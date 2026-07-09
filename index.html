@@ -24,32 +24,20 @@
     -webkit-background-clip:text;background-clip:text;color:transparent;
   }
   header p{color:var(--muted);font-size:.85rem;margin:0}
-  .card{
-    background:var(--panel);border:1px solid var(--border);
-    border-radius:16px;overflow:hidden;
-    box-shadow:0 0 0 1px rgba(245,217,10,.06), 0 20px 60px -20px rgba(168,85,247,.35);
+  ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.8rem}
+  li a{
+    display:flex;justify-content:space-between;align-items:center;gap:.5rem;
+    background:var(--panel);border:1px solid var(--border);border-radius:12px;
+    padding:1rem 1.2rem;text-decoration:none;color:var(--text);
   }
-  .card-head{padding:1rem 1.2rem .8rem;display:flex;justify-content:space-between;align-items:center;gap:.5rem}
+  li a:hover{border-color:var(--neon-yellow)}
+  li a span.name{font-weight:600;font-size:.95rem}
   .badge{
     font-size:.7rem;font-weight:600;letter-spacing:.02em;
-    padding:.25rem .6rem;border-radius:999px;
+    padding:.25rem .6rem;border-radius:999px;white-space:nowrap;
     background:rgba(245,217,10,.12);color:var(--neon-yellow);
-    border:1px solid rgba(245,217,10,.3);white-space:nowrap;
+    border:1px solid rgba(245,217,10,.3);
   }
-  .card-head h2{font-size:1rem;margin:0;font-weight:600}
-  video{display:block;width:100%;aspect-ratio:9/16;background:#000}
-  .meta{padding:1rem 1.2rem 1.3rem;border-top:1px solid var(--border)}
-  .meta .row{display:flex;justify-content:space-between;font-size:.8rem;color:var(--muted);margin-bottom:.5rem}
-  .meta .row b{color:var(--text);font-weight:500}
-  .script{
-    margin-top:.8rem;font-size:.85rem;line-height:1.5;color:#d8d8e2;
-    background:#0d0d13;border:1px solid var(--border);border-radius:10px;padding:.8rem .9rem;
-  }
-  .cta{
-    margin-top:1rem;display:flex;align-items:center;gap:.5rem;
-    font-size:.85rem;color:var(--neon-purple);font-weight:600;
-  }
-  .cta::before{content:"💬";font-size:1rem}
   footer{text-align:center;margin-top:2rem;font-size:.75rem;color:var(--muted)}
   footer a{color:var(--neon-orange)}
 </style>
@@ -61,29 +49,15 @@
     <p>Valider avant publication Instagram / TikTok</p>
   </header>
 
-  <div class="card">
-    <div class="card-head">
-      <h2>#10 — Générateur Livres Enfants</h2>
-      <span class="badge">⏳ En attente validation</span>
-    </div>
-    <video src="livres-enfants.mp4" controls playsinline loop muted></video>
-    <div class="meta">
-      <div class="row"><span>Durée</span><b>15.5s</b></div>
-      <div class="row"><span>Format</span><b>1080×1920 (9:16)</b></div>
-      <div class="row"><span>Workflow</span><b>Générateur Livres Enfants</b></div>
-      <div class="script">
-        Voilà un business que tu peux lancer ce week-end avec zéro stock et zéro investissement.
-        Tu donnes le prénom de l'enfant et le thème. Le workflow génère toutes les illustrations
-        avec l'IA et rédige le texte. Un livre personnalisé en quelques minutes. Commente LIVRE
-        pour recevoir le workflow gratuitement.
-      </div>
-      <div class="cta">Commente LIVRE</div>
-    </div>
-  </div>
+  <ul>
+    <li><a href="/livres-enfants">
+      <span class="name">#10 — Générateur Livres Enfants</span>
+      <span class="badge">⏳ En attente</span>
+    </a></li>
+  </ul>
 
   <footer>
     Déployé via <a href="https://github.com/tonyPayetDev/kilo-skills/tree/main/coolify-deploy">coolify-deploy</a>
-    — Sheet de suivi ligne #10
   </footer>
 </div>
 </body>
