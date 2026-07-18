@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sound design — 3 positions à choisir (#37 Fable)</title>
+<style>
+  :root{ --bg:#0a0a0f; --panel:#111117; --border:#242430; --accent-yellow:#ffe600; --violet:#a855f7; --orange:#ff8a3d; --text:#f2f2f5; --muted:#9a9aa8; }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;padding:2rem 1rem 4rem}
+  .wrap{max-width:440px;margin:0 auto}
+  a.back{color:var(--muted);font-size:.8rem;text-decoration:none;display:inline-block;margin-bottom:1rem}
+  header{text-align:center;margin-bottom:1.4rem}
+  header h1{font-size:1.35rem;margin:0 0 .3rem;background:linear-gradient(90deg,var(--accent-yellow),var(--orange));-webkit-background-clip:text;background-clip:text;color:transparent}
+  header p{color:var(--muted);font-size:.85rem;margin:0;line-height:1.5}
+  .intro{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:.9rem 1rem;font-size:.82rem;line-height:1.55;color:#c9c9d4;margin-bottom:1.2rem}
+  .intro b{color:var(--accent-yellow)}
+  .warn{background:rgba(255,138,61,.08);border:1px solid rgba(255,138,61,.3);border-radius:12px;padding:.85rem 1rem;font-size:.8rem;line-height:1.55;color:#d8d8e2;margin-bottom:1.8rem}
+  .warn b{color:var(--orange)}
+  .pos{margin-bottom:2.2rem}
+  .pos-head{display:flex;align-items:baseline;gap:.55rem;margin-bottom:.2rem}
+  .pos-head h2{font-size:1.05rem;margin:0;font-weight:700}
+  .pos-head span{font-size:.75rem;color:var(--muted);font-family:ui-monospace,Menlo,monospace}
+  .pos>p.ctx{font-size:.8rem;color:var(--muted);margin:.1rem 0 .9rem;line-height:1.5}
+  .opt{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:.85rem 1rem 1rem;margin-bottom:.75rem}
+  .opt.reco{border-color:rgba(245,217,10,.45)}
+  .opt-head{display:flex;align-items:center;gap:.5rem;margin-bottom:.5rem;flex-wrap:wrap}
+  .opt-head h3{font-size:.92rem;margin:0;font-weight:700}
+  .tag{font-size:.65rem;font-weight:700;padding:.2rem .5rem;border-radius:999px;background:rgba(245,217,10,.14);color:var(--accent-yellow);border:1px solid rgba(245,217,10,.35)}
+  .tag.grey{background:rgba(154,154,168,.12);color:var(--muted);border-color:rgba(154,154,168,.3)}
+  audio{width:100%;height:36px;margin:.15rem 0 .5rem;filter:invert(.92) hue-rotate(180deg)}
+  .opt p{font-size:.8rem;line-height:1.55;color:#c9c9d4;margin:0}
+  .sfxlist{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:1rem}
+  .sfxlist h2{font-size:1rem;margin:0 0 .3rem}
+  .sfxlist>p{font-size:.78rem;color:var(--muted);margin:0 0 .9rem;line-height:1.5}
+  .sfxrow{border-top:1px solid var(--border);padding-top:.7rem;margin-top:.7rem}
+  .sfxrow b{font-size:.85rem}
+  .sfxrow small{display:block;color:var(--muted);font-size:.75rem;line-height:1.5;margin-bottom:.2rem}
+  footer{text-align:center;margin-top:2rem;font-size:.75rem;color:var(--muted);line-height:1.6}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="/fable/">← Retour à la vidéo #37</a>
+  <header>
+    <h1>Sound design — 3 choix</h1>
+    <p>Chaque extrait est la vraie voix + la vraie musique de la #37, avec les effets posés dessus.</p>
+  </header>
+
+  <div class="intro">
+    <b>Ce qu'il y a aujourd'hui : deux sons pour 25 secondes.</b> Un même whoosh recyclé 3 fois (à 3,8 / 10,9 / 16,4 s) et un chime à 20,4 s. Le <b>hook n'a aucun son</b> — les 3,8 premières secondes, celles qui décident du scroll, sont muettes côté effets. Et comme les sous-titres ont été recalés, les effets tombent maintenant jusqu'à 0,8 s à côté des accents.
+  </div>
+
+  <div class="warn">
+    <b>À écouter au casque ou écouteurs.</b> La palette IMPACT repose sur un grave (45–130 Hz) que le haut-parleur d'un téléphone ne restitue quasiment pas — il y a un transitoire claquant par-dessus pour que ça marche aussi sans grave, mais le jugement se fait au casque.
+  </div>
+
+  <div class="pos">
+    <div class="pos-head"><h2>1. Le hook</h2><span>0 → 3,4 s</span></div>
+    <p class="ctx">« Ton IA te coûte 5× trop cher. Et tu le sais même pas. »</p>
+
+    <div class="opt">
+      <div class="opt-head"><h3>A — Actuel</h3><span class="tag grey">rien</span></div>
+      <audio controls preload="none" src="hook-actuel.mp3"></audio>
+      <p>Aucun effet. La voix démarre sur un lit de musique très bas (0,09). Rien ne souligne « 5× trop cher ».</p>
+    </div>
+
+    <div class="opt reco">
+      <div class="opt-head"><h3>B — IMPACT</h3><span class="tag">recommandé</span></div>
+      <audio controls preload="none" src="hook-impact.mp3"></audio>
+      <p>Un coup sub à l'ouverture, un deuxième plus fort pile sur « 5× TROP CHER », puis un souffle court avant « tu le sais même pas ». +6,5 dB sur l'accent : c'est ce qui arrête le pouce.</p>
+    </div>
+
+    <div class="opt">
+      <div class="opt-head"><h3>C — AIR</h3><span class="tag grey">plus doux</span></div>
+      <audio controls preload="none" src="hook-air.mp3"></audio>
+      <p>Trois souffles filtrés à la place des coups. Plus élégant, moins agressif — mais +3 dB seulement sur l'accent, ça glisse plus que ça ne frappe.</p>
+    </div>
+  </div>
+
+  <div class="pos">
+    <div class="pos-head"><h2>2. Le milieu</h2><span>16,4 → 20,2 s</span></div>
+    <p class="ctx">« Le sale boulot part sur des agents plus légers, 5× moins chers. » — c'est là que tourne le b-roll de code.</p>
+
+    <div class="opt">
+      <div class="opt-head"><h3>A — Actuel</h3><span class="tag grey">1 whoosh</span></div>
+      <audio controls preload="none" src="milieu-actuel.mp3"></audio>
+      <p>Un seul whoosh à l'entrée du b-roll, à 0,15 de volume. Le « 5× moins chers », qui est le bénéfice de la vidéo, passe sans rien.</p>
+    </div>
+
+    <div class="opt reco">
+      <div class="opt-head"><h3>B — DIGITAL</h3><span class="tag">recommandé</span></div>
+      <audio controls preload="none" src="milieu-digital.mp3"></audio>
+      <p>Trois bips courts façon terminal sur les deux premières lignes, puis un coup sur « 5× MOINS CHER ». Le registre colle au b-roll de code — le son raconte la même chose que l'image.</p>
+    </div>
+
+    <div class="opt">
+      <div class="opt-head"><h3>C — IMPACT</h3><span class="tag grey">plus lourd</span></div>
+      <audio controls preload="none" src="milieu-impact.mp3"></audio>
+      <p>Souffle d'entrée puis deux coups. Efficace, mais on réutilise la même arme qu'au hook : au bout de 20 s l'oreille s'habitue et l'effet s'use.</p>
+    </div>
+  </div>
+
+  <div class="pos">
+    <div class="pos-head"><h2>3. La fin</h2><span>20,0 → 25,2 s</span></div>
+    <p class="ctx">« Même résultat, facture divisée. Commente le mot FABLE… »</p>
+
+    <div class="opt">
+      <div class="opt-head"><h3>A — Actuel</h3><span class="tag grey">1 chime</span></div>
+      <audio controls preload="none" src="fin-actuel.mp3"></audio>
+      <p>Un chime à 20,4 s, puis plus rien. L'appel à commenter arrive sans aucune montée : rien ne dit à l'oreille que c'est le moment d'agir.</p>
+    </div>
+
+    <div class="opt reco">
+      <div class="opt-head"><h3>B — RISER</h3><span class="tag">recommandé</span></div>
+      <audio controls preload="none" src="fin-riser.mp3"></audio>
+      <p>Coup sur « facture divisée », puis une montée de tension de 1,6 s qui se résout par un impact pile sur « COMMENTE », et une cloche sur « FABLE ». C'est la grammaire du CTA : on crée l'attente, on la libère sur le mot-clé.</p>
+    </div>
+
+    <div class="opt">
+      <div class="opt-head"><h3>C — CLEAN</h3><span class="tag grey">sobre</span></div>
+      <audio controls preload="none" src="fin-clean.mp3"></audio>
+      <p>Trois cloches douces et un souffle. Premium, pas vendeur — aucune tension avant le mot-clé.</p>
+    </div>
+  </div>
+
+  <div class="sfxlist">
+    <h2>Les 5 effets, à sec</h2>
+    <p>Fabriqués sur mesure (synthèse ffmpeg) — pas de banque de sons, donc aucun problème de licence et on peut les régler au détail près.</p>
+
+    <div class="sfxrow"><b>IMPACT</b><small>Sub 130→45 Hz + transitoire claquant, 0,8 s</small>
+      <audio controls preload="none" src="sfx-hit.mp3"></audio></div>
+    <div class="sfxrow"><b>AIR</b><small>Bruit filtré 380–6500 Hz, swell gaussien + phaser, 1,0 s</small>
+      <audio controls preload="none" src="sfx-whoosh.mp3"></audio></div>
+    <div class="sfxrow"><b>DIGITAL</b><small>3 bips carrés 880 / 1320 / 1760 Hz espacés de 70 ms</small>
+      <audio controls preload="none" src="sfx-digital.mp3"></audio></div>
+    <div class="sfxrow"><b>RISER</b><small>Sweep 180→500 Hz + deux bandes de bruit croisées, 1,6 s</small>
+      <audio controls preload="none" src="sfx-riser.mp3"></audio></div>
+    <div class="sfxrow"><b>BELL</b><small>880 Hz + 2 harmoniques, décroissance douce, 1,4 s</small>
+      <audio controls preload="none" src="sfx-bell.mp3"></audio></div>
+  </div>
+
+  <footer>
+    Dis-moi une lettre par position — ex. « <b>B / B / B</b> ».<br>
+    Rien n'est encore appliqué à la vidéo : le rendu final (~16 min) part une fois ton choix fait.
+  </footer>
+</div>
+</body>
+</html>
