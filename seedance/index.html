@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prévisualisation — #40 Seedance · 3 astuces de prompt</title>
+<style>
+  :root{ --bg:#0a0a0f; --panel:#111117; --border:#242430; --neon-yellow:#f5d90a; --neon-purple:#a855f7; --neon-orange:#ff7a1a; --text:#f2f2f5; --muted:#9a9aa8; }
+  *{box-sizing:border-box}
+  body{margin:0; background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; padding:2rem 1rem 4rem;}
+  .wrap{max-width:480px;margin:0 auto}
+  a.back{color:var(--muted);font-size:.8rem;text-decoration:none;display:inline-block;margin-bottom:1rem}
+  header{text-align:center;margin-bottom:2rem}
+  header h1{font-size:1.4rem;margin:0 0 .3rem; background:linear-gradient(90deg,var(--neon-yellow),var(--neon-orange)); -webkit-background-clip:text;background-clip:text;color:transparent;}
+  header p{color:var(--muted);font-size:.85rem;margin:0}
+  .card{background:var(--panel);border:1px solid var(--border); border-radius:16px;overflow:hidden; box-shadow:0 0 0 1px rgba(245,217,10,.06), 0 20px 60px -20px rgba(168,85,247,.35);margin-bottom:1.5rem}
+  .card-head{padding:1rem 1.2rem .8rem;display:flex;justify-content:space-between;align-items:center;gap:.5rem}
+  .badge{font-size:.7rem;font-weight:600;letter-spacing:.02em; padding:.25rem .6rem;border-radius:999px; background:rgba(245,217,10,.12);color:var(--neon-yellow); border:1px solid rgba(245,217,10,.3);white-space:nowrap;}
+  .card-head h2{font-size:1rem;margin:0;font-weight:600}
+  video{display:block;width:100%;aspect-ratio:9/16;background:#000}
+  .meta{padding:1rem 1.2rem 1.3rem;border-top:1px solid var(--border)}
+  .headphones{font-size:.8rem;color:var(--neon-purple);font-weight:600;margin-bottom:.9rem}
+  .table-scroll{overflow-x:auto}
+  table{width:100%;border-collapse:collapse;font-size:.78rem}
+  th{text-align:left;color:var(--muted);font-weight:600;padding:.4rem .3rem;border-bottom:1px solid var(--border);font-size:.72rem;text-transform:uppercase;letter-spacing:.03em}
+  td{padding:.45rem .3rem;border-bottom:1px solid rgba(36,36,48,.6);vertical-align:top;color:#d8d8e2}
+  td.t{color:var(--neon-yellow);font-variant-numeric:tabular-nums;white-space:nowrap;font-weight:600}
+  .note{margin-top:1rem;font-size:.78rem;line-height:1.5;color:#c9c9d4;background:rgba(255,122,26,.07);border:1px solid rgba(255,122,26,.28);border-radius:10px;padding:.75rem .85rem;}
+  .note b{color:var(--neon-orange)}
+  footer{text-align:center;margin-top:2rem;font-size:.75rem;color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="/">← Toutes les vidéos</a>
+  <header>
+    <h1>#40 Seedance — 3 astuces de prompt</h1>
+    <p>Pourquoi tes vidéos IA ont l'air fausses</p>
+  </header>
+
+  <div class="card">
+    <div class="card-head">
+      <h2>Rendu final — avatar + b-roll, palette SFX v1</h2>
+      <span class="badge">🔊 À valider</span>
+    </div>
+    <video src="video.mp4" controls playsinline loop></video>
+    <div class="meta">
+      <div class="headphones">🎧 Écoute au casque — les SFX sont volontairement bas</div>
+      <div class="table-scroll">
+      <table>
+        <tr><th>Temps</th><th>Ce qui se passe</th><th>Son</th></tr>
+        <tr><td class="t">0,10</td><td>Hook « on dirait du faux »</td><td>Electric buzz glitch + impact</td></tr>
+        <tr><td class="t">1,45</td><td>Le prompt raté se tape ligne par ligne</td><td>—</td></tr>
+        <tr><td class="t">4,10</td><td>Verdict « le sujet arrive en 3ᵉ ligne »</td><td>Interface hint notification</td></tr>
+        <tr><td class="t">4,48</td><td>Coupe vers l'astuce 1</td><td>Air zoom (pic sur la coupe 5,68)</td></tr>
+        <tr><td class="t">5,88</td><td>Astuce 1 — badge + titre</td><td>Small glitch + sci-fi click</td></tr>
+        <tr><td class="t">6,85</td><td><b>Les 20 premiers mots se surlignent</b></td><td>Interface hint notification</td></tr>
+        <tr><td class="t">9,50</td><td>L'ordre 1-2-3 en cascade</td><td>Clicks doux ×3</td></tr>
+        <tr><td class="t">10,63</td><td>Coupe vers l'astuce 2</td><td>Air zoom (pic sur 11,83)</td></tr>
+        <tr><td class="t">12,80</td><td>Les mauvais empilages apparaissent</td><td>Clicks doux ×2</td></tr>
+        <tr><td class="t">14,55</td><td>Le bon mouvement validé (3 s)</td><td>Sci-fi confirmation</td></tr>
+        <tr><td class="t">17,50</td><td><b>Les deux mauvais se font barrer</b></td><td>Arrow whoosh ×2</td></tr>
+        <tr><td class="t">17,46</td><td>Coupe vers le b-roll</td><td>Air zoom (pic sur 18,66)</td></tr>
+        <tr><td class="t">18,66</td><td><b>B-roll</b> — tournage au téléphone</td><td>Arrow whoosh</td></tr>
+        <tr><td class="t">19,56</td><td>Retour sur l'astuce 3</td><td>Air zoom (pic sur 20,76)</td></tr>
+        <tr><td class="t">21,00</td><td>@image / @vidéo / @texte en cascade</td><td>Sci-fi click + clicks doux ×3</td></tr>
+        <tr><td class="t">23,48</td><td>Coupe vers le CTA</td><td>Air zoom (pic sur 24,68)</td></tr>
+        <tr><td class="t">24,95</td><td>La jauge « 200 mots max » se remplit</td><td>Interface hint notification</td></tr>
+        <tr><td class="t">26,50</td><td>CTA SEEDANCE</td><td>Electric pop + impact</td></tr>
+        <tr><td class="t">27,85</td><td>Sous-titre CTA</td><td>Click doux</td></tr>
+      </table>
+      </div>
+
+      <div class="note">
+        <b>Comment c'est calé :</b> Whisper n'est pas disponible sur cette machine, donc la timeline est posée sur les <b>14 groupes de parole mesurés</b> dans le fichier voix (silencedetect à -40 dB). Toutes les coupes de scène tombent dans un silence : 5,68 / 11,83 / 18,66 / 20,76 / 24,68.<br><br>
+        <b>Plus dynamique que #39 :</b> ici le décor bouge en même temps que la voix — le prompt se tape, les 20 mots se surlignent, les mauvais mouvements se font barrer d'un trait, la jauge se remplit. C'est le reproche que tu faisais à #38.<br><br>
+        <b>Corrigé avant rendu :</b> au snapshot, le badge de numéro d'astuce tombait sur le titre et mangeait « mots » et « mouvement ». Remonté au-dessus du kicker.<br><br>
+        <b>Point à trancher :</b> la jauge « 200 mots max » ne se remplit qu'au quart. Ça se lit comme « reste bien en dessous de la limite », mais si tu préfères qu'elle aille au bout, c'est une ligne à changer.
+      </div>
+    </div>
+  </div>
+
+  <footer>#40 Seedance · 29,2 s · 1080×1920 · rendu du 20/07 12:33</footer>
+</div>
+</body>
+</html>
