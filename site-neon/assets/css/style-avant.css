@@ -3,7 +3,7 @@
    Palette : Cyberpunk Noir/Or
    ============================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Rajdhani:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
 /* --- RESET & BASE --- */
 *, *::before, *::after {
@@ -12,57 +12,23 @@
   padding: 0;
 }
 
-/* LIGHT theme (default) — inspiré de buildyoursaas : fond clair, typo Sora,
-   jaune + orange Claude + violet en accents. Bascule vers black via
-   :root[data-theme="dark"]. */
 :root {
-  --bg-dark:     #ffffff;
-  --bg-card:     #ffffff;
-  --bg-card-2:   #f8fafb;
-  --border:      #e8ecef;
+  --bg-dark:     #050505;
+  --bg-card:     #0d0d0d;
+  --bg-card-2:   #111111;
+  --border:      #1a1a1a;
   --gold:        #eab308;
   --gold-dark:   #ca8a04;
-  --gold-glow:   rgba(234, 179, 8, 0.14);
-  --gold-glow2:  rgba(234, 179, 8, 0.35);
-  --orange:      #d97757;
-  --orange-dark: #c25f3f;
-  --violet:      #8b5cf6;
-  --violet-dark: #7c3aed;
-  --text:        #0c0c0c;
-  --text-muted:  #6b7280;
-  --text-light:  #3f3f46;
-  --red:         #ef4444;
-  --green:       #10b981;
-  --radius:      12px;
-  --radius-lg:   18px;
-  --shadow-gold: 0 8px 30px rgba(234,179,8,0.18);
-  --shadow-soft: 0 2px 14px rgba(16,24,40,0.06);
-  --grid-line:   rgba(12,12,12,0.035);
-  --scan:        rgba(12,12,12,0.012);
-  --nav-bg:      rgba(255,255,255,0.82);
-  --nav-bg-scr:  rgba(255,255,255,0.95);
-  --nav-shadow:  0 8px 30px rgba(16,24,40,0.10);
-  --on-gold:     #1a1200;
-}
-:root[data-theme="dark"] {
-  --bg-dark:     #0a0a0f;
-  --bg-card:     #111117;
-  --bg-card-2:   #16161d;
-  --border:      #232330;
   --gold-glow:   rgba(234, 179, 8, 0.15);
   --gold-glow2:  rgba(234, 179, 8, 0.4);
   --text:        #e4e4e7;
-  --text-muted:  #8b8b98;
-  --text-light:  #b4b4c0;
+  --text-muted:  #71717a;
+  --text-light:  #a1a1aa;
+  --red:         #ef4444;
   --green:       #22c55e;
+  --radius:      8px;
+  --radius-lg:   16px;
   --shadow-gold: 0 0 30px rgba(234,179,8,0.3), 0 0 60px rgba(234,179,8,0.1);
-  --shadow-soft: 0 10px 34px rgba(0,0,0,0.5);
-  --grid-line:   rgba(234,179,8,0.03);
-  --scan:        rgba(0,0,0,0.04);
-  --nav-bg:      rgba(10,10,15,0.88);
-  --nav-bg-scr:  rgba(6,6,10,0.96);
-  --nav-shadow:  0 12px 40px rgba(0,0,0,0.6);
-  --on-gold:     #000;
 }
 
 html { scroll-behavior: smooth; }
@@ -70,7 +36,7 @@ html { scroll-behavior: smooth; }
 body {
   background-color: var(--bg-dark);
   color: var(--text);
-  font-family: 'Inter', 'Sora', sans-serif;
+  font-family: 'Inter', 'Rajdhani', sans-serif;
   font-size: 17px;
   line-height: 1.75;
   overflow-x: hidden;
@@ -83,8 +49,8 @@ body::before {
   position: fixed;
   inset: 0;
   background-image:
-    linear-gradient(var(--grid-line) 1px, transparent 1px),
-    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+    linear-gradient(rgba(234,179,8,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(234,179,8,0.03) 1px, transparent 1px);
   background-size: 60px 60px;
   pointer-events: none;
   z-index: 0;
@@ -99,8 +65,8 @@ body::after {
     0deg,
     transparent,
     transparent 2px,
-    var(--scan) 2px,
-    var(--scan) 4px
+    rgba(0,0,0,0.04) 2px,
+    rgba(0,0,0,0.04) 4px
   );
   pointer-events: none;
   z-index: 0;
@@ -113,7 +79,7 @@ body::after {
 
 /* --- TYPOGRAPHY --- */
 h1, h2, h3, h4 {
-  font-family: 'Sora', sans-serif;
+  font-family: 'Orbitron', sans-serif;
   line-height: 1.15;
   letter-spacing: -0.03em;
 }
@@ -175,49 +141,28 @@ nav {
   position: fixed;
   top: 16px;
   left: 50%;
+  transform: translateX(-50%);
   z-index: 1000;
   width: auto;
   max-width: calc(100% - 32px);
-  /* translate rather than `top`: `top` is a layout property, and the pill also
-     carries the -50% centring, so both live on the same transform. */
-  transform: translateX(-50%) translateY(0);
-  transition: transform 0.25s cubic-bezier(0.23, 1, 0.32, 1);
-}
-
-/* The rule above matches the <nav> element, not just the navbar, so every other
-   <nav> on the page inherits fixed positioning: the mobile menu body dropped out
-   of flow (collapsing its opaque panel to 0 height, leaving the links floating
-   unreadable over the page) and the landing footer links flew to the top.
-   humian.html still relies on a bare <nav> as its navbar, so keep this as a reset
-   rather than scoping the rule to #navbar. */
-.mobile-menu-inner,
-.lp-footer-links {
-  position: static;
-  transform: none;
-  width: auto;
-  max-width: none;
-  z-index: auto;
+  transition: top 0.4s cubic-bezier(0.23, 1, 0.32, 1);
 }
 
 .nav-pill {
   display: flex;
   align-items: center;
   gap: 4px;
-  background: var(--nav-bg);
+  background: rgba(8, 8, 8, 0.88);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(234,179,8,0.28);
+  border: 1px solid rgba(234,179,8,0.18);
   border-radius: 100px;
   padding: 7px 10px 7px 14px;
   box-shadow:
-    var(--nav-shadow),
-    0 0 0 1px rgba(234,179,8,0.05);
-  /* `.scrolled` toggles on every scroll past 50px, so this is the highest-frequency
-     transition on the site — list the properties instead of animating `all`. */
-  transition:
-    border-color 0.35s cubic-bezier(0.23, 1, 0.32, 1),
-    box-shadow 0.35s cubic-bezier(0.23, 1, 0.32, 1),
-    background-color 0.35s cubic-bezier(0.23, 1, 0.32, 1);
+    0 8px 32px rgba(0,0,0,0.5),
+    0 0 0 1px rgba(234,179,8,0.05),
+    inset 0 1px 0 rgba(255,255,255,0.04);
+  transition: all 0.35s cubic-bezier(0.23, 1, 0.32, 1);
 }
 
 nav.scrolled .nav-pill {
@@ -226,26 +171,7 @@ nav.scrolled .nav-pill {
     0 12px 40px rgba(0,0,0,0.6),
     0 0 24px rgba(234,179,8,0.1),
     inset 0 1px 0 rgba(255,255,255,0.05);
-  background: var(--nav-bg-scr);
-}
-
-/* Theme toggle button (injected by theme.js into the nav pill) */
-.theme-toggle {
-  background: transparent;
-  border: 1px solid var(--border);
-  color: var(--text);
-  width: 34px; height: 34px;
-  border-radius: 50%;
-  font-size: 15px; line-height: 1;
-  cursor: pointer;
-  display: inline-flex; align-items: center; justify-content: center;
-  transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease, color 0.2s ease, opacity 0.2s ease;
-  flex: 0 0 auto;
-}
-.theme-toggle:hover {
-  border-color: var(--gold);
-  box-shadow: 0 0 0 3px var(--gold-glow);
-  transform: translateY(-1px);
+  background: rgba(5,5,5,0.96);
 }
 
 .logo {
@@ -268,7 +194,7 @@ nav.scrolled .nav-pill {
 }
 
 .logo-text {
-  font-family: 'Sora', sans-serif;
+  font-family: 'Orbitron', sans-serif;
   font-size: 1.1rem;
   font-weight: 700;
   color: var(--text);
@@ -279,18 +205,15 @@ nav.scrolled .nav-pill {
 .nav-cta {
   background: var(--gold);
   color: #000;
-  font-family: 'Sora', sans-serif;
+  font-family: 'Rajdhani', sans-serif;
   font-weight: 700;
   font-size: 0.95rem;
   padding: 9px 22px;
   border-radius: var(--radius);
   text-decoration: none;
   letter-spacing: 0.03em;
-  transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease, color 0.2s ease, opacity 0.2s ease;
+  transition: all 0.2s ease;
   text-transform: uppercase;
-  /* Libellé sur une seule ligne : sinon il casse en deux et déborde de la pilule. */
-  white-space: nowrap;
-  flex-shrink: 0;
 }
 
 .nav-cta:hover {
@@ -351,7 +274,7 @@ nav.scrolled .nav-pill {
   font-weight: 600;
   text-decoration: none;
   letter-spacing: 0.02em;
-  transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease, color 0.2s ease, opacity 0.2s ease;
+  transition: all 0.2s ease;
   margin-left: 4px;
 }
 .nav-formation:hover {
@@ -395,24 +318,13 @@ nav.scrolled .nav-pill {
 
 .hero-glow {
   position: absolute;
-  top: -8%;
+  top: 20%;
   left: 50%;
   transform: translateX(-50%);
-  width: min(1150px, 125vw);
-  height: 820px;
-  background:
-    radial-gradient(closest-side, rgba(234,179,8,0.18), transparent 72%) 28% 26% / 62% 60% no-repeat,
-    radial-gradient(closest-side, rgba(217,119,87,0.15), transparent 72%) 74% 38% / 56% 56% no-repeat,
-    radial-gradient(closest-side, rgba(139,92,246,0.13), transparent 72%) 50% 74% / 58% 56% no-repeat;
-  filter: blur(24px);
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(234,179,8,0.08) 0%, transparent 70%);
   pointer-events: none;
-  z-index: 0;
-}
-:root[data-theme="dark"] .hero-glow {
-  background:
-    radial-gradient(closest-side, rgba(234,179,8,0.22), transparent 72%) 28% 26% / 62% 60% no-repeat,
-    radial-gradient(closest-side, rgba(217,119,87,0.16), transparent 72%) 74% 38% / 56% 56% no-repeat,
-    radial-gradient(closest-side, rgba(139,92,246,0.18), transparent 72%) 50% 74% / 58% 56% no-repeat;
 }
 
 .hero-badge {
@@ -437,8 +349,12 @@ nav.scrolled .nav-pill {
   height: 8px;
   background: var(--gold);
   border-radius: 50%;
-  /* No pulse: a gold dot already reads as "active". A looping scale/opacity on a
-     status indicator draws the eye repeatedly without carrying new information. */
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(1.3); }
 }
 
 .hero-title {
@@ -477,14 +393,14 @@ nav.scrolled .nav-pill {
 .btn-primary {
   background: linear-gradient(135deg, var(--gold), var(--gold-dark));
   color: #000;
-  font-family: 'Sora', sans-serif;
+  font-family: 'Rajdhani', sans-serif;
   font-weight: 700;
   font-size: 1.05rem;
   padding: 15px 34px;
   border-radius: var(--radius);
   text-decoration: none;
   letter-spacing: 0.03em;
-  transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease, color 0.2s ease, opacity 0.2s ease;
+  transition: all 0.2s ease;
   text-transform: uppercase;
   border: none;
   cursor: pointer;
@@ -502,14 +418,14 @@ nav.scrolled .nav-pill {
 .btn-secondary {
   background: transparent;
   color: var(--text);
-  font-family: 'Sora', sans-serif;
+  font-family: 'Rajdhani', sans-serif;
   font-weight: 600;
   font-size: 1rem;
   padding: 14px 28px;
   border-radius: var(--radius);
   text-decoration: none;
   border: 1px solid var(--border);
-  transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease, color 0.2s ease, opacity 0.2s ease;
+  transition: all 0.2s ease;
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -533,20 +449,12 @@ nav.scrolled .nav-pill {
 }
 
 .stat-number {
-  font-family: 'Sora', sans-serif;
+  font-family: 'Orbitron', sans-serif;
   font-size: 2rem;
   font-weight: 900;
   color: var(--gold);
   line-height: 1;
 }
-/* Accents variés (jaune / orange Claude / violet) sur les stats du hero */
-.hero-stats .stat-item:nth-child(2) .stat-number { color: var(--orange); }
-.hero-stats .stat-item:nth-child(3) .stat-number { color: var(--violet); }
-
-/* Rythme des sections : alternance surface claire / blanc (thème-aware) */
-#problem, #how-it-works, #testimonials, #faq { background: var(--bg-card-2); }
-#problem, #how-it-works, #testimonials, #faq,
-#features, #demo, #urgency, #pricing, #final-cta { position: relative; z-index: 1; }
 
 .stat-label {
   font-size: 0.85rem;
@@ -562,31 +470,21 @@ nav.scrolled .nav-pill {
 }
 
 .dashboard-mockup {
-  /* Always a dark "app screenshot", even on the light theme — scope dark
-     tokens so all children read on the dark surface. */
-  --bg-card: #111117; --bg-card-2: #16161d; --border: #232330;
-  --text: #e4e4e7; --text-light: #b4b4c0; --text-muted: #8b8b98;
-  background: #0d0d13;
-  color: #e4e4e7;
-  border: 1px solid rgba(234,179,8,0.25);
+  background: var(--bg-card);
+  border: 1px solid rgba(234,179,8,0.2);
   border-radius: var(--radius-lg);
   overflow: hidden;
-  box-shadow: 0 30px 70px rgba(16,24,40,0.28), 0 0 0 1px rgba(234,179,8,0.06);
+  box-shadow: var(--shadow-gold), 0 40px 80px rgba(0,0,0,0.6);
+  animation: float 6s ease-in-out infinite;
 }
 
-/* Ambient drift is decorative and vestibular-triggering, so it is opt-in:
-   the animation only exists when the user has not asked for reduced motion. */
-@media (prefers-reduced-motion: no-preference) {
-  .dashboard-mockup { animation: float 6s ease-in-out infinite; }
-
-  @keyframes float {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-10px); }
-  }
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
 }
 
 .mockup-bar {
-  background: var(--bg-card-2);
+  background: #0a0a0a;
   padding: 12px 16px;
   display: flex;
   align-items: center;
@@ -611,7 +509,7 @@ nav.scrolled .nav-pill {
 }
 
 .mockup-title {
-  font-family: 'Sora', sans-serif;
+  font-family: 'Orbitron', sans-serif;
   font-size: 0.8rem;
   font-weight: 600;
   color: var(--gold);
@@ -633,7 +531,7 @@ nav.scrolled .nav-pill {
   height: 7px;
   background: var(--green);
   border-radius: 50%;
-  /* Static green dot — see .hero-badge::before for why the pulse was dropped. */
+  animation: pulse 2s infinite;
 }
 
 .mockup-platforms {
@@ -699,7 +597,7 @@ nav.scrolled .nav-pill {
 }
 
 .metric-value {
-  font-family: 'Sora', sans-serif;
+  font-family: 'Orbitron', sans-serif;
   font-size: 1rem;
   font-weight: 700;
   color: var(--gold);
@@ -750,7 +648,7 @@ nav.scrolled .nav-pill {
   padding: 28px;
   position: relative;
   overflow: hidden;
-  transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease, color 0.3s ease, opacity 0.3s ease;
+  transition: all 0.3s ease;
 }
 
 .problem-card::before {
@@ -777,7 +675,7 @@ nav.scrolled .nav-pill {
   justify-content: center;
   margin-bottom: 16px;
   color: #ef4444;
-  transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease, color 0.3s ease, opacity 0.3s ease;
+  transition: all 0.3s ease;
 }
 
 .problem-card:hover .problem-icon {
@@ -802,17 +700,12 @@ nav.scrolled .nav-pill {
   font-size: 2.5rem;
   color: var(--gold);
   margin: 40px 0;
+  animation: bounce 2s ease-in-out infinite;
 }
 
-/* One nudge when the arrow scrolls into view (`.is-in` is added by main.js),
-   instead of bouncing forever. A gesture that repeats stops being a gesture. */
-@media (prefers-reduced-motion: no-preference) {
-  .solution-arrow.is-in { animation: bounce 1.6s ease-in-out 2; }
-
-  @keyframes bounce {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(8px); }
-  }
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(8px); }
 }
 
 /* --- FEATURES --- */
@@ -831,7 +724,7 @@ nav.scrolled .nav-pill {
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   padding: 32px;
-  transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease, color 0.3s ease, opacity 0.3s ease;
+  transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
 }
@@ -869,7 +762,7 @@ nav.scrolled .nav-pill {
   position: relative;
   z-index: 1;
   color: var(--gold);
-  transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease, color 0.3s ease, opacity 0.3s ease;
+  transition: all 0.3s ease;
 }
 
 .feature-card:hover .feature-icon {
@@ -930,7 +823,7 @@ nav.scrolled .nav-pill {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: 'Sora', sans-serif;
+  font-family: 'Orbitron', sans-serif;
   font-size: 1.1rem;
   font-weight: 900;
   color: #000;
@@ -945,7 +838,7 @@ nav.scrolled .nav-pill {
   border-radius: var(--radius-lg);
   padding: 24px;
   flex: 1;
-  transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease, color 0.3s ease, opacity 0.3s ease;
+  transition: all 0.3s ease;
 }
 
 .step-content:hover {
@@ -1012,13 +905,13 @@ nav.scrolled .nav-pill {
 }
 
 .screen-header {
-  background: var(--bg-card-2);
+  background: #0a0a0a;
   padding: 12px 16px;
   display: flex;
   align-items: center;
   gap: 8px;
   border-bottom: 1px solid var(--border);
-  font-family: 'Sora', sans-serif;
+  font-family: 'Orbitron', sans-serif;
   font-size: 0.7rem;
   color: var(--gold);
   text-transform: uppercase;
@@ -1036,7 +929,7 @@ nav.scrolled .nav-pill {
   border: 1px solid var(--border);
   border-radius: var(--radius);
   margin-bottom: 10px;
-  transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease, color 0.3s ease, opacity 0.3s ease;
+  transition: all 0.3s ease;
 }
 
 .queue-item:hover {
@@ -1098,7 +991,7 @@ nav.scrolled .nav-pill {
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   padding: 28px;
-  transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease, color 0.3s ease, opacity 0.3s ease;
+  transition: all 0.3s ease;
   position: relative;
 }
 
@@ -1161,7 +1054,7 @@ nav.scrolled .nav-pill {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: 'Sora', sans-serif;
+  font-family: 'Orbitron', sans-serif;
   font-size: 0.9rem;
   font-weight: 700;
   color: #000;
@@ -1212,7 +1105,7 @@ nav.scrolled .nav-pill {
   padding: 36px;
   text-align: center;
   position: relative;
-  transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease, color 0.3s ease, opacity 0.3s ease;
+  transition: all 0.3s ease;
 }
 
 .pricing-card::after {
@@ -1254,7 +1147,7 @@ nav.scrolled .nav-pill {
 }
 
 .plan-name {
-  font-family: 'Sora', sans-serif;
+  font-family: 'Orbitron', sans-serif;
   font-size: 0.9rem;
   font-weight: 600;
   color: var(--text-muted);
@@ -1267,18 +1160,8 @@ nav.scrolled .nav-pill {
   margin-bottom: 8px;
 }
 
-/* Remplace l'affichage du prix : baseline de valeur, pas de montant */
-.plan-tagline {
-  font-size: 0.98rem;
-  line-height: 1.5;
-  color: var(--text-light);
-  margin-bottom: 26px;
-  min-height: 44px;
-}
-.pricing-card.featured .plan-tagline { color: var(--text); }
-
 .price-amount {
-  font-family: 'Sora', sans-serif;
+  font-family: 'Orbitron', sans-serif;
   font-size: 3rem;
   font-weight: 900;
   color: var(--text);
@@ -1360,7 +1243,7 @@ nav.scrolled .nav-pill {
 }
 
 .cd-number {
-  font-family: 'Sora', sans-serif;
+  font-family: 'Orbitron', sans-serif;
   font-size: 2.5rem;
   font-weight: 900;
   color: var(--gold);
@@ -1410,12 +1293,7 @@ nav.scrolled .nav-pill {
   height: 100%;
   background: linear-gradient(90deg, var(--gold), var(--red));
   border-radius: 100px;
-  /* scaleX composites; width relayouts the track every frame. 1s also meant the
-     bar always showed a stale value — 400ms tracks the state closely enough. */
-  width: 100%;
-  transform: scaleX(0);
-  transform-origin: 0 50%;
-  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: width 1s ease;
 }
 
 /* --- FAQ --- */
@@ -1444,7 +1322,7 @@ nav.scrolled .nav-pill {
   gap: 16px;
   cursor: pointer;
   text-align: left;
-  font-family: 'Sora', sans-serif;
+  font-family: 'Rajdhani', sans-serif;
   font-size: 1.05rem;
   font-weight: 600;
   color: var(--text);
@@ -1465,23 +1343,18 @@ nav.scrolled .nav-pill {
   justify-content: center;
   font-size: 1rem;
   color: var(--gold);
-  transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease, color 0.3s ease, opacity 0.3s ease;
+  transition: all 0.3s ease;
 }
 
 .faq-item.open .faq-icon { transform: rotate(45deg); background: rgba(234,179,8,0.2); }
 
-/* grid-template-rows interpolates the CONTENT's real height, so the easing curve
-   matches the movement you actually see. `max-height` had to overshoot the real
-   height, which made the open feel fast-then-slow and capped answers at 300px. */
 .faq-answer {
-  display: grid;
-  grid-template-rows: 0fr;
-  transition: grid-template-rows 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s ease, padding 0.3s ease;
 }
 
-.faq-answer > * { overflow: hidden; }
-
-.faq-item.open .faq-answer { grid-template-rows: 1fr; }
+.faq-item.open .faq-answer { max-height: 300px; }
 
 .faq-answer p {
   padding: 0 0 20px;
@@ -1554,7 +1427,7 @@ footer {
 }
 
 .footer-heading {
-  font-family: 'Sora', sans-serif;
+  font-family: 'Orbitron', sans-serif;
   font-size: 0.75rem;
   font-weight: 600;
   text-transform: uppercase;
@@ -1592,8 +1465,8 @@ footer {
 
 /* --- RESPONSIVE --- */
 @media (max-width: 768px) {
-  /* Le dimensionnement mobile du .nav-cta est en fin de fichier : il doit passer
-     après le bloc néon (~l.2060) qui redéfinit padding/font-size sans media query. */
+  /* Navbar : masquer les boutons secondaires sur mobile */
+  .nav-cta { display: none; }
   .nav-formation { font-size: 12px !important; padding: 5px 10px !important; }
 
   section { padding: 60px 0; }
@@ -1642,9 +1515,6 @@ footer {
 
   /* Sections : padding réduit */
   section { padding: 44px 0 !important; }
-  /* Pages ressources/article : garder assez d'espace en haut pour ne pas
-     passer sous la nav pill flottante (fixed) sur mobile. */
-  section.res-page { padding-top: 88px !important; }
 
   /* Marges section-desc et grilles trop généreux */
   .section-desc { margin-bottom: 24px !important; font-size: 0.9rem !important; }
@@ -1806,9 +1676,10 @@ footer {
   left: 0;
   right: 0;
   z-index: 9999;
-  background: var(--bg-dark);
+  background: rgba(5,5,5,0.97);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   border-bottom: 1px solid rgba(234,179,8,0.18);
-  box-shadow: 0 16px 40px rgba(0,0,0,0.6);
   /* Fade + slide vertical — état fermé */
   visibility: hidden;
   opacity: 0;
@@ -1844,7 +1715,7 @@ footer {
   letter-spacing: -0.01em;
   border-radius: 10px;
   border: 1px solid transparent;
-  transition: background 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease, color 0.18s ease, opacity 0.18s ease;
+  transition: all 0.18s;
 }
 .mob-link:hover, .mob-link:active {
   background: rgba(255,255,255,0.05);
@@ -1868,8 +1739,8 @@ footer {
   .mobile-menu { display: block; }
   nav { top: 10px; max-width: calc(100% - 20px); }
   .nav-pill { padding: 6px 8px 6px 12px; gap: 6px; }
-  .logo-text { font-size: 0.85rem; }
-  .logo-icon { width: 26px; height: 26px; }
+  .nav-cta { display: none; }
+  .logo-text { font-size: 0.95rem; }
 }
 
 /* --- ANIMATIONS --- */
@@ -1928,25 +1799,15 @@ footer {
 }
 .hero-title .line-4::before {
   color: rgba(234,179,8,0.55);
+  animation: glitch-before 6s infinite;
+  animation-delay: 3s;
   clip-path: inset(0 0 100% 0);
 }
 .hero-title .line-4::after {
   color: rgba(180,120,0,0.4);
+  animation: glitch-after 6s infinite;
+  animation-delay: 3.05s;
   clip-path: inset(0 0 100% 0);
-}
-
-/* Two bursts, then rest — a glitch that never stops reads as a broken page
-   rather than an effect. Both layers stay hidden (`inset(0 0 100% 0)`) outside
-   the burst window, which is also the reduced-motion resting state. */
-@media (prefers-reduced-motion: no-preference) {
-  .hero-title .line-4::before {
-    animation: glitch-before 6s 2;
-    animation-delay: 1.5s;
-  }
-  .hero-title .line-4::after {
-    animation: glitch-after 6s 2;
-    animation-delay: 1.55s;
-  }
 }
 
 @keyframes glitch-before {
@@ -1985,9 +1846,9 @@ footer {
 
 /* Social proof bandeau — platform tags */
 .social-proof-band {
-  background: var(--bg-card-2);
-  border-top: 1px solid var(--border);
-  border-bottom: 1px solid var(--border);
+  background: #0a0a0a;
+  border-top: 1px solid #1a1a1a;
+  border-bottom: 1px solid #1a1a1a;
   padding: 22px 0;
   position: relative;
   z-index: 1;
@@ -2031,89 +1892,4 @@ footer {
 .platform-tag:hover {
   border-color: rgba(234,179,8,0.25);
   color: var(--gold);
-}
-
-/* ============================================================
-   NEON BUTTONS — site-wide yellow/violet glow (2026-07-17)
-   Applied globally via the shared stylesheet.
-   ============================================================ */
-:root {
-  --neon-y: rgba(234, 179, 8, 0.55);   /* jaune */
-  --neon-v: rgba(139, 92, 246, 0.50);  /* violet */
-}
-
-.btn-primary,
-.btn-secondary,
-.nav-cta {
-  transition: box-shadow .25s ease, transform .2s ease,
-              border-color .2s ease, background .2s ease, color .2s ease;
-}
-
-/* Primary CTA — dual yellow + violet neon halo */
-.btn-primary {
-  box-shadow: 0 4px 20px rgba(234, 179, 8, .35),
-              0 0 16px var(--neon-y),
-              0 0 32px var(--neon-v);
-}
-.btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 30px rgba(234, 179, 8, .5),
-              0 0 24px var(--neon-y),
-              0 0 52px var(--neon-v);
-}
-
-/* Secondary CTA — outlined neon */
-.btn-secondary {
-  border-color: rgba(234, 179, 8, .35);
-  box-shadow: 0 0 14px rgba(234, 179, 8, .20),
-              0 0 26px rgba(139, 92, 246, .16);
-}
-.btn-secondary:hover {
-  border-color: var(--gold);
-  color: var(--gold);
-  background: var(--gold-glow);
-  box-shadow: 0 0 20px var(--neon-y),
-              0 0 40px var(--neon-v);
-}
-
-/* Contact button (nav) — smaller + neon */
-.nav-cta {
-  padding: 6px 15px;
-  font-size: 0.8rem;
-  box-shadow: 0 0 12px var(--neon-y),
-              0 0 24px var(--neon-v);
-}
-.nav-cta:hover {
-  box-shadow: 0 0 20px var(--neon-y),
-              0 0 40px var(--neon-v);
-}
-
-/* ============================================================
-   Navbar mobile — le CTA principal reste visible
-   ------------------------------------------------------------
-   Ce bloc doit rester EN FIN DE FICHIER : les règles néon
-   ci-dessus redéfinissent .nav-cta sans media query, et à
-   spécificité égale c'est l'ordre source qui tranche.
-   Budget mesuré à 390px (pilule = 370px de large) :
-   logo 148 + thème 34 + CTA 96 + burger 38 + gaps ≈ 340.
-   ============================================================ */
-@media (max-width: 768px) {
-  .nav-cta {
-    display: inline-flex;
-    align-items: center;
-    font-size: 0.68rem;
-    padding: 8px 11px;
-    letter-spacing: 0.01em;
-  }
-  .nav-pill { gap: 4px; padding-right: 6px; }
-  /* Le logo garde la priorité sur la marque, mais cède l'espace résiduel. */
-  .logo { gap: 7px; }
-  .logo-text { font-size: 0.82rem; }
-  .logo-icon { width: 28px; height: 28px; border-radius: 7px; }
-  .logo-icon svg { width: 15px; height: 15px; }
-}
-
-@media (max-width: 380px) {
-  .nav-cta { font-size: 0.62rem; padding: 7px 8px; }
-  .logo-text { font-size: 0.78rem; }
 }
