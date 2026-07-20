@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Preview — AutomationBoost néon jaune/violet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0a0a0f; --panel:#111117; --border:#232330;
+    --text:#e4e4e7; --muted:#8b8b98;
+    --gold:#eab308; --violet:#8b5cf6;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    background:var(--bg); color:var(--text);
+    font-family:'Sora',system-ui,sans-serif;
+    display:flex; flex-direction:column; overflow:hidden;
+  }
+  header{
+    flex:none; padding:14px 18px; border-bottom:1px solid var(--border);
+    display:flex; align-items:center; gap:14px; flex-wrap:wrap;
+    background:rgba(10,10,15,.95);
+  }
+  h1{font-size:.95rem; font-weight:800; letter-spacing:-.01em}
+  h1 span{color:var(--gold)}
+  .sub{font-size:.75rem; color:var(--muted); font-weight:400}
+
+  .switch{display:flex; gap:6px; margin-left:auto}
+  .switch button{
+    font-family:inherit; font-size:.8rem; font-weight:600; cursor:pointer;
+    padding:8px 18px; border-radius:100px; border:1px solid var(--border);
+    background:transparent; color:var(--muted); transition:all .2s ease;
+  }
+  .switch button:hover{color:var(--text); border-color:#33334a}
+  .switch button:focus-visible{outline:2px solid var(--gold); outline-offset:2px}
+  .switch button[aria-selected="true"]{
+    color:#000; background:var(--gold); border-color:var(--gold);
+    box-shadow:0 0 12px rgba(234,179,8,.5), 0 0 26px rgba(139,92,246,.4);
+  }
+
+  .stage{flex:1; position:relative; background:#000}
+  .stage iframe{
+    position:absolute; inset:0; width:100%; height:100%;
+    border:0; display:none; background:var(--bg);
+  }
+  .stage iframe.active{display:block}
+
+  footer{
+    flex:none; padding:9px 18px; border-top:1px solid var(--border);
+    font-size:.72rem; color:var(--muted);
+    display:flex; gap:16px; flex-wrap:wrap; align-items:center;
+  }
+  footer a{color:var(--gold); text-decoration:none}
+  footer a:hover{text-decoration:underline}
+  .chg{display:flex; gap:14px; flex-wrap:wrap}
+  .chg b{color:var(--violet); font-weight:600}
+  @media (max-width:560px){
+    header{padding:11px 13px; gap:9px}
+    .switch{width:100%; margin-left:0}
+    .switch button{flex:1}
+    footer .chg{display:none}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>Automation<span>Boost</span> — néon jaune/violet</h1>
+    <div class="sub">Preview avant mise en ligne · 20/07/2026</div>
+  </div>
+  <div class="switch" role="tablist">
+    <button role="tab" id="tab-avant" aria-selected="false" aria-controls="f-avant">Avant</button>
+    <button role="tab" id="tab-apres" aria-selected="true" aria-controls="f-apres">Après</button>
+  </div>
+</header>
+
+<div class="stage">
+  <iframe id="f-avant" src="avant.html" title="Version actuelle en ligne" loading="lazy"></iframe>
+  <iframe id="f-apres" src="apres.html" class="active" title="Version avec le néon jaune/violet"></iframe>
+</div>
+
+<footer>
+  <div class="chg">
+    <span><b>1.</b> Cartes néon halo + bordure dégradée</span>
+    <span><b>2.</b> Néon jaune/violet sur tous les boutons</span>
+    <span><b>3.</b> Bouton Contact réduit</span>
+  </div>
+  <span style="margin-left:auto">
+    Plein écran : <a href="apres.html">après</a> · <a href="avant.html">avant</a>
+  </span>
+</footer>
+
+<script>
+(function(){
+  var tabs = {avant: document.getElementById('tab-avant'), apres: document.getElementById('tab-apres')};
+  var frames = {avant: document.getElementById('f-avant'), apres: document.getElementById('f-apres')};
+  function show(key){
+    Object.keys(tabs).forEach(function(k){
+      var on = k === key;
+      tabs[k].setAttribute('aria-selected', on ? 'true' : 'false');
+      frames[k].classList.toggle('active', on);
+    });
+  }
+  Object.keys(tabs).forEach(function(k){
+    tabs[k].addEventListener('click', function(){ show(k); });
+  });
+})();
+</script>
+</body>
+</html>
