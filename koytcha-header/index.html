@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Koytcha Immo — Proposition header animé</title>
+<style>
+  :root{
+    --magenta:#e6007e;
+    --magenta-dark:#c00068;
+    --ink:#1d1d24;
+    --muted:#6b6b76;
+    --soft:#f6f4f7;
+    --white:#ffffff;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    color:var(--ink);background:#fff;
+  }
+  a{color:inherit}
+
+  /* ---------- TOP BAR ---------- */
+  .topbar{
+    position:absolute;top:0;left:0;right:0;z-index:20;
+    display:flex;align-items:center;justify-content:space-between;padding:1.1rem 2.2rem;
+  }
+  .logo{display:flex;align-items:center;gap:.55rem;font-weight:800;font-size:1.35rem;letter-spacing:-.02em}
+  .logo .mark{width:34px;height:34px;border-radius:50%;background:var(--magenta);position:relative;flex:0 0 auto;box-shadow:0 4px 14px rgba(230,0,126,.45)}
+  .logo .mark::before{content:"";position:absolute;left:11px;top:7px;width:5px;height:20px;background:#fff;border-radius:3px;transform:rotate(-12deg)}
+  .logo .mark::after{content:"";position:absolute;left:17px;bottom:7px;width:9px;height:9px;background:#fff;border-radius:50%}
+  .logo span{color:#fff;font-weight:800}
+  .logo .immo{color:#ffd0e8}
+  nav{display:flex;align-items:center;gap:1.4rem}
+  nav a{color:#fff;text-decoration:none;font-size:.9rem;font-weight:600;opacity:.95;transition:.2s}
+  nav a:hover{color:#ffd0e8}
+  .follow{color:#fff;font-size:.72rem;font-weight:700;text-align:right;line-height:1.1;opacity:.9}
+
+  /* ---------- HERO (recherche) ---------- */
+  .hero{position:relative;height:100vh;min-height:640px;overflow:hidden;display:flex;align-items:center;justify-content:center}
+  .hero video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1}
+  .hero .veil{position:absolute;inset:0;z-index:2;background:linear-gradient(180deg,rgba(10,10,20,.55),rgba(10,10,20,.15) 30%,rgba(10,10,20,.25) 70%,rgba(10,10,20,.7)),radial-gradient(120% 90% at 50% 40%,rgba(230,0,126,.10),transparent 60%)}
+  .hero-inner{position:relative;z-index:3;text-align:center;color:#fff;padding:0 1.5rem;max-width:720px}
+  .kicker{font-size:.8rem;letter-spacing:.28em;text-transform:uppercase;font-weight:700;color:#ffd0e8;margin-bottom:1rem}
+  .hero h1{font-size:clamp(2.2rem,5vw,3.6rem);font-weight:800;line-height:1.05;letter-spacing:-.02em;text-shadow:0 2px 24px rgba(0,0,0,.4)}
+  .hero p.sub{margin-top:1rem;font-size:1.05rem;font-weight:500;color:#f4f4f6;text-shadow:0 1px 12px rgba(0,0,0,.5)}
+  .search{margin:2.2rem auto 0;max-width:600px;background:rgba(255,255,255,.14);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.28);border-radius:18px;padding:1.4rem;box-shadow:0 20px 50px rgba(0,0,0,.3)}
+  .search .q{font-size:1.15rem;font-weight:700;margin-bottom:1rem;color:#fff}
+  .search .q em{color:#ffd0e8;font-style:normal}
+  .toggle{display:flex;gap:.7rem;margin-bottom:1rem}
+  .toggle button{flex:1;padding:.85rem;border-radius:10px;border:1px solid rgba(255,255,255,.5);background:rgba(255,255,255,.9);color:var(--magenta);font-weight:700;font-size:.9rem;cursor:pointer;letter-spacing:.03em;transition:.2s}
+  .toggle button.active,.toggle button:hover{background:#fff;box-shadow:0 6px 18px rgba(0,0,0,.2)}
+  .fields{display:flex;gap:.6rem;margin-bottom:1rem}
+  .fields select{flex:1;padding:.8rem;border-radius:10px;border:1px solid rgba(255,255,255,.5);background:rgba(255,255,255,.92);color:var(--ink);font-size:.9rem;font-weight:600}
+  .cta{display:inline-block;width:100%;padding:1rem;border:none;border-radius:10px;background:var(--magenta);color:#fff;font-weight:800;font-size:1rem;letter-spacing:.06em;cursor:pointer;box-shadow:0 10px 26px rgba(230,0,126,.5);transition:.2s}
+  .cta:hover{background:var(--magenta-dark);transform:translateY(-1px)}
+  .scroll-hint{position:absolute;bottom:1.4rem;left:50%;transform:translateX(-50%);z-index:3;color:#fff;font-size:1.5rem;opacity:.85;animation:bob 1.8s infinite}
+  @keyframes bob{0%,100%{transform:translate(-50%,0)}50%{transform:translate(-50%,8px)}}
+
+  /* ---------- SECTIONS ---------- */
+  .section{max-width:1160px;margin:0 auto;padding:5.5rem 1.5rem}
+  .eyebrow{color:var(--magenta);font-weight:800;font-size:.8rem;letter-spacing:.22em;text-transform:uppercase;margin-bottom:.6rem}
+  .section h2{font-size:clamp(1.8rem,3.5vw,2.6rem);font-weight:800;letter-spacing:-.02em;margin-bottom:.8rem}
+  .section .lead{color:var(--muted);font-size:1.05rem;max-width:620px;line-height:1.6}
+
+  /* programmes */
+  .progs{display:grid;grid-template-columns:repeat(3,1fr);gap:1.4rem;margin-top:2.6rem}
+  .card{border-radius:16px;overflow:hidden;background:#fff;border:1px solid #eee;box-shadow:0 12px 34px rgba(0,0,0,.07);transition:.25s}
+  .card:hover{transform:translateY(-6px);box-shadow:0 22px 50px rgba(230,0,126,.14)}
+  .card .thumb{height:200px;background-size:cover;background-position:center;position:relative}
+  .card .thumb::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 40%,rgba(0,0,0,.35))}
+  .card .badge{position:absolute;top:.8rem;left:.8rem;z-index:2;background:var(--magenta);color:#fff;font-size:.7rem;font-weight:800;letter-spacing:.05em;padding:.35rem .7rem;border-radius:20px}
+  .card .body{padding:1.1rem 1.2rem 1.3rem}
+  .card h3{font-size:1.15rem;font-weight:800;margin-bottom:.25rem}
+  .card .loc{color:var(--muted);font-size:.85rem;margin-bottom:.7rem}
+  .card .row{display:flex;justify-content:space-between;align-items:center}
+  .card .price{color:var(--magenta);font-weight:800}
+  .card .more{font-size:.82rem;font-weight:700;color:var(--ink);opacity:.7}
+
+  /* présentation */
+  .present{background:var(--soft)}
+  .present .grid{display:grid;grid-template-columns:1.1fr .9fr;gap:3rem;align-items:center}
+  .present .media{border-radius:18px;overflow:hidden;box-shadow:0 20px 50px rgba(0,0,0,.12);aspect-ratio:4/3;background-size:cover;background-position:center}
+  .stats{display:flex;gap:2rem;margin-top:1.8rem}
+  .stat b{display:block;font-size:2rem;font-weight:800;color:var(--magenta);line-height:1}
+  .stat span{color:var(--muted);font-size:.85rem}
+  .services{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1.6rem}
+  .services span{background:#fff;border:1px solid #eadfe6;color:var(--ink);font-weight:600;font-size:.85rem;padding:.5rem .9rem;border-radius:20px}
+
+  footer{background:#141018;color:#fff;text-align:center;padding:3.5rem 1.5rem}
+  footer .cta{max-width:340px;margin:1.4rem auto 0}
+
+  .reveal{opacity:0;transform:translateY(28px);transition:.7s cubic-bezier(.2,.7,.2,1)}
+  .reveal.in{opacity:1;transform:none}
+
+  .note{position:fixed;bottom:0;left:0;right:0;z-index:60;background:#111;color:#eee;font-size:.72rem;text-align:center;padding:.45rem 1rem;font-family:ui-monospace,monospace}
+  .note b{color:#ff5db1}
+
+  @media(max-width:860px){
+    .progs{grid-template-columns:1fr}
+    .present .grid{grid-template-columns:1fr;gap:1.8rem}
+    nav,.follow{display:none}
+    .topbar{padding:.9rem 1.1rem}
+  }
+</style>
+</head>
+<body>
+
+  <div class="topbar">
+    <div class="logo"><span class="mark"></span><span>Koytcha</span><span class="immo">immo</span></div>
+    <nav>
+      <a href="#recherche">Acheter</a><a href="#recherche">Louer</a><a href="#recherche">Vendre</a>
+      <a href="#programmes">Nos programmes</a><a href="#presentation">À propos</a><a href="#presentation">Contact</a>
+    </nav>
+    <div class="follow">Suivez-nous<br>sur</div>
+  </div>
+
+  <!-- 1. HERO — recherche de biens (contenu conservé) -->
+  <section class="hero" id="recherche">
+    <video autoplay muted loop playsinline poster="poster.jpg"><source src="video.mp4" type="video/mp4"></video>
+    <div class="veil"></div>
+    <div class="hero-inner">
+      <div class="kicker">Koytcha Immo · La Réunion</div>
+      <h1>30 ans d'expertise<br>à La Réunion</h1>
+      <p class="sub">Acheter, louer, vendre ou confier la gestion de votre bien — en toute sérénité.</p>
+      <div class="search">
+        <div class="q">Vous recherchez <em>un bien</em> ?</div>
+        <div class="toggle"><button class="active">RÉSIDENTIEL</button><button>PROFESSIONNEL</button></div>
+        <div class="fields">
+          <select><option>Acheter</option><option>Louer</option></select>
+          <select><option>Toutes zones</option><option>Saint-Denis</option><option>Saint-Pierre</option><option>Ouest</option></select>
+          <select><option>Type de bien</option><option>Appartement</option><option>Villa</option><option>Terrain</option></select>
+        </div>
+        <button class="cta">VOIR LES ANNONCES</button>
+      </div>
+    </div>
+    <div class="scroll-hint">⌄</div>
+  </section>
+
+  <!-- 2. NOS PROGRAMMES -->
+  <section class="section" id="programmes">
+    <div class="reveal">
+      <div class="eyebrow">Nos programmes</div>
+      <h2>Nos programmes neufs à La Réunion</h2>
+      <p class="lead">Une sélection de programmes immobiliers exclusifs, du littoral ouest aux hauteurs — pour habiter ou investir.</p>
+    </div>
+    <div class="progs">
+      <div class="card reveal">
+        <div class="thumb" style="background-image:url('poster.jpg')"><span class="badge">NEUF</span></div>
+        <div class="body"><h3>Les Terrasses du Lagon</h3><div class="loc">Saint-Gilles · Ouest</div><div class="row"><span class="price">à partir de 320 000 €</span><span class="more">Découvrir →</span></div></div>
+      </div>
+      <div class="card reveal">
+        <div class="thumb" style="background-image:url('poster.jpg')"><span class="badge">EXCLUSIF</span></div>
+        <div class="body"><h3>Villa Panorama</h3><div class="loc">Saint-Leu · vue mer</div><div class="row"><span class="price">à partir de 540 000 €</span><span class="more">Découvrir →</span></div></div>
+      </div>
+      <div class="card reveal">
+        <div class="thumb" style="background-image:url('poster.jpg')"><span class="badge">INVESTIR</span></div>
+        <div class="body"><h3>Résidence Alizés</h3><div class="loc">Saint-Pierre · Sud</div><div class="row"><span class="price">à partir de 245 000 €</span><span class="more">Découvrir →</span></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. NOTRE PRÉSENTATION -->
+  <section class="present" id="presentation">
+    <div class="section">
+      <div class="present grid">
+        <div class="reveal">
+          <div class="eyebrow">Qui sommes-nous</div>
+          <h2>Koytcha Immo, votre partenaire immobilier depuis 30 ans</h2>
+          <p class="lead">Agence de référence à La Réunion, nous accompagnons les particuliers et les professionnels à chaque étape : recherche, achat, location, vente et gestion locative. Une connaissance fine du territoire, un service humain et sur-mesure.</p>
+          <div class="stats">
+            <div class="stat"><b>30 ans</b><span>d'expertise locale</span></div>
+            <div class="stat"><b>+2 000</b><span>biens accompagnés</span></div>
+            <div class="stat"><b>974</b><span>toute l'île</span></div>
+          </div>
+          <div class="services">
+            <span>Acheter</span><span>Louer</span><span>Vendre</span><span>Gestion locative</span><span>Conseil</span>
+          </div>
+        </div>
+        <div class="media reveal" style="background-image:url('poster.jpg')"></div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="eyebrow" style="color:#ff5db1">Un projet immobilier ?</div>
+    <h2 style="color:#fff">Parlons-en dès aujourd'hui</h2>
+    <button class="cta">NOUS CONTACTER</button>
+  </footer>
+
+  <div class="note">Proposition — même contenu (recherche → programmes → présentation), header enrichi d'une <b>vidéo drone IA</b> (Higgsfield · Seedance 2.5). Textes / programmes = exemples, non contractuels.</div>
+
+  <script>
+    document.querySelectorAll('.toggle button').forEach(b=>b.addEventListener('click',()=>{
+      document.querySelectorAll('.toggle button').forEach(x=>x.classList.remove('active'));b.classList.add('active');
+    }));
+    const io=new IntersectionObserver((es)=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('in')}),{threshold:.15});
+    document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+  </script>
+</body>
+</html>
