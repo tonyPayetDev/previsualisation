@@ -4,138 +4,192 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Koytcha Immo — Proposition header animé</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root{
     --magenta:#e6007e;
     --magenta-dark:#c00068;
-    --ink:#1d1d24;
+    --magenta-soft:#ffe3f1;
+    --ink:#17171f;
     --muted:#6b6b76;
-    --soft:#f6f4f7;
+    --line:#ece7ea;
+    --soft:#faf7f9;
     --white:#ffffff;
+    --sans:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+    --serif:"Fraunces",Georgia,"Times New Roman",serif;
+    --shadow-sm:0 1px 2px rgba(20,10,20,.06),0 2px 8px rgba(20,10,20,.05);
+    --shadow-md:0 8px 24px rgba(20,10,20,.08),0 2px 6px rgba(20,10,20,.05);
+    --shadow-lg:0 24px 60px rgba(20,10,20,.14);
+    --radius:18px;
+    --ease:cubic-bezier(.22,.61,.36,1);
   }
   *{box-sizing:border-box;margin:0;padding:0}
   html{scroll-behavior:smooth}
-  body{
-    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
-    color:var(--ink);background:#fff;
-  }
+  body{font-family:var(--sans);color:var(--ink);background:#fff;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
   a{color:inherit}
+  :focus-visible{outline:3px solid var(--magenta);outline-offset:2px;border-radius:6px}
+  h1,h2,h3{font-family:var(--serif);font-weight:600;letter-spacing:-.01em}
 
   /* ---------- TOP BAR ---------- */
   .topbar{
-    position:absolute;top:0;left:0;right:0;z-index:20;
-    display:flex;align-items:center;justify-content:space-between;padding:1.1rem 2.2rem;
+    position:fixed;top:0;left:0;right:0;z-index:40;
+    display:flex;align-items:center;justify-content:space-between;
+    padding:1.1rem clamp(1.1rem,4vw,2.4rem);
+    transition:background .35s var(--ease),box-shadow .35s var(--ease),padding .35s var(--ease);
   }
-  .logo{display:flex;align-items:center;gap:.55rem;font-weight:800;font-size:1.35rem;letter-spacing:-.02em}
-  .logo .mark{width:34px;height:34px;border-radius:50%;background:var(--magenta);position:relative;flex:0 0 auto;box-shadow:0 4px 14px rgba(230,0,126,.45)}
+  .topbar.scrolled{background:rgba(255,255,255,.86);backdrop-filter:saturate(180%) blur(14px);-webkit-backdrop-filter:saturate(180%) blur(14px);box-shadow:var(--shadow-sm);padding-top:.75rem;padding-bottom:.75rem}
+  .logo{display:flex;align-items:center;gap:.55rem;font-family:var(--sans);font-weight:800;font-size:1.3rem;letter-spacing:-.03em;transition:color .35s var(--ease)}
+  .logo .mark{width:34px;height:34px;border-radius:50%;background:var(--magenta);position:relative;flex:0 0 auto;box-shadow:0 6px 16px rgba(230,0,126,.45)}
   .logo .mark::before{content:"";position:absolute;left:11px;top:7px;width:5px;height:20px;background:#fff;border-radius:3px;transform:rotate(-12deg)}
   .logo .mark::after{content:"";position:absolute;left:17px;bottom:7px;width:9px;height:9px;background:#fff;border-radius:50%}
-  .logo span{color:#fff;font-weight:800}
-  .logo .immo{color:#ffd0e8}
-  nav{display:flex;align-items:center;gap:1.4rem}
-  nav a{color:#fff;text-decoration:none;font-size:.9rem;font-weight:600;opacity:.95;transition:.2s}
-  nav a:hover{color:#ffd0e8}
-  .follow{color:#fff;font-size:.72rem;font-weight:700;text-align:right;line-height:1.1;opacity:.9}
+  .logo .name{color:#fff}
+  .logo .immo{color:#ffd0e8;font-weight:600}
+  .topbar.scrolled .logo .name{color:var(--ink)}
+  .topbar.scrolled .logo .immo{color:var(--magenta)}
+  nav{display:flex;align-items:center;gap:1.6rem}
+  nav a{color:#fff;text-decoration:none;font-size:.88rem;font-weight:600;opacity:.94;position:relative;transition:color .2s}
+  nav a::after{content:"";position:absolute;left:0;right:0;bottom:-5px;height:2px;background:var(--magenta);transform:scaleX(0);transform-origin:left;transition:transform .25s var(--ease)}
+  nav a:hover::after{transform:scaleX(1)}
+  .topbar.scrolled nav a{color:var(--ink)}
+  .topbar.scrolled nav a:hover{color:var(--magenta)}
+  .nav-cta{padding:.55rem 1.1rem;border-radius:999px;background:var(--magenta);color:#fff!important;font-weight:700;box-shadow:0 8px 20px rgba(230,0,126,.35)}
+  .nav-cta::after{display:none}
+  .nav-cta:hover{background:var(--magenta-dark)}
 
   /* ---------- HERO (recherche) ---------- */
-  .hero{position:relative;height:100vh;min-height:640px;overflow:hidden;display:flex;align-items:center;justify-content:center}
-  .hero video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1}
-  .hero .veil{position:absolute;inset:0;z-index:2;background:linear-gradient(180deg,rgba(10,10,20,.55),rgba(10,10,20,.15) 30%,rgba(10,10,20,.25) 70%,rgba(10,10,20,.7)),radial-gradient(120% 90% at 50% 40%,rgba(230,0,126,.10),transparent 60%)}
-  .hero-inner{position:relative;z-index:3;text-align:center;color:#fff;padding:0 1.5rem;max-width:720px}
-  .kicker{font-size:.8rem;letter-spacing:.28em;text-transform:uppercase;font-weight:700;color:#ffd0e8;margin-bottom:1rem}
-  .hero h1{font-size:clamp(2.2rem,5vw,3.6rem);font-weight:800;line-height:1.05;letter-spacing:-.02em;text-shadow:0 2px 24px rgba(0,0,0,.4)}
-  .hero p.sub{margin-top:1rem;font-size:1.05rem;font-weight:500;color:#f4f4f6;text-shadow:0 1px 12px rgba(0,0,0,.5)}
-  .search{margin:2.2rem auto 0;max-width:600px;background:rgba(255,255,255,.14);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.28);border-radius:18px;padding:1.4rem;box-shadow:0 20px 50px rgba(0,0,0,.3)}
-  .search .q{font-size:1.15rem;font-weight:700;margin-bottom:1rem;color:#fff}
-  .search .q em{color:#ffd0e8;font-style:normal}
-  .toggle{display:flex;gap:.7rem;margin-bottom:1rem}
-  .toggle button{flex:1;padding:.85rem;border-radius:10px;border:1px solid rgba(255,255,255,.5);background:rgba(255,255,255,.9);color:var(--magenta);font-weight:700;font-size:.9rem;cursor:pointer;letter-spacing:.03em;transition:.2s}
-  .toggle button.active,.toggle button:hover{background:#fff;box-shadow:0 6px 18px rgba(0,0,0,.2)}
+  .hero{position:relative;height:100vh;min-height:660px;overflow:hidden;display:flex;align-items:center;justify-content:center}
+  .hero video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1;transform:scale(1.04)}
+  .hero .veil{position:absolute;inset:0;z-index:2;background:linear-gradient(180deg,rgba(12,10,20,.6),rgba(12,10,20,.12) 32%,rgba(12,10,20,.22) 66%,rgba(12,10,20,.78)),radial-gradient(120% 90% at 50% 42%,rgba(230,0,126,.12),transparent 60%)}
+  .hero-inner{position:relative;z-index:3;text-align:center;color:#fff;padding:0 1.5rem;max-width:760px}
+  .kicker{display:inline-flex;align-items:center;gap:.5rem;font-family:var(--sans);font-size:.72rem;letter-spacing:.28em;text-transform:uppercase;font-weight:700;color:#fff;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);padding:.45rem .9rem;border-radius:999px;margin-bottom:1.3rem;backdrop-filter:blur(4px)}
+  .kicker .dot{width:6px;height:6px;border-radius:50%;background:var(--magenta);box-shadow:0 0 0 4px rgba(230,0,126,.25)}
+  .hero h1{font-size:clamp(2.4rem,5.4vw,4rem);font-weight:600;line-height:1.02;text-shadow:0 2px 30px rgba(0,0,0,.4)}
+  .hero h1 em{font-style:italic;color:#ffcfe7}
+  .hero p.sub{margin:1.1rem auto 0;max-width:560px;font-size:clamp(1rem,1.4vw,1.12rem);font-weight:400;color:#f1eef2;text-shadow:0 1px 14px rgba(0,0,0,.5)}
+  .search{margin:2.4rem auto 0;max-width:640px;background:rgba(255,255,255,.14);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.3);border-radius:22px;padding:1.5rem;box-shadow:var(--shadow-lg)}
+  .search .q{font-family:var(--serif);font-size:1.25rem;font-weight:600;margin-bottom:1.1rem;color:#fff;text-align:left}
+  .search .q em{color:#ffcfe7;font-style:italic}
+  .toggle{display:flex;gap:.6rem;margin-bottom:1rem}
+  .toggle button{flex:1;padding:.85rem;border-radius:12px;border:1px solid rgba(255,255,255,.4);background:rgba(255,255,255,.16);color:#fff;font-weight:700;font-size:.82rem;cursor:pointer;letter-spacing:.06em;transition:.2s var(--ease)}
+  .toggle button.active{background:#fff;color:var(--magenta);box-shadow:0 6px 18px rgba(0,0,0,.22)}
+  .toggle button:not(.active):hover{background:rgba(255,255,255,.3)}
   .fields{display:flex;gap:.6rem;margin-bottom:1rem}
-  .fields select{flex:1;padding:.8rem;border-radius:10px;border:1px solid rgba(255,255,255,.5);background:rgba(255,255,255,.92);color:var(--ink);font-size:.9rem;font-weight:600}
-  .cta{display:inline-block;width:100%;padding:1rem;border:none;border-radius:10px;background:var(--magenta);color:#fff;font-weight:800;font-size:1rem;letter-spacing:.06em;cursor:pointer;box-shadow:0 10px 26px rgba(230,0,126,.5);transition:.2s}
-  .cta:hover{background:var(--magenta-dark);transform:translateY(-1px)}
-  .scroll-hint{position:absolute;bottom:1.4rem;left:50%;transform:translateX(-50%);z-index:3;color:#fff;font-size:1.5rem;opacity:.85;animation:bob 1.8s infinite}
-  @keyframes bob{0%,100%{transform:translate(-50%,0)}50%{transform:translate(-50%,8px)}}
+  .field{flex:1;position:relative}
+  .field label{position:absolute;left:.85rem;top:.42rem;font-size:.6rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);pointer-events:none}
+  .field select{width:100%;padding:1.35rem .85rem .5rem;border-radius:12px;border:1px solid rgba(255,255,255,.5);background:rgba(255,255,255,.95);color:var(--ink);font-size:.9rem;font-weight:600;font-family:var(--sans);cursor:pointer;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23e6007e' stroke-width='3'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right .8rem center}
+  .cta{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;width:100%;padding:1.05rem;border:none;border-radius:12px;background:var(--magenta);color:#fff;font-family:var(--sans);font-weight:800;font-size:.98rem;letter-spacing:.05em;cursor:pointer;box-shadow:0 12px 28px rgba(230,0,126,.5);transition:.2s var(--ease)}
+  .cta:hover{background:var(--magenta-dark);transform:translateY(-2px);box-shadow:0 16px 34px rgba(230,0,126,.55)}
+  .cta svg{width:18px;height:18px}
+  .scroll-hint{position:absolute;bottom:1.6rem;left:50%;transform:translateX(-50%);z-index:3;color:#fff;opacity:.85;animation:bob 1.9s var(--ease) infinite}
+  .scroll-hint svg{width:26px;height:26px}
+  @keyframes bob{0%,100%{transform:translate(-50%,0)}50%{transform:translate(-50%,9px)}}
 
   /* ---------- SECTIONS ---------- */
-  .section{max-width:1160px;margin:0 auto;padding:5.5rem 1.5rem}
-  .eyebrow{color:var(--magenta);font-weight:800;font-size:.8rem;letter-spacing:.22em;text-transform:uppercase;margin-bottom:.6rem}
-  .section h2{font-size:clamp(1.8rem,3.5vw,2.6rem);font-weight:800;letter-spacing:-.02em;margin-bottom:.8rem}
-  .section .lead{color:var(--muted);font-size:1.05rem;max-width:620px;line-height:1.6}
+  .section{max-width:1180px;margin:0 auto;padding:clamp(4rem,8vw,7rem) 1.5rem}
+  .eyebrow{display:inline-flex;align-items:center;gap:.5rem;color:var(--magenta);font-weight:800;font-size:.76rem;letter-spacing:.2em;text-transform:uppercase;margin-bottom:.9rem}
+  .eyebrow::before{content:"";width:22px;height:2px;background:var(--magenta);border-radius:2px}
+  .section h2{font-size:clamp(1.9rem,3.6vw,2.8rem);line-height:1.08;margin-bottom:.9rem}
+  .section .lead{color:var(--muted);font-size:1.06rem;max-width:600px;line-height:1.65}
 
   /* programmes */
-  .progs{display:grid;grid-template-columns:repeat(3,1fr);gap:1.4rem;margin-top:2.6rem}
-  .card{border-radius:16px;overflow:hidden;background:#fff;border:1px solid #eee;box-shadow:0 12px 34px rgba(0,0,0,.07);transition:.25s}
-  .card:hover{transform:translateY(-6px);box-shadow:0 22px 50px rgba(230,0,126,.14)}
-  .card .thumb{height:200px;background-size:cover;background-position:center;position:relative}
-  .card .thumb::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 40%,rgba(0,0,0,.35))}
-  .card .badge{position:absolute;top:.8rem;left:.8rem;z-index:2;background:var(--magenta);color:#fff;font-size:.7rem;font-weight:800;letter-spacing:.05em;padding:.35rem .7rem;border-radius:20px}
-  .card .body{padding:1.1rem 1.2rem 1.3rem}
-  .card h3{font-size:1.15rem;font-weight:800;margin-bottom:.25rem}
-  .card .loc{color:var(--muted);font-size:.85rem;margin-bottom:.7rem}
-  .card .row{display:flex;justify-content:space-between;align-items:center}
-  .card .price{color:var(--magenta);font-weight:800}
-  .card .more{font-size:.82rem;font-weight:700;color:var(--ink);opacity:.7}
+  .progs{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-top:2.8rem}
+  .card{border-radius:var(--radius);overflow:hidden;background:#fff;border:1px solid var(--line);box-shadow:var(--shadow-md);transition:transform .3s var(--ease),box-shadow .3s var(--ease)}
+  .card:hover{transform:translateY(-8px);box-shadow:0 28px 56px rgba(230,0,126,.16)}
+  .card .thumb{height:210px;background-size:cover;background-position:center;position:relative}
+  .card .thumb::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 38%,rgba(0,0,0,.4))}
+  .card:nth-child(1) .thumb{background-blend-mode:soft-light;background-color:#0aa}
+  .card:nth-child(2) .thumb{background-blend-mode:soft-light;background-color:#e6007e}
+  .card:nth-child(3) .thumb{background-blend-mode:soft-light;background-color:#f6a11a}
+  .card .badge{position:absolute;top:.9rem;left:.9rem;z-index:2;background:rgba(255,255,255,.94);color:var(--magenta);font-family:var(--sans);font-size:.66rem;font-weight:800;letter-spacing:.08em;padding:.4rem .75rem;border-radius:999px;box-shadow:var(--shadow-sm)}
+  .card .body{padding:1.2rem 1.3rem 1.4rem}
+  .card h3{font-size:1.2rem;font-weight:600;margin-bottom:.3rem}
+  .card .loc{display:flex;align-items:center;gap:.35rem;color:var(--muted);font-size:.85rem;margin-bottom:.9rem}
+  .card .loc svg{width:14px;height:14px;color:var(--magenta)}
+  .card .row{display:flex;justify-content:space-between;align-items:center;padding-top:.9rem;border-top:1px solid var(--line)}
+  .card .price{color:var(--ink);font-weight:800;font-size:1.02rem}
+  .card .price small{display:block;font-size:.68rem;font-weight:600;color:var(--muted);letter-spacing:.02em}
+  .card .more{display:inline-flex;align-items:center;gap:.3rem;font-size:.82rem;font-weight:700;color:var(--magenta)}
+  .card .more svg{width:14px;height:14px;transition:transform .25s var(--ease)}
+  .card:hover .more svg{transform:translateX(3px)}
 
   /* présentation */
-  .present{background:var(--soft)}
-  .present .grid{display:grid;grid-template-columns:1.1fr .9fr;gap:3rem;align-items:center}
-  .present .media{border-radius:18px;overflow:hidden;box-shadow:0 20px 50px rgba(0,0,0,.12);aspect-ratio:4/3;background-size:cover;background-position:center}
-  .stats{display:flex;gap:2rem;margin-top:1.8rem}
-  .stat b{display:block;font-size:2rem;font-weight:800;color:var(--magenta);line-height:1}
-  .stat span{color:var(--muted);font-size:.85rem}
-  .services{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1.6rem}
-  .services span{background:#fff;border:1px solid #eadfe6;color:var(--ink);font-weight:600;font-size:.85rem;padding:.5rem .9rem;border-radius:20px}
+  .present{background:var(--soft);border-top:1px solid var(--line)}
+  .present .grid{display:grid;grid-template-columns:1.05fr .95fr;gap:clamp(2rem,5vw,3.6rem);align-items:center}
+  .present .media{position:relative;border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow-lg);aspect-ratio:4/3;background-size:cover;background-position:center}
+  .present .media .float{position:absolute;bottom:1rem;left:1rem;background:rgba(255,255,255,.95);border-radius:14px;padding:.8rem 1rem;box-shadow:var(--shadow-md);backdrop-filter:blur(6px)}
+  .present .media .float b{font-family:var(--serif);color:var(--magenta);font-size:1.3rem;display:block;line-height:1}
+  .present .media .float span{font-size:.74rem;color:var(--muted);font-weight:600}
+  .stats{display:flex;gap:2.2rem;margin-top:2rem;flex-wrap:wrap}
+  .stat b{display:block;font-family:var(--serif);font-size:2.2rem;font-weight:600;color:var(--magenta);line-height:1}
+  .stat span{color:var(--muted);font-size:.82rem;font-weight:500}
+  .services{display:flex;flex-wrap:wrap;gap:.55rem;margin-top:1.8rem}
+  .services span{background:#fff;border:1px solid var(--line);color:var(--ink);font-weight:600;font-size:.84rem;padding:.5rem .95rem;border-radius:999px;box-shadow:var(--shadow-sm)}
 
-  footer{background:#141018;color:#fff;text-align:center;padding:3.5rem 1.5rem}
-  footer .cta{max-width:340px;margin:1.4rem auto 0}
+  footer{background:linear-gradient(160deg,#1b1420,#120d18);color:#fff;text-align:center;padding:clamp(3.5rem,7vw,5rem) 1.5rem}
+  footer .eyebrow{color:#ff5db1;justify-content:center}
+  footer .eyebrow::before{background:#ff5db1}
+  footer h2{color:#fff;font-size:clamp(1.9rem,3.6vw,2.8rem);margin-bottom:.4rem}
+  footer p{color:rgba(255,255,255,.7);margin-bottom:1.6rem}
+  footer .cta{max-width:340px;margin:0 auto}
 
-  .reveal{opacity:0;transform:translateY(28px);transition:.7s cubic-bezier(.2,.7,.2,1)}
+  .reveal{opacity:0;transform:translateY(30px);transition:opacity .7s var(--ease),transform .7s var(--ease)}
   .reveal.in{opacity:1;transform:none}
 
-  .note{position:fixed;bottom:0;left:0;right:0;z-index:60;background:#111;color:#eee;font-size:.72rem;text-align:center;padding:.45rem 1rem;font-family:ui-monospace,monospace}
-  .note b{color:#ff5db1}
+  .note{position:fixed;bottom:0;left:0;right:0;z-index:60;background:#0f0d14;color:#d8d3dc;font-size:.72rem;text-align:center;padding:.5rem 1rem;font-family:var(--sans)}
+  .note b{color:#ff5db1;font-weight:700}
 
   @media(max-width:860px){
     .progs{grid-template-columns:1fr}
-    .present .grid{grid-template-columns:1fr;gap:1.8rem}
-    nav,.follow{display:none}
-    .topbar{padding:.9rem 1.1rem}
+    .present .grid{grid-template-columns:1fr}
+    nav{display:none}
+    .fields{flex-direction:column}
+  }
+  @media(prefers-reduced-motion:reduce){
+    html{scroll-behavior:auto}
+    .reveal{opacity:1;transform:none;transition:none}
+    .scroll-hint{animation:none}
+    .hero video{transform:none}
   }
 </style>
 </head>
 <body>
 
-  <div class="topbar">
-    <div class="logo"><span class="mark"></span><span>Koytcha</span><span class="immo">immo</span></div>
+  <header class="topbar" id="topbar">
+    <div class="logo"><span class="mark"></span><span class="name">Koytcha</span><span class="immo">immo</span></div>
     <nav>
       <a href="#recherche">Acheter</a><a href="#recherche">Louer</a><a href="#recherche">Vendre</a>
-      <a href="#programmes">Nos programmes</a><a href="#presentation">À propos</a><a href="#presentation">Contact</a>
+      <a href="#programmes">Nos programmes</a><a href="#presentation">À propos</a>
+      <a href="#contact" class="nav-cta">Contact</a>
     </nav>
-    <div class="follow">Suivez-nous<br>sur</div>
-  </div>
+  </header>
 
   <!-- 1. HERO — recherche de biens (contenu conservé) -->
   <section class="hero" id="recherche">
-    <video autoplay muted loop playsinline poster="poster.jpg"><source src="video.mp4" type="video/mp4"></video>
+    <video autoplay muted loop playsinline poster="poster.jpg" aria-hidden="true"><source src="video.mp4" type="video/mp4"></video>
     <div class="veil"></div>
     <div class="hero-inner">
-      <div class="kicker">Koytcha Immo · La Réunion</div>
-      <h1>30 ans d'expertise<br>à La Réunion</h1>
+      <div class="kicker"><span class="dot"></span>Koytcha Immo · La Réunion</div>
+      <h1>30 ans d'expertise<br><em>à La Réunion</em></h1>
       <p class="sub">Acheter, louer, vendre ou confier la gestion de votre bien — en toute sérénité.</p>
-      <div class="search">
+      <div class="search" role="search" aria-label="Recherche de biens immobiliers">
         <div class="q">Vous recherchez <em>un bien</em> ?</div>
-        <div class="toggle"><button class="active">RÉSIDENTIEL</button><button>PROFESSIONNEL</button></div>
+        <div class="toggle"><button class="active" type="button">RÉSIDENTIEL</button><button type="button">PROFESSIONNEL</button></div>
         <div class="fields">
-          <select><option>Acheter</option><option>Louer</option></select>
-          <select><option>Toutes zones</option><option>Saint-Denis</option><option>Saint-Pierre</option><option>Ouest</option></select>
-          <select><option>Type de bien</option><option>Appartement</option><option>Villa</option><option>Terrain</option></select>
+          <div class="field"><label for="f-op">Projet</label><select id="f-op" aria-label="Type de projet"><option>Acheter</option><option>Louer</option></select></div>
+          <div class="field"><label for="f-zone">Zone</label><select id="f-zone" aria-label="Zone géographique"><option>Toutes zones</option><option>Saint-Denis</option><option>Saint-Pierre</option><option>Ouest</option></select></div>
+          <div class="field"><label for="f-type">Bien</label><select id="f-type" aria-label="Type de bien"><option>Tous types</option><option>Appartement</option><option>Villa</option><option>Terrain</option></select></div>
         </div>
-        <button class="cta">VOIR LES ANNONCES</button>
+        <button class="cta" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+          VOIR LES ANNONCES
+        </button>
       </div>
     </div>
-    <div class="scroll-hint">⌄</div>
+    <a class="scroll-hint" href="#programmes" aria-label="Faire défiler vers nos programmes">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+    </a>
   </section>
 
   <!-- 2. NOS PROGRAMMES -->
@@ -146,57 +200,103 @@
       <p class="lead">Une sélection de programmes immobiliers exclusifs, du littoral ouest aux hauteurs — pour habiter ou investir.</p>
     </div>
     <div class="progs">
-      <div class="card reveal">
+      <article class="card reveal">
         <div class="thumb" style="background-image:url('poster.jpg')"><span class="badge">NEUF</span></div>
-        <div class="body"><h3>Les Terrasses du Lagon</h3><div class="loc">Saint-Gilles · Ouest</div><div class="row"><span class="price">à partir de 320 000 €</span><span class="more">Découvrir →</span></div></div>
-      </div>
-      <div class="card reveal">
+        <div class="body">
+          <h3>Les Terrasses du Lagon</h3>
+          <div class="loc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-6-7-11a7 7 0 0114 0c0 5-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>Saint-Gilles · Ouest</div>
+          <div class="row"><span class="price">320 000 €<small>à partir de</small></span><span class="more">Découvrir <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></div>
+        </div>
+      </article>
+      <article class="card reveal">
         <div class="thumb" style="background-image:url('poster.jpg')"><span class="badge">EXCLUSIF</span></div>
-        <div class="body"><h3>Villa Panorama</h3><div class="loc">Saint-Leu · vue mer</div><div class="row"><span class="price">à partir de 540 000 €</span><span class="more">Découvrir →</span></div></div>
-      </div>
-      <div class="card reveal">
+        <div class="body">
+          <h3>Villa Panorama</h3>
+          <div class="loc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-6-7-11a7 7 0 0114 0c0 5-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>Saint-Leu · vue mer</div>
+          <div class="row"><span class="price">540 000 €<small>à partir de</small></span><span class="more">Découvrir <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></div>
+        </div>
+      </article>
+      <article class="card reveal">
         <div class="thumb" style="background-image:url('poster.jpg')"><span class="badge">INVESTIR</span></div>
-        <div class="body"><h3>Résidence Alizés</h3><div class="loc">Saint-Pierre · Sud</div><div class="row"><span class="price">à partir de 245 000 €</span><span class="more">Découvrir →</span></div></div>
-      </div>
+        <div class="body">
+          <h3>Résidence Alizés</h3>
+          <div class="loc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-6-7-11a7 7 0 0114 0c0 5-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>Saint-Pierre · Sud</div>
+          <div class="row"><span class="price">245 000 €<small>à partir de</small></span><span class="more">Découvrir <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></div>
+        </div>
+      </article>
     </div>
   </section>
 
   <!-- 3. NOTRE PRÉSENTATION -->
   <section class="present" id="presentation">
     <div class="section">
-      <div class="present grid">
+      <div class="grid">
         <div class="reveal">
           <div class="eyebrow">Qui sommes-nous</div>
-          <h2>Koytcha Immo, votre partenaire immobilier depuis 30 ans</h2>
-          <p class="lead">Agence de référence à La Réunion, nous accompagnons les particuliers et les professionnels à chaque étape : recherche, achat, location, vente et gestion locative. Une connaissance fine du territoire, un service humain et sur-mesure.</p>
+          <h2>Votre partenaire immobilier depuis 30 ans</h2>
+          <p class="lead">Agence de référence à La Réunion, nous accompagnons particuliers et professionnels à chaque étape : recherche, achat, location, vente et gestion locative. Une connaissance fine du territoire, un service humain et sur-mesure.</p>
           <div class="stats">
-            <div class="stat"><b>30 ans</b><span>d'expertise locale</span></div>
-            <div class="stat"><b>+2 000</b><span>biens accompagnés</span></div>
+            <div class="stat"><b data-count="30" data-suffix=" ans">30 ans</b><span>d'expertise locale</span></div>
+            <div class="stat"><b data-count="2000" data-prefix="+" data-sep="1">+2 000</b><span>biens accompagnés</span></div>
             <div class="stat"><b>974</b><span>toute l'île</span></div>
           </div>
           <div class="services">
             <span>Acheter</span><span>Louer</span><span>Vendre</span><span>Gestion locative</span><span>Conseil</span>
           </div>
         </div>
-        <div class="media reveal" style="background-image:url('poster.jpg')"></div>
+        <div class="media reveal" style="background-image:url('poster.jpg')">
+          <div class="float"><b>+2 000</b><span>familles accompagnées</span></div>
+        </div>
       </div>
     </div>
   </section>
 
-  <footer>
-    <div class="eyebrow" style="color:#ff5db1">Un projet immobilier ?</div>
-    <h2 style="color:#fff">Parlons-en dès aujourd'hui</h2>
-    <button class="cta">NOUS CONTACTER</button>
+  <footer id="contact">
+    <div class="eyebrow">Un projet immobilier ?</div>
+    <h2>Parlons-en dès aujourd'hui</h2>
+    <p>Notre équipe vous rappelle sous 24 h.</p>
+    <button class="cta" type="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M22 16.9v3a2 2 0 01-2.2 2 19.8 19.8 0 01-8.6-3 19.5 19.5 0 01-6-6 19.8 19.8 0 01-3-8.6A2 2 0 014.1 2h3a2 2 0 012 1.7c.1.9.4 1.8.7 2.7a2 2 0 01-.5 2.1L8.1 9.9a16 16 0 006 6l1.4-1.2a2 2 0 012.1-.4c.9.3 1.8.6 2.7.7a2 2 0 011.7 2z"/></svg>
+      NOUS CONTACTER
+    </button>
   </footer>
 
   <div class="note">Proposition — même contenu (recherche → programmes → présentation), header enrichi d'une <b>vidéo drone IA</b> (Higgsfield · Seedance 2.5). Textes / programmes = exemples, non contractuels.</div>
 
   <script>
+    // toggle résidentiel / professionnel
     document.querySelectorAll('.toggle button').forEach(b=>b.addEventListener('click',()=>{
       document.querySelectorAll('.toggle button').forEach(x=>x.classList.remove('active'));b.classList.add('active');
     }));
-    const io=new IntersectionObserver((es)=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('in')}),{threshold:.15});
+
+    // navbar solidifie au scroll
+    const bar=document.getElementById('topbar');
+    const onScroll=()=>bar.classList.toggle('scrolled',window.scrollY>60);
+    window.addEventListener('scroll',onScroll,{passive:true});onScroll();
+
+    const reduce=window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+
+    // reveal + count-up
+    const io=new IntersectionObserver((es)=>es.forEach(e=>{
+      if(!e.isIntersecting)return;
+      e.target.classList.add('in');
+      e.target.querySelectorAll('[data-count]').forEach(runCount);
+      io.unobserve(e.target);
+    }),{threshold:.18});
     document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+
+    function runCount(el){
+      if(el.dataset.done)return;el.dataset.done=1;
+      const end=+el.dataset.count,pre=el.dataset.prefix||'',suf=el.dataset.suffix||'',sep=el.dataset.sep;
+      const fmt=n=>(sep?Math.round(n).toLocaleString('fr-FR'):Math.round(n));
+      if(reduce){el.textContent=pre+fmt(end)+suf;return;}
+      const dur=1100,t0=performance.now();
+      (function tick(t){
+        const p=Math.min(1,(t-t0)/dur),e=1-Math.pow(1-p,3);
+        el.textContent=pre+fmt(end*e)+suf;
+        if(p<1)requestAnimationFrame(tick);
+      })(t0);
+    }
   </script>
 </body>
 </html>
