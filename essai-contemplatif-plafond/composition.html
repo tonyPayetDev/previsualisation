@@ -32,7 +32,10 @@
       .cursor { display:inline-block; width:16px; height:30px; background:#facc15; box-shadow:0 0 18px rgba(250,204,21,.45);
         vertical-align:-4px; margin-left:6px; }
       .term-label { position:absolute; left:90px; top:470px; color:#facc15; text-shadow:0 0 22px rgba(250,204,21,.25);
-        font-size:24px; letter-spacing:6px; }
+         font-size:24px; letter-spacing:6px; }
+      #opening-why { position:absolute; left:70px; top:760px; width:940px; text-align:center; z-index:8;
+        color:#facc15; font:700 122px/1 "DejaVu Sans", sans-serif; letter-spacing:18px;
+        text-shadow:0 0 18px rgba(250,204,21,.55), 0 0 64px rgba(250,204,21,.24); opacity:0; }
 
       /* --- Scene 2 : abstract ascent --- */
       #sc-abstract { background:
@@ -153,6 +156,7 @@
           <div class="ceiling"></div>
         </div>
       </div>
+      <div id="opening-why">POURQUOI</div>
 
       <!-- ============ ATMOSPHERIC B-ROLL (track 1) ============ -->
       <div id="broll" class="fill">
@@ -258,6 +262,9 @@
       const tl = gsap.timeline({ paused: true });
 
       /* ---------- BACKGROUND scene crossfades ---------- */
+      tl.fromTo("#opening-why", { opacity: 0, scale: 0.92, y: 18 },
+        { opacity: 1, scale: 1, y: 0, duration: 0.35, ease: "power3.out" }, 0.08);
+      tl.to("#opening-why", { opacity: 0, scale: 1.04, duration: 0.42, ease: "power2.in" }, 1.62);
       tl.set("#sc-abstract", { opacity: 0 }, 0);
       tl.set("#sc-void", { opacity: 0 }, 0);
       // terminal breathes (very slow push-in)
