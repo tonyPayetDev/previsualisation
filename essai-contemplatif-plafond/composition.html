@@ -7,7 +7,7 @@
     <style>
       * { margin: 0; padding: 0; box-sizing: border-box; }
       html, body {
-        width: 1080px; height: 1920px; overflow: hidden;
+        width: 100%; height: 100%; overflow: hidden;
         background: #05070b;
       }
       body { font-family: "DejaVu Serif", serif; }
@@ -191,6 +191,13 @@
 
     <script>
       window.__timelines = window.__timelines || {};
+      // Scale the fixed render canvas only when viewed inside the responsive preview iframe.
+      const root = document.querySelector("#root");
+      if (window.innerWidth !== 1080 || window.innerHeight !== 1920) {
+        const scale = Math.min(window.innerWidth / 1080, window.innerHeight / 1920);
+        root.style.transformOrigin = "top left";
+        root.style.transform = `scale(${scale})`;
+      }
       const tl = gsap.timeline({ paused: true });
 
       /* ---------- BACKGROUND scene crossfades ---------- */
