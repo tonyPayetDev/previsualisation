@@ -55,6 +55,7 @@
       timers = [];
       timeline.restart();
       const audio = [...doc.querySelectorAll('audio')];
+      const videos = [...doc.querySelectorAll('video')];
       // Unlock every track during the user gesture, then schedule one track at a time.
       await Promise.allSettled(audio.map(async (item) => {
         item.currentTime = 0;
@@ -62,11 +63,21 @@
         item.pause();
         item.currentTime = 0;
       }));
+      videos.forEach((item) => { item.muted = true; item.currentTime = 0; item.play().then(() => item.pause()).catch(() => {}); });
       audio.forEach((item) => {
         const start = Number(item.dataset.start || 0) * 1000;
         const duration = Number(item.dataset.duration || 0) * 1000;
         timers.push(setTimeout(() => {
           audio.forEach((other) => { if (other !== item) other.pause(); });
+          item.currentTime = 0;
+          item.play().catch(() => {});
+          timers.push(setTimeout(() => item.pause(), duration));
+        }, start));
+      });
+      videos.forEach((item) => {
+        const start = Number(item.dataset.start || 0) * 1000;
+        const duration = Number(item.dataset.duration || 0) * 1000;
+        timers.push(setTimeout(() => {
           item.currentTime = 0;
           item.play().catch(() => {});
           timers.push(setTimeout(() => item.pause(), duration));
