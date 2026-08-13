@@ -103,6 +103,10 @@
         opacity:0; text-shadow: 0 2px 30px rgba(0,0,0,0.55); }
        .cap.small { font-size:52px; color:#d8c878; }
       .cap.pivot { letter-spacing:14px; font-size:58px; }
+      .why-stack { display:flex; flex-direction:column; align-items:center; gap:10px; letter-spacing:14px; }
+      .why-line { display:block; opacity:0; text-shadow:0 0 22px rgba(250,204,21,.5); }
+      .why-line:nth-child(2) { transform:translateY(14px); }
+      .why-line:nth-child(3) { transform:translateY(28px); }
        .cap.dark { color:#14130e; text-shadow:none; }
        .cap .highlight { color:#facc15 !important; font-weight:600; text-shadow:0 0 22px rgba(250,204,21,.42); }
        .cap .word { transition:color .08s linear, text-shadow .08s linear; }
@@ -114,8 +118,11 @@
       /* --- final wordmark card (after the white) --- */
       #endcard { background:#ffffff; opacity:0; z-index:9; }
       #endcard .wm { position:absolute; left:0; top:900px; width:1080px; text-align:center;
-        color:#b8bcc4; font-size:34px; letter-spacing:12px; }
+         color:#b8bcc4; font-size:34px; letter-spacing:12px; }
       #endcard .wm small { display:block; margin-top:18px; font-size:20px; letter-spacing:8px; color:#c8ccd3; }
+      #endcard .cta { position:absolute; left:90px; top:1080px; width:900px; text-align:center;
+        color:#17181c; font:600 34px/1.35 "DejaVu Sans", sans-serif; letter-spacing:1px; }
+      #endcard .cta strong { display:block; margin-top:18px; color:#b48700; font-size:48px; letter-spacing:6px; }
     </style>
   </head>
   <body>
@@ -192,7 +199,7 @@
 
       <div class="cap cap-pos-low clip" id="c5" data-start="27.6" data-duration="2.6" data-track-index="3">Je me bats quand même.</div>
 
-      <div class="cap pivot cap-pos-mid clip mono" id="c6" data-start="30.6" data-duration="5.6" data-track-index="3"><span class="highlight">POURQUOI.</span><br/><span class="highlight">POURQUOI.</span><br/><span class="highlight">POURQUOI.</span></div>
+       <div class="cap pivot cap-pos-mid clip mono" id="c6" data-start="30.6" data-duration="5.6" data-track-index="3"><span class="why-stack"><span class="why-line highlight">POURQUOI.</span><span class="why-line highlight">POURQUOI.</span><span class="why-line highlight">POURQUOI.</span></span></div>
 
       <div class="cap cap-pos-mid clip" id="c7" data-start="37.6" data-duration="6.6" data-track-index="3">Je touche le <span class="highlight">plafond.</span><br/>Le <span class="highlight">plafond de verre.</span><br/>Et derrière — <span class="highlight">le vide.</span></div>
 
@@ -203,6 +210,7 @@
       <!-- ============ END WHITE + WORDMARK (track 4) ============ -->
       <div id="endcard" class="fill clip" data-start="58.6" data-duration="2.9" data-track-index="4">
         <div class="wm sans">VIDEOBOOST<small>AUTOMATION&nbsp;&nbsp;BOOST</small></div>
+        <div class="cta">Commente pour soutenir mon pourquoi —<br/>et sûrement le tien.<strong>VIDEOBOOST</strong></div>
       </div>
 
       <!-- ============ AUDIO ============ -->
@@ -321,9 +329,13 @@
       cap("#c2", 8.4, 5.9);
       cap("#c3", 17.6, 5.5);
       cap("#c4", 24.8, 1.9);
-      cap("#c5", 27.8, 1.8);
-      cap("#c6", 30.8, 4.8);
-      cap("#c7", 37.8, 5.7);
+       cap("#c5", 27.8, 1.8);
+       cap("#c6", 30.8, 4.8);
+       [30.8, 32.0, 33.2].forEach((at, index) => {
+         tl.fromTo(`#c6 .why-line:nth-child(${index + 1})`, { opacity: 0, y: 8 },
+           { opacity: 1, y: 0, duration: 0.45, ease: "power2.out" }, at);
+       });
+       cap("#c7", 37.8, 5.7);
       cap("#c8", 46.0, 3.6);
       // final line lingers, then the white takes it
       tl.fromTo("#c9", { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 1.2, ease: "power1.out" }, 50.8);
