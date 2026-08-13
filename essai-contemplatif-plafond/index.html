@@ -57,19 +57,28 @@
       const audio = [...doc.querySelectorAll('audio')];
       const videos = [...doc.querySelectorAll('video')];
       const captions = [...doc.querySelectorAll('.cap')];
-      // Unlock every track during the user gesture, then schedule one track at a time.
+      // Unlock every track during the user gesture. The ambience is persistent;
+      // only voice tracks are sequenced and paused between segments.
       await Promise.allSettled(audio.map(async (item) => {
+        item.volume = Number(item.dataset.volume || 1);
         item.currentTime = 0;
         await item.play();
         item.pause();
         item.currentTime = 0;
       }));
       videos.forEach((item) => { item.muted = true; item.currentTime = 0; item.play().then(() => item.pause()).catch(() => {}); });
-      audio.forEach((item) => {
+      const ambience = doc.querySelector('#a-amb');
+      const voices = audio.filter((item) => item !== ambience);
+      if (ambience) {
+        ambience.loop = true;
+        ambience.currentTime = 0;
+        ambience.play().catch(() => {});
+      }
+      voices.forEach((item) => {
         const start = Number(item.dataset.start || 0) * 1000;
         const duration = (Number.isFinite(item.duration) ? item.duration : Number(item.dataset.duration || 0)) * 1000;
         timers.push(setTimeout(() => {
-          audio.forEach((other) => { if (other !== item) other.pause(); });
+          voices.forEach((other) => { if (other !== item) other.pause(); });
           item.currentTime = 0;
           item.play().catch(() => {});
           const index = Number(item.id.replace('a-s', '')) - 1;
