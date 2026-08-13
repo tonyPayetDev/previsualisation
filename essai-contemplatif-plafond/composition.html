@@ -93,6 +93,8 @@
       .cap.pivot { letter-spacing:14px; font-size:58px; }
        .cap.dark { color:#14130e; text-shadow:none; }
        .cap .highlight { color:#facc15 !important; font-weight:600; text-shadow:0 0 22px rgba(250,204,21,.42); }
+       .cap .word { transition:color .08s linear, text-shadow .08s linear; }
+       .cap .word.active { color:#facc15 !important; font-weight:700; text-shadow:0 0 22px rgba(250,204,21,.5); }
       .cap-pos-mid { top:820px; }
       .cap-pos-low { top:1180px; }
       .cap-pos-hi  { top:560px; }
@@ -206,6 +208,26 @@
         root.style.transformOrigin = "top left";
         root.style.transform = `scale(${scale})`;
       }
+      // Split caption text into stable word spans so the preview can run a TikTok-style highlight.
+      document.querySelectorAll(".cap").forEach((caption) => {
+        const walker = document.createTreeWalker(caption, NodeFilter.SHOW_TEXT);
+        const nodes = [];
+        while (walker.nextNode()) nodes.push(walker.currentNode);
+        nodes.forEach((node) => {
+          if (!node.nodeValue.trim()) return;
+          const fragment = document.createDocumentFragment();
+          node.nodeValue.split(/(\s+)/).forEach((part) => {
+            if (/^\s+$/.test(part)) fragment.appendChild(document.createTextNode(part));
+            else {
+              const word = document.createElement("span");
+              word.className = "word";
+              word.textContent = part;
+              fragment.appendChild(word);
+            }
+          });
+          node.replaceWith(fragment);
+        });
+      });
       const tl = gsap.timeline({ paused: true });
 
       /* ---------- BACKGROUND scene crossfades ---------- */
