@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Prévisualisation — showcase-claude-max</title>
+<title>Prévisualisation — Showcase Claude Max (Autoboost néon)</title>
 <style>
   :root{ --bg:#0a0a0f; --panel:#111117; --border:#242430; --neon-yellow:#f5d90a; --neon-purple:#a855f7; --neon-orange:#ff7a1a; --text:#f2f2f5; --muted:#9a9aa8; }
   *{box-sizing:border-box}
@@ -20,6 +20,10 @@
   video{display:block;width:100%;aspect-ratio:9/16;background:#000}
   .meta{padding:1rem 1.2rem 1.3rem;border-top:1px solid var(--border);font-size:.8rem;color:#c9c9d4;line-height:1.7}
   .meta b{color:var(--neon-yellow)}
+  .note{padding:0 1.2rem 1.3rem;font-size:.78rem;color:var(--muted);line-height:1.6}
+  .note b{color:var(--neon-purple)}
+  .flow{padding:0 1.2rem 1.3rem;font-size:.76rem;color:#b7b7c4;line-height:1.7}
+  .flow code{background:rgba(245,217,10,.08);border:1px solid rgba(245,217,10,.2);color:var(--neon-yellow);padding:.1rem .4rem;border-radius:6px;font-size:.72rem}
   footer{text-align:center;margin-top:2rem;font-size:.75rem;color:var(--muted)}
 </style>
 </head>
@@ -27,17 +31,32 @@
 <div class="wrap">
   <a class="back" href="/">← Toutes les vidéos</a>
   <header>
-    <h1>showcase-claude-max</h1>
-    <p>Publié automatiquement à la fin du rendu</p>
+    <h1>Showcase Claude Max</h1>
+    <p>Ce qu'une personne peut construire avec l'IA, sur un vrai système</p>
   </header>
   <div class="card">
     <div class="card-head">
-      <h2>Rendu final</h2>
+      <h2>Pas une équipe. Un système.</h2>
       <span class="badge">⏳ À valider</span>
     </div>
     <video src="video.mp4" poster="cover.jpg" controls playsinline loop></video>
     <div class="meta">
-      Durée <b>18s</b> · Poids <b>3 Mo</b> · Rendu le <b>14/08/2026</b>
+      Durée <b>18s</b> · 1080×1920 · 30fps · <b>3 clips avatar Seedance</b> (voix FR) montés dans
+      l'habillage <b>Autoboost néon</b> : fenêtre média, captions mot-à-mot 27px, ligne néon beat-sync,
+      4 panneaux « preuve », carton punchline plein écran, CTA.
+    </div>
+    <div class="flow">
+      Angle : <b style="color:#f5d90a">inspirer + prouver</b> le vrai travail construit avec Claude Max.<br>
+      B-roll (mockups UI natifs) : <code>flux n8n</code> → <code>site client auto-généré</code> →
+      <code>pipeline vidéo IA</code> → <code>terminal Claude Code</code>.<br>
+      CTA — mot-clé <b style="color:#ff7a1a">AUTOMATION</b>.
+    </div>
+    <div class="note">
+      Pipeline <b>veille-to-avatar</b> — architecture 2 passes : HyperFrames rend l'habillage néon complet
+      (zéro balise vidéo, fenêtre média + panneaux b-roll en CSS natif), puis ffmpeg composite les vrais
+      clips avatar de Tony dans la fenêtre au bon timing ; les panneaux « preuve » sont révélés en
+      n'overlayant pas l'avatar pendant la voix off. Voix = <b>audio Seedance</b> des clips, BGM basse +
+      SFX de coupe dessous. Punchline : <b>« Pas une équipe. Pas d'agence. Un système. »</b>
     </div>
   </div>
   <footer>previsualisation.automatisationboost.com</footer>
