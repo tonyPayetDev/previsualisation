@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prévisualisation — Showcase Claude Max (reel avatar)</title>
+<style>
+  :root{ --bg:#0a0a0f; --panel:#111117; --border:#242430; --neon-yellow:#f5d90a; --neon-purple:#a855f7; --neon-orange:#ff7a1a; --text:#f2f2f5; --muted:#9a9aa8; }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;padding:2rem 1rem 4rem}
+  .wrap{max-width:480px;margin:0 auto}
+  a.back{color:var(--muted);font-size:.8rem;text-decoration:none;display:inline-block;margin-bottom:1rem}
+  header{text-align:center;margin-bottom:2rem}
+  header h1{font-size:1.4rem;margin:0 0 .3rem;background:linear-gradient(90deg,var(--neon-yellow),var(--neon-orange));-webkit-background-clip:text;background-clip:text;color:transparent}
+  header p{color:var(--muted);font-size:.85rem;margin:0}
+  .card{background:var(--panel);border:1px solid var(--border);border-radius:16px;overflow:hidden;box-shadow:0 0 0 1px rgba(245,217,10,.06),0 20px 60px -20px rgba(168,85,247,.35);margin-bottom:1.5rem}
+  .card-head{padding:1rem 1.2rem .8rem;display:flex;justify-content:space-between;align-items:center;gap:.5rem}
+  .badge{font-size:.7rem;font-weight:600;padding:.25rem .6rem;border-radius:999px;background:rgba(245,217,10,.12);color:var(--neon-yellow);border:1px solid rgba(245,217,10,.3);white-space:nowrap}
+  .card-head h2{font-size:1rem;margin:0;font-weight:600}
+  video{display:block;width:100%;aspect-ratio:9/16;background:#000}
+  .meta{padding:1rem 1.2rem 1.3rem;border-top:1px solid var(--border);font-size:.8rem;color:#c9c9d4;line-height:1.7}
+  .meta b{color:var(--neon-yellow)}
+  .note{padding:0 1.2rem 1.3rem;font-size:.78rem;color:var(--muted);line-height:1.6}
+  .note b{color:var(--neon-purple)}
+  .flow{padding:0 1.2rem 1.3rem;font-size:.76rem;color:#b7b7c4;line-height:1.7}
+  .flow code{background:rgba(245,217,10,.08);border:1px solid rgba(245,217,10,.2);color:var(--neon-yellow);padding:.1rem .4rem;border-radius:6px;font-size:.72rem}
+  footer{text-align:center;margin-top:2rem;font-size:.75rem;color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="/">← Toutes les vidéos</a>
+  <header>
+    <h1>Showcase Claude Max — reel avatar</h1>
+    <p>Ce que j'ai construit aujourd'hui : le travail d'une équipe, avec une seule IA</p>
+  </header>
+  <div class="card">
+    <div class="card-head">
+      <h2>Un système que je pilote.</h2>
+      <span class="badge">⏳ À valider</span>
+    </div>
+    <video src="video.mp4" poster="cover.jpg" controls playsinline loop></video>
+    <div class="meta">
+      Durée <b>13,8s</b> · 1080×1920 · 30fps · <b>3 clips avatar Seedance</b> (A1 hook / B1 explication / C2 CTA)
+      montés dans l'habillage <b>Autoboost néon</b> : fenêtre média, captions mot-à-mot 27px, ligne néon
+      beat-sync, 4 panneaux « preuve » mockup, carton punchline plein écran, CTA.
+    </div>
+    <div class="flow">
+      Angle : <b style="color:#f5d90a">inspirer + prouver</b> le vrai travail du jour construit avec Claude Max.<br>
+      B-roll (mockups UI natifs) : <code>feed Instagram auto</code> → <code>avatar cloné (cette vidéo)</code> →
+      <code>planning 5 réseaux</code> → <code>terminal Claude Code</code>.<br>
+      Punchline : <b>« Pas une agence. Pas une équipe. Un système que je pilote. »</b> · CTA — mot-clé
+      <b style="color:#ff7a1a">AUTOMATION</b>.
+    </div>
+    <div class="note">
+      Pipeline <b>veille-to-avatar-v3</b> — architecture 2 passes : HyperFrames rend l'habillage néon complet
+      (zéro balise vidéo, fenêtre média + panneaux b-roll en CSS natif), puis ffmpeg composite les vrais clips
+      avatar de Tony dans la fenêtre au bon timing ; les panneaux « preuve » sont révélés en n'overlayant pas
+      l'avatar pendant la voix off. Voix = <b>audio Seedance</b> des 3 clips concaténés (les captions matchent
+      les mots réellement dits), BGM basse + SFX de coupe dessous. Lip-sync approximatif assumé (ElevenLabs
+      le rendra parfait plus tard).
+    </div>
+  </div>
+  <footer>previsualisation.automatisationboost.com</footer>
+</div>
+</body>
+</html>
