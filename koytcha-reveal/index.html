@@ -1,0 +1,1125 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Villa Solèy — Koytcha Immobilier · La Réunion</title>
+<meta name="description" content="Villa Solèy, Saint-Leu — présentation cinématique d'un bien d'exception à La Réunion. Démonstration Koytcha Immobilier.">
+<meta name="theme-color" content="#07070a">
+<meta property="og:title" content="Villa Solèy — Koytcha Immobilier">
+<meta property="og:description" content="Une villa contemporaine face à l'océan. Présentation cinématique — démonstration.">
+<meta property="og:image" content="assets/web/reveal-b.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ============ TOKENS — charte KOYTCHA ============ */
+:root{
+  --magenta:#e6007e; --rose:#ff5db1; --rose-dark:#c00068; --orange:#f6a11a;
+  --rose-100:#ffe3f1; --rose-200:#ffd0e8; --rose-300:#ffcfe7;
+  --white:#ffffff; --ecru:#faf7f9; --ink:#141419; --grey:#6b6b76; --line:#ece6ea;
+  --black:#07070a; --black-2:#0d0d12;
+  --sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  --serif:'Fraunces',Georgia,'Times New Roman',serif;
+  --bar:64px;
+  --ease:cubic-bezier(.22,.61,.36,1);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{
+  font-family:var(--sans); color:var(--ink); background:var(--black);
+  -webkit-font-smoothing:antialiased; overflow-x:hidden;
+}
+body.is-loading{overflow:hidden;height:100vh}
+img{max-width:100%;display:block}
+button,input,select{font:inherit;color:inherit}
+a{color:inherit;text-decoration:none}
+::selection{background:var(--magenta);color:#fff}
+:focus-visible{outline:2px solid var(--magenta);outline-offset:3px;border-radius:4px}
+
+/* ============ LOADER ============ */
+#loader{
+  position:fixed;inset:0;z-index:200;background:var(--black);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:26px;
+  transition:opacity .7s var(--ease),visibility .7s;
+}
+#loader.done{opacity:0;visibility:hidden}
+.ld-logo{font-family:var(--serif);font-size:clamp(26px,6vw,40px);color:#fff;letter-spacing:.14em;font-weight:300}
+.ld-logo b{font-weight:600}
+.ld-logo i{color:var(--magenta);font-style:normal}
+.ld-sub{font-size:11px;letter-spacing:.34em;text-transform:uppercase;color:#79798a}
+.ld-track{width:min(260px,60vw);height:2px;background:#20202a;overflow:hidden;border-radius:2px}
+.ld-fill{height:100%;width:0;background:linear-gradient(90deg,var(--magenta),var(--rose),var(--orange));transition:width .25s linear}
+.ld-pct{font-size:12px;letter-spacing:.2em;color:#9a9aa8;font-variant-numeric:tabular-nums}
+
+/* ============ TOPBAR + RECHERCHE ============ */
+.topbar{
+  position:fixed;top:0;left:0;right:0;z-index:90;
+  background:rgba(9,9,13,.62);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  border-bottom:1px solid rgba(255,255,255,.09);
+  transition:background .4s var(--ease),border-color .4s var(--ease),color .4s var(--ease);
+  padding-top:env(safe-area-inset-top);
+}
+.topbar.light{background:rgba(255,255,255,.97);border-bottom-color:var(--line);color:var(--ink)}
+.bar{height:var(--bar);display:flex;align-items:center;gap:14px;padding:0 clamp(14px,3vw,32px);max-width:1500px;margin:0 auto}
+.brand{display:flex;flex-direction:column;line-height:1;color:#fff;transition:color .4s var(--ease);flex:0 0 auto}
+.topbar.light .brand{color:var(--ink)}
+.brand .b1{font-family:var(--serif);font-size:19px;font-weight:600;letter-spacing:.06em}
+.brand .b1 i{color:var(--magenta);font-style:normal}
+.brand .b2{font-size:8.5px;letter-spacing:.32em;text-transform:uppercase;opacity:.62;margin-top:4px}
+.nav{display:none;gap:26px;margin-left:26px;font-size:13px;color:rgba(255,255,255,.72)}
+.topbar.light .nav{color:var(--grey)}
+.nav a{position:relative;padding:4px 0;transition:color .25s}
+.nav a:hover{color:var(--magenta)}
+.spacer{flex:1}
+.btn-search{
+  display:inline-flex;align-items:center;gap:8px;border:0;cursor:pointer;
+  background:var(--magenta);color:#fff;padding:11px 18px;border-radius:999px;
+  font-size:13px;font-weight:600;letter-spacing:.01em;transition:background .25s,transform .2s;
+}
+.btn-search:hover{background:var(--rose-dark)}
+.btn-search:active{transform:scale(.97)}
+.btn-search svg{width:15px;height:15px;flex:0 0 auto}
+.btn-search .lbl-close{display:none}
+.topbar.open .btn-search .lbl-open{display:none}
+.topbar.open .btn-search .lbl-close{display:inline}
+
+.searchwrap{max-height:0;overflow:hidden;transition:max-height .45s var(--ease)}
+.topbar.open .searchwrap{max-height:520px}
+.search{
+  display:grid;gap:10px;padding:4px clamp(14px,3vw,32px) 16px;max-width:1500px;margin:0 auto;
+  grid-template-columns:1fr;
+}
+.field{position:relative}
+.field label{
+  position:absolute;top:9px;left:14px;font-size:9.5px;letter-spacing:.22em;text-transform:uppercase;
+  color:rgba(255,255,255,.5);pointer-events:none;
+}
+.topbar.light .field label{color:var(--grey)}
+.field select{
+  width:100%;appearance:none;background:rgba(255,255,255,.07);color:#fff;
+  border:1px solid rgba(255,255,255,.16);border-radius:12px;
+  padding:26px 38px 11px 14px;font-size:14px;cursor:pointer;transition:border-color .25s,background .25s;
+}
+.topbar.light .field select{background:var(--ecru);color:var(--ink);border-color:var(--line)}
+.field select:hover{border-color:var(--magenta)}
+.field::after{
+  content:"";position:absolute;right:16px;top:calc(50% + 5px);width:8px;height:8px;
+  border-right:1.6px solid var(--magenta);border-bottom:1.6px solid var(--magenta);
+  transform:translateY(-50%) rotate(45deg);pointer-events:none;
+}
+.field option{background:#141419;color:#fff}
+.topbar.light .field option{background:#fff;color:var(--ink)}
+.btn-go{
+  border:0;cursor:pointer;background:var(--magenta);color:#fff;border-radius:12px;
+  padding:16px 20px;font-size:14px;font-weight:600;letter-spacing:.02em;transition:background .25s,transform .2s;
+  display:flex;align-items:center;justify-content:center;gap:9px;
+}
+.btn-go:hover{background:var(--rose-dark)}
+.btn-go:active{transform:scale(.985)}
+.search-note{
+  grid-column:1/-1;font-size:11.5px;color:rgba(255,255,255,.5);line-height:1.5;display:flex;gap:7px;align-items:flex-start;
+}
+.topbar.light .search-note{color:var(--grey)}
+.search-note b{color:var(--rose);font-weight:600}
+.topbar.light .search-note b{color:var(--magenta)}
+@media(min-width:900px){
+  .nav{display:flex}
+  .searchwrap{max-height:none;overflow:visible}
+  .search{grid-template-columns:1.3fr 1fr 1fr auto;align-items:center;padding-bottom:14px}
+  .btn-go{padding:16px 30px}
+}
+
+/* ============ CHAPITRES CINÉMA ============ */
+.film{position:relative;background:var(--black)}
+.chapter{position:relative;height:400svh}
+#ch2{height:620svh}
+#ch3{height:420svh}
+#ch4{height:320svh}
+.stage{
+  position:sticky;top:0;height:100svh;width:100%;overflow:hidden;
+  background:var(--black);display:block;
+}
+.stage canvas,.stage .still{
+  position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;
+}
+.vignette{
+  position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(120% 85% at 50% 42%,transparent 38%,rgba(0,0,0,.55) 100%);
+}
+.scrim{
+  position:absolute;left:0;right:0;bottom:0;height:66%;pointer-events:none;
+  background:linear-gradient(to top,rgba(4,4,7,.96) 0%,rgba(4,4,7,.88) 22%,rgba(4,4,7,.6) 50%,rgba(4,4,7,.22) 76%,transparent 100%);
+  height:74%;
+}
+.caption{
+  position:absolute;left:clamp(18px,5vw,72px);bottom:clamp(46px,8vh,92px);
+  right:clamp(18px,5vw,72px);max-width:640px;color:#fff;z-index:3;
+}
+.eyebrow{
+  display:flex;align-items:center;gap:11px;font-size:10.5px;letter-spacing:.3em;
+  text-transform:uppercase;color:var(--rose);margin-bottom:16px;
+}
+.eyebrow .num{color:rgba(255,255,255,.42);letter-spacing:.16em}
+.eyebrow .dash{width:34px;height:1px;background:var(--magenta);flex:0 0 auto}
+.caption h1,.caption h2{
+  font-family:var(--serif);font-weight:300;line-height:1.03;letter-spacing:-.015em;
+  font-size:clamp(34px,7.4vw,74px);margin-bottom:14px;text-shadow:0 2px 26px rgba(0,0,0,.55);
+}
+.caption h1 em,.caption h2 em{font-style:normal;font-weight:600}
+.caption p{
+  font-size:clamp(13.5px,3.4vw,16.5px);line-height:1.65;color:rgba(255,255,255,.74);
+  max-width:48ch;font-weight:300;text-shadow:0 1px 16px rgba(0,0,0,.5);
+}
+.cap-meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}
+.tag{
+  font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;padding:7px 13px;
+  border:1px solid rgba(255,255,255,.22);border-radius:999px;color:rgba(255,255,255,.8);
+}
+.tag.demo{border-color:var(--magenta);color:#fff;background:rgba(230,0,126,.22)}
+.cue{
+  position:absolute;left:50%;transform:translateX(-50%);bottom:18px;z-index:4;
+  display:flex;flex-direction:column;align-items:center;gap:8px;
+  font-size:9.5px;letter-spacing:.28em;text-transform:uppercase;color:rgba(255,255,255,.45);
+}
+.cue .line{width:1px;height:34px;background:linear-gradient(to bottom,var(--magenta),transparent);animation:cue 2.1s var(--ease) infinite}
+@keyframes cue{0%{transform:scaleY(.2);transform-origin:top;opacity:0}45%{transform:scaleY(1);opacity:1}100%{transform:scaleY(1);transform-origin:bottom;transform:scaleY(0);opacity:0}}
+.progress-rail{
+  position:absolute;right:clamp(12px,2.4vw,26px);top:50%;transform:translateY(-50%);
+  width:2px;height:120px;background:rgba(255,255,255,.14);border-radius:2px;z-index:4;overflow:hidden;
+}
+.progress-rail i{position:absolute;top:0;left:0;width:100%;height:0%;background:linear-gradient(to bottom,var(--magenta),var(--rose));}
+@media(max-width:640px){.progress-rail{display:none}}
+
+/* chapitre 3 — vue éclatée animée */
+.exploded{
+  position:absolute;inset:0;display:flex;align-items:flex-start;justify-content:center;
+  perspective:1400px;padding:96px 0 34svh;
+}
+.exploded-inner{position:relative;width:min(54vw,270px);aspect-ratio:760/1500;will-change:transform}
+.slab{position:absolute;left:0;width:100%;will-change:transform,opacity}
+.slab img{width:100%;height:auto;filter:drop-shadow(0 30px 60px rgba(0,0,0,.8))}
+.slab.s3{top:0}
+.slab.s2{top:33%}
+.slab.s1{top:66%}
+.beam{
+  position:absolute;left:50%;width:1.5px;transform:translateX(-50%);
+  background:linear-gradient(to bottom,transparent,var(--magenta),var(--rose),transparent);
+  opacity:0;filter:blur(.4px);box-shadow:0 0 12px var(--magenta);transform-origin:top center;
+}
+.beam.b1{top:22%;height:13%}
+.beam.b2{top:60%;height:13%}
+.slab.hot img{filter:drop-shadow(0 0 34px rgba(230,0,126,.55)) drop-shadow(0 30px 60px rgba(0,0,0,.8))}
+@media(min-width:900px){
+  .exploded{justify-content:flex-end;padding:150px 9vw 60px 0;align-items:center}
+  .exploded-inner{width:min(27vw,320px)}
+}
+
+/* chapitre 4 */
+.zoomer{position:absolute;inset:0;overflow:hidden}
+.zoomer picture{display:block;width:100%;height:100%}
+.zoomer img{width:100%;height:100%;object-fit:cover;object-position:center 58%;will-change:transform}
+
+/* transition noir -> clair */
+.seam{height:120px;background:linear-gradient(to bottom,var(--black),var(--white));position:relative;z-index:2}
+
+/* ============ SECTIONS CLAIRES ============ */
+.light-zone{background:var(--ecru);color:var(--ink);position:relative;z-index:2}
+.wrap{max-width:1240px;margin:0 auto;padding:0 clamp(18px,5vw,40px)}
+.sec{padding:clamp(56px,9vw,110px) 0}
+.sec-head{margin-bottom:clamp(28px,5vw,52px);max-width:680px}
+.kicker{
+  display:flex;align-items:center;gap:11px;font-size:10.5px;letter-spacing:.3em;
+  text-transform:uppercase;color:var(--magenta);margin-bottom:16px;font-weight:600;
+}
+.kicker .dash{width:30px;height:1px;background:var(--magenta)}
+.sec-head h2{
+  font-family:var(--serif);font-weight:300;font-size:clamp(27px,5vw,46px);
+  line-height:1.1;letter-spacing:-.015em;
+}
+.sec-head h2 em{font-style:normal;font-weight:600;color:var(--magenta)}
+.sec-head p{margin-top:14px;color:var(--grey);font-size:15px;line-height:1.7;font-weight:300}
+
+/* bandeau de faits */
+.facts{background:var(--white);border-bottom:1px solid var(--line)}
+.facts-in{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--line)}
+.fact{background:var(--white);padding:clamp(20px,4vw,34px) clamp(14px,3vw,26px);text-align:center}
+.fact .v{font-family:var(--serif);font-size:clamp(24px,5vw,38px);font-weight:400;line-height:1;color:var(--ink)}
+.fact .v span{font-size:.5em;color:var(--magenta);margin-left:3px}
+.fact .k{font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--grey);margin-top:11px}
+@media(min-width:760px){.facts-in{grid-template-columns:repeat(4,1fr)}}
+.price-row{
+  display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:14px;
+  padding:26px 0 0;
+}
+.price-row .p{font-family:var(--serif);font-size:clamp(28px,5.4vw,44px);font-weight:400}
+.price-row .p small{font-size:.4em;color:var(--grey);font-family:var(--sans);letter-spacing:.04em;margin-left:8px}
+.ref{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--grey)}
+
+/* sélecteur d'étages */
+.levels-grid{display:grid;gap:clamp(22px,4vw,44px);grid-template-columns:1fr}
+@media(min-width:900px){.levels-grid{grid-template-columns:.95fr 1.05fr;align-items:start}}
+.tabs{display:flex;gap:8px;margin-bottom:22px;flex-wrap:wrap}
+.tab{
+  border:1px solid var(--line);background:var(--white);border-radius:999px;padding:11px 17px;
+  font-size:12.5px;font-weight:500;cursor:pointer;transition:all .25s var(--ease);color:var(--grey);
+}
+.tab:hover{border-color:var(--rose-200);color:var(--ink)}
+.tab[aria-selected="true"]{background:var(--magenta);border-color:var(--magenta);color:#fff;box-shadow:0 8px 22px -10px rgba(230,0,126,.75)}
+.panel[hidden]{display:none}
+.panel{animation:fadeup .5s var(--ease)}
+@keyframes fadeup{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.panel h3{font-family:var(--serif);font-size:clamp(21px,3.6vw,30px);font-weight:400;margin-bottom:6px}
+.panel .surface{color:var(--magenta);font-size:13px;font-weight:600;letter-spacing:.04em;margin-bottom:18px}
+.rooms{list-style:none;display:grid;gap:1px;background:var(--line);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.rooms li{
+  background:var(--white);padding:14px 17px;display:flex;justify-content:space-between;
+  align-items:center;gap:14px;font-size:14px;
+}
+.rooms li span{color:var(--grey);font-size:13px;white-space:nowrap}
+.rooms li::before{content:"";position:absolute}
+.lvl-visual{
+  background:var(--black);border-radius:18px;overflow:hidden;position:relative;
+  display:flex;align-items:center;justify-content:center;padding:26px;min-height:280px;
+}
+.lvl-visual img{width:100%;max-width:420px;transition:opacity .5s var(--ease),transform .6s var(--ease)}
+.lvl-visual .cut{position:absolute;opacity:0;transform:scale(.96)}
+.lvl-visual .cut.on{opacity:1;transform:none;position:relative}
+.lvl-visual .glow{
+  position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(60% 45% at 50% 50%,rgba(230,0,126,.22),transparent 70%);
+}
+
+/* galerie */
+.gal{display:grid;gap:12px;grid-template-columns:repeat(2,1fr)}
+.gal figure{position:relative;overflow:hidden;border-radius:14px;background:#111;aspect-ratio:4/3}
+.gal figure:first-child{grid-column:1/-1;aspect-ratio:16/10}
+.gal img{width:100%;height:100%;object-fit:cover;transition:transform .8s var(--ease)}
+.gal figure:hover img{transform:scale(1.05)}
+.gal figcaption{
+  position:absolute;left:0;right:0;bottom:0;padding:26px 16px 14px;color:#fff;font-size:12px;
+  letter-spacing:.14em;text-transform:uppercase;
+  background:linear-gradient(to top,rgba(0,0,0,.8),transparent);
+}
+@media(min-width:760px){
+  .gal{grid-template-columns:repeat(3,1fr);grid-auto-rows:clamp(190px,18vw,250px)}
+  .gal figure{aspect-ratio:auto}
+  .gal figure:first-child{grid-column:1/3;grid-row:span 2;aspect-ratio:auto}
+  .gal figure:nth-child(4){grid-column:span 2}
+}
+
+/* calculateur */
+.calc-grid{display:grid;gap:clamp(20px,4vw,40px);grid-template-columns:1fr}
+@media(min-width:900px){.calc-grid{grid-template-columns:1.1fr .9fr;align-items:start}}
+.card{background:var(--white);border:1px solid var(--line);border-radius:18px;padding:clamp(20px,3.6vw,32px)}
+.ctrl{margin-bottom:26px}
+.ctrl:last-child{margin-bottom:0}
+.ctrl-top{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:12px}
+.ctrl-top label{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--grey);font-weight:500}
+.ctrl-top output{font-family:var(--serif);font-size:19px;font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums}
+input[type=range]{
+  -webkit-appearance:none;appearance:none;width:100%;height:4px;border-radius:4px;
+  background:linear-gradient(to right,var(--magenta) var(--pc,40%),var(--line) var(--pc,40%));
+  cursor:pointer;
+}
+input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:var(--white);
+  border:2px solid var(--magenta);box-shadow:0 3px 12px -2px rgba(230,0,126,.6);cursor:grab;
+}
+input[type=range]::-moz-range-thumb{
+  width:20px;height:20px;border-radius:50%;background:var(--white);
+  border:2px solid var(--magenta);box-shadow:0 3px 12px -2px rgba(230,0,126,.6);cursor:grab;
+}
+.result{
+  background:linear-gradient(155deg,#1a0a14 0%,var(--black-2) 60%);color:#fff;border-radius:18px;
+  padding:clamp(24px,4vw,34px);position:relative;overflow:hidden;
+}
+.result::before{
+  content:"";position:absolute;top:-60px;right:-60px;width:220px;height:220px;border-radius:50%;
+  background:radial-gradient(circle,rgba(230,0,126,.42),transparent 70%);
+}
+.result .lab{font-size:10.5px;letter-spacing:.3em;text-transform:uppercase;color:var(--rose);position:relative}
+.result .big{
+  font-family:var(--serif);font-size:clamp(38px,8vw,58px);font-weight:400;line-height:1;
+  margin:14px 0 4px;font-variant-numeric:tabular-nums;position:relative;
+}
+.result .big small{font-size:.32em;color:rgba(255,255,255,.6);font-family:var(--sans);margin-left:6px}
+.res-rows{margin-top:24px;display:grid;gap:1px;background:rgba(255,255,255,.1);border-radius:12px;overflow:hidden;position:relative}
+.res-rows div{
+  display:flex;justify-content:space-between;gap:12px;padding:13px 16px;font-size:13.5px;
+  background:rgba(255,255,255,.035);
+}
+.res-rows div b{font-weight:600;font-variant-numeric:tabular-nums}
+.res-rows div span{color:rgba(255,255,255,.6)}
+.disclaim{margin-top:16px;font-size:11.5px;color:rgba(255,255,255,.48);line-height:1.6;position:relative}
+
+/* visite */
+.visit-grid{display:grid;gap:clamp(20px,4vw,40px);grid-template-columns:1fr}
+@media(min-width:900px){.visit-grid{grid-template-columns:1fr 1fr}}
+.frow{display:grid;gap:14px;grid-template-columns:1fr}
+@media(min-width:560px){.frow.two{grid-template-columns:1fr 1fr}}
+.inp{position:relative;margin-bottom:14px}
+.inp label{display:block;font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--grey);margin-bottom:8px}
+.inp input{
+  width:100%;padding:14px 15px;border:1px solid var(--line);border-radius:12px;background:var(--ecru);
+  font-size:15px;transition:border-color .25s,background .25s;
+}
+.inp input:focus{border-color:var(--magenta);background:var(--white);outline:none}
+.slots{display:flex;flex-wrap:wrap;gap:9px;margin-top:4px}
+.slot{
+  border:1px solid var(--line);background:var(--white);border-radius:999px;padding:10px 16px;
+  font-size:13.5px;cursor:pointer;transition:all .22s var(--ease);color:var(--ink);font-variant-numeric:tabular-nums;
+}
+.slot:hover{border-color:var(--rose-200)}
+.slot[aria-pressed="true"]{background:var(--magenta);border-color:var(--magenta);color:#fff;box-shadow:0 8px 20px -10px rgba(230,0,126,.8)}
+.hint{font-size:12px;color:var(--grey);margin-top:12px;display:flex;gap:7px;align-items:flex-start}
+.hint.warn{color:var(--rose-dark)}
+.btn-primary{
+  width:100%;border:0;border-radius:12px;padding:17px 22px;background:var(--magenta);color:#fff;
+  font-size:15px;font-weight:600;cursor:pointer;transition:background .25s,transform .2s,opacity .25s;margin-top:18px;
+}
+.btn-primary:hover:not(:disabled){background:var(--rose-dark)}
+.btn-primary:active:not(:disabled){transform:scale(.99)}
+.btn-primary:disabled{background:#d9d2d7;color:#fff;cursor:not-allowed;opacity:.85}
+.ok-msg{
+  margin-top:16px;padding:16px;border-radius:12px;background:var(--rose-100);
+  border:1px solid var(--rose-200);color:var(--rose-dark);font-size:14px;line-height:1.6;
+}
+.aside-card{background:var(--white);border:1px solid var(--line);border-radius:18px;overflow:hidden}
+.aside-card img{width:100%;aspect-ratio:16/10;object-fit:cover}
+.aside-card .in{padding:clamp(20px,3.4vw,28px)}
+.aside-card h3{font-family:var(--serif);font-size:22px;font-weight:400;margin-bottom:10px}
+.aside-card p{color:var(--grey);font-size:14px;line-height:1.7;margin-bottom:18px}
+.contact-line{display:flex;align-items:center;gap:12px;padding:13px 0;border-top:1px solid var(--line);font-size:14px}
+.contact-line b{color:var(--magenta);font-weight:600}
+
+/* footer */
+footer{background:var(--black);color:rgba(255,255,255,.62);padding:clamp(44px,7vw,72px) 0 40px;position:relative;z-index:2}
+.foot-grid{display:grid;gap:30px;grid-template-columns:1fr}
+@media(min-width:760px){.foot-grid{grid-template-columns:1.4fr 1fr 1fr}}
+footer .brand{color:#fff;margin-bottom:14px}
+footer p{font-size:13.5px;line-height:1.75;font-weight:300}
+footer h4{color:#fff;font-size:11px;letter-spacing:.24em;text-transform:uppercase;margin-bottom:16px;font-weight:600}
+footer ul{list-style:none;display:grid;gap:10px;font-size:13.5px}
+footer a:hover{color:var(--rose)}
+.demo-band{
+  margin-top:40px;padding:18px 20px;border:1px solid rgba(230,0,126,.42);border-radius:14px;
+  background:rgba(230,0,126,.09);color:rgba(255,255,255,.86);font-size:13px;line-height:1.7;
+  display:flex;gap:12px;align-items:flex-start;
+}
+.demo-band strong{color:#fff}
+.demo-band .dot{width:8px;height:8px;border-radius:50%;background:var(--magenta);flex:0 0 auto;margin-top:6px;box-shadow:0 0 12px var(--magenta)}
+.legal{margin-top:26px;padding-top:22px;border-top:1px solid rgba(255,255,255,.1);font-size:11.5px;color:rgba(255,255,255,.4);display:flex;flex-wrap:wrap;gap:14px;justify-content:space-between}
+
+/* reveals au scroll */
+.rv{opacity:0;transform:translateY(22px);transition:opacity .8s var(--ease),transform .8s var(--ease)}
+.rv.in{opacity:1;transform:none}
+
+/* reduced motion */
+@media(prefers-reduced-motion:reduce){
+  *{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.15s !important}
+  .chapter{height:auto !important}
+  .stage{position:relative;height:88svh}
+  .cue{display:none}
+  .rv{opacity:1;transform:none}
+}
+html.reduced .chapter{height:auto}
+html.reduced .stage{position:relative;height:88svh}
+html.reduced .cue{display:none}
+</style>
+</head>
+<body class="is-loading">
+
+<!-- ===== LOADER ===== -->
+<div id="loader" role="status" aria-live="polite">
+  <div class="ld-logo">K<i>O</i>YTCHA</div>
+  <div class="ld-sub">Immobilier · La Réunion</div>
+  <div class="ld-track"><div class="ld-fill" id="ldFill"></div></div>
+  <div class="ld-pct"><span id="ldPct">0</span> %</div>
+</div>
+
+<!-- ===== TOPBAR + RECHERCHE ===== -->
+<header class="topbar" id="topbar">
+  <div class="bar">
+    <a class="brand" href="#top" aria-label="Koytcha Immobilier, accueil">
+      <span class="b1">K<i>O</i>YTCHA</span>
+      <span class="b2">Immobilier</span>
+    </a>
+    <nav class="nav" aria-label="Navigation principale">
+      <a href="#niveaux">Les niveaux</a>
+      <a href="#galerie">Galerie</a>
+      <a href="#financement">Financement</a>
+      <a href="#visite">Visite privée</a>
+    </nav>
+    <span class="spacer"></span>
+    <button class="btn-search" id="searchToggle" aria-expanded="false" aria-controls="searchPanel">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true">
+        <circle cx="11" cy="11" r="7"/><path d="M20 20l-3.6-3.6"/>
+      </svg>
+      <span class="lbl-open">Rechercher un bien</span>
+      <span class="lbl-close">Fermer</span>
+    </button>
+  </div>
+  <div class="searchwrap" id="searchPanel">
+    <form class="search" id="searchForm">
+      <div class="field">
+        <label for="f-loc">Localisation</label>
+        <select id="f-loc" name="loc">
+          <option>Toute l'île</option><option selected>Saint-Leu</option><option>Saint-Gilles-les-Bains</option>
+          <option>L'Hermitage</option><option>Saint-Paul</option><option>Boucan Canot</option>
+          <option>Saint-Pierre</option><option>Le Tampon</option><option>Sainte-Marie</option><option>Saint-Denis</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="f-type">Type de bien</label>
+        <select id="f-type" name="type">
+          <option selected>Villa</option><option>Appartement</option><option>Terrain</option>
+          <option>Maison créole</option><option>Local commercial</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="f-budget">Budget</label>
+        <select id="f-budget" name="budget">
+          <option>Jusqu'à 400 000 €</option><option>400 000 – 800 000 €</option>
+          <option>800 000 – 1 500 000 €</option><option selected>1 500 000 € et plus</option>
+        </select>
+      </div>
+      <button class="btn-go" type="submit">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" width="16" height="16" aria-hidden="true">
+          <circle cx="11" cy="11" r="7"/><path d="M20 20l-3.6-3.6"/>
+        </svg>
+        Rechercher
+      </button>
+      <p class="search-note" id="searchNote">
+        <b>Démonstration —</b> cette recherche illustre le parcours client ; elle se branchera sur le portail de biens Koytcha.
+      </p>
+    </form>
+  </div>
+</header>
+
+<main id="top">
+<div class="film">
+
+  <!-- ===== 01 · ARRIVAL ===== -->
+  <section class="chapter" id="ch1" data-seq="arrival">
+    <div class="stage">
+      <canvas id="cv-arrival" aria-label="Vue aérienne cinématique arrivant sur la villa"></canvas>
+      <div class="vignette"></div>
+      <div class="scrim"></div>
+      <div class="progress-rail"><i data-rail></i></div>
+      <div class="caption" data-cap>
+        <div class="eyebrow"><span class="dash"></span><span>Arrivée</span><span class="num">01 / 04</span></div>
+        <h1>Villa <em>Solèy</em></h1>
+        <p>Au-dessus du lagon, la côte ouest s'ouvre. Posée sur son morne, face au large, une architecture contemporaine attend l'heure dorée.</p>
+        <div class="cap-meta">
+          <span class="tag">Saint-Leu · Les Colimaçons</span>
+          <span class="tag">Vue océan</span>
+          <span class="tag demo">Bien de démonstration</span>
+        </div>
+      </div>
+      <div class="cue"><span class="line"></span><span>Faites défiler</span></div>
+    </div>
+  </section>
+
+  <!-- ===== 02 · THE REVEAL ===== -->
+  <section class="chapter" id="ch2" data-seq="reveal">
+    <div class="stage">
+      <canvas id="cv-reveal" aria-label="La villa révélée au centre d'une explosion de poudre colorée"></canvas>
+      <div class="vignette"></div>
+      <div class="scrim"></div>
+      <div class="progress-rail"><i data-rail></i></div>
+      <div class="caption" data-cap>
+        <div class="eyebrow"><span class="dash"></span><span>La révélation</span><span class="num">02 / 04</span></div>
+        <h2>Elle ne se visite pas.<br><em>Elle se révèle.</em></h2>
+        <p>412 m² suspendus sur un socle de basalte. Chaque volume, chaque faille de lumière, chaque éclat : la signature Koytcha, trente ans d'expertise sur l'île.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 03 · THE LEVELS ===== -->
+  <section class="chapter" id="ch3">
+    <div class="stage">
+      <div class="exploded">
+        <div class="exploded-inner" data-exp>
+          <div class="beam b1" data-beam></div>
+          <div class="beam b2" data-beam></div>
+          <div class="slab s3" data-slab="3"><img src="assets/levels/n3.jpg" alt="Niveau 3 — terrasse et piscine à débordement" loading="lazy"></div>
+          <div class="slab s2" data-slab="2"><img src="assets/levels/n2.jpg" alt="Niveau 2 — séjour et suite parentale" loading="lazy"></div>
+          <div class="slab s1" data-slab="1"><img src="assets/levels/n1.jpg" alt="Niveau 1 — chambres et réception" loading="lazy"></div>
+        </div>
+      </div>
+      <div class="scrim"></div>
+      <div class="progress-rail"><i data-rail></i></div>
+      <div class="caption" data-cap>
+        <div class="eyebrow"><span class="dash"></span><span>Les niveaux</span><span class="num">03 / 04</span></div>
+        <h2>Trois plateaux,<br><em>trois façons de vivre</em></h2>
+        <p>La villa se déplie. Nuit en socle, vie au centre, ciel et bassin au sommet — reliés par la lumière.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 04 · INSIDE ===== -->
+  <section class="chapter" id="ch4">
+    <div class="stage">
+      <div class="zoomer">
+        <picture>
+          <source media="(max-width:760px)" srcset="assets/web/inside-p.jpg">
+          <img src="assets/web/inside.jpg" alt="Grand séjour ouvert sur la terrasse et l'océan au coucher du soleil" data-zoom>
+        </picture>
+      </div>
+      <div class="vignette"></div>
+      <div class="scrim"></div>
+      <div class="progress-rail"><i data-rail></i></div>
+      <div class="caption" data-cap>
+        <div class="eyebrow"><span class="dash"></span><span>À l'intérieur</span><span class="num">04 / 04</span></div>
+        <h2>18 h 42.<br><em>Les baies sont ouvertes.</em></h2>
+        <p>Basalte, chêne clair, lin écru. Le séjour de 62 m² se prolonge sur la terrasse, et la terrasse sur l'océan Indien. C'est l'art de vivre réunionnais, à l'échelle d'une villa.</p>
+      </div>
+    </div>
+  </section>
+
+</div>
+<div class="seam"></div>
+
+<!-- ===== BANDEAU DE FAITS ===== -->
+<section class="light-zone facts">
+  <div class="facts-in">
+    <div class="fact"><div class="v">5</div><div class="k">Chambres</div></div>
+    <div class="fact"><div class="v">4</div><div class="k">Salles de bains</div></div>
+    <div class="fact"><div class="v">412<span>m²</span></div><div class="k">Habitables</div></div>
+    <div class="fact"><div class="v">2 800<span>m²</span></div><div class="k">Terrain</div></div>
+  </div>
+  <div class="wrap">
+    <div class="price-row">
+      <div class="p">2 450 000 <small>€ · honoraires inclus</small></div>
+      <div class="ref">Réf. KI-2841 · DPE B</div>
+    </div>
+    <div class="price-row" style="padding-bottom:26px">
+      <p style="color:var(--grey);font-size:14px;line-height:1.7;max-width:70ch">
+        Piscine à débordement de 14 m · Cuisine d'été · Bureau · Garage 2 véhicules · Panneaux solaires ·
+        Exposition ouest, coucher de soleil toute l'année.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SÉLECTEUR D'ÉTAGES ===== -->
+<section class="light-zone sec" id="niveaux">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <div class="kicker"><span class="dash"></span>Sélecteur de niveaux</div>
+      <h2>Explorez la villa, <em>plateau par plateau</em></h2>
+      <p>Trois niveaux distincts, reliés par un escalier suspendu et un ascenseur privatif. Choisissez un niveau pour en voir le détail.</p>
+    </div>
+    <div class="levels-grid">
+      <div class="rv">
+        <div class="tabs" role="tablist" aria-label="Niveaux de la villa">
+          <button class="tab" role="tab" id="tab-3" aria-controls="pan-3" aria-selected="true" data-lvl="3">Niveau 3 · Terrasse</button>
+          <button class="tab" role="tab" id="tab-2" aria-controls="pan-2" aria-selected="false" data-lvl="2">Niveau 2 · Séjour</button>
+          <button class="tab" role="tab" id="tab-1" aria-controls="pan-1" aria-selected="false" data-lvl="1">Niveau 1 · Nuit</button>
+        </div>
+
+        <div class="panel" role="tabpanel" id="pan-3" aria-labelledby="tab-3" data-lvl="3">
+          <h3>Terrasse & bassin</h3>
+          <div class="surface">148 m² d'extérieur aménagé</div>
+          <ul class="rooms">
+            <li>Piscine à débordement <span>14 × 4 m</span></li>
+            <li>Solarium teck <span>42 m²</span></li>
+            <li>Cuisine d'été & plancha <span>18 m²</span></li>
+            <li>Pool house fermé <span>16 m²</span></li>
+            <li>Douche extérieure basalte <span>—</span></li>
+          </ul>
+        </div>
+
+        <div class="panel" role="tabpanel" id="pan-2" aria-labelledby="tab-2" data-lvl="2" hidden>
+          <h3>Séjour & suite parentale</h3>
+          <div class="surface">236 m² habitables</div>
+          <ul class="rooms">
+            <li>Séjour cathédrale <span>62 m²</span></li>
+            <li>Cuisine ouverte équipée <span>28 m²</span></li>
+            <li>Salle à manger <span>24 m²</span></li>
+            <li>Suite parentale + dressing <span>46 m²</span></li>
+            <li>Salle de bains parentale <span>16 m²</span></li>
+            <li>Bureau / bibliothèque <span>21 m²</span></li>
+          </ul>
+        </div>
+
+        <div class="panel" role="tabpanel" id="pan-1" aria-labelledby="tab-1" data-lvl="1" hidden>
+          <h3>Nuit & réception</h3>
+          <div class="surface">176 m² habitables</div>
+          <ul class="rooms">
+            <li>Chambre 2 avec terrasse <span>24 m²</span></li>
+            <li>Chambre 3 <span>21 m²</span></li>
+            <li>Chambre 4 <span>19 m²</span></li>
+            <li>Chambre 5 / studio ami <span>26 m²</span></li>
+            <li>2 salles de bains <span>11 + 9 m²</span></li>
+            <li>Buanderie, cave & garage <span>2 véhicules</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="lvl-visual rv">
+        <div class="glow"></div>
+        <img class="cut on" data-cut="3" src="assets/levels/n3.jpg" alt="Coupe du niveau 3 : terrasse et piscine">
+        <img class="cut" data-cut="2" src="assets/levels/n2.jpg" alt="Coupe du niveau 2 : séjour">
+        <img class="cut" data-cut="1" src="assets/levels/n1.jpg" alt="Coupe du niveau 1 : chambres">
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== GALERIE ===== -->
+<section class="light-zone sec" id="galerie" style="background:var(--white)">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <div class="kicker"><span class="dash"></span>Galerie</div>
+      <h2>Quelques <em>fragments</em> du quotidien</h2>
+    </div>
+    <div class="gal rv">
+      <figure><img src="assets/web/g-pool.jpg" alt="Terrasse et piscine à débordement à l'heure dorée" loading="lazy"><figcaption>Le bassin, 18 h</figcaption></figure>
+      <figure><img src="assets/web/g-suite.jpg" alt="Suite parentale ouverte sur la terrasse" loading="lazy"><figcaption>Suite parentale</figcaption></figure>
+      <figure><img src="assets/web/g-kitchen.jpg" alt="Cuisine ouverte en basalte et chêne clair" loading="lazy"><figcaption>Cuisine ouverte</figcaption></figure>
+      <figure><img src="assets/web/g-night.jpg" alt="La villa à l'heure bleue, intérieurs allumés" loading="lazy"><figcaption>Heure bleue</figcaption></figure>
+      <figure><img src="assets/web/inside.jpg" alt="Séjour ouvert sur l'océan" loading="lazy"><figcaption>Le séjour</figcaption></figure>
+    </div>
+  </div>
+</section>
+
+<!-- ===== CALCULATEUR DE PRÊT ===== -->
+<section class="light-zone sec" id="financement">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <div class="kicker"><span class="dash"></span>Financement</div>
+      <h2>Estimez votre <em>mensualité</em></h2>
+      <p>Ajustez l'apport, le taux et la durée : la mensualité se recalcule instantanément.</p>
+    </div>
+    <div class="calc-grid">
+      <div class="card rv">
+        <div class="ctrl">
+          <div class="ctrl-top"><label for="c-price">Prix du bien</label><output id="o-price">2 450 000 €</output></div>
+          <input type="range" id="c-price" min="500000" max="4000000" step="10000" value="2450000">
+        </div>
+        <div class="ctrl">
+          <div class="ctrl-top"><label for="c-apport">Apport personnel</label><output id="o-apport">490 000 €</output></div>
+          <input type="range" id="c-apport" min="0" max="2000000" step="5000" value="490000">
+        </div>
+        <div class="ctrl">
+          <div class="ctrl-top"><label for="c-taux">Taux d'intérêt</label><output id="o-taux">3,45 %</output></div>
+          <input type="range" id="c-taux" min="0" max="7" step="0.05" value="3.45">
+        </div>
+        <div class="ctrl">
+          <div class="ctrl-top"><label for="c-duree">Durée</label><output id="o-duree">20 ans</output></div>
+          <input type="range" id="c-duree" min="5" max="30" step="1" value="20">
+        </div>
+      </div>
+      <div class="result rv">
+        <div class="lab">Mensualité estimée</div>
+        <div class="big" id="r-month">—<small>€ / mois</small></div>
+        <div class="res-rows">
+          <div><span>Capital emprunté</span><b id="r-cap">—</b></div>
+          <div><span>Coût total du crédit</span><b id="r-cost">—</b></div>
+          <div><span>Total remboursé</span><b id="r-total">—</b></div>
+          <div><span>Apport</span><b id="r-apport">—</b></div>
+        </div>
+        <p class="disclaim">Simulation indicative, hors assurance emprunteur et frais de dossier. Elle ne constitue ni une offre de prêt ni un engagement de Koytcha Immobilier. Bien et prix présentés à titre de démonstration.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== DEMANDE DE VISITE ===== -->
+<section class="light-zone sec" id="visite" style="background:var(--white)">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <div class="kicker"><span class="dash"></span>Visite privée</div>
+      <h2>Venez la voir <em>à l'heure dorée</em></h2>
+      <p>Nous n'ouvrons la villa qu'à un visiteur à la fois. Choisissez une date et un créneau.</p>
+    </div>
+    <div class="visit-grid">
+      <form class="card rv" id="visitForm" novalidate>
+        <div class="frow two">
+          <div class="inp"><label for="v-nom">Nom & prénom</label><input id="v-nom" name="nom" type="text" autocomplete="name" required placeholder="Marie Hoarau"></div>
+          <div class="inp"><label for="v-tel">Téléphone</label><input id="v-tel" name="tel" type="tel" autocomplete="tel" required placeholder="0692 00 00 00"></div>
+        </div>
+        <div class="inp"><label for="v-mail">E-mail</label><input id="v-mail" name="email" type="email" autocomplete="email" required placeholder="marie@exemple.re"></div>
+        <div class="inp"><label for="v-date">Date souhaitée</label><input id="v-date" name="date" type="date" required></div>
+        <div class="inp">
+          <label id="slotLabel">Créneau horaire</label>
+          <div class="slots" role="group" aria-labelledby="slotLabel">
+            <button type="button" class="slot" aria-pressed="false" data-slot="09:00">09 h 00</button>
+            <button type="button" class="slot" aria-pressed="false" data-slot="10:30">10 h 30</button>
+            <button type="button" class="slot" aria-pressed="false" data-slot="14:00">14 h 00</button>
+            <button type="button" class="slot" aria-pressed="false" data-slot="16:00">16 h 00</button>
+            <button type="button" class="slot" aria-pressed="false" data-slot="17:30">17 h 30 · coucher de soleil</button>
+          </div>
+          <p class="hint" id="slotHint">Sélectionnez un créneau pour activer la demande.</p>
+        </div>
+        <button class="btn-primary" id="visitSubmit" type="submit" disabled>Demander la visite</button>
+        <div id="visitOk" hidden></div>
+      </form>
+      <aside class="aside-card rv">
+        <img src="assets/web/g-night.jpg" alt="La villa à la tombée de la nuit" loading="lazy">
+        <div class="in">
+          <h3>Votre interlocuteur</h3>
+          <p>Un seul conseiller vous suit, de la première visite à la remise des clés. Trente ans d'expertise sur le marché réunionnais, une connaissance fine de la côte ouest.</p>
+          <div class="contact-line"><b>Tél.</b> 0262 00 00 00</div>
+          <div class="contact-line"><b>E-mail</b> contact@koytchaimmo.re</div>
+          <div class="contact-line"><b>Agence</b> Saint-Gilles-les-Bains</div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+</main>
+
+<!-- ===== FOOTER ===== -->
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <div class="brand"><span class="b1">K<i>O</i>YTCHA</span><span class="b2">Immobilier</span></div>
+        <p>Trente ans d'expertise immobilière à La Réunion. Vente, location, gestion et conseil sur l'ensemble de l'île, avec une spécialité sur la côte ouest et les biens d'exception.</p>
+      </div>
+      <div>
+        <h4>Le bien</h4>
+        <ul>
+          <li><a href="#niveaux">Les trois niveaux</a></li>
+          <li><a href="#galerie">Galerie</a></li>
+          <li><a href="#financement">Simulateur de prêt</a></li>
+          <li><a href="#visite">Visite privée</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Contact</h4>
+        <ul>
+          <li>0262 00 00 00</li>
+          <li>contact@koytchaimmo.re</li>
+          <li>Saint-Gilles-les-Bains</li>
+          <li><a href="https://koytchaimmo.re" rel="noopener">koytchaimmo.re</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="demo-band">
+      <span class="dot"></span>
+      <span><strong>Page de démonstration.</strong> « Villa Solèy » n'est pas une annonce réelle : le bien, la référence KI-2841, les surfaces, le prix et les visuels ont été créés pour illustrer une expérience de présentation immobilière cinématique. Aucune donnée n'est transmise par les formulaires de cette page. Pour les biens réellement disponibles, rendez-vous sur koytchaimmo.re.</span>
+    </div>
+    <div class="legal">
+      <span>© 2026 Koytcha Immobilier — maquette de présentation</span>
+      <span>Conception : Automatisation Boost</span>
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
+<script>
+(function(){
+'use strict';
+var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+if(reduced) document.documentElement.classList.add('reduced');
+var small = window.matchMedia('(max-width: 700px)').matches;
+
+/* ---------- SÉQUENCES D'IMAGES (scroll-scrub sur canvas) ---------- */
+function Sequence(canvas, dir, prefix, count){
+  this.cv = canvas; this.ctx = canvas.getContext('2d', {alpha:false});
+  this.imgs = new Array(count); this.count = count; this.cur = -1; this.ready = 0;
+  this.base = dir + (small ? 'sm/' : '') + prefix;
+  this.dpr = Math.min(window.devicePixelRatio || 1, 2);
+}
+Sequence.prototype.url = function(i){
+  var n = String(i+1); while(n.length < 3) n = '0' + n;
+  return this.base + n + '.jpg';
+};
+Sequence.prototype.load = function(i, onDone){
+  if(this.imgs[i]) { if(onDone) onDone(); return; }
+  var im = new Image(); var self = this;
+  im.onload = im.onerror = function(){ self.ready++; if(onDone) onDone(); };
+  im.src = this.url(i); this.imgs[i] = im;
+};
+Sequence.prototype.resize = function(){
+  var r = this.cv.getBoundingClientRect();
+  this.cv.width = Math.round(r.width * this.dpr);
+  this.cv.height = Math.round(r.height * this.dpr);
+  this.cur = -1; this.render(this.lastP || 0);
+};
+Sequence.prototype.render = function(p){
+  this.lastP = p;
+  var i = Math.max(0, Math.min(this.count-1, Math.round(p * (this.count-1))));
+  var im = this.imgs[i];
+  if(!im || !im.complete || !im.naturalWidth){
+    // frame pas encore prête : on garde la plus proche déjà chargée
+    var j = i, found = null;
+    for(var k=0;k<this.count;k++){
+      var a = i-k, b = i+k;
+      if(a>=0 && this.imgs[a] && this.imgs[a].complete && this.imgs[a].naturalWidth){ found=this.imgs[a]; break; }
+      if(b<this.count && this.imgs[b] && this.imgs[b].complete && this.imgs[b].naturalWidth){ found=this.imgs[b]; break; }
+    }
+    if(!found) return; im = found;
+  } else if(i === this.cur) return;
+  this.cur = i;
+  var cw = this.cv.width, ch = this.cv.height;
+  var s = Math.max(cw/im.naturalWidth, ch/im.naturalHeight);
+  var w = im.naturalWidth*s, h = im.naturalHeight*s;
+  this.ctx.drawImage(im, (cw-w)/2, (ch-h)/2, w, h);
+};
+
+var SEQ = {
+  arrival: new Sequence(document.getElementById('cv-arrival'), 'assets/arrival/', 'a', 62),
+  reveal:  new Sequence(document.getElementById('cv-reveal'),  'assets/reveal/',  'r', 123)
+};
+
+/* ---------- LOADER ---------- */
+var critical = [];
+for(var i=0;i<SEQ.arrival.count;i++) critical.push([SEQ.arrival, i]);
+for(var j=0;j<28;j++) critical.push([SEQ.reveal, j]);
+var total = critical.length, done = 0, shown = 0;
+var fill = document.getElementById('ldFill'), pct = document.getElementById('ldPct');
+function bump(){
+  done++;
+  var p = Math.min(100, Math.round(done/total*100));
+  if(p > shown){ shown = p; fill.style.width = p + '%'; pct.textContent = p; }
+  if(done >= total) finish();
+}
+var finished = false;
+function finish(){
+  if(finished) return; finished = true;
+  fill.style.width = '100%'; pct.textContent = '100';
+  setTimeout(function(){
+    document.getElementById('loader').classList.add('done');
+    document.body.classList.remove('is-loading');
+    SEQ.arrival.resize(); SEQ.reveal.resize();
+    // le reste des frames en tâche de fond
+    for(var k=28;k<SEQ.reveal.count;k++) SEQ.reveal.load(k);
+    if(window.ScrollTrigger) ScrollTrigger.refresh();
+  }, 420);
+}
+critical.forEach(function(c){ c[0].load(c[1], bump); });
+setTimeout(finish, 12000); // garde-fou : jamais bloqué sur le loader
+
+/* ---------- BARRE DE RECHERCHE ---------- */
+var topbar = document.getElementById('topbar');
+var toggle = document.getElementById('searchToggle');
+function setOpen(v){
+  topbar.classList.toggle('open', v);
+  toggle.setAttribute('aria-expanded', v ? 'true' : 'false');
+}
+if(window.matchMedia('(min-width:900px)').matches) setOpen(true);
+toggle.addEventListener('click', function(){ setOpen(!topbar.classList.contains('open')); });
+document.getElementById('searchForm').addEventListener('submit', function(e){
+  e.preventDefault();
+  var loc = document.getElementById('f-loc').value;
+  var type = document.getElementById('f-type').value;
+  var note = document.getElementById('searchNote');
+  note.innerHTML = '<b>Démonstration —</b> recherche « ' + type + ' · ' + loc +
+    ' » : 1 bien correspond, la Villa Solèy, présentée ci-dessous. Le portail réel de Koytcha se branchera ici.';
+  document.getElementById('ch1').scrollIntoView({behavior:'smooth', block:'start'});
+});
+
+/* ---------- SÉLECTEUR D'ÉTAGES ---------- */
+var tabs = [].slice.call(document.querySelectorAll('.tab'));
+var panels = [].slice.call(document.querySelectorAll('.panel'));
+var cuts = [].slice.call(document.querySelectorAll('.cut'));
+function selectLevel(lvl){
+  tabs.forEach(function(t){ t.setAttribute('aria-selected', t.dataset.lvl === lvl ? 'true' : 'false'); });
+  panels.forEach(function(p){ p.hidden = (p.dataset.lvl !== lvl); });
+  cuts.forEach(function(c){ c.classList.toggle('on', c.dataset.cut === lvl); });
+}
+tabs.forEach(function(t){
+  t.addEventListener('click', function(){ selectLevel(t.dataset.lvl); });
+  t.addEventListener('keydown', function(e){
+    var idx = tabs.indexOf(t), n = null;
+    if(e.key === 'ArrowRight') n = tabs[(idx+1)%tabs.length];
+    if(e.key === 'ArrowLeft')  n = tabs[(idx-1+tabs.length)%tabs.length];
+    if(n){ e.preventDefault(); n.focus(); selectLevel(n.dataset.lvl); }
+  });
+});
+
+/* ---------- CALCULATEUR DE PRÊT ---------- */
+var nf = new Intl.NumberFormat('fr-FR', {maximumFractionDigits:0});
+var els = {
+  price:document.getElementById('c-price'), apport:document.getElementById('c-apport'),
+  taux:document.getElementById('c-taux'), duree:document.getElementById('c-duree')
+};
+function fillRange(el){
+  var p = (el.value - el.min) / (el.max - el.min) * 100;
+  el.style.setProperty('--pc', p + '%');
+}
+function calc(){
+  var price = +els.price.value, apport = Math.min(+els.apport.value, price);
+  var taux = +els.taux.value, ans = +els.duree.value;
+  var cap = Math.max(0, price - apport), n = ans*12, i = taux/100/12;
+  var m = i > 0 ? cap*i/(1-Math.pow(1+i,-n)) : (n ? cap/n : 0);
+  var totalPaid = m*n, cost = totalPaid - cap;
+  document.getElementById('o-price').textContent = nf.format(price) + ' €';
+  document.getElementById('o-apport').textContent = nf.format(apport) + ' €';
+  document.getElementById('o-taux').textContent = taux.toFixed(2).replace('.', ',') + ' %';
+  document.getElementById('o-duree').textContent = ans + ' ans';
+  document.getElementById('r-month').innerHTML = nf.format(Math.round(m)) + '<small>€ / mois</small>';
+  document.getElementById('r-cap').textContent = nf.format(cap) + ' €';
+  document.getElementById('r-cost').textContent = nf.format(Math.round(cost)) + ' €';
+  document.getElementById('r-total').textContent = nf.format(Math.round(totalPaid)) + ' €';
+  document.getElementById('r-apport').textContent = nf.format(apport) + ' €';
+  Object.keys(els).forEach(function(k){ fillRange(els[k]); });
+}
+Object.keys(els).forEach(function(k){
+  els[k].addEventListener('input', calc);
+});
+calc();
+
+/* ---------- DEMANDE DE VISITE ---------- */
+var chosen = null;
+var slots = [].slice.call(document.querySelectorAll('.slot'));
+var submit = document.getElementById('visitSubmit');
+var hint = document.getElementById('slotHint');
+slots.forEach(function(s){
+  s.addEventListener('click', function(){
+    chosen = s.dataset.slot;
+    slots.forEach(function(o){ o.setAttribute('aria-pressed', o === s ? 'true' : 'false'); });
+    submit.disabled = false;
+    hint.classList.remove('warn');
+    hint.textContent = 'Créneau retenu : ' + s.textContent.replace(' · coucher de soleil','') + '.';
+  });
+});
+var dateEl = document.getElementById('v-date');
+var t = new Date(Date.now() + 2*86400000);
+dateEl.value = t.toISOString().slice(0,10);
+dateEl.min = new Date().toISOString().slice(0,10);
+document.getElementById('visitForm').addEventListener('submit', function(e){
+  e.preventDefault();
+  if(!chosen){
+    hint.classList.add('warn');
+    hint.textContent = 'Merci de choisir un créneau horaire.';
+    return;
+  }
+  var nom = document.getElementById('v-nom').value.trim() || 'Votre demande';
+  var d = dateEl.value ? new Date(dateEl.value).toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'}) : 'la date choisie';
+  var ok = document.getElementById('visitOk');
+  ok.hidden = false;
+  ok.className = 'ok-msg';
+  ok.innerHTML = '<strong>' + nom + ', c\'est noté.</strong><br>Visite privée de la Villa Solèy demandée pour le ' + d +
+    ' à ' + chosen.replace(':',' h ') + '. <em>Démonstration : aucune donnée n\'est envoyée ni enregistrée.</em>';
+  submit.disabled = true;
+  submit.textContent = 'Demande enregistrée';
+});
+
+/* ---------- APPARITIONS AU SCROLL ---------- */
+if('IntersectionObserver' in window){
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(en){ if(en.isIntersecting){ en.target.classList.add('in'); io.unobserve(en.target); } });
+  }, {rootMargin:'0px 0px -12% 0px'});
+  [].slice.call(document.querySelectorAll('.rv')).forEach(function(el){ io.observe(el); });
+} else {
+  [].slice.call(document.querySelectorAll('.rv')).forEach(function(el){ el.classList.add('in'); });
+}
+
+/* ---------- CHAPITRES : SCRUB ---------- */
+var chapters = [].slice.call(document.querySelectorAll('.chapter'));
+function chapterProgress(sec){
+  var r = sec.getBoundingClientRect();
+  var vh = window.innerHeight;
+  var travel = r.height - vh;
+  if(travel <= 0) return r.top < vh/2 ? 1 : 0;
+  return Math.max(0, Math.min(1, -r.top / travel));
+}
+function applyCaption(sec, p){
+  var cap = sec.querySelector('[data-cap]');
+  if(!cap) return;
+  var o, y;
+  var first = (sec.id === 'ch1'); // le premier chapitre est visible dès le chargement
+  if(p < 0.12){ o = first ? 1 : p/0.12; y = (1-o)*26; }
+  else if(p > 0.88){ o = (1-p)/0.12; y = -(1-o)*22; }
+  else { o = 1; y = 0; }
+  o = Math.max(0, Math.min(1, o));
+  cap.style.opacity = o;
+  cap.style.transform = 'translate3d(0,' + y.toFixed(1) + 'px,0)';
+}
+function applyChapter(sec, p){
+  var rail = sec.querySelector('[data-rail]');
+  if(rail) rail.style.height = (p*100).toFixed(1) + '%';
+  applyCaption(sec, p);
+  var seq = sec.dataset.seq;
+  if(seq && SEQ[seq]){ SEQ[seq].render(p); return; }
+  if(sec.id === 'ch3'){
+    var inner = sec.querySelector('[data-exp]');
+    var s3 = sec.querySelector('[data-slab="3"]');
+    var s2 = sec.querySelector('[data-slab="2"]');
+    var s1 = sec.querySelector('[data-slab="1"]');
+    var e = p;                                   // 0 -> compact, 1 -> éclaté
+    var spread = 1 - Math.pow(1-e, 2);
+    if(inner) inner.style.transform = 'rotateX(' + (6 - e*10).toFixed(2) + 'deg) rotateZ(' + (-2 + e*4).toFixed(2) + 'deg) scale(' + (0.9 + e*0.13).toFixed(3) + ')';
+    if(s3) s3.style.transform = 'translate3d(0,' + (40 - spread*50).toFixed(1) + '%,0)';
+    if(s2) s2.style.transform = 'translate3d(0,0,0)';
+    if(s1) s1.style.transform = 'translate3d(0,' + (-40 + spread*50).toFixed(1) + '%,0)';
+    [].slice.call(sec.querySelectorAll('[data-beam]')).forEach(function(b){
+      b.style.opacity = Math.max(0, Math.min(1, (e-0.25)/0.35)).toFixed(2);
+      b.style.transform = 'translateX(-50%) scaleY(' + Math.max(0.05, Math.min(1,(e-0.2)/0.4)).toFixed(2) + ')';
+    });
+    var hot = e < 0.36 ? '3' : (e < 0.68 ? '2' : '1');
+    [s3,s2,s1].forEach(function(s){ if(s) s.classList.toggle('hot', s.dataset.slab === hot); });
+    return;
+  }
+  if(sec.id === 'ch4'){
+    var img = sec.querySelector('[data-zoom]');
+    if(img) img.style.transform = 'scale(' + (1.18 - p*0.18).toFixed(3) + ') translate3d(0,' + ((0.5-p)*3).toFixed(2) + '%,0)';
+  }
+}
+
+function initScroll(){
+  if(reduced){
+    chapters.forEach(function(sec){ applyChapter(sec, 0.55); });
+    return;
+  }
+  if(window.gsap && window.ScrollTrigger){
+    gsap.registerPlugin(ScrollTrigger);
+    ScrollTrigger.config({ignoreMobileResize:true});
+    chapters.forEach(function(sec){
+      ScrollTrigger.create({
+        trigger: sec, start: 'top top', end: 'bottom bottom', scrub: true,
+        onUpdate: function(self){ applyChapter(sec, self.progress); },
+        onRefresh: function(self){ applyChapter(sec, self.progress); }
+      });
+    });
+    ScrollTrigger.create({
+      trigger: '.seam', start: 'top 70%',
+      onEnter: function(){ topbar.classList.add('light'); },
+      onLeaveBack: function(){ topbar.classList.remove('light'); }
+    });
+  } else {
+    // repli sans GSAP : rAF sur le scroll natif
+    var ticking = false;
+    function loop(){
+      chapters.forEach(function(sec){
+        var r = sec.getBoundingClientRect();
+        if(r.bottom > -200 && r.top < window.innerHeight + 200) applyChapter(sec, chapterProgress(sec));
+      });
+      var seam = document.querySelector('.seam');
+      if(seam) topbar.classList.toggle('light', seam.getBoundingClientRect().top < window.innerHeight*0.7);
+      ticking = false;
+    }
+    window.addEventListener('scroll', function(){
+      if(!ticking){ ticking = true; requestAnimationFrame(loop); }
+    }, {passive:true});
+    loop();
+  }
+}
+
+/* fermeture du panneau de recherche au scroll (mobile) */
+var lastY = 0;
+window.addEventListener('scroll', function(){
+  var y = window.scrollY;
+  if(!window.matchMedia('(min-width:900px)').matches && y > 120 && y > lastY) setOpen(false);
+  lastY = y;
+}, {passive:true});
+
+window.addEventListener('resize', function(){
+  small = window.matchMedia('(max-width: 700px)').matches;
+  SEQ.arrival.resize(); SEQ.reveal.resize();
+});
+
+if(document.readyState === 'complete') initScroll();
+else window.addEventListener('load', initScroll);
+SEQ.arrival.resize(); SEQ.reveal.resize();
+})();
+</script>
+</body>
+</html>
