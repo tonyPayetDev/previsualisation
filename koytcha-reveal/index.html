@@ -3,12 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Villa Solèy — Koytcha Immobilier · La Réunion</title>
-<meta name="description" content="Villa Solèy, Saint-Leu — présentation cinématique d'un bien d'exception à La Réunion. Démonstration Koytcha Immobilier.">
+<title>Résidence Les Manguiers — Koytcha Immo · La Réunion</title>
+<meta name="description" content="Résidence Les Manguiers, La Possession — appartements T3 au T5, 76 à 110 m², varangues et terrasses. Programme Koytcha Immo, 30 ans d'expertise à La Réunion.">
 <meta name="theme-color" content="#07070a">
-<meta property="og:title" content="Villa Solèy — Koytcha Immobilier">
-<meta property="og:description" content="Une villa contemporaine face à l'océan. Présentation cinématique — démonstration.">
-<meta property="og:image" content="assets/web/reveal-b.jpg">
+<meta property="og:title" content="Résidence Les Manguiers — Koytcha Immo">
+<meta property="og:description" content="La Possession · Appartements T3 au T5, 76 à 110 m², varangues, terrasses, 30 lots. Présentation cinématique.">
+<meta property="og:image" content="assets/web/reveal.jpg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -411,6 +411,24 @@ footer a:hover{color:var(--rose)}
 .demo-band .dot{width:8px;height:8px;border-radius:50%;background:var(--magenta);flex:0 0 auto;margin-top:6px;box-shadow:0 0 12px var(--magenta)}
 .legal{margin-top:26px;padding-top:22px;border-top:1px solid rgba(255,255,255,.1);font-size:11.5px;color:rgba(255,255,255,.4);display:flex;flex-wrap:wrap;gap:14px;justify-content:space-between}
 
+/* ---- expertise + programmes réels ---- */
+.pillars{display:grid;grid-template-columns:repeat(auto-fit,minmax(216px,1fr));gap:18px;margin-top:38px}
+.pillar{padding:22px 20px;border:1px solid var(--line);border-radius:16px;background:var(--white)}
+.pillar h4{font-family:var(--serif);font-weight:600;font-size:17px;margin-bottom:8px;color:var(--ink)}
+.pillar p{font-size:13.5px;line-height:1.65;color:var(--grey)}
+.progs{display:grid;grid-template-columns:repeat(auto-fit,minmax(238px,1fr));gap:14px;margin-top:36px}
+.prog{
+  display:flex;flex-direction:column;gap:4px;padding:20px 18px;border:1px solid var(--line);
+  border-radius:16px;background:var(--white);transition:border-color .3s var(--ease),transform .3s var(--ease),box-shadow .3s var(--ease);
+}
+.prog:hover{border-color:var(--magenta);transform:translateY(-3px);box-shadow:0 14px 34px rgba(230,0,126,.13)}
+.prog .pt{align-self:flex-start;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--grey);border:1px solid var(--line);border-radius:99px;padding:3px 10px;margin-bottom:8px}
+.prog .pt.res{color:var(--magenta);border-color:rgba(230,0,126,.4);background:var(--rose-100)}
+.prog b{font-size:14.5px;letter-spacing:.02em;color:var(--ink)}
+.prog .pl{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--magenta)}
+.prog .pm{font-size:12.5px;color:var(--grey)}
+.prog.cur{border-color:var(--magenta);background:linear-gradient(180deg,var(--rose-100),var(--white))}
+
 /* reveals au scroll */
 .rv{opacity:0;transform:translateY(22px);transition:opacity .8s var(--ease),transform .8s var(--ease)}
 .rv.in{opacity:1;transform:none}
@@ -433,7 +451,7 @@ html.reduced .cue{display:none}
 <!-- ===== LOADER ===== -->
 <div id="loader" role="status" aria-live="polite">
   <div class="ld-logo">K<i>O</i>YTCHA</div>
-  <div class="ld-sub">Immobilier · La Réunion</div>
+  <div class="ld-sub">Immo · La Réunion</div>
   <div class="ld-track"><div class="ld-fill" id="ldFill"></div></div>
   <div class="ld-pct"><span id="ldPct">0</span> %</div>
 </div>
@@ -443,13 +461,14 @@ html.reduced .cue{display:none}
   <div class="bar">
     <a class="brand" href="#top" aria-label="Koytcha Immobilier, accueil">
       <span class="b1">K<i>O</i>YTCHA</span>
-      <span class="b2">Immobilier</span>
+      <span class="b2">Immo</span>
     </a>
     <nav class="nav" aria-label="Navigation principale">
-      <a href="#niveaux">Les niveaux</a>
+      <a href="#niveaux">Typologies</a>
       <a href="#galerie">Galerie</a>
+      <a href="#expertise">Programmes</a>
       <a href="#financement">Financement</a>
-      <a href="#visite">Visite privée</a>
+      <a href="#visite">Contacter un pro</a>
     </nav>
     <span class="spacer"></span>
     <button class="btn-search" id="searchToggle" aria-expanded="false" aria-controls="searchPanel">
@@ -463,35 +482,34 @@ html.reduced .cue{display:none}
   <div class="searchwrap" id="searchPanel">
     <form class="search" id="searchForm">
       <div class="field">
-        <label for="f-loc">Localisation</label>
-        <select id="f-loc" name="loc">
-          <option>Toute l'île</option><option selected>Saint-Leu</option><option>Saint-Gilles-les-Bains</option>
-          <option>L'Hermitage</option><option>Saint-Paul</option><option>Boucan Canot</option>
-          <option>Saint-Pierre</option><option>Le Tampon</option><option>Sainte-Marie</option><option>Saint-Denis</option>
+        <label for="f-presta">Votre projet</label>
+        <select id="f-presta" name="prestation_type">
+          <option value="vente" selected>Acheter</option>
+          <option value="location">Louer</option>
         </select>
       </div>
       <div class="field">
-        <label for="f-type">Type de bien</label>
+        <label for="f-secteur">Votre secteur&nbsp;?</label>
+        <select id="f-secteur" name="pro_res">
+          <option value="residentiel" selected>Résidentiel</option>
+          <option value="professionnel">Professionnel</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="f-type">Type de bien&nbsp;?</label>
         <select id="f-type" name="type">
-          <option selected>Villa</option><option>Appartement</option><option>Terrain</option>
-          <option>Maison créole</option><option>Local commercial</option>
-        </select>
-      </div>
-      <div class="field">
-        <label for="f-budget">Budget</label>
-        <select id="f-budget" name="budget">
-          <option>Jusqu'à 400 000 €</option><option>400 000 – 800 000 €</option>
-          <option>800 000 – 1 500 000 €</option><option selected>1 500 000 € et plus</option>
+          <option selected>Tous les types</option><option>Appartement</option><option>Maison / Villa</option>
+          <option>Terrain</option><option>Local commercial</option><option>Bureaux</option>
         </select>
       </div>
       <button class="btn-go" type="submit">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" width="16" height="16" aria-hidden="true">
           <circle cx="11" cy="11" r="7"/><path d="M20 20l-3.6-3.6"/>
         </svg>
-        Rechercher
+        Voir les annonces
       </button>
       <p class="search-note" id="searchNote">
-        <b>Démonstration —</b> cette recherche illustre le parcours client ; elle se branchera sur le portail de biens Koytcha.
+        Plus de 100 annonces à La Réunion — la recherche ouvre le portail officiel <b>koytchaimmo.re</b>
       </p>
     </form>
   </div>
@@ -503,18 +521,18 @@ html.reduced .cue{display:none}
   <!-- ===== 01 · ARRIVAL ===== -->
   <section class="chapter" id="ch1" data-seq="arrival">
     <div class="stage">
-      <canvas id="cv-arrival" aria-label="Vue aérienne cinématique arrivant sur la villa"></canvas>
+      <canvas id="cv-arrival" aria-label="Vue depuis une varangue de la Résidence Les Manguiers sur le jardin et les hauts de La Possession"></canvas>
       <div class="vignette"></div>
       <div class="scrim"></div>
       <div class="progress-rail"><i data-rail></i></div>
       <div class="caption" data-cap>
         <div class="eyebrow"><span class="dash"></span><span>Arrivée</span><span class="num">01 / 04</span></div>
-        <h1>Villa <em>Solèy</em></h1>
-        <p>Au-dessus du lagon, la côte ouest s'ouvre. Posée sur son morne, face au large, une architecture contemporaine attend l'heure dorée.</p>
+        <h1>Résidence <em>Les Manguiers</em></h1>
+        <p>La Possession, à flanc de hauts. Le jardin s'ouvre sur les remparts, les varangues cadrent la lumière de fin de journée. Trente lots, une résidence à taille humaine.</p>
         <div class="cap-meta">
-          <span class="tag">Saint-Leu · Les Colimaçons</span>
-          <span class="tag">Vue océan</span>
-          <span class="tag demo">Bien de démonstration</span>
+          <span class="tag">La Possession · 97419</span>
+          <span class="tag">Appartements T3 au T5</span>
+          <span class="tag">76 à 110 m²</span>
         </div>
       </div>
       <div class="cue"><span class="line"></span><span>Faites défiler</span></div>
@@ -524,14 +542,14 @@ html.reduced .cue{display:none}
   <!-- ===== 02 · THE REVEAL ===== -->
   <section class="chapter" id="ch2" data-seq="reveal">
     <div class="stage">
-      <canvas id="cv-reveal" aria-label="La villa révélée au centre d'une explosion de poudre colorée"></canvas>
+      <canvas id="cv-reveal" aria-label="La façade de la Résidence Les Manguiers se révélant depuis un voile de couleur"></canvas>
       <div class="vignette"></div>
       <div class="scrim"></div>
       <div class="progress-rail"><i data-rail></i></div>
       <div class="caption" data-cap>
         <div class="eyebrow"><span class="dash"></span><span>La révélation</span><span class="num">02 / 04</span></div>
         <h2>Elle ne se visite pas.<br><em>Elle se révèle.</em></h2>
-        <p>412 m² suspendus sur un socle de basalte. Chaque volume, chaque faille de lumière, chaque éclat : la signature Koytcha, trente ans d'expertise sur l'île.</p>
+        <p>Bardages bois, coursives ouvertes, jardin planté au pied des bâtiments. Livrée en mai 2020, la résidence porte la signature Koytcha Immo — trente ans d'expertise sur l'île.</p>
       </div>
     </div>
   </section>
@@ -543,17 +561,17 @@ html.reduced .cue{display:none}
         <div class="exploded-inner" data-exp>
           <div class="beam b1" data-beam></div>
           <div class="beam b2" data-beam></div>
-          <div class="slab s3" data-slab="3"><img src="assets/levels/n3.jpg" alt="Niveau 3 — terrasse et piscine à débordement" loading="lazy"></div>
-          <div class="slab s2" data-slab="2"><img src="assets/levels/n2.jpg" alt="Niveau 2 — séjour et suite parentale" loading="lazy"></div>
-          <div class="slab s1" data-slab="1"><img src="assets/levels/n1.jpg" alt="Niveau 1 — chambres et réception" loading="lazy"></div>
+          <div class="slab s3" data-slab="3"><img src="assets/levels/t5.jpg" alt="T5 — les plus grandes surfaces de la résidence" loading="lazy"></div>
+          <div class="slab s2" data-slab="2"><img src="assets/levels/t4.jpg" alt="T4 — varangue ouverte sur le jardin" loading="lazy"></div>
+          <div class="slab s1" data-slab="1"><img src="assets/levels/t3.jpg" alt="T3 — séjour traversant et baie vitrée" loading="lazy"></div>
         </div>
       </div>
       <div class="scrim"></div>
       <div class="progress-rail"><i data-rail></i></div>
       <div class="caption" data-cap>
-        <div class="eyebrow"><span class="dash"></span><span>Les niveaux</span><span class="num">03 / 04</span></div>
-        <h2>Trois plateaux,<br><em>trois façons de vivre</em></h2>
-        <p>La villa se déplie. Nuit en socle, vie au centre, ciel et bassin au sommet — reliés par la lumière.</p>
+        <div class="eyebrow"><span class="dash"></span><span>Les typologies</span><span class="num">03 / 04</span></div>
+        <h2>Du T3 au T5,<br><em>trente lots</em></h2>
+        <p>La résidence se déplie. Séjours traversants, varangues, terrasses, séchoirs et parkings — selon le lot.</p>
       </div>
     </div>
   </section>
@@ -563,8 +581,8 @@ html.reduced .cue{display:none}
     <div class="stage">
       <div class="zoomer">
         <picture>
-          <source media="(max-width:760px)" srcset="assets/web/inside-p.jpg">
-          <img src="assets/web/inside.jpg" alt="Grand séjour ouvert sur la terrasse et l'océan au coucher du soleil" data-zoom>
+          <source media="(max-width:760px)" srcset="assets/web/sejour-sm.jpg">
+          <img src="assets/web/sejour.jpg" alt="Séjour d'un appartement des Manguiers, parquet et baie vitrée ouverte sur la varangue" data-zoom>
         </picture>
       </div>
       <div class="vignette"></div>
@@ -572,8 +590,8 @@ html.reduced .cue{display:none}
       <div class="progress-rail"><i data-rail></i></div>
       <div class="caption" data-cap>
         <div class="eyebrow"><span class="dash"></span><span>À l'intérieur</span><span class="num">04 / 04</span></div>
-        <h2>18 h 42.<br><em>Les baies sont ouvertes.</em></h2>
-        <p>Basalte, chêne clair, lin écru. Le séjour de 62 m² se prolonge sur la terrasse, et la terrasse sur l'océan Indien. C'est l'art de vivre réunionnais, à l'échelle d'une villa.</p>
+        <h2>La baie s'ouvre.<br><em>La varangue prolonge le séjour.</em></h2>
+        <p>Parquet clair, séjour traversant, grande baie coulissante : dedans et dehors ne font qu'un. C'est l'art de vivre réunionnais, à l'échelle d'un appartement.</p>
       </div>
     </div>
   </section>
@@ -584,20 +602,20 @@ html.reduced .cue{display:none}
 <!-- ===== BANDEAU DE FAITS ===== -->
 <section class="light-zone facts">
   <div class="facts-in">
-    <div class="fact"><div class="v">5</div><div class="k">Chambres</div></div>
-    <div class="fact"><div class="v">4</div><div class="k">Salles de bains</div></div>
-    <div class="fact"><div class="v">412<span>m²</span></div><div class="k">Habitables</div></div>
-    <div class="fact"><div class="v">2 800<span>m²</span></div><div class="k">Terrain</div></div>
+    <div class="fact"><div class="v">30</div><div class="k">Lots</div></div>
+    <div class="fact"><div class="v">T3 <span>→ T5</span></div><div class="k">Typologies</div></div>
+    <div class="fact"><div class="v">76<span>à 110 m²</span></div><div class="k">Surfaces</div></div>
+    <div class="fact"><div class="v">2020</div><div class="k">Livrée en mai</div></div>
   </div>
   <div class="wrap">
     <div class="price-row">
-      <div class="p">2 450 000 <small>€ · honoraires inclus</small></div>
-      <div class="ref">Réf. KI-2841 · DPE B</div>
+      <div class="p">Prix <small>· nous consulter</small></div>
+      <div class="ref">La Possession 97419 · Appartement</div>
     </div>
     <div class="price-row" style="padding-bottom:26px">
       <p style="color:var(--grey);font-size:14px;line-height:1.7;max-width:70ch">
-        Piscine à débordement de 14 m · Cuisine d'été · Bureau · Garage 2 véhicules · Panneaux solaires ·
-        Exposition ouest, coucher de soleil toute l'année.
+        Varangues · Terrasses · Séchoirs · Parkings — selon le lot. Résidence livrée en mai 2020,
+        composée d'appartements du T3 au T5. Contactez un conseiller Koytcha Immo pour la disponibilité et les prix.
       </p>
     </div>
   </div>
@@ -607,62 +625,64 @@ html.reduced .cue{display:none}
 <section class="light-zone sec" id="niveaux">
   <div class="wrap">
     <div class="sec-head rv">
-      <div class="kicker"><span class="dash"></span>Sélecteur de niveaux</div>
-      <h2>Explorez la villa, <em>plateau par plateau</em></h2>
-      <p>Trois niveaux distincts, reliés par un escalier suspendu et un ascenseur privatif. Choisissez un niveau pour en voir le détail.</p>
+      <div class="kicker"><span class="dash"></span>Sélecteur de typologies</div>
+      <h2>Explorez la résidence, <em>typologie par typologie</em></h2>
+      <p>Trente lots répartis du T3 au T5, de 76 à 110 m². Choisissez une typologie pour en voir le détail.</p>
     </div>
     <div class="levels-grid">
       <div class="rv">
-        <div class="tabs" role="tablist" aria-label="Niveaux de la villa">
-          <button class="tab" role="tab" id="tab-3" aria-controls="pan-3" aria-selected="true" data-lvl="3">Niveau 3 · Terrasse</button>
-          <button class="tab" role="tab" id="tab-2" aria-controls="pan-2" aria-selected="false" data-lvl="2">Niveau 2 · Séjour</button>
-          <button class="tab" role="tab" id="tab-1" aria-controls="pan-1" aria-selected="false" data-lvl="1">Niveau 1 · Nuit</button>
+        <div class="tabs" role="tablist" aria-label="Typologies de la résidence">
+          <button class="tab" role="tab" id="tab-3" aria-controls="pan-3" aria-selected="true" data-lvl="3">T5 · Les plus grands</button>
+          <button class="tab" role="tab" id="tab-2" aria-controls="pan-2" aria-selected="false" data-lvl="2">T4 · Intermédiaire</button>
+          <button class="tab" role="tab" id="tab-1" aria-controls="pan-1" aria-selected="false" data-lvl="1">T3 · L'entrée de gamme</button>
         </div>
 
         <div class="panel" role="tabpanel" id="pan-3" aria-labelledby="tab-3" data-lvl="3">
-          <h3>Terrasse & bassin</h3>
-          <div class="surface">148 m² d'extérieur aménagé</div>
+          <h3>T5 — les plus grandes surfaces</h3>
+          <div class="surface">jusqu'à 110 m²</div>
           <ul class="rooms">
-            <li>Piscine à débordement <span>14 × 4 m</span></li>
-            <li>Solarium teck <span>42 m²</span></li>
-            <li>Cuisine d'été & plancha <span>18 m²</span></li>
-            <li>Pool house fermé <span>16 m²</span></li>
-            <li>Douche extérieure basalte <span>—</span></li>
+            <li>Séjour traversant <span>selon le lot</span></li>
+            <li>Quatre chambres <span>selon le lot</span></li>
+            <li>Varangue <span>selon le lot</span></li>
+            <li>Terrasse <span>selon le lot</span></li>
+            <li>Séchoir & parking <span>selon le lot</span></li>
           </ul>
         </div>
 
         <div class="panel" role="tabpanel" id="pan-2" aria-labelledby="tab-2" data-lvl="2" hidden>
-          <h3>Séjour & suite parentale</h3>
-          <div class="surface">236 m² habitables</div>
+          <h3>T4 — l'équilibre familial</h3>
+          <div class="surface">surfaces intermédiaires de la gamme</div>
           <ul class="rooms">
-            <li>Séjour cathédrale <span>62 m²</span></li>
-            <li>Cuisine ouverte équipée <span>28 m²</span></li>
-            <li>Salle à manger <span>24 m²</span></li>
-            <li>Suite parentale + dressing <span>46 m²</span></li>
-            <li>Salle de bains parentale <span>16 m²</span></li>
-            <li>Bureau / bibliothèque <span>21 m²</span></li>
+            <li>Séjour ouvert sur varangue <span>selon le lot</span></li>
+            <li>Trois chambres <span>selon le lot</span></li>
+            <li>Varangue ou terrasse <span>selon le lot</span></li>
+            <li>Séchoir <span>selon le lot</span></li>
+            <li>Parking <span>selon le lot</span></li>
           </ul>
         </div>
 
         <div class="panel" role="tabpanel" id="pan-1" aria-labelledby="tab-1" data-lvl="1" hidden>
-          <h3>Nuit & réception</h3>
-          <div class="surface">176 m² habitables</div>
+          <h3>T3 — le premier achat</h3>
+          <div class="surface">à partir de 76 m²</div>
           <ul class="rooms">
-            <li>Chambre 2 avec terrasse <span>24 m²</span></li>
-            <li>Chambre 3 <span>21 m²</span></li>
-            <li>Chambre 4 <span>19 m²</span></li>
-            <li>Chambre 5 / studio ami <span>26 m²</span></li>
-            <li>2 salles de bains <span>11 + 9 m²</span></li>
-            <li>Buanderie, cave & garage <span>2 véhicules</span></li>
+            <li>Séjour avec baie coulissante <span>selon le lot</span></li>
+            <li>Deux chambres <span>selon le lot</span></li>
+            <li>Varangue <span>selon le lot</span></li>
+            <li>Séchoir <span>selon le lot</span></li>
+            <li>Parking <span>selon le lot</span></li>
           </ul>
         </div>
+        <p class="disclaim" style="margin-top:18px">
+          Composition indicative : la résidence réunit des appartements du T3 au T5, dotés selon le lot de varangues,
+          terrasses, séchoirs et parkings. Le détail exact de chaque lot est communiqué par un conseiller Koytcha Immo.
+        </p>
       </div>
 
       <div class="lvl-visual rv">
         <div class="glow"></div>
-        <img class="cut on" data-cut="3" src="assets/levels/n3.jpg" alt="Coupe du niveau 3 : terrasse et piscine">
-        <img class="cut" data-cut="2" src="assets/levels/n2.jpg" alt="Coupe du niveau 2 : séjour">
-        <img class="cut" data-cut="1" src="assets/levels/n1.jpg" alt="Coupe du niveau 1 : chambres">
+        <img class="cut on" data-cut="3" src="assets/levels/t5.jpg" alt="Façade et coursives de la Résidence Les Manguiers">
+        <img class="cut" data-cut="2" src="assets/levels/t4.jpg" alt="Varangue d'un appartement des Manguiers">
+        <img class="cut" data-cut="1" src="assets/levels/t3.jpg" alt="Séjour d'un appartement des Manguiers">
       </div>
     </div>
   </div>
@@ -673,14 +693,54 @@ html.reduced .cue{display:none}
   <div class="wrap">
     <div class="sec-head rv">
       <div class="kicker"><span class="dash"></span>Galerie</div>
-      <h2>Quelques <em>fragments</em> du quotidien</h2>
+      <h2>Quelques <em>fragments</em> de la résidence</h2>
+      <p>Photographies du programme — © Koytcha Immo.</p>
     </div>
     <div class="gal rv">
-      <figure><img src="assets/web/g-pool.jpg" alt="Terrasse et piscine à débordement à l'heure dorée" loading="lazy"><figcaption>Le bassin, 18 h</figcaption></figure>
-      <figure><img src="assets/web/g-suite.jpg" alt="Suite parentale ouverte sur la terrasse" loading="lazy"><figcaption>Suite parentale</figcaption></figure>
-      <figure><img src="assets/web/g-kitchen.jpg" alt="Cuisine ouverte en basalte et chêne clair" loading="lazy"><figcaption>Cuisine ouverte</figcaption></figure>
-      <figure><img src="assets/web/g-night.jpg" alt="La villa à l'heure bleue, intérieurs allumés" loading="lazy"><figcaption>Heure bleue</figcaption></figure>
-      <figure><img src="assets/web/inside.jpg" alt="Séjour ouvert sur l'océan" loading="lazy"><figcaption>Le séjour</figcaption></figure>
+      <figure><img src="assets/web/reveal-sm.jpg" alt="Façade et coursives bois de la Résidence Les Manguiers" loading="lazy"><figcaption>La façade</figcaption></figure>
+      <figure><img src="assets/web/varangue-sm.jpg" alt="Varangue avec garde-corps bois ouverte sur le jardin" loading="lazy"><figcaption>La varangue</figcaption></figure>
+      <figure><img src="assets/web/sejour-sm.jpg" alt="Séjour avec parquet clair et grande baie coulissante" loading="lazy"><figcaption>Le séjour</figcaption></figure>
+      <figure><img src="assets/web/arrival-sm.jpg" alt="Vue sur le jardin planté et les hauts de La Possession" loading="lazy"><figcaption>Le jardin, fin de journée</figcaption></figure>
+    </div>
+  </div>
+</section>
+
+<!-- ===== KOYTCHA IMMO — CONTENU DE LA LANDING ===== -->
+<section class="light-zone sec" id="expertise">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <div class="kicker"><span class="dash"></span>Koytcha Immo vous accompagne depuis 2004</div>
+      <h2>30 ans d'expertise <em>à La Réunion</em></h2>
+      <p>Koytcha Immo accompagne depuis 2004 avec le même niveau d'exigence les entreprises, propriétaires et
+      investisseurs sur l'ensemble de leurs enjeux immobiliers. Que vous cherchiez à investir, à vendre, ou que vous
+      soyez tout simplement à la recherche d'un achat ou d'une location, Koytcha Immo vous apporte toute son expertise
+      et son savoir-faire afin de vous faciliter la vie tout en optimisant votre projet.</p>
+    </div>
+    <div class="pillars rv">
+      <div class="pillar"><h4>Valorisation du patrimoine</h4><p>Créer de la valeur à chaque étape de la vie d'un bien immobilier.</p></div>
+      <div class="pillar"><h4>Transactions maîtrisées</h4><p>Des délais mesurés et des conditions optimales.</p></div>
+      <div class="pillar"><h4>Recherche de locaux</h4><p>Adaptés à l'activité, aux employés et à l'image de l'entreprise.</p></div>
+      <div class="pillar"><h4>Conseil global</h4><p>Un accompagnement durable tout au long du cycle de vie immobilier.</p></div>
+    </div>
+    <div class="sec-head rv" style="margin-top:64px">
+      <div class="kicker"><span class="dash"></span>Nos opportunités exclusives</div>
+      <h2>Les autres <em>programmes</em> Koytcha</h2>
+      <p>Retrouvez ici notre sélection de programmes immobiliers neufs à La Réunion. Que vous souhaitiez développer votre
+      activité professionnelle, investir pour défiscaliser, diversifier votre patrimoine ou préparer votre retraite,
+      Koytcha Immo vous délivre toutes les clés pour réussir votre investissement.</p>
+    </div>
+    <div class="progs rv">
+      <a class="prog" href="https://koytchaimmo.re/nos-programmes/quartz" target="_blank" rel="noopener"><span class="pt">Pro</span><b>QUARTZ</b><span class="pl">Le Tampon</span><span class="pm">Commerce · 57 à 135 m²</span></a>
+      <a class="prog" href="https://koytchaimmo.re/nos-programmes/espace-turquoise" target="_blank" rel="noopener"><span class="pt">Pro</span><b>ESPACE TURQUOISE</b><span class="pl">Saint-Pierre</span><span class="pm">Bureaux et commerces · 61 à 537 m²</span></a>
+      <a class="prog" href="https://koytchaimmo.re/nos-programmes/ze-bureau-3" target="_blank" rel="noopener"><span class="pt">Pro</span><b>ZE BURE@U 3</b><span class="pl">La Possession</span><span class="pm">Bureaux · 58 à 279 m²</span></a>
+      <a class="prog" href="https://koytchaimmo.re/nos-programmes/la-kanopee-boutiques" target="_blank" rel="noopener"><span class="pt">Pro</span><b>LA KANOPÉE BOUTIQUES</b><span class="pl">La Possession</span><span class="pm">Commerce · 12 à 152 m²</span></a>
+      <a class="prog" href="https://koytchaimmo.re/nos-programmes/les-ateliers-de-bel-air" target="_blank" rel="noopener"><span class="pt">Pro</span><b>LES ATELIERS DE BEL AIR</b><span class="pl">Saint-Louis</span><span class="pm">Entrepôts et commerces · 426 à 867 m²</span></a>
+      <a class="prog" href="https://koytchaimmo.re/nos-programmes/le-kerval" target="_blank" rel="noopener"><span class="pt">Pro</span><b>LE KERVAL</b><span class="pl">Sainte-Marie</span><span class="pm">Bureaux et commerces · 10 000 m²</span></a>
+      <a class="prog" href="https://koytchaimmo.re/nos-programmes/ze-bureu-2" target="_blank" rel="noopener"><span class="pt">Pro</span><b>ZE BURE@U 2</b><span class="pl">Saint-Gilles les Hauts</span><span class="pm">Bureaux et commerces · 58 à 279 m²</span></a>
+      <a class="prog cur" href="https://koytchaimmo.re/nos-programmes/les-manguiers" target="_blank" rel="noopener"><span class="pt res">Résidentiel</span><b>RÉSIDENCE LES MANGUIERS</b><span class="pl">La Possession</span><span class="pm">Appartement · 76 à 110 m²</span></a>
+    </div>
+    <div class="rv" style="text-align:center;margin-top:34px">
+      <a class="btn-primary" style="display:inline-block;width:auto;padding-left:34px;padding-right:34px" href="https://koytchaimmo.re/nos-programmes/?statut=encours" target="_blank" rel="noopener">Découvrez nos programmes</a>
     </div>
   </div>
 </section>
@@ -691,17 +751,17 @@ html.reduced .cue{display:none}
     <div class="sec-head rv">
       <div class="kicker"><span class="dash"></span>Financement</div>
       <h2>Estimez votre <em>mensualité</em></h2>
-      <p>Ajustez l'apport, le taux et la durée : la mensualité se recalcule instantanément.</p>
+      <p>Le prix des lots des Manguiers est communiqué sur demande. Positionnez le curseur sur le montant de votre projet : la mensualité se recalcule instantanément.</p>
     </div>
     <div class="calc-grid">
       <div class="card rv">
         <div class="ctrl">
-          <div class="ctrl-top"><label for="c-price">Prix du bien</label><output id="o-price">2 450 000 €</output></div>
-          <input type="range" id="c-price" min="500000" max="4000000" step="10000" value="2450000">
+          <div class="ctrl-top"><label for="c-price">Montant du projet</label><output id="o-price">350 000 €</output></div>
+          <input type="range" id="c-price" min="100000" max="1000000" step="5000" value="350000">
         </div>
         <div class="ctrl">
-          <div class="ctrl-top"><label for="c-apport">Apport personnel</label><output id="o-apport">490 000 €</output></div>
-          <input type="range" id="c-apport" min="0" max="2000000" step="5000" value="490000">
+          <div class="ctrl-top"><label for="c-apport">Apport personnel</label><output id="o-apport">50 000 €</output></div>
+          <input type="range" id="c-apport" min="0" max="500000" step="1000" value="50000">
         </div>
         <div class="ctrl">
           <div class="ctrl-top"><label for="c-taux">Taux d'intérêt</label><output id="o-taux">3,45 %</output></div>
@@ -721,7 +781,7 @@ html.reduced .cue{display:none}
           <div><span>Total remboursé</span><b id="r-total">—</b></div>
           <div><span>Apport</span><b id="r-apport">—</b></div>
         </div>
-        <p class="disclaim">Simulation indicative, hors assurance emprunteur et frais de dossier. Elle ne constitue ni une offre de prêt ni un engagement de Koytcha Immobilier. Bien et prix présentés à titre de démonstration.</p>
+        <p class="disclaim">Simulation indicative, hors assurance emprunteur et frais de dossier. Elle ne constitue ni une offre de prêt ni un engagement de Koytcha Immo. Le montant saisi est celui de votre projet, pas le prix d'un lot de la résidence.</p>
       </div>
     </div>
   </div>
@@ -731,9 +791,9 @@ html.reduced .cue{display:none}
 <section class="light-zone sec" id="visite" style="background:var(--white)">
   <div class="wrap">
     <div class="sec-head rv">
-      <div class="kicker"><span class="dash"></span>Visite privée</div>
+      <div class="kicker"><span class="dash"></span>Contacter un pro</div>
       <h2>Venez la voir <em>à l'heure dorée</em></h2>
-      <p>Nous n'ouvrons la villa qu'à un visiteur à la fois. Choisissez une date et un créneau.</p>
+      <p>Un conseiller Koytcha Immo vous ouvre la résidence. Choisissez une date et un créneau — l'agence reçoit du lundi au vendredi, 08 h – 12 h et 14 h – 17 h.</p>
     </div>
     <div class="visit-grid">
       <form class="card rv" id="visitForm" novalidate>
@@ -746,11 +806,11 @@ html.reduced .cue{display:none}
         <div class="inp">
           <label id="slotLabel">Créneau horaire</label>
           <div class="slots" role="group" aria-labelledby="slotLabel">
-            <button type="button" class="slot" aria-pressed="false" data-slot="09:00">09 h 00</button>
-            <button type="button" class="slot" aria-pressed="false" data-slot="10:30">10 h 30</button>
-            <button type="button" class="slot" aria-pressed="false" data-slot="14:00">14 h 00</button>
-            <button type="button" class="slot" aria-pressed="false" data-slot="16:00">16 h 00</button>
-            <button type="button" class="slot" aria-pressed="false" data-slot="17:30">17 h 30 · coucher de soleil</button>
+            <button type="button" class="slot" aria-pressed="false" data-slot="08:30">08 h 30</button>
+            <button type="button" class="slot" aria-pressed="false" data-slot="10:00">10 h 00</button>
+            <button type="button" class="slot" aria-pressed="false" data-slot="11:00">11 h 00</button>
+            <button type="button" class="slot" aria-pressed="false" data-slot="14:30">14 h 30</button>
+            <button type="button" class="slot" aria-pressed="false" data-slot="16:00">16 h 00 · lumière de fin de journée</button>
           </div>
           <p class="hint" id="slotHint">Sélectionnez un créneau pour activer la demande.</p>
         </div>
@@ -758,13 +818,14 @@ html.reduced .cue{display:none}
         <div id="visitOk" hidden></div>
       </form>
       <aside class="aside-card rv">
-        <img src="assets/web/g-night.jpg" alt="La villa à la tombée de la nuit" loading="lazy">
+        <img src="assets/web/varangue-sm.jpg" alt="Varangue de la Résidence Les Manguiers" loading="lazy">
         <div class="in">
           <h3>Votre interlocuteur</h3>
-          <p>Un seul conseiller vous suit, de la première visite à la remise des clés. Trente ans d'expertise sur le marché réunionnais, une connaissance fine de la côte ouest.</p>
-          <div class="contact-line"><b>Tél.</b> 0262 00 00 00</div>
-          <div class="contact-line"><b>E-mail</b> contact@koytchaimmo.re</div>
-          <div class="contact-line"><b>Agence</b> Saint-Gilles-les-Bains</div>
+          <p>Un seul conseiller vous suit, de la première visite à la remise des clés. Koytcha Immo accompagne depuis 2004 entreprises, propriétaires et investisseurs sur l'ensemble de leurs enjeux immobiliers à La Réunion.</p>
+          <div class="contact-line"><b>Tél.</b> <a href="tel:+262262979607">0262 97 96 07</a></div>
+          <div class="contact-line"><b>Agence</b> 45 rue Alexis de Villeneuve, 97400 Saint-Denis</div>
+          <div class="contact-line"><b>Horaires</b> Lun. – ven. · 08 h-12 h et 14 h-17 h</div>
+          <div class="contact-line"><b>Site</b> <a href="https://koytchaimmo.re/contact/" rel="noopener" target="_blank">koytchaimmo.re/contact</a></div>
         </div>
       </aside>
     </div>
@@ -777,34 +838,40 @@ html.reduced .cue{display:none}
   <div class="wrap">
     <div class="foot-grid">
       <div>
-        <div class="brand"><span class="b1">K<i>O</i>YTCHA</span><span class="b2">Immobilier</span></div>
-        <p>Trente ans d'expertise immobilière à La Réunion. Vente, location, gestion et conseil sur l'ensemble de l'île, avec une spécialité sur la côte ouest et les biens d'exception.</p>
+        <div class="brand"><span class="b1">K<i>O</i>YTCHA</span><span class="b2">Immo</span></div>
+        <p>30 ans d'expertise immobilière à La Réunion. Koytcha Immo accompagne depuis 2004 entreprises, propriétaires et investisseurs : vente, location, gestion, conseil, et promotion de programmes neufs sur l'ensemble de l'île.</p>
       </div>
       <div>
-        <h4>Le bien</h4>
+        <h4>Le programme</h4>
         <ul>
-          <li><a href="#niveaux">Les trois niveaux</a></li>
+          <li><a href="#niveaux">Les typologies</a></li>
           <li><a href="#galerie">Galerie</a></li>
+          <li><a href="#expertise">Nos programmes</a></li>
           <li><a href="#financement">Simulateur de prêt</a></li>
-          <li><a href="#visite">Visite privée</a></li>
+          <li><a href="#visite">Contacter un pro</a></li>
         </ul>
       </div>
       <div>
         <h4>Contact</h4>
         <ul>
-          <li>0262 00 00 00</li>
-          <li>contact@koytchaimmo.re</li>
-          <li>Saint-Gilles-les-Bains</li>
-          <li><a href="https://koytchaimmo.re" rel="noopener">koytchaimmo.re</a></li>
+          <li><a href="tel:+262262979607">0262 97 96 07</a></li>
+          <li>45 rue Alexis de Villeneuve</li>
+          <li>97400 Saint-Denis, La Réunion</li>
+          <li>Lun. – ven. · 08 h-12 h / 14 h-17 h</li>
+          <li><a href="https://koytchaimmo.re" rel="noopener" target="_blank">koytchaimmo.re</a></li>
         </ul>
       </div>
     </div>
     <div class="demo-band">
       <span class="dot"></span>
-      <span><strong>Page de démonstration.</strong> « Villa Solèy » n'est pas une annonce réelle : le bien, la référence KI-2841, les surfaces, le prix et les visuels ont été créés pour illustrer une expérience de présentation immobilière cinématique. Aucune donnée n'est transmise par les formulaires de cette page. Pour les biens réellement disponibles, rendez-vous sur koytchaimmo.re.</span>
+      <span><strong>Maquette de présentation.</strong> Le programme, les textes, les caractéristiques et les photographies
+      présentés ici proviennent du site officiel <a href="https://koytchaimmo.re/nos-programmes/les-manguiers" rel="noopener" target="_blank">koytchaimmo.re</a>
+      (Résidence Les Manguiers, La Possession) — les photos sont celles de Koytcha Immo, simplement remises à l'échelle pour l'affichage plein écran.
+      Cette page est une démonstration d'expérience de navigation, pas le site officiel : les formulaires n'envoient et n'enregistrent aucune donnée,
+      et la répartition indicative par typologie ne remplace pas le détail des lots. Pour les biens et les prix réellement disponibles, rendez-vous sur koytchaimmo.re.</span>
     </div>
     <div class="legal">
-      <span>© 2026 Koytcha Immobilier — maquette de présentation</span>
+      <span>© 2026 Koytcha Immo — maquette de présentation · photos © Koytcha Immo</span>
       <span>Conception : Automatisation Boost</span>
     </div>
   </div>
@@ -819,81 +886,116 @@ var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 if(reduced) document.documentElement.classList.add('reduced');
 var small = window.matchMedia('(max-width: 700px)').matches;
 
-/* ---------- SÉQUENCES D'IMAGES (scroll-scrub sur canvas) ---------- */
-function Sequence(canvas, dir, prefix, count){
+/* ---------- PLANS CINÉMATIQUES (scroll-scrub sur canvas) ----------
+   Une seule photo source en haute définition par chapitre : le mouvement de
+   caméra est un recadrage calculé à chaque image, donc net à toutes les tailles
+   d'écran (plus de séquence de frames pré-découpées et molles).            */
+function Pan(canvas, src, opts){
   this.cv = canvas; this.ctx = canvas.getContext('2d', {alpha:false});
-  this.imgs = new Array(count); this.count = count; this.cur = -1; this.ready = 0;
-  this.base = dir + (small ? 'sm/' : '') + prefix;
+  this.img = new Image(); this.src = src; this.o = opts || {};
+  this.loaded = false; this.lastP = 0;
   this.dpr = Math.min(window.devicePixelRatio || 1, 2);
 }
-Sequence.prototype.url = function(i){
-  var n = String(i+1); while(n.length < 3) n = '0' + n;
-  return this.base + n + '.jpg';
+Pan.prototype.load = function(onDone){
+  var self = this;
+  this.img.onload = function(){ self.loaded = !!self.img.naturalWidth; self.resize(); if(onDone) onDone(); };
+  this.img.onerror = function(){ self.loaded = false; if(onDone) onDone(); };
+  this.img.src = this.src;
 };
-Sequence.prototype.load = function(i, onDone){
-  if(this.imgs[i]) { if(onDone) onDone(); return; }
-  var im = new Image(); var self = this;
-  im.onload = im.onerror = function(){ self.ready++; if(onDone) onDone(); };
-  im.src = this.url(i); this.imgs[i] = im;
-};
-Sequence.prototype.resize = function(){
+Pan.prototype.resize = function(){
   var r = this.cv.getBoundingClientRect();
-  this.cv.width = Math.round(r.width * this.dpr);
-  this.cv.height = Math.round(r.height * this.dpr);
-  this.cur = -1; this.render(this.lastP || 0);
+  var w = Math.round(r.width * this.dpr), h = Math.round(r.height * this.dpr);
+  if(!w || !h) return;
+  this.cv.width = w; this.cv.height = h;
+  this.render(this.lastP);
 };
-Sequence.prototype.render = function(p){
+Pan.prototype.render = function(p){
   this.lastP = p;
-  var i = Math.max(0, Math.min(this.count-1, Math.round(p * (this.count-1))));
-  var im = this.imgs[i];
-  if(!im || !im.complete || !im.naturalWidth){
-    // frame pas encore prête : on garde la plus proche déjà chargée
-    var j = i, found = null;
-    for(var k=0;k<this.count;k++){
-      var a = i-k, b = i+k;
-      if(a>=0 && this.imgs[a] && this.imgs[a].complete && this.imgs[a].naturalWidth){ found=this.imgs[a]; break; }
-      if(b<this.count && this.imgs[b] && this.imgs[b].complete && this.imgs[b].naturalWidth){ found=this.imgs[b]; break; }
-    }
-    if(!found) return; im = found;
-  } else if(i === this.cur) return;
-  this.cur = i;
+  if(!this.loaded) return;
   var cw = this.cv.width, ch = this.cv.height;
-  var s = Math.max(cw/im.naturalWidth, ch/im.naturalHeight);
-  var w = im.naturalWidth*s, h = im.naturalHeight*s;
-  this.ctx.drawImage(im, (cw-w)/2, (ch-h)/2, w, h);
+  if(!cw || !ch) return;
+  var iw = this.img.naturalWidth, ih = this.img.naturalHeight, ctx = this.ctx, o = this.o;
+  var ca = cw/ch, bw, bh;
+  if(iw/ih > ca){ bh = ih; bw = ih*ca; } else { bw = iw; bh = iw/ca; }
+  var num = function(v, d){ return v == null ? d : v; };
+  var z = num(o.z0,1.10) + (num(o.z1,1.00) - num(o.z0,1.10)) * p;
+  var w = bw/z, h = bh/z;
+  var xc = num(o.x0,.5) + (num(o.x1,.5) - num(o.x0,.5)) * p;
+  var yc = num(o.y0,.5) + (num(o.y1,.5) - num(o.y0,.5)) * p;
+  var sx = (iw-w)*xc, sy = (ih-h)*yc;
+
+  var t = o.reveal ? Math.max(0, Math.min(1, (p-0.02)/0.66)) : 1;
+  var blur = o.reveal ? (1-t)*(1-t)*16*this.dpr : 0;
+  ctx.filter = blur > 0.4 ? 'blur(' + blur.toFixed(1) + 'px)' : 'none';
+  var m = Math.ceil(blur*2.2); // marge : évite les bords transparents du flou
+  ctx.drawImage(this.img, sx, sy, w, h, -m, -m, cw+2*m, ch+2*m);
+  ctx.filter = 'none';
+  if(o.reveal && t < 0.999) this.veil(t, cw, ch);
+};
+/* voile spectre Koytcha qui se dissipe : la résidence se révèle */
+Pan.prototype.veil = function(t, cw, ch){
+  var ctx = this.ctx, a = Math.pow(1-t, 1.4);
+  if(a <= 0.005) return;
+  var g = ctx.createLinearGradient(0, ch, cw, 0);
+  g.addColorStop(0,   'rgba(230,0,126,'  + (a*0.94).toFixed(3) + ')');
+  g.addColorStop(0.40,'rgba(255,93,177,' + (a*0.74).toFixed(3) + ')');
+  g.addColorStop(0.72,'rgba(246,161,26,' + (a*0.52).toFixed(3) + ')');
+  g.addColorStop(1,   'rgba(7,7,10,'     + (a*0.82).toFixed(3) + ')');
+  ctx.save();
+  ctx.fillStyle = g; ctx.fillRect(0,0,cw,ch);
+  var r = Math.max(cw,ch) * (0.14 + t*1.05);
+  var rg = ctx.createRadialGradient(cw*0.5, ch*0.54, r*0.08, cw*0.5, ch*0.54, r);
+  rg.addColorStop(0,   'rgba(255,255,255,' + (a*0.34).toFixed(3) + ')');
+  rg.addColorStop(0.5, 'rgba(255,93,177,'  + (a*0.14).toFixed(3) + ')');
+  rg.addColorStop(1,   'rgba(255,255,255,0)');
+  ctx.globalCompositeOperation = 'lighter';
+  ctx.fillStyle = rg; ctx.fillRect(0,0,cw,ch);
+  ctx.restore();
 };
 
+var SFX = small ? '-sm' : '';
 var SEQ = {
-  arrival: new Sequence(document.getElementById('cv-arrival'), 'assets/arrival/', 'a', 62),
-  reveal:  new Sequence(document.getElementById('cv-reveal'),  'assets/reveal/',  'r', 123)
+  arrival: new Pan(document.getElementById('cv-arrival'), 'assets/web/arrival' + SFX + '.jpg',
+                   {z0:1.16, z1:1.00, y0:0.30, y1:0.74, x0:0.50, x1:0.44}),
+  reveal:  new Pan(document.getElementById('cv-reveal'),  'assets/web/reveal'  + SFX + '.jpg',
+                   {z0:1.22, z1:1.02, y0:0.62, y1:0.26, x0:0.54, x1:0.48, reveal:true})
 };
 
 /* ---------- LOADER ---------- */
-var critical = [];
-for(var i=0;i<SEQ.arrival.count;i++) critical.push([SEQ.arrival, i]);
-for(var j=0;j<28;j++) critical.push([SEQ.reveal, j]);
-var total = critical.length, done = 0, shown = 0;
+var preload = [
+  SEQ.arrival, SEQ.reveal,
+  'assets/web/sejour' + SFX + '.jpg',
+  'assets/levels/t5.jpg', 'assets/levels/t4.jpg', 'assets/levels/t3.jpg'
+];
+var total = preload.length, done = 0, shownT = 0, curPct = 0;
 var fill = document.getElementById('ldFill'), pct = document.getElementById('ldPct');
-function bump(){
-  done++;
-  var p = Math.min(100, Math.round(done/total*100));
-  if(p > shown){ shown = p; fill.style.width = p + '%'; pct.textContent = p; }
-  if(done >= total) finish();
-}
+/* la barre suit la progression réelle mais glisse : jamais de saut brutal */
+var ramping = true;
+(function ramp(){
+  if(!ramping) return;
+  var target = Math.min(100, Math.round(done/total*100));
+  if(curPct < target) curPct = Math.min(target, curPct + Math.max(0.6, (target-curPct)*0.12));
+  var v = Math.round(curPct);
+  if(v !== shownT){ shownT = v; fill.style.width = v + '%'; pct.textContent = v; }
+  requestAnimationFrame(ramp);
+})();
+function bump(){ if(++done >= total) finish(); }
 var finished = false;
 function finish(){
   if(finished) return; finished = true;
+  ramping = false;
   fill.style.width = '100%'; pct.textContent = '100';
   setTimeout(function(){
     document.getElementById('loader').classList.add('done');
     document.body.classList.remove('is-loading');
     SEQ.arrival.resize(); SEQ.reveal.resize();
-    // le reste des frames en tâche de fond
-    for(var k=28;k<SEQ.reveal.count;k++) SEQ.reveal.load(k);
     if(window.ScrollTrigger) ScrollTrigger.refresh();
   }, 420);
 }
-critical.forEach(function(c){ c[0].load(c[1], bump); });
+preload.forEach(function(it){
+  if(typeof it === 'string'){ var im = new Image(); im.onload = im.onerror = bump; im.src = it; }
+  else it.load(bump);
+});
 setTimeout(finish, 12000); // garde-fou : jamais bloqué sur le loader
 
 /* ---------- BARRE DE RECHERCHE ---------- */
@@ -907,12 +1009,16 @@ if(window.matchMedia('(min-width:900px)').matches) setOpen(true);
 toggle.addEventListener('click', function(){ setOpen(!topbar.classList.contains('open')); });
 document.getElementById('searchForm').addEventListener('submit', function(e){
   e.preventDefault();
-  var loc = document.getElementById('f-loc').value;
-  var type = document.getElementById('f-type').value;
+  var presta  = document.getElementById('f-presta');
+  var secteur = document.getElementById('f-secteur');
+  var type    = document.getElementById('f-type').value;
+  var url = 'https://koytchaimmo.re/index.php/recherche/?prestation_type=' +
+            encodeURIComponent(presta.value) + '&pro_res=' + encodeURIComponent(secteur.value);
   var note = document.getElementById('searchNote');
-  note.innerHTML = '<b>Démonstration —</b> recherche « ' + type + ' · ' + loc +
-    ' » : 1 bien correspond, la Villa Solèy, présentée ci-dessous. Le portail réel de Koytcha se branchera ici.';
-  document.getElementById('ch1').scrollIntoView({behavior:'smooth', block:'start'});
+  note.innerHTML = 'Recherche « ' + presta.options[presta.selectedIndex].text.toLowerCase() + ' · ' +
+    secteur.options[secteur.selectedIndex].text.toLowerCase() + ' · ' + type.toLowerCase() +
+    ' » ouverte sur le portail officiel <b>koytchaimmo.re</b> (nouvel onglet).';
+  window.open(url, '_blank', 'noopener');
 });
 
 /* ---------- SÉLECTEUR D'ÉTAGES ---------- */
@@ -996,8 +1102,9 @@ document.getElementById('visitForm').addEventListener('submit', function(e){
   var ok = document.getElementById('visitOk');
   ok.hidden = false;
   ok.className = 'ok-msg';
-  ok.innerHTML = '<strong>' + nom + ', c\'est noté.</strong><br>Visite privée de la Villa Solèy demandée pour le ' + d +
-    ' à ' + chosen.replace(':',' h ') + '. <em>Démonstration : aucune donnée n\'est envoyée ni enregistrée.</em>';
+  ok.innerHTML = '<strong>' + nom + ', c\'est noté.</strong><br>Visite de la Résidence Les Manguiers demandée pour le ' + d +
+    ' à ' + chosen.replace(':',' h ') + '. <em>Maquette de démonstration : aucune donnée n\'est envoyée ni enregistrée. ' +
+    'Pour une vraie prise de rendez-vous, appelez le 0262 97 96 07.</em>';
   submit.disabled = true;
   submit.textContent = 'Demande enregistrée';
 });
