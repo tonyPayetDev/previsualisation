@@ -40,19 +40,39 @@
   </header>
 
   <div class="alert">
-    <h3>⚠️ Voix clonée : il manque un dernier enregistrement</h3>
-    L'ancienne tâche de validation a expiré côté Suno, et la phrase de vérification est régénérée à chaque fois par une IA (elle n'est jamais la même).
-    Ta prise « Chantons ensemble sous les étoiles et respire la musique » a été refusée :
-    <em>« It didn't sound like you said the phrase. »</em>
+    <h3>✅ On a trouvé pourquoi ça ratait — et ce n'était pas toi</h3>
+    Diagnostic API complet fait le 16/08. La phrase de vérification de Suno
+    <b>expire au bout d'environ 3 minutes</b> (mesuré : encore valide à 151 s, morte à 181 s).
+    Tes 4 prises n'ont jamais été écoutées : à chaque fois la phrase était déjà périmée quand on l'envoyait.
     <br><br>
-    Une tâche fraîche est ouverte. Il faut te réenregistrer en <b>CHANTANT</b> exactement cette phrase :
-    <span class="phrase">« Chantons ensemble sous les reflets de la lumière musicale »</span>
+    La preuve : quand la phrase est encore vivante, l'API répond
+    <em>« It didn't sound like you said the phrase »</em> (elle a écouté).
+    Quand elle est périmée, elle répond <em>« Verification phrase expired or not found »</em> (elle n'a rien écouté).
+    Nos échecs = uniquement le second message.
+    <br><br>
+    <b>Ce qu'on fait maintenant :</b> une prise en direct, chrono en main.
     <ol>
-      <li>A cappella, sans musique de fond</li>
-      <li>Chanté (pas parlé) — c'est un contrôle anti-fraude</li>
-      <li>8 à 15 secondes, articulation nette</li>
+      <li>Tu te mets au calme, dictaphone déjà ouvert, et tu me préviens quand tu es prêt</li>
+      <li>Je tire la phrase et je te l'envoie dans la seconde</li>
+      <li>Tu la <b>chantes</b> a cappella (pas parlée), 8 à 15 s, articulation nette</li>
+      <li>Tu m'envoies le fichier tout de suite — on a <b>2 minutes</b>, pas plus</li>
     </ol>
-    Dès que le fichier est fourni, le <b>voiceId</b> est obtenu en ~1 min et cette chanson est régénérée avec ta vraie voix.
+    Si on rate la fenêtre, on retire une phrase (gratuit, 20 s) et on recommence autant de fois qu'il faut.
+  </div>
+
+  <div class="card">
+    <div class="card-head">
+      <h2>Bonus : ta VRAIE voix + instru (sans clonage)</h2>
+      <span class="badge">🎧 À écouter</span>
+    </div>
+    <audio src="tony-voix-reelle-instru-v1.mp3" controls preload="metadata"></audio>
+    <audio src="tony-voix-reelle-instru-v2.mp3" controls preload="metadata"></audio>
+    <div class="meta">
+      Ton a cappella passé dans <b>add-instrumental</b> (Suno V5) : l'IA compose l'instru autour de ta voix.<br>
+      Durées <b>24,6s</b> et <b>26,6s</b> · Aucune phrase de vérification nécessaire · 12 crédits<br>
+      <b>Dis-moi si ta voix est bien conservée</b> — si oui, c'est une piste utilisable tout de suite,
+      sans attendre le clone.
+    </div>
   </div>
 
   <div class="card">
@@ -81,12 +101,13 @@
   <div class="card">
     <div class="card-head">
       <h2>Échantillon chanté fourni par Tony</h2>
-      <span class="badge warn">✖ Refusé (mauvaise phrase)</span>
+      <span class="badge">✔ Prise valide, jamais écoutée</span>
     </div>
     <audio src="tony-sample-chante-source.mp3" controls preload="metadata"></audio>
     <div class="meta">
       Durée <b>8,4s</b> · Converti en mono 44,1 kHz MP3 · Qualité audio OK<br>
-      Refus uniquement dû au <b>texte</b> chanté, pas à la voix ni à la prise.
+      Cette prise sert de <b>voix source</b> à cloner. Elle n'a jamais été rejetée pour sa qualité :
+      les tâches expiraient avant que Suno ne l'écoute.
     </div>
   </div>
 
