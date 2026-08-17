@@ -1,0 +1,1116 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>BLACKSSHADE — Le futur c'est maintenant</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="BLACKSSHADE — vêtements personnalisés, fashion / mecha / streetwear. SHADE-01 Bomber Mecha. Maquette de présentation, marque en lancement.">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#050506">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Spectral:ital,wght@0,300;0,400;0,600;1,300&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#050506; --ink2:#0a0a0d; --panel:#0d0d11; --panel2:#111116;
+  --line:rgba(255,255,255,.09); --line2:rgba(255,255,255,.16);
+  --txt:#e8e8ee; --dim:#8e8e9a; --dim2:#63636e;
+  --acc:#8a5cf0;            /* violet mat */
+  --acc-soft:rgba(138,92,240,.14);
+  --amber:#c98a45; --cyan:#4fc6cf;
+  --h:'Bebas Neue','Oswald','Arial Narrow',sans-serif;
+  --b:'Spectral',Georgia,'Times New Roman',serif;
+  --pad:clamp(18px,5vw,64px);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{
+  background:var(--ink); color:var(--txt); font-family:var(--b); font-weight:300;
+  font-size:clamp(15px,1.05rem,18px); line-height:1.72;
+  -webkit-font-smoothing:antialiased; overflow-x:hidden;
+}
+body.is-loading{overflow:hidden;height:100vh}
+body.locked{overflow:hidden}
+img{max-width:100%;display:block}
+a{color:inherit}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+::selection{background:var(--acc);color:#fff}
+
+h1,h2,h3,.bebas{font-family:var(--h);font-weight:400;letter-spacing:.02em;line-height:.92;text-transform:uppercase}
+.mono{font-family:var(--h);letter-spacing:.28em;font-size:.72rem;color:var(--dim);text-transform:uppercase}
+.acc{color:var(--acc)}
+
+/* ---------- LOADER ---------- */
+#loader{position:fixed;inset:0;z-index:200;background:var(--ink);display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:26px;transition:opacity .7s ease,visibility .7s}
+#loader.done{opacity:0;visibility:hidden;pointer-events:none}
+.ld-mark{font-family:var(--h);font-size:clamp(30px,7vw,54px);letter-spacing:.34em;
+  text-indent:.34em;color:#fff;opacity:.92}
+.ld-base{font-size:.8rem;letter-spacing:.18em;color:var(--dim2);text-transform:uppercase;font-family:var(--h)}
+.ld-bar{width:min(300px,62vw);height:1px;background:rgba(255,255,255,.13);overflow:hidden}
+.ld-bar i{display:block;height:100%;width:0;background:var(--acc);transition:width .18s linear}
+.ld-num{font-family:var(--h);font-size:.95rem;letter-spacing:.2em;color:var(--dim)}
+
+/* ---------- TOPBAR ---------- */
+#topbar{position:fixed;top:0;left:0;right:0;z-index:90;display:flex;align-items:center;gap:14px;
+  padding:14px var(--pad);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  background:linear-gradient(180deg,rgba(5,5,6,.86),rgba(5,5,6,.32) 70%,transparent);
+  border-bottom:1px solid transparent;transition:border-color .4s,background .4s}
+#topbar.solid{background:rgba(6,6,9,.93);border-bottom-color:var(--line)}
+.brand{font-family:var(--h);font-size:clamp(17px,2.5vw,22px);letter-spacing:.3em;text-indent:.3em;white-space:nowrap}
+.brand small{display:block;font-family:var(--b);font-size:.56rem;letter-spacing:.22em;color:var(--dim2);
+  text-indent:0;text-transform:uppercase;margin-top:2px}
+nav.links{display:none;gap:26px;margin-left:auto;font-family:var(--h);letter-spacing:.16em;font-size:.86rem;color:var(--dim)}
+nav.links a{text-decoration:none;transition:color .25s}
+nav.links a:hover{color:#fff}
+.tb-right{margin-left:auto;display:flex;align-items:center;gap:10px}
+.pill{border:1px solid var(--line2);border-radius:999px;padding:5px 11px;font-family:var(--h);
+  font-size:.66rem;letter-spacing:.18em;color:var(--dim);white-space:nowrap}
+.cart-btn{display:flex;align-items:center;gap:8px;border:1px solid var(--line2);border-radius:999px;
+  padding:8px 15px;font-family:var(--h);letter-spacing:.16em;font-size:.82rem;transition:border-color .25s,background .25s}
+.cart-btn:hover{border-color:var(--acc);background:var(--acc-soft)}
+.cart-btn b{background:var(--acc);color:#fff;border-radius:999px;min-width:19px;height:19px;
+  display:inline-flex;align-items:center;justify-content:center;font-size:.66rem;font-weight:400;padding:0 5px}
+.cart-btn b.zero{background:rgba(255,255,255,.13);color:var(--dim)}
+#prog{position:fixed;top:0;left:0;height:2px;width:0;background:var(--acc);z-index:95;transition:width .1s linear}
+@media(min-width:900px){nav.links{display:flex}.tb-right{margin-left:26px}}
+/* mobile étroit : la barre ne doit jamais déborder */
+@media(max-width:640px){.brand small{display:none}.brand{letter-spacing:.2em;text-indent:.2em}}
+@media(max-width:520px){.pill{display:none}}
+@media(max-width:400px){.brand{font-size:15px;letter-spacing:.14em;text-indent:.14em}
+  .cart-btn{padding:8px 12px;font-size:.76rem}}
+
+/* ---------- DUST ---------- */
+#dust{position:fixed;inset:0;width:100%;height:100%;z-index:1;pointer-events:none;opacity:.55;transition:opacity .5s}
+
+/* ---------- HERO CHAPTERS ---------- */
+#hero{position:relative;z-index:2}
+.ch{position:relative;height:320vh}
+.ch .stage{position:sticky;top:0;height:100svh;overflow:hidden;background:var(--ink)}
+.ch canvas.cv{position:absolute;inset:0;width:100%;height:100%;display:block}
+/* dégradés : le texte se pose sur le noir, jamais au centre de l'image */
+.stage::after{content:'';position:absolute;inset:0;pointer-events:none;
+  background:
+    linear-gradient(180deg,rgba(5,5,6,.72) 0%,transparent 26%,transparent 44%,rgba(5,5,6,.80) 88%,rgba(5,5,6,.96) 100%),
+    linear-gradient(90deg,rgba(5,5,6,.86) 0%,rgba(5,5,6,.52) 26%,transparent 56%)}
+.stage::before{content:'';position:absolute;inset:0;pointer-events:none;z-index:2;
+  background:radial-gradient(120% 78% at 50% 46%,transparent 42%,rgba(5,5,6,.62) 100%)}
+.cap{position:absolute;left:var(--pad);right:var(--pad);bottom:clamp(56px,9vh,96px);z-index:3;
+  max-width:min(560px,88vw);text-align:left}
+.cap .idx{font-family:var(--h);font-size:.74rem;letter-spacing:.34em;color:var(--acc);margin-bottom:12px;display:block}
+.cap h1,.cap h2{font-size:clamp(38px,9.5vw,86px)}
+.cap h1 em,.cap h2 em{font-style:normal;display:block;color:var(--dim);font-size:.42em;letter-spacing:.16em;margin-top:10px}
+.cap p{margin-top:16px;color:var(--dim);max-width:44ch;font-size:clamp(14px,.98rem,17px);line-height:1.68}
+.cap .rule{width:44px;height:1px;background:var(--acc);margin:18px 0 0}
+.scrollhint{position:absolute;right:var(--pad);bottom:clamp(56px,9vh,96px);z-index:3;
+  font-family:var(--h);letter-spacing:.24em;font-size:.68rem;color:var(--dim2);display:none}
+@media(min-width:760px){.scrollhint{display:block}}
+.scrollhint i{display:block;width:1px;height:42px;background:linear-gradient(var(--dim2),transparent);margin:10px auto 0}
+#ch1 .cap h2{font-size:clamp(44px,11vw,104px)}
+
+/* ---------- SECTIONS ---------- */
+section.blk{position:relative;z-index:2;padding:clamp(72px,11vh,132px) var(--pad);border-top:1px solid var(--line);background:var(--ink)}
+.wrap{max-width:1180px;margin:0 auto}
+.eyebrow{display:flex;align-items:center;gap:14px;margin-bottom:26px}
+.eyebrow span{font-family:var(--h);letter-spacing:.3em;font-size:.74rem;color:var(--acc)}
+.eyebrow i{flex:1;height:1px;background:var(--line);display:block}
+h2.sec{font-size:clamp(32px,6.5vw,62px);margin-bottom:14px}
+.lede{color:var(--dim);max-width:60ch;margin-bottom:44px;font-size:clamp(15px,1.02rem,18px)}
+
+/* SPECS */
+.specs{display:grid;gap:1px;background:var(--line);border:1px solid var(--line)}
+@media(min-width:720px){.specs{grid-template-columns:1fr 1fr}}
+.spec{background:var(--ink2);padding:26px 24px}
+.spec dt{font-family:var(--h);letter-spacing:.2em;font-size:.76rem;color:var(--dim2);margin-bottom:8px}
+.spec dd{font-size:1rem;color:var(--txt)}
+.spec dd small{display:block;color:var(--dim);font-size:.86rem;margin-top:5px;line-height:1.6}
+
+/* CONFIGURATEUR */
+.cfg{display:grid;gap:clamp(28px,4vw,56px);align-items:start}
+@media(min-width:940px){.cfg{grid-template-columns:1.05fr .95fr}}
+.cfg-vis{position:relative;border:1px solid var(--line);background:#000;aspect-ratio:4/5;overflow:hidden}
+@media(min-width:940px){.cfg-vis{position:sticky;top:96px;aspect-ratio:3/4}}
+.cfg-vis canvas{position:absolute;inset:0;width:100%;height:100%}
+.cfg-vis .tag{position:absolute;left:16px;top:14px;z-index:2;font-family:var(--h);letter-spacing:.22em;
+  font-size:.68rem;color:var(--dim);background:rgba(5,5,6,.7);padding:5px 10px;border:1px solid var(--line)}
+.cfg-vis .ref{position:absolute;right:16px;bottom:14px;z-index:2;font-family:var(--h);letter-spacing:.2em;
+  font-size:.72rem;color:var(--acc)}
+.grp{margin-bottom:30px}
+.grp>label{display:flex;justify-content:space-between;align-items:baseline;font-family:var(--h);
+  letter-spacing:.24em;font-size:.76rem;color:var(--dim2);margin-bottom:13px}
+.grp>label b{font-family:var(--b);font-weight:400;font-size:.84rem;letter-spacing:0;
+  color:var(--txt);text-transform:none}
+.opts{display:flex;flex-wrap:wrap;gap:9px}
+.opt{border:1px solid var(--line2);background:var(--panel);padding:11px 16px;font-family:var(--h);
+  letter-spacing:.14em;font-size:.88rem;color:var(--dim);transition:.22s;display:flex;align-items:center;gap:9px}
+.opt:hover{border-color:var(--line2);color:var(--txt);background:var(--panel2)}
+.opt[aria-pressed="true"]{border-color:var(--acc);color:#fff;background:var(--acc-soft)}
+.opt .sw{width:13px;height:13px;border-radius:50%;box-shadow:0 0 0 1px rgba(255,255,255,.22)}
+.opt.wide{flex:1 1 100%;justify-content:space-between;text-align:left;font-family:var(--b);
+  letter-spacing:0;font-size:.92rem;text-transform:none;padding:13px 16px}
+.opt.wide span:last-child{font-family:var(--h);letter-spacing:.1em;color:var(--dim);font-size:.86rem}
+.opt.wide[aria-pressed="true"] span:last-child{color:var(--acc)}
+.note{font-size:.86rem;color:var(--dim);margin-top:11px}
+.price-row{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;
+  border-top:1px solid var(--line);padding-top:24px;margin-top:6px;flex-wrap:wrap}
+.price{font-family:var(--h);font-size:clamp(44px,10vw,72px);line-height:.9}
+.price sup{font-size:.36em;vertical-align:super;margin-left:4px;color:var(--dim)}
+.price-meta{text-align:right;font-size:.84rem;color:var(--dim);min-width:150px}
+.price-meta b{display:block;font-family:var(--h);letter-spacing:.16em;color:var(--txt);font-size:.9rem;font-weight:400}
+.btn{display:flex;align-items:center;justify-content:center;gap:12px;width:100%;margin-top:20px;
+  padding:19px 24px;border:1px solid var(--acc);background:var(--acc);color:#fff;
+  font-family:var(--h);letter-spacing:.22em;font-size:1rem;transition:.25s}
+.btn:hover{background:#7a4ce4;border-color:#7a4ce4}
+.btn.ghost{background:transparent;color:var(--txt);border-color:var(--line2)}
+.btn.ghost:hover{background:var(--panel2);border-color:var(--acc);color:#fff}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.legal-mini{font-size:.8rem;color:var(--dim2);margin-top:14px;line-height:1.62}
+
+/* PRICING TABLE */
+.tbl{width:100%;border-collapse:collapse;border:1px solid var(--line);font-size:.94rem}
+.tbl th,.tbl td{padding:15px 16px;text-align:left;border-bottom:1px solid var(--line)}
+.tbl th{font-family:var(--h);letter-spacing:.2em;font-size:.74rem;color:var(--dim2);font-weight:400;background:var(--ink2)}
+.tbl tr:last-child td{border-bottom:0}
+.tbl td b{font-family:var(--h);letter-spacing:.1em;font-weight:400;font-size:1.02rem}
+.dotc{display:inline-flex;align-items:center;gap:9px}
+.dotc i{width:11px;height:11px;border-radius:50%;box-shadow:0 0 0 1px rgba(255,255,255,.22)}
+.stk{font-family:var(--h);letter-spacing:.14em;font-size:.76rem;padding:4px 9px;border:1px solid var(--line2);color:var(--dim)}
+.stk.ok{color:var(--acc);border-color:rgba(138,92,240,.5)}
+.tbl-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+
+/* REVIEWS — état vide assumé */
+.empty{border:1px dashed var(--line2);background:var(--ink2);padding:clamp(34px,6vw,60px);text-align:center}
+.empty .big{font-family:var(--h);font-size:clamp(46px,10vw,80px);color:var(--dim2);line-height:.9}
+.empty p{color:var(--dim);max-width:52ch;margin:16px auto 0}
+.empty .stars{color:var(--dim2);letter-spacing:.42em;font-size:1.1rem;margin-top:14px}
+
+/* SHIPPING */
+.cards{display:grid;gap:1px;background:var(--line);border:1px solid var(--line)}
+@media(min-width:780px){.cards{grid-template-columns:repeat(3,1fr)}}
+.card{background:var(--ink2);padding:28px 24px}
+.card h3{font-size:1.5rem;margin-bottom:11px}
+.card p{color:var(--dim);font-size:.92rem}
+.card .k{font-family:var(--h);letter-spacing:.2em;font-size:.72rem;color:var(--acc);display:block;margin-bottom:14px}
+
+/* FAQ */
+.faq details{border-bottom:1px solid var(--line)}
+.faq summary{list-style:none;cursor:pointer;padding:22px 40px 22px 0;position:relative;
+  font-family:var(--h);font-size:clamp(19px,3.4vw,27px);letter-spacing:.04em;transition:color .25s}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary:hover{color:var(--acc)}
+.faq summary::after{content:'+';position:absolute;right:6px;top:50%;transform:translateY(-50%);
+  color:var(--acc);font-size:1.4rem;transition:transform .3s}
+.faq details[open] summary::after{transform:translateY(-50%) rotate(45deg)}
+.faq .ans{padding:0 0 24px;color:var(--dim);max-width:70ch}
+
+/* HONNÊTETÉ */
+.honest{position:relative;z-index:2;background:var(--ink2);border-top:1px solid var(--line);
+  padding:clamp(30px,5vw,44px) var(--pad)}
+.honest .wrap{display:flex;gap:18px;align-items:flex-start}
+.honest .dot{width:9px;height:9px;border-radius:50%;background:var(--acc);flex:none;margin-top:9px;
+  box-shadow:0 0 0 5px var(--acc-soft)}
+.honest p{color:var(--dim);font-size:.92rem;line-height:1.75}
+.honest b{color:var(--txt);font-weight:400}
+
+footer{position:relative;z-index:2;background:var(--ink);border-top:1px solid var(--line);
+  padding:clamp(40px,6vw,64px) var(--pad) 40px}
+footer .wrap{display:flex;flex-wrap:wrap;gap:26px;justify-content:space-between;align-items:flex-end}
+footer .fbrand{font-family:var(--h);font-size:clamp(30px,7vw,58px);letter-spacing:.22em;text-indent:.22em}
+footer .fbase{color:var(--dim);font-size:.88rem;margin-top:8px}
+footer .fmeta{font-size:.8rem;color:var(--dim2);text-align:left;line-height:1.9}
+@media(min-width:700px){footer .fmeta{text-align:right}}
+
+/* ---------- PANIER ---------- */
+.scrim{position:fixed;inset:0;z-index:110;background:rgba(3,3,5,.74);backdrop-filter:blur(4px);
+  opacity:0;visibility:hidden;transition:.35s}
+.scrim.on{opacity:1;visibility:visible}
+#cart{position:fixed;top:0;right:0;bottom:0;z-index:120;width:min(430px,100vw);background:var(--ink2);
+  border-left:1px solid var(--line);transform:translateX(101%);transition:transform .42s cubic-bezier(.6,0,.2,1);
+  display:flex;flex-direction:column}
+#cart.on{transform:none}
+.cart-hd{display:flex;align-items:center;justify-content:space-between;padding:20px 22px;border-bottom:1px solid var(--line)}
+.cart-hd h3{font-size:1.5rem;letter-spacing:.14em}
+.x{font-size:1.5rem;line-height:1;color:var(--dim);padding:4px 8px;transition:color .2s}
+.x:hover{color:#fff}
+.cart-body{flex:1;overflow-y:auto;padding:8px 22px 22px}
+.line{display:flex;gap:14px;padding:20px 0;border-bottom:1px solid var(--line)}
+.line .thumb{width:60px;height:74px;flex:none;border:1px solid var(--line);background:#000;overflow:hidden;position:relative}
+.line .thumb canvas{position:absolute;inset:0;width:100%;height:100%}
+.line .info{flex:1;min-width:0}
+.line .info b{font-family:var(--h);letter-spacing:.1em;font-weight:400;font-size:1.02rem;display:block}
+.line .info small{color:var(--dim);font-size:.82rem;display:block;margin-top:3px;line-height:1.5}
+.line .info .rm{color:var(--dim2);font-size:.78rem;text-decoration:underline;margin-top:8px;display:inline-block}
+.line .info .rm:hover{color:var(--acc)}
+.qty{display:flex;align-items:center;gap:0;border:1px solid var(--line2);margin-top:10px;width:fit-content}
+.qty button{width:30px;height:28px;color:var(--dim);font-size:1rem;line-height:1}
+.qty button:hover{color:#fff;background:var(--panel2)}
+.qty span{min-width:30px;text-align:center;font-family:var(--h);letter-spacing:.1em;font-size:.9rem}
+.line .amt{font-family:var(--h);letter-spacing:.08em;font-size:1.02rem;white-space:nowrap}
+.cart-empty{color:var(--dim);text-align:center;padding:60px 10px;font-size:.94rem}
+.cart-ft{border-top:1px solid var(--line);padding:20px 22px;background:var(--panel)}
+.tot{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px}
+.tot span{font-family:var(--h);letter-spacing:.2em;font-size:.84rem;color:var(--dim)}
+.tot b{font-family:var(--h);font-size:1.9rem;font-weight:400;letter-spacing:.04em}
+.cart-ft .btn{margin-top:16px}
+.cart-warn{font-size:.8rem;color:var(--dim2);line-height:1.6;margin-top:13px}
+
+/* ---------- MODALE LISTE D'ATTENTE ---------- */
+#wl{position:fixed;z-index:130;left:50%;top:50%;transform:translate(-50%,-48%) scale(.98);
+  width:min(480px,calc(100vw - 28px));max-height:88svh;overflow-y:auto;background:var(--ink2);
+  border:1px solid var(--line2);padding:clamp(26px,5vw,38px);opacity:0;visibility:hidden;transition:.3s}
+#wl.on{opacity:1;visibility:visible;transform:translate(-50%,-50%) scale(1)}
+#wl h3{font-size:clamp(26px,5vw,36px);margin-bottom:10px}
+#wl .sub{color:var(--dim);font-size:.9rem;margin-bottom:24px}
+.fld{margin-bottom:16px}
+.fld label{display:block;font-family:var(--h);letter-spacing:.2em;font-size:.72rem;color:var(--dim2);margin-bottom:7px}
+.fld input,.fld select,.fld textarea{width:100%;background:var(--panel);border:1px solid var(--line2);
+  color:var(--txt);padding:13px 14px;font-family:var(--b);font-size:.96rem;border-radius:0;-webkit-appearance:none}
+.fld input:focus,.fld select:focus,.fld textarea:focus{outline:none;border-color:var(--acc)}
+.fld textarea{min-height:82px;resize:vertical}
+#wlDone{display:none;text-align:center;padding:14px 0}
+#wlDone .big{font-family:var(--h);font-size:2.4rem;color:var(--acc);margin-bottom:12px}
+#wlDone p{color:var(--dim);font-size:.92rem}
+.toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,20px);z-index:140;background:var(--panel2);
+  border:1px solid var(--acc);padding:13px 22px;font-family:var(--h);letter-spacing:.16em;font-size:.84rem;
+  opacity:0;visibility:hidden;transition:.3s;white-space:nowrap;max-width:calc(100vw - 28px)}
+.toast.on{opacity:1;visibility:visible;transform:translate(-50%,0)}
+
+/* ---------- REDUCED MOTION ---------- */
+@media (prefers-reduced-motion: reduce){
+  *{animation:none!important;transition-duration:.01ms!important}
+  .ch{height:auto}
+  .ch .stage{position:relative;height:min(78svh,620px)}
+  #dust{display:none}
+}
+.reduced .ch{height:auto}
+.reduced .ch .stage{position:relative;height:min(78svh,620px)}
+.reduced #dust{display:none}
+</style>
+</head>
+<body class="is-loading">
+
+<div id="loader">
+  <div class="ld-mark">BLACKSSHADE</div>
+  <div class="ld-base">Le futur c'est maintenant</div>
+  <div class="ld-bar"><i id="ldFill"></i></div>
+  <div class="ld-num"><span id="ldPct">0</span> %</div>
+</div>
+
+<div id="prog"></div>
+<canvas id="dust"></canvas>
+
+<header id="topbar">
+  <div class="brand">BLACKSSHADE<small>Le futur c'est maintenant</small></div>
+  <nav class="links">
+    <a href="#specs">Specs</a>
+    <a href="#config">Configurer</a>
+    <a href="#pricing">Tarifs</a>
+    <a href="#reviews">Avis</a>
+    <a href="#faq">FAQ</a>
+  </nav>
+  <div class="tb-right">
+    <span class="pill">Maquette</span>
+    <button class="cart-btn" id="cartOpen" aria-label="Ouvrir le panier">PANIER <b class="zero" id="cartCount">0</b></button>
+  </div>
+</header>
+
+<main>
+<!-- ============ HERO SCROLL-SCRUB ============ -->
+<div id="hero">
+
+  <section class="ch" id="ch1" data-ch="1">
+    <div class="stage">
+      <canvas class="cv" id="cv1"></canvas>
+      <div class="cap">
+        <span class="idx">CH.01 — L'ORBITE</span>
+        <h1 class="bebas" style="font-size:clamp(44px,11vw,104px)">SHADE&#8209;01<em>Bomber Mecha</em></h1>
+        <div class="rule"></div>
+        <p>Une seule silhouette. Coque d'épaule articulée, sergé technique déperlant, passepoil néon mat cousu au fil.
+           On la tourne jusqu'à ce qu'elle tienne sous tous les angles.</p>
+      </div>
+      <div class="scrollhint">SCROLL<i></i></div>
+    </div>
+  </section>
+
+  <section class="ch" id="ch2" data-ch="2">
+    <div class="stage">
+      <canvas class="cv" id="cv2"></canvas>
+      <div class="cap">
+        <span class="idx">CH.02 — LA MATIÈRE</span>
+        <h2>La preuve<em>est à trente centimètres</em></h2>
+        <div class="rule"></div>
+        <p>Double couture renforcée sur chaque panneau. Quincaillerie anodisée noire, mate, sans reflet parasite.
+           Le passepoil est un vrai cordon cousu, pas une impression.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="ch" id="ch3" data-ch="3">
+    <div class="stage">
+      <canvas class="cv" id="cv3"></canvas>
+      <div class="cap">
+        <span class="idx">CH.03 — L'ÉCHELLE</span>
+        <h2>Portée,<em>elle tombe droit</em></h2>
+        <div class="rule"></div>
+        <p>Coupe boxy, épaule tenue par la coque, longueur au bassin. Ni oversize mou, ni cintré :
+           la pièce garde sa géométrie même les mains dans les poches.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="ch" id="ch4" data-ch="4">
+    <div class="stage">
+      <canvas class="cv" id="cv4"></canvas>
+      <div class="cap">
+        <span class="idx">CH.04 — LE RECUL</span>
+        <h2>Le futur<em>c'est maintenant</em></h2>
+        <div class="rule"></div>
+        <p>Fin du plan. La pièce reste seule sur le noir — c'est là qu'on la juge.</p>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<!-- ============ SPECS ============ -->
+<section class="blk" id="specs">
+  <div class="wrap">
+    <div class="eyebrow"><span>01 — SPECS</span><i></i></div>
+    <h2 class="sec">Ce qu'il y a<br>dans la pièce</h2>
+    <p class="lede">Fiche technique de la SHADE&#8209;01. Tout ce qui est listé ici est le cahier des charges
+      de production visé pour la première série — c'est une marque en lancement, rien n'a encore été fabriqué.</p>
+    <dl class="specs">
+      <div class="spec"><dt>MATIÈRE PRINCIPALE</dt><dd>Sergé nylon technique 240 g/m²
+        <small>Traitement déperlant, tenue mate, sans brillance sous flash.</small></dd></div>
+      <div class="spec"><dt>DOUBLURE</dt><dd>Satin recyclé + ouate 80 g
+        <small>Doublure matelassée sur le corps, manches non doublées pour la mobilité.</small></dd></div>
+      <div class="spec"><dt>COQUE D'ÉPAULE</dt><dd>Polymère injecté, finition anodisée
+        <small>Amovible par 4 vis alu. La pièce se porte coque montée ou nue.</small></dd></div>
+      <div class="spec"><dt>PASSEPOIL</dt><dd>Cordon néon mat cousu main
+        <small>Trois coloris. Aucun film réfléchissant, aucune impression.</small></dd></div>
+      <div class="spec"><dt>COUPE</dt><dd>Boxy, épaule tombante tenue
+        <small>Longueur bassin. Bord-côte poignets et taille.</small></dd></div>
+      <div class="spec"><dt>TAILLES</dt><dd>S · M · L · XL
+        <small>XL en coupe sur mesure (mesures prises à la commande).</small></dd></div>
+      <div class="spec"><dt>PERSONNALISATION</dt><dd>Broderie dorsale + plaque gravée
+        <small>Jusqu'à 14 caractères. C'est le cœur de la marque : chaque pièce est numérotée.</small></dd></div>
+      <div class="spec"><dt>ENTRETIEN</dt><dd>Lavage 30° coque démontée
+        <small>Séchage à plat. Pas de sèche-linge, pas d'adoucissant sur le passepoil.</small></dd></div>
+    </dl>
+  </div>
+</section>
+
+<!-- ============ CONFIGURATEUR + ADD TO CART ============ -->
+<section class="blk" id="config">
+  <div class="wrap">
+    <div class="eyebrow"><span>02 — CONFIGURER</span><i></i></div>
+    <h2 class="sec">Compose<br>ta pièce</h2>
+    <p class="lede">Coloris, taille, personnalisation. Le visuel et le prix se mettent à jour en direct.</p>
+
+    <div class="cfg">
+      <div class="cfg-vis">
+        <span class="tag" id="visTag">VIOLET MAT</span>
+        <canvas id="cvVar"></canvas>
+        <span class="ref">SHADE&#8209;01</span>
+      </div>
+
+      <div>
+        <div class="grp">
+          <label>COLORIS <b id="lblColor">Violet mat</b></label>
+          <div class="opts" id="optColors" role="group" aria-label="Coloris"></div>
+          <p class="note" id="colorNote"></p>
+        </div>
+
+        <div class="grp">
+          <label>TAILLE <b id="lblSize">M</b></label>
+          <div class="opts" id="optSizes" role="group" aria-label="Taille"></div>
+          <p class="note" id="sizeNote"></p>
+        </div>
+
+        <div class="grp">
+          <label>PERSONNALISATION <b id="lblPerso">Aucune</b></label>
+          <div class="opts" id="optPerso" role="group" aria-label="Personnalisation"></div>
+        </div>
+
+        <div class="price-row">
+          <div class="price"><span id="priceVal">289</span><sup>€</sup></div>
+          <div class="price-meta">
+            <b id="skuVal">SHADE01-VIO-M</b>
+            <span id="availVal">Disponible au lancement</span>
+          </div>
+        </div>
+
+        <button class="btn" id="addBtn">AJOUTER AU PANIER</button>
+        <button class="btn ghost" id="wlBtn">REJOINDRE LA LISTE D'ATTENTE</button>
+        <p class="legal-mini">La boutique n'est pas ouverte : aucun paiement n'est encaissé et aucune commande
+          n'est enregistrée. Le panier ci-dessus vit uniquement dans votre navigateur.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PRICING ============ -->
+<section class="blk" id="pricing">
+  <div class="wrap">
+    <div class="eyebrow"><span>03 — TARIFS</span><i></i></div>
+    <h2 class="sec">Variantes<br>&amp; disponibilité</h2>
+    <p class="lede">Tarifs de lancement prévus pour la première série. Ils sont indicatifs tant que la production
+      n'est pas lancée.</p>
+    <div class="tbl-scroll">
+    <table class="tbl">
+      <thead><tr><th>Variante</th><th>Prix</th><th>Série</th><th>Disponibilité</th></tr></thead>
+      <tbody id="priceRows"></tbody>
+    </table>
+    </div>
+    <p class="legal-mini" style="margin-top:18px">Options : taille XL en coupe sur mesure +20 €.
+      Broderie dorsale + plaque gravée +60 €. Prix TTC, hors livraison.</p>
+  </div>
+</section>
+
+<!-- ============ REVIEWS — état vide assumé ============ -->
+<section class="blk" id="reviews">
+  <div class="wrap">
+    <div class="eyebrow"><span>04 — AVIS</span><i></i></div>
+    <h2 class="sec">Avis clients</h2>
+    <div class="empty">
+      <div class="big">0 AVIS</div>
+      <div class="stars">☆ ☆ ☆ ☆ ☆</div>
+      <p>BLACKSSHADE n'a livré aucune pièce à ce jour. Il n'y a donc rien à afficher ici,
+        et nous n'inventerons pas de témoignages pour remplir la section.
+        Les premiers retours arriveront ici, tels quels, quand les premières vestes seront portées.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SHIPPING & RETURNS ============ -->
+<section class="blk" id="shipping">
+  <div class="wrap">
+    <div class="eyebrow"><span>05 — LIVRAISON &amp; RETOURS</span><i></i></div>
+    <h2 class="sec">Ce qui est prévu</h2>
+    <p class="lede">Conditions visées pour la première série. Elles seront figées avant l'ouverture de la boutique.</p>
+    <div class="cards">
+      <div class="card"><span class="k">EXPÉDITION</span><h3>France &amp; DOM</h3>
+        <p>Départ prévu sous 5 jours ouvrés après lancement de la série, suivi inclus.
+          La Réunion et la métropole au même tarif.</p></div>
+      <div class="card"><span class="k">RETOURS</span><h3>30 jours</h3>
+        <p>Retour accepté 30 jours, pièce non portée, coque montée. Les pièces personnalisées
+          (broderie, plaque gravée) ne sont pas reprises — c'est le prix du sur-mesure.</p></div>
+      <div class="card"><span class="k">GARANTIE</span><h3>2 ans coutures</h3>
+        <p>Coutures et quincaillerie garanties 2 ans. Coque d'épaule remplaçable à l'unité,
+          sans renvoyer la veste.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FAQ ============ -->
+<section class="blk" id="faq">
+  <div class="wrap">
+    <div class="eyebrow"><span>06 — FAQ</span><i></i></div>
+    <h2 class="sec">Questions</h2>
+    <div class="faq">
+      <details open><summary>Puis-je commander maintenant ?</summary>
+        <div class="ans">Non. BLACKSSHADE est en lancement : la boutique n'encaisse aucun paiement.
+          Vous pouvez composer votre pièce, la mettre au panier pour garder votre configuration,
+          et rejoindre la liste d'attente. Rien d'autre ne se passe pour l'instant.</div></details>
+      <details><summary>Les photos sont-elles réelles ?</summary>
+        <div class="ans">Non, et c'est écrit partout sur cette page : tous les visuels sont générés par
+          intelligence artificielle à partir du cahier des charges de la pièce. Ils montrent l'intention
+          de design, pas un produit photographié. Les visuels définitifs seront des photos de la vraie série.</div></details>
+      <details><summary>Que veut dire « personnalisé » ?</summary>
+        <div class="ans">Chaque pièce peut recevoir une broderie dorsale et une plaque gravée
+          (jusqu'à 14 caractères), et chaque exemplaire est numéroté. C'est le principe de la marque :
+          la silhouette est fixe, la pièce est la vôtre.</div></details>
+      <details><summary>La coque d'épaule, c'est solide ?</summary>
+        <div class="ans">Polymère injecté fixé par quatre vis alu sur des renforts cousus.
+          Elle se démonte en une minute pour le lavage et se remplace à l'unité en cas de casse.</div></details>
+      <details><summary>Pourquoi du néon « mat » ?</summary>
+        <div class="ans">Parce que le néon saturé vieillit mal et se lit comme un déguisement.
+          Le passepoil est un cordon teint dans la masse, mat : il attrape la lumière rasante
+          sans jamais briller. Trois coloris, pas dix.</div></details>
+      <details><summary>Où en est le projet ?</summary>
+        <div class="ans">Au stade du prototype et du design. Cette page est une proposition
+          de boutique, construite pour valider la direction artistique et le parcours d'achat
+          avant de lancer la production.</div></details>
+    </div>
+  </div>
+</section>
+</main>
+
+<!-- ============ MENTION HONNÊTE ============ -->
+<div class="honest">
+  <div class="wrap">
+    <span class="dot"></span>
+    <p><b>Maquette de présentation — à lire.</b> BLACKSSHADE est une marque <b>en cours de lancement</b> :
+      aucune pièce n'a encore été produite ni livrée. <b>Tous les visuels de cette page sont générés par
+      intelligence artificielle</b> à partir du cahier des charges du produit — ce ne sont pas des photographies
+      d'un vêtement existant. <b>Aucun paiement n'est encaissé</b>, aucune commande n'est enregistrée :
+      le panier est stocké uniquement dans votre navigateur et le formulaire de liste d'attente
+      n'envoie ni ne conserve aucune donnée. La section avis est <b>volontairement vide</b> —
+      aucun témoignage n'a été inventé. Les prix, délais et conditions affichés sont des intentions
+      de lancement, pas des engagements commerciaux.</p>
+  </div>
+</div>
+
+<footer>
+  <div class="wrap">
+    <div>
+      <div class="fbrand">BLACKSSHADE</div>
+      <div class="fbase">Le futur c'est maintenant — vêtements personnalisés, fashion / mecha / streetwear.</div>
+    </div>
+    <div class="fmeta">
+      © 2026 BLACKSSHADE — maquette de présentation<br>
+      Conception &amp; direction artistique : Automatisation Boost<br>
+      Visuels générés par IA · aucune transaction
+    </div>
+  </div>
+</footer>
+
+<!-- ============ PANIER ============ -->
+<div class="scrim" id="scrim"></div>
+<aside id="cart" aria-label="Panier" aria-hidden="true">
+  <div class="cart-hd">
+    <h3 class="bebas">PANIER</h3>
+    <button class="x" id="cartClose" aria-label="Fermer le panier">×</button>
+  </div>
+  <div class="cart-body" id="cartBody"></div>
+  <div class="cart-ft">
+    <div class="tot"><span>TOTAL</span><b id="cartTotal">0 €</b></div>
+    <button class="btn" id="checkoutBtn">REJOINDRE LA LISTE D'ATTENTE</button>
+    <p class="cart-warn">La boutique n'est pas encore ouverte : ce panier ne déclenche aucun paiement
+      et n'est envoyé nulle part. Il est conservé dans votre navigateur pour retrouver votre configuration.</p>
+  </div>
+</aside>
+
+<!-- ============ MODALE LISTE D'ATTENTE ============ -->
+<div id="wl" role="dialog" aria-modal="true" aria-labelledby="wlTitle">
+  <button class="x" id="wlClose" style="position:absolute;right:14px;top:12px" aria-label="Fermer">×</button>
+  <div id="wlForm">
+    <h3 class="bebas" id="wlTitle">LISTE D'ATTENTE</h3>
+    <p class="sub">La première série sera limitée. Laissez votre taille : vous serez prévenu à l'ouverture.</p>
+    <div class="fld"><label for="wlMail">EMAIL</label><input type="email" id="wlMail" placeholder="vous@exemple.fr" required></div>
+    <div class="fld"><label for="wlSize">TAILLE SOUHAITÉE</label>
+      <select id="wlSize"><option>S</option><option selected>M</option><option>L</option><option>XL (sur mesure)</option></select></div>
+    <div class="fld"><label for="wlMsg">MESSAGE (facultatif)</label><textarea id="wlMsg" placeholder="Coloris, personnalisation souhaitée…"></textarea></div>
+    <button class="btn" id="wlSend">M'INSCRIRE</button>
+    <p class="legal-mini">Démonstration : ce formulaire <b>n'envoie et n'enregistre aucune donnée</b>.
+      Rien ne quitte votre navigateur.</p>
+  </div>
+  <div id="wlDone">
+    <div class="big">C'EST NOTÉ</div>
+    <p>Enfin… presque. Cette page est une maquette : <b>aucune donnée n'a été envoyée ni conservée</b>.
+      Sur la boutique définitive, cette action inscrira réellement à la liste d'attente.</p>
+    <button class="btn ghost" id="wlBack" style="margin-top:22px">FERMER</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
+<script>
+(function(){
+'use strict';
+var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+if(reduced) document.documentElement.classList.add('reduced');
+var small = window.matchMedia('(max-width: 760px)').matches;
+var SFX = small ? '-sm' : '';
+var A = 'assets/';
+
+/* =========================================================================
+   PAN — plan cinématique sur UNE image haute définition.
+   Le mouvement de caméra est un recadrage recalculé à chaque frame :
+   net à toute taille d'écran, aucune séquence de frames pré-découpées.
+   Chaque "shot" a sa fenêtre de visibilité -> le fondu enchaîné entre
+   deux angles du même blouson lit comme une rotation.
+   ========================================================================= */
+function Pan(canvas, shots, opts){
+  this.cv = canvas;
+  this.ctx = canvas.getContext('2d', {alpha:false});
+  this.shots = shots; this.o = opts || {};
+  this.lastP = 0; this.n = 0;
+  this.dpr = Math.min(window.devicePixelRatio || 1, 2);
+  for(var i=0;i<shots.length;i++){ shots[i].img = new Image(); shots[i].ok = false; }
+}
+Pan.prototype.load = function(done){
+  var self = this, left = this.shots.length;
+  this.shots.forEach(function(s){
+    s.img.onload  = function(){ s.ok = !!s.img.naturalWidth; if(!--left){ self.resize(); if(done) done(); } };
+    s.img.onerror = function(){ s.ok = false; if(!--left){ if(done) done(); } };
+    s.img.src = s.src;
+  });
+};
+Pan.prototype.resize = function(){
+  var r = this.cv.getBoundingClientRect();
+  var w = Math.round(r.width * this.dpr), h = Math.round(r.height * this.dpr);
+  if(!w || !h) return;
+  if(this.cv.width !== w || this.cv.height !== h){ this.cv.width = w; this.cv.height = h; }
+  this.render(this.lastP, true);
+};
+function num(v,d){ return v == null ? d : v; }
+function clamp01(v){ return v < 0 ? 0 : (v > 1 ? 1 : v); }
+function ease(t){ return t*t*(3-2*t); }
+
+Pan.prototype.alphaOf = function(s, p){
+  var f = num(s.fade, .12);
+  var a = num(s.a, -9), b = num(s.b, 9);
+  return clamp01((p-a)/f) * clamp01((b-p)/f);
+};
+Pan.prototype.drawShot = function(s, p, alpha){
+  if(!s.ok || alpha <= 0.004) return;
+  var cw = this.cv.width, ch = this.cv.height, ctx = this.ctx;
+  var iw = s.img.naturalWidth, ih = s.img.naturalHeight;
+  var ca = cw/ch, bw, bh;
+  if(iw/ih > ca){ bh = ih; bw = ih*ca; } else { bw = iw; bh = iw/ca; }
+  var z  = num(s.z0,1.10) + (num(s.z1,1.00) - num(s.z0,1.10)) * p;
+  if(z < 1) z = 1;
+  var w = bw/z, h = bh/z;
+  var xc = num(s.x0,.5) + (num(s.x1,.5) - num(s.x0,.5)) * p;
+  var yc = num(s.y0,.5) + (num(s.y1,.5) - num(s.y0,.5)) * p;
+  var sx, sy;
+  if(s.abs){ /* x/y = position du centre DANS l'image (0..1) — cadrage d'un sujet précis */
+    sx = Math.max(0, Math.min(iw-w, xc*iw - w/2));
+    sy = Math.max(0, Math.min(ih-h, yc*ih - h/2));
+  } else {   /* x/y = position du cadre dans la marge restante (mouvement de caméra) */
+    sx = (iw-w)*clamp01(xc); sy = (ih-h)*clamp01(yc);
+  }
+  ctx.globalAlpha = alpha;
+  ctx.drawImage(s.img, sx, sy, w, h, 0, 0, cw, ch);
+  ctx.globalAlpha = 1;
+};
+/* balayage de lumière procédural : masque le raccord entre deux angles
+   et rejoue la lumière studio qui court sur la matière */
+Pan.prototype.sweep = function(p){
+  var o = this.o.sweep; if(!o) return;
+  var t = clamp01((p - o.from)/(o.to - o.from));
+  if(t <= 0 || t >= 1) return;
+  var cw = this.cv.width, ch = this.cv.height, ctx = this.ctx;
+  var inten = Math.sin(t*Math.PI);
+  var x = (-0.35 + t*1.7) * cw, band = cw*0.30;
+  var g = ctx.createLinearGradient(x-band, 0, x+band, ch);
+  g.addColorStop(0,   'rgba(255,255,255,0)');
+  g.addColorStop(0.44,'rgba(196,178,255,' + (inten*0.10).toFixed(3) + ')');
+  g.addColorStop(0.52,'rgba(255,255,255,' + (inten*0.15).toFixed(3) + ')');
+  g.addColorStop(0.60,'rgba(138,92,240,'  + (inten*0.09).toFixed(3) + ')');
+  g.addColorStop(1,   'rgba(255,255,255,0)');
+  ctx.save(); ctx.globalCompositeOperation = 'lighter';
+  ctx.fillStyle = g; ctx.fillRect(0,0,cw,ch); ctx.restore();
+};
+/* voile de révélation : la matière sort du noir au début du plan */
+Pan.prototype.veil = function(p){
+  var o = this.o.veil; if(!o) return;
+  var t = clamp01((p - o.from)/(o.to - o.from));
+  var a = Math.pow(1-t, 1.5) * num(o.max, .9);
+  if(a <= 0.005) return;
+  var cw = this.cv.width, ch = this.cv.height, ctx = this.ctx;
+  ctx.save();
+  ctx.fillStyle = 'rgba(5,5,6,' + a.toFixed(3) + ')';
+  ctx.fillRect(0,0,cw,ch);
+  var r = Math.max(cw,ch) * (0.10 + t*0.95);
+  var rg = ctx.createRadialGradient(cw*.5, ch*.5, r*.05, cw*.5, ch*.5, r);
+  rg.addColorStop(0,   'rgba(138,92,240,' + (a*0.16).toFixed(3) + ')');
+  rg.addColorStop(1,   'rgba(138,92,240,0)');
+  ctx.globalCompositeOperation = 'lighter';
+  ctx.fillStyle = rg; ctx.fillRect(0,0,cw,ch);
+  ctx.restore();
+};
+Pan.prototype.render = function(p, force){
+  p = clamp01(p);
+  if(!force && Math.abs(p - this.lastP) < 0.0004) return;
+  this.lastP = p;
+  var cw = this.cv.width, ch = this.cv.height;
+  if(!cw || !ch) return;
+  var ctx = this.ctx;
+  ctx.fillStyle = '#050506'; ctx.fillRect(0,0,cw,ch);
+  for(var i=0;i<this.shots.length;i++){
+    this.drawShot(this.shots[i], p, this.alphaOf(this.shots[i], p));
+  }
+  this.veil(p);
+  if(!reduced) this.sweep(p);
+};
+
+/* ---------- les 4 chapitres ---------- */
+var SEQ = {
+  /* CH1 : la caméra orbite — fondu enchaîné 3/4 face -> 3/4 dos, lumière qui balaie */
+  1: new Pan(document.getElementById('cv1'), [
+       {src:A+'orbit-a'+SFX+'.jpg', z0:1.42, z1:1.06, x0:.50, x1:.50, y0:.38, y1:.46, a:-1, b:.56, fade:.13},
+       {src:A+'orbit-b'+SFX+'.jpg', z0:1.34, z1:1.00, x0:.56, x1:.46, y0:.44, y1:.50, a:.44, b:9,  fade:.13}
+     ], {sweep:{from:.34, to:.70}, veil:{from:.00, to:.13, max:.72}}),
+  /* CH2 : dolly avant lent sur la couture / la quincaillerie */
+  2: new Pan(document.getElementById('cv2'), [
+       {src:A+'detail'+SFX+'.jpg', z0:1.02, z1:1.42, x0:.42, x1:.58, y0:.58, y1:.40}
+     ], {sweep:{from:.55, to:.95}}),
+  /* CH3 : remontée lente sur la pièce portée — l'échelle se révèle */
+  3: new Pan(document.getElementById('cv3'), [
+       {src:A+'worn'+SFX+'.jpg', z0:1.30, z1:1.02, x0:.46, x1:.52, y0:.78, y1:.34}
+     ], {}),
+  /* CH4 : recul, la pièce seule sur le noir, immobile à la fin */
+  4: new Pan(document.getElementById('cv4'), [
+       {src:A+'orbit-a'+SFX+'.jpg', z0:1.36, z1:1.00, x0:.50, x1:.50, y0:.36, y1:.44}
+     ], {sweep:{from:.06, to:.42}})
+};
+
+/* =========================================================================
+   LOADER — compteur réel, glissé
+   ========================================================================= */
+var pans = [SEQ[1],SEQ[2],SEQ[3],SEQ[4]];
+var extra = [A+'lineup'+SFX+'.jpg'];
+var total = pans.length + extra.length, done = 0, shown = -1, cur = 0, ramping = true;
+var fill = document.getElementById('ldFill'), pctEl = document.getElementById('ldPct');
+(function ramp(){
+  if(!ramping) return;
+  var target = Math.min(100, Math.round(done/total*100));
+  if(cur < target) cur = Math.min(target, cur + Math.max(0.7, (target-cur)*0.12));
+  var v = Math.round(cur);
+  if(v !== shown){ shown = v; fill.style.width = v + '%'; pctEl.textContent = v; }
+  requestAnimationFrame(ramp);
+})();
+var finished = false;
+function finish(){
+  if(finished) return; finished = true; ramping = false;
+  fill.style.width = '100%'; pctEl.textContent = '100';
+  setTimeout(function(){
+    document.getElementById('loader').classList.add('done');
+    document.body.classList.remove('is-loading');
+    resizeAll();
+    if(window.ScrollTrigger) ScrollTrigger.refresh();
+  }, 420);
+}
+function bump(){ if(++done >= total) finish(); }
+pans.forEach(function(p){ p.load(bump); });
+extra.forEach(function(u){ var im = new Image(); im.onload = im.onerror = bump; im.src = u; });
+setTimeout(finish, 12000);
+
+/* =========================================================================
+   POUSSIÈRE PROCÉDURALE (canvas, léger, coupé hors du hero)
+   ========================================================================= */
+var dust = document.getElementById('dust'), dctx = dust.getContext('2d');
+var parts = [], dpr = Math.min(window.devicePixelRatio||1, 2), dustOn = false, dustRAF = 0;
+function dustSize(){
+  dust.width = Math.round(innerWidth*dpr); dust.height = Math.round(innerHeight*dpr);
+  var n = small ? 26 : 44;
+  parts = [];
+  for(var i=0;i<n;i++) parts.push({
+    x: Math.random()*dust.width, y: Math.random()*dust.height,
+    r: (Math.random()*1.5+0.4)*dpr, s: (Math.random()*0.22+0.05)*dpr,
+    a: Math.random()*0.16+0.04, w: Math.random()*Math.PI*2, v: Math.random()*0.9+0.3
+  });
+}
+function dustLoop(){
+  if(!dustOn) return;
+  dctx.clearRect(0,0,dust.width,dust.height);
+  for(var i=0;i<parts.length;i++){
+    var p = parts[i];
+    p.y -= p.s; p.w += 0.006*p.v;
+    if(p.y < -6){ p.y = dust.height+6; p.x = Math.random()*dust.width; }
+    var x = p.x + Math.sin(p.w)*8*dpr;
+    dctx.beginPath();
+    dctx.fillStyle = i % 5 === 0 ? 'rgba(160,120,255,'+p.a+')' : 'rgba(220,220,235,'+(p.a*0.7)+')';
+    dctx.arc(x, p.y, p.r, 0, 6.284); dctx.fill();
+  }
+  dustRAF = requestAnimationFrame(dustLoop);
+}
+if(!reduced){
+  dustSize();
+  if('IntersectionObserver' in window){
+    new IntersectionObserver(function(es){
+      var vis = es[0].isIntersecting;
+      if(vis && !dustOn){ dustOn = true; dustLoop(); dust.style.opacity = '.55'; }
+      else if(!vis && dustOn){ dustOn = false; cancelAnimationFrame(dustRAF); dust.style.opacity = '0'; }
+    }, {threshold:0.02}).observe(document.getElementById('hero'));
+  } else { dustOn = true; dustLoop(); }
+} else { dust.style.display = 'none'; }
+
+/* =========================================================================
+   SCROLL — pin + scrub
+   ========================================================================= */
+var chapters = [].slice.call(document.querySelectorAll('.ch'));
+function chapterP(sec){
+  var r = sec.getBoundingClientRect();
+  var span = sec.offsetHeight - innerHeight;
+  if(span <= 0) return 0.5;
+  return clamp01(-r.top / span);
+}
+function initScroll(){
+  var topbar = document.getElementById('topbar'), prog = document.getElementById('prog');
+  function progress(){
+    var h = document.documentElement.scrollHeight - innerHeight;
+    prog.style.width = (h > 0 ? (scrollY/h*100) : 0) + '%';
+    topbar.classList.toggle('solid', scrollY > innerHeight*0.9);
+  }
+  if(reduced){
+    chapters.forEach(function(sec){ SEQ[sec.dataset.ch].render(0.58, true); });
+    progress();
+    addEventListener('scroll', progress, {passive:true});
+    return;
+  }
+  if(window.gsap && window.ScrollTrigger){
+    gsap.registerPlugin(ScrollTrigger);
+    ScrollTrigger.config({ignoreMobileResize:true});
+    chapters.forEach(function(sec){
+      var pan = SEQ[sec.dataset.ch];
+      ScrollTrigger.create({
+        trigger: sec, start:'top top', end:'bottom bottom', scrub:true,
+        onUpdate:  function(s){ pan.render(s.progress); },
+        onRefresh: function(s){ pan.render(s.progress, true); }
+      });
+    });
+    ScrollTrigger.create({start:0, end:'max', onUpdate:progress, onRefresh:progress});
+  } else {
+    var tick = false;
+    function loop(){
+      chapters.forEach(function(sec){
+        var r = sec.getBoundingClientRect();
+        if(r.bottom > -200 && r.top < innerHeight+200) SEQ[sec.dataset.ch].render(chapterP(sec));
+      });
+      progress(); tick = false;
+    }
+    addEventListener('scroll', function(){ if(!tick){ tick = true; requestAnimationFrame(loop); } }, {passive:true});
+    loop();
+  }
+  progress();
+}
+
+/* =========================================================================
+   PRODUIT / VARIANTES
+   ========================================================================= */
+var PRODUCT = {
+  ref:'SHADE-01', name:'Bomber Mecha',
+  colors:[
+    {id:'VIO', name:'Violet mat', hex:'#8a5cf0', base:289, cx:0.175,
+     note:'Le coloris de lancement. Cordon teint dans la masse, mat.', serie:'Série 1 · 120 pièces', avail:'Disponible au lancement'},
+    {id:'AMB', name:'Ambre mat',  hex:'#c98a45', base:289, cx:0.500,
+     note:'Passepoil ambre, plus chaud sur le noir profond.', serie:'Série 1 · 120 pièces', avail:'Disponible au lancement'},
+    {id:'CYA', name:'Cyan mat',   hex:'#4fc6cf', base:309, cx:0.825,
+     note:'Édition limitée : plaque gravée numérotée incluse.', serie:'Édition limitée · 40 pièces', avail:'Liste d’attente uniquement'}
+  ],
+  sizes:[
+    {id:'S',  add:0,  note:'Stock prévu au lancement.'},
+    {id:'M',  add:0,  note:'Stock prévu au lancement.'},
+    {id:'L',  add:0,  note:'Stock prévu au lancement.'},
+    {id:'XL', add:20, note:'Coupe sur mesure : mesures prises à la commande (+20 €).'}
+  ],
+  perso:[
+    {id:'STD', label:'Aucune personnalisation', short:'Aucune', add:0},
+    {id:'BRD', label:'Broderie dorsale + plaque gravée', short:'Broderie + plaque', add:60}
+  ]
+};
+var sel = {c:0, s:1, p:0};
+
+/* visuel des variantes : recadrage animé sur l'image "lineup" (3 coloris) */
+var varPan = new Pan(document.getElementById('cvVar'), [
+  {src:A+'lineup'+SFX+'.jpg', abs:true, z0:1.40, z1:1.40, x0:.175, x1:.175, y0:.44, y1:.44}
+], {});
+varPan.load(function(){ varPan.resize(); });
+var varX = 0.175, varTarget = 0.175, varRAF = 0;
+function setVarTarget(cx){
+  varTarget = cx;
+  if(reduced){ varX = cx; applyVarX(); return; }
+  if(!varRAF) varRAF = requestAnimationFrame(varStep);
+}
+function applyVarX(){
+  var s = varPan.shots[0]; s.x0 = s.x1 = varX;
+  varPan.render(1, true);
+}
+function varStep(){
+  var d = varTarget - varX;
+  if(Math.abs(d) < 0.0008){ varX = varTarget; applyVarX(); varRAF = 0; return; }
+  varX += d * 0.14; applyVarX();
+  varRAF = requestAnimationFrame(varStep);
+}
+
+function money(n){ return n.toLocaleString('fr-FR') + ' €'; }
+function currentPrice(){
+  return PRODUCT.colors[sel.c].base + PRODUCT.sizes[sel.s].add + PRODUCT.perso[sel.p].add;
+}
+function currentSku(){
+  return 'SHADE01-' + PRODUCT.colors[sel.c].id + '-' + PRODUCT.sizes[sel.s].id +
+         (PRODUCT.perso[sel.p].add ? '-BRD' : '');
+}
+function buildOptions(){
+  var oc = document.getElementById('optColors');
+  PRODUCT.colors.forEach(function(c, i){
+    var b = document.createElement('button');
+    b.className = 'opt'; b.type = 'button';
+    b.innerHTML = '<span class="sw" style="background:' + c.hex + '"></span>' + c.name.toUpperCase();
+    b.addEventListener('click', function(){ sel.c = i; sync(); });
+    oc.appendChild(b);
+  });
+  var os = document.getElementById('optSizes');
+  PRODUCT.sizes.forEach(function(s, i){
+    var b = document.createElement('button');
+    b.className = 'opt'; b.type = 'button'; b.textContent = s.id;
+    b.addEventListener('click', function(){ sel.s = i; sync(); });
+    os.appendChild(b);
+  });
+  var op = document.getElementById('optPerso');
+  PRODUCT.perso.forEach(function(p, i){
+    var b = document.createElement('button');
+    b.className = 'opt wide'; b.type = 'button';
+    b.innerHTML = '<span>' + p.label + '</span><span>' + (p.add ? '+' + p.add + ' €' : 'Inclus') + '</span>';
+    b.addEventListener('click', function(){ sel.p = i; sync(); });
+    op.appendChild(b);
+  });
+}
+function press(container, idx){
+  [].slice.call(container.children).forEach(function(b, i){
+    b.setAttribute('aria-pressed', i === idx ? 'true' : 'false');
+  });
+}
+function sync(){
+  var c = PRODUCT.colors[sel.c], s = PRODUCT.sizes[sel.s], p = PRODUCT.perso[sel.p];
+  press(document.getElementById('optColors'), sel.c);
+  press(document.getElementById('optSizes'),  sel.s);
+  press(document.getElementById('optPerso'),  sel.p);
+  document.getElementById('lblColor').textContent = c.name;
+  document.getElementById('lblSize').textContent  = s.id;
+  document.getElementById('lblPerso').textContent = p.short;
+  document.getElementById('colorNote').textContent = c.note;
+  document.getElementById('sizeNote').textContent  = s.note;
+  document.getElementById('priceVal').textContent = currentPrice().toLocaleString('fr-FR');
+  document.getElementById('skuVal').textContent   = currentSku();
+  document.getElementById('availVal').textContent = c.avail;
+  document.getElementById('visTag').textContent   = c.name.toUpperCase();
+  document.documentElement.style.setProperty('--acc', c.hex);
+  document.documentElement.style.setProperty('--acc-soft', hexA(c.hex, .14));
+  setVarTarget(c.cx);
+}
+function hexA(h, a){
+  var n = parseInt(h.slice(1), 16);
+  return 'rgba(' + ((n>>16)&255) + ',' + ((n>>8)&255) + ',' + (n&255) + ',' + a + ')';
+}
+function buildPricing(){
+  var tb = document.getElementById('priceRows');
+  PRODUCT.colors.forEach(function(c){
+    var tr = document.createElement('tr');
+    tr.innerHTML =
+      '<td><span class="dotc"><i style="background:' + c.hex + '"></i><b>' + c.name + '</b></span></td>' +
+      '<td><b>' + money(c.base) + '</b></td>' +
+      '<td>' + c.serie + '</td>' +
+      '<td><span class="stk' + (c.base === 289 ? ' ok' : '') + '">' + c.avail + '</span></td>';
+    tb.appendChild(tr);
+  });
+}
+
+/* =========================================================================
+   PANIER (localStorage, aucun paiement)
+   ========================================================================= */
+var KEY = 'bss_cart_v1', cart = [];
+try { cart = JSON.parse(localStorage.getItem(KEY)) || []; } catch(e){ cart = []; }
+if(!Array.isArray(cart)) cart = [];
+function save(){ try { localStorage.setItem(KEY, JSON.stringify(cart)); } catch(e){} }
+function cartQty(){ return cart.reduce(function(a,l){ return a + l.qty; }, 0); }
+function cartTotal(){ return cart.reduce(function(a,l){ return a + l.qty*l.price; }, 0); }
+
+function addToCart(){
+  var c = PRODUCT.colors[sel.c], s = PRODUCT.sizes[sel.s], p = PRODUCT.perso[sel.p];
+  var sku = currentSku(), price = currentPrice();
+  var found = null;
+  for(var i=0;i<cart.length;i++) if(cart[i].sku === sku) found = cart[i];
+  if(found) found.qty++;
+  else cart.push({sku:sku, price:price, qty:1, color:c.name, hex:c.hex, cx:c.cx, size:s.id, perso:p.short});
+  save(); renderCart(); openCart();
+  toast('AJOUTÉ AU PANIER');
+}
+function renderCart(){
+  var body = document.getElementById('cartBody');
+  var cnt = document.getElementById('cartCount');
+  cnt.textContent = cartQty();
+  cnt.classList.toggle('zero', cartQty() === 0);
+  document.getElementById('cartTotal').textContent = money(cartTotal());
+  document.getElementById('checkoutBtn').disabled = false;
+  body.innerHTML = '';
+  if(!cart.length){
+    body.innerHTML = '<p class="cart-empty">Votre panier est vide.<br>Composez votre pièce dans le configurateur.</p>';
+    return;
+  }
+  cart.forEach(function(l, i){
+    var d = document.createElement('div');
+    d.className = 'line';
+    d.innerHTML =
+      '<div class="thumb"><canvas></canvas></div>' +
+      '<div class="info"><b>' + PRODUCT.ref + ' ' + PRODUCT.name + '</b>' +
+        '<small>' + l.color + ' · Taille ' + l.size + '<br>' + l.perso + '</small>' +
+        '<div class="qty"><button aria-label="Moins">−</button><span>' + l.qty + '</span><button aria-label="Plus">+</button></div>' +
+        '<span class="rm" role="button" tabindex="0">Retirer</span>' +
+      '</div>' +
+      '<div class="amt">' + money(l.qty*l.price) + '</div>';
+    var btns = d.querySelectorAll('.qty button');
+    btns[0].addEventListener('click', function(){ if(--l.qty <= 0) cart.splice(i,1); save(); renderCart(); });
+    btns[1].addEventListener('click', function(){ l.qty++; save(); renderCart(); });
+    var rm = d.querySelector('.rm');
+    rm.addEventListener('click', function(){ cart.splice(i,1); save(); renderCart(); });
+    rm.addEventListener('keydown', function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); cart.splice(i,1); save(); renderCart(); } });
+    body.appendChild(d);
+    /* vignette : même image lineup, recadrée sur le coloris de la ligne */
+    var tp = new Pan(d.querySelector('.thumb canvas'), [
+      {src:A+'lineup'+SFX+'.jpg', abs:true, z0:1.42, z1:1.42, x0:l.cx, x1:l.cx, y0:.44, y1:.44}
+    ], {});
+    tp.load(function(){ tp.resize(); tp.render(1, true); });
+  });
+}
+
+/* ---------- ouverture / fermeture ---------- */
+var scrim = document.getElementById('scrim'), cartEl = document.getElementById('cart'), wlEl = document.getElementById('wl');
+function lock(v){ document.body.classList.toggle('locked', v); }
+function openCart(){ cartEl.classList.add('on'); cartEl.setAttribute('aria-hidden','false'); scrim.classList.add('on'); lock(true); }
+function closeAll(){
+  cartEl.classList.remove('on'); cartEl.setAttribute('aria-hidden','true');
+  wlEl.classList.remove('on'); scrim.classList.remove('on'); lock(false);
+}
+function openWl(){
+  document.getElementById('wlForm').style.display = 'block';
+  document.getElementById('wlDone').style.display = 'none';
+  cartEl.classList.remove('on'); cartEl.setAttribute('aria-hidden','true');
+  wlEl.classList.add('on'); scrim.classList.add('on'); lock(true);
+  setTimeout(function(){ document.getElementById('wlMail').focus(); }, 320);
+}
+document.getElementById('cartOpen').addEventListener('click', openCart);
+document.getElementById('cartClose').addEventListener('click', closeAll);
+document.getElementById('wlClose').addEventListener('click', closeAll);
+scrim.addEventListener('click', closeAll);
+addEventListener('keydown', function(e){ if(e.key === 'Escape') closeAll(); });
+document.getElementById('addBtn').addEventListener('click', addToCart);
+document.getElementById('wlBtn').addEventListener('click', openWl);
+document.getElementById('checkoutBtn').addEventListener('click', openWl);
+document.getElementById('wlBack').addEventListener('click', closeAll);
+document.getElementById('wlSend').addEventListener('click', function(){
+  var m = document.getElementById('wlMail');
+  if(!m.value || m.value.indexOf('@') < 1){ m.focus(); m.style.borderColor = '#c0392b'; return; }
+  /* AUCUN envoi : la page est une maquette, rien ne sort du navigateur. */
+  document.getElementById('wlForm').style.display = 'none';
+  document.getElementById('wlDone').style.display = 'block';
+});
+
+var toastEl = document.getElementById('toast'), toastT = 0;
+function toast(msg){
+  toastEl.textContent = msg; toastEl.classList.add('on');
+  clearTimeout(toastT); toastT = setTimeout(function(){ toastEl.classList.remove('on'); }, 2000);
+}
+
+/* =========================================================================
+   RESIZE
+   ========================================================================= */
+function resizeAll(){
+  pans.forEach(function(p){ p.resize(); });
+  varPan.resize(); applyVarX();
+}
+var rT = 0;
+addEventListener('resize', function(){
+  clearTimeout(rT);
+  rT = setTimeout(function(){
+    small = window.matchMedia('(max-width: 760px)').matches;
+    if(!reduced) dustSize();
+    resizeAll();
+    if(window.ScrollTrigger) ScrollTrigger.refresh();
+  }, 160);
+}, {passive:true});
+
+/* ---------- démarrage ---------- */
+buildOptions(); buildPricing(); sync(); renderCart();
+if(document.readyState === 'complete') initScroll();
+else addEventListener('load', initScroll);
+resizeAll();
+})();
+</script>
+</body>
+</html>
