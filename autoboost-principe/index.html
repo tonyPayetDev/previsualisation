@@ -3,302 +3,378 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Le principe — Automatisation Boost</title>
+<title>Principe — Automatisation Boost</title>
 <meta name="description" content="Comment fonctionne Automatisation Boost : une idée entre, une chaîne automatisée la transforme en vidéos, posts, sites et relances. Explication cinématique au scroll.">
-<meta name="theme-color" content="#0a0a0f">
-<meta property="og:title" content="Le principe — Automatisation Boost">
+<meta name="theme-color" content="#1B1B1B">
+<meta property="og:title" content="Principe — Automatisation Boost">
 <meta property="og:description" content="Une idée entre. Une chaîne la démultiplie. Tu ne travailles plus DANS le système, tu construis le système.">
 <meta property="og:image" content="assets/proof-journal.jpg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-/* ================= TOKENS — charte AUTOBOOST ================= */
+/* =========================================================
+   TOKENS — DA « encre & split », charte Autoboost
+   noir 1B1B1B / anthracite 323232 / crème FFE7D0 / orange FC6E20
+   + jaune signature f5d90a
+   ========================================================= */
 :root{
-  --bg:#0a0a0f; --bg-2:#0f0f16; --panel:#121219; --panel-2:#16161f;
-  --line:#23232f; --line-2:#2c2c3a;
-  --yellow:#f5d90a; --purple:#a855f7; --orange:#ff7a1a;
-  --text:#f2f2f5; --muted:#9a9aa8; --dim:#6d6d7d;
+  --ink:#1B1B1B; --ink-deep:#121212; --ink-soft:#202020;
+  --coal:#323232; --coal-2:#282828;
+  --cream:#FFE7D0; --orange:#FC6E20; --yellow:#f5d90a;
+  --text:var(--cream);
+  --muted:rgba(255,231,208,.62);
+  --dim:rgba(255,231,208,.38);
+  --line:rgba(255,231,208,.13);
+  --line-2:rgba(255,231,208,.22);
   --sans:'Sora',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
   --ease:cubic-bezier(.22,.61,.36,1);
-  --bar:58px;
+  --bar:54px;
+  /* typo de la référence : capitales fines, tracking large.
+     Le tracking est fluide pour que le français long reste lisible en 390 px. */
+  --tk-xl:clamp(.09em,2.1vw,.26em);
+  --tk-l:clamp(.05em,1.1vw,.13em);
+  --tk-s:.3em;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
 body{
-  font-family:var(--sans);color:var(--text);background:var(--bg);
+  font-family:var(--sans);color:var(--text);background:var(--ink);
   -webkit-font-smoothing:antialiased;overflow-x:hidden;
 }
 body.is-loading{overflow:hidden;height:100svh}
 img{max-width:100%;display:block}
-button,input,select{font:inherit;color:inherit}
+button,input,select{font:inherit;color:inherit;background:none;border:0}
 a{color:inherit;text-decoration:none}
-::selection{background:var(--yellow);color:#0a0a0f}
-:focus-visible{outline:2px solid var(--yellow);outline-offset:3px;border-radius:6px}
+::selection{background:var(--orange);color:var(--ink)}
+:focus-visible{outline:2px solid var(--orange);outline-offset:3px;border-radius:4px}
 
-/* ================= LOADER (le loader fait partie du spectacle) ================= */
+/* utilitaires typographiques de la DA */
+.caps{text-transform:uppercase;font-weight:300;letter-spacing:var(--tk-l)}
+.micro{font-size:9.5px;letter-spacing:var(--tk-s);text-transform:uppercase;font-weight:400}
+
+/* =========================================================
+   LOADER
+   ========================================================= */
 #loader{
-  position:fixed;inset:0;z-index:300;background:var(--bg);
-  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;
-  transition:opacity .75s var(--ease),visibility .75s;
+  position:fixed;inset:0;z-index:400;background:var(--ink);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;
+  transition:opacity .8s var(--ease),visibility .8s;
 }
+#loader::before{content:"";position:absolute;inset:0 50% 0 0;background:var(--orange);opacity:.9}
+#loader::after{content:"";position:absolute;inset:0 0 0 50%;background:var(--coal)}
+#loader .ld-in{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;gap:18px;
+  padding:34px 40px;background:rgba(18,18,18,.86);backdrop-filter:blur(8px)}
 #loader.done{opacity:0;visibility:hidden}
-.ld-mark{
-  width:54px;height:54px;border-radius:15px;display:grid;place-items:center;
-  background:linear-gradient(150deg,var(--yellow),var(--orange));
-  box-shadow:0 0 46px rgba(245,217,10,.34);
-}
-.ld-mark svg{width:26px;height:26px;display:block}
-.ld-name{font-size:clamp(17px,4.4vw,23px);font-weight:700;letter-spacing:-.01em}
-.ld-name b{color:var(--yellow);font-weight:800}
-.ld-sub{font-size:10px;letter-spacing:.34em;text-transform:uppercase;color:var(--dim)}
-.ld-track{width:min(280px,62vw);height:2px;background:#1e1e29;border-radius:2px;overflow:hidden}
-.ld-fill{height:100%;width:0;background:linear-gradient(90deg,var(--yellow),var(--orange),var(--purple));transition:width .22s linear}
-.ld-pct{font-size:12px;letter-spacing:.22em;color:var(--muted);font-variant-numeric:tabular-nums}
+.ld-name{font-size:clamp(20px,6vw,34px);font-weight:200;letter-spacing:var(--tk-xl);text-transform:uppercase;color:var(--cream)}
+.ld-name b{color:var(--orange);font-weight:200}
+.ld-sub{font-size:9.5px;letter-spacing:var(--tk-s);text-transform:uppercase;color:var(--dim)}
+.ld-track{width:min(240px,54vw);height:1px;background:rgba(255,231,208,.18);overflow:hidden}
+.ld-fill{height:100%;width:0;background:var(--orange);transition:width .22s linear}
+.ld-pct{font-size:10px;letter-spacing:var(--tk-s);color:var(--muted);font-variant-numeric:tabular-nums}
 
-/* ================= TOPBAR ================= */
-.topbar{
-  position:fixed;top:0;left:0;right:0;z-index:120;height:var(--bar);
-  display:flex;align-items:center;gap:14px;padding:0 clamp(14px,4vw,32px);
-  background:rgba(10,10,15,.7);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
-  border-bottom:1px solid rgba(255,255,255,.07);
+/* =========================================================
+   NAV MINIMALE (référence : logo à gauche, micro-liens à droite)
+   ========================================================= */
+.nav{
+  position:fixed;top:0;left:0;right:0;z-index:200;height:var(--bar);
+  display:flex;align-items:center;gap:16px;padding:0 clamp(14px,4vw,40px);
+  transition:background .4s var(--ease),border-color .4s var(--ease);
+  border-bottom:1px solid transparent;
 }
-.brand{display:flex;align-items:center;gap:9px;font-weight:700;font-size:14.5px;letter-spacing:-.01em}
-.brand .mk{
-  width:27px;height:27px;border-radius:8px;display:grid;place-items:center;flex:0 0 auto;
-  background:linear-gradient(150deg,var(--yellow),var(--orange));box-shadow:0 0 18px rgba(245,217,10,.3);
-}
-.brand .mk svg{width:14px;height:14px}
-.brand i{font-style:normal;color:var(--yellow)}
-.topbar .spacer{flex:1}
-.chip-demo{
-  font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--purple);
-  border:1px solid rgba(168,85,247,.4);background:rgba(168,85,247,.12);
-  padding:5px 10px;border-radius:999px;white-space:nowrap;
-}
-.btn-top{
-  background:linear-gradient(140deg,var(--yellow),var(--orange));color:#0a0a0f;font-weight:700;
-  font-size:12.5px;padding:9px 15px;border-radius:10px;white-space:nowrap;
-  box-shadow:0 4px 20px rgba(245,217,10,.2);transition:transform .2s var(--ease),box-shadow .25s;
-}
-.btn-top:hover{transform:translateY(-1px);box-shadow:0 6px 26px rgba(245,217,10,.34)}
-#pagebar{position:fixed;top:0;left:0;height:2px;z-index:130;width:0;
-  background:linear-gradient(90deg,var(--yellow),var(--orange),var(--purple))}
-@media(max-width:520px){.chip-demo{display:none}}
+.nav.solid{background:rgba(18,18,18,.82);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  border-bottom-color:var(--line)}
+.logo{display:flex;align-items:center;gap:9px;font-size:10px;letter-spacing:var(--tk-s);
+  text-transform:uppercase;font-weight:400;color:var(--cream);white-space:nowrap}
+.logo .sq{width:9px;height:9px;background:var(--orange);flex:0 0 auto;border-radius:1px}
+.logo .lg-short{display:none}
+@media(max-width:620px){.logo .lg-full{display:none}.logo .lg-short{display:inline}}
+.nav .spacer{flex:1}
+.nav-links{display:flex;align-items:center;gap:clamp(12px,2.4vw,26px)}
+.nav-links a{font-size:9.5px;letter-spacing:var(--tk-s);text-transform:uppercase;color:var(--muted);
+  transition:color .25s var(--ease);white-space:nowrap}
+.nav-links a:hover{color:var(--cream)}
+.nav-links a.hi{color:var(--orange)}
+@media(max-width:560px){.nav-links a.hide-s{display:none}}
+#pagebar{position:fixed;top:0;left:0;height:2px;z-index:210;width:0;background:var(--orange)}
 
-/* ================= CHAPITRES CINÉMA ================= */
-.film{position:relative;background:var(--bg)}
+/* =========================================================
+   HERO — le split orange / anthracite + la forme d'encre
+   ========================================================= */
+.hero{position:relative;height:100svh;min-height:520px;overflow:hidden;background:var(--coal)}
+.split{position:absolute;inset:0;z-index:0}
+.split::before{content:"";position:absolute;inset:0 50% 0 0;background:var(--orange)}
+.split::after{content:"";position:absolute;inset:0 0 0 50%;background:var(--coal)}
+.split .seamline{position:absolute;top:0;bottom:0;left:50%;width:1px;background:rgba(27,27,27,.28)}
+.grain{position:absolute;inset:0;z-index:3;pointer-events:none;opacity:.28;mix-blend-mode:overlay;
+  background-image:radial-gradient(rgba(255,255,255,.22) .5px,transparent .5px);
+  background-size:3px 3px}
+#cv-ink{position:absolute;inset:0;z-index:2;width:100%;height:100%;display:block}
+.hero-copy{position:absolute;inset:0;z-index:4;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;text-align:center;padding:0 18px;pointer-events:none}
+.hero-eyebrow{font-size:9.5px;letter-spacing:var(--tk-s);text-transform:uppercase;color:rgba(255,231,208,.72);
+  margin-bottom:clamp(14px,3vh,26px)}
+.hero-title{
+  font-weight:200;text-transform:uppercase;color:var(--cream);
+  font-size:clamp(44px,15vw,168px);line-height:.94;letter-spacing:var(--tk-xl);
+  text-indent:var(--tk-xl); /* compense le tracking à droite : le mot reste optiquement centré */
+  text-shadow:0 6px 60px rgba(0,0,0,.55);
+}
+.hero-title i{font-style:normal;color:var(--orange)}
+.hero-rule{width:44px;height:1px;background:rgba(255,231,208,.5);margin:clamp(18px,4vh,34px) 0 clamp(14px,3vh,22px)}
+.hero-line{font-size:clamp(11px,2.9vw,13.5px);letter-spacing:.16em;text-transform:uppercase;
+  color:rgba(255,231,208,.78);font-weight:300;max-width:34ch;line-height:1.9}
+/* bas : deux micro-liens de part et d'autre d'un bouton rond « play » */
+.hero-foot{position:absolute;left:0;right:0;bottom:clamp(20px,4.4vh,42px);z-index:5;
+  display:flex;align-items:center;justify-content:center;gap:clamp(14px,5vw,54px);
+  padding:0 clamp(14px,4vw,40px)}
+.hero-foot a.ml{font-size:9px;letter-spacing:var(--tk-s);text-transform:uppercase;color:rgba(255,231,208,.72);
+  transition:color .25s var(--ease);white-space:nowrap;flex:1 1 0;}
+.hero-foot a.ml:last-child{text-align:right}
+.hero-foot a.ml:first-child{text-align:left}
+.hero-foot a.ml:hover{color:var(--cream)}
+.playbtn{
+  flex:0 0 auto;width:clamp(56px,15vw,74px);height:clamp(56px,15vw,74px);border-radius:50%;
+  border:1px solid rgba(255,231,208,.55);display:grid;place-items:center;cursor:pointer;
+  transition:background .3s var(--ease),border-color .3s var(--ease),transform .3s var(--ease);
+  background:rgba(27,27,27,.22);backdrop-filter:blur(3px);
+}
+.playbtn svg{width:16px;height:16px;fill:var(--cream);transition:fill .3s var(--ease);margin-left:2px}
+.playbtn:hover{background:var(--cream);border-color:var(--cream);transform:scale(1.04)}
+.playbtn:hover svg{fill:var(--ink)}
+@media(max-width:420px){.hero-foot a.ml{font-size:8px;letter-spacing:.2em}}
+
+/* =========================================================
+   CHAPITRES CINÉMA (structure conservée)
+   ========================================================= */
+.film{position:relative;background:var(--ink-deep)}
 .chapter{position:relative}
 #ch1{height:300svh}
 #ch2{height:520svh}
 #ch3{height:620svh}
 #ch4{height:460svh}
-#ch5{height:340svh}
-.stage{position:sticky;top:0;height:100svh;width:100%;overflow:hidden;background:var(--bg);display:block}
+#ch5{height:520svh}
+#ch6{height:340svh}
+.stage{position:sticky;top:0;height:100svh;width:100%;overflow:hidden;background:var(--ink-deep);display:block}
 .stage canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
 .vignette{position:absolute;inset:0;pointer-events:none;
-  background:radial-gradient(125% 88% at 50% 44%,transparent 34%,rgba(0,0,0,.62) 100%)}
+  background:radial-gradient(125% 88% at 50% 44%,transparent 34%,rgba(0,0,0,.6) 100%)}
 .scrim{position:absolute;left:0;right:0;bottom:0;height:72%;pointer-events:none;
-  background:linear-gradient(to top,rgba(6,6,10,.97) 0%,rgba(6,6,10,.9) 20%,rgba(6,6,10,.62) 48%,rgba(6,6,10,.2) 76%,transparent 100%)}
-/* variante « pondérée à gauche » : le texte garde son fond noir, mais on
-   n'assombrit plus le centre-droit où la route et la boucle doivent briller */
+  background:linear-gradient(to top,rgba(14,14,14,.97) 0%,rgba(14,14,14,.9) 20%,rgba(14,14,14,.62) 48%,rgba(14,14,14,.2) 76%,transparent 100%)}
 .scrim.left{height:92%;background:
-  linear-gradient(to top,rgba(6,6,10,.9) 0%,rgba(6,6,10,.6) 20%,rgba(6,6,10,.16) 46%,transparent 68%),
-  radial-gradient(78% 66% at 4% 100%,rgba(6,6,10,.92),rgba(6,6,10,.4) 52%,transparent 76%)}
+  linear-gradient(to top,rgba(14,14,14,.9) 0%,rgba(14,14,14,.6) 20%,rgba(14,14,14,.16) 46%,transparent 68%),
+  radial-gradient(78% 66% at 4% 100%,rgba(14,14,14,.92),rgba(14,14,14,.4) 52%,transparent 76%)}
 
 /* --- LÉGENDE : toujours en bas-gauche, jamais centrée sur le visuel --- */
 .caption{
   position:absolute;left:clamp(16px,5vw,68px);bottom:clamp(52px,9vh,88px);
-  right:clamp(16px,5vw,68px);max-width:620px;z-index:4;
+  right:clamp(16px,5vw,68px);max-width:640px;z-index:6;
 }
-.eyebrow{display:flex;align-items:center;gap:11px;font-size:10px;letter-spacing:.28em;
-  text-transform:uppercase;color:var(--yellow);margin-bottom:14px}
-.eyebrow .dash{width:30px;height:1px;background:linear-gradient(90deg,var(--yellow),var(--orange));flex:0 0 auto}
-.eyebrow .num{color:rgba(255,255,255,.34);letter-spacing:.14em;margin-left:auto}
+.eyebrow{display:flex;align-items:center;gap:11px;font-size:9.5px;letter-spacing:var(--tk-s);
+  text-transform:uppercase;color:var(--orange);margin-bottom:16px}
+.eyebrow .dash{width:26px;height:1px;background:var(--orange);flex:0 0 auto}
+.eyebrow .num{color:rgba(255,231,208,.34);letter-spacing:.16em;margin-left:auto}
 .caption h1,.caption h2{
-  font-weight:700;line-height:1.04;letter-spacing:-.028em;
-  font-size:clamp(29px,7.2vw,63px);margin-bottom:13px;text-shadow:0 2px 30px rgba(0,0,0,.6);
+  font-weight:200;text-transform:uppercase;line-height:1.1;letter-spacing:var(--tk-l);
+  font-size:clamp(26px,6.6vw,58px);margin-bottom:16px;text-shadow:0 2px 30px rgba(0,0,0,.7);
 }
-.caption h1 em,.caption h2 em{font-style:normal;
-  background:linear-gradient(96deg,var(--yellow),var(--orange) 55%,var(--purple));
-  -webkit-background-clip:text;background-clip:text;color:transparent}
-.caption p{font-size:clamp(13.5px,3.5vw,16.5px);line-height:1.66;color:rgba(255,255,255,.72);
-  max-width:50ch;font-weight:300;text-shadow:0 1px 18px rgba(0,0,0,.55)}
-.cap-meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
-.tag{font-size:10px;letter-spacing:.14em;text-transform:uppercase;padding:6px 12px;
-  border:1px solid rgba(255,255,255,.2);border-radius:999px;color:rgba(255,255,255,.76)}
-.tag.y{border-color:rgba(245,217,10,.5);color:var(--yellow);background:rgba(245,217,10,.1)}
-.tag.p{border-color:rgba(168,85,247,.5);color:#c99bff;background:rgba(168,85,247,.12)}
-.tag.o{border-color:rgba(255,122,26,.5);color:#ffab6b;background:rgba(255,122,26,.12)}
+.caption h1 em,.caption h2 em{font-style:normal;color:var(--orange)}
+.caption h1 b,.caption h2 b{color:var(--yellow);font-weight:200}
+.caption p{font-size:clamp(13.5px,3.5vw,16px);line-height:1.72;color:var(--muted);
+  max-width:50ch;font-weight:300;text-shadow:0 1px 18px rgba(0,0,0,.6)}
+.cap-meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}
+.tag{font-size:9px;letter-spacing:.2em;text-transform:uppercase;padding:6px 12px;
+  border:1px solid var(--line-2);color:rgba(255,231,208,.76)}
+.tag.y{border-color:rgba(245,217,10,.55);color:var(--yellow)}
+.tag.o{border-color:rgba(252,110,32,.6);color:var(--orange)}
 
-.cue{position:absolute;left:50%;transform:translateX(-50%);bottom:16px;z-index:5;
+.cue{position:absolute;left:50%;transform:translateX(-50%);bottom:14px;z-index:7;
   display:flex;flex-direction:column;align-items:center;gap:7px;
-  font-size:9px;letter-spacing:.26em;text-transform:uppercase;color:rgba(255,255,255,.4)}
-.cue .line{width:1px;height:30px;background:linear-gradient(to bottom,var(--yellow),transparent);
+  font-size:8.5px;letter-spacing:var(--tk-s);text-transform:uppercase;color:rgba(255,231,208,.4)}
+.cue .line{width:1px;height:28px;background:linear-gradient(to bottom,var(--orange),transparent);
   animation:cue 2.1s var(--ease) infinite}
 @keyframes cue{0%{transform:scaleY(.2);transform-origin:top;opacity:0}45%{transform:scaleY(1);opacity:1}
   100%{transform-origin:bottom;transform:scaleY(0);opacity:0}}
 .rail{position:absolute;right:clamp(10px,2.2vw,24px);top:50%;transform:translateY(-50%);
-  width:2px;height:110px;background:rgba(255,255,255,.13);border-radius:2px;z-index:5;overflow:hidden}
-.rail i{position:absolute;top:0;left:0;width:100%;height:0%;
-  background:linear-gradient(to bottom,var(--yellow),var(--orange))}
+  width:1px;height:110px;background:rgba(255,231,208,.15);z-index:7;overflow:hidden}
+.rail i{position:absolute;top:0;left:0;width:100%;height:0%;background:var(--orange)}
 @media(max-width:680px){.rail{display:none}}
 
-/* --- ch2 : étiquettes des sorties après l'explosion --- */
+/* --- ch2 : étiquettes des sorties --- */
 .outs{position:absolute;inset:0;pointer-events:none;z-index:3}
 .out{
   position:absolute;transform:translate(-50%,-50%) scale(.72);opacity:0;
-  font-size:10px;letter-spacing:.2em;text-transform:uppercase;font-weight:600;
-  padding:7px 13px;border-radius:999px;white-space:nowrap;
-  background:rgba(10,10,15,.72);backdrop-filter:blur(6px);border:1px solid;
+  font-size:9px;letter-spacing:.2em;text-transform:uppercase;font-weight:400;
+  padding:7px 13px;white-space:nowrap;
+  background:rgba(18,18,18,.7);backdrop-filter:blur(6px);border:1px solid;
   transition:opacity .28s var(--ease),transform .34s var(--ease);
 }
 .out.on{opacity:1;transform:translate(-50%,-50%) scale(1)}
-@media(max-width:600px){.out{font-size:9px;letter-spacing:.14em;padding:6px 10px}}
+@media(max-width:600px){.out{font-size:8.5px;letter-spacing:.12em;padding:6px 10px}}
 
-/* --- ch3 : rail d'étapes de la route --- */
-.steps{
-  position:absolute;left:clamp(16px,5vw,68px);top:calc(var(--bar) + clamp(18px,4vh,34px));
-  z-index:4;display:flex;flex-direction:column;gap:7px;
-}
-.step{display:flex;align-items:center;gap:9px;opacity:.3;transition:opacity .3s var(--ease)}
-.step .dot{width:7px;height:7px;border-radius:50%;background:#3a3a4a;flex:0 0 auto;transition:all .3s var(--ease)}
-.step .lbl{font-size:10px;letter-spacing:.17em;text-transform:uppercase;font-weight:500;color:rgba(255,255,255,.7)}
-.step.done{opacity:.6}
-.step.done .dot{background:var(--purple)}
+/* --- ch3 : rail d'étapes --- */
+.steps{position:absolute;left:clamp(16px,5vw,68px);top:calc(var(--bar) + clamp(18px,4vh,34px));
+  z-index:6;display:flex;flex-direction:column;gap:8px}
+.step{display:flex;align-items:center;gap:10px;opacity:.28;transition:opacity .3s var(--ease)}
+.step .dot{width:6px;height:6px;background:var(--coal);flex:0 0 auto;transition:all .3s var(--ease)}
+.step .lbl{font-size:9px;letter-spacing:.2em;text-transform:uppercase;font-weight:400;color:rgba(255,231,208,.7)}
+.step.done{opacity:.55}
+.step.done .dot{background:var(--orange)}
 .step.on{opacity:1}
 .step.on .dot{background:var(--yellow);box-shadow:0 0 12px var(--yellow);transform:scale(1.5)}
-.step.on .lbl{color:#fff}
-@media(max-width:600px){.step .lbl{font-size:9px;letter-spacing:.1em}.steps{gap:5px}}
+.step.on .lbl{color:var(--cream)}
+@media(max-width:600px){.step .lbl{font-size:8.5px;letter-spacing:.12em}.steps{gap:6px}}
 
-/* --- ch4 : bande de preuves réelles --- */
-/* la bande vit dans la moitié HAUTE du cadre : le bas-gauche appartient à la légende */
+/* --- ch4 : bande de preuves --- */
 .stripwrap{position:absolute;left:0;right:0;top:calc(var(--bar) + 1.5vh);height:52svh;
   display:flex;align-items:center;overflow:hidden;perspective:1500px}
-.strip{display:flex;gap:clamp(14px,3vw,34px);will-change:transform;
-  align-items:center;transform-style:preserve-3d}
-.pcard{
-  position:relative;flex:0 0 auto;
-  border-radius:16px;overflow:hidden;background:var(--panel);
-  border:1px solid var(--line-2);box-shadow:0 26px 70px rgba(0,0,0,.62);
-  transition:border-color .35s var(--ease),box-shadow .35s var(--ease);
-  will-change:transform,opacity;
-}
-/* mobile-first : les cartes sont cadrées par la LARGEUR, sinon une capture
-   paysage déborde de l'écran et se fait rogner des deux côtés */
+.strip{display:flex;gap:clamp(14px,3vw,34px);will-change:transform;align-items:center;transform-style:preserve-3d}
+.pcard{position:relative;flex:0 0 auto;overflow:hidden;background:var(--ink);
+  border:1px solid var(--line);box-shadow:0 26px 70px rgba(0,0,0,.66);
+  transition:border-color .35s var(--ease),box-shadow .35s var(--ease);will-change:transform,opacity}
 .pcard{width:min(72vw,330px)}
 .pcard.tall{width:min(50vw,222px)}
 .pcard img{width:100%;height:auto;display:block}
-/* à partir du desktop on cadre par la hauteur : toutes les preuves s'alignent */
 @media(min-width:900px){
   .pcard,.pcard.tall{width:auto;height:46svh}
   .pcard img{width:auto;height:100%;max-width:none;object-fit:cover;object-position:top center}
 }
-.pcard .pc-tag{
-  position:absolute;top:11px;left:11px;font-size:9px;letter-spacing:.18em;text-transform:uppercase;
-  font-weight:600;padding:5px 10px;border-radius:999px;
-  background:rgba(10,10,15,.8);backdrop-filter:blur(6px);border:1px solid rgba(245,217,10,.42);color:var(--yellow);
-}
-.pcard.on{border-color:rgba(245,217,10,.55);box-shadow:0 26px 80px rgba(0,0,0,.7),0 0 0 1px rgba(245,217,10,.3),0 0 60px rgba(245,217,10,.14)}
+.pcard .pc-tag{position:absolute;top:10px;left:10px;font-size:8.5px;letter-spacing:.2em;text-transform:uppercase;
+  font-weight:400;padding:5px 10px;background:rgba(18,18,18,.82);backdrop-filter:blur(6px);
+  border:1px solid rgba(252,110,32,.5);color:var(--orange)}
+.pcard.on{border-color:rgba(252,110,32,.6);box-shadow:0 26px 80px rgba(0,0,0,.72),0 0 60px rgba(252,110,32,.14)}
 #ch4 .caption{max-width:560px}
-.pf-title{font-size:clamp(20px,5.4vw,34px);font-weight:700;letter-spacing:-.02em;margin-bottom:8px;line-height:1.12}
-.pf-desc{font-size:clamp(13px,3.4vw,15.5px);line-height:1.62;color:rgba(255,255,255,.7);font-weight:300;max-width:46ch}
+.pf-title{font-size:clamp(19px,5vw,32px);font-weight:200;text-transform:uppercase;letter-spacing:var(--tk-l);
+  margin-bottom:10px;line-height:1.16}
+.pf-desc{font-size:clamp(13px,3.4vw,15.5px);line-height:1.68;color:var(--muted);font-weight:300;max-width:46ch}
 
-/* ================= SEAM + SECTIONS ================= */
-.seam{height:1px;background:linear-gradient(90deg,transparent,var(--yellow),var(--purple),transparent);opacity:.5}
-.sec{padding:clamp(58px,11vh,116px) clamp(16px,5vw,68px);position:relative}
-.sec.alt{background:var(--bg-2)}
+/* --- ch5 : LA FUMÉE RÉVÈLE LA VIDÉO --- */
+#ch5 .stage{background:#0d0d0d}
+.rv-glow{position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:radial-gradient(52% 42% at 50% 46%,rgba(252,110,32,.16),transparent 70%)}
+.rv-frame{
+  position:absolute;left:50%;top:46%;transform:translate(-50%,-50%);z-index:2;
+  height:min(60svh,132vw);aspect-ratio:9/16;
+  border:1px solid rgba(255,231,208,.16);overflow:hidden;background:#0d0d0d;
+  box-shadow:0 30px 90px rgba(0,0,0,.7);
+}
+/* desktop : le cadre glisse à droite — le bas-gauche reste au texte */
+@media(min-width:820px){.rv-frame{height:min(72svh,140vw);top:50%;left:64%}}
+.rv-frame video{width:100%;height:100%;object-fit:cover;display:block}
+#cv-smoke{position:absolute;inset:0;z-index:4;width:100%;height:100%;display:block;pointer-events:none}
+.rv-sound{
+  position:absolute;right:clamp(14px,4vw,40px);top:calc(var(--bar) + 16px);z-index:8;
+  display:inline-flex;align-items:center;gap:8px;padding:9px 14px;cursor:pointer;
+  border:1px solid var(--line-2);background:rgba(18,18,18,.7);backdrop-filter:blur(8px);
+  font-size:8.5px;letter-spacing:.24em;text-transform:uppercase;color:var(--muted);
+  opacity:0;visibility:hidden;transition:opacity .45s var(--ease),visibility .45s,color .25s,border-color .25s;
+}
+.rv-sound.show{opacity:1;visibility:visible}
+.rv-sound:hover{color:var(--cream);border-color:var(--cream)}
+.rv-sound .dotv{width:6px;height:6px;border-radius:50%;background:var(--orange)}
+/* le scrim passe AU-DESSUS de la vidéo (z5) mais sous la légende (z6) :
+   le texte reste lisible même quand le rendu révélé est très clair */
+#ch5 .scrim{z-index:5}
+
+/* =========================================================
+   SECTIONS
+   ========================================================= */
+.seam{height:2px;display:flex}
+.seam i{flex:1;height:100%}
+.seam i:first-child{background:var(--orange)}
+.seam i:last-child{background:var(--coal)}
+.sec{padding:clamp(58px,11vh,120px) clamp(16px,5vw,68px);position:relative}
+.sec.alt{background:var(--ink-deep)}
 .in{max-width:1120px;margin:0 auto}
-.kicker{display:flex;align-items:center;gap:11px;font-size:10px;letter-spacing:.28em;
-  text-transform:uppercase;color:var(--yellow);margin-bottom:16px}
-.kicker .dash{width:30px;height:1px;background:linear-gradient(90deg,var(--yellow),var(--orange))}
-.sec h2{font-size:clamp(25px,5.6vw,45px);font-weight:700;letter-spacing:-.028em;line-height:1.1;margin-bottom:14px}
-.sec h2 em{font-style:normal;background:linear-gradient(96deg,var(--yellow),var(--orange) 55%,var(--purple));
-  -webkit-background-clip:text;background-clip:text;color:transparent}
-.lead{font-size:clamp(14px,3.5vw,17px);line-height:1.68;color:var(--muted);font-weight:300;max-width:58ch}
+.kicker{display:flex;align-items:center;gap:11px;font-size:9.5px;letter-spacing:var(--tk-s);
+  text-transform:uppercase;color:var(--orange);margin-bottom:18px}
+.kicker .dash{width:26px;height:1px;background:var(--orange)}
+.sec h2{font-size:clamp(23px,5.4vw,44px);font-weight:200;text-transform:uppercase;
+  letter-spacing:var(--tk-l);line-height:1.14;margin-bottom:16px}
+.sec h2 em{font-style:normal;color:var(--orange)}
+.sec h2 b{font-weight:200;color:var(--yellow)}
+.lead{font-size:clamp(14px,3.5vw,16.5px);line-height:1.72;color:var(--muted);font-weight:300;max-width:58ch}
 
 .facts{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--line);
-  border:1px solid var(--line);border-radius:18px;overflow:hidden}
-.fact{background:var(--panel);padding:clamp(20px,4vw,32px) clamp(14px,3vw,24px)}
-.fact .v{font-size:clamp(28px,7vw,46px);font-weight:800;letter-spacing:-.03em;line-height:1;
-  background:linear-gradient(140deg,var(--yellow),var(--orange));-webkit-background-clip:text;background-clip:text;color:transparent}
-.fact:nth-child(2) .v,.fact:nth-child(3) .v{background:linear-gradient(140deg,var(--purple),#7dd3fc);
-  -webkit-background-clip:text;background-clip:text;color:transparent}
-.fact .k{font-size:12px;color:var(--muted);margin-top:9px;line-height:1.45;font-weight:300}
+  border:1px solid var(--line);overflow:hidden}
+.fact{background:var(--ink);padding:clamp(20px,4vw,32px) clamp(14px,3vw,24px)}
+.fact .v{font-size:clamp(26px,6.4vw,42px);font-weight:200;letter-spacing:.02em;line-height:1;color:var(--orange)}
+.fact:nth-child(2) .v,.fact:nth-child(3) .v{color:var(--cream)}
+.fact .k{font-size:12px;color:var(--muted);margin-top:12px;line-height:1.55;font-weight:300}
 @media(min-width:860px){.facts{grid-template-columns:repeat(4,1fr)}}
 
-.grid3{display:grid;gap:14px;margin-top:34px}
+.grid3{display:grid;gap:1px;margin-top:36px;background:var(--line);border:1px solid var(--line)}
 @media(min-width:800px){.grid3{grid-template-columns:repeat(3,1fr)}}
-.card{background:var(--panel);border:1px solid var(--line);border-radius:18px;
-  padding:clamp(20px,3.6vw,30px);transition:border-color .3s var(--ease),transform .3s var(--ease)}
-.card:hover{border-color:rgba(245,217,10,.36);transform:translateY(-3px)}
-.card .no{font-size:10.5px;letter-spacing:.22em;color:var(--purple);font-weight:600;margin-bottom:13px}
-.card h3{font-size:clamp(17px,3.4vw,21px);font-weight:600;letter-spacing:-.018em;margin-bottom:9px}
-.card p{font-size:14px;line-height:1.65;color:var(--muted);font-weight:300}
-.card ul{list-style:none;margin-top:13px;display:flex;flex-direction:column;gap:7px}
-.card li{font-size:12.5px;color:var(--dim);display:flex;gap:8px;line-height:1.5}
-.card li::before{content:"";width:5px;height:5px;border-radius:50%;background:var(--yellow);flex:0 0 auto;margin-top:6px}
+.card{background:var(--ink);padding:clamp(22px,3.6vw,32px);transition:background .3s var(--ease)}
+.card:hover{background:var(--coal-2)}
+.card .no{font-size:9px;letter-spacing:var(--tk-s);color:var(--orange);font-weight:400;margin-bottom:16px}
+.card h3{font-size:clamp(15px,3vw,18px);font-weight:300;text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px;line-height:1.3}
+.card p{font-size:13.5px;line-height:1.7;color:var(--muted);font-weight:300}
+.card ul{list-style:none;margin-top:16px;display:flex;flex-direction:column;gap:8px}
+.card li{font-size:12px;color:var(--dim);display:flex;gap:9px;line-height:1.55}
+.card li::before{content:"";width:4px;height:4px;background:var(--orange);flex:0 0 auto;margin-top:6px}
 
-/* ---- le site a un JOB : estimateur de temps ---- */
-.calc{display:grid;gap:18px;margin-top:32px}
-@media(min-width:880px){.calc{grid-template-columns:1.15fr .85fr;align-items:start;gap:24px}}
-.ctrls{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:clamp(20px,3.6vw,30px);
-  display:flex;flex-direction:column;gap:22px}
-.ctrl-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:11px;gap:12px}
-.ctrl-top label{font-size:12.5px;color:var(--muted);font-weight:300}
-.ctrl-top output{font-size:16px;font-weight:700;color:var(--yellow);font-variant-numeric:tabular-nums}
-input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:3px;border-radius:3px;
-  background:linear-gradient(90deg,var(--yellow),var(--orange));outline:none;cursor:pointer}
-input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;
-  background:#fff;border:3px solid var(--orange);box-shadow:0 0 16px rgba(255,122,26,.55);cursor:pointer}
-input[type=range]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:#fff;
-  border:3px solid var(--orange);box-shadow:0 0 16px rgba(255,122,26,.55);cursor:pointer;border-width:3px}
-.res{background:linear-gradient(160deg,rgba(245,217,10,.09),rgba(168,85,247,.09));
-  border:1px solid rgba(245,217,10,.26);border-radius:18px;padding:clamp(20px,3.6vw,30px)}
-.res .big{font-size:clamp(38px,10vw,62px);font-weight:800;letter-spacing:-.035em;line-height:1;
-  background:linear-gradient(140deg,var(--yellow),var(--orange));-webkit-background-clip:text;background-clip:text;color:transparent}
-.res .big small{display:block;font-size:12px;letter-spacing:.2em;text-transform:uppercase;
-  color:var(--muted);margin-top:11px;font-weight:400;-webkit-text-fill-color:var(--muted)}
-.res .rows{margin-top:22px;display:flex;flex-direction:column;gap:11px}
-.res .rows div{display:flex;justify-content:space-between;gap:12px;font-size:13px;
-  padding-bottom:11px;border-bottom:1px solid rgba(255,255,255,.09)}
+/* ---- estimateur ---- */
+.calc{display:grid;gap:1px;margin-top:34px;background:var(--line);border:1px solid var(--line)}
+@media(min-width:880px){.calc{grid-template-columns:1.15fr .85fr;align-items:stretch}}
+.ctrls{background:var(--ink);padding:clamp(22px,3.6vw,32px);display:flex;flex-direction:column;gap:24px}
+.ctrl-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:13px;gap:12px}
+.ctrl-top label{font-size:12px;color:var(--muted);font-weight:300}
+.ctrl-top output{font-size:15px;font-weight:400;color:var(--orange);font-variant-numeric:tabular-nums}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:1px;
+  background:rgba(255,231,208,.28);outline:none;cursor:pointer}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;
+  background:var(--orange);cursor:pointer}
+input[type=range]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:var(--orange);
+  border:0;cursor:pointer}
+.res{background:var(--coal-2);padding:clamp(22px,3.6vw,32px)}
+.res .big{font-size:clamp(38px,10vw,62px);font-weight:200;letter-spacing:.01em;line-height:1;color:var(--orange)}
+.res .big small{display:block;font-size:9px;letter-spacing:var(--tk-s);text-transform:uppercase;
+  color:var(--muted);margin-top:14px;font-weight:400}
+.res .rows{margin-top:24px;display:flex;flex-direction:column;gap:12px}
+.res .rows div{display:flex;justify-content:space-between;gap:12px;font-size:12.5px;
+  padding-bottom:12px;border-bottom:1px solid rgba(255,231,208,.1)}
 .res .rows div:last-child{border:0;padding:0}
 .res .rows span{color:var(--muted);font-weight:300}
-.res .rows b{font-weight:600;font-variant-numeric:tabular-nums}
-.note{font-size:11.5px;color:var(--dim);line-height:1.6;margin-top:16px;font-weight:300}
-.note b{color:var(--muted);font-weight:500}
+.res .rows b{font-weight:400;font-variant-numeric:tabular-nums;text-align:right}
+.note{font-size:11px;color:var(--dim);line-height:1.65;margin-top:18px;font-weight:300}
+.note b{color:var(--muted);font-weight:400}
 
-/* ---- CTA ---- */
-.cta{text-align:center;padding:clamp(62px,13vh,130px) clamp(16px,5vw,68px);position:relative;overflow:hidden}
-.cta::before{content:"";position:absolute;inset:0;pointer-events:none;
-  background:radial-gradient(58% 62% at 50% 42%,rgba(245,217,10,.13),transparent 66%),
-             radial-gradient(48% 52% at 78% 78%,rgba(168,85,247,.13),transparent 68%)}
-.cta .in{position:relative}
-.cta h2{margin-bottom:16px}
-.cta .lead{margin:0 auto}
+/* ---- CTA : le split en rappel ---- */
+.cta{position:relative;overflow:hidden;padding:clamp(66px,14vh,140px) clamp(16px,5vw,68px);text-align:center}
+.cta .bg{position:absolute;inset:0;z-index:0}
+.cta .bg::before{content:"";position:absolute;inset:0 0 0 50%;background:var(--orange);opacity:.92}
+.cta .bg::after{content:"";position:absolute;inset:0 50% 0 0;background:var(--coal)}
+.cta .blob{position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:radial-gradient(82% 66% at 50% 50%,#141414 0%,rgba(20,20,20,.97) 46%,rgba(20,20,20,.82) 66%,transparent 90%)}
+.cta .in{position:relative;z-index:2}
+.cta h2{margin-bottom:18px;color:var(--cream)}
+.cta .lead{margin:0 auto;color:rgba(255,231,208,.8)}
 .btn-cta{
-  display:inline-flex;align-items:center;gap:11px;margin-top:32px;
-  background:linear-gradient(140deg,var(--yellow),var(--orange));color:#0a0a0f;font-weight:800;
-  font-size:clamp(14px,3.6vw,16.5px);padding:17px 30px;border-radius:14px;letter-spacing:-.01em;
-  box-shadow:0 10px 44px rgba(245,217,10,.28);transition:transform .22s var(--ease),box-shadow .28s;
+  display:inline-flex;align-items:center;gap:14px;margin-top:38px;
+  background:var(--cream);color:var(--ink);font-weight:400;text-transform:uppercase;
+  font-size:clamp(10px,2.6vw,11.5px);letter-spacing:var(--tk-s);padding:19px 30px;
+  transition:background .25s var(--ease),color .25s var(--ease),transform .25s var(--ease);
 }
-.btn-cta:hover{transform:translateY(-2px);box-shadow:0 14px 54px rgba(245,217,10,.42)}
-.btn-ghost{display:inline-flex;align-items:center;gap:9px;margin-top:16px;font-size:13px;color:var(--muted);
-  border-bottom:1px solid rgba(255,255,255,.2);padding-bottom:2px}
-.btn-ghost:hover{color:var(--yellow);border-color:var(--yellow)}
-footer{padding:34px clamp(16px,5vw,68px) 48px;border-top:1px solid var(--line);
-  font-size:11.5px;color:var(--dim);text-align:center;line-height:1.7;font-weight:300}
+.btn-cta:hover{background:var(--orange);color:var(--ink);transform:translateY(-2px)}
+.btn-ghost{display:inline-block;margin-top:22px;font-size:9px;letter-spacing:var(--tk-s);text-transform:uppercase;
+  color:rgba(255,231,208,.66);border-bottom:1px solid rgba(255,231,208,.28);padding-bottom:3px}
+.btn-ghost:hover{color:var(--cream);border-color:var(--cream)}
+footer{padding:38px clamp(16px,5vw,68px) 52px;border-top:1px solid var(--line);
+  font-size:11px;color:var(--dim);text-align:center;line-height:1.9;font-weight:300;
+  letter-spacing:.04em}
 footer a{color:var(--orange)}
 
-/* ================= REDUCED MOTION ================= */
+/* =========================================================
+   REDUCED MOTION — repli statique lisible
+   ========================================================= */
 @media(prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}
   .cue .line{animation:none}
 }
 .reduced .chapter{height:auto!important}
 .reduced .stage{position:relative;height:88svh}
-.reduced .cue{display:none}
-.reduced .rail{display:none}
+.reduced .cue,.reduced .rail{display:none}
 .reduced .out{opacity:1;transform:translate(-50%,-50%) scale(1)}
 .reduced .step{opacity:1}
 .reduced .stripwrap{position:relative;top:0;height:auto;overflow-x:auto;padding:0 clamp(16px,5vw,68px)}
@@ -308,33 +384,63 @@ footer a{color:var(--orange)}
   padding:26px clamp(16px,5vw,68px) 0;max-width:none}
 .reduced #ch4 .stage{display:flex;flex-direction:column;justify-content:center;gap:6px}
 .reduced #ch4 .scrim{display:none}
+/* ch5 sans animation : la vidéo se lit avec ses contrôles natifs,
+   la fumée disparaît et la légende repasse SOUS le cadre (plus de superposition) */
+.reduced #cv-smoke,.reduced .rv-sound,.reduced #ch5 .scrim{display:none}
+.reduced #ch5 .stage{display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:20px;height:auto;padding:30px 0 10px}
+.reduced .rv-frame{position:relative;left:auto;top:auto;transform:none;height:min(58svh,128vw)}
+.reduced #ch5 .caption{position:relative;left:auto;right:auto;bottom:auto;
+  padding:0 clamp(16px,5vw,68px);max-width:none}
 </style>
 </head>
 <body class="is-loading">
 
 <!-- ============ LOADER ============ -->
 <div id="loader" role="status" aria-live="polite">
-  <div class="ld-mark"><svg viewBox="0 0 24 24" fill="none"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8Z" fill="#0a0a0f"/></svg></div>
-  <div class="ld-name">Automation<b>Boost</b></div>
-  <div class="ld-sub">Le principe</div>
-  <div class="ld-track"><div class="ld-fill" id="ldFill"></div></div>
-  <div class="ld-pct"><span id="ldPct">0</span> %</div>
+  <div class="ld-in">
+    <div class="ld-name">Principe<b>.</b></div>
+    <div class="ld-sub">Automatisation Boost</div>
+    <div class="ld-track"><div class="ld-fill" id="ldFill"></div></div>
+    <div class="ld-pct"><span id="ldPct">0</span> %</div>
+  </div>
 </div>
 
 <div id="pagebar"></div>
 
-<!-- ============ TOPBAR ============ -->
-<header class="topbar">
-  <a class="brand" href="#top">
-    <span class="mk"><svg viewBox="0 0 24 24" fill="none"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8Z" fill="#0a0a0f"/></svg></span>
-    Automation<i>Boost</i>
-  </a>
+<!-- ============ NAV MINIMALE ============ -->
+<header class="nav" id="nav">
+  <a class="logo" href="#top"><span class="sq"></span><span class="lg-full">Automatisation Boost</span><span class="lg-short">A—Boost</span></a>
   <span class="spacer"></span>
-  <span class="chip-demo">Proposition · à valider</span>
-  <a class="btn-top" href="https://videoboost.automatisationboost.com/vente.html" target="_blank" rel="noopener">Voir l'offre</a>
+  <nav class="nav-links">
+    <a href="#ch1" class="hide-s">Le principe</a>
+    <a href="#ch5">La chaîne</a>
+    <a href="https://videoboost.automatisationboost.com/vente.html" target="_blank" rel="noopener" class="hi">L'offre</a>
+  </nav>
 </header>
 
 <main id="top">
+
+<!-- ============ HERO — SPLIT + ENCRE ============ -->
+<section class="hero" id="hero">
+  <div class="split"><span class="seamline"></span></div>
+  <canvas id="cv-ink" aria-label="Une forme d'encre noire en suspension au centre d'une composition partagée entre une moitié orange et une moitié anthracite"></canvas>
+  <div class="grain"></div>
+  <div class="hero-copy">
+    <div class="hero-eyebrow">Automatisation Boost — 2026</div>
+    <h1 class="hero-title">Principe<i>.</i></h1>
+    <div class="hero-rule"></div>
+    <p class="hero-line">Une idée entre. Tout en ressort.</p>
+  </div>
+  <div class="hero-foot">
+    <a class="ml" href="#ch1">01 — Le problème</a>
+    <button class="playbtn" id="playJump" aria-label="Aller à la vidéo révélée">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
+    </button>
+    <a class="ml" href="https://videoboost.automatisationboost.com/vente.html" target="_blank" rel="noopener">VideoBoost ↗</a>
+  </div>
+</section>
+
 <div class="film">
 
   <!-- ===== 01 · LA CHARGE ===== -->
@@ -345,7 +451,7 @@ footer a{color:var(--orange)}
       <div class="scrim"></div>
       <div class="rail"><i data-rail></i></div>
       <div class="caption">
-        <div class="eyebrow"><span class="dash"></span><span>Le problème</span><span class="num">01 / 05</span></div>
+        <div class="eyebrow"><span class="dash"></span><span>Le problème</span><span class="num">01 / 06</span></div>
         <h1>Tout seul,<br><em>ça ne tient pas.</em></h1>
         <p>Écrire, filmer, monter, publier, relancer. Chaque jour. Sur quatre réseaux. Une tâche prend dix minutes — mais il y en a quarante, et elles reviennent demain. Ce n'est pas un problème de motivation. C'est un problème de débit.</p>
         <div class="cap-meta">
@@ -361,28 +467,28 @@ footer a{color:var(--orange)}
   <!-- ===== 02 · L'EXPLOSION ===== -->
   <section class="chapter" id="ch2">
     <div class="stage">
-      <canvas id="cv-boom" aria-label="Une idée unique se comprime puis explose en une multitude de sorties colorées : vidéos, posts, sites et emails"></canvas>
+      <canvas id="cv-boom" aria-label="Une idée unique se comprime puis explose en une multitude de sorties : vidéos, posts, sites et emails"></canvas>
       <div class="outs" id="outs">
         <span class="out" data-out style="border-color:rgba(245,217,10,.6);color:#f5d90a">Vidéos 9:16</span>
-        <span class="out" data-out style="border-color:rgba(168,85,247,.6);color:#c99bff">Posts sociaux</span>
-        <span class="out" data-out style="border-color:rgba(255,122,26,.6);color:#ffab6b">Sites clients</span>
+        <span class="out" data-out style="border-color:rgba(255,231,208,.5);color:#FFE7D0">Posts sociaux</span>
+        <span class="out" data-out style="border-color:rgba(252,110,32,.6);color:#FC6E20">Sites clients</span>
         <span class="out" data-out style="border-color:rgba(245,217,10,.6);color:#f5d90a">Emails &amp; relances</span>
       </div>
       <div class="vignette"></div>
       <div class="scrim"></div>
       <div class="rail"><i data-rail></i></div>
       <div class="caption">
-        <div class="eyebrow"><span class="dash"></span><span>Le principe</span><span class="num">02 / 05</span></div>
+        <div class="eyebrow"><span class="dash"></span><span>Le principe</span><span class="num">02 / 06</span></div>
         <h2>Une idée entre.<br><em>Tout en ressort.</em></h2>
-        <p>C'est toute l'idée d'Automatisation Boost : tu n'écris plus quarante contenus, tu écris <b>une</b> intention. La chaîne s'occupe de la démultiplier — un même sujet devient une vidéo, un post, une page, une relance.</p>
+        <p>C'est toute l'idée d'Automatisation Boost : tu n'écris plus quarante contenus, tu écris une intention. La chaîne s'occupe de la démultiplier — un même sujet devient une vidéo, un post, une page, une relance.</p>
       </div>
     </div>
   </section>
 
-  <!-- ===== 03 · LA ROUTE NÉON ===== -->
+  <!-- ===== 03 · LA ROUTE ===== -->
   <section class="chapter" id="ch3">
     <div class="stage">
-      <canvas id="cv-route" aria-label="Une route néon en perspective qui défile, traversée de portiques lumineux marquant chaque étape de la chaîne automatisée"></canvas>
+      <canvas id="cv-route" aria-label="Une route lumineuse en perspective qui défile, traversée de portiques marquant chaque étape de la chaîne automatisée"></canvas>
       <div class="steps" id="steps" aria-hidden="true">
         <div class="step" data-step="0"><span class="dot"></span><span class="lbl">01 · Brief</span></div>
         <div class="step" data-step="1"><span class="dot"></span><span class="lbl">02 · Script IA</span></div>
@@ -395,41 +501,41 @@ footer a{color:var(--orange)}
       <div class="scrim left"></div>
       <div class="rail"><i data-rail></i></div>
       <div class="caption">
-        <div class="eyebrow"><span class="dash"></span><span>La route</span><span class="num">03 / 05</span></div>
+        <div class="eyebrow"><span class="dash"></span><span>La route</span><span class="num">03 / 06</span></div>
         <h2 id="roadTitle">La route <em>est déjà tracée.</em></h2>
         <p id="roadDesc">Entre ton idée et ta publication, il y a six portiques. Tu les franchis une fois à la main. Ensuite, la route se parcourt toute seule — c'est ça, un workflow.</p>
       </div>
     </div>
   </section>
 
-  <!-- ===== 04 · LES PREUVES (captures réelles) ===== -->
+  <!-- ===== 04 · LES PREUVES ===== -->
   <section class="chapter" id="ch4">
     <div class="stage">
       <div class="stripwrap">
         <div class="strip" id="strip">
           <figure class="pcard tall" data-p="0" data-t="Le Journal IA, chaque matin"
             data-d="Une vidéo d'actu IA de 45 s à 1 min, écrite, doublée, montée et publiée sans intervention. Celle-ci est celle du 17 août — la routine tourne tous les jours.">
-            <img src="assets/proof-journal.jpg" alt="Image extraite du Journal IA du 17 août : carte Gemini 3.7 Flash sur fond noir avec accents néon jaunes" loading="lazy" width="540" height="960">
+            <img src="assets/proof-journal.jpg" alt="Image extraite du Journal IA du 17 août" loading="lazy" width="540" height="960">
             <figcaption class="pc-tag">Vidéo · Journal IA</figcaption>
           </figure>
           <figure class="pcard" data-p="1" data-t="Plus de 100 rendus archivés"
             data-d="Chaque vidéo produite passe par une page de prévisualisation avant publication. Cette galerie, c'est la sortie brute de la chaîne — pas une maquette.">
-            <img src="assets/proof-gallery.jpg" alt="Galerie de prévisualisation Autoboost listant des dizaines de vidéos produites, chacune avec un badge à valider" loading="lazy" width="760" height="950">
+            <img src="assets/proof-gallery.jpg" alt="Galerie de prévisualisation Autoboost listant des dizaines de vidéos produites" loading="lazy" width="760" height="950">
             <figcaption class="pc-tag">Sortie · Prévisualisation</figcaption>
           </figure>
           <figure class="pcard" data-p="2" data-t="Des sites clients, générés"
             data-d="Ce site immobilier cinématique — chapitres au scroll, recherche, simulateur de prêt — est sorti de la même chaîne. Le contenu change, la méthode ne change pas.">
-            <img src="assets/proof-koytcha.jpg" alt="Capture du site immobilier cinématique Koytcha : photo de résidence plein écran avec titre en bas à gauche" loading="lazy" width="1200" height="750">
+            <img src="assets/proof-koytcha.jpg" alt="Capture du site immobilier cinématique Koytcha" loading="lazy" width="1200" height="750">
             <figcaption class="pc-tag">Site · Client réel</figcaption>
           </figure>
           <figure class="pcard tall" data-p="3" data-t="Le format social, en série"
-            data-d="Même moteur, autre sortie : la vidéo verticale prête pour TikTok et Instagram, avec voix clonée, sous-titres mot-à-mot et habillage néon.">
+            data-d="Même moteur, autre sortie : la vidéo verticale prête pour TikTok et Instagram, avec voix clonée, sous-titres mot-à-mot et habillage à la charte.">
             <img src="assets/proof-social.jpg" alt="Image extraite d'une vidéo sociale verticale Autoboost avec sous-titres animés" loading="lazy" width="540" height="960">
             <figcaption class="pc-tag">Vidéo · Réseaux</figcaption>
           </figure>
           <figure class="pcard" data-p="4" data-t="Et la vitrine qui encaisse"
             data-d="Au bout de la route il y a une page : ressources, audit, offre. Le contenu produit chaque jour y ramène du monde. La boucle est fermée.">
-            <img src="assets/proof-site.jpg" alt="Capture de la page d'accueil d'automatisationboost.com : titre Publie partout, en automatique" loading="lazy" width="1200" height="750">
+            <img src="assets/proof-site.jpg" alt="Capture de la page d'accueil d'automatisationboost.com" loading="lazy" width="1200" height="750">
             <figcaption class="pc-tag">Site · automatisationboost.com</figcaption>
           </figure>
         </div>
@@ -437,23 +543,45 @@ footer a{color:var(--orange)}
       <div class="scrim"></div>
       <div class="rail"><i data-rail></i></div>
       <div class="caption">
-        <div class="eyebrow"><span class="dash"></span><span>Les preuves</span><span class="num">04 / 05</span></div>
+        <div class="eyebrow"><span class="dash"></span><span>Les preuves</span><span class="num">04 / 06</span></div>
         <h2 class="pf-title" id="pfTitle">Le Journal IA, chaque matin</h2>
         <p class="pf-desc" id="pfDesc">Une vidéo d'actu IA de 45 s à 1 min, écrite, doublée, montée et publiée sans intervention.</p>
-        <div class="cap-meta"><span class="tag y">Captures réelles</span><span class="tag">Aucune maquette</span></div>
+        <div class="cap-meta"><span class="tag o">Captures réelles</span><span class="tag">Aucune maquette</span></div>
       </div>
     </div>
   </section>
 
-  <!-- ===== 05 · LA BOUCLE ===== -->
+  <!-- ===== 05 · LA FUMÉE RÉVÈLE LA VIDÉO ===== -->
   <section class="chapter" id="ch5">
     <div class="stage">
-      <canvas id="cv-loop" aria-label="La route néon se referme sur elle-même en un circuit lumineux parcouru par plusieurs impulsions"></canvas>
+      <div class="rv-glow"></div>
+      <div class="rv-frame" id="rvFrame">
+        <video id="rvVideo" src="assets/reveal.mp4" poster="assets/reveal-poster.jpg"
+               muted playsinline loop preload="none"
+               aria-label="Extrait d'une vidéo produite par la chaîne Automatisation Boost"></video>
+      </div>
+      <canvas id="cv-smoke" aria-hidden="true"></canvas>
+      <button class="rv-sound" id="rvSound" aria-label="Activer le son de la vidéo"><span class="dotv"></span><span id="rvSoundLbl">Activer le son</span></button>
+      <div class="scrim left"></div>
+      <div class="rail"><i data-rail></i></div>
+      <div class="caption">
+        <div class="eyebrow"><span class="dash"></span><span>La révélation</span><span class="num">05 / 06</span></div>
+        <h2>Et au bout,<br><em>ça sort comme ça.</em></h2>
+        <p>La fumée se dissipe sur un rendu réel, sorti de la chaîne : image générée, montage calé sur les temps forts du son, habillage automatique. Personne n'a ouvert un logiciel de montage.</p>
+        <div class="cap-meta"><span class="tag y">Rendu réel</span><span class="tag">17 s · 9:16</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 06 · LA BOUCLE ===== -->
+  <section class="chapter" id="ch6">
+    <div class="stage">
+      <canvas id="cv-loop" aria-label="La route se referme sur elle-même en un circuit lumineux parcouru par plusieurs impulsions"></canvas>
       <div class="vignette"></div>
       <div class="scrim left"></div>
       <div class="rail"><i data-rail></i></div>
       <div class="caption">
-        <div class="eyebrow"><span class="dash"></span><span>Le principe, en une phrase</span><span class="num">05 / 05</span></div>
+        <div class="eyebrow"><span class="dash"></span><span>Le principe, en une phrase</span><span class="num">06 / 06</span></div>
         <h2>Tu ne travailles plus<br>dans le système.<br><em>Tu le construis.</em></h2>
         <p>La route finit par se refermer : ce que tu as câblé une fois tourne pendant que tu dors. Ton métier change — tu passes d'exécutant à architecte.</p>
       </div>
@@ -461,7 +589,7 @@ footer a{color:var(--orange)}
   </section>
 
 </div>
-<div class="seam"></div>
+<div class="seam"><i></i><i></i></div>
 
 <!-- ============ CE QUI TOURNE VRAIMENT ============ -->
 <section class="sec">
@@ -469,7 +597,7 @@ footer a{color:var(--orange)}
     <div class="kicker"><span class="dash"></span><span>Ce qui tourne déjà</span></div>
     <h2>Des chiffres, <em>pas des promesses.</em></h2>
     <p class="lead">Voilà l'état réel de la chaîne aujourd'hui. Rien d'anticipé, rien d'arrondi vers le haut.</p>
-    <div class="facts" style="margin-top:32px">
+    <div class="facts" style="margin-top:34px">
       <div class="fact"><div class="v">1 / jour</div><div class="k">Journal IA écrit, doublé, monté et publié chaque matin</div></div>
       <div class="fact"><div class="v">100+</div><div class="k">Rendus vidéo archivés en prévisualisation avant publication</div></div>
       <div class="fact"><div class="v">4</div><div class="k">Réseaux alimentés depuis la même chaîne — TikTok, Instagram, LinkedIn, Facebook</div></div>
@@ -486,19 +614,19 @@ footer a{color:var(--orange)}
     <p class="lead">Le principe tient en trois mouvements. Le premier coûte du temps, les deux suivants n'en coûtent plus.</p>
     <div class="grid3">
       <article class="card">
-        <div class="no">TEMPS 01</div>
+        <div class="no">Temps 01</div>
         <h3>On câble la route</h3>
         <p>On décide une bonne fois du chemin : d'où part une idée, ce qui l'écrit, ce qui la met en voix, ce qui la monte, où elle atterrit.</p>
         <ul><li>Un workflow n8n par étape</li><li>Une charte figée (couleurs, voix, format)</li><li>Une seule source de vérité pour les sujets</li></ul>
       </article>
       <article class="card">
-        <div class="no">TEMPS 02</div>
+        <div class="no">Temps 02</div>
         <h3>La route se parcourt seule</h3>
         <p>Chaque jour, la chaîne reprend le chemin sans toi : elle cherche le sujet, écrit, génère la voix, monte, habille, et dépose le rendu pour validation.</p>
         <ul><li>Script écrit par l'IA</li><li>Voix clonée, pas de re-enregistrement</li><li>Montage et sous-titres automatiques</li></ul>
       </article>
       <article class="card">
-        <div class="no">TEMPS 03</div>
+        <div class="no">Temps 03</div>
         <h3>Tu gardes la main</h3>
         <p>Le seul geste qui reste : regarder le rendu et dire oui. Une validation déclenche la publication programmée et les relances.</p>
         <ul><li>Prévisualisation avant toute publication</li><li>Publication programmée multi-réseaux</li><li>Réponse automatique aux commentaires</li></ul>
@@ -507,7 +635,7 @@ footer a{color:var(--orange)}
   </div>
 </section>
 
-<!-- ============ LE SITE A UN JOB : ESTIMATEUR ============ -->
+<!-- ============ ESTIMATEUR ============ -->
 <section class="sec">
   <div class="in">
     <div class="kicker"><span class="dash"></span><span>Ton cas</span></div>
@@ -542,14 +670,15 @@ footer a{color:var(--orange)}
 </section>
 
 <!-- ============ CTA ============ -->
-<section class="sec cta alt">
+<section class="sec cta">
+  <div class="bg"></div><div class="blob"></div>
   <div class="in">
     <div class="kicker" style="justify-content:center"><span class="dash"></span><span>La suite</span><span class="dash"></span></div>
     <h2>Arrête de pousser.<br><em>Construis la route.</em></h2>
     <p class="lead">VideoBoost, c'est la première brique : la partie vidéo de cette chaîne, montée et prête à tourner chez toi.</p>
     <a class="btn-cta" href="https://videoboost.automatisationboost.com/vente.html" target="_blank" rel="noopener">
       Découvrir VideoBoost
-      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
     </a>
     <div><a class="btn-ghost" href="https://automatisationboost.com/" target="_blank" rel="noopener">ou voir le site principal</a></div>
   </div>
@@ -557,7 +686,7 @@ footer a{color:var(--orange)}
 
 <footer>
   Automatisation Boost — page de démonstration du principe.<br>
-  Toutes les captures de la section « preuves » sont des sorties réelles de la chaîne.
+  Toutes les captures de la section « preuves » et la vidéo révélée sont des sorties réelles de la chaîne.
   <a href="https://videoboost.automatisationboost.com/vente.html" target="_blank" rel="noopener">L'offre VideoBoost</a>
 </footer>
 </main>
@@ -573,30 +702,63 @@ if(reduced) document.documentElement.classList.add('reduced');
 var small = window.matchMedia('(max-width:700px)').matches;
 var DPR = Math.min(window.devicePixelRatio || 1, small ? 1.75 : 2);
 
-var Y = [245,217,10], P = [168,85,247], O = [255,122,26];
+/* palette JS — le violet a disparu : jaune signature, orange et crème de la référence */
+var Y = [245,217,10], O = [252,110,32], C = [255,231,208];
 function rgba(c,a){ return 'rgba('+c[0]+','+c[1]+','+c[2]+','+a+')'; }
 function cl(v,a,b){ return v<a?a:(v>b?b:v); }
 function lerp(a,b,t){ return a+(b-a)*t; }
-/* bruit déterministe : le rendu est identique à la montée et à la descente du scroll */
+function ss(e0,e1,x){ var t = cl((x-e0)/(e1-e0),0,1); return t*t*(3-2*t); }
 function rnd(i,s){ var x = Math.sin(i*127.1 + s*311.7) * 43758.5453; return x - Math.floor(x); }
-function F(size,w){ return (w||600)+' '+size.toFixed(0)+'px Sora, system-ui, -apple-system, sans-serif'; }
+function F(size,w){ return (w||400)+' '+size.toFixed(0)+'px Sora, system-ui, -apple-system, sans-serif'; }
 
 /* =========================================================
-   SOCLE CANVAS — un seul contexte par chapitre, redessiné
-   à chaque frame de scroll. Rien n'est pré-calculé en image :
-   tout est procédural, donc net partout et quasi sans poids.
+   BRUIT DE VALEUR (table de permutation) — base de l'encre
+   et de la fumée. 100 % procédural, aucune image, aucun coût.
+   ========================================================= */
+var PERM = new Uint8Array(512), RT = new Float32Array(256);
+(function(){
+  var s = 1337;
+  function r(){ s = (s*1664525 + 1013904223) & 0x7fffffff; return s/0x7fffffff; }
+  var p = new Uint8Array(256), i, j, t;
+  for(i=0;i<256;i++){ p[i] = i; RT[i] = r(); }
+  for(i=255;i>0;i--){ j = (r()*(i+1))|0; t = p[i]; p[i] = p[j]; p[j] = t; }
+  for(i=0;i<512;i++) PERM[i] = p[i & 255];
+})();
+function vn(x,y){
+  var xi = Math.floor(x), yi = Math.floor(y);
+  var xf = x-xi, yf = y-yi;
+  var u = xf*xf*(3-2*xf), v = yf*yf*(3-2*yf);
+  xi &= 255; yi &= 255;
+  var p0 = PERM[yi], p1 = PERM[yi+1];
+  var a = RT[PERM[xi+p0]], b = RT[PERM[xi+1+p0]];
+  var c = RT[PERM[xi+p1]], d = RT[PERM[xi+1+p1]];
+  var ab = a + (b-a)*u;
+  return ab + ((c + (d-c)*u) - ab)*v;
+}
+function fbm(x,y,oct){
+  var v = 0, a = 0.5, f = 1;
+  for(var i=0;i<oct;i++){ v += a*vn(x*f, y*f); f *= 2.03; a *= 0.5; }
+  return v;
+}
+var NRM = {2:1/0.75, 3:1/0.875, 4:1/0.9375};
+
+/* petit canvas hors-écran redimensionné à la volée */
+function offscreen(){ var c = document.createElement('canvas'); return c; }
+
+/* =========================================================
+   SOCLE CANVAS des chapitres procéduraux
    ========================================================= */
 function Layer(id, paint){
   this.cv = document.getElementById(id);
   this.ctx = this.cv ? this.cv.getContext('2d') : null;
-  this.paint = paint; this.p = 0; this.w = 0; this.h = 0;
+  this.paint = paint; this.p = 0;
 }
 Layer.prototype.resize = function(){
   if(!this.ctx) return;
   var r = this.cv.getBoundingClientRect();
-  var w = Math.max(1, Math.round(r.width * DPR)), h = Math.max(1, Math.round(r.height * DPR));
+  var w = Math.max(1, Math.round(r.width*DPR)), h = Math.max(1, Math.round(r.height*DPR));
   if(w === this.cv.width && h === this.cv.height){ this.render(this.p); return; }
-  this.cv.width = w; this.cv.height = h; this.w = w; this.h = h;
+  this.cv.width = w; this.cv.height = h;
   this.render(this.p);
 };
 Layer.prototype.render = function(p){
@@ -608,19 +770,118 @@ Layer.prototype.render = function(p){
   ctx.globalAlpha = 1;
   this.paint(ctx, this.cv.width, this.cv.height, cl(p,0,1), Math.min(this.cv.width, this.cv.height));
 };
+function rr(ctx,x,y,w,h,r){
+  r = Math.min(r,w/2,h/2);
+  ctx.beginPath();
+  ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r);
+  ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath();
+}
 
-/* ---------- 01 · LA CHARGE : les tâches s'empilent ---------- */
+/* =========================================================
+   HERO — LA FORME D'ENCRE (référence Darkmatter)
+   Un champ fbm sculpté en blob organique + filaments,
+   redessiné en basse résolution puis agrandi (= volume).
+   ========================================================= */
+var inkCv = document.getElementById('cv-ink');
+var inkCtx = inkCv ? inkCv.getContext('2d') : null;
+var inkOff = offscreen(), inkOffCtx = inkOff.getContext('2d');
+var inkImg = null, inkW = 0, inkH = 0, inkLW = 0, inkLH = 0;
+var INK_PX = small ? 9000 : 16000;
+
+function inkResize(){
+  if(!inkCtx) return;
+  var r = inkCv.getBoundingClientRect();
+  if(r.width < 2 || r.height < 2) return;   /* canvas masqué (reduced motion) */
+  inkW = Math.max(1, Math.round(r.width*DPR)); inkH = Math.max(1, Math.round(r.height*DPR));
+  inkCv.width = inkW; inkCv.height = inkH;
+  var asp = r.width/Math.max(1,r.height);
+  inkLW = Math.max(28, Math.round(Math.sqrt(INK_PX*asp)));
+  inkLH = Math.max(28, Math.round(inkLW/asp));
+  inkOff.width = inkLW; inkOff.height = inkLH;
+  inkImg = inkOffCtx.createImageData(inkLW, inkLH);
+  inkCtx.imageSmoothingEnabled = true;
+  if(inkCtx.imageSmoothingQuality) inkCtx.imageSmoothingQuality = 'high';
+  paintInk(inkTime);
+}
+function paintInk(t){
+  if(!inkCtx || !inkImg) return;
+  var d = inkImg.data, k = 0, x, y;
+  /* la forme est légèrement plus haute que large : elle chevauche la ligne de partage */
+  var RX = small ? 0.40 : 0.27, RY = small ? 0.26 : 0.30;
+  for(y=0;y<inkLH;y++){
+    var fy = y/inkLH;
+    var dy = (fy-0.47)/RY;
+    for(x=0;x<inkLW;x++,k+=4){
+      var fx = x/inkLW;
+      var dx = (fx-0.5)/RX;
+      var dn = Math.sqrt(dx*dx + dy*dy);
+      var n  = fbm(fx*2.5 + t*0.028, fy*2.5 - t*0.021, 4)*NRM[4];
+      var n2 = fbm(fx*6.2 - t*0.045, fy*6.2 + t*0.036, 3)*NRM[3];
+      var n3 = fbm(fx*13.5 + t*0.07, fy*13.5 - t*0.05, 2)*NRM[2];
+      /* le bruit déforme le contour : c'est ce qui fait les volutes,
+         et la 3e octave détache les filaments d'encre du corps principal */
+      var shape = 1.34 - dn + (n-0.5)*2.05 + (n2-0.5)*0.62 + (n3-0.5)*0.3;
+      var a = cl((shape-0.5)/0.24, 0, 1);
+      if(a <= 0.002){ d[k+3] = 0; continue; }
+      /* densité interne : coeur presque noir, bords translucides */
+      var core = cl((shape-0.62)/0.5, 0, 1);
+      var edge = a*(1-a)*4;
+      /* la lumière chaude du fond traverse les bords : liseré orange/jaune */
+      var g = edge*edge*(0.35 + 0.65*n2);
+      var r0 = lerp(18, 252, g*0.9) + edge*22;
+      var g0 = lerp(16, 130, g*0.9) + edge*10;
+      var b0 = lerp(16, 34, g*0.9);
+      /* quelques veines jaunes dans la masse */
+      var vein = Math.pow(cl(n2*1.3-0.55,0,1), 2.2)*0.5*(1-core*0.55);
+      r0 = lerp(r0, 245, vein); g0 = lerp(g0, 217, vein); b0 = lerp(b0, 10, vein);
+      d[k]   = r0|0;
+      d[k+1] = g0|0;
+      d[k+2] = b0|0;
+      d[k+3] = (a*255*(0.55 + core*0.45))|0;
+    }
+  }
+  inkOffCtx.putImageData(inkImg, 0, 0);
+  inkCtx.setTransform(1,0,0,1,0,0);
+  inkCtx.clearRect(0,0,inkW,inkH);
+  inkCtx.drawImage(inkOff, 0, 0, inkLW, inkLH, 0, 0, inkW, inkH);
+  /* dispersion : les fines particules d'encre autour du corps principal */
+  var S = Math.min(inkW, inkH), NP = small ? 90 : 170;
+  inkCtx.globalCompositeOperation = 'source-over';
+  for(var i=0;i<NP;i++){
+    var ang = rnd(i,3)*Math.PI*2;
+    var rad = (0.18 + Math.pow(rnd(i,5),1.6)*0.72);
+    var drift = t*(0.06 + rnd(i,7)*0.1);
+    var px = inkW*0.5 + Math.cos(ang + drift*0.35)*rad*S*(small?0.62:0.9);
+    var py = inkH*0.47 + Math.sin(ang + drift*0.5)*rad*S*(small?0.72:0.62) - Math.sin(t*0.3+i)*S*0.006;
+    if(px < -20 || px > inkW+20 || py < -20 || py > inkH+20) continue;
+    var sz = S*0.0012*(0.4 + rnd(i,11)*2.6);
+    var kind = i%11;
+    inkCtx.globalAlpha = 0.16 + rnd(i,13)*0.5;
+    inkCtx.fillStyle = kind === 0 ? rgba(Y,1) : (kind === 1 ? rgba(O,1) : 'rgba(15,15,15,1)');
+    inkCtx.beginPath(); inkCtx.arc(px,py,sz,0,7); inkCtx.fill();
+  }
+  inkCtx.globalAlpha = 1;
+}
+var inkTime = 0, inkOn = false, inkLast = 0;
+function inkTick(now){
+  if(!inkOn) return;
+  if(now - inkLast > 40){ inkLast = now; inkTime = now*0.001; paintInk(inkTime); }
+  requestAnimationFrame(inkTick);
+}
+
+/* =========================================================
+   01 · LA CHARGE
+   ========================================================= */
 var TASKS = ['écrire le post','monter la vidéo','trouver le sujet','faire la voix off',
   'découper les rushes','écrire la légende','programmer','relancer le client','répondre aux DM',
   'faire la miniature','publier sur TikTok','publier sur Insta','relancer encore','écrire la newsletter'];
 var NCHIP = small ? 70 : 120;
 
 function paintCharge(ctx,W,H,p,S){
-  ctx.fillStyle = '#08080c'; ctx.fillRect(0,0,W,H);
-  /* fond qui se resserre à mesure que la pile monte */
+  ctx.fillStyle = '#0e0e0e'; ctx.fillRect(0,0,W,H);
   var g = ctx.createRadialGradient(W*0.5,H*0.34,S*0.02,W*0.5,H*0.44,S*1.05);
-  g.addColorStop(0,'rgba(30,26,44,'+(0.7-p*0.42).toFixed(3)+')');
-  g.addColorStop(1,'rgba(6,6,10,0)');
+  g.addColorStop(0,'rgba(58,40,28,'+(0.62-p*0.4).toFixed(3)+')');
+  g.addColorStop(1,'rgba(14,14,14,0)');
   ctx.fillStyle = g; ctx.fillRect(0,0,W,H);
 
   var u = S/1000;
@@ -634,25 +895,22 @@ function paintCharge(ctx,W,H,p,S){
     var q = cl((p-appear)/0.09,0,1);
     if(q<=0) continue;
     var col = i%cols, row = Math.floor(i/cols);
-    /* la pile monte : les dernières tâches débordent hors cadre */
     var baseY = H*1.03 - (row+1)*gapY + p*rows*gapY*0.62;
     var jx = (rnd(i,1)-0.5)*W*0.08, jy = (rnd(i,2)-0.5)*chh*0.8;
     var x = W*0.5 + (col-(cols-1)/2)*(cw*1.1) + jx - cw/2;
     var y = lerp(baseY - H*0.35, baseY, q*q) + jy;
     if(y < -chh*2 || y > H+chh) continue;
-    var rot = (rnd(i,3)-0.5)*0.14;
     ctx.save();
-    ctx.translate(x+cw/2, y+chh/2); ctx.rotate(rot); ctx.translate(-cw/2,-chh/2);
+    ctx.translate(x+cw/2, y+chh/2); ctx.rotate((rnd(i,3)-0.5)*0.14); ctx.translate(-cw/2,-chh/2);
     ctx.globalAlpha = q*0.92;
-    ctx.fillStyle = '#181820';
-    rr(ctx,0,0,cw,chh,chh*0.34); ctx.fill();
-    ctx.strokeStyle = 'rgba(255,255,255,.055)'; ctx.lineWidth = Math.max(1,u*1.2); ctx.stroke();
-    ctx.fillStyle = 'rgba(255,122,26,.5)';
-    rr(ctx,chh*0.34,chh*0.3,Math.max(2,u*4),chh*0.4,u*2); ctx.fill();
-    ctx.fillStyle = 'rgba(255,255,255,.34)';
-    ctx.font = F(Math.max(9,chh*0.4),400); ctx.textBaseline = 'middle';
-    var t = TASKS[i%TASKS.length];
-    ctx.fillText(t, chh*0.34+Math.max(2,u*4)+chh*0.36, chh*0.54);
+    ctx.fillStyle = '#282828';
+    rr(ctx,0,0,cw,chh,0); ctx.fill();
+    ctx.strokeStyle = 'rgba(255,231,208,.11)'; ctx.lineWidth = Math.max(1,u*1.2); ctx.stroke();
+    ctx.fillStyle = rgba(O,0.85);
+    ctx.fillRect(chh*0.3, chh*0.3, Math.max(2,u*3.4), chh*0.4);
+    ctx.fillStyle = 'rgba(255,231,208,.55)';
+    ctx.font = F(Math.max(9,chh*0.4),300); ctx.textBaseline = 'middle';
+    ctx.fillText(TASKS[i%TASKS.length], chh*0.3+Math.max(2,u*3.4)+chh*0.34, chh*0.54);
     ctx.restore();
   }
   ctx.restore();
@@ -669,87 +927,71 @@ function paintCharge(ctx,W,H,p,S){
   ctx.fillStyle = rg; ctx.beginPath(); ctx.arc(W*0.5,H*0.33,r0*7,0,7); ctx.fill();
   ctx.restore();
 
-  /* compteur de retard */
   ctx.save();
   ctx.globalAlpha = cl((p-0.12)/0.2,0,1)*0.95;
   ctx.textAlign = 'center';
-  ctx.fillStyle = rgba(O,0.92);
-  ctx.font = F(S*(small?0.115:0.085),800);
+  ctx.fillStyle = rgba(O,0.95);
+  ctx.font = F(S*(small?0.115:0.085),200);
   ctx.fillText('+'+Math.round(p*NCHIP*2.4), W*0.5, H*0.2);
-  ctx.fillStyle = 'rgba(255,255,255,.34)';
-  ctx.font = F(S*(small?0.026:0.019),500);
-  ctx.fillText('TÂCHES EN RETARD', W*0.5, H*0.2 + S*(small?0.05:0.038));
+  ctx.fillStyle = 'rgba(255,231,208,.4)';
+  ctx.font = F(S*(small?0.022:0.016),400);
+  var lbl = 'T Â C H E S   E N   R E T A R D';
+  ctx.fillText(lbl, W*0.5, H*0.2 + S*(small?0.05:0.038));
   ctx.restore();
 }
-function rr(ctx,x,y,w,h,r){
-  r = Math.min(r,w/2,h/2);
-  ctx.beginPath();
-  ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r);
-  ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath();
-}
 
-/* ---------- 02 · L'EXPLOSION DE COULEUR ---------- */
+/* =========================================================
+   02 · L'EXPLOSION
+   ========================================================= */
 var NPART = small ? 420 : 900;
 var PART = [];
 (function(){
   for(var i=0;i<NPART;i++){
     var a = rnd(i,7)*Math.PI*2;
     PART.push({
-      a:a,
-      sp:0.22 + Math.pow(rnd(i,11),1.7)*0.95,
-      c:(i%7===0)?O:((i%3===0)?P:((i%3===1)?Y:O)),
-      sz:0.35 + rnd(i,13)*1.5,
-      cluster:i%4,
-      wob:(rnd(i,17)-0.5)*0.5,
-      tw:rnd(i,19)
+      a:a, sp:0.22 + Math.pow(rnd(i,11),1.7)*0.95,
+      c:(i%7===0)?C:((i%3===0)?O:((i%3===1)?Y:O)),
+      sz:0.35 + rnd(i,13)*1.5, cluster:i%4,
+      wob:(rnd(i,17)-0.5)*0.5, tw:rnd(i,19)
     });
   }
 })();
-/* 4 attracteurs = les 4 familles de sorties (cf. étiquettes DOM).
-   Ils occupent la moitié haute du cadre : le bas-gauche reste libre
-   pour la légende, jamais de texte par-dessus le visuel.           */
 var CLU_WIDE  = [[0.17,0.27],[0.50,0.19],[0.84,0.31],[0.79,0.61]];
 var CLU_SMALL = [[0.22,0.15],[0.74,0.13],[0.24,0.37],[0.76,0.39]];
 var CLU = CLU_WIDE;
 
 function paintBoom(ctx,W,H,p,S){
   var cx = W*0.5, cy = H*0.44;
-  ctx.fillStyle = '#07070b'; ctx.fillRect(0,0,W,H);
+  ctx.fillStyle = '#0d0d0d'; ctx.fillRect(0,0,W,H);
 
-  var tBoom = 0.34;                     /* instant de la détonation */
-  var pre   = cl(p/tBoom,0,1);          /* montée en pression       */
-  var t     = cl((p-tBoom)/0.66,0,1);   /* onde + organisation      */
-  var org   = cl((p-0.52)/0.44,0,1);    /* aimantation vers les 4 sorties */
+  var tBoom = 0.34;
+  var pre = cl(p/tBoom,0,1);
+  var t   = cl((p-tBoom)/0.66,0,1);
+  var org = cl((p-0.52)/0.44,0,1);
 
-  /* --- avant : le noyau se comprime, la poussière converge --- */
   if(p < tBoom+0.08){
     var comp = Math.pow(pre,2.2);
     ctx.save(); ctx.globalCompositeOperation = 'lighter';
     for(var k=0;k<(small?60:110);k++){
       var ka = rnd(k,23)*Math.PI*2, kd = (0.16+rnd(k,29)*0.5)*(1-comp*0.94);
-      var kx = cx + Math.cos(ka)*kd*S, ky = cy + Math.sin(ka)*kd*S;
       ctx.globalAlpha = (0.1+rnd(k,31)*0.4)*(1-t);
-      ctx.fillStyle = rgba(k%2?Y:P,1);
-      ctx.beginPath(); ctx.arc(kx,ky,S*0.0018*(1+rnd(k,37)),0,7); ctx.fill();
+      ctx.fillStyle = rgba(k%2?Y:O,1);
+      ctx.beginPath(); ctx.arc(cx+Math.cos(ka)*kd*S, cy+Math.sin(ka)*kd*S, S*0.0018*(1+rnd(k,37)),0,7); ctx.fill();
     }
     ctx.restore();
   }
 
-  /* --- l'onde de choc : trois anneaux, un par couleur de la charte --- */
   ctx.save(); ctx.globalCompositeOperation = 'lighter';
-  var rings = [[Y,0.0,1.0],[P,0.05,0.84],[O,0.11,0.7]];
+  var rings = [[Y,0.0,1.0],[O,0.05,0.84],[C,0.11,0.7]];
   for(var r=0;r<3;r++){
     var rt = cl((t - rings[r][1])/0.72,0,1);
     if(rt<=0 || rt>=1) continue;
-    var rad = S*(0.02 + rt*rings[r][2]*1.5);
-    var al = Math.pow(1-rt,2.1)*0.75;
-    ctx.strokeStyle = rgba(rings[r][0],al);
+    ctx.strokeStyle = rgba(rings[r][0], Math.pow(1-rt,2.1)*0.7);
     ctx.lineWidth = Math.max(1, S*0.012*(1-rt)+1);
-    ctx.beginPath(); ctx.arc(cx,cy,rad,0,7); ctx.stroke();
+    ctx.beginPath(); ctx.arc(cx,cy,S*(0.02 + rt*rings[r][2]*1.5),0,7); ctx.stroke();
   }
   ctx.restore();
 
-  /* --- les éclats : ils partent en étoile puis rejoignent leur famille --- */
   if(t>0){
     ctx.save(); ctx.globalCompositeOperation = 'lighter';
     var burst = 1 - Math.exp(-3.4*t);
@@ -766,14 +1008,11 @@ function paintBoom(ctx,W,H,p,S){
         px = lerp(px,tx,w); py = lerp(py,ty,w);
       }
       if(px<-40||px>W+40||py<-40||py>H+40) continue;
-      var fade = (1-t*0.28)*(0.4+q.tw*0.6);
-      ctx.globalAlpha = cl(fade,0,1);
+      ctx.globalAlpha = cl((1-t*0.28)*(0.4+q.tw*0.6),0,1);
       ctx.fillStyle = rgba(q.c,1);
-      var sz = S*0.0016*q.sz*(1+ (1-burst)*2.2);
-      /* traînée pendant l'expansion, point net une fois rangé */
+      var sz = S*0.0016*q.sz*(1+(1-burst)*2.2);
       if(org<0.5 && t<0.6){
-        ctx.beginPath();
-        ctx.moveTo(px,py);
+        ctx.beginPath(); ctx.moveTo(px,py);
         ctx.lineTo(px-Math.cos(ang)*sz*7, py-Math.sin(ang)*sz*7);
         ctx.strokeStyle = rgba(q.c,ctx.globalAlpha*0.5);
         ctx.lineWidth = sz*1.5; ctx.stroke();
@@ -783,44 +1022,42 @@ function paintBoom(ctx,W,H,p,S){
     ctx.restore();
   }
 
-  /* --- le lavis de couleur : le spectre néon qui gicle puis retombe --- */
   var wash = Math.pow(cl(t/0.34,0,1),0.7) * Math.pow(1-cl((t-0.16)/0.62,0,1),1.4);
   if(wash>0.01){
     ctx.save(); ctx.globalCompositeOperation = 'lighter';
     var wg = ctx.createLinearGradient(0,H,W,0);
-    wg.addColorStop(0,    rgba(O,wash*0.5));
-    wg.addColorStop(0.36, rgba(Y,wash*0.6));
-    wg.addColorStop(0.72, rgba(P,wash*0.5));
-    wg.addColorStop(1,    rgba(O,wash*0.34));
+    wg.addColorStop(0,    rgba(O,wash*0.55));
+    wg.addColorStop(0.36, rgba(Y,wash*0.55));
+    wg.addColorStop(0.72, rgba(O,wash*0.4));
+    wg.addColorStop(1,    rgba(C,wash*0.2));
     ctx.fillStyle = wg; ctx.fillRect(0,0,W,H);
     ctx.restore();
   }
 
-  /* --- le noyau : l'idée. Minuscule, puis flash blanc, puis braise --- */
   ctx.save(); ctx.globalCompositeOperation = 'lighter';
-  /* le flash n'existe QU'À la détonation : avant, seul le noyau comprimé brille */
   var flash = (p <= tBoom) ? 0 : Math.pow(1-cl(t/0.13,0,1),2.6);
-  var ember = 1 - cl(t/0.55,0,1);              /* la braise s'éteint pendant que ça s'organise */
+  var ember = 1 - cl(t/0.55,0,1);
   var coreR = S*(0.012 + pre*0.016) * (1 + flash*8);
   var cg = ctx.createRadialGradient(cx,cy,0,cx,cy,Math.max(1,coreR*3.4));
-  cg.addColorStop(0,   'rgba(255,255,255,'+(0.5*Math.max(pre*0.7,ember)+flash*0.5).toFixed(3)+')');
+  cg.addColorStop(0,   'rgba(255,240,220,'+(0.5*Math.max(pre*0.7,ember)+flash*0.5).toFixed(3)+')');
   cg.addColorStop(0.2, rgba(Y,0.62*(0.34*Math.max(pre,ember)+flash)));
-  cg.addColorStop(0.55,rgba(O,0.24*(0.26*Math.max(pre,ember)+flash)));
-  cg.addColorStop(1,   rgba(P,0));
+  cg.addColorStop(0.55,rgba(O,0.26*(0.26*Math.max(pre,ember)+flash)));
+  cg.addColorStop(1,   rgba(O,0));
   ctx.fillStyle = cg; ctx.beginPath(); ctx.arc(cx,cy,coreR*3.4,0,7); ctx.fill();
-  /* voile blanc plein cadre au moment exact de la détonation */
-  if(flash>0.02){ ctx.fillStyle='rgba(255,255,255,'+(flash*0.52).toFixed(3)+')'; ctx.fillRect(0,0,W,H); }
+  if(flash>0.02){ ctx.fillStyle='rgba(255,240,220,'+(flash*0.5).toFixed(3)+')'; ctx.fillRect(0,0,W,H); }
   ctx.restore();
 }
 
-/* ---------- 03 · LA ROUTE NÉON ---------- */
+/* =========================================================
+   03 · LA ROUTE
+   ========================================================= */
 var GATES = [
-  {d:1.0, c:Y, n:'01', t:'Le brief',        h:'Le brief',        s:'Une ligne suffit : le sujet du jour, ou une idée jetée dans un tableau. C\'est le seul endroit où tu écris encore.'},
-  {d:2.2, c:P, n:'02', t:'Le script IA',    h:'L\'IA <em>écrit</em>',   s:'Le sujet part dans un agent qui rédige le script : accroche, corps, appel à l\'action. Il suit la charte, pas son humeur.'},
-  {d:3.4, c:O, n:'03', t:'La voix clonée',  h:'Ta voix, <em>clonée</em>', s:'Le texte devient audio avec ta propre voix, clonée une fois pour toutes. Aucun micro à rallumer.'},
-  {d:4.6, c:Y, n:'04', t:'Le montage',      h:'Le montage <em>se fait</em>', s:'Habillage, sous-titres mot-à-mot, musique, format vertical : le rendu sort déjà à la charte.'},
-  {d:5.8, c:P, n:'05', t:'La publication',  h:'Ça <em>part partout</em>', s:'Un seul rendu, quatre réseaux. Programmé aux bonnes heures, sans que tu ouvres une seule application.'},
-  {d:7.0, c:O, n:'06', t:'La relance',      h:'Et ça <em>relance</em>',  s:'Un commentaire déclenche un message privé, un lead déclenche un email. La route continue après la publication.'}
+  {d:1.0, c:Y, n:'01', t:'Le brief',       h:'Le brief',                s:'Une ligne suffit : le sujet du jour, ou une idée jetée dans un tableau. C\'est le seul endroit où tu écris encore.'},
+  {d:2.2, c:O, n:'02', t:'Le script IA',   h:'L\'IA <em>écrit</em>',    s:'Le sujet part dans un agent qui rédige le script : accroche, corps, appel à l\'action. Il suit la charte, pas son humeur.'},
+  {d:3.4, c:C, n:'03', t:'La voix clonée', h:'Ta voix, <em>clonée</em>',s:'Le texte devient audio avec ta propre voix, clonée une fois pour toutes. Aucun micro à rallumer.'},
+  {d:4.6, c:Y, n:'04', t:'Le montage',     h:'Le montage <em>se fait</em>', s:'Habillage, sous-titres mot-à-mot, musique, format vertical : le rendu sort déjà à la charte.'},
+  {d:5.8, c:O, n:'05', t:'La publication', h:'Ça <em>part partout</em>',s:'Un seul rendu, quatre réseaux. Programmé aux bonnes heures, sans que tu ouvres une seule application.'},
+  {d:7.0, c:C, n:'06', t:'La relance',     h:'Et ça <em>relance</em>',  s:'Un commentaire déclenche un message privé, un lead déclenche un email. La route continue après la publication.'}
 ];
 var DEPTH = 8.2, HY = 0.44;
 
@@ -829,48 +1066,40 @@ function paintRoute(ctx,W,H,p,S){
   var travel = p*DEPTH;
   var u = S/1000;
 
-  /* ciel + horizon néon */
   var sky = ctx.createLinearGradient(0,0,0,hy);
-  sky.addColorStop(0,'#08080e'); sky.addColorStop(1,'#141024');
+  sky.addColorStop(0,'#0d0d0d'); sky.addColorStop(1,'#241608');
   ctx.fillStyle = sky; ctx.fillRect(0,0,W,hy);
   var hg = ctx.createLinearGradient(0,hy-S*0.3,0,hy+S*0.06);
-  hg.addColorStop(0,'rgba(168,85,247,0)');
-  hg.addColorStop(0.62,'rgba(168,85,247,.2)');
-  hg.addColorStop(1,'rgba(245,217,10,.36)');
+  hg.addColorStop(0,'rgba(252,110,32,0)');
+  hg.addColorStop(0.62,'rgba(252,110,32,.2)');
+  hg.addColorStop(1,'rgba(245,217,10,.38)');
   ctx.fillStyle = hg; ctx.fillRect(0,hy-S*0.3,W,S*0.36);
-  /* le sol : jamais du noir plat, sinon la route flotte dans le vide */
   var gr = ctx.createLinearGradient(0,hy,0,H);
-  gr.addColorStop(0,'#171128'); gr.addColorStop(0.42,'#0c0a14'); gr.addColorStop(1,'#07070b');
+  gr.addColorStop(0,'#2a1a0c'); gr.addColorStop(0.42,'#141010'); gr.addColorStop(1,'#0c0c0c');
   ctx.fillStyle = gr; ctx.fillRect(0,hy,W,H-hy);
 
-  function sc(z){ return 1/(1 + z*3.0); }           /* échelle perspective */
+  function sc(z){ return 1/(1 + z*3.0); }
   function yOf(z){ return hy + (H-hy)*sc(z); }
-  function halfW(z){ return W*0.42*sc(z); }         /* la route reste dans le cadre au premier plan */
+  function halfW(z){ return W*0.42*sc(z); }
 
-  /* grille au sol : c'est elle qui donne la vitesse */
   ctx.save();
   ctx.lineWidth = Math.max(1,u*1.2);
   var step = 0.32, first = Math.ceil(travel/step)*step;
   for(var g=0; g<48; g++){
     var z = (first + g*step) - travel;
     if(z<0.02) continue; if(z>DEPTH*0.9) break;
-    var gy = yOf(z), hw = halfW(z)*3.4;
-    ctx.globalAlpha = cl((1-z/4.4),0,1)*0.5;
-    ctx.strokeStyle = 'rgba(150,115,235,.55)';
-    ctx.beginPath(); ctx.moveTo(vx-hw,gy); ctx.lineTo(vx+hw,gy); ctx.stroke();
+    ctx.globalAlpha = cl((1-z/4.4),0,1)*0.42;
+    ctx.strokeStyle = 'rgba(252,110,32,.5)';
+    ctx.beginPath(); ctx.moveTo(vx-halfW(z)*3.4,yOf(z)); ctx.lineTo(vx+halfW(z)*3.4,yOf(z)); ctx.stroke();
   }
-  ctx.globalAlpha = 1;
-  /* fuyantes latérales : elles convergent toutes vers le point de fuite */
-  ctx.strokeStyle = 'rgba(150,115,235,.3)';
+  ctx.strokeStyle = 'rgba(252,110,32,.28)';
   for(var l=-5;l<=5;l++){
     if(l===0) continue;
-    ctx.globalAlpha = 0.2;
+    ctx.globalAlpha = 0.18;
     ctx.beginPath(); ctx.moveTo(vx + l*W*0.3, H); ctx.lineTo(vx, hy); ctx.stroke();
   }
   ctx.restore();
 
-  /* la CHAUSSÉE elle-même : sans cette surface, les deux néons ne lisent
-     que comme deux lasers — c'est le ruban qui fait la route.          */
   (function(){
     var zs = [], z;
     for(z=0.004; z<3.6; z*=1.14) zs.push(z);
@@ -880,35 +1109,31 @@ function paintRoute(ctx,W,H,p,S){
     for(var j=zs.length-1;j>=0;j--){ ctx.lineTo(vx+halfW(zs[j]), yOf(zs[j])); }
     ctx.closePath();
     var rgd = ctx.createLinearGradient(0,hy,0,H);
-    rgd.addColorStop(0,'rgba(60,40,110,.85)');
-    rgd.addColorStop(0.3,'rgba(24,18,44,.9)');
-    rgd.addColorStop(1,'rgba(10,9,16,.95)');
+    rgd.addColorStop(0,'rgba(96,52,18,.85)');
+    rgd.addColorStop(0.3,'rgba(38,24,14,.9)');
+    rgd.addColorStop(1,'rgba(15,14,13,.95)');
     ctx.fillStyle = rgd; ctx.fill();
   })();
 
-  /* les deux bords néon de la route : jaune à gauche, violet à droite */
-  function edge(sign,col){
-    var pts = [], z;
-    /* on part quasiment de la caméra pour que la bordure touche le bas du cadre */
-    for(z=0.004; z<3.6; z*=1.14){ pts.push([vx + sign*halfW(z), yOf(z)]); }
-    pts.push([vx + sign*halfW(3.6), yOf(3.6)]);
-    ctx.save(); ctx.globalCompositeOperation = 'lighter';
-    /* passe large et floue = le halo */
-    ctx.strokeStyle = rgba(col,0.16); ctx.lineWidth = u*22; ctx.lineJoin='round'; ctx.lineCap='round';
-    stroke(pts);
-    ctx.strokeStyle = rgba(col,0.36); ctx.lineWidth = u*9; stroke(pts);
-    ctx.strokeStyle = rgba(col,0.95); ctx.lineWidth = u*2.6; stroke(pts);
-    ctx.strokeStyle = 'rgba(255,255,255,.8)'; ctx.lineWidth = u*1.05; stroke(pts);
-    ctx.restore();
-  }
   function stroke(pts){
     ctx.beginPath(); ctx.moveTo(pts[0][0],pts[0][1]);
     for(var i=1;i<pts.length;i++) ctx.lineTo(pts[i][0],pts[i][1]);
     ctx.stroke();
   }
-  edge(-1,Y); edge(1,P);
+  function edge(sign,col){
+    var pts = [], z;
+    for(z=0.004; z<3.6; z*=1.14){ pts.push([vx + sign*halfW(z), yOf(z)]); }
+    pts.push([vx + sign*halfW(3.6), yOf(3.6)]);
+    ctx.save(); ctx.globalCompositeOperation = 'lighter';
+    ctx.strokeStyle = rgba(col,0.16); ctx.lineWidth = u*22; ctx.lineJoin='round'; ctx.lineCap='round';
+    stroke(pts);
+    ctx.strokeStyle = rgba(col,0.36); ctx.lineWidth = u*9; stroke(pts);
+    ctx.strokeStyle = rgba(col,0.95); ctx.lineWidth = u*2.6; stroke(pts);
+    ctx.strokeStyle = 'rgba(255,231,208,.8)'; ctx.lineWidth = u*1.05; stroke(pts);
+    ctx.restore();
+  }
+  edge(-1,Y); edge(1,O);
 
-  /* bande centrale : tirets orange qui filent vers toi */
   ctx.save(); ctx.globalCompositeOperation = 'lighter';
   var ds = 0.34, dfirst = Math.ceil(travel/ds)*ds;
   for(var d=0; d<40; d++){
@@ -917,16 +1142,13 @@ function paintRoute(ctx,W,H,p,S){
     var y1 = yOf(dz), y2 = yOf(dz+ds*0.5);
     var w1 = W*0.022*sc(dz), w2 = W*0.022*sc(dz+ds*0.5);
     ctx.globalAlpha = cl(1-dz/3.4,0,1);
-    ctx.fillStyle = rgba(O,1);
+    ctx.fillStyle = rgba(C,0.9);
     ctx.beginPath();
     ctx.moveTo(vx-w1,y1); ctx.lineTo(vx+w1,y1); ctx.lineTo(vx+w2,y2); ctx.lineTo(vx-w2,y2);
     ctx.closePath(); ctx.fill();
   }
   ctx.restore();
 
-  /* les six portiques : une étape de la chaîne chacun.
-     Seul le plus proche porte son intitulé — deux libellés superposés
-     à des profondeurs différentes deviennent illisibles.            */
   var nearest = -1, nz = 1e9;
   for(var q0=0;q0<GATES.length;q0++){
     var z0 = GATES[q0].d - travel;
@@ -934,66 +1156,192 @@ function paintRoute(ctx,W,H,p,S){
   }
   ctx.save();
   for(var k=GATES.length-1;k>=0;k--){
-    var G = GATES[k], z = G.d - travel;
-    if(z < 0.04 || z > 4.2) continue;
-    var gy = yOf(z), hw = halfW(z)*0.92, s = sc(z);
+    var G = GATES[k], zz = G.d - travel;
+    if(zz < 0.04 || zz > 4.2) continue;
+    var gy = yOf(zz), hw = halfW(zz)*0.92, s = sc(zz);
     var topY = gy - (H-hy)*s*1.15;
-    var near = cl(1 - z/4.2,0,1);
-    var al = Math.pow(near,1.5);
+    var al = Math.pow(cl(1 - zz/4.2,0,1),1.5);
     ctx.globalCompositeOperation = 'lighter';
     ctx.globalAlpha = al;
     var lw = Math.max(1, u*7*s*3.0);
-    /* montants + linteau */
     ctx.strokeStyle = rgba(G.c,0.2); ctx.lineWidth = lw*3.4; gatePath(ctx,vx,hw,topY,gy); ctx.stroke();
     ctx.strokeStyle = rgba(G.c,0.95); ctx.lineWidth = lw; gatePath(ctx,vx,hw,topY,gy); ctx.stroke();
-    ctx.strokeStyle = 'rgba(255,255,255,.75)'; ctx.lineWidth = Math.max(0.6,lw*0.36); gatePath(ctx,vx,hw,topY,gy); ctx.stroke();
-    /* numéro d'étape sur le linteau, lisible seulement quand ça approche */
+    ctx.strokeStyle = 'rgba(255,231,208,.75)'; ctx.lineWidth = Math.max(0.6,lw*0.36); gatePath(ctx,vx,hw,topY,gy); ctx.stroke();
     var fs = (H-hy)*s*0.34;
-    if(fs > 13 && z < 2.6 && k === nearest){
+    if(fs > 13 && zz < 2.6 && k === nearest){
       ctx.globalCompositeOperation = 'source-over';
-      ctx.globalAlpha = al*cl((2.6-z)/1.1,0,1);
+      ctx.globalAlpha = al*cl((2.6-zz)/1.1,0,1);
       ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-      ctx.fillStyle = rgba(G.c,1); ctx.font = F(fs,800);
+      ctx.fillStyle = rgba(G.c,1); ctx.font = F(fs,200);
       ctx.fillText(G.n, vx, topY - fs*0.86);
-      ctx.fillStyle = 'rgba(255,255,255,.8)'; ctx.font = F(Math.max(10,fs*0.3),600);
-      ctx.fillText(G.t.toUpperCase(), vx, topY - fs*0.22);
+      ctx.fillStyle = 'rgba(255,231,208,.8)'; ctx.font = F(Math.max(10,fs*0.26),400);
+      ctx.fillText(G.t.toUpperCase(), vx, topY - fs*0.2);
     }
     ctx.globalCompositeOperation = 'lighter';
     ctx.globalAlpha = 1;
   }
   ctx.restore();
 
-  /* le véhicule : l'impulsion qui remonte la route sous toi */
   ctx.save(); ctx.globalCompositeOperation = 'lighter';
   var pg = ctx.createRadialGradient(vx,H*0.99,0,vx,H*0.99,S*0.42);
-  pg.addColorStop(0, rgba(Y,0.4)); pg.addColorStop(0.4, rgba(O,0.16)); pg.addColorStop(1,rgba(O,0));
+  pg.addColorStop(0, rgba(Y,0.36)); pg.addColorStop(0.4, rgba(O,0.16)); pg.addColorStop(1,rgba(O,0));
   ctx.fillStyle = pg; ctx.fillRect(0,H*0.6,W,H*0.4);
   ctx.restore();
 }
-/* un portique = deux montants + un linteau, en perspective */
 function gatePath(ctx,vx,hw,topY,gy){
   ctx.lineCap = 'round'; ctx.lineJoin = 'round';
   ctx.beginPath();
-  ctx.moveTo(vx-hw, gy);
-  ctx.lineTo(vx-hw, topY);
-  ctx.lineTo(vx+hw, topY);
-  ctx.lineTo(vx+hw, gy);
+  ctx.moveTo(vx-hw, gy); ctx.lineTo(vx-hw, topY); ctx.lineTo(vx+hw, topY); ctx.lineTo(vx+hw, gy);
 }
 
-/* ---------- 05 · LA BOUCLE ---------- */
+/* =========================================================
+   05 · LA FUMÉE QUI RÉVÈLE LA VIDÉO
+   Champ fbm calculé en basse définition puis agrandi :
+   dense au départ, il s'érode depuis le centre à mesure que
+   le scroll avance. Le seuil ne dépend QUE de la progression,
+   donc la fumée se reforme à l'identique en scrollant en arrière.
+   ========================================================= */
+var smCv = document.getElementById('cv-smoke');
+var smCtx = smCv ? smCv.getContext('2d') : null;
+var smOff = offscreen(), smOffCtx = smOff.getContext('2d');
+var smImg = null, smW = 0, smH = 0, smLW = 0, smLH = 0;
+var SM_PX = small ? 14000 : 46000, SM_OCT = small ? 3 : 4;
+/* centre + demi-extension normalisés du cadre vidéo : la clairière
+   doit s'ouvrir EXACTEMENT là où la vidéo est posée, pas au centre du canvas */
+var smRX = 0.34, smRY = 0.5, smCX = 0.5, smCY = 0.47;
+
+function smokeResize(){
+  if(!smCtx) return;
+  var r = smCv.getBoundingClientRect();
+  if(r.width < 2 || r.height < 2) return;   /* canvas masqué (reduced motion) */
+  smW = Math.max(1, Math.round(r.width*DPR)); smH = Math.max(1, Math.round(r.height*DPR));
+  smCv.width = smW; smCv.height = smH;
+  var asp = r.width/Math.max(1,r.height);
+  smLW = Math.max(24, Math.round(Math.sqrt(SM_PX*asp)));
+  smLH = Math.max(24, Math.round(smLW/asp));
+  smOff.width = smLW; smOff.height = smLH;
+  smImg = smOffCtx.createImageData(smLW, smLH);
+  smCtx.imageSmoothingEnabled = true;
+  if(smCtx.imageSmoothingQuality) smCtx.imageSmoothingQuality = 'high';
+  /* la clairière épouse exactement le cadre de la vidéo, avec une marge */
+  var fr = document.getElementById('rvFrame');
+  if(fr && r.width && r.height){
+    var f = fr.getBoundingClientRect(), s = smCv.getBoundingClientRect();
+    smCX = cl((f.left + f.width/2 - s.left)/s.width, 0, 1);
+    smCY = cl((f.top + f.height/2 - s.top)/s.height, 0, 1);
+    smRX = cl((f.width/s.width)*0.78, 0.16, 0.9);
+    smRY = cl((f.height/s.height)*0.72, 0.2, 0.95);
+  }
+  paintSmoke(smokeP, smokeT);
+}
+function paintSmoke(p, t){
+  if(!smCtx || !smImg) return;
+  var d = smImg.data, k = 0, x, y;
+  /* dissipation : la clairière s'ouvre vers p=0.3, tout est dégagé vers p=0.52,
+     le reste du chapitre laisse la vidéo tourner en clair */
+  var pe = ss(0, 0.78, p);
+  var base = -0.36 + pe*1.75;
+  for(y=0;y<smLH;y++){
+    var fy = y/smLH;
+    var dy = (fy-smCY)/smRY;
+    for(x=0;x<smLW;x++,k+=4){
+      var fx = x/smLW;
+      var dx = (fx-smCX)/smRX;
+      var dn = Math.sqrt(dx*dx + dy*dy); if(dn>1) dn = 1;
+      /* deux couches qui dérivent à des vitesses différentes = volume */
+      var n  = fbm(fx*3.6 + t*0.05  + pe*0.35, fy*3.6 - t*0.085 - pe*0.55, SM_OCT)*NRM[SM_OCT];
+      var n2 = fbm(fx*13.0 - t*0.035, fy*13.0 + t*0.055, 2)*NRM[2];
+      var field = n*0.74 + n2*0.26;
+      /* le centre s'ouvre en premier : c'est la clairière sur la vidéo */
+      var thr = base + (1-dn)*0.66*pe;
+      var a = (field - thr)/0.2; a = a<0?0:(a>1?1:a);
+      if(a <= 0.004){ d[k+3] = 0; continue; }
+      var edge = a*(1-a)*4;
+      /* le corps de la fumée : gris chaud modulé par le champ, sinon
+         une fumée « noire » n'est qu'un rectangle noir sans volume */
+      var lum = Math.pow(field, 2.3);
+      var l0 = 5 + lum*142;
+      /* veines jaunes : bruit « ridgé » (1-|2n-1|) puis puissance élevée,
+         ce qui donne des filaments fins et non des taches */
+      /* la braise ne vit QUE sur le front d'érosion, sinon elle devient une tache */
+      var glow = Math.pow(edge, 2.6)*(0.3 + 0.7*n2);
+      /* la fumée n'est pas peinte en jaune : elle est ÉCLAIRÉE par le rendu
+         qu'elle cache. Les volutes denses au-dessus de la vidéo captent la
+         lumière, les autres restent noires. La lumière monte avec le scroll. */
+      var amb = 0.12 + cl(1-dn,0,1)*(0.36 + 0.5*pe);
+      var warm = cl((1-dn)*pe*1.35,0,1)*0.45;
+      var mixY = cl(glow*0.78 + amb*lum*2.1, 0, 1);
+      var mixO = cl(warm + edge*0.45*(1-n2), 0, 1);
+      var r0 = lerp(l0*1.06, 245, mixY), g0 = lerp(l0*0.97, 217, mixY), b0 = lerp(l0*0.86, 10, mixY);
+      r0 = lerp(r0, 252, mixO*0.55); g0 = lerp(g0, 110, mixO*0.55); b0 = lerp(b0, 32, mixO*0.55);
+      d[k]   = r0|0; d[k+1] = g0|0; d[k+2] = b0|0;
+      d[k+3] = (a*255)|0;
+    }
+  }
+  smOffCtx.putImageData(smImg, 0, 0);
+  smCtx.setTransform(1,0,0,1,0,0);
+  smCtx.clearRect(0,0,smW,smH);
+  smCtx.drawImage(smOff, 0, 0, smLW, smLH, 0, 0, smW, smH);
+}
+var smokeP = 0, smokeT = 0, smokeOn = false, smokeLast = 0;
+function smokeTick(now){
+  if(!smokeOn) return;
+  if(now - smokeLast > 33){ smokeLast = now; smokeT = now*0.001; paintSmoke(smokeP, smokeT); }
+  requestAnimationFrame(smokeTick);
+}
+
+/* --- pilotage de la vidéo révélée --- */
+var rvVideo = document.getElementById('rvVideo');
+var rvSound = document.getElementById('rvSound');
+var rvSoundLbl = document.getElementById('rvSoundLbl');
+var rvLoaded = false, rvPlaying = false, rvFails = 0;
+function rvPreload(){
+  if(rvLoaded || !rvVideo) return;
+  rvLoaded = true; rvVideo.preload = 'auto'; try{ rvVideo.load(); }catch(e){}
+}
+function rvUpdate(p){
+  if(!rvVideo || reduced) return;
+  if(p > 0.28 && !rvPlaying && rvFails < 4){
+    rvPreload(); rvPlaying = true;
+    var pr = rvVideo.play();
+    /* si le navigateur refuse la lecture, on réessaie au scroll suivant —
+       sinon un seul refus laisserait un cadre noir pour toujours (le poster
+       reste visible entre-temps, la page ne casse jamais) */
+    if(pr && pr.catch) pr.catch(function(){ rvPlaying = false; rvFails++; });
+  } else if(p < 0.22 && rvPlaying){
+    rvPlaying = false; rvVideo.pause();
+  }
+  /* remonté tout en haut du chapitre : la fumée est refermée, on rembobine
+     pour que la révélation reparte du début au scroll suivant */
+  if(p < 0.1 && !rvPlaying && rvVideo.currentTime > 0.1){
+    try{ rvVideo.currentTime = 0; }catch(e){}
+  }
+  rvSound.classList.toggle('show', p > 0.5);
+}
+if(rvSound && rvVideo){
+  rvSound.addEventListener('click', function(){
+    rvVideo.muted = !rvVideo.muted;
+    rvSoundLbl.textContent = rvVideo.muted ? 'Activer le son' : 'Couper le son';
+    rvSound.setAttribute('aria-label', rvVideo.muted ? 'Activer le son de la vidéo' : 'Couper le son de la vidéo');
+    if(!rvVideo.muted){ var pr = rvVideo.play(); if(pr && pr.catch) pr.catch(function(){}); }
+  });
+}
+
+/* =========================================================
+   06 · LA BOUCLE
+   ========================================================= */
 function paintLoop(ctx,W,H,p,S){
-  ctx.fillStyle = '#07070b'; ctx.fillRect(0,0,W,H);
+  ctx.fillStyle = '#0d0d0d'; ctx.fillRect(0,0,W,H);
   var cx = W*0.5, cy = H*0.33;
   var rx = Math.min(W*0.38, S*0.56), ry = rx*0.46;
 
-  /* halo de fond */
   ctx.save(); ctx.globalCompositeOperation='lighter';
   var bg = ctx.createRadialGradient(cx,cy,0,cx,cy,rx*2.2);
-  bg.addColorStop(0, rgba(P,0.14)); bg.addColorStop(0.5, rgba(P,0.05)); bg.addColorStop(1,rgba(P,0));
+  bg.addColorStop(0, rgba(O,0.14)); bg.addColorStop(0.5, rgba(O,0.05)); bg.addColorStop(1,rgba(O,0));
   ctx.fillStyle = bg; ctx.fillRect(0,0,W,H);
   ctx.restore();
 
-  var draw = cl(p/0.42,0,1);          /* le circuit se referme */
+  var draw = cl(p/0.42,0,1);
   var u = S/1000;
 
   function ell(a0,a1,alpha,lw,col){
@@ -1008,28 +1356,26 @@ function paintLoop(ctx,W,H,p,S){
   }
   ctx.save(); ctx.globalCompositeOperation = 'lighter';
   var a0 = -Math.PI/2, a1 = a0 + Math.PI*2*draw;
-  ell(a0,a1,0.12,u*30,P);
+  ell(a0,a1,0.12,u*30,O);
   ell(a0,a1,0.3, u*13,Y);
   ell(a0,a1,0.9, u*3.2,Y);
-  ell(a0,a1,0.8, u*1.2,[255,255,255]);
+  ell(a0,a1,0.8, u*1.2,C);
   ctx.restore();
 
-  /* les six étapes posées sur le circuit */
   ctx.save();
   for(var k=0;k<6;k++){
     var a = -Math.PI/2 + (k/6)*Math.PI*2;
     if((a - a0) > (a1-a0)) continue;
     var x = cx + Math.cos(a)*rx, y = cy + Math.sin(a)*ry;
     ctx.globalCompositeOperation = 'lighter';
-    var c = [Y,P,O][k%3];
+    var c = [Y,O,C][k%3];
     var dg = ctx.createRadialGradient(x,y,0,x,y,u*26);
     dg.addColorStop(0, rgba(c,0.95)); dg.addColorStop(0.3, rgba(c,0.4)); dg.addColorStop(1,rgba(c,0));
     ctx.fillStyle = dg; ctx.beginPath(); ctx.arc(x,y,u*26,0,7); ctx.fill();
-    ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(x,y,u*3.2,0,7); ctx.fill();
+    ctx.fillStyle = rgba(C,1); ctx.beginPath(); ctx.arc(x,y,u*3.2,0,7); ctx.fill();
   }
   ctx.restore();
 
-  /* les impulsions : une, puis deux, puis trois — la boucle s'auto-alimente */
   var closed = cl((p-0.42)/0.58,0,1);
   var npulse = 1 + Math.floor(closed*2.99);
   ctx.save(); ctx.globalCompositeOperation = 'lighter';
@@ -1038,17 +1384,15 @@ function paintLoop(ctx,W,H,p,S){
     var pa = -Math.PI/2 + t*Math.PI*2;
     if(draw<1 && (pa-a0) > (a1-a0)) continue;
     var px = cx + Math.cos(pa)*rx, py = cy + Math.sin(pa)*ry;
-    /* traînée */
     for(var s2=0;s2<16;s2++){
       var ta = pa - s2*0.052;
-      var tx = cx + Math.cos(ta)*rx, ty = cy + Math.sin(ta)*ry;
       ctx.globalAlpha = (1-s2/16)*0.45;
       ctx.fillStyle = rgba(O,1);
-      ctx.beginPath(); ctx.arc(tx,ty,u*(6-s2*0.3),0,7); ctx.fill();
+      ctx.beginPath(); ctx.arc(cx + Math.cos(ta)*rx, cy + Math.sin(ta)*ry, u*(6-s2*0.3),0,7); ctx.fill();
     }
     ctx.globalAlpha = 1;
     var g2 = ctx.createRadialGradient(px,py,0,px,py,u*44);
-    g2.addColorStop(0,'rgba(255,255,255,.95)'); g2.addColorStop(0.22, rgba(Y,0.7));
+    g2.addColorStop(0,'rgba(255,240,220,.95)'); g2.addColorStop(0.22, rgba(Y,0.7));
     g2.addColorStop(0.6, rgba(O,0.2)); g2.addColorStop(1, rgba(O,0));
     ctx.fillStyle = g2; ctx.beginPath(); ctx.arc(px,py,u*44,0,7); ctx.fill();
   }
@@ -1066,20 +1410,16 @@ var L = {
 };
 var ALL = [L.charge, L.boom, L.route, L.loop];
 
-/* --- éléments DOM pilotés par le scroll --- */
-var outs   = [].slice.call(document.querySelectorAll('[data-out]'));
-var stepEls= [].slice.call(document.querySelectorAll('.step'));
-var strip  = document.getElementById('strip');
-var pcards = strip ? [].slice.call(strip.querySelectorAll('.pcard')) : [];
-var pfTitle= document.getElementById('pfTitle');
-var pfDesc = document.getElementById('pfDesc');
+var outs    = [].slice.call(document.querySelectorAll('[data-out]'));
+var stepEls = [].slice.call(document.querySelectorAll('.step'));
+var strip   = document.getElementById('strip');
+var pcards  = strip ? [].slice.call(strip.querySelectorAll('.pcard')) : [];
+var pfTitle = document.getElementById('pfTitle');
+var pfDesc  = document.getElementById('pfDesc');
 var roadTitle = document.getElementById('roadTitle');
 var roadDesc  = document.getElementById('roadDesc');
 var lastGate = -1, lastCard = -1;
 
-/* Le centre de chaque carte doit être mesuré SANS la transformation en cours :
-   .stripwrap est l'offsetParent, donc offsetLeft inclurait le translate et le
-   calcul deviendrait auto-référent (la bande dérive à chaque frame).        */
 var CARDX = [];
 function measureStrip(){
   if(!strip || !pcards.length) return;
@@ -1100,11 +1440,7 @@ function applyChapter(id, p){
 
   if(id === 'ch2'){
     L.boom.render(p);
-    var on = p > 0.66;
-    for(var i=0;i<outs.length;i++){
-      var lit = p > (0.62 + i*0.045);
-      outs[i].classList.toggle('on', lit);
-    }
+    for(var i=0;i<outs.length;i++) outs[i].classList.toggle('on', p > (0.62 + i*0.045));
     return;
   }
 
@@ -1134,18 +1470,13 @@ function applyChapter(id, p){
     var n = pcards.length;
     if(!CARDX.length) measureStrip();
     var vw = window.innerWidth;
-    /* on centre la carte active plutôt que de faire glisser la bande d'un bout à l'autre :
-       la preuve regardée est toujours au milieu, quel que soit son format */
-    /* smootherstep par segment : chaque preuve MARQUE UN TEMPS au centre au lieu
-       de glisser en continu — on a le temps de lire la capture et sa légende */
     var raw = p*(n-1), i0 = Math.min(n-2, Math.floor(raw)), i1 = i0+1, r0 = cl(raw-i0,0,1);
     var h = cl((r0-0.28)/0.44,0,1), fr = h*h*(3-2*h);
     var f = i0 + fr;
     strip.style.transform = 'translate3d(' + (vw/2 - lerp(CARDX[i0],CARDX[i1],fr)).toFixed(1) + 'px,0,0)';
     var act = Math.round(f);
     for(var c=0;c<n;c++){
-      var dist = Math.abs(c - f);
-      var k = cl(1-dist*0.9,0,1);
+      var k = cl(1-Math.abs(c-f)*0.9,0,1);
       pcards[c].style.transform = 'translateZ(' + (-150 + k*150).toFixed(0) + 'px) rotateY(' +
         (cl((c-f),-2,2)*-8).toFixed(1) + 'deg) scale(' + (0.88 + k*0.12).toFixed(3) + ')';
       pcards[c].style.opacity = (0.42 + k*0.58).toFixed(2);
@@ -1159,15 +1490,21 @@ function applyChapter(id, p){
     return;
   }
 
-  if(id === 'ch5'){ L.loop.render(p); return; }
+  if(id === 'ch5'){
+    smokeP = p;
+    if(!smokeOn) paintSmoke(p, smokeT);   /* scrub hors rAF : reste exact */
+    rvUpdate(p);
+    return;
+  }
+
+  if(id === 'ch6'){ L.loop.render(p); return; }
 }
 
 /* =========================================================
-   LOADER — les images de preuve sont préchargées,
-   le pourcentage glisse au lieu de sauter.
+   LOADER
    ========================================================= */
 var IMGS = ['assets/proof-journal.jpg','assets/proof-gallery.jpg','assets/proof-koytcha.jpg',
-            'assets/proof-social.jpg','assets/proof-site.jpg'];
+            'assets/proof-social.jpg','assets/proof-site.jpg','assets/reveal-poster.jpg'];
 var total = IMGS.length + 1, done = 0, shown = -1, cur = 0, ramping = true;
 var fill = document.getElementById('ldFill'), pctEl = document.getElementById('ldPct');
 (function ramp(){
@@ -1187,20 +1524,20 @@ function finish(){
     document.getElementById('loader').classList.add('done');
     document.body.classList.remove('is-loading');
     resizeAll();
+    if(!reduced){ inkOn = true; requestAnimationFrame(inkTick); }
     if(window.ScrollTrigger) ScrollTrigger.refresh();
   }, 380);
 }
 IMGS.forEach(function(src){ var im = new Image(); im.onload = im.onerror = bump; im.src = src; });
 if(document.fonts && document.fonts.ready) document.fonts.ready.then(function(){ bump(); resizeAll(); });
 else bump();
-setTimeout(finish, 9000);   /* garde-fou : jamais bloqué sur le loader */
+setTimeout(finish, 9000);
 
 /* =========================================================
-   RESIZE + BRANCHEMENT SCROLL
+   RESIZE + SCROLL
    ========================================================= */
 function resizeAll(){
   small = window.matchMedia('(max-width:700px)').matches;
-  /* les étiquettes de sortie suivent exactement les attracteurs du canvas */
   CLU = small ? CLU_SMALL : CLU_WIDE;
   for(var i=0;i<outs.length && i<CLU.length;i++){
     outs[i].style.left = (CLU[i][0]*100).toFixed(1)+'%';
@@ -1208,17 +1545,51 @@ function resizeAll(){
   }
   measureStrip();
   ALL.forEach(function(l){ l.resize(); });
+  inkResize();
+  smokeResize();
 }
-var IDS = ['ch1','ch2','ch3','ch4','ch5'];
+var IDS = ['ch1','ch2','ch3','ch4','ch5','ch6'];
+
+/* n'anime que ce qui est à l'écran : la fumée et l'encre coûtent du CPU */
+function watch(el, on, off, margin){
+  if(!el || !('IntersectionObserver' in window)) { on(); return; }
+  new IntersectionObserver(function(es){
+    for(var i=0;i<es.length;i++){ es[i].isIntersecting ? on() : off(); }
+  }, {rootMargin: margin || '0px'}).observe(el);
+}
 
 function initScroll(){
   resizeAll();
+
+  /* nav : fond seulement une fois le hero passé */
+  var navEl = document.getElementById('nav'), heroEl = document.getElementById('hero');
+  function navCheck(){ navEl.classList.toggle('solid', window.scrollY > window.innerHeight*0.72); }
+  window.addEventListener('scroll', navCheck, {passive:true});
+  navCheck();
+
+  var jump = document.getElementById('playJump');
+  if(jump) jump.addEventListener('click', function(){
+    var t = document.getElementById('ch5');
+    if(t) window.scrollTo({top: t.offsetTop + t.offsetHeight*0.5, behavior: reduced ? 'auto' : 'smooth'});
+  });
+
+  if(!reduced){
+    watch(heroEl, function(){ if(!inkOn && !document.body.classList.contains('is-loading')){ inkOn = true; requestAnimationFrame(inkTick); } },
+                  function(){ inkOn = false; }, '10% 0px');
+    watch(document.getElementById('ch5'),
+          function(){ if(!smokeOn){ smokeOn = true; requestAnimationFrame(smokeTick); } },
+          function(){ smokeOn = false; }, '0px');
+    watch(document.getElementById('ch4'), rvPreload, function(){}, '150% 0px');
+  }
+
   if(reduced){
-    /* état figé et lisible : pas de scrub, mais chaque chapitre reste éloquent */
-    applyChapter('ch1',0.72); applyChapter('ch2',0.78);
-    applyChapter('ch3',0.16); applyChapter('ch4',0);   applyChapter('ch5',0.85);
+    applyChapter('ch1',0.72); applyChapter('ch2',0.78); applyChapter('ch3',0.16);
+    applyChapter('ch4',0);    applyChapter('ch5',0.5);  applyChapter('ch6',0.85);
+    if(rvVideo){ rvVideo.setAttribute('controls',''); rvVideo.preload = 'metadata'; }
+    paintInk(0);
     return;
   }
+
   var bar = document.getElementById('pagebar');
   if(window.gsap && window.ScrollTrigger){
     gsap.registerPlugin(ScrollTrigger);
@@ -1235,15 +1606,13 @@ function initScroll(){
       onUpdate:function(self){ bar.style.width = (self.progress*100).toFixed(2)+'%'; }
     });
   } else {
-    /* repli sans GSAP : rAF sur le scroll natif */
     var ticking = false;
     function loop(){
       IDS.forEach(function(id){
         var sec = document.getElementById(id); if(!sec) return;
         var r = sec.getBoundingClientRect();
         if(r.bottom > -300 && r.top < window.innerHeight + 300){
-          var prog = cl(-r.top / Math.max(1,(sec.offsetHeight - window.innerHeight)),0,1);
-          applyChapter(id, prog);
+          applyChapter(id, cl(-r.top / Math.max(1,(sec.offsetHeight - window.innerHeight)),0,1));
         }
       });
       var de = document.documentElement;
@@ -1268,7 +1637,7 @@ else window.addEventListener('load', initScroll);
 resizeAll();
 
 /* =========================================================
-   ESTIMATEUR — le site a un job, pas juste une ambiance
+   ESTIMATEUR
    ========================================================= */
 (function(){
   var posts = document.getElementById('c-posts'), mins = document.getElementById('c-min'), auto = document.getElementById('c-auto');
@@ -1289,8 +1658,7 @@ resizeAll();
     rH.querySelector('small').textContent = (saved<1?'minutes':'heures')+' récupérées / mois';
     rNow.textContent = fmtH(hMonth) + ' / mois';
     rAf.textContent  = fmtH(hMonth - saved) + ' / mois';
-    var days = saved*12/7;
-    rY.textContent = Math.round(saved*12) + ' h — soit ' + days.toFixed(0) + ' journées de 7 h';
+    rY.textContent = Math.round(saved*12) + ' h — soit ' + (saved*12/7).toFixed(0) + ' journées de 7 h';
   }
   [posts,mins,auto].forEach(function(el){ el.addEventListener('input', calc); });
   calc();
