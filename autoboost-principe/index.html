@@ -1,0 +1,1302 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Le principe — Automatisation Boost</title>
+<meta name="description" content="Comment fonctionne Automatisation Boost : une idée entre, une chaîne automatisée la transforme en vidéos, posts, sites et relances. Explication cinématique au scroll.">
+<meta name="theme-color" content="#0a0a0f">
+<meta property="og:title" content="Le principe — Automatisation Boost">
+<meta property="og:description" content="Une idée entre. Une chaîne la démultiplie. Tu ne travailles plus DANS le système, tu construis le système.">
+<meta property="og:image" content="assets/proof-journal.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ================= TOKENS — charte AUTOBOOST ================= */
+:root{
+  --bg:#0a0a0f; --bg-2:#0f0f16; --panel:#121219; --panel-2:#16161f;
+  --line:#23232f; --line-2:#2c2c3a;
+  --yellow:#f5d90a; --purple:#a855f7; --orange:#ff7a1a;
+  --text:#f2f2f5; --muted:#9a9aa8; --dim:#6d6d7d;
+  --sans:'Sora',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  --ease:cubic-bezier(.22,.61,.36,1);
+  --bar:58px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+body{
+  font-family:var(--sans);color:var(--text);background:var(--bg);
+  -webkit-font-smoothing:antialiased;overflow-x:hidden;
+}
+body.is-loading{overflow:hidden;height:100svh}
+img{max-width:100%;display:block}
+button,input,select{font:inherit;color:inherit}
+a{color:inherit;text-decoration:none}
+::selection{background:var(--yellow);color:#0a0a0f}
+:focus-visible{outline:2px solid var(--yellow);outline-offset:3px;border-radius:6px}
+
+/* ================= LOADER (le loader fait partie du spectacle) ================= */
+#loader{
+  position:fixed;inset:0;z-index:300;background:var(--bg);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;
+  transition:opacity .75s var(--ease),visibility .75s;
+}
+#loader.done{opacity:0;visibility:hidden}
+.ld-mark{
+  width:54px;height:54px;border-radius:15px;display:grid;place-items:center;
+  background:linear-gradient(150deg,var(--yellow),var(--orange));
+  box-shadow:0 0 46px rgba(245,217,10,.34);
+}
+.ld-mark svg{width:26px;height:26px;display:block}
+.ld-name{font-size:clamp(17px,4.4vw,23px);font-weight:700;letter-spacing:-.01em}
+.ld-name b{color:var(--yellow);font-weight:800}
+.ld-sub{font-size:10px;letter-spacing:.34em;text-transform:uppercase;color:var(--dim)}
+.ld-track{width:min(280px,62vw);height:2px;background:#1e1e29;border-radius:2px;overflow:hidden}
+.ld-fill{height:100%;width:0;background:linear-gradient(90deg,var(--yellow),var(--orange),var(--purple));transition:width .22s linear}
+.ld-pct{font-size:12px;letter-spacing:.22em;color:var(--muted);font-variant-numeric:tabular-nums}
+
+/* ================= TOPBAR ================= */
+.topbar{
+  position:fixed;top:0;left:0;right:0;z-index:120;height:var(--bar);
+  display:flex;align-items:center;gap:14px;padding:0 clamp(14px,4vw,32px);
+  background:rgba(10,10,15,.7);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  border-bottom:1px solid rgba(255,255,255,.07);
+}
+.brand{display:flex;align-items:center;gap:9px;font-weight:700;font-size:14.5px;letter-spacing:-.01em}
+.brand .mk{
+  width:27px;height:27px;border-radius:8px;display:grid;place-items:center;flex:0 0 auto;
+  background:linear-gradient(150deg,var(--yellow),var(--orange));box-shadow:0 0 18px rgba(245,217,10,.3);
+}
+.brand .mk svg{width:14px;height:14px}
+.brand i{font-style:normal;color:var(--yellow)}
+.topbar .spacer{flex:1}
+.chip-demo{
+  font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--purple);
+  border:1px solid rgba(168,85,247,.4);background:rgba(168,85,247,.12);
+  padding:5px 10px;border-radius:999px;white-space:nowrap;
+}
+.btn-top{
+  background:linear-gradient(140deg,var(--yellow),var(--orange));color:#0a0a0f;font-weight:700;
+  font-size:12.5px;padding:9px 15px;border-radius:10px;white-space:nowrap;
+  box-shadow:0 4px 20px rgba(245,217,10,.2);transition:transform .2s var(--ease),box-shadow .25s;
+}
+.btn-top:hover{transform:translateY(-1px);box-shadow:0 6px 26px rgba(245,217,10,.34)}
+#pagebar{position:fixed;top:0;left:0;height:2px;z-index:130;width:0;
+  background:linear-gradient(90deg,var(--yellow),var(--orange),var(--purple))}
+@media(max-width:520px){.chip-demo{display:none}}
+
+/* ================= CHAPITRES CINÉMA ================= */
+.film{position:relative;background:var(--bg)}
+.chapter{position:relative}
+#ch1{height:300svh}
+#ch2{height:520svh}
+#ch3{height:620svh}
+#ch4{height:460svh}
+#ch5{height:340svh}
+.stage{position:sticky;top:0;height:100svh;width:100%;overflow:hidden;background:var(--bg);display:block}
+.stage canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.vignette{position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(125% 88% at 50% 44%,transparent 34%,rgba(0,0,0,.62) 100%)}
+.scrim{position:absolute;left:0;right:0;bottom:0;height:72%;pointer-events:none;
+  background:linear-gradient(to top,rgba(6,6,10,.97) 0%,rgba(6,6,10,.9) 20%,rgba(6,6,10,.62) 48%,rgba(6,6,10,.2) 76%,transparent 100%)}
+/* variante « pondérée à gauche » : le texte garde son fond noir, mais on
+   n'assombrit plus le centre-droit où la route et la boucle doivent briller */
+.scrim.left{height:92%;background:
+  linear-gradient(to top,rgba(6,6,10,.9) 0%,rgba(6,6,10,.6) 20%,rgba(6,6,10,.16) 46%,transparent 68%),
+  radial-gradient(78% 66% at 4% 100%,rgba(6,6,10,.92),rgba(6,6,10,.4) 52%,transparent 76%)}
+
+/* --- LÉGENDE : toujours en bas-gauche, jamais centrée sur le visuel --- */
+.caption{
+  position:absolute;left:clamp(16px,5vw,68px);bottom:clamp(52px,9vh,88px);
+  right:clamp(16px,5vw,68px);max-width:620px;z-index:4;
+}
+.eyebrow{display:flex;align-items:center;gap:11px;font-size:10px;letter-spacing:.28em;
+  text-transform:uppercase;color:var(--yellow);margin-bottom:14px}
+.eyebrow .dash{width:30px;height:1px;background:linear-gradient(90deg,var(--yellow),var(--orange));flex:0 0 auto}
+.eyebrow .num{color:rgba(255,255,255,.34);letter-spacing:.14em;margin-left:auto}
+.caption h1,.caption h2{
+  font-weight:700;line-height:1.04;letter-spacing:-.028em;
+  font-size:clamp(29px,7.2vw,63px);margin-bottom:13px;text-shadow:0 2px 30px rgba(0,0,0,.6);
+}
+.caption h1 em,.caption h2 em{font-style:normal;
+  background:linear-gradient(96deg,var(--yellow),var(--orange) 55%,var(--purple));
+  -webkit-background-clip:text;background-clip:text;color:transparent}
+.caption p{font-size:clamp(13.5px,3.5vw,16.5px);line-height:1.66;color:rgba(255,255,255,.72);
+  max-width:50ch;font-weight:300;text-shadow:0 1px 18px rgba(0,0,0,.55)}
+.cap-meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+.tag{font-size:10px;letter-spacing:.14em;text-transform:uppercase;padding:6px 12px;
+  border:1px solid rgba(255,255,255,.2);border-radius:999px;color:rgba(255,255,255,.76)}
+.tag.y{border-color:rgba(245,217,10,.5);color:var(--yellow);background:rgba(245,217,10,.1)}
+.tag.p{border-color:rgba(168,85,247,.5);color:#c99bff;background:rgba(168,85,247,.12)}
+.tag.o{border-color:rgba(255,122,26,.5);color:#ffab6b;background:rgba(255,122,26,.12)}
+
+.cue{position:absolute;left:50%;transform:translateX(-50%);bottom:16px;z-index:5;
+  display:flex;flex-direction:column;align-items:center;gap:7px;
+  font-size:9px;letter-spacing:.26em;text-transform:uppercase;color:rgba(255,255,255,.4)}
+.cue .line{width:1px;height:30px;background:linear-gradient(to bottom,var(--yellow),transparent);
+  animation:cue 2.1s var(--ease) infinite}
+@keyframes cue{0%{transform:scaleY(.2);transform-origin:top;opacity:0}45%{transform:scaleY(1);opacity:1}
+  100%{transform-origin:bottom;transform:scaleY(0);opacity:0}}
+.rail{position:absolute;right:clamp(10px,2.2vw,24px);top:50%;transform:translateY(-50%);
+  width:2px;height:110px;background:rgba(255,255,255,.13);border-radius:2px;z-index:5;overflow:hidden}
+.rail i{position:absolute;top:0;left:0;width:100%;height:0%;
+  background:linear-gradient(to bottom,var(--yellow),var(--orange))}
+@media(max-width:680px){.rail{display:none}}
+
+/* --- ch2 : étiquettes des sorties après l'explosion --- */
+.outs{position:absolute;inset:0;pointer-events:none;z-index:3}
+.out{
+  position:absolute;transform:translate(-50%,-50%) scale(.72);opacity:0;
+  font-size:10px;letter-spacing:.2em;text-transform:uppercase;font-weight:600;
+  padding:7px 13px;border-radius:999px;white-space:nowrap;
+  background:rgba(10,10,15,.72);backdrop-filter:blur(6px);border:1px solid;
+  transition:opacity .28s var(--ease),transform .34s var(--ease);
+}
+.out.on{opacity:1;transform:translate(-50%,-50%) scale(1)}
+@media(max-width:600px){.out{font-size:9px;letter-spacing:.14em;padding:6px 10px}}
+
+/* --- ch3 : rail d'étapes de la route --- */
+.steps{
+  position:absolute;left:clamp(16px,5vw,68px);top:calc(var(--bar) + clamp(18px,4vh,34px));
+  z-index:4;display:flex;flex-direction:column;gap:7px;
+}
+.step{display:flex;align-items:center;gap:9px;opacity:.3;transition:opacity .3s var(--ease)}
+.step .dot{width:7px;height:7px;border-radius:50%;background:#3a3a4a;flex:0 0 auto;transition:all .3s var(--ease)}
+.step .lbl{font-size:10px;letter-spacing:.17em;text-transform:uppercase;font-weight:500;color:rgba(255,255,255,.7)}
+.step.done{opacity:.6}
+.step.done .dot{background:var(--purple)}
+.step.on{opacity:1}
+.step.on .dot{background:var(--yellow);box-shadow:0 0 12px var(--yellow);transform:scale(1.5)}
+.step.on .lbl{color:#fff}
+@media(max-width:600px){.step .lbl{font-size:9px;letter-spacing:.1em}.steps{gap:5px}}
+
+/* --- ch4 : bande de preuves réelles --- */
+/* la bande vit dans la moitié HAUTE du cadre : le bas-gauche appartient à la légende */
+.stripwrap{position:absolute;left:0;right:0;top:calc(var(--bar) + 1.5vh);height:52svh;
+  display:flex;align-items:center;overflow:hidden;perspective:1500px}
+.strip{display:flex;gap:clamp(14px,3vw,34px);will-change:transform;
+  align-items:center;transform-style:preserve-3d}
+.pcard{
+  position:relative;flex:0 0 auto;
+  border-radius:16px;overflow:hidden;background:var(--panel);
+  border:1px solid var(--line-2);box-shadow:0 26px 70px rgba(0,0,0,.62);
+  transition:border-color .35s var(--ease),box-shadow .35s var(--ease);
+  will-change:transform,opacity;
+}
+/* mobile-first : les cartes sont cadrées par la LARGEUR, sinon une capture
+   paysage déborde de l'écran et se fait rogner des deux côtés */
+.pcard{width:min(72vw,330px)}
+.pcard.tall{width:min(50vw,222px)}
+.pcard img{width:100%;height:auto;display:block}
+/* à partir du desktop on cadre par la hauteur : toutes les preuves s'alignent */
+@media(min-width:900px){
+  .pcard,.pcard.tall{width:auto;height:46svh}
+  .pcard img{width:auto;height:100%;max-width:none;object-fit:cover;object-position:top center}
+}
+.pcard .pc-tag{
+  position:absolute;top:11px;left:11px;font-size:9px;letter-spacing:.18em;text-transform:uppercase;
+  font-weight:600;padding:5px 10px;border-radius:999px;
+  background:rgba(10,10,15,.8);backdrop-filter:blur(6px);border:1px solid rgba(245,217,10,.42);color:var(--yellow);
+}
+.pcard.on{border-color:rgba(245,217,10,.55);box-shadow:0 26px 80px rgba(0,0,0,.7),0 0 0 1px rgba(245,217,10,.3),0 0 60px rgba(245,217,10,.14)}
+#ch4 .caption{max-width:560px}
+.pf-title{font-size:clamp(20px,5.4vw,34px);font-weight:700;letter-spacing:-.02em;margin-bottom:8px;line-height:1.12}
+.pf-desc{font-size:clamp(13px,3.4vw,15.5px);line-height:1.62;color:rgba(255,255,255,.7);font-weight:300;max-width:46ch}
+
+/* ================= SEAM + SECTIONS ================= */
+.seam{height:1px;background:linear-gradient(90deg,transparent,var(--yellow),var(--purple),transparent);opacity:.5}
+.sec{padding:clamp(58px,11vh,116px) clamp(16px,5vw,68px);position:relative}
+.sec.alt{background:var(--bg-2)}
+.in{max-width:1120px;margin:0 auto}
+.kicker{display:flex;align-items:center;gap:11px;font-size:10px;letter-spacing:.28em;
+  text-transform:uppercase;color:var(--yellow);margin-bottom:16px}
+.kicker .dash{width:30px;height:1px;background:linear-gradient(90deg,var(--yellow),var(--orange))}
+.sec h2{font-size:clamp(25px,5.6vw,45px);font-weight:700;letter-spacing:-.028em;line-height:1.1;margin-bottom:14px}
+.sec h2 em{font-style:normal;background:linear-gradient(96deg,var(--yellow),var(--orange) 55%,var(--purple));
+  -webkit-background-clip:text;background-clip:text;color:transparent}
+.lead{font-size:clamp(14px,3.5vw,17px);line-height:1.68;color:var(--muted);font-weight:300;max-width:58ch}
+
+.facts{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--line);
+  border:1px solid var(--line);border-radius:18px;overflow:hidden}
+.fact{background:var(--panel);padding:clamp(20px,4vw,32px) clamp(14px,3vw,24px)}
+.fact .v{font-size:clamp(28px,7vw,46px);font-weight:800;letter-spacing:-.03em;line-height:1;
+  background:linear-gradient(140deg,var(--yellow),var(--orange));-webkit-background-clip:text;background-clip:text;color:transparent}
+.fact:nth-child(2) .v,.fact:nth-child(3) .v{background:linear-gradient(140deg,var(--purple),#7dd3fc);
+  -webkit-background-clip:text;background-clip:text;color:transparent}
+.fact .k{font-size:12px;color:var(--muted);margin-top:9px;line-height:1.45;font-weight:300}
+@media(min-width:860px){.facts{grid-template-columns:repeat(4,1fr)}}
+
+.grid3{display:grid;gap:14px;margin-top:34px}
+@media(min-width:800px){.grid3{grid-template-columns:repeat(3,1fr)}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:18px;
+  padding:clamp(20px,3.6vw,30px);transition:border-color .3s var(--ease),transform .3s var(--ease)}
+.card:hover{border-color:rgba(245,217,10,.36);transform:translateY(-3px)}
+.card .no{font-size:10.5px;letter-spacing:.22em;color:var(--purple);font-weight:600;margin-bottom:13px}
+.card h3{font-size:clamp(17px,3.4vw,21px);font-weight:600;letter-spacing:-.018em;margin-bottom:9px}
+.card p{font-size:14px;line-height:1.65;color:var(--muted);font-weight:300}
+.card ul{list-style:none;margin-top:13px;display:flex;flex-direction:column;gap:7px}
+.card li{font-size:12.5px;color:var(--dim);display:flex;gap:8px;line-height:1.5}
+.card li::before{content:"";width:5px;height:5px;border-radius:50%;background:var(--yellow);flex:0 0 auto;margin-top:6px}
+
+/* ---- le site a un JOB : estimateur de temps ---- */
+.calc{display:grid;gap:18px;margin-top:32px}
+@media(min-width:880px){.calc{grid-template-columns:1.15fr .85fr;align-items:start;gap:24px}}
+.ctrls{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:clamp(20px,3.6vw,30px);
+  display:flex;flex-direction:column;gap:22px}
+.ctrl-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:11px;gap:12px}
+.ctrl-top label{font-size:12.5px;color:var(--muted);font-weight:300}
+.ctrl-top output{font-size:16px;font-weight:700;color:var(--yellow);font-variant-numeric:tabular-nums}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:3px;border-radius:3px;
+  background:linear-gradient(90deg,var(--yellow),var(--orange));outline:none;cursor:pointer}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;
+  background:#fff;border:3px solid var(--orange);box-shadow:0 0 16px rgba(255,122,26,.55);cursor:pointer}
+input[type=range]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:#fff;
+  border:3px solid var(--orange);box-shadow:0 0 16px rgba(255,122,26,.55);cursor:pointer;border-width:3px}
+.res{background:linear-gradient(160deg,rgba(245,217,10,.09),rgba(168,85,247,.09));
+  border:1px solid rgba(245,217,10,.26);border-radius:18px;padding:clamp(20px,3.6vw,30px)}
+.res .big{font-size:clamp(38px,10vw,62px);font-weight:800;letter-spacing:-.035em;line-height:1;
+  background:linear-gradient(140deg,var(--yellow),var(--orange));-webkit-background-clip:text;background-clip:text;color:transparent}
+.res .big small{display:block;font-size:12px;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--muted);margin-top:11px;font-weight:400;-webkit-text-fill-color:var(--muted)}
+.res .rows{margin-top:22px;display:flex;flex-direction:column;gap:11px}
+.res .rows div{display:flex;justify-content:space-between;gap:12px;font-size:13px;
+  padding-bottom:11px;border-bottom:1px solid rgba(255,255,255,.09)}
+.res .rows div:last-child{border:0;padding:0}
+.res .rows span{color:var(--muted);font-weight:300}
+.res .rows b{font-weight:600;font-variant-numeric:tabular-nums}
+.note{font-size:11.5px;color:var(--dim);line-height:1.6;margin-top:16px;font-weight:300}
+.note b{color:var(--muted);font-weight:500}
+
+/* ---- CTA ---- */
+.cta{text-align:center;padding:clamp(62px,13vh,130px) clamp(16px,5vw,68px);position:relative;overflow:hidden}
+.cta::before{content:"";position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(58% 62% at 50% 42%,rgba(245,217,10,.13),transparent 66%),
+             radial-gradient(48% 52% at 78% 78%,rgba(168,85,247,.13),transparent 68%)}
+.cta .in{position:relative}
+.cta h2{margin-bottom:16px}
+.cta .lead{margin:0 auto}
+.btn-cta{
+  display:inline-flex;align-items:center;gap:11px;margin-top:32px;
+  background:linear-gradient(140deg,var(--yellow),var(--orange));color:#0a0a0f;font-weight:800;
+  font-size:clamp(14px,3.6vw,16.5px);padding:17px 30px;border-radius:14px;letter-spacing:-.01em;
+  box-shadow:0 10px 44px rgba(245,217,10,.28);transition:transform .22s var(--ease),box-shadow .28s;
+}
+.btn-cta:hover{transform:translateY(-2px);box-shadow:0 14px 54px rgba(245,217,10,.42)}
+.btn-ghost{display:inline-flex;align-items:center;gap:9px;margin-top:16px;font-size:13px;color:var(--muted);
+  border-bottom:1px solid rgba(255,255,255,.2);padding-bottom:2px}
+.btn-ghost:hover{color:var(--yellow);border-color:var(--yellow)}
+footer{padding:34px clamp(16px,5vw,68px) 48px;border-top:1px solid var(--line);
+  font-size:11.5px;color:var(--dim);text-align:center;line-height:1.7;font-weight:300}
+footer a{color:var(--orange)}
+
+/* ================= REDUCED MOTION ================= */
+@media(prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .cue .line{animation:none}
+}
+.reduced .chapter{height:auto!important}
+.reduced .stage{position:relative;height:88svh}
+.reduced .cue{display:none}
+.reduced .rail{display:none}
+.reduced .out{opacity:1;transform:translate(-50%,-50%) scale(1)}
+.reduced .step{opacity:1}
+.reduced .stripwrap{position:relative;top:0;height:auto;overflow-x:auto;padding:0 clamp(16px,5vw,68px)}
+.reduced .strip{transform:none!important}
+.reduced .pcard{opacity:1!important;transform:none!important;height:38svh}
+.reduced #ch4 .caption{position:relative;left:auto;right:auto;bottom:auto;
+  padding:26px clamp(16px,5vw,68px) 0;max-width:none}
+.reduced #ch4 .stage{display:flex;flex-direction:column;justify-content:center;gap:6px}
+.reduced #ch4 .scrim{display:none}
+</style>
+</head>
+<body class="is-loading">
+
+<!-- ============ LOADER ============ -->
+<div id="loader" role="status" aria-live="polite">
+  <div class="ld-mark"><svg viewBox="0 0 24 24" fill="none"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8Z" fill="#0a0a0f"/></svg></div>
+  <div class="ld-name">Automation<b>Boost</b></div>
+  <div class="ld-sub">Le principe</div>
+  <div class="ld-track"><div class="ld-fill" id="ldFill"></div></div>
+  <div class="ld-pct"><span id="ldPct">0</span> %</div>
+</div>
+
+<div id="pagebar"></div>
+
+<!-- ============ TOPBAR ============ -->
+<header class="topbar">
+  <a class="brand" href="#top">
+    <span class="mk"><svg viewBox="0 0 24 24" fill="none"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8Z" fill="#0a0a0f"/></svg></span>
+    Automation<i>Boost</i>
+  </a>
+  <span class="spacer"></span>
+  <span class="chip-demo">Proposition · à valider</span>
+  <a class="btn-top" href="https://videoboost.automatisationboost.com/vente.html" target="_blank" rel="noopener">Voir l'offre</a>
+</header>
+
+<main id="top">
+<div class="film">
+
+  <!-- ===== 01 · LA CHARGE ===== -->
+  <section class="chapter" id="ch1">
+    <div class="stage">
+      <canvas id="cv-charge" aria-label="Une avalanche de tâches quotidiennes qui s'empilent et finissent par ensevelir une seule personne"></canvas>
+      <div class="vignette"></div>
+      <div class="scrim"></div>
+      <div class="rail"><i data-rail></i></div>
+      <div class="caption">
+        <div class="eyebrow"><span class="dash"></span><span>Le problème</span><span class="num">01 / 05</span></div>
+        <h1>Tout seul,<br><em>ça ne tient pas.</em></h1>
+        <p>Écrire, filmer, monter, publier, relancer. Chaque jour. Sur quatre réseaux. Une tâche prend dix minutes — mais il y en a quarante, et elles reviennent demain. Ce n'est pas un problème de motivation. C'est un problème de débit.</p>
+        <div class="cap-meta">
+          <span class="tag">1 personne</span>
+          <span class="tag">4 réseaux</span>
+          <span class="tag">7 jours / 7</span>
+        </div>
+      </div>
+      <div class="cue"><span class="line"></span><span>Faites défiler</span></div>
+    </div>
+  </section>
+
+  <!-- ===== 02 · L'EXPLOSION ===== -->
+  <section class="chapter" id="ch2">
+    <div class="stage">
+      <canvas id="cv-boom" aria-label="Une idée unique se comprime puis explose en une multitude de sorties colorées : vidéos, posts, sites et emails"></canvas>
+      <div class="outs" id="outs">
+        <span class="out" data-out style="border-color:rgba(245,217,10,.6);color:#f5d90a">Vidéos 9:16</span>
+        <span class="out" data-out style="border-color:rgba(168,85,247,.6);color:#c99bff">Posts sociaux</span>
+        <span class="out" data-out style="border-color:rgba(255,122,26,.6);color:#ffab6b">Sites clients</span>
+        <span class="out" data-out style="border-color:rgba(245,217,10,.6);color:#f5d90a">Emails &amp; relances</span>
+      </div>
+      <div class="vignette"></div>
+      <div class="scrim"></div>
+      <div class="rail"><i data-rail></i></div>
+      <div class="caption">
+        <div class="eyebrow"><span class="dash"></span><span>Le principe</span><span class="num">02 / 05</span></div>
+        <h2>Une idée entre.<br><em>Tout en ressort.</em></h2>
+        <p>C'est toute l'idée d'Automatisation Boost : tu n'écris plus quarante contenus, tu écris <b>une</b> intention. La chaîne s'occupe de la démultiplier — un même sujet devient une vidéo, un post, une page, une relance.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 03 · LA ROUTE NÉON ===== -->
+  <section class="chapter" id="ch3">
+    <div class="stage">
+      <canvas id="cv-route" aria-label="Une route néon en perspective qui défile, traversée de portiques lumineux marquant chaque étape de la chaîne automatisée"></canvas>
+      <div class="steps" id="steps" aria-hidden="true">
+        <div class="step" data-step="0"><span class="dot"></span><span class="lbl">01 · Brief</span></div>
+        <div class="step" data-step="1"><span class="dot"></span><span class="lbl">02 · Script IA</span></div>
+        <div class="step" data-step="2"><span class="dot"></span><span class="lbl">03 · Voix clonée</span></div>
+        <div class="step" data-step="3"><span class="dot"></span><span class="lbl">04 · Montage</span></div>
+        <div class="step" data-step="4"><span class="dot"></span><span class="lbl">05 · Publication</span></div>
+        <div class="step" data-step="5"><span class="dot"></span><span class="lbl">06 · Relance</span></div>
+      </div>
+      <div class="vignette"></div>
+      <div class="scrim left"></div>
+      <div class="rail"><i data-rail></i></div>
+      <div class="caption">
+        <div class="eyebrow"><span class="dash"></span><span>La route</span><span class="num">03 / 05</span></div>
+        <h2 id="roadTitle">La route <em>est déjà tracée.</em></h2>
+        <p id="roadDesc">Entre ton idée et ta publication, il y a six portiques. Tu les franchis une fois à la main. Ensuite, la route se parcourt toute seule — c'est ça, un workflow.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 04 · LES PREUVES (captures réelles) ===== -->
+  <section class="chapter" id="ch4">
+    <div class="stage">
+      <div class="stripwrap">
+        <div class="strip" id="strip">
+          <figure class="pcard tall" data-p="0" data-t="Le Journal IA, chaque matin"
+            data-d="Une vidéo d'actu IA de 45 s à 1 min, écrite, doublée, montée et publiée sans intervention. Celle-ci est celle du 17 août — la routine tourne tous les jours.">
+            <img src="assets/proof-journal.jpg" alt="Image extraite du Journal IA du 17 août : carte Gemini 3.7 Flash sur fond noir avec accents néon jaunes" loading="lazy" width="540" height="960">
+            <figcaption class="pc-tag">Vidéo · Journal IA</figcaption>
+          </figure>
+          <figure class="pcard" data-p="1" data-t="Plus de 100 rendus archivés"
+            data-d="Chaque vidéo produite passe par une page de prévisualisation avant publication. Cette galerie, c'est la sortie brute de la chaîne — pas une maquette.">
+            <img src="assets/proof-gallery.jpg" alt="Galerie de prévisualisation Autoboost listant des dizaines de vidéos produites, chacune avec un badge à valider" loading="lazy" width="760" height="950">
+            <figcaption class="pc-tag">Sortie · Prévisualisation</figcaption>
+          </figure>
+          <figure class="pcard" data-p="2" data-t="Des sites clients, générés"
+            data-d="Ce site immobilier cinématique — chapitres au scroll, recherche, simulateur de prêt — est sorti de la même chaîne. Le contenu change, la méthode ne change pas.">
+            <img src="assets/proof-koytcha.jpg" alt="Capture du site immobilier cinématique Koytcha : photo de résidence plein écran avec titre en bas à gauche" loading="lazy" width="1200" height="750">
+            <figcaption class="pc-tag">Site · Client réel</figcaption>
+          </figure>
+          <figure class="pcard tall" data-p="3" data-t="Le format social, en série"
+            data-d="Même moteur, autre sortie : la vidéo verticale prête pour TikTok et Instagram, avec voix clonée, sous-titres mot-à-mot et habillage néon.">
+            <img src="assets/proof-social.jpg" alt="Image extraite d'une vidéo sociale verticale Autoboost avec sous-titres animés" loading="lazy" width="540" height="960">
+            <figcaption class="pc-tag">Vidéo · Réseaux</figcaption>
+          </figure>
+          <figure class="pcard" data-p="4" data-t="Et la vitrine qui encaisse"
+            data-d="Au bout de la route il y a une page : ressources, audit, offre. Le contenu produit chaque jour y ramène du monde. La boucle est fermée.">
+            <img src="assets/proof-site.jpg" alt="Capture de la page d'accueil d'automatisationboost.com : titre Publie partout, en automatique" loading="lazy" width="1200" height="750">
+            <figcaption class="pc-tag">Site · automatisationboost.com</figcaption>
+          </figure>
+        </div>
+      </div>
+      <div class="scrim"></div>
+      <div class="rail"><i data-rail></i></div>
+      <div class="caption">
+        <div class="eyebrow"><span class="dash"></span><span>Les preuves</span><span class="num">04 / 05</span></div>
+        <h2 class="pf-title" id="pfTitle">Le Journal IA, chaque matin</h2>
+        <p class="pf-desc" id="pfDesc">Une vidéo d'actu IA de 45 s à 1 min, écrite, doublée, montée et publiée sans intervention.</p>
+        <div class="cap-meta"><span class="tag y">Captures réelles</span><span class="tag">Aucune maquette</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 05 · LA BOUCLE ===== -->
+  <section class="chapter" id="ch5">
+    <div class="stage">
+      <canvas id="cv-loop" aria-label="La route néon se referme sur elle-même en un circuit lumineux parcouru par plusieurs impulsions"></canvas>
+      <div class="vignette"></div>
+      <div class="scrim left"></div>
+      <div class="rail"><i data-rail></i></div>
+      <div class="caption">
+        <div class="eyebrow"><span class="dash"></span><span>Le principe, en une phrase</span><span class="num">05 / 05</span></div>
+        <h2>Tu ne travailles plus<br>dans le système.<br><em>Tu le construis.</em></h2>
+        <p>La route finit par se refermer : ce que tu as câblé une fois tourne pendant que tu dors. Ton métier change — tu passes d'exécutant à architecte.</p>
+      </div>
+    </div>
+  </section>
+
+</div>
+<div class="seam"></div>
+
+<!-- ============ CE QUI TOURNE VRAIMENT ============ -->
+<section class="sec">
+  <div class="in">
+    <div class="kicker"><span class="dash"></span><span>Ce qui tourne déjà</span></div>
+    <h2>Des chiffres, <em>pas des promesses.</em></h2>
+    <p class="lead">Voilà l'état réel de la chaîne aujourd'hui. Rien d'anticipé, rien d'arrondi vers le haut.</p>
+    <div class="facts" style="margin-top:32px">
+      <div class="fact"><div class="v">1 / jour</div><div class="k">Journal IA écrit, doublé, monté et publié chaque matin</div></div>
+      <div class="fact"><div class="v">100+</div><div class="k">Rendus vidéo archivés en prévisualisation avant publication</div></div>
+      <div class="fact"><div class="v">4</div><div class="k">Réseaux alimentés depuis la même chaîne — TikTok, Instagram, LinkedIn, Facebook</div></div>
+      <div class="fact"><div class="v">24 / 7</div><div class="k">Les workflows n8n tournent sans qu'on les regarde</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ LES 3 TEMPS ============ -->
+<section class="sec alt">
+  <div class="in">
+    <div class="kicker"><span class="dash"></span><span>Comment ça marche</span></div>
+    <h2>Trois temps, <em>puis plus rien à faire.</em></h2>
+    <p class="lead">Le principe tient en trois mouvements. Le premier coûte du temps, les deux suivants n'en coûtent plus.</p>
+    <div class="grid3">
+      <article class="card">
+        <div class="no">TEMPS 01</div>
+        <h3>On câble la route</h3>
+        <p>On décide une bonne fois du chemin : d'où part une idée, ce qui l'écrit, ce qui la met en voix, ce qui la monte, où elle atterrit.</p>
+        <ul><li>Un workflow n8n par étape</li><li>Une charte figée (couleurs, voix, format)</li><li>Une seule source de vérité pour les sujets</li></ul>
+      </article>
+      <article class="card">
+        <div class="no">TEMPS 02</div>
+        <h3>La route se parcourt seule</h3>
+        <p>Chaque jour, la chaîne reprend le chemin sans toi : elle cherche le sujet, écrit, génère la voix, monte, habille, et dépose le rendu pour validation.</p>
+        <ul><li>Script écrit par l'IA</li><li>Voix clonée, pas de re-enregistrement</li><li>Montage et sous-titres automatiques</li></ul>
+      </article>
+      <article class="card">
+        <div class="no">TEMPS 03</div>
+        <h3>Tu gardes la main</h3>
+        <p>Le seul geste qui reste : regarder le rendu et dire oui. Une validation déclenche la publication programmée et les relances.</p>
+        <ul><li>Prévisualisation avant toute publication</li><li>Publication programmée multi-réseaux</li><li>Réponse automatique aux commentaires</li></ul>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============ LE SITE A UN JOB : ESTIMATEUR ============ -->
+<section class="sec">
+  <div class="in">
+    <div class="kicker"><span class="dash"></span><span>Ton cas</span></div>
+    <h2>Combien de temps <em>tu récupères ?</em></h2>
+    <p class="lead">Mets tes vrais chiffres. Le calcul ne fait qu'additionner le temps que tu passes aujourd'hui sur les tâches que la chaîne peut reprendre.</p>
+    <div class="calc">
+      <div class="ctrls">
+        <div>
+          <div class="ctrl-top"><label for="c-posts">Contenus publiés par semaine</label><output id="o-posts">7</output></div>
+          <input type="range" id="c-posts" min="1" max="35" step="1" value="7">
+        </div>
+        <div>
+          <div class="ctrl-top"><label for="c-min">Minutes par contenu (écriture + montage + publication)</label><output id="o-min">45 min</output></div>
+          <input type="range" id="c-min" min="5" max="180" step="5" value="45">
+        </div>
+        <div>
+          <div class="ctrl-top"><label for="c-auto">Part que la chaîne reprend</label><output id="o-auto">75 %</output></div>
+          <input type="range" id="c-auto" min="10" max="95" step="5" value="75">
+        </div>
+      </div>
+      <div class="res">
+        <div class="big" id="r-h">—<small>heures récupérées / mois</small></div>
+        <div class="rows">
+          <div><span>Temps passé aujourd'hui</span><b id="r-now">—</b></div>
+          <div><span>Temps qu'il te resterait</span><b id="r-after">—</b></div>
+          <div><span>Sur un an</span><b id="r-year">—</b></div>
+        </div>
+        <p class="note"><b>Comment c'est calculé :</b> contenus / semaine × minutes × 4,33 semaines, puis on retire la part reprise par la chaîne. Aucune donnée n'est envoyée nulle part — le calcul se fait dans ton navigateur.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CTA ============ -->
+<section class="sec cta alt">
+  <div class="in">
+    <div class="kicker" style="justify-content:center"><span class="dash"></span><span>La suite</span><span class="dash"></span></div>
+    <h2>Arrête de pousser.<br><em>Construis la route.</em></h2>
+    <p class="lead">VideoBoost, c'est la première brique : la partie vidéo de cette chaîne, montée et prête à tourner chez toi.</p>
+    <a class="btn-cta" href="https://videoboost.automatisationboost.com/vente.html" target="_blank" rel="noopener">
+      Découvrir VideoBoost
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+    </a>
+    <div><a class="btn-ghost" href="https://automatisationboost.com/" target="_blank" rel="noopener">ou voir le site principal</a></div>
+  </div>
+</section>
+
+<footer>
+  Automatisation Boost — page de démonstration du principe.<br>
+  Toutes les captures de la section « preuves » sont des sorties réelles de la chaîne.
+  <a href="https://videoboost.automatisationboost.com/vente.html" target="_blank" rel="noopener">L'offre VideoBoost</a>
+</footer>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
+<script>
+(function(){
+'use strict';
+
+var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+if(reduced) document.documentElement.classList.add('reduced');
+var small = window.matchMedia('(max-width:700px)').matches;
+var DPR = Math.min(window.devicePixelRatio || 1, small ? 1.75 : 2);
+
+var Y = [245,217,10], P = [168,85,247], O = [255,122,26];
+function rgba(c,a){ return 'rgba('+c[0]+','+c[1]+','+c[2]+','+a+')'; }
+function cl(v,a,b){ return v<a?a:(v>b?b:v); }
+function lerp(a,b,t){ return a+(b-a)*t; }
+/* bruit déterministe : le rendu est identique à la montée et à la descente du scroll */
+function rnd(i,s){ var x = Math.sin(i*127.1 + s*311.7) * 43758.5453; return x - Math.floor(x); }
+function F(size,w){ return (w||600)+' '+size.toFixed(0)+'px Sora, system-ui, -apple-system, sans-serif'; }
+
+/* =========================================================
+   SOCLE CANVAS — un seul contexte par chapitre, redessiné
+   à chaque frame de scroll. Rien n'est pré-calculé en image :
+   tout est procédural, donc net partout et quasi sans poids.
+   ========================================================= */
+function Layer(id, paint){
+  this.cv = document.getElementById(id);
+  this.ctx = this.cv ? this.cv.getContext('2d') : null;
+  this.paint = paint; this.p = 0; this.w = 0; this.h = 0;
+}
+Layer.prototype.resize = function(){
+  if(!this.ctx) return;
+  var r = this.cv.getBoundingClientRect();
+  var w = Math.max(1, Math.round(r.width * DPR)), h = Math.max(1, Math.round(r.height * DPR));
+  if(w === this.cv.width && h === this.cv.height){ this.render(this.p); return; }
+  this.cv.width = w; this.cv.height = h; this.w = w; this.h = h;
+  this.render(this.p);
+};
+Layer.prototype.render = function(p){
+  this.p = p;
+  if(!this.ctx || !this.cv.width) return;
+  var ctx = this.ctx;
+  ctx.setTransform(1,0,0,1,0,0);
+  ctx.globalCompositeOperation = 'source-over';
+  ctx.globalAlpha = 1;
+  this.paint(ctx, this.cv.width, this.cv.height, cl(p,0,1), Math.min(this.cv.width, this.cv.height));
+};
+
+/* ---------- 01 · LA CHARGE : les tâches s'empilent ---------- */
+var TASKS = ['écrire le post','monter la vidéo','trouver le sujet','faire la voix off',
+  'découper les rushes','écrire la légende','programmer','relancer le client','répondre aux DM',
+  'faire la miniature','publier sur TikTok','publier sur Insta','relancer encore','écrire la newsletter'];
+var NCHIP = small ? 70 : 120;
+
+function paintCharge(ctx,W,H,p,S){
+  ctx.fillStyle = '#08080c'; ctx.fillRect(0,0,W,H);
+  /* fond qui se resserre à mesure que la pile monte */
+  var g = ctx.createRadialGradient(W*0.5,H*0.34,S*0.02,W*0.5,H*0.44,S*1.05);
+  g.addColorStop(0,'rgba(30,26,44,'+(0.7-p*0.42).toFixed(3)+')');
+  g.addColorStop(1,'rgba(6,6,10,0)');
+  ctx.fillStyle = g; ctx.fillRect(0,0,W,H);
+
+  var u = S/1000;
+  var cw = W*(small?0.40:0.235), chh = Math.max(9, u*30);
+  var cols = small ? 2 : 3, rows = Math.ceil(NCHIP/cols);
+  var gapY = chh*1.42;
+
+  ctx.save();
+  for(var i=0;i<NCHIP;i++){
+    var appear = (i/NCHIP)*0.92;
+    var q = cl((p-appear)/0.09,0,1);
+    if(q<=0) continue;
+    var col = i%cols, row = Math.floor(i/cols);
+    /* la pile monte : les dernières tâches débordent hors cadre */
+    var baseY = H*1.03 - (row+1)*gapY + p*rows*gapY*0.62;
+    var jx = (rnd(i,1)-0.5)*W*0.08, jy = (rnd(i,2)-0.5)*chh*0.8;
+    var x = W*0.5 + (col-(cols-1)/2)*(cw*1.1) + jx - cw/2;
+    var y = lerp(baseY - H*0.35, baseY, q*q) + jy;
+    if(y < -chh*2 || y > H+chh) continue;
+    var rot = (rnd(i,3)-0.5)*0.14;
+    ctx.save();
+    ctx.translate(x+cw/2, y+chh/2); ctx.rotate(rot); ctx.translate(-cw/2,-chh/2);
+    ctx.globalAlpha = q*0.92;
+    ctx.fillStyle = '#181820';
+    rr(ctx,0,0,cw,chh,chh*0.34); ctx.fill();
+    ctx.strokeStyle = 'rgba(255,255,255,.055)'; ctx.lineWidth = Math.max(1,u*1.2); ctx.stroke();
+    ctx.fillStyle = 'rgba(255,122,26,.5)';
+    rr(ctx,chh*0.34,chh*0.3,Math.max(2,u*4),chh*0.4,u*2); ctx.fill();
+    ctx.fillStyle = 'rgba(255,255,255,.34)';
+    ctx.font = F(Math.max(9,chh*0.4),400); ctx.textBaseline = 'middle';
+    var t = TASKS[i%TASKS.length];
+    ctx.fillText(t, chh*0.34+Math.max(2,u*4)+chh*0.36, chh*0.54);
+    ctx.restore();
+  }
+  ctx.restore();
+
+  /* toi, au milieu : le point jaune que la pile finit par recouvrir */
+  var solo = cl(1-p*1.25,0.1,1);
+  ctx.save();
+  ctx.globalCompositeOperation = 'lighter';
+  var r0 = S*0.02*(1+Math.sin(p*22)*0.05);
+  var rg = ctx.createRadialGradient(W*0.5,H*0.33,0,W*0.5,H*0.33,r0*7);
+  rg.addColorStop(0, rgba(Y,0.9*solo));
+  rg.addColorStop(0.22, rgba(Y,0.24*solo));
+  rg.addColorStop(1, rgba(Y,0));
+  ctx.fillStyle = rg; ctx.beginPath(); ctx.arc(W*0.5,H*0.33,r0*7,0,7); ctx.fill();
+  ctx.restore();
+
+  /* compteur de retard */
+  ctx.save();
+  ctx.globalAlpha = cl((p-0.12)/0.2,0,1)*0.95;
+  ctx.textAlign = 'center';
+  ctx.fillStyle = rgba(O,0.92);
+  ctx.font = F(S*(small?0.115:0.085),800);
+  ctx.fillText('+'+Math.round(p*NCHIP*2.4), W*0.5, H*0.2);
+  ctx.fillStyle = 'rgba(255,255,255,.34)';
+  ctx.font = F(S*(small?0.026:0.019),500);
+  ctx.fillText('TÂCHES EN RETARD', W*0.5, H*0.2 + S*(small?0.05:0.038));
+  ctx.restore();
+}
+function rr(ctx,x,y,w,h,r){
+  r = Math.min(r,w/2,h/2);
+  ctx.beginPath();
+  ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r);
+  ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath();
+}
+
+/* ---------- 02 · L'EXPLOSION DE COULEUR ---------- */
+var NPART = small ? 420 : 900;
+var PART = [];
+(function(){
+  for(var i=0;i<NPART;i++){
+    var a = rnd(i,7)*Math.PI*2;
+    PART.push({
+      a:a,
+      sp:0.22 + Math.pow(rnd(i,11),1.7)*0.95,
+      c:(i%7===0)?O:((i%3===0)?P:((i%3===1)?Y:O)),
+      sz:0.35 + rnd(i,13)*1.5,
+      cluster:i%4,
+      wob:(rnd(i,17)-0.5)*0.5,
+      tw:rnd(i,19)
+    });
+  }
+})();
+/* 4 attracteurs = les 4 familles de sorties (cf. étiquettes DOM).
+   Ils occupent la moitié haute du cadre : le bas-gauche reste libre
+   pour la légende, jamais de texte par-dessus le visuel.           */
+var CLU_WIDE  = [[0.17,0.27],[0.50,0.19],[0.84,0.31],[0.79,0.61]];
+var CLU_SMALL = [[0.22,0.15],[0.74,0.13],[0.24,0.37],[0.76,0.39]];
+var CLU = CLU_WIDE;
+
+function paintBoom(ctx,W,H,p,S){
+  var cx = W*0.5, cy = H*0.44;
+  ctx.fillStyle = '#07070b'; ctx.fillRect(0,0,W,H);
+
+  var tBoom = 0.34;                     /* instant de la détonation */
+  var pre   = cl(p/tBoom,0,1);          /* montée en pression       */
+  var t     = cl((p-tBoom)/0.66,0,1);   /* onde + organisation      */
+  var org   = cl((p-0.52)/0.44,0,1);    /* aimantation vers les 4 sorties */
+
+  /* --- avant : le noyau se comprime, la poussière converge --- */
+  if(p < tBoom+0.08){
+    var comp = Math.pow(pre,2.2);
+    ctx.save(); ctx.globalCompositeOperation = 'lighter';
+    for(var k=0;k<(small?60:110);k++){
+      var ka = rnd(k,23)*Math.PI*2, kd = (0.16+rnd(k,29)*0.5)*(1-comp*0.94);
+      var kx = cx + Math.cos(ka)*kd*S, ky = cy + Math.sin(ka)*kd*S;
+      ctx.globalAlpha = (0.1+rnd(k,31)*0.4)*(1-t);
+      ctx.fillStyle = rgba(k%2?Y:P,1);
+      ctx.beginPath(); ctx.arc(kx,ky,S*0.0018*(1+rnd(k,37)),0,7); ctx.fill();
+    }
+    ctx.restore();
+  }
+
+  /* --- l'onde de choc : trois anneaux, un par couleur de la charte --- */
+  ctx.save(); ctx.globalCompositeOperation = 'lighter';
+  var rings = [[Y,0.0,1.0],[P,0.05,0.84],[O,0.11,0.7]];
+  for(var r=0;r<3;r++){
+    var rt = cl((t - rings[r][1])/0.72,0,1);
+    if(rt<=0 || rt>=1) continue;
+    var rad = S*(0.02 + rt*rings[r][2]*1.5);
+    var al = Math.pow(1-rt,2.1)*0.75;
+    ctx.strokeStyle = rgba(rings[r][0],al);
+    ctx.lineWidth = Math.max(1, S*0.012*(1-rt)+1);
+    ctx.beginPath(); ctx.arc(cx,cy,rad,0,7); ctx.stroke();
+  }
+  ctx.restore();
+
+  /* --- les éclats : ils partent en étoile puis rejoignent leur famille --- */
+  if(t>0){
+    ctx.save(); ctx.globalCompositeOperation = 'lighter';
+    var burst = 1 - Math.exp(-3.4*t);
+    for(var i=0;i<NPART;i++){
+      var q = PART[i];
+      var d = burst*q.sp*S*0.72;
+      var ang = q.a + q.wob*burst*0.5;
+      var px = cx + Math.cos(ang)*d, py = cy + Math.sin(ang)*d*0.92;
+      if(org>0){
+        var c = CLU[q.cluster];
+        var tx = W*c[0] + Math.cos(q.a*3.1)*S*0.085*(0.4+q.tw);
+        var ty = H*c[1] + Math.sin(q.a*2.7)*S*0.085*(0.4+q.tw);
+        var w = Math.pow(org,1.5)*0.94;
+        px = lerp(px,tx,w); py = lerp(py,ty,w);
+      }
+      if(px<-40||px>W+40||py<-40||py>H+40) continue;
+      var fade = (1-t*0.28)*(0.4+q.tw*0.6);
+      ctx.globalAlpha = cl(fade,0,1);
+      ctx.fillStyle = rgba(q.c,1);
+      var sz = S*0.0016*q.sz*(1+ (1-burst)*2.2);
+      /* traînée pendant l'expansion, point net une fois rangé */
+      if(org<0.5 && t<0.6){
+        ctx.beginPath();
+        ctx.moveTo(px,py);
+        ctx.lineTo(px-Math.cos(ang)*sz*7, py-Math.sin(ang)*sz*7);
+        ctx.strokeStyle = rgba(q.c,ctx.globalAlpha*0.5);
+        ctx.lineWidth = sz*1.5; ctx.stroke();
+      }
+      ctx.beginPath(); ctx.arc(px,py,sz,0,7); ctx.fill();
+    }
+    ctx.restore();
+  }
+
+  /* --- le lavis de couleur : le spectre néon qui gicle puis retombe --- */
+  var wash = Math.pow(cl(t/0.34,0,1),0.7) * Math.pow(1-cl((t-0.16)/0.62,0,1),1.4);
+  if(wash>0.01){
+    ctx.save(); ctx.globalCompositeOperation = 'lighter';
+    var wg = ctx.createLinearGradient(0,H,W,0);
+    wg.addColorStop(0,    rgba(O,wash*0.5));
+    wg.addColorStop(0.36, rgba(Y,wash*0.6));
+    wg.addColorStop(0.72, rgba(P,wash*0.5));
+    wg.addColorStop(1,    rgba(O,wash*0.34));
+    ctx.fillStyle = wg; ctx.fillRect(0,0,W,H);
+    ctx.restore();
+  }
+
+  /* --- le noyau : l'idée. Minuscule, puis flash blanc, puis braise --- */
+  ctx.save(); ctx.globalCompositeOperation = 'lighter';
+  /* le flash n'existe QU'À la détonation : avant, seul le noyau comprimé brille */
+  var flash = (p <= tBoom) ? 0 : Math.pow(1-cl(t/0.13,0,1),2.6);
+  var ember = 1 - cl(t/0.55,0,1);              /* la braise s'éteint pendant que ça s'organise */
+  var coreR = S*(0.012 + pre*0.016) * (1 + flash*8);
+  var cg = ctx.createRadialGradient(cx,cy,0,cx,cy,Math.max(1,coreR*3.4));
+  cg.addColorStop(0,   'rgba(255,255,255,'+(0.5*Math.max(pre*0.7,ember)+flash*0.5).toFixed(3)+')');
+  cg.addColorStop(0.2, rgba(Y,0.62*(0.34*Math.max(pre,ember)+flash)));
+  cg.addColorStop(0.55,rgba(O,0.24*(0.26*Math.max(pre,ember)+flash)));
+  cg.addColorStop(1,   rgba(P,0));
+  ctx.fillStyle = cg; ctx.beginPath(); ctx.arc(cx,cy,coreR*3.4,0,7); ctx.fill();
+  /* voile blanc plein cadre au moment exact de la détonation */
+  if(flash>0.02){ ctx.fillStyle='rgba(255,255,255,'+(flash*0.52).toFixed(3)+')'; ctx.fillRect(0,0,W,H); }
+  ctx.restore();
+}
+
+/* ---------- 03 · LA ROUTE NÉON ---------- */
+var GATES = [
+  {d:1.0, c:Y, n:'01', t:'Le brief',        h:'Le brief',        s:'Une ligne suffit : le sujet du jour, ou une idée jetée dans un tableau. C\'est le seul endroit où tu écris encore.'},
+  {d:2.2, c:P, n:'02', t:'Le script IA',    h:'L\'IA <em>écrit</em>',   s:'Le sujet part dans un agent qui rédige le script : accroche, corps, appel à l\'action. Il suit la charte, pas son humeur.'},
+  {d:3.4, c:O, n:'03', t:'La voix clonée',  h:'Ta voix, <em>clonée</em>', s:'Le texte devient audio avec ta propre voix, clonée une fois pour toutes. Aucun micro à rallumer.'},
+  {d:4.6, c:Y, n:'04', t:'Le montage',      h:'Le montage <em>se fait</em>', s:'Habillage, sous-titres mot-à-mot, musique, format vertical : le rendu sort déjà à la charte.'},
+  {d:5.8, c:P, n:'05', t:'La publication',  h:'Ça <em>part partout</em>', s:'Un seul rendu, quatre réseaux. Programmé aux bonnes heures, sans que tu ouvres une seule application.'},
+  {d:7.0, c:O, n:'06', t:'La relance',      h:'Et ça <em>relance</em>',  s:'Un commentaire déclenche un message privé, un lead déclenche un email. La route continue après la publication.'}
+];
+var DEPTH = 8.2, HY = 0.44;
+
+function paintRoute(ctx,W,H,p,S){
+  var hy = H*HY, vx = W*0.5;
+  var travel = p*DEPTH;
+  var u = S/1000;
+
+  /* ciel + horizon néon */
+  var sky = ctx.createLinearGradient(0,0,0,hy);
+  sky.addColorStop(0,'#08080e'); sky.addColorStop(1,'#141024');
+  ctx.fillStyle = sky; ctx.fillRect(0,0,W,hy);
+  var hg = ctx.createLinearGradient(0,hy-S*0.3,0,hy+S*0.06);
+  hg.addColorStop(0,'rgba(168,85,247,0)');
+  hg.addColorStop(0.62,'rgba(168,85,247,.2)');
+  hg.addColorStop(1,'rgba(245,217,10,.36)');
+  ctx.fillStyle = hg; ctx.fillRect(0,hy-S*0.3,W,S*0.36);
+  /* le sol : jamais du noir plat, sinon la route flotte dans le vide */
+  var gr = ctx.createLinearGradient(0,hy,0,H);
+  gr.addColorStop(0,'#171128'); gr.addColorStop(0.42,'#0c0a14'); gr.addColorStop(1,'#07070b');
+  ctx.fillStyle = gr; ctx.fillRect(0,hy,W,H-hy);
+
+  function sc(z){ return 1/(1 + z*3.0); }           /* échelle perspective */
+  function yOf(z){ return hy + (H-hy)*sc(z); }
+  function halfW(z){ return W*0.42*sc(z); }         /* la route reste dans le cadre au premier plan */
+
+  /* grille au sol : c'est elle qui donne la vitesse */
+  ctx.save();
+  ctx.lineWidth = Math.max(1,u*1.2);
+  var step = 0.32, first = Math.ceil(travel/step)*step;
+  for(var g=0; g<48; g++){
+    var z = (first + g*step) - travel;
+    if(z<0.02) continue; if(z>DEPTH*0.9) break;
+    var gy = yOf(z), hw = halfW(z)*3.4;
+    ctx.globalAlpha = cl((1-z/4.4),0,1)*0.5;
+    ctx.strokeStyle = 'rgba(150,115,235,.55)';
+    ctx.beginPath(); ctx.moveTo(vx-hw,gy); ctx.lineTo(vx+hw,gy); ctx.stroke();
+  }
+  ctx.globalAlpha = 1;
+  /* fuyantes latérales : elles convergent toutes vers le point de fuite */
+  ctx.strokeStyle = 'rgba(150,115,235,.3)';
+  for(var l=-5;l<=5;l++){
+    if(l===0) continue;
+    ctx.globalAlpha = 0.2;
+    ctx.beginPath(); ctx.moveTo(vx + l*W*0.3, H); ctx.lineTo(vx, hy); ctx.stroke();
+  }
+  ctx.restore();
+
+  /* la CHAUSSÉE elle-même : sans cette surface, les deux néons ne lisent
+     que comme deux lasers — c'est le ruban qui fait la route.          */
+  (function(){
+    var zs = [], z;
+    for(z=0.004; z<3.6; z*=1.14) zs.push(z);
+    zs.push(3.6);
+    ctx.beginPath();
+    for(var i=0;i<zs.length;i++){ var x=vx-halfW(zs[i]), y=yOf(zs[i]); i?ctx.lineTo(x,y):ctx.moveTo(x,y); }
+    for(var j=zs.length-1;j>=0;j--){ ctx.lineTo(vx+halfW(zs[j]), yOf(zs[j])); }
+    ctx.closePath();
+    var rgd = ctx.createLinearGradient(0,hy,0,H);
+    rgd.addColorStop(0,'rgba(60,40,110,.85)');
+    rgd.addColorStop(0.3,'rgba(24,18,44,.9)');
+    rgd.addColorStop(1,'rgba(10,9,16,.95)');
+    ctx.fillStyle = rgd; ctx.fill();
+  })();
+
+  /* les deux bords néon de la route : jaune à gauche, violet à droite */
+  function edge(sign,col){
+    var pts = [], z;
+    /* on part quasiment de la caméra pour que la bordure touche le bas du cadre */
+    for(z=0.004; z<3.6; z*=1.14){ pts.push([vx + sign*halfW(z), yOf(z)]); }
+    pts.push([vx + sign*halfW(3.6), yOf(3.6)]);
+    ctx.save(); ctx.globalCompositeOperation = 'lighter';
+    /* passe large et floue = le halo */
+    ctx.strokeStyle = rgba(col,0.16); ctx.lineWidth = u*22; ctx.lineJoin='round'; ctx.lineCap='round';
+    stroke(pts);
+    ctx.strokeStyle = rgba(col,0.36); ctx.lineWidth = u*9; stroke(pts);
+    ctx.strokeStyle = rgba(col,0.95); ctx.lineWidth = u*2.6; stroke(pts);
+    ctx.strokeStyle = 'rgba(255,255,255,.8)'; ctx.lineWidth = u*1.05; stroke(pts);
+    ctx.restore();
+  }
+  function stroke(pts){
+    ctx.beginPath(); ctx.moveTo(pts[0][0],pts[0][1]);
+    for(var i=1;i<pts.length;i++) ctx.lineTo(pts[i][0],pts[i][1]);
+    ctx.stroke();
+  }
+  edge(-1,Y); edge(1,P);
+
+  /* bande centrale : tirets orange qui filent vers toi */
+  ctx.save(); ctx.globalCompositeOperation = 'lighter';
+  var ds = 0.34, dfirst = Math.ceil(travel/ds)*ds;
+  for(var d=0; d<40; d++){
+    var dz = (dfirst + d*ds) - travel;
+    if(dz<0.02) continue; if(dz>3.4) break;
+    var y1 = yOf(dz), y2 = yOf(dz+ds*0.5);
+    var w1 = W*0.022*sc(dz), w2 = W*0.022*sc(dz+ds*0.5);
+    ctx.globalAlpha = cl(1-dz/3.4,0,1);
+    ctx.fillStyle = rgba(O,1);
+    ctx.beginPath();
+    ctx.moveTo(vx-w1,y1); ctx.lineTo(vx+w1,y1); ctx.lineTo(vx+w2,y2); ctx.lineTo(vx-w2,y2);
+    ctx.closePath(); ctx.fill();
+  }
+  ctx.restore();
+
+  /* les six portiques : une étape de la chaîne chacun.
+     Seul le plus proche porte son intitulé — deux libellés superposés
+     à des profondeurs différentes deviennent illisibles.            */
+  var nearest = -1, nz = 1e9;
+  for(var q0=0;q0<GATES.length;q0++){
+    var z0 = GATES[q0].d - travel;
+    if(z0 > 0.04 && z0 < nz){ nz = z0; nearest = q0; }
+  }
+  ctx.save();
+  for(var k=GATES.length-1;k>=0;k--){
+    var G = GATES[k], z = G.d - travel;
+    if(z < 0.04 || z > 4.2) continue;
+    var gy = yOf(z), hw = halfW(z)*0.92, s = sc(z);
+    var topY = gy - (H-hy)*s*1.15;
+    var near = cl(1 - z/4.2,0,1);
+    var al = Math.pow(near,1.5);
+    ctx.globalCompositeOperation = 'lighter';
+    ctx.globalAlpha = al;
+    var lw = Math.max(1, u*7*s*3.0);
+    /* montants + linteau */
+    ctx.strokeStyle = rgba(G.c,0.2); ctx.lineWidth = lw*3.4; gatePath(ctx,vx,hw,topY,gy); ctx.stroke();
+    ctx.strokeStyle = rgba(G.c,0.95); ctx.lineWidth = lw; gatePath(ctx,vx,hw,topY,gy); ctx.stroke();
+    ctx.strokeStyle = 'rgba(255,255,255,.75)'; ctx.lineWidth = Math.max(0.6,lw*0.36); gatePath(ctx,vx,hw,topY,gy); ctx.stroke();
+    /* numéro d'étape sur le linteau, lisible seulement quand ça approche */
+    var fs = (H-hy)*s*0.34;
+    if(fs > 13 && z < 2.6 && k === nearest){
+      ctx.globalCompositeOperation = 'source-over';
+      ctx.globalAlpha = al*cl((2.6-z)/1.1,0,1);
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillStyle = rgba(G.c,1); ctx.font = F(fs,800);
+      ctx.fillText(G.n, vx, topY - fs*0.86);
+      ctx.fillStyle = 'rgba(255,255,255,.8)'; ctx.font = F(Math.max(10,fs*0.3),600);
+      ctx.fillText(G.t.toUpperCase(), vx, topY - fs*0.22);
+    }
+    ctx.globalCompositeOperation = 'lighter';
+    ctx.globalAlpha = 1;
+  }
+  ctx.restore();
+
+  /* le véhicule : l'impulsion qui remonte la route sous toi */
+  ctx.save(); ctx.globalCompositeOperation = 'lighter';
+  var pg = ctx.createRadialGradient(vx,H*0.99,0,vx,H*0.99,S*0.42);
+  pg.addColorStop(0, rgba(Y,0.4)); pg.addColorStop(0.4, rgba(O,0.16)); pg.addColorStop(1,rgba(O,0));
+  ctx.fillStyle = pg; ctx.fillRect(0,H*0.6,W,H*0.4);
+  ctx.restore();
+}
+/* un portique = deux montants + un linteau, en perspective */
+function gatePath(ctx,vx,hw,topY,gy){
+  ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+  ctx.beginPath();
+  ctx.moveTo(vx-hw, gy);
+  ctx.lineTo(vx-hw, topY);
+  ctx.lineTo(vx+hw, topY);
+  ctx.lineTo(vx+hw, gy);
+}
+
+/* ---------- 05 · LA BOUCLE ---------- */
+function paintLoop(ctx,W,H,p,S){
+  ctx.fillStyle = '#07070b'; ctx.fillRect(0,0,W,H);
+  var cx = W*0.5, cy = H*0.33;
+  var rx = Math.min(W*0.38, S*0.56), ry = rx*0.46;
+
+  /* halo de fond */
+  ctx.save(); ctx.globalCompositeOperation='lighter';
+  var bg = ctx.createRadialGradient(cx,cy,0,cx,cy,rx*2.2);
+  bg.addColorStop(0, rgba(P,0.14)); bg.addColorStop(0.5, rgba(P,0.05)); bg.addColorStop(1,rgba(P,0));
+  ctx.fillStyle = bg; ctx.fillRect(0,0,W,H);
+  ctx.restore();
+
+  var draw = cl(p/0.42,0,1);          /* le circuit se referme */
+  var u = S/1000;
+
+  function ell(a0,a1,alpha,lw,col){
+    ctx.beginPath();
+    var n = 90;
+    for(var i=0;i<=n;i++){
+      var a = a0 + (a1-a0)*(i/n);
+      var x = cx + Math.cos(a)*rx, y = cy + Math.sin(a)*ry;
+      i?ctx.lineTo(x,y):ctx.moveTo(x,y);
+    }
+    ctx.strokeStyle = rgba(col,alpha); ctx.lineWidth = lw; ctx.lineCap='round'; ctx.stroke();
+  }
+  ctx.save(); ctx.globalCompositeOperation = 'lighter';
+  var a0 = -Math.PI/2, a1 = a0 + Math.PI*2*draw;
+  ell(a0,a1,0.12,u*30,P);
+  ell(a0,a1,0.3, u*13,Y);
+  ell(a0,a1,0.9, u*3.2,Y);
+  ell(a0,a1,0.8, u*1.2,[255,255,255]);
+  ctx.restore();
+
+  /* les six étapes posées sur le circuit */
+  ctx.save();
+  for(var k=0;k<6;k++){
+    var a = -Math.PI/2 + (k/6)*Math.PI*2;
+    if((a - a0) > (a1-a0)) continue;
+    var x = cx + Math.cos(a)*rx, y = cy + Math.sin(a)*ry;
+    ctx.globalCompositeOperation = 'lighter';
+    var c = [Y,P,O][k%3];
+    var dg = ctx.createRadialGradient(x,y,0,x,y,u*26);
+    dg.addColorStop(0, rgba(c,0.95)); dg.addColorStop(0.3, rgba(c,0.4)); dg.addColorStop(1,rgba(c,0));
+    ctx.fillStyle = dg; ctx.beginPath(); ctx.arc(x,y,u*26,0,7); ctx.fill();
+    ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(x,y,u*3.2,0,7); ctx.fill();
+  }
+  ctx.restore();
+
+  /* les impulsions : une, puis deux, puis trois — la boucle s'auto-alimente */
+  var closed = cl((p-0.42)/0.58,0,1);
+  var npulse = 1 + Math.floor(closed*2.99);
+  ctx.save(); ctx.globalCompositeOperation = 'lighter';
+  for(var q=0;q<npulse;q++){
+    var t = (p*2.4 + q/npulse) % 1;
+    var pa = -Math.PI/2 + t*Math.PI*2;
+    if(draw<1 && (pa-a0) > (a1-a0)) continue;
+    var px = cx + Math.cos(pa)*rx, py = cy + Math.sin(pa)*ry;
+    /* traînée */
+    for(var s2=0;s2<16;s2++){
+      var ta = pa - s2*0.052;
+      var tx = cx + Math.cos(ta)*rx, ty = cy + Math.sin(ta)*ry;
+      ctx.globalAlpha = (1-s2/16)*0.45;
+      ctx.fillStyle = rgba(O,1);
+      ctx.beginPath(); ctx.arc(tx,ty,u*(6-s2*0.3),0,7); ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+    var g2 = ctx.createRadialGradient(px,py,0,px,py,u*44);
+    g2.addColorStop(0,'rgba(255,255,255,.95)'); g2.addColorStop(0.22, rgba(Y,0.7));
+    g2.addColorStop(0.6, rgba(O,0.2)); g2.addColorStop(1, rgba(O,0));
+    ctx.fillStyle = g2; ctx.beginPath(); ctx.arc(px,py,u*44,0,7); ctx.fill();
+  }
+  ctx.restore();
+}
+
+/* =========================================================
+   INSTANCIATION
+   ========================================================= */
+var L = {
+  charge: new Layer('cv-charge', paintCharge),
+  boom:   new Layer('cv-boom',   paintBoom),
+  route:  new Layer('cv-route',  paintRoute),
+  loop:   new Layer('cv-loop',   paintLoop)
+};
+var ALL = [L.charge, L.boom, L.route, L.loop];
+
+/* --- éléments DOM pilotés par le scroll --- */
+var outs   = [].slice.call(document.querySelectorAll('[data-out]'));
+var stepEls= [].slice.call(document.querySelectorAll('.step'));
+var strip  = document.getElementById('strip');
+var pcards = strip ? [].slice.call(strip.querySelectorAll('.pcard')) : [];
+var pfTitle= document.getElementById('pfTitle');
+var pfDesc = document.getElementById('pfDesc');
+var roadTitle = document.getElementById('roadTitle');
+var roadDesc  = document.getElementById('roadDesc');
+var lastGate = -1, lastCard = -1;
+
+/* Le centre de chaque carte doit être mesuré SANS la transformation en cours :
+   .stripwrap est l'offsetParent, donc offsetLeft inclurait le translate et le
+   calcul deviendrait auto-référent (la bande dérive à chaque frame).        */
+var CARDX = [];
+function measureStrip(){
+  if(!strip || !pcards.length) return;
+  var prev = strip.style.transform;
+  strip.style.transform = 'none';
+  CARDX = pcards.map(function(el){ return el.offsetLeft + el.offsetWidth/2; });
+  strip.style.transform = prev;
+}
+
+function applyChapter(id, p){
+  p = cl(p,0,1);
+  var sec = document.getElementById(id);
+  if(sec){
+    var rail = sec.querySelector('[data-rail]');
+    if(rail) rail.style.height = (p*100).toFixed(1)+'%';
+  }
+  if(id === 'ch1'){ L.charge.render(p); return; }
+
+  if(id === 'ch2'){
+    L.boom.render(p);
+    var on = p > 0.66;
+    for(var i=0;i<outs.length;i++){
+      var lit = p > (0.62 + i*0.045);
+      outs[i].classList.toggle('on', lit);
+    }
+    return;
+  }
+
+  if(id === 'ch3'){
+    L.route.render(p);
+    var travel = p*DEPTH, cur = -1;
+    for(var g=0; g<GATES.length; g++){ if(travel >= GATES[g].d - 1.15) cur = g; }
+    for(var s=0; s<stepEls.length; s++){
+      stepEls[s].classList.toggle('on', s === cur);
+      stepEls[s].classList.toggle('done', s < cur);
+    }
+    if(cur !== lastGate){
+      lastGate = cur;
+      if(cur < 0){
+        roadTitle.innerHTML = 'La route <em>est déjà tracée.</em>';
+        roadDesc.textContent = "Entre ton idée et ta publication, il y a six portiques. Tu les franchis une fois à la main. Ensuite, la route se parcourt toute seule — c'est ça, un workflow.";
+      } else {
+        roadTitle.innerHTML = GATES[cur].h;
+        roadDesc.textContent = GATES[cur].s.replace(/<[^>]+>/g,'');
+      }
+    }
+    return;
+  }
+
+  if(id === 'ch4'){
+    if(!pcards.length) return;
+    var n = pcards.length;
+    if(!CARDX.length) measureStrip();
+    var vw = window.innerWidth;
+    /* on centre la carte active plutôt que de faire glisser la bande d'un bout à l'autre :
+       la preuve regardée est toujours au milieu, quel que soit son format */
+    /* smootherstep par segment : chaque preuve MARQUE UN TEMPS au centre au lieu
+       de glisser en continu — on a le temps de lire la capture et sa légende */
+    var raw = p*(n-1), i0 = Math.min(n-2, Math.floor(raw)), i1 = i0+1, r0 = cl(raw-i0,0,1);
+    var h = cl((r0-0.28)/0.44,0,1), fr = h*h*(3-2*h);
+    var f = i0 + fr;
+    strip.style.transform = 'translate3d(' + (vw/2 - lerp(CARDX[i0],CARDX[i1],fr)).toFixed(1) + 'px,0,0)';
+    var act = Math.round(f);
+    for(var c=0;c<n;c++){
+      var dist = Math.abs(c - f);
+      var k = cl(1-dist*0.9,0,1);
+      pcards[c].style.transform = 'translateZ(' + (-150 + k*150).toFixed(0) + 'px) rotateY(' +
+        (cl((c-f),-2,2)*-8).toFixed(1) + 'deg) scale(' + (0.88 + k*0.12).toFixed(3) + ')';
+      pcards[c].style.opacity = (0.42 + k*0.58).toFixed(2);
+      pcards[c].classList.toggle('on', c === act);
+    }
+    if(act !== lastCard){
+      lastCard = act;
+      pfTitle.textContent = pcards[act].getAttribute('data-t');
+      pfDesc.textContent  = pcards[act].getAttribute('data-d');
+    }
+    return;
+  }
+
+  if(id === 'ch5'){ L.loop.render(p); return; }
+}
+
+/* =========================================================
+   LOADER — les images de preuve sont préchargées,
+   le pourcentage glisse au lieu de sauter.
+   ========================================================= */
+var IMGS = ['assets/proof-journal.jpg','assets/proof-gallery.jpg','assets/proof-koytcha.jpg',
+            'assets/proof-social.jpg','assets/proof-site.jpg'];
+var total = IMGS.length + 1, done = 0, shown = -1, cur = 0, ramping = true;
+var fill = document.getElementById('ldFill'), pctEl = document.getElementById('ldPct');
+(function ramp(){
+  if(!ramping) return;
+  var target = Math.min(100, Math.round(done/total*100));
+  if(cur < target) cur = Math.min(target, cur + Math.max(0.7, (target-cur)*0.13));
+  var v = Math.round(cur);
+  if(v !== shown){ shown = v; fill.style.width = v+'%'; pctEl.textContent = v; }
+  requestAnimationFrame(ramp);
+})();
+function bump(){ if(++done >= total) finish(); }
+var finished = false;
+function finish(){
+  if(finished) return; finished = true; ramping = false;
+  fill.style.width = '100%'; pctEl.textContent = '100';
+  setTimeout(function(){
+    document.getElementById('loader').classList.add('done');
+    document.body.classList.remove('is-loading');
+    resizeAll();
+    if(window.ScrollTrigger) ScrollTrigger.refresh();
+  }, 380);
+}
+IMGS.forEach(function(src){ var im = new Image(); im.onload = im.onerror = bump; im.src = src; });
+if(document.fonts && document.fonts.ready) document.fonts.ready.then(function(){ bump(); resizeAll(); });
+else bump();
+setTimeout(finish, 9000);   /* garde-fou : jamais bloqué sur le loader */
+
+/* =========================================================
+   RESIZE + BRANCHEMENT SCROLL
+   ========================================================= */
+function resizeAll(){
+  small = window.matchMedia('(max-width:700px)').matches;
+  /* les étiquettes de sortie suivent exactement les attracteurs du canvas */
+  CLU = small ? CLU_SMALL : CLU_WIDE;
+  for(var i=0;i<outs.length && i<CLU.length;i++){
+    outs[i].style.left = (CLU[i][0]*100).toFixed(1)+'%';
+    outs[i].style.top  = (CLU[i][1]*100).toFixed(1)+'%';
+  }
+  measureStrip();
+  ALL.forEach(function(l){ l.resize(); });
+}
+var IDS = ['ch1','ch2','ch3','ch4','ch5'];
+
+function initScroll(){
+  resizeAll();
+  if(reduced){
+    /* état figé et lisible : pas de scrub, mais chaque chapitre reste éloquent */
+    applyChapter('ch1',0.72); applyChapter('ch2',0.78);
+    applyChapter('ch3',0.16); applyChapter('ch4',0);   applyChapter('ch5',0.85);
+    return;
+  }
+  var bar = document.getElementById('pagebar');
+  if(window.gsap && window.ScrollTrigger){
+    gsap.registerPlugin(ScrollTrigger);
+    ScrollTrigger.config({ignoreMobileResize:true});
+    IDS.forEach(function(id){
+      ScrollTrigger.create({
+        trigger:'#'+id, start:'top top', end:'bottom bottom', scrub:true,
+        onUpdate:function(self){ applyChapter(id, self.progress); },
+        onRefresh:function(self){ applyChapter(id, self.progress); }
+      });
+    });
+    ScrollTrigger.create({
+      trigger:document.body, start:'top top', end:'bottom bottom', scrub:true,
+      onUpdate:function(self){ bar.style.width = (self.progress*100).toFixed(2)+'%'; }
+    });
+  } else {
+    /* repli sans GSAP : rAF sur le scroll natif */
+    var ticking = false;
+    function loop(){
+      IDS.forEach(function(id){
+        var sec = document.getElementById(id); if(!sec) return;
+        var r = sec.getBoundingClientRect();
+        if(r.bottom > -300 && r.top < window.innerHeight + 300){
+          var prog = cl(-r.top / Math.max(1,(sec.offsetHeight - window.innerHeight)),0,1);
+          applyChapter(id, prog);
+        }
+      });
+      var de = document.documentElement;
+      bar.style.width = (cl(window.scrollY/Math.max(1,de.scrollHeight-de.clientHeight),0,1)*100).toFixed(2)+'%';
+      ticking = false;
+    }
+    window.addEventListener('scroll', function(){ if(!ticking){ ticking = true; requestAnimationFrame(loop); } }, {passive:true});
+    window.addEventListener('resize', loop);
+    loop();
+  }
+}
+
+var rT;
+window.addEventListener('resize', function(){
+  clearTimeout(rT);
+  rT = setTimeout(function(){ resizeAll(); if(window.ScrollTrigger) ScrollTrigger.refresh(); }, 180);
+});
+window.addEventListener('orientationchange', function(){ setTimeout(resizeAll, 320); });
+
+if(document.readyState === 'complete') initScroll();
+else window.addEventListener('load', initScroll);
+resizeAll();
+
+/* =========================================================
+   ESTIMATEUR — le site a un job, pas juste une ambiance
+   ========================================================= */
+(function(){
+  var posts = document.getElementById('c-posts'), mins = document.getElementById('c-min'), auto = document.getElementById('c-auto');
+  if(!posts) return;
+  var oP = document.getElementById('o-posts'), oM = document.getElementById('o-min'), oA = document.getElementById('o-auto');
+  var rH = document.getElementById('r-h'), rNow = document.getElementById('r-now'),
+      rAf = document.getElementById('r-after'), rY = document.getElementById('r-year');
+  function fmtH(h){
+    if(h < 1) return Math.round(h*60)+' min';
+    return (h < 10 ? h.toFixed(1).replace('.',',') : Math.round(h)) + ' h';
+  }
+  function calc(){
+    var n = +posts.value, m = +mins.value, a = +auto.value/100;
+    oP.textContent = n; oM.textContent = m+' min'; oA.textContent = a*100+' %';
+    var hMonth = n * m * 4.33 / 60;
+    var saved = hMonth * a;
+    rH.firstChild.nodeValue = fmtH(saved).replace(/ h| min/,'');
+    rH.querySelector('small').textContent = (saved<1?'minutes':'heures')+' récupérées / mois';
+    rNow.textContent = fmtH(hMonth) + ' / mois';
+    rAf.textContent  = fmtH(hMonth - saved) + ' / mois';
+    var days = saved*12/7;
+    rY.textContent = Math.round(saved*12) + ' h — soit ' + days.toFixed(0) + ' journées de 7 h';
+  }
+  [posts,mins,auto].forEach(function(el){ el.addEventListener('input', calc); });
+  calc();
+})();
+
+})();
+</script>
+</body>
+</html>
