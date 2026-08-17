@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <title>BLACKSSHADE — Le futur c'est maintenant</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="description" content="BLACKSSHADE — vêtements personnalisés, fashion / mecha / streetwear. SHADE-01 Bomber Mecha. Maquette de présentation, marque en lancement.">
+<meta name="description" content="BLACKSSHADE — textile imprimé néon mecha techwear. Casquette, tee-shirt, hoodie, cargo. Maquette de présentation, marque en lancement.">
 <meta name="robots" content="noindex">
 <meta name="theme-color" content="#050506">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -17,7 +17,6 @@
   --txt:#e8e8ee; --dim:#8e8e9a; --dim2:#63636e;
   --acc:#8a5cf0;            /* violet mat */
   --acc-soft:rgba(138,92,240,.14);
-  --amber:#c98a45; --cyan:#4fc6cf;
   --h:'Bebas Neue','Oswald','Arial Narrow',sans-serif;
   --b:'Spectral',Georgia,'Times New Roman',serif;
   --pad:clamp(18px,5vw,64px);
@@ -38,29 +37,37 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 
 h1,h2,h3,.bebas{font-family:var(--h);font-weight:400;letter-spacing:.02em;line-height:.92;text-transform:uppercase}
 .mono{font-family:var(--h);letter-spacing:.28em;font-size:.72rem;color:var(--dim);text-transform:uppercase}
-.acc{color:var(--acc)}
+
+/* ---------- LOGO (SVG procédural, 0 asset) ---------- */
+.mark{display:block;color:var(--acc);flex:none}
+.lockup{display:flex;align-items:center;gap:.6em;line-height:1}
+.wordmark{font-family:var(--h);font-weight:400;letter-spacing:.30em;text-indent:.30em;
+  text-transform:uppercase;white-space:nowrap;display:block}
+.lockup .stack{display:block}
+.lockup .base{display:block;font-family:var(--b);font-size:.52rem;letter-spacing:.22em;
+  color:var(--dim2);text-transform:uppercase;margin-top:3px;text-indent:0}
+.neonrule{height:1px;border:0;background:linear-gradient(90deg,transparent,var(--acc),transparent);
+  opacity:.75;box-shadow:0 0 6px var(--acc)}
 
 /* ---------- LOADER ---------- */
 #loader{position:fixed;inset:0;z-index:200;background:var(--ink);display:flex;flex-direction:column;
-  align-items:center;justify-content:center;gap:26px;transition:opacity .7s ease,visibility .7s}
+  align-items:center;justify-content:center;gap:22px;transition:opacity .7s ease,visibility .7s;padding:0 24px}
 #loader.done{opacity:0;visibility:hidden;pointer-events:none}
-.ld-mark{font-family:var(--h);font-size:clamp(30px,7vw,54px);letter-spacing:.34em;
-  text-indent:.34em;color:#fff;opacity:.92}
-.ld-base{font-size:.8rem;letter-spacing:.18em;color:var(--dim2);text-transform:uppercase;font-family:var(--h)}
+#loader .lockup{flex-direction:column;gap:16px}
+#loader .wordmark{font-size:clamp(26px,6.4vw,48px);letter-spacing:.34em;text-indent:.34em;color:#fff}
+.ld-base{font-size:.78rem;letter-spacing:.18em;color:var(--dim2);text-transform:uppercase;font-family:var(--h)}
 .ld-bar{width:min(300px,62vw);height:1px;background:rgba(255,255,255,.13);overflow:hidden}
 .ld-bar i{display:block;height:100%;width:0;background:var(--acc);transition:width .18s linear}
 .ld-num{font-family:var(--h);font-size:.95rem;letter-spacing:.2em;color:var(--dim)}
 
 /* ---------- TOPBAR ---------- */
 #topbar{position:fixed;top:0;left:0;right:0;z-index:90;display:flex;align-items:center;gap:14px;
-  padding:14px var(--pad);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  padding:12px var(--pad);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
   background:linear-gradient(180deg,rgba(5,5,6,.86),rgba(5,5,6,.32) 70%,transparent);
   border-bottom:1px solid transparent;transition:border-color .4s,background .4s}
 #topbar.solid{background:rgba(6,6,9,.93);border-bottom-color:var(--line)}
-.brand{font-family:var(--h);font-size:clamp(17px,2.5vw,22px);letter-spacing:.3em;text-indent:.3em;white-space:nowrap}
-.brand small{display:block;font-family:var(--b);font-size:.56rem;letter-spacing:.22em;color:var(--dim2);
-  text-indent:0;text-transform:uppercase;margin-top:2px}
-nav.links{display:none;gap:26px;margin-left:auto;font-family:var(--h);letter-spacing:.16em;font-size:.86rem;color:var(--dim)}
+#topbar .wordmark{font-size:clamp(15px,2.3vw,20px)}
+nav.links{display:none;gap:24px;margin-left:auto;font-family:var(--h);letter-spacing:.16em;font-size:.86rem;color:var(--dim)}
 nav.links a{text-decoration:none;transition:color .25s}
 nav.links a:hover{color:#fff}
 .tb-right{margin-left:auto;display:flex;align-items:center;gap:10px}
@@ -73,11 +80,10 @@ nav.links a:hover{color:#fff}
   display:inline-flex;align-items:center;justify-content:center;font-size:.66rem;font-weight:400;padding:0 5px}
 .cart-btn b.zero{background:rgba(255,255,255,.13);color:var(--dim)}
 #prog{position:fixed;top:0;left:0;height:2px;width:0;background:var(--acc);z-index:95;transition:width .1s linear}
-@media(min-width:900px){nav.links{display:flex}.tb-right{margin-left:26px}}
-/* mobile étroit : la barre ne doit jamais déborder */
-@media(max-width:640px){.brand small{display:none}.brand{letter-spacing:.2em;text-indent:.2em}}
-@media(max-width:520px){.pill{display:none}}
-@media(max-width:400px){.brand{font-size:15px;letter-spacing:.14em;text-indent:.14em}
+@media(min-width:980px){nav.links{display:flex}.tb-right{margin-left:26px}}
+@media(max-width:660px){#topbar .base{display:none}}
+@media(max-width:540px){.pill{display:none}}
+@media(max-width:400px){#topbar .wordmark{font-size:13px;letter-spacing:.16em;text-indent:.16em}
   .cart-btn{padding:8px 12px;font-size:.76rem}}
 
 /* ---------- DUST ---------- */
@@ -106,7 +112,6 @@ nav.links a:hover{color:#fff}
   font-family:var(--h);letter-spacing:.24em;font-size:.68rem;color:var(--dim2);display:none}
 @media(min-width:760px){.scrollhint{display:block}}
 .scrollhint i{display:block;width:1px;height:42px;background:linear-gradient(var(--dim2),transparent);margin:10px auto 0}
-#ch1 .cap h2{font-size:clamp(44px,11vw,104px)}
 
 /* ---------- SECTIONS ---------- */
 section.blk{position:relative;z-index:2;padding:clamp(72px,11vh,132px) var(--pad);border-top:1px solid var(--line);background:var(--ink)}
@@ -116,6 +121,40 @@ section.blk{position:relative;z-index:2;padding:clamp(72px,11vh,132px) var(--pad
 .eyebrow i{flex:1;height:1px;background:var(--line);display:block}
 h2.sec{font-size:clamp(32px,6.5vw,62px);margin-bottom:14px}
 .lede{color:var(--dim);max-width:60ch;margin-bottom:44px;font-size:clamp(15px,1.02rem,18px)}
+
+/* ---------- TURNTABLE 360 ---------- */
+.turn-grid{display:grid;gap:clamp(26px,4vw,52px);align-items:start}
+@media(min-width:940px){.turn-grid{grid-template-columns:1.1fr .9fr}}
+.turn-stage{position:relative;border:1px solid var(--line);background:#000;aspect-ratio:1/1;overflow:hidden}
+#cvTurn{position:absolute;inset:0;width:100%;height:100%;display:block;
+  touch-action:pan-y;               /* le scroll vertical reste possible au doigt */
+  -webkit-user-select:none;user-select:none;-webkit-touch-callout:none;cursor:grab}
+#cvTurn.grabbing{cursor:grabbing}
+.turn-stage .deg{position:absolute;left:16px;top:14px;z-index:2;font-family:var(--h);letter-spacing:.2em;
+  font-size:.72rem;color:var(--acc);background:rgba(5,5,6,.72);padding:5px 10px;border:1px solid var(--line)}
+.turn-stage .ref{position:absolute;right:16px;top:14px;z-index:2;font-family:var(--h);letter-spacing:.2em;
+  font-size:.7rem;color:var(--dim);background:rgba(5,5,6,.72);padding:5px 10px;border:1px solid var(--line)}
+/* l'indice de glissement est en bas, sur le noir, jamais par-dessus le vêtement */
+.turn-stage .hint{position:absolute;left:0;right:0;bottom:0;z-index:2;text-align:center;
+  padding:12px 10px 14px;font-family:var(--h);letter-spacing:.24em;font-size:.7rem;color:var(--dim);
+  background:linear-gradient(180deg,transparent,rgba(5,5,6,.92) 55%);
+  transition:opacity .45s;pointer-events:none}
+.turn-stage .hint.off{opacity:0}
+.turn-stage .hint b{color:var(--acc);font-weight:400}
+.turn-track{margin-top:16px;height:2px;background:rgba(255,255,255,.09);position:relative;overflow:hidden}
+.turn-track i{position:absolute;top:0;left:0;height:100%;width:14%;background:var(--acc);
+  box-shadow:0 0 8px var(--acc)}
+.turn-steps{display:none;flex-wrap:wrap;gap:9px;margin-top:18px}
+.reduced .turn-steps{display:flex}
+.reduced .turn-stage .hint{display:none}
+.reduced #cvTurn{cursor:default;touch-action:auto}
+.turn-note{margin-top:22px}
+.turn-note h3{font-size:clamp(22px,3.6vw,30px);margin-bottom:10px}
+.turn-note p{color:var(--dim);font-size:.95rem;margin-bottom:14px}
+.kv{display:grid;gap:1px;background:var(--line);border:1px solid var(--line);margin-top:24px}
+.kv div{background:var(--ink2);padding:15px 18px;display:flex;justify-content:space-between;gap:14px;align-items:baseline}
+.kv dt{font-family:var(--h);letter-spacing:.18em;font-size:.72rem;color:var(--dim2)}
+.kv dd{font-size:.94rem;text-align:right}
 
 /* SPECS */
 .specs{display:grid;gap:1px;background:var(--line);border:1px solid var(--line)}
@@ -129,7 +168,7 @@ h2.sec{font-size:clamp(32px,6.5vw,62px);margin-bottom:14px}
 .cfg{display:grid;gap:clamp(28px,4vw,56px);align-items:start}
 @media(min-width:940px){.cfg{grid-template-columns:1.05fr .95fr}}
 .cfg-vis{position:relative;border:1px solid var(--line);background:#000;aspect-ratio:4/5;overflow:hidden}
-@media(min-width:940px){.cfg-vis{position:sticky;top:96px;aspect-ratio:3/4}}
+@media(min-width:940px){.cfg-vis{position:sticky;top:96px;aspect-ratio:1/1}}
 .cfg-vis canvas{position:absolute;inset:0;width:100%;height:100%}
 .cfg-vis .tag{position:absolute;left:16px;top:14px;z-index:2;font-family:var(--h);letter-spacing:.22em;
   font-size:.68rem;color:var(--dim);background:rgba(5,5,6,.7);padding:5px 10px;border:1px solid var(--line)}
@@ -137,9 +176,9 @@ h2.sec{font-size:clamp(32px,6.5vw,62px);margin-bottom:14px}
   font-size:.72rem;color:var(--acc)}
 .grp{margin-bottom:30px}
 .grp>label{display:flex;justify-content:space-between;align-items:baseline;font-family:var(--h);
-  letter-spacing:.24em;font-size:.76rem;color:var(--dim2);margin-bottom:13px}
+  letter-spacing:.24em;font-size:.76rem;color:var(--dim2);margin-bottom:13px;gap:12px}
 .grp>label b{font-family:var(--b);font-weight:400;font-size:.84rem;letter-spacing:0;
-  color:var(--txt);text-transform:none}
+  color:var(--txt);text-transform:none;text-align:right}
 .opts{display:flex;flex-wrap:wrap;gap:9px}
 .opt{border:1px solid var(--line2);background:var(--panel);padding:11px 16px;font-family:var(--h);
   letter-spacing:.14em;font-size:.88rem;color:var(--dim);transition:.22s;display:flex;align-items:center;gap:9px}
@@ -150,6 +189,15 @@ h2.sec{font-size:clamp(32px,6.5vw,62px);margin-bottom:14px}
   letter-spacing:0;font-size:.92rem;text-transform:none;padding:13px 16px}
 .opt.wide span:last-child{font-family:var(--h);letter-spacing:.1em;color:var(--dim);font-size:.86rem}
 .opt.wide[aria-pressed="true"] span:last-child{color:var(--acc)}
+/* sélecteur de produit */
+.prods{display:grid;grid-template-columns:repeat(2,1fr);gap:9px;margin-bottom:34px}
+@media(min-width:620px){.prods{grid-template-columns:repeat(4,1fr)}}
+.prod{border:1px solid var(--line2);background:var(--panel);padding:14px 12px;text-align:left;transition:.22s}
+.prod:hover{background:var(--panel2)}
+.prod[aria-pressed="true"]{border-color:var(--acc);background:var(--acc-soft)}
+.prod b{display:block;font-family:var(--h);letter-spacing:.12em;font-weight:400;font-size:.94rem;color:var(--txt)}
+.prod small{display:block;color:var(--dim);font-size:.8rem;margin-top:5px}
+.prod[aria-pressed="true"] small{color:var(--acc)}
 .note{font-size:.86rem;color:var(--dim);margin-top:11px}
 .price-row{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;
   border-top:1px solid var(--line);padding-top:24px;margin-top:6px;flex-wrap:wrap}
@@ -160,20 +208,18 @@ h2.sec{font-size:clamp(32px,6.5vw,62px);margin-bottom:14px}
 .btn{display:flex;align-items:center;justify-content:center;gap:12px;width:100%;margin-top:20px;
   padding:19px 24px;border:1px solid var(--acc);background:var(--acc);color:#fff;
   font-family:var(--h);letter-spacing:.22em;font-size:1rem;transition:.25s}
-.btn:hover{background:#7a4ce4;border-color:#7a4ce4}
+.btn:hover{filter:brightness(1.12)}
 .btn.ghost{background:transparent;color:var(--txt);border-color:var(--line2)}
-.btn.ghost:hover{background:var(--panel2);border-color:var(--acc);color:#fff}
+.btn.ghost:hover{background:var(--panel2);border-color:var(--acc);color:#fff;filter:none}
 .btn:disabled{opacity:.45;cursor:not-allowed}
 .legal-mini{font-size:.8rem;color:var(--dim2);margin-top:14px;line-height:1.62}
 
 /* PRICING TABLE */
 .tbl{width:100%;border-collapse:collapse;border:1px solid var(--line);font-size:.94rem}
-.tbl th,.tbl td{padding:15px 16px;text-align:left;border-bottom:1px solid var(--line)}
+.tbl th,.tbl td{padding:15px 16px;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}
 .tbl th{font-family:var(--h);letter-spacing:.2em;font-size:.74rem;color:var(--dim2);font-weight:400;background:var(--ink2)}
 .tbl tr:last-child td{border-bottom:0}
 .tbl td b{font-family:var(--h);letter-spacing:.1em;font-weight:400;font-size:1.02rem}
-.dotc{display:inline-flex;align-items:center;gap:9px}
-.dotc i{width:11px;height:11px;border-radius:50%;box-shadow:0 0 0 1px rgba(255,255,255,.22)}
 .stk{font-family:var(--h);letter-spacing:.14em;font-size:.76rem;padding:4px 9px;border:1px solid var(--line2);color:var(--dim)}
 .stk.ok{color:var(--acc);border-color:rgba(138,92,240,.5)}
 .tbl-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
@@ -210,13 +256,14 @@ h2.sec{font-size:clamp(32px,6.5vw,62px);margin-bottom:14px}
 .honest .dot{width:9px;height:9px;border-radius:50%;background:var(--acc);flex:none;margin-top:9px;
   box-shadow:0 0 0 5px var(--acc-soft)}
 .honest p{color:var(--dim);font-size:.92rem;line-height:1.75}
+.honest p+p{margin-top:12px}
 .honest b{color:var(--txt);font-weight:400}
 
 footer{position:relative;z-index:2;background:var(--ink);border-top:1px solid var(--line);
   padding:clamp(40px,6vw,64px) var(--pad) 40px}
 footer .wrap{display:flex;flex-wrap:wrap;gap:26px;justify-content:space-between;align-items:flex-end}
-footer .fbrand{font-family:var(--h);font-size:clamp(30px,7vw,58px);letter-spacing:.22em;text-indent:.22em}
-footer .fbase{color:var(--dim);font-size:.88rem;margin-top:8px}
+footer .wordmark{font-size:clamp(24px,5.4vw,44px)}
+footer .fbase{color:var(--dim);font-size:.88rem;margin-top:10px;max-width:46ch}
 footer .fmeta{font-size:.8rem;color:var(--dim2);text-align:left;line-height:1.9}
 @media(min-width:700px){footer .fmeta{text-align:right}}
 
@@ -234,7 +281,7 @@ footer .fmeta{font-size:.8rem;color:var(--dim2);text-align:left;line-height:1.9}
 .x:hover{color:#fff}
 .cart-body{flex:1;overflow-y:auto;padding:8px 22px 22px}
 .line{display:flex;gap:14px;padding:20px 0;border-bottom:1px solid var(--line)}
-.line .thumb{width:60px;height:74px;flex:none;border:1px solid var(--line);background:#000;overflow:hidden;position:relative}
+.line .thumb{width:64px;height:64px;flex:none;border:1px solid var(--line);background:#000;overflow:hidden;position:relative}
 .line .thumb canvas{position:absolute;inset:0;width:100%;height:100%}
 .line .info{flex:1;min-width:0}
 .line .info b{font-family:var(--h);letter-spacing:.1em;font-weight:400;font-size:1.02rem;display:block}
@@ -289,8 +336,27 @@ footer .fmeta{font-size:.8rem;color:var(--dim2);text-align:left;line-height:1.9}
 </head>
 <body class="is-loading">
 
+<!-- ===== LOGO SVG PROCÉDURAL : anneau fin + arc néon (éclipse = "shade") ===== -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <filter id="bssGlow" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="1.5" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <symbol id="bssMark" viewBox="0 0 40 40">
+      <circle cx="20" cy="20" r="14" fill="none" stroke="currentColor" stroke-width="1" opacity=".26"/>
+      <circle cx="20" cy="20" r="14" fill="none" stroke="currentColor" stroke-width="2.1"
+              stroke-linecap="round" stroke-dasharray="55 88" transform="rotate(-128 20 20)"
+              filter="url(#bssGlow)"/>
+    </symbol>
+  </defs>
+</svg>
+
 <div id="loader">
-  <div class="ld-mark">BLACKSSHADE</div>
+  <div class="lockup">
+    <svg class="mark" width="52" height="52" aria-hidden="true"><use href="#bssMark"/></svg>
+    <span class="wordmark">BLACKSSHADE</span>
+  </div>
   <div class="ld-base">Le futur c'est maintenant</div>
   <div class="ld-bar"><i id="ldFill"></i></div>
   <div class="ld-num"><span id="ldPct">0</span> %</div>
@@ -300,12 +366,18 @@ footer .fmeta{font-size:.8rem;color:var(--dim2);text-align:left;line-height:1.9}
 <canvas id="dust"></canvas>
 
 <header id="topbar">
-  <div class="brand">BLACKSSHADE<small>Le futur c'est maintenant</small></div>
+  <div class="lockup">
+    <svg class="mark" width="30" height="30" aria-hidden="true"><use href="#bssMark"/></svg>
+    <span class="stack">
+      <span class="wordmark">BLACKSSHADE</span>
+      <span class="base">Le futur c'est maintenant</span>
+    </span>
+  </div>
   <nav class="links">
+    <a href="#rotation">Rotation</a>
     <a href="#specs">Specs</a>
     <a href="#config">Configurer</a>
     <a href="#pricing">Tarifs</a>
-    <a href="#reviews">Avis</a>
     <a href="#faq">FAQ</a>
   </nav>
   <div class="tb-right">
@@ -322,11 +394,11 @@ footer .fmeta{font-size:.8rem;color:var(--dim2);text-align:left;line-height:1.9}
     <div class="stage">
       <canvas class="cv" id="cv1"></canvas>
       <div class="cap">
-        <span class="idx">CH.01 — L'ORBITE</span>
-        <h1 class="bebas" style="font-size:clamp(44px,11vw,104px)">SHADE&#8209;01<em>Bomber Mecha</em></h1>
+        <span class="idx">CH.01 — L'IMPRESSION</span>
+        <h1 class="bebas" style="font-size:clamp(42px,10.5vw,100px)">GUÉPARD<em>Néon mecha techwear</em></h1>
         <div class="rule"></div>
-        <p>Une seule silhouette. Coque d'épaule articulée, sergé technique déperlant, passepoil néon mat cousu au fil.
-           On la tourne jusqu'à ce qu'elle tienne sous tous les angles.</p>
+        <p>Le vêtement reste noir, sobre, sans logo bavard. C'est l'impression qui parle :
+           un guépard reconstruit en machine, plaques d'armure et rosettes devenues circuits.</p>
       </div>
       <div class="scrollhint">SCROLL<i></i></div>
     </div>
@@ -337,10 +409,10 @@ footer .fmeta{font-size:.8rem;color:var(--dim2);text-align:left;line-height:1.9}
       <canvas class="cv" id="cv2"></canvas>
       <div class="cap">
         <span class="idx">CH.02 — LA MATIÈRE</span>
-        <h2>La preuve<em>est à trente centimètres</em></h2>
+        <h2>L'encre<em>est posée sur le fil</em></h2>
         <div class="rule"></div>
-        <p>Double couture renforcée sur chaque panneau. Quincaillerie anodisée noire, mate, sans reflet parasite.
-           Le passepoil est un vrai cordon cousu, pas une impression.</p>
+        <p>Sérigraphie épaisse sur coton lourd. On voit la trame du jersey, le relief de l'encre
+           et le halo néon qui bave d'un millimètre dans le noir. Rien n'est collé, tout est imprimé.</p>
       </div>
     </div>
   </section>
@@ -349,11 +421,11 @@ footer .fmeta{font-size:.8rem;color:var(--dim2);text-align:left;line-height:1.9}
     <div class="stage">
       <canvas class="cv" id="cv3"></canvas>
       <div class="cap">
-        <span class="idx">CH.03 — L'ÉCHELLE</span>
-        <h2>Portée,<em>elle tombe droit</em></h2>
+        <span class="idx">CH.03 — PORTÉ</span>
+        <h2>Sur le dos,<em>ça tient tout seul</em></h2>
         <div class="rule"></div>
-        <p>Coupe boxy, épaule tenue par la coque, longueur au bassin. Ni oversize mou, ni cintré :
-           la pièce garde sa géométrie même les mains dans les poches.</p>
+        <p>Coupe oversize, épaule tombante, longueur bassin. L'impression prend toute la largeur
+           du dos — c'est elle qu'on voit arriver, pas l'étiquette.</p>
       </div>
     </div>
   </section>
@@ -362,40 +434,81 @@ footer .fmeta{font-size:.8rem;color:var(--dim2);text-align:left;line-height:1.9}
     <div class="stage">
       <canvas class="cv" id="cv4"></canvas>
       <div class="cap">
-        <span class="idx">CH.04 — LE RECUL</span>
-        <h2>Le futur<em>c'est maintenant</em></h2>
+        <span class="idx">CH.04 — LA GAMME</span>
+        <h2>Quatre pièces<em>une seule impression</em></h2>
         <div class="rule"></div>
-        <p>Fin du plan. La pièce reste seule sur le noir — c'est là qu'on la juge.</p>
+        <p>Casquette, tee-shirt, hoodie, cargo. La silhouette change, le guépard reste :
+           même tracé, même néon, décliné à l'échelle de chaque pièce.</p>
       </div>
     </div>
   </section>
 
 </div>
 
+<!-- ============ ROTATION 360 ============ -->
+<section class="blk" id="rotation">
+  <div class="wrap">
+    <div class="eyebrow"><span>01 — ROTATION 360°</span><i></i></div>
+    <h2 class="sec">Tourne-le<br>toi-même</h2>
+    <p class="lede">Le tee-shirt guépard sur douze positions de plateau tournant. Attrape-le et fais-le tourner
+      — à la souris, au doigt, ou aux flèches du clavier. Le scroll le fait pivoter tout seul tant que tu n'y as pas touché.</p>
+
+    <div class="turn-grid">
+      <div>
+        <div class="turn-stage">
+          <span class="deg" id="turnDeg">0°</span>
+          <span class="ref">SHADE-TEE</span>
+          <canvas id="cvTurn" tabindex="0" role="img"
+            aria-label="Vue à 360 degrés du tee-shirt : glissez horizontalement ou utilisez les flèches du clavier pour le faire tourner"></canvas>
+          <div class="hint" id="turnHint"><b>GLISSE</b> POUR FAIRE TOURNER</div>
+        </div>
+        <div class="turn-track"><i id="turnBar"></i></div>
+        <div class="turn-steps" id="turnSteps" role="group" aria-label="Angles de vue"></div>
+      </div>
+
+      <div class="turn-note">
+        <h3>Douze prises,<br>un seul vêtement</h3>
+        <p>La rotation n'est pas un modèle 3D : ce sont douze photos du même tee-shirt sur un
+          plateau tournant, préchargées puis affichées selon la position de ton doigt.
+          C'est net à toute taille d'écran, ça pèse deux images, et ça marche sur mobile
+          sans bloquer le scroll de la page.</p>
+        <p>Le dos est une vraie vue arrière : l'impression disparaît et laisse une simple
+          ligne néon le long de la colonne.</p>
+        <dl class="kv">
+          <div><dt>POSITIONS</dt><dd id="kvFrames">12 sur 360°</dd></div>
+          <div><dt>ENTRÉE</dt><dd>Glisser · balayer · flèches · scroll</dd></div>
+          <div><dt>POIDS</dt><dd id="kvWeight">2 images</dd></div>
+          <div><dt>MOUVEMENT RÉDUIT</dt><dd>Bascule en vues fixes</dd></div>
+        </dl>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- ============ SPECS ============ -->
 <section class="blk" id="specs">
   <div class="wrap">
-    <div class="eyebrow"><span>01 — SPECS</span><i></i></div>
+    <div class="eyebrow"><span>02 — SPECS</span><i></i></div>
     <h2 class="sec">Ce qu'il y a<br>dans la pièce</h2>
-    <p class="lede">Fiche technique de la SHADE&#8209;01. Tout ce qui est listé ici est le cahier des charges
-      de production visé pour la première série — c'est une marque en lancement, rien n'a encore été fabriqué.</p>
+    <p class="lede">Cahier des charges de production visé pour la première série. C'est une marque
+      en lancement : rien n'a encore été fabriqué.</p>
     <dl class="specs">
-      <div class="spec"><dt>MATIÈRE PRINCIPALE</dt><dd>Sergé nylon technique 240 g/m²
-        <small>Traitement déperlant, tenue mate, sans brillance sous flash.</small></dd></div>
-      <div class="spec"><dt>DOUBLURE</dt><dd>Satin recyclé + ouate 80 g
-        <small>Doublure matelassée sur le corps, manches non doublées pour la mobilité.</small></dd></div>
-      <div class="spec"><dt>COQUE D'ÉPAULE</dt><dd>Polymère injecté, finition anodisée
-        <small>Amovible par 4 vis alu. La pièce se porte coque montée ou nue.</small></dd></div>
-      <div class="spec"><dt>PASSEPOIL</dt><dd>Cordon néon mat cousu main
-        <small>Trois coloris. Aucun film réfléchissant, aucune impression.</small></dd></div>
-      <div class="spec"><dt>COUPE</dt><dd>Boxy, épaule tombante tenue
-        <small>Longueur bassin. Bord-côte poignets et taille.</small></dd></div>
-      <div class="spec"><dt>TAILLES</dt><dd>S · M · L · XL
-        <small>XL en coupe sur mesure (mesures prises à la commande).</small></dd></div>
-      <div class="spec"><dt>PERSONNALISATION</dt><dd>Broderie dorsale + plaque gravée
-        <small>Jusqu'à 14 caractères. C'est le cœur de la marque : chaque pièce est numérotée.</small></dd></div>
-      <div class="spec"><dt>ENTRETIEN</dt><dd>Lavage 30° coque démontée
-        <small>Séchage à plat. Pas de sèche-linge, pas d'adoucissant sur le passepoil.</small></dd></div>
+      <div class="spec"><dt>SUPPORT TEE / HOODIE</dt><dd>Coton peigné 240 g/m² (tee) · molleton 400 g/m² (hoodie)
+        <small>Coupe oversize boxy, épaule tombante, col côtelé double aiguille.</small></dd></div>
+      <div class="spec"><dt>SUPPORT CARGO</dt><dd>Sergé nylon technique déperlant
+        <small>Poches à soufflet, sangles et boucles, bas de jambe réglable par cordon.</small></dd></div>
+      <div class="spec"><dt>IMPRESSION</dt><dd>Sérigraphie plastisol haute densité, 4 passages
+        <small>Violet et cyan néon, ponctuations ambre. L'encre est posée en relief sur la trame.</small></dd></div>
+      <div class="spec"><dt>MOTIF</dt><dd>Guépard mecha — tracé maison
+        <small>Plaques d'armure segmentées, mâchoire mécanique, rosettes traitées en nœuds de circuit.</small></dd></div>
+      <div class="spec"><dt>DOS</dt><dd>Noir plein + ligne néon dorsale
+        <small>Une seule ligne fine le long de la colonne. Pas de second motif.</small></dd></div>
+      <div class="spec"><dt>TAILLES</dt><dd>TU (casquette) · S à XL · W28 à W38 (cargo)
+        <small>Le XL du haut est coupé sur mesure, mesures prises à la commande.</small></dd></div>
+      <div class="spec"><dt>PERSONNALISATION</dt><dd>Broderie ou plaque gravée selon la pièce
+        <small>Jusqu'à 14 caractères. Chaque exemplaire est numéroté — c'est le cœur de la marque.</small></dd></div>
+      <div class="spec"><dt>ENTRETIEN</dt><dd>Lavage 30° sur l'envers
+        <small>Séchage à plat, pas de sèche-linge, jamais de fer directement sur l'impression.</small></dd></div>
     </dl>
   </div>
 </section>
@@ -403,21 +516,24 @@ footer .fmeta{font-size:.8rem;color:var(--dim2);text-align:left;line-height:1.9}
 <!-- ============ CONFIGURATEUR + ADD TO CART ============ -->
 <section class="blk" id="config">
   <div class="wrap">
-    <div class="eyebrow"><span>02 — CONFIGURER</span><i></i></div>
+    <div class="eyebrow"><span>03 — CONFIGURER</span><i></i></div>
     <h2 class="sec">Compose<br>ta pièce</h2>
-    <p class="lede">Coloris, taille, personnalisation. Le visuel et le prix se mettent à jour en direct.</p>
+    <p class="lede">Quatre pièces, chacune avec ses tailles, ses options et son prix.
+      Le visuel et le total se mettent à jour en direct.</p>
+
+    <div class="prods" id="optProds" role="group" aria-label="Choisir une pièce"></div>
 
     <div class="cfg">
       <div class="cfg-vis">
-        <span class="tag" id="visTag">VIOLET MAT</span>
+        <span class="tag" id="visTag">TEE — VIOLET MECHA</span>
         <canvas id="cvVar"></canvas>
-        <span class="ref">SHADE&#8209;01</span>
+        <span class="ref" id="visRef">SHADE-TEE</span>
       </div>
 
       <div>
         <div class="grp">
-          <label>COLORIS <b id="lblColor">Violet mat</b></label>
-          <div class="opts" id="optColors" role="group" aria-label="Coloris"></div>
+          <label>COLORIS D'IMPRESSION <b id="lblColor">Violet mecha</b></label>
+          <div class="opts" id="optColors" role="group" aria-label="Coloris d'impression"></div>
           <p class="note" id="colorNote"></p>
         </div>
 
@@ -433,9 +549,9 @@ footer .fmeta{font-size:.8rem;color:var(--dim2);text-align:left;line-height:1.9}
         </div>
 
         <div class="price-row">
-          <div class="price"><span id="priceVal">289</span><sup>€</sup></div>
+          <div class="price"><span id="priceVal">79</span><sup>€</sup></div>
           <div class="price-meta">
-            <b id="skuVal">SHADE01-VIO-M</b>
+            <b id="skuVal">SHADE-TEE-VIO-M</b>
             <span id="availVal">Disponible au lancement</span>
           </div>
         </div>
@@ -452,32 +568,33 @@ footer .fmeta{font-size:.8rem;color:var(--dim2);text-align:left;line-height:1.9}
 <!-- ============ PRICING ============ -->
 <section class="blk" id="pricing">
   <div class="wrap">
-    <div class="eyebrow"><span>03 — TARIFS</span><i></i></div>
-    <h2 class="sec">Variantes<br>&amp; disponibilité</h2>
+    <div class="eyebrow"><span>04 — TARIFS</span><i></i></div>
+    <h2 class="sec">La gamme<br>&amp; disponibilité</h2>
     <p class="lede">Tarifs de lancement prévus pour la première série. Ils sont indicatifs tant que la production
       n'est pas lancée.</p>
     <div class="tbl-scroll">
     <table class="tbl">
-      <thead><tr><th>Variante</th><th>Prix</th><th>Série</th><th>Disponibilité</th></tr></thead>
+      <thead><tr><th>Pièce</th><th>Prix</th><th>Tailles</th><th>Série</th><th>Disponibilité</th></tr></thead>
       <tbody id="priceRows"></tbody>
     </table>
     </div>
-    <p class="legal-mini" style="margin-top:18px">Options : taille XL en coupe sur mesure +20 €.
-      Broderie dorsale + plaque gravée +60 €. Prix TTC, hors livraison.</p>
+    <p class="legal-mini" style="margin-top:18px">Options : coloris d'impression Cyan +10 € (édition limitée).
+      Personnalisation de +25 € à +60 € selon la pièce. Taille XL du haut en coupe sur mesure +20 €.
+      Prix TTC, hors livraison.</p>
   </div>
 </section>
 
 <!-- ============ REVIEWS — état vide assumé ============ -->
 <section class="blk" id="reviews">
   <div class="wrap">
-    <div class="eyebrow"><span>04 — AVIS</span><i></i></div>
+    <div class="eyebrow"><span>05 — AVIS</span><i></i></div>
     <h2 class="sec">Avis clients</h2>
     <div class="empty">
       <div class="big">0 AVIS</div>
       <div class="stars">☆ ☆ ☆ ☆ ☆</div>
       <p>BLACKSSHADE n'a livré aucune pièce à ce jour. Il n'y a donc rien à afficher ici,
         et nous n'inventerons pas de témoignages pour remplir la section.
-        Les premiers retours arriveront ici, tels quels, quand les premières vestes seront portées.</p>
+        Les premiers retours arriveront ici, tels quels, quand les premières pièces seront portées.</p>
     </div>
   </div>
 </section>
@@ -485,7 +602,7 @@ footer .fmeta{font-size:.8rem;color:var(--dim2);text-align:left;line-height:1.9}
 <!-- ============ SHIPPING & RETURNS ============ -->
 <section class="blk" id="shipping">
   <div class="wrap">
-    <div class="eyebrow"><span>05 — LIVRAISON &amp; RETOURS</span><i></i></div>
+    <div class="eyebrow"><span>06 — LIVRAISON &amp; RETOURS</span><i></i></div>
     <h2 class="sec">Ce qui est prévu</h2>
     <p class="lede">Conditions visées pour la première série. Elles seront figées avant l'ouverture de la boutique.</p>
     <div class="cards">
@@ -493,11 +610,11 @@ footer .fmeta{font-size:.8rem;color:var(--dim2);text-align:left;line-height:1.9}
         <p>Départ prévu sous 5 jours ouvrés après lancement de la série, suivi inclus.
           La Réunion et la métropole au même tarif.</p></div>
       <div class="card"><span class="k">RETOURS</span><h3>30 jours</h3>
-        <p>Retour accepté 30 jours, pièce non portée, coque montée. Les pièces personnalisées
+        <p>Retour accepté 30 jours, pièce non portée, étiquette en place. Les pièces personnalisées
           (broderie, plaque gravée) ne sont pas reprises — c'est le prix du sur-mesure.</p></div>
       <div class="card"><span class="k">GARANTIE</span><h3>2 ans coutures</h3>
-        <p>Coutures et quincaillerie garanties 2 ans. Coque d'épaule remplaçable à l'unité,
-          sans renvoyer la veste.</p></div>
+        <p>Coutures garanties 2 ans. L'impression est garantie contre le craquelage
+          si les consignes de lavage sont respectées.</p></div>
     </div>
   </div>
 </section>
@@ -505,7 +622,7 @@ footer .fmeta{font-size:.8rem;color:var(--dim2);text-align:left;line-height:1.9}
 <!-- ============ FAQ ============ -->
 <section class="blk" id="faq">
   <div class="wrap">
-    <div class="eyebrow"><span>06 — FAQ</span><i></i></div>
+    <div class="eyebrow"><span>07 — FAQ</span><i></i></div>
     <h2 class="sec">Questions</h2>
     <div class="faq">
       <details open><summary>Puis-je commander maintenant ?</summary>
@@ -514,23 +631,23 @@ footer .fmeta{font-size:.8rem;color:var(--dim2);text-align:left;line-height:1.9}
           et rejoindre la liste d'attente. Rien d'autre ne se passe pour l'instant.</div></details>
       <details><summary>Les photos sont-elles réelles ?</summary>
         <div class="ans">Non, et c'est écrit partout sur cette page : tous les visuels sont générés par
-          intelligence artificielle à partir du cahier des charges de la pièce. Ils montrent l'intention
-          de design, pas un produit photographié. Les visuels définitifs seront des photos de la vraie série.</div></details>
+          intelligence artificielle à partir du cahier des charges. Ils montrent l'intention de design,
+          pas un produit photographié. Les visuels définitifs seront des photos de la vraie série.</div></details>
+      <details><summary>La rotation 360°, c'est de la 3D ?</summary>
+        <div class="ans">Non. Ce sont douze vues du même tee-shirt prises sous douze angles,
+          affichées selon la position de votre doigt ou de votre souris. Un vrai moteur 3D serait
+          plus lourd et moins net sur mobile pour exactement le même résultat perçu.</div></details>
+      <details><summary>Le vêtement est-il vraiment noir uni ?</summary>
+        <div class="ans">Oui. Le support ne change pas : coton noir mat, sans logo apparent, sans surpiqûre
+          voyante. Toute l'identité passe par l'impression. C'est un parti pris : le vêtement se porte
+          aussi bien retourné, et l'imprimé peut évoluer d'une série à l'autre sans changer la coupe.</div></details>
       <details><summary>Que veut dire « personnalisé » ?</summary>
-        <div class="ans">Chaque pièce peut recevoir une broderie dorsale et une plaque gravée
-          (jusqu'à 14 caractères), et chaque exemplaire est numéroté. C'est le principe de la marque :
-          la silhouette est fixe, la pièce est la vôtre.</div></details>
-      <details><summary>La coque d'épaule, c'est solide ?</summary>
-        <div class="ans">Polymère injecté fixé par quatre vis alu sur des renforts cousus.
-          Elle se démonte en une minute pour le lavage et se remplace à l'unité en cas de casse.</div></details>
-      <details><summary>Pourquoi du néon « mat » ?</summary>
-        <div class="ans">Parce que le néon saturé vieillit mal et se lit comme un déguisement.
-          Le passepoil est un cordon teint dans la masse, mat : il attrape la lumière rasante
-          sans jamais briller. Trois coloris, pas dix.</div></details>
+        <div class="ans">Selon la pièce : broderie latérale sur la casquette, broderie dorsale et plaque
+          gravée sur le tee et le hoodie, plaque gravée sur la poche du cargo — jusqu'à 14 caractères.
+          Chaque exemplaire est numéroté. La silhouette est fixe, la pièce est la vôtre.</div></details>
       <details><summary>Où en est le projet ?</summary>
-        <div class="ans">Au stade du prototype et du design. Cette page est une proposition
-          de boutique, construite pour valider la direction artistique et le parcours d'achat
-          avant de lancer la production.</div></details>
+        <div class="ans">Au stade du prototype et du design. Cette page est une proposition de boutique,
+          construite pour valider la direction artistique et le parcours d'achat avant de lancer la production.</div></details>
     </div>
   </div>
 </section>
@@ -540,22 +657,35 @@ footer .fmeta{font-size:.8rem;color:var(--dim2);text-align:left;line-height:1.9}
 <div class="honest">
   <div class="wrap">
     <span class="dot"></span>
-    <p><b>Maquette de présentation — à lire.</b> BLACKSSHADE est une marque <b>en cours de lancement</b> :
-      aucune pièce n'a encore été produite ni livrée. <b>Tous les visuels de cette page sont générés par
-      intelligence artificielle</b> à partir du cahier des charges du produit — ce ne sont pas des photographies
-      d'un vêtement existant. <b>Aucun paiement n'est encaissé</b>, aucune commande n'est enregistrée :
-      le panier est stocké uniquement dans votre navigateur et le formulaire de liste d'attente
-      n'envoie ni ne conserve aucune donnée. La section avis est <b>volontairement vide</b> —
-      aucun témoignage n'a été inventé. Les prix, délais et conditions affichés sont des intentions
-      de lancement, pas des engagements commerciaux.</p>
+    <div>
+      <p><b>Maquette de présentation — à lire.</b> BLACKSSHADE est une marque <b>en cours de lancement</b> :
+        aucune pièce n'a encore été produite ni livrée. <b>Tous les visuels de cette page sont générés par
+        intelligence artificielle</b> à partir du cahier des charges du produit — ce ne sont pas des photographies
+        d'un vêtement existant. <b>Aucun paiement n'est encaissé</b>, aucune commande n'est enregistrée :
+        le panier est stocké uniquement dans votre navigateur et le formulaire de liste d'attente
+        n'envoie ni ne conserve aucune donnée. La section avis est <b>volontairement vide</b> —
+        aucun témoignage n'a été inventé. Les prix, délais et conditions affichés sont des intentions
+        de lancement, pas des engagements commerciaux.</p>
+      <p><b>Deux précisions techniques, pour ne rien maquiller.</b> Les douze vues de la rotation 360°
+        proviennent de <b>deux planches générées</b> puis découpées : quelques angles de la moitié droite
+        sont l'image miroir d'un angle de gauche — le motif étant symétrique, la rotation reste juste,
+        mais ce ne sont pas douze prises indépendantes. Et les coloris d'impression <b>Ambre</b> et <b>Cyan</b>
+        sont une <b>rotation de teinte appliquée en direct</b> au visuel violet, pas un second échantillon
+        imprimé : ils donnent la bonne idée de la couleur, pas le rendu exact d'une encre réelle.</p>
+    </div>
   </div>
 </div>
 
 <footer>
   <div class="wrap">
     <div>
-      <div class="fbrand">BLACKSSHADE</div>
-      <div class="fbase">Le futur c'est maintenant — vêtements personnalisés, fashion / mecha / streetwear.</div>
+      <div class="lockup">
+        <svg class="mark" width="40" height="40" aria-hidden="true"><use href="#bssMark"/></svg>
+        <span class="wordmark">BLACKSSHADE</span>
+      </div>
+      <hr class="neonrule" style="margin-top:16px;max-width:260px">
+      <div class="fbase">Le futur c'est maintenant — textile imprimé, néon mecha techwear.
+        Casquette · tee-shirt · hoodie · cargo.</div>
     </div>
     <div class="fmeta">
       © 2026 BLACKSSHADE — maquette de présentation<br>
@@ -588,9 +718,14 @@ footer .fmeta{font-size:.8rem;color:var(--dim2);text-align:left;line-height:1.9}
     <h3 class="bebas" id="wlTitle">LISTE D'ATTENTE</h3>
     <p class="sub">La première série sera limitée. Laissez votre taille : vous serez prévenu à l'ouverture.</p>
     <div class="fld"><label for="wlMail">EMAIL</label><input type="email" id="wlMail" placeholder="vous@exemple.fr" required></div>
-    <div class="fld"><label for="wlSize">TAILLE SOUHAITÉE</label>
-      <select id="wlSize"><option>S</option><option selected>M</option><option>L</option><option>XL (sur mesure)</option></select></div>
-    <div class="fld"><label for="wlMsg">MESSAGE (facultatif)</label><textarea id="wlMsg" placeholder="Coloris, personnalisation souhaitée…"></textarea></div>
+    <div class="fld"><label for="wlSize">PIÈCE SOUHAITÉE</label>
+      <select id="wlSize">
+        <option>Casquette Mecha</option>
+        <option selected>Tee Guépard Mecha</option>
+        <option>Hoodie Mecha</option>
+        <option>Cargo Techwear</option>
+      </select></div>
+    <div class="fld"><label for="wlMsg">MESSAGE (facultatif)</label><textarea id="wlMsg" placeholder="Taille, coloris d'impression, personnalisation souhaitée…"></textarea></div>
     <button class="btn" id="wlSend">M'INSCRIRE</button>
     <p class="legal-mini">Démonstration : ce formulaire <b>n'envoie et n'enregistre aucune donnée</b>.
       Rien ne quitte votre navigateur.</p>
@@ -615,19 +750,28 @@ if(reduced) document.documentElement.classList.add('reduced');
 var small = window.matchMedia('(max-width: 760px)').matches;
 var SFX = small ? '-sm' : '';
 var A = 'assets/';
+/* filtre canvas dispo ? (rotation de teinte des coloris d'impression) */
+var CANFILTER = (function(){
+  try { var c = document.createElement('canvas').getContext('2d');
+        c.filter = 'hue-rotate(90deg)'; return c.filter !== 'none' && c.filter !== ''; }
+  catch(e){ return false; }
+})();
+
+function num(v,d){ return v == null ? d : v; }
+function clamp01(v){ return v < 0 ? 0 : (v > 1 ? 1 : v); }
 
 /* =========================================================================
    PAN — plan cinématique sur UNE image haute définition.
    Le mouvement de caméra est un recadrage recalculé à chaque frame :
    net à toute taille d'écran, aucune séquence de frames pré-découpées.
-   Chaque "shot" a sa fenêtre de visibilité -> le fondu enchaîné entre
-   deux angles du même blouson lit comme une rotation.
+   Mode `abs` : x/y = position du sujet DANS l'image -> découpe une planche
+   (la gamme de 4 pièces vit dans un seul fichier).
    ========================================================================= */
 function Pan(canvas, shots, opts){
   this.cv = canvas;
   this.ctx = canvas.getContext('2d', {alpha:false});
   this.shots = shots; this.o = opts || {};
-  this.lastP = 0; this.n = 0;
+  this.lastP = 0; this.hue = 0;
   this.dpr = Math.min(window.devicePixelRatio || 1, 2);
   for(var i=0;i<shots.length;i++){ shots[i].img = new Image(); shots[i].ok = false; }
 }
@@ -646,10 +790,6 @@ Pan.prototype.resize = function(){
   if(this.cv.width !== w || this.cv.height !== h){ this.cv.width = w; this.cv.height = h; }
   this.render(this.lastP, true);
 };
-function num(v,d){ return v == null ? d : v; }
-function clamp01(v){ return v < 0 ? 0 : (v > 1 ? 1 : v); }
-function ease(t){ return t*t*(3-2*t); }
-
 Pan.prototype.alphaOf = function(s, p){
   var f = num(s.fade, .12);
   var a = num(s.a, -9), b = num(s.b, 9);
@@ -667,18 +807,16 @@ Pan.prototype.drawShot = function(s, p, alpha){
   var xc = num(s.x0,.5) + (num(s.x1,.5) - num(s.x0,.5)) * p;
   var yc = num(s.y0,.5) + (num(s.y1,.5) - num(s.y0,.5)) * p;
   var sx, sy;
-  if(s.abs){ /* x/y = position du centre DANS l'image (0..1) — cadrage d'un sujet précis */
-    sx = Math.max(0, Math.min(iw-w, xc*iw - w/2));
-    sy = Math.max(0, Math.min(ih-h, yc*ih - h/2));
-  } else {   /* x/y = position du cadre dans la marge restante (mouvement de caméra) */
-    sx = (iw-w)*clamp01(xc); sy = (ih-h)*clamp01(yc);
-  }
+  if(s.abs){ sx = Math.max(0, Math.min(iw-w, xc*iw - w/2));
+             sy = Math.max(0, Math.min(ih-h, yc*ih - h/2)); }
+  else     { sx = (iw-w)*clamp01(xc); sy = (ih-h)*clamp01(yc); }
+  ctx.save();
   ctx.globalAlpha = alpha;
+  if(this.hue && CANFILTER) ctx.filter = 'hue-rotate(' + this.hue + 'deg)';
   ctx.drawImage(s.img, sx, sy, w, h, 0, 0, cw, ch);
-  ctx.globalAlpha = 1;
+  ctx.restore();
 };
-/* balayage de lumière procédural : masque le raccord entre deux angles
-   et rejoue la lumière studio qui court sur la matière */
+/* balayage de lumière procédural : masque le raccord entre deux angles */
 Pan.prototype.sweep = function(p){
   var o = this.o.sweep; if(!o) return;
   var t = clamp01((p - o.from)/(o.to - o.from));
@@ -707,8 +845,8 @@ Pan.prototype.veil = function(p){
   ctx.fillRect(0,0,cw,ch);
   var r = Math.max(cw,ch) * (0.10 + t*0.95);
   var rg = ctx.createRadialGradient(cw*.5, ch*.5, r*.05, cw*.5, ch*.5, r);
-  rg.addColorStop(0,   'rgba(138,92,240,' + (a*0.16).toFixed(3) + ')');
-  rg.addColorStop(1,   'rgba(138,92,240,0)');
+  rg.addColorStop(0, 'rgba(138,92,240,' + (a*0.16).toFixed(3) + ')');
+  rg.addColorStop(1, 'rgba(138,92,240,0)');
   ctx.globalCompositeOperation = 'lighter';
   ctx.fillStyle = rg; ctx.fillRect(0,0,cw,ch);
   ctx.restore();
@@ -730,31 +868,211 @@ Pan.prototype.render = function(p, force){
 
 /* ---------- les 4 chapitres ---------- */
 var SEQ = {
-  /* CH1 : la caméra orbite — fondu enchaîné 3/4 face -> 3/4 dos, lumière qui balaie */
+  /* CH1 : révélation de l'impression, dolly avant sur le motif */
   1: new Pan(document.getElementById('cv1'), [
-       {src:A+'orbit-a'+SFX+'.jpg', z0:1.42, z1:1.06, x0:.50, x1:.50, y0:.38, y1:.46, a:-1, b:.56, fade:.13},
-       {src:A+'orbit-b'+SFX+'.jpg', z0:1.34, z1:1.00, x0:.56, x1:.46, y0:.44, y1:.50, a:.44, b:9,  fade:.13}
-     ], {sweep:{from:.34, to:.70}, veil:{from:.00, to:.13, max:.72}}),
-  /* CH2 : dolly avant lent sur la couture / la quincaillerie */
+       {src:A+'hero'+SFX+'.jpg', z0:1.06, z1:1.44, x0:.50, x1:.50, y0:.46, y1:.40}
+     ], {sweep:{from:.30, to:.72}, veil:{from:.00, to:.14, max:.74}}),
+  /* CH2 : macro sur l'encre et la trame */
   2: new Pan(document.getElementById('cv2'), [
-       {src:A+'detail'+SFX+'.jpg', z0:1.02, z1:1.42, x0:.42, x1:.58, y0:.58, y1:.40}
+       {src:A+'detail'+SFX+'.jpg', z0:1.02, z1:1.40, x0:.40, x1:.60, y0:.56, y1:.42}
      ], {sweep:{from:.55, to:.95}}),
-  /* CH3 : remontée lente sur la pièce portée — l'échelle se révèle */
+  /* CH3 : remontée lente sur la pièce portée */
   3: new Pan(document.getElementById('cv3'), [
-       {src:A+'worn'+SFX+'.jpg', z0:1.30, z1:1.02, x0:.46, x1:.52, y0:.78, y1:.34}
+       {src:A+'worn'+SFX+'.jpg', z0:1.26, z1:1.02, x0:.50, x1:.50, y0:.72, y1:.34}
      ], {}),
-  /* CH4 : recul, la pièce seule sur le noir, immobile à la fin */
+  /* CH4 : travelling latéral sur la gamme — casquette -> tee -> hoodie -> cargo
+     (la planche `range` sert en pleine résolution : le recadrage plein écran
+      d'une bande 4:1 ne supporte pas de variante allégée) */
   4: new Pan(document.getElementById('cv4'), [
-       {src:A+'orbit-a'+SFX+'.jpg', z0:1.36, z1:1.00, x0:.50, x1:.50, y0:.36, y1:.44}
-     ], {sweep:{from:.06, to:.42}})
+       {src:A+'range.jpg', abs:true, z0:1, z1:1, x0:.10, x1:.90, y0:.50, y1:.50}
+     ], {sweep:{from:.08, to:.44}})
 };
+
+/* =========================================================================
+   TURNTABLE 360° — 12 positions découpées dans 2 planches 4x2.
+   `flip` : miroir horizontal (le motif est symétrique, l'éclairage aussi)
+   ========================================================================= */
+function Turn(canvas){
+  this.cv = canvas;
+  this.ctx = canvas.getContext('2d', {alpha:false});
+  this.dpr = Math.min(window.devicePixelRatio || 1, 2);
+  this.pos = 0; this.hue = 0; this.zoom = 1.0;
+  this.imgs = {};
+  var self = this;
+  ['a','b'].forEach(function(k){
+    var im = new Image(); im.ok = false; self.imgs[k] = im;
+  });
+  /* s = planche, c = colonne (0-3), r = rangée (0-1), flip = miroir */
+  this.frames = [
+    {s:'a', c:0, r:0, flip:0},  /*   0° face */
+    {s:'b', c:2, r:1, flip:0},  /*  20° */
+    {s:'b', c:2, r:0, flip:0},  /*  55° */
+    {s:'b', c:3, r:0, flip:0},  /*  85° profil */
+    {s:'a', c:1, r:0, flip:0},  /* 110° */
+    {s:'b', c:3, r:1, flip:0},  /* 150° */
+    {s:'a', c:0, r:1, flip:0},  /* 180° dos + ligne néon */
+    {s:'b', c:3, r:1, flip:1},  /* 210° (miroir) */
+    {s:'a', c:2, r:1, flip:0},  /* 250° prise réelle */
+    {s:'a', c:1, r:1, flip:0},  /* 285° prise réelle */
+    {s:'b', c:2, r:0, flip:1},  /* 305° (miroir) */
+    {s:'b', c:2, r:1, flip:1}   /* 340° (miroir) */
+  ];
+}
+Turn.prototype.load = function(done){
+  var self = this, left = 2;
+  function one(k, src){
+    var im = self.imgs[k];
+    im.onload  = function(){ im.ok = !!im.naturalWidth; if(!--left){ self.resize(); if(done) done(); } };
+    im.onerror = function(){ im.ok = false; if(!--left){ if(done) done(); } };
+    im.src = src;
+  }
+  one('a', A+'turn-a'+SFX+'.jpg');
+  one('b', A+'turn-b'+SFX+'.jpg');
+};
+Turn.prototype.resize = function(){
+  var r = this.cv.getBoundingClientRect();
+  var w = Math.round(r.width * this.dpr), h = Math.round(r.height * this.dpr);
+  if(!w || !h) return;
+  if(this.cv.width !== w || this.cv.height !== h){ this.cv.width = w; this.cv.height = h; }
+  this.render(this.pos, true);
+};
+Turn.prototype.drawFrame = function(f, alpha){
+  var im = this.imgs[f.s];
+  if(!im || !im.ok || alpha <= 0.004) return;
+  var ctx = this.ctx, cw = this.cv.width, ch = this.cv.height;
+  var cellW = im.naturalWidth/4, cellH = im.naturalHeight/2;
+  var sc = Math.min(cw/cellW, ch/cellH) * this.zoom;
+  var dw = cellW*sc, dh = cellH*sc;
+  var dx = (cw-dw)/2, dy = (ch-dh)/2;
+  ctx.save();
+  ctx.globalAlpha = alpha;
+  if(this.hue && CANFILTER) ctx.filter = 'hue-rotate(' + this.hue + 'deg)';
+  if(f.flip){ ctx.translate(cw, 0); ctx.scale(-1, 1); } /* dx est centré : inchangé */
+  ctx.drawImage(im, f.c*cellW, f.r*cellH, cellW, cellH, dx, dy, dw, dh);
+  ctx.restore();
+};
+Turn.prototype.render = function(pos, force){
+  var n = this.frames.length;
+  pos = ((pos % n) + n) % n;
+  if(!force && Math.abs(pos - this.pos) < 0.002) return;
+  this.pos = pos;
+  var cw = this.cv.width, ch = this.cv.height;
+  if(!cw || !ch) return;
+  var ctx = this.ctx;
+  ctx.fillStyle = '#050506'; ctx.fillRect(0,0,cw,ch);
+  var i = Math.floor(pos), t = pos - i;
+  this.drawFrame(this.frames[i], 1);
+  if(t > 0.012) this.drawFrame(this.frames[(i+1)%n], t);
+  if(this.onpos) this.onpos(pos/n);
+};
+
+var turn = new Turn(document.getElementById('cvTurn'));
+var turnDeg = document.getElementById('turnDeg'),
+    turnBar = document.getElementById('turnBar'),
+    turnHint = document.getElementById('turnHint');
+turn.onpos = function(frac){
+  turnDeg.textContent = Math.round(frac*360) + '°';
+  turnBar.style.left = (frac*86).toFixed(2) + '%';
+};
+
+function initTurn(){
+  var cv = turn.cv, N = turn.frames.length;
+  var touched = false, dragging = false, lastX = 0, vel = 0, raf = 0;
+
+  function setPos(p){ turn.render(p); }
+  function markTouched(){
+    if(touched) return;
+    touched = true; turnHint.classList.add('off');
+  }
+  /* --- vues fixes si l'utilisateur limite les animations --- */
+  if(reduced){
+    var steps = document.getElementById('turnSteps');
+    [['FACE',0],['PROFIL',3],['DOS',6],['PROFIL',9]].forEach(function(s){
+      var b = document.createElement('button');
+      b.className = 'opt'; b.type = 'button'; b.textContent = s[0];
+      b.addEventListener('click', function(){ turn.render(s[1], true); });
+      steps.appendChild(b);
+    });
+    turn.render(0, true);
+    return;
+  }
+
+  /* --- glisser / balayer --- */
+  function down(x, e){
+    dragging = true; markTouched(); lastX = x; vel = 0;
+    cancelAnimationFrame(raf); raf = 0;
+    cv.classList.add('grabbing');
+    if(e && e.pointerId != null && cv.setPointerCapture){
+      try { cv.setPointerCapture(e.pointerId); } catch(err){}
+    }
+  }
+  function move(x){
+    if(!dragging) return;
+    var w = cv.clientWidth || 1;
+    var d = (x - lastX) / w * N * 1.15;   /* une largeur d'écran ≈ un tour */
+    lastX = x;
+    vel = d;
+    setPos(turn.pos - d);
+  }
+  function up(){
+    if(!dragging) return;
+    dragging = false;
+    cv.classList.remove('grabbing');
+    if(Math.abs(vel) > 0.004 && !raf) raf = requestAnimationFrame(glide);
+  }
+  function glide(){
+    vel *= 0.93;
+    if(Math.abs(vel) < 0.0035){ raf = 0; return; }
+    setPos(turn.pos - vel);
+    raf = requestAnimationFrame(glide);
+  }
+
+  if(window.PointerEvent){
+    cv.addEventListener('pointerdown', function(e){ down(e.clientX, e); });
+    cv.addEventListener('pointermove', function(e){ if(dragging){ e.preventDefault(); move(e.clientX); } });
+    cv.addEventListener('pointerup', up);
+    cv.addEventListener('pointercancel', up);
+    cv.addEventListener('lostpointercapture', up);
+  } else {
+    cv.addEventListener('mousedown', function(e){ e.preventDefault(); down(e.clientX); });
+    addEventListener('mousemove', function(e){ move(e.clientX); });
+    addEventListener('mouseup', up);
+    cv.addEventListener('touchstart', function(e){ down(e.touches[0].clientX); }, {passive:true});
+    cv.addEventListener('touchmove', function(e){
+      if(!dragging) return;
+      move(e.touches[0].clientX);
+    }, {passive:true});
+    cv.addEventListener('touchend', up);
+    cv.addEventListener('touchcancel', up);
+  }
+
+  /* --- clavier (accessibilité) --- */
+  cv.addEventListener('keydown', function(e){
+    if(e.key === 'ArrowLeft' || e.key === 'ArrowRight'){
+      e.preventDefault(); markTouched();
+      setPos(turn.pos + (e.key === 'ArrowRight' ? 1 : -1));
+    }
+  });
+
+  /* --- pilotage au scroll tant que personne n'y a touché --- */
+  turn.scrollDrive = function(){
+    if(touched || dragging) return;
+    var sec = document.getElementById('rotation');
+    var r = sec.getBoundingClientRect();
+    var span = r.height + innerHeight;
+    if(span <= 0) return;
+    var p = clamp01((innerHeight - r.top) / span);
+    setPos(p * N);
+  };
+  turn.render(0, true);
+}
 
 /* =========================================================================
    LOADER — compteur réel, glissé
    ========================================================================= */
 var pans = [SEQ[1],SEQ[2],SEQ[3],SEQ[4]];
-var extra = [A+'lineup'+SFX+'.jpg'];
-var total = pans.length + extra.length, done = 0, shown = -1, cur = 0, ramping = true;
+var total = pans.length + 1 /* turntable = 2 images comptées ensemble */ + 1 /* planche gamme du configurateur */;
+var done = 0, shown = -1, cur = 0, ramping = true;
 var fill = document.getElementById('ldFill'), pctEl = document.getElementById('ldPct');
 (function ramp(){
   if(!ramping) return;
@@ -776,9 +1094,6 @@ function finish(){
   }, 420);
 }
 function bump(){ if(++done >= total) finish(); }
-pans.forEach(function(p){ p.load(bump); });
-extra.forEach(function(u){ var im = new Image(); im.onload = im.onerror = bump; im.src = u; });
-setTimeout(finish, 12000);
 
 /* =========================================================================
    POUSSIÈRE PROCÉDURALE (canvas, léger, coupé hors du hero)
@@ -836,6 +1151,7 @@ function initScroll(){
     var h = document.documentElement.scrollHeight - innerHeight;
     prog.style.width = (h > 0 ? (scrollY/h*100) : 0) + '%';
     topbar.classList.toggle('solid', scrollY > innerHeight*0.9);
+    if(turn.scrollDrive) turn.scrollDrive();
   }
   if(reduced){
     chapters.forEach(function(sec){ SEQ[sec.dataset.ch].render(0.58, true); });
@@ -867,41 +1183,66 @@ function initScroll(){
     addEventListener('scroll', function(){ if(!tick){ tick = true; requestAnimationFrame(loop); } }, {passive:true});
     loop();
   }
+  addEventListener('scroll', function(){ if(turn.scrollDrive) turn.scrollDrive(); }, {passive:true});
   progress();
 }
 
 /* =========================================================================
-   PRODUIT / VARIANTES
+   GAMME — 4 pièces, chacune ses tailles / options / prix
+   Chaque pièce est une cellule de la planche `range` (cx = centre horizontal).
    ========================================================================= */
-var PRODUCT = {
-  ref:'SHADE-01', name:'Bomber Mecha',
-  colors:[
-    {id:'VIO', name:'Violet mat', hex:'#8a5cf0', base:289, cx:0.175,
-     note:'Le coloris de lancement. Cordon teint dans la masse, mat.', serie:'Série 1 · 120 pièces', avail:'Disponible au lancement'},
-    {id:'AMB', name:'Ambre mat',  hex:'#c98a45', base:289, cx:0.500,
-     note:'Passepoil ambre, plus chaud sur le noir profond.', serie:'Série 1 · 120 pièces', avail:'Disponible au lancement'},
-    {id:'CYA', name:'Cyan mat',   hex:'#4fc6cf', base:309, cx:0.825,
-     note:'Édition limitée : plaque gravée numérotée incluse.', serie:'Édition limitée · 40 pièces', avail:'Liste d’attente uniquement'}
-  ],
-  sizes:[
-    {id:'S',  add:0,  note:'Stock prévu au lancement.'},
-    {id:'M',  add:0,  note:'Stock prévu au lancement.'},
-    {id:'L',  add:0,  note:'Stock prévu au lancement.'},
-    {id:'XL', add:20, note:'Coupe sur mesure : mesures prises à la commande (+20 €).'}
-  ],
-  perso:[
-    {id:'STD', label:'Aucune personnalisation', short:'Aucune', add:0},
-    {id:'BRD', label:'Broderie dorsale + plaque gravée', short:'Broderie + plaque', add:60}
-  ]
-};
-var sel = {c:0, s:1, p:0};
+var SIZES_TOP = [
+  {id:'S',  add:0,  note:'Stock prévu au lancement.'},
+  {id:'M',  add:0,  note:'Stock prévu au lancement.'},
+  {id:'L',  add:0,  note:'Stock prévu au lancement.'},
+  {id:'XL', add:20, note:'Coupe sur mesure : mesures prises à la commande (+20 €).'}
+];
+var COLORS = [
+  {id:'VIO', name:'Violet mecha', hex:'#8a5cf0', hue:0,    add:0,
+   note:'Le coloris de lancement. Encre violette et cyan, ponctuations ambre.',
+   avail:'Disponible au lancement'},
+  {id:'AMB', name:'Ambre mecha',  hex:'#c98a45', hue:132,  add:0,
+   note:'Simulation par rotation de teinte : plus chaud sur le noir profond.',
+   avail:'Disponible au lancement'},
+  {id:'CYA', name:'Cyan mecha',   hex:'#4fc6cf', hue:-74,  add:10,
+   note:'Édition limitée, simulation par rotation de teinte : plaque gravée numérotée incluse.',
+   avail:'Liste d’attente uniquement'}
+];
+var PRODUCTS = [
+  {id:'CAP', ref:'SHADE-CAP', name:'Casquette Mecha', short:'Casquette', cx:0.125, base:59,
+   serie:'Série 1 · 200 pièces', sizeLabel:'TAILLE',
+   sizes:[{id:'TU', add:0, note:'Taille unique, bande arrière réglable.'}],
+   perso:[{id:'STD', label:'Aucune personnalisation', short:'Aucune', add:0},
+          {id:'BRD', label:'Broderie latérale (14 car.)', short:'Broderie latérale', add:25}]},
+  {id:'TEE', ref:'SHADE-TEE', name:'Tee Guépard Mecha', short:'Tee-shirt', cx:0.375, base:79,
+   serie:'Série 1 · 150 pièces', sizeLabel:'TAILLE', sizes:SIZES_TOP,
+   perso:[{id:'STD', label:'Aucune personnalisation', short:'Aucune', add:0},
+          {id:'BRD', label:'Broderie dorsale + plaque gravée', short:'Broderie + plaque', add:60}]},
+  {id:'HOO', ref:'SHADE-HOO', name:'Hoodie Mecha', short:'Hoodie', cx:0.625, base:139,
+   serie:'Série 1 · 90 pièces', sizeLabel:'TAILLE', sizes:SIZES_TOP,
+   perso:[{id:'STD', label:'Aucune personnalisation', short:'Aucune', add:0},
+          {id:'BRD', label:'Broderie dorsale + plaque gravée', short:'Broderie + plaque', add:60}]},
+  {id:'CAR', ref:'SHADE-CAR', name:'Cargo Techwear', short:'Cargo', cx:0.875, base:119,
+   serie:'Série 1 · 80 pièces', sizeLabel:'TAILLE (W)',
+   sizes:[{id:'W28', add:0, note:'Bas de jambe réglable par cordon.'},
+          {id:'W30', add:0, note:'Bas de jambe réglable par cordon.'},
+          {id:'W32', add:0, note:'Bas de jambe réglable par cordon.'},
+          {id:'W34', add:0, note:'Bas de jambe réglable par cordon.'},
+          {id:'W36', add:0, note:'Bas de jambe réglable par cordon.'},
+          {id:'W38', add:0, note:'Coupe ample, ourlet ajusté à la commande.'}],
+   perso:[{id:'STD', label:'Aucune personnalisation', short:'Aucune', add:0},
+          {id:'PLQ', label:'Plaque gravée sur poche cuisse', short:'Plaque gravée', add:35}]}
+];
+var sel = {i:1, c:0, s:1, p:0};   /* le tee est la pièce héros */
+function P(){ return PRODUCTS[sel.i]; }
 
-/* visuel des variantes : recadrage animé sur l'image "lineup" (3 coloris) */
+/* visuel du configurateur : recadrage sur la cellule de la pièce dans `range` */
+/* z = 1 -> la fenêtre de recadrage vaut exactement une cellule de la planche */
 var varPan = new Pan(document.getElementById('cvVar'), [
-  {src:A+'lineup'+SFX+'.jpg', abs:true, z0:1.40, z1:1.40, x0:.175, x1:.175, y0:.44, y1:.44}
+  {src:A+'range.jpg', abs:true, z0:1, z1:1, x0:.375, x1:.375, y0:.50, y1:.50}
 ], {});
-varPan.load(function(){ varPan.resize(); });
-var varX = 0.175, varTarget = 0.175, varRAF = 0;
+varPan.load(function(){ varPan.resize(); bump(); });
+var varX = 0.375, varTarget = 0.375, varRAF = 0;
 function setVarTarget(cx){
   varTarget = cx;
   if(reduced){ varX = cx; applyVarX(); return; }
@@ -913,37 +1254,61 @@ function applyVarX(){
 }
 function varStep(){
   var d = varTarget - varX;
-  if(Math.abs(d) < 0.0008){ varX = varTarget; applyVarX(); varRAF = 0; return; }
-  varX += d * 0.14; applyVarX();
+  if(Math.abs(d) < 0.0006){ varX = varTarget; applyVarX(); varRAF = 0; return; }
+  varX += d * 0.16; applyVarX();
   varRAF = requestAnimationFrame(varStep);
 }
 
 function money(n){ return n.toLocaleString('fr-FR') + ' €'; }
 function currentPrice(){
-  return PRODUCT.colors[sel.c].base + PRODUCT.sizes[sel.s].add + PRODUCT.perso[sel.p].add;
+  var p = P();
+  return p.base + COLORS[sel.c].add + p.sizes[sel.s].add + p.perso[sel.p].add;
 }
 function currentSku(){
-  return 'SHADE01-' + PRODUCT.colors[sel.c].id + '-' + PRODUCT.sizes[sel.s].id +
-         (PRODUCT.perso[sel.p].add ? '-BRD' : '');
+  var p = P();
+  return p.ref + '-' + COLORS[sel.c].id + '-' + p.sizes[sel.s].id +
+         (p.perso[sel.p].add ? '-' + p.perso[sel.p].id : '');
 }
-function buildOptions(){
-  var oc = document.getElementById('optColors');
-  PRODUCT.colors.forEach(function(c, i){
+function el(id){ return document.getElementById(id); }
+
+function buildProds(){
+  var box = el('optProds');
+  PRODUCTS.forEach(function(p, i){
+    var b = document.createElement('button');
+    b.className = 'prod'; b.type = 'button';
+    b.innerHTML = '<b>' + p.short.toUpperCase() + '</b><small>dès ' + money(p.base) + '</small>';
+    b.addEventListener('click', function(){
+      sel.i = i;
+      sel.s = Math.min(sel.s, PRODUCTS[i].sizes.length - 1);
+      if(PRODUCTS[i].sizes.length === 1) sel.s = 0;
+      sel.p = 0;
+      buildSizes(); buildPerso(); sync();
+    });
+    box.appendChild(b);
+  });
+}
+function buildColors(){
+  var oc = el('optColors');
+  COLORS.forEach(function(c, i){
     var b = document.createElement('button');
     b.className = 'opt'; b.type = 'button';
     b.innerHTML = '<span class="sw" style="background:' + c.hex + '"></span>' + c.name.toUpperCase();
     b.addEventListener('click', function(){ sel.c = i; sync(); });
     oc.appendChild(b);
   });
-  var os = document.getElementById('optSizes');
-  PRODUCT.sizes.forEach(function(s, i){
+}
+function buildSizes(){
+  var os = el('optSizes'); os.innerHTML = '';
+  P().sizes.forEach(function(s, i){
     var b = document.createElement('button');
     b.className = 'opt'; b.type = 'button'; b.textContent = s.id;
     b.addEventListener('click', function(){ sel.s = i; sync(); });
     os.appendChild(b);
   });
-  var op = document.getElementById('optPerso');
-  PRODUCT.perso.forEach(function(p, i){
+}
+function buildPerso(){
+  var op = el('optPerso'); op.innerHTML = '';
+  P().perso.forEach(function(p, i){
     var b = document.createElement('button');
     b.className = 'opt wide'; b.type = 'button';
     b.innerHTML = '<span>' + p.label + '</span><span>' + (p.add ? '+' + p.add + ' €' : 'Inclus') + '</span>';
@@ -956,37 +1321,43 @@ function press(container, idx){
     b.setAttribute('aria-pressed', i === idx ? 'true' : 'false');
   });
 }
-function sync(){
-  var c = PRODUCT.colors[sel.c], s = PRODUCT.sizes[sel.s], p = PRODUCT.perso[sel.p];
-  press(document.getElementById('optColors'), sel.c);
-  press(document.getElementById('optSizes'),  sel.s);
-  press(document.getElementById('optPerso'),  sel.p);
-  document.getElementById('lblColor').textContent = c.name;
-  document.getElementById('lblSize').textContent  = s.id;
-  document.getElementById('lblPerso').textContent = p.short;
-  document.getElementById('colorNote').textContent = c.note;
-  document.getElementById('sizeNote').textContent  = s.note;
-  document.getElementById('priceVal').textContent = currentPrice().toLocaleString('fr-FR');
-  document.getElementById('skuVal').textContent   = currentSku();
-  document.getElementById('availVal').textContent = c.avail;
-  document.getElementById('visTag').textContent   = c.name.toUpperCase();
-  document.documentElement.style.setProperty('--acc', c.hex);
-  document.documentElement.style.setProperty('--acc-soft', hexA(c.hex, .14));
-  setVarTarget(c.cx);
-}
 function hexA(h, a){
   var n = parseInt(h.slice(1), 16);
   return 'rgba(' + ((n>>16)&255) + ',' + ((n>>8)&255) + ',' + (n&255) + ',' + a + ')';
 }
+function sync(){
+  var p = P(), c = COLORS[sel.c], s = p.sizes[sel.s], pe = p.perso[sel.p];
+  press(el('optProds'),  sel.i);
+  press(el('optColors'), sel.c);
+  press(el('optSizes'),  sel.s);
+  press(el('optPerso'),  sel.p);
+  el('lblColor').textContent = c.name;
+  el('lblSize').textContent  = s.id;
+  el('lblPerso').textContent = pe.short;
+  el('colorNote').textContent = c.note;
+  el('sizeNote').textContent  = s.note;
+  el('priceVal').textContent = currentPrice().toLocaleString('fr-FR');
+  el('skuVal').textContent   = currentSku();
+  el('availVal').textContent = c.avail;
+  el('visTag').textContent   = p.short.toUpperCase() + ' — ' + c.name.toUpperCase();
+  el('visRef').textContent   = p.ref;
+  document.documentElement.style.setProperty('--acc', c.hex);
+  document.documentElement.style.setProperty('--acc-soft', hexA(c.hex, .14));
+  varPan.hue = c.hue;
+  turn.hue = c.hue; turn.render(turn.pos, true);
+  setVarTarget(p.cx);
+}
 function buildPricing(){
-  var tb = document.getElementById('priceRows');
-  PRODUCT.colors.forEach(function(c){
+  var tb = el('priceRows');
+  PRODUCTS.forEach(function(p){
+    var sizes = p.sizes.map(function(s){ return s.id; }).join(' · ');
     var tr = document.createElement('tr');
     tr.innerHTML =
-      '<td><span class="dotc"><i style="background:' + c.hex + '"></i><b>' + c.name + '</b></span></td>' +
-      '<td><b>' + money(c.base) + '</b></td>' +
-      '<td>' + c.serie + '</td>' +
-      '<td><span class="stk' + (c.base === 289 ? ' ok' : '') + '">' + c.avail + '</span></td>';
+      '<td><b>' + p.name + '</b></td>' +
+      '<td><b>' + money(p.base) + '</b></td>' +
+      '<td>' + sizes + '</td>' +
+      '<td>' + p.serie + '</td>' +
+      '<td><span class="stk ok">Disponible au lancement</span></td>';
     tb.appendChild(tr);
   });
 }
@@ -994,7 +1365,7 @@ function buildPricing(){
 /* =========================================================================
    PANIER (localStorage, aucun paiement)
    ========================================================================= */
-var KEY = 'bss_cart_v1', cart = [];
+var KEY = 'bss_cart_v2', cart = [];
 try { cart = JSON.parse(localStorage.getItem(KEY)) || []; } catch(e){ cart = []; }
 if(!Array.isArray(cart)) cart = [];
 function save(){ try { localStorage.setItem(KEY, JSON.stringify(cart)); } catch(e){} }
@@ -1002,22 +1373,21 @@ function cartQty(){ return cart.reduce(function(a,l){ return a + l.qty; }, 0); }
 function cartTotal(){ return cart.reduce(function(a,l){ return a + l.qty*l.price; }, 0); }
 
 function addToCart(){
-  var c = PRODUCT.colors[sel.c], s = PRODUCT.sizes[sel.s], p = PRODUCT.perso[sel.p];
+  var p = P(), c = COLORS[sel.c], s = p.sizes[sel.s], pe = p.perso[sel.p];
   var sku = currentSku(), price = currentPrice();
   var found = null;
   for(var i=0;i<cart.length;i++) if(cart[i].sku === sku) found = cart[i];
   if(found) found.qty++;
-  else cart.push({sku:sku, price:price, qty:1, color:c.name, hex:c.hex, cx:c.cx, size:s.id, perso:p.short});
+  else cart.push({sku:sku, price:price, qty:1, prod:p.name, cx:p.cx,
+                  color:c.name, hex:c.hex, hue:c.hue, size:s.id, perso:pe.short});
   save(); renderCart(); openCart();
   toast('AJOUTÉ AU PANIER');
 }
 function renderCart(){
-  var body = document.getElementById('cartBody');
-  var cnt = document.getElementById('cartCount');
+  var body = el('cartBody'), cnt = el('cartCount');
   cnt.textContent = cartQty();
   cnt.classList.toggle('zero', cartQty() === 0);
-  document.getElementById('cartTotal').textContent = money(cartTotal());
-  document.getElementById('checkoutBtn').disabled = false;
+  el('cartTotal').textContent = money(cartTotal());
   body.innerHTML = '';
   if(!cart.length){
     body.innerHTML = '<p class="cart-empty">Votre panier est vide.<br>Composez votre pièce dans le configurateur.</p>';
@@ -1028,7 +1398,7 @@ function renderCart(){
     d.className = 'line';
     d.innerHTML =
       '<div class="thumb"><canvas></canvas></div>' +
-      '<div class="info"><b>' + PRODUCT.ref + ' ' + PRODUCT.name + '</b>' +
+      '<div class="info"><b>' + l.prod + '</b>' +
         '<small>' + l.color + ' · Taille ' + l.size + '<br>' + l.perso + '</small>' +
         '<div class="qty"><button aria-label="Moins">−</button><span>' + l.qty + '</span><button aria-label="Plus">+</button></div>' +
         '<span class="rm" role="button" tabindex="0">Retirer</span>' +
@@ -1041,16 +1411,17 @@ function renderCart(){
     rm.addEventListener('click', function(){ cart.splice(i,1); save(); renderCart(); });
     rm.addEventListener('keydown', function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); cart.splice(i,1); save(); renderCart(); } });
     body.appendChild(d);
-    /* vignette : même image lineup, recadrée sur le coloris de la ligne */
+    /* vignette : même planche `range`, recadrée sur la pièce de la ligne */
     var tp = new Pan(d.querySelector('.thumb canvas'), [
-      {src:A+'lineup'+SFX+'.jpg', abs:true, z0:1.42, z1:1.42, x0:l.cx, x1:l.cx, y0:.44, y1:.44}
+      {src:A+'range.jpg', abs:true, z0:1.12, z1:1.12, x0:l.cx, x1:l.cx, y0:.50, y1:.50}
     ], {});
+    tp.hue = l.hue || 0;
     tp.load(function(){ tp.resize(); tp.render(1, true); });
   });
 }
 
 /* ---------- ouverture / fermeture ---------- */
-var scrim = document.getElementById('scrim'), cartEl = document.getElementById('cart'), wlEl = document.getElementById('wl');
+var scrim = el('scrim'), cartEl = el('cart'), wlEl = el('wl');
 function lock(v){ document.body.classList.toggle('locked', v); }
 function openCart(){ cartEl.classList.add('on'); cartEl.setAttribute('aria-hidden','false'); scrim.classList.add('on'); lock(true); }
 function closeAll(){
@@ -1058,30 +1429,30 @@ function closeAll(){
   wlEl.classList.remove('on'); scrim.classList.remove('on'); lock(false);
 }
 function openWl(){
-  document.getElementById('wlForm').style.display = 'block';
-  document.getElementById('wlDone').style.display = 'none';
+  el('wlForm').style.display = 'block';
+  el('wlDone').style.display = 'none';
   cartEl.classList.remove('on'); cartEl.setAttribute('aria-hidden','true');
   wlEl.classList.add('on'); scrim.classList.add('on'); lock(true);
-  setTimeout(function(){ document.getElementById('wlMail').focus(); }, 320);
+  setTimeout(function(){ el('wlMail').focus(); }, 320);
 }
-document.getElementById('cartOpen').addEventListener('click', openCart);
-document.getElementById('cartClose').addEventListener('click', closeAll);
-document.getElementById('wlClose').addEventListener('click', closeAll);
+el('cartOpen').addEventListener('click', openCart);
+el('cartClose').addEventListener('click', closeAll);
+el('wlClose').addEventListener('click', closeAll);
 scrim.addEventListener('click', closeAll);
 addEventListener('keydown', function(e){ if(e.key === 'Escape') closeAll(); });
-document.getElementById('addBtn').addEventListener('click', addToCart);
-document.getElementById('wlBtn').addEventListener('click', openWl);
-document.getElementById('checkoutBtn').addEventListener('click', openWl);
-document.getElementById('wlBack').addEventListener('click', closeAll);
-document.getElementById('wlSend').addEventListener('click', function(){
-  var m = document.getElementById('wlMail');
+el('addBtn').addEventListener('click', addToCart);
+el('wlBtn').addEventListener('click', openWl);
+el('checkoutBtn').addEventListener('click', openWl);
+el('wlBack').addEventListener('click', closeAll);
+el('wlSend').addEventListener('click', function(){
+  var m = el('wlMail');
   if(!m.value || m.value.indexOf('@') < 1){ m.focus(); m.style.borderColor = '#c0392b'; return; }
   /* AUCUN envoi : la page est une maquette, rien ne sort du navigateur. */
-  document.getElementById('wlForm').style.display = 'none';
-  document.getElementById('wlDone').style.display = 'block';
+  el('wlForm').style.display = 'none';
+  el('wlDone').style.display = 'block';
 });
 
-var toastEl = document.getElementById('toast'), toastT = 0;
+var toastEl = el('toast'), toastT = 0;
 function toast(msg){
   toastEl.textContent = msg; toastEl.classList.add('on');
   clearTimeout(toastT); toastT = setTimeout(function(){ toastEl.classList.remove('on'); }, 2000);
@@ -1093,6 +1464,7 @@ function toast(msg){
 function resizeAll(){
   pans.forEach(function(p){ p.resize(); });
   varPan.resize(); applyVarX();
+  turn.resize();
 }
 var rT = 0;
 addEventListener('resize', function(){
@@ -1106,7 +1478,10 @@ addEventListener('resize', function(){
 }, {passive:true});
 
 /* ---------- démarrage ---------- */
-buildOptions(); buildPricing(); sync(); renderCart();
+pans.forEach(function(p){ p.load(bump); });
+turn.load(function(){ initTurn(); bump(); });
+buildProds(); buildColors(); buildSizes(); buildPerso(); buildPricing(); sync(); renderCart();
+setTimeout(finish, 14000);
 if(document.readyState === 'complete') initScroll();
 else addEventListener('load', initScroll);
 resizeAll();
