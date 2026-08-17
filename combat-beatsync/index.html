@@ -20,13 +20,17 @@
   video{display:block;width:100%;aspect-ratio:9/16;background:#000}
   .meta{padding:1rem 1.2rem 1.3rem;border-top:1px solid var(--border);font-size:.8rem;color:#c9c9d4;line-height:1.7}
   .meta b{color:var(--neon-yellow)}
+  .fix{padding:1rem 1.2rem 1.3rem;border-top:1px solid var(--border);font-size:.8rem;color:#c9c9d4;line-height:1.65}
+  .fix h3{margin:0 0 .5rem;font-size:.82rem;color:var(--neon-orange);letter-spacing:.02em}
+  .fix b{color:var(--neon-yellow)}
   .grid{padding:0 1.2rem 1.3rem;font-size:.72rem;color:#c9c9d4}
   .grid table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
   .grid th,.grid td{text-align:left;padding:.28rem .3rem;border-bottom:1px solid rgba(36,36,48,.8)}
   .grid th{color:var(--neon-purple);font-weight:600}
   .grid td.ok{color:#4ade80}
-  .warn{margin-top:1rem;padding:.9rem 1rem;border-radius:12px;background:rgba(255,122,26,.08);border:1px solid rgba(255,122,26,.35);font-size:.78rem;line-height:1.6;color:#ffd9b8}
-  .warn b{color:var(--neon-orange)}
+  .grid td.soft{color:var(--muted)}
+  .note{margin:0 1.2rem 1.3rem;padding:.9rem 1rem;border-radius:12px;background:rgba(168,85,247,.08);border:1px solid rgba(168,85,247,.3);font-size:.76rem;line-height:1.6;color:#e2d4ff}
+  .note b{color:var(--neon-purple)}
   footer{text-align:center;margin-top:2rem;font-size:.75rem;color:var(--muted)}
 </style>
 </head>
@@ -35,7 +39,7 @@
   <a class="back" href="/">← Toutes les vidéos</a>
   <header>
     <h1>Combat Beat-Sync</h1>
-    <p>v2 — combat réaliste uniquement · chaque impact tombe pile sur un temps fort mesuré</p>
+    <p>v4 — plan entier (dézoomé) · un impact toutes les 2 s</p>
   </header>
 
   <div class="card">
@@ -45,72 +49,73 @@
     </div>
     <video src="video.mp4" poster="cover.jpg" controls playsinline loop></video>
     <div class="meta">
-      Durée <b>17,03s</b> · Poids <b>15 Mo</b> · Format <b>1080×1920</b> · <b>60 fps</b> · Rendu le <b>17/08/2026</b><br>
-      <b>BPM mesuré 114,5</b> (beat 0,524s) · <b>17 impacts</b> · 18 plans<br>
-      Coût : <b>0 crédit Higgsfield · 0 $ WaveSpeed</b> — 100 % réutilisation
+      Durée <b>17,03 s</b> · Poids <b>12 Mo</b> · Format <b>1080×1920</b> · <b>60 fps</b> · 1022 frames<br>
+      <b>BPM mesuré 114,5</b> (beat 0,524 s) · <b>7 impacts</b> espacés de <b>2,096 s</b> · <b>16 plans</b><br>
+      Coût : <b>0 crédit Higgsfield · 0 $ WaveSpeed</b> — 100 % réutilisation des rushes existants
     </div>
-    <div class="meta">
-      <b>Retour Tony appliqué</b> — retiré : anime / Dragon Ball / transformation shonen
-      (anime-powerup, shonen-transform, shonen-wasteland, les 5 segments humian, saiyan)
-      et tout le robot / androïde (android-combat, android-ground).
-      <b>insect-fight 1 &amp; 2 également écartés</b> : jugés sur frames extraites, ce sont des plans
-      CGI cheveux blonds hérissés + yeux lumineux, donc la catégorie refusée malgré leur nom de fichier.<br><br>
-      <b>3 rushes 100 % live-action</b> conservés, multipliés en 18 plans par recadrage horizontal,
-      zoom et vitesse (comme BeFresh) : <b>bus-fight</b> (bagarre de bus, nuit) ·
-      <b>combat-teleport</b> (ruelle graffiti, nuit) · <b>street-ruins</b> (ville en ruines, poussière —
-      récupéré dans l'historique Higgsfield, jamais utilisé jusqu'ici).
-      Rotation stricte des sources : jamais deux plans consécutifs du même rush.
+
+    <div class="fix">
+      <h3>Correction 1 — « on ne voit pas les combats »</h3>
+      L'ancien montage recadrait le 1280×720 en 9:16, soit un zoom <b>×2,7</b> qui coupait les corps.
+      Le recadrage est supprimé : le plan est désormais affiché <b>ENTIER</b>, mis à l'échelle sur la
+      largeur (1080×608) et centré verticalement. Les bandes haut/bas ne sont ni noires ni vides —
+      elles sont remplies par <b>le même plan, flouté et agrandi</b> (backdrop blur), avec un gamma
+      relevé pour que les rushes de nuit ne retombent pas en bandes noires.<br><br>
+      Le mouvement est conservé mais bridé : push-in / pull-out de <b>1,00 → 1,06 max</b> (≤ 2,5 %
+      de rognage sur les bords), et le shake d'impact est <b>vertical en priorité</b> (656 px de marge
+      au-dessus et en dessous ⇒ aucun corps ne peut sortir du cadre).
+      <b>Vérifié sur frames extraites</b> : les deux combattants sont visibles en entier sur les 7 impacts.
     </div>
+
+    <div class="fix">
+      <h3>Correction 2 — un coup toutes les 2 secondes</h3>
+      Avant : un impact tous les <b>2 temps (1,048 s)</b>. Maintenant : un impact tous les
+      <b>4 temps</b>. À 114,5 BPM cela fait <b>2,096 s</b> — c'est le multiple propre le plus proche
+      de 2 s (3 temps = 1,572 s, 5 temps = 2,620 s). 2,000 s pile aurait dérivé du beat et sonné faux.<br><br>
+      Chaque grille tombe à moins de <b>50 ms</b> d'un onset réellement mesuré dans la piste.
+      Entre deux impacts, un <b>cut doux</b> (sans flash, sans shake, sans SFX) porte l'élan et
+      l'approche pour éviter les 2 s de plan statique, plus un <b>whoosh d'élan</b> 0,42 s avant
+      chaque coup. Freeze de 2 à 4 frames sur les impacts les plus gros.
+    </div>
+
     <div class="grid">
       <table>
-        <tr><th>Temps fort</th><th>Effet</th><th>Écart</th></tr>
-        <tr><td>2,360s — drop</td><td>flash + freeze 3f + shake</td><td class="ok">0 f</td></tr>
-        <tr><td>3,408s</td><td>flash + shake</td><td class="ok">0 f</td></tr>
-        <tr><td>4,456s</td><td>flash + shake</td><td class="ok">0 f</td></tr>
-        <tr><td>5,504s</td><td>flash + shake</td><td class="ok">0 f</td></tr>
-        <tr><td>6,552s</td><td>flash + freeze 2f</td><td class="ok">0 f</td></tr>
-        <tr><td>7,600s</td><td>flash + shake</td><td class="ok">0 f</td></tr>
-        <tr><td>8,648s</td><td>flash + shake</td><td class="ok">0 f</td></tr>
-        <tr><td>9,696s</td><td>flash + freeze 2f</td><td class="ok">0 f</td></tr>
-        <tr><td>10,744s</td><td>flash + shake</td><td class="ok">0 f</td></tr>
-        <tr><td>11,792s</td><td>flash + shake</td><td class="ok">0 f</td></tr>
-        <tr><td>12,840s — flurry</td><td>flash + shake</td><td class="ok">0 f</td></tr>
-        <tr><td>13,364s — climax</td><td>flash + freeze 4f</td><td class="ok">0 f</td></tr>
-        <tr><td>13,888s</td><td>flash + shake</td><td class="ok">0 f</td></tr>
-        <tr><td>14,412s</td><td>flash + shake</td><td class="ok">0 f</td></tr>
-        <tr><td>14,936s</td><td>flash + shake</td><td class="ok">0 f</td></tr>
-        <tr><td>15,460s</td><td>flash + shake</td><td class="ok">0 f</td></tr>
-        <tr><td>15,984s — final</td><td>flash + freeze 3f</td><td class="ok">0 f</td></tr>
+        <tr><th>Temps</th><th>Effet</th><th>Luminance</th></tr>
+        <tr><td>1,312 s</td><td class="soft">cut doux (amorce)</td><td class="soft">80</td></tr>
+        <tr><td><b>2,367 s</b> — drop</td><td>flash + shake + freeze 2f + SFX</td><td class="ok">255 ✓</td></tr>
+        <tr><td>3,400 s</td><td class="soft">cut doux</td><td class="soft">122</td></tr>
+        <tr><td><b>4,450 s</b></td><td>flash + shake + freeze 3f + SFX</td><td class="ok">255 ✓</td></tr>
+        <tr><td>5,500 s</td><td class="soft">cut doux</td><td class="soft">105</td></tr>
+        <tr><td><b>6,550 s</b></td><td>flash + shake + freeze 2f + SFX</td><td class="ok">255 ✓</td></tr>
+        <tr><td>7,600 s</td><td class="soft">cut doux</td><td class="soft">80</td></tr>
+        <tr><td><b>8,650 s</b></td><td>flash + shake + freeze 2f + SFX</td><td class="ok">254 ✓</td></tr>
+        <tr><td>9,700 s</td><td class="soft">cut doux</td><td class="soft">114</td></tr>
+        <tr><td><b>10,750 s</b></td><td>flash + shake + freeze 2f + SFX</td><td class="ok">255 ✓</td></tr>
+        <tr><td>11,800 s</td><td class="soft">cut doux</td><td class="soft">102</td></tr>
+        <tr><td><b>12,833 s</b></td><td>flash + shake + freeze 2f + SFX</td><td class="ok">255 ✓</td></tr>
+        <tr><td>13,883 s</td><td class="soft">cut doux</td><td class="soft">84</td></tr>
+        <tr><td><b>14,933 s</b> — climax</td><td>flash + shake + freeze 4f + SFX</td><td class="ok">255 ✓</td></tr>
+        <tr><td>15,983 s</td><td class="soft">cut doux — résolution</td><td class="soft">97</td></tr>
       </table>
     </div>
-  </div>
 
-  <div class="card">
-    <div class="card-head">
-      <h2>Méthode</h2>
-      <span class="badge">grille mesurée</span>
+    <div class="note">
+      <b>Preuve mesurée</b> — luminance analysée frame par frame sur les 1022 frames du fichier final :
+      les <b>7 seules</b> frames dépassant 200 de luminance sont 142, 267, 393, 519, 645, 770, 896,
+      soit exactement la grille 2 s. <b>7/7 flashs</b>, <b>0 flash parasite</b> sur les cuts doux.
+      Écarts mesurés entre flashs : 2,083 / 2,100 / 2,100 / 2,100 / 2,083 / 2,100 s.
     </div>
-    <div class="meta">
-      Grille <b>mesurée sur le fichier</b>, pas estimée : bande kick isolée (passe-haut 35 Hz + passe-bas 150 Hz),
-      enveloppe RMS par trames de 5 ms, flux d'onsets, puis autocorrélation.<br>
-      <b>114,5 BPM</b> sort net (score 1,00 contre 0,35 au candidat suivant) · période <b>0,524s</b> · phase <b>0,264s</b>.<br>
-      Entrée du kick à <b>2,36s</b> (énergie ×4,8 vs l'intro).<br>
-      Montage à 60 fps sur des frontières de frames entières → écart max <b>8,3 ms</b>.<br>
-      Vérification : luminance décodée frame par frame — <b>17/17</b> impacts, luminance minimale relevée
-      <b>242/255</b> sur la frame du temps fort (contre ~50 en moyenne 0,2s avant).<br>
-      Sources 1280×720 recadrées en 9:16 → sur-échantillonnage ~2,7× compensé par un
-      <b>unsharp</b> après mise à l'échelle lanczos.
+
+    <div class="fix">
+      <h3>Sources — inchangées</h3>
+      Mêmes <b>3 rushes 100 % live-action</b>, même bande son, montage 60 fps sur frontières de
+      frames en cumulé : <b>bus-fight</b> (bagarre de bus, nuit) · <b>combat-teleport</b>
+      (ruelle graffiti, nuit) · <b>street-ruins</b> (ville en ruines, poussière).
+      Aucun anime, aucun robot. Aucune génération : 0 €.
     </div>
   </div>
 
-  <div class="warn">
-    <b>⚠️ Droits musique</b> — la bande son vient de la vidéo TikTok de référence
-    (<i>@subscribe_humian</i>, créditée « son original »), mais elle contient des paroles en portugais
-    d'un titre commercial. Usage courant pour une trend, mais <b>risque réel de mute ou de flag</b> à la publication.
-    Prévoir un remplacement si la vidéo est monétisée.
-  </div>
-
-  <footer>previsualisation.automatisationboost.com</footer>
+  <footer>Automation Boost — prévisualisation interne</footer>
 </div>
 </body>
 </html>
