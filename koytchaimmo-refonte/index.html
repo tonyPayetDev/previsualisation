@@ -23,13 +23,19 @@
   --body:'Source Sans 3',system-ui,sans-serif;
   --wrap:1180px;
   --r:4px;
+  /* échelle typographique — 5 pas, rapport ~1.22 */
+  --fs-xs:11.5px;
+  --fs-sm:14.5px;
+  --fs-base:18.5px;
+  --fs-md:23.5px;
+  --fs-lg:30px;
 }
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
 body{
   margin:0;background:var(--paper);color:var(--slate);
-  font-family:var(--body);font-size:17.5px;line-height:1.65;
+  font-family:var(--body);font-size:var(--fs-base);line-height:1.65;
   -webkit-font-smoothing:antialiased;
 }
 ::selection{background:var(--magenta);color:#fff}
@@ -49,7 +55,7 @@ img{display:block;max-width:100%}
 .hdr img{height:34px;width:auto}
 .nav{display:flex;gap:26px;margin-left:auto;align-items:center}
 .nav a{
-  font-family:var(--display);font-size:14px;font-weight:500;text-decoration:none;
+  font-family:var(--display);font-size:var(--fs-sm);font-weight:500;text-decoration:none;
   color:var(--ink);position:relative;padding:6px 0;
 }
 .nav a::after{
@@ -69,7 +75,7 @@ img{display:block;max-width:100%}
 
 /* ---------- hero ---------- */
 .hero{position:relative;min-height:clamp(520px,74vh,720px);display:flex;align-items:flex-end;overflow:hidden}
-.hero-img{position:absolute;inset:0}
+.hero-img{position:absolute;inset:0;background:var(--ink)}
 .hero-img img{width:100%;height:100%;object-fit:cover}
 .hero-img::after{
   content:"";position:absolute;inset:0;
@@ -82,7 +88,7 @@ img{display:block;max-width:100%}
 }
 .hero h1 em{font-style:normal;color:var(--magenta);display:block}
 .hero-sub{
-  color:rgba(255,255,255,.94);font-size:1.2rem;margin-top:20px;max-width:46ch;
+  color:rgba(255,255,255,.94);font-size:var(--fs-md);margin-top:20px;max-width:46ch;
   text-shadow:0 1px 18px rgba(36,28,33,.5);
 }
 .rise{opacity:0;transform:translateY(22px);filter:blur(6px);animation:rise .95s cubic-bezier(.16,1,.3,1) forwards}
@@ -93,13 +99,13 @@ img{display:block;max-width:100%}
 /* ---------- module recherche (préservé) ---------- */
 .search-dock{margin-top:-56px;position:relative;z-index:20}
 #ktp-search-root{
-  background:var(--paper);border:1px solid var(--line);border-radius:var(--r);
+  background:var(--paper);border-radius:var(--r);
   box-shadow:0 18px 44px -20px rgba(36,28,33,.28),0 2px 8px -2px rgba(36,28,33,.10);
   padding:26px 28px;
 }
 .search-tabs{display:flex;gap:4px;margin-bottom:20px;border-bottom:1px solid var(--line)}
 .search-tabs button{
-  font-family:var(--display);font-size:14px;font-weight:600;color:var(--slate);
+  font-family:var(--display);font-size:var(--fs-sm);font-weight:600;color:var(--slate);
   background:none;border:0;border-bottom:2px solid transparent;
   padding:10px 18px;cursor:pointer;transition:color .18s ease,border-color .18s ease;
 }
@@ -107,11 +113,11 @@ img{display:block;max-width:100%}
 .search-tabs button:hover{color:var(--ink)}
 .search-grid{display:grid;grid-template-columns:1.3fr 1fr 1fr auto;gap:14px;align-items:end}
 .fld label{
-  display:block;font-family:var(--display);font-size:11.5px;font-weight:600;
+  display:block;font-family:var(--display);font-size:var(--fs-xs);font-weight:600;
   letter-spacing:.06em;text-transform:uppercase;color:var(--slate-soft);margin-bottom:7px;
 }
 .fld select,.fld input{
-  width:100%;font-family:var(--body);font-size:16px;color:var(--ink);
+  width:100%;font-family:var(--body);font-size:var(--fs-base);color:var(--ink);
   padding:12px 14px;border:1px solid var(--line);border-radius:var(--r);
   background:var(--paper);appearance:none;
 }
@@ -122,7 +128,7 @@ img{display:block;max-width:100%}
 .fld select:focus,.fld input:focus{border-color:var(--magenta);outline:none}
 .search-go{
   background:var(--magenta);color:#fff;border:0;border-radius:var(--r);
-  font-family:var(--display);font-weight:600;font-size:15.5px;
+  font-family:var(--display);font-weight:600;font-size:var(--fs-sm);
   padding:13.5px 30px;cursor:pointer;transition:background .2s ease;white-space:nowrap;
 }
 .search-go:hover{background:var(--magenta-deep)}
@@ -136,19 +142,19 @@ img{display:block;max-width:100%}
 section{padding:104px 0}
 .sec-head{max-width:34ch;margin-bottom:44px}
 .sec-head h2{font-size:clamp(1.85rem,3.4vw,2.75rem);line-height:1.12}
-.sec-head p{margin-top:14px;font-size:1.12rem}
+.sec-head p{margin-top:14px;font-size:var(--fs-md)}
 
 /* opportunités */
 .progs{display:grid;grid-template-columns:repeat(3,1fr);gap:26px}
-.prog{position:relative;overflow:hidden;border-radius:var(--r);isolation:isolate}
+.prog{position:relative;overflow:hidden;border-radius:var(--r);isolation:isolate;background:var(--ink)}
 .prog img{width:100%;aspect-ratio:4/3;object-fit:cover;transition:transform .7s cubic-bezier(.16,1,.3,1)}
 .prog:hover img{transform:scale(1.045)}
 .prog figcaption{
   position:absolute;inset:auto 0 0 0;padding:22px;color:#fff;
   background:linear-gradient(180deg,transparent,rgba(36,28,33,.85));
 }
-.prog h3{color:#fff;font-size:1.22rem;font-weight:600}
-.prog span{font-size:.94rem;color:rgba(255,255,255,.82)}
+.prog h3{color:#fff;font-size:var(--fs-md);font-weight:600}
+.prog span{font-size:var(--fs-sm);color:rgba(255,255,255,.82)}
 @media(max-width:900px){.progs{grid-template-columns:1fr}}
 
 /* accompagnement */
@@ -158,7 +164,7 @@ section{padding:104px 0}
 .commit{list-style:none;padding:0;margin:34px 0 0;border-top:1px solid var(--line)}
 .commit li{
   padding:18px 0 18px 34px;border-bottom:1px solid var(--line);position:relative;
-  font-size:1.06rem;color:var(--ink);
+  font-size:var(--fs-base);color:var(--ink);
 }
 .commit li::before{
   content:"";position:absolute;left:0;top:26px;width:14px;height:2px;background:var(--magenta);
@@ -172,7 +178,7 @@ section{padding:104px 0}
 }
 .philo blockquote strong{color:var(--magenta);font-weight:600}
 .pillars{display:grid;grid-template-columns:repeat(3,1fr);gap:40px;margin-top:56px;border-top:1px solid var(--line);padding-top:36px}
-.pillars h3{font-size:1.02rem;color:var(--magenta);margin-bottom:10px;font-weight:600}
+.pillars h3{font-size:var(--fs-base);color:var(--magenta);margin-bottom:10px;font-weight:600}
 @media(max-width:900px){.pillars{grid-template-columns:1fr;gap:30px}}
 
 /* contact */
@@ -181,8 +187,8 @@ section{padding:104px 0}
 .contact .two{gap:56px;align-items:center}
 .cinfo{list-style:none;padding:0;margin:0}
 .cinfo li{padding:16px 0;border-bottom:1px solid rgba(255,255,255,.14);display:flex;gap:16px}
-.cinfo b{font-family:var(--display);font-weight:600;color:rgba(255,255,255,.55);font-size:12px;letter-spacing:.06em;text-transform:uppercase;min-width:88px;padding-top:3px}
-.cinfo span{color:#fff;font-size:1.06rem}
+.cinfo b{font-family:var(--display);font-weight:600;color:rgba(255,255,255,.55);font-size:var(--fs-xs);letter-spacing:.06em;text-transform:uppercase;min-width:88px;padding-top:3px}
+.cinfo span{color:#fff;font-size:var(--fs-base)}
 .cinfo a{color:#fff;text-decoration:none;border-bottom:1px solid var(--magenta);padding-bottom:1px}
 .cta-btn{
   display:inline-block;margin-top:28px;background:var(--magenta);color:#fff;
@@ -192,14 +198,14 @@ section{padding:104px 0}
 .cta-btn:hover{background:var(--magenta-deep)}
 
 /* footer */
-footer{background:#1A1418;color:rgba(255,255,255,.5);padding:40px 0;font-size:.92rem}
+footer{background:#1A1418;color:rgba(255,255,255,.5);padding:40px 0;font-size:var(--fs-sm)}
 .f-in{display:flex;flex-wrap:wrap;gap:20px;align-items:center;justify-content:space-between}
 footer img{height:30px}
 footer a{color:rgba(255,255,255,.72);text-decoration:none}
 footer a:hover{color:#fff}
 
 /* note maquette */
-.note{background:var(--magenta-wash);border-top:2px solid var(--magenta);padding:28px 0;font-size:.95rem;color:var(--ink)}
+.note{background:var(--magenta-wash);border-top:2px solid var(--magenta);padding:28px 0;font-size:var(--fs-sm);color:var(--ink)}
 .note b{font-family:var(--display)}
 </style>
 </head>
@@ -291,7 +297,7 @@ footer a:hover{color:#fff}
       <p>Agissant également en tant que promoteur immobilier, Koytcha Immo commercialise de nombreux projets innovants et adaptés aux spécificités locales, tels que des immeubles résidentiels, des bureaux, des locaux d'activités, ou encore des centres d'affaires comme les projets phares Ze Bure@u 1 et 2 (plus de 3 000 m² chacun) situés à l'Éperon.</p>
     </div>
     <div>
-      <p style="color:var(--ink);font-size:1.1rem">Grâce à notre équipe, nous sommes en mesure de répondre à tous vos besoins tant en résidentiel qu'en professionnel :</p>
+      <p style="color:var(--ink);font-size:var(--fs-md)">Grâce à notre équipe, nous sommes en mesure de répondre à tous vos besoins tant en résidentiel qu'en professionnel :</p>
       <ul class="commit">
         <li>Valorisation du patrimoine</li>
         <li>Transactions dans des délais mesurés et conditions optimales</li>
@@ -305,7 +311,7 @@ footer a:hover{color:#fff}
 <section class="philo" id="philosophie">
   <div class="wrap">
     <blockquote>Notre philosophie : une approche globale axée sur <strong>le conseil</strong>.</blockquote>
-    <p style="margin-top:26px;max-width:62ch;font-size:1.1rem">Que vous soyez investisseurs, utilisateurs, particuliers à la recherche d'un bien à acheter ou particuliers investisseurs, vos problématiques sont variées. Nous y apportons des expertises spécifiques. Le client est au cœur de nos engagements.</p>
+    <p style="margin-top:26px;max-width:62ch;font-size:var(--fs-md)">Que vous soyez investisseurs, utilisateurs, particuliers à la recherche d'un bien à acheter ou particuliers investisseurs, vos problématiques sont variées. Nous y apportons des expertises spécifiques. Le client est au cœur de nos engagements.</p>
     <div class="pillars">
       <div>
         <h3>Notre objectif</h3>
