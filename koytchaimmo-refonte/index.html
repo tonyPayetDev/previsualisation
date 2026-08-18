@@ -1,0 +1,358 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Koytcha Immo — Conseil &amp; expertise en immobilier à La Réunion</title>
+<meta name="description" content="Que vous souhaitiez développer votre activité professionnelle, investir pour défiscaliser ou diversifier votre patrimoine, Koytcha Immo vous accompagne depuis 2004 à La Réunion.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=Source+Sans+3:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --magenta:#E6007E;
+  --magenta-deep:#B00062;
+  --magenta-wash:#FDF2F8;
+  --ink:#241C21;
+  --slate:#6B6167;
+  --slate-soft:#8C848A;
+  --paper:#FFFFFF;
+  --surface:#FAF6F8;
+  --line:#EBE1E7;
+  --display:'Poppins',system-ui,sans-serif;
+  --body:'Source Sans 3',system-ui,sans-serif;
+  --wrap:1180px;
+  --r:4px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{
+  margin:0;background:var(--paper);color:var(--slate);
+  font-family:var(--body);font-size:17.5px;line-height:1.65;
+  -webkit-font-smoothing:antialiased;
+}
+::selection{background:var(--magenta);color:#fff}
+:focus-visible{outline:2px solid var(--magenta);outline-offset:3px;border-radius:2px}
+h1,h2,h3{font-family:var(--display);color:var(--ink);margin:0;letter-spacing:-.022em;text-wrap:balance;font-weight:600}
+p{margin:0}
+a{color:inherit}
+img{display:block;max-width:100%}
+.wrap{max-width:var(--wrap);margin:0 auto;padding:0 24px}
+
+/* ---------- header ---------- */
+.hdr{
+  position:sticky;top:0;z-index:60;background:rgba(255,255,255,.92);
+  backdrop-filter:saturate(1.4) blur(14px);border-bottom:1px solid var(--line);
+}
+.hdr-in{display:flex;align-items:center;gap:32px;height:76px}
+.hdr img{height:34px;width:auto}
+.nav{display:flex;gap:26px;margin-left:auto;align-items:center}
+.nav a{
+  font-family:var(--display);font-size:14px;font-weight:500;text-decoration:none;
+  color:var(--ink);position:relative;padding:6px 0;
+}
+.nav a::after{
+  content:"";position:absolute;left:0;right:100%;bottom:0;height:2px;
+  background:var(--magenta);transition:right .32s cubic-bezier(.16,1,.3,1);
+}
+.nav a:hover::after{right:0}
+.nav .tel{
+  background:var(--magenta);color:#fff;padding:11px 20px;border-radius:var(--r);
+  font-weight:600;transition:background .2s ease;
+}
+.nav .tel::after{display:none}
+.nav .tel:hover{background:var(--magenta-deep)}
+.burger{display:none;margin-left:auto;background:none;border:0;padding:8px;cursor:pointer}
+.burger span{display:block;width:24px;height:2px;background:var(--ink);margin:5px 0}
+@media(max-width:900px){.nav{display:none}.burger{display:block}}
+
+/* ---------- hero ---------- */
+.hero{position:relative;min-height:clamp(520px,74vh,720px);display:flex;align-items:flex-end;overflow:hidden}
+.hero-img{position:absolute;inset:0}
+.hero-img img{width:100%;height:100%;object-fit:cover}
+.hero-img::after{
+  content:"";position:absolute;inset:0;
+  background:linear-gradient(180deg,rgba(36,28,33,.55) 0%,rgba(36,28,33,.18) 38%,rgba(36,28,33,.82) 100%);
+}
+.hero-in{position:relative;width:100%;padding:0 0 96px}
+.hero h1{
+  color:#fff;font-size:clamp(2.5rem,6.2vw,4.6rem);line-height:1.02;font-weight:700;
+  max-width:14ch;text-shadow:0 2px 30px rgba(36,28,33,.4);
+}
+.hero h1 em{font-style:normal;color:var(--magenta);display:block}
+.hero-sub{
+  color:rgba(255,255,255,.94);font-size:1.2rem;margin-top:20px;max-width:46ch;
+  text-shadow:0 1px 18px rgba(36,28,33,.5);
+}
+.rise{opacity:0;transform:translateY(22px);filter:blur(6px);animation:rise .95s cubic-bezier(.16,1,.3,1) forwards}
+.rise:nth-child(2){animation-delay:.12s}
+@keyframes rise{to{opacity:1;transform:none;filter:none}}
+@media (prefers-reduced-motion:reduce){.rise{animation:none;opacity:1;transform:none;filter:none}}
+
+/* ---------- module recherche (préservé) ---------- */
+.search-dock{margin-top:-56px;position:relative;z-index:20}
+#ktp-search-root{
+  background:var(--paper);border:1px solid var(--line);border-radius:var(--r);
+  box-shadow:0 18px 44px -20px rgba(36,28,33,.28),0 2px 8px -2px rgba(36,28,33,.10);
+  padding:26px 28px;
+}
+.search-tabs{display:flex;gap:4px;margin-bottom:20px;border-bottom:1px solid var(--line)}
+.search-tabs button{
+  font-family:var(--display);font-size:14px;font-weight:600;color:var(--slate);
+  background:none;border:0;border-bottom:2px solid transparent;
+  padding:10px 18px;cursor:pointer;transition:color .18s ease,border-color .18s ease;
+}
+.search-tabs button[aria-selected="true"]{color:var(--magenta);border-bottom-color:var(--magenta)}
+.search-tabs button:hover{color:var(--ink)}
+.search-grid{display:grid;grid-template-columns:1.3fr 1fr 1fr auto;gap:14px;align-items:end}
+.fld label{
+  display:block;font-family:var(--display);font-size:11.5px;font-weight:600;
+  letter-spacing:.06em;text-transform:uppercase;color:var(--slate-soft);margin-bottom:7px;
+}
+.fld select,.fld input{
+  width:100%;font-family:var(--body);font-size:16px;color:var(--ink);
+  padding:12px 14px;border:1px solid var(--line);border-radius:var(--r);
+  background:var(--paper);appearance:none;
+}
+.fld select{
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%236B6167' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 14px center;padding-right:36px;
+}
+.fld select:focus,.fld input:focus{border-color:var(--magenta);outline:none}
+.search-go{
+  background:var(--magenta);color:#fff;border:0;border-radius:var(--r);
+  font-family:var(--display);font-weight:600;font-size:15.5px;
+  padding:13.5px 30px;cursor:pointer;transition:background .2s ease;white-space:nowrap;
+}
+.search-go:hover{background:var(--magenta-deep)}
+@media(max-width:860px){
+  .search-dock{margin-top:-30px}
+  .search-grid{grid-template-columns:1fr;gap:12px}
+  .search-go{width:100%}
+}
+
+/* ---------- sections ---------- */
+section{padding:104px 0}
+.sec-head{max-width:34ch;margin-bottom:44px}
+.sec-head h2{font-size:clamp(1.85rem,3.4vw,2.75rem);line-height:1.12}
+.sec-head p{margin-top:14px;font-size:1.12rem}
+
+/* opportunités */
+.progs{display:grid;grid-template-columns:repeat(3,1fr);gap:26px}
+.prog{position:relative;overflow:hidden;border-radius:var(--r);isolation:isolate}
+.prog img{width:100%;aspect-ratio:4/3;object-fit:cover;transition:transform .7s cubic-bezier(.16,1,.3,1)}
+.prog:hover img{transform:scale(1.045)}
+.prog figcaption{
+  position:absolute;inset:auto 0 0 0;padding:22px;color:#fff;
+  background:linear-gradient(180deg,transparent,rgba(36,28,33,.85));
+}
+.prog h3{color:#fff;font-size:1.22rem;font-weight:600}
+.prog span{font-size:.94rem;color:rgba(255,255,255,.82)}
+@media(max-width:900px){.progs{grid-template-columns:1fr}}
+
+/* accompagnement */
+.accomp{background:var(--surface)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:72px;align-items:start}
+.two p+p{margin-top:18px}
+.commit{list-style:none;padding:0;margin:34px 0 0;border-top:1px solid var(--line)}
+.commit li{
+  padding:18px 0 18px 34px;border-bottom:1px solid var(--line);position:relative;
+  font-size:1.06rem;color:var(--ink);
+}
+.commit li::before{
+  content:"";position:absolute;left:0;top:26px;width:14px;height:2px;background:var(--magenta);
+}
+@media(max-width:900px){.two{grid-template-columns:1fr;gap:40px}}
+
+/* philosophie */
+.philo blockquote{
+  margin:0;font-family:var(--display);font-weight:600;color:var(--ink);
+  font-size:clamp(1.6rem,3.1vw,2.4rem);line-height:1.28;max-width:22ch;letter-spacing:-.02em;
+}
+.philo blockquote strong{color:var(--magenta);font-weight:600}
+.pillars{display:grid;grid-template-columns:repeat(3,1fr);gap:40px;margin-top:56px;border-top:1px solid var(--line);padding-top:36px}
+.pillars h3{font-size:1.02rem;color:var(--magenta);margin-bottom:10px;font-weight:600}
+@media(max-width:900px){.pillars{grid-template-columns:1fr;gap:30px}}
+
+/* contact */
+.contact{background:var(--ink);color:rgba(255,255,255,.78)}
+.contact h2{color:#fff}
+.contact .two{gap:56px;align-items:center}
+.cinfo{list-style:none;padding:0;margin:0}
+.cinfo li{padding:16px 0;border-bottom:1px solid rgba(255,255,255,.14);display:flex;gap:16px}
+.cinfo b{font-family:var(--display);font-weight:600;color:rgba(255,255,255,.55);font-size:12px;letter-spacing:.06em;text-transform:uppercase;min-width:88px;padding-top:3px}
+.cinfo span{color:#fff;font-size:1.06rem}
+.cinfo a{color:#fff;text-decoration:none;border-bottom:1px solid var(--magenta);padding-bottom:1px}
+.cta-btn{
+  display:inline-block;margin-top:28px;background:var(--magenta);color:#fff;
+  font-family:var(--display);font-weight:600;text-decoration:none;
+  padding:15px 32px;border-radius:var(--r);transition:background .2s ease;
+}
+.cta-btn:hover{background:var(--magenta-deep)}
+
+/* footer */
+footer{background:#1A1418;color:rgba(255,255,255,.5);padding:40px 0;font-size:.92rem}
+.f-in{display:flex;flex-wrap:wrap;gap:20px;align-items:center;justify-content:space-between}
+footer img{height:30px}
+footer a{color:rgba(255,255,255,.72);text-decoration:none}
+footer a:hover{color:#fff}
+
+/* note maquette */
+.note{background:var(--magenta-wash);border-top:2px solid var(--magenta);padding:28px 0;font-size:.95rem;color:var(--ink)}
+.note b{font-family:var(--display)}
+</style>
+</head>
+<body>
+
+<header class="hdr">
+  <div class="wrap hdr-in">
+    <a href="#"><img src="assets/logo-quadri.webp" alt="Koytcha Immo — conseil et expertise en immobilier"></a>
+    <nav class="nav">
+      <a href="#opportunites">Acheter</a>
+      <a href="#opportunites">Louer</a>
+      <a href="#accompagnement">Vendre</a>
+      <a href="#accompagnement">Gestion</a>
+      <a href="#philosophie">À propos</a>
+      <a class="tel" href="tel:+262262979607">0262 97 96 07</a>
+    </nav>
+    <button class="burger" aria-label="Ouvrir le menu"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="hero-img"><img src="assets/drone.webp" alt="Ze Bure@u à l'Éperon, programme réalisé par Koytcha Immo"></div>
+  <div class="hero-in wrap">
+    <h1 class="rise">30 ans d'expertise<em>à La Réunion</em></h1>
+    <p class="hero-sub rise">Conseil et expertise en immobilier résidentiel et professionnel, aux côtés des entreprises, des propriétaires et des investisseurs depuis 2004.</p>
+  </div>
+</div>
+
+<div class="wrap search-dock">
+  <!-- ═══ MODULE DE RECHERCHE — conteneur du plugin React existant ═══
+       En production, ce bloc est remplacé par le point de montage du plugin
+       « elementor-search-react-ktp-v2 ». Le balisage ci-dessous n'est là que
+       pour montrer l'emplacement et l'échelle dans la maquette. -->
+  <div id="ktp-search-root">
+    <div class="search-tabs" role="tablist">
+      <button role="tab" aria-selected="true">Acheter</button>
+      <button role="tab" aria-selected="false">Louer</button>
+      <button role="tab" aria-selected="false">Professionnel</button>
+    </div>
+    <div class="search-grid">
+      <div class="fld">
+        <label for="f-loc">Localisation</label>
+        <input id="f-loc" type="text" placeholder="Saint-Denis, Saint-Paul…">
+      </div>
+      <div class="fld">
+        <label for="f-type">Type de bien</label>
+        <select id="f-type"><option>Tous les biens</option><option>Appartement</option><option>Maison</option><option>Terrain</option><option>Local / bureau</option></select>
+      </div>
+      <div class="fld">
+        <label for="f-bud">Budget maximum</label>
+        <select id="f-bud"><option>Indifférent</option><option>150 000 €</option><option>250 000 €</option><option>400 000 €</option><option>600 000 € et +</option></select>
+      </div>
+      <button class="search-go">Rechercher</button>
+    </div>
+  </div>
+</div>
+
+<section id="opportunites">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>Nos opportunités exclusives</h2>
+      <p>Découvrez sans plus attendre nos opportunités exclusives du moment.</p>
+    </div>
+    <div class="progs">
+      <figure class="prog">
+        <img src="assets/drone.webp" alt="Ze Bure@u, centre d'affaires à l'Éperon">
+        <figcaption><h3>Ze Bure@u 1 &amp; 2</h3><span>Centre d'affaires — L'Éperon · plus de 3 000 m² chacun</span></figcaption>
+      </figure>
+      <figure class="prog">
+        <img src="assets/alpha1.webp" alt="Programme résidentiel Koytcha Immo">
+        <figcaption><h3>Résidentiel</h3><span>Immeubles et logements neufs</span></figcaption>
+      </figure>
+      <figure class="prog">
+        <img src="assets/photo1.webp" alt="Locaux d'activités et bureaux">
+        <figcaption><h3>Professionnel</h3><span>Bureaux et locaux d'activités</span></figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<section class="accomp" id="accompagnement">
+  <div class="wrap two">
+    <div>
+      <div class="sec-head" style="margin-bottom:24px">
+        <h2>Koytcha Immo vous accompagne depuis 2004</h2>
+      </div>
+      <p>Koytcha Immo accompagne depuis 2004 avec le même niveau d'exigence les entreprises, propriétaires et investisseurs sur l'ensemble de leurs enjeux immobiliers.</p>
+      <p>Que vous cherchiez à investir, à vendre, ou que vous soyez tout simplement à la recherche d'un achat ou d'une location, Koytcha Immo vous apporte toute son expertise et son savoir-faire afin de vous faciliter la vie tout en optimisant votre projet.</p>
+      <p>Agissant également en tant que promoteur immobilier, Koytcha Immo commercialise de nombreux projets innovants et adaptés aux spécificités locales, tels que des immeubles résidentiels, des bureaux, des locaux d'activités, ou encore des centres d'affaires comme les projets phares Ze Bure@u 1 et 2 (plus de 3 000 m² chacun) situés à l'Éperon.</p>
+    </div>
+    <div>
+      <p style="color:var(--ink);font-size:1.1rem">Grâce à notre équipe, nous sommes en mesure de répondre à tous vos besoins tant en résidentiel qu'en professionnel :</p>
+      <ul class="commit">
+        <li>Valorisation du patrimoine</li>
+        <li>Transactions dans des délais mesurés et conditions optimales</li>
+        <li>Recherche de locaux adaptés à l'activité, aux employés et à l'image de l'entreprise</li>
+        <li>Accompagnement du client par un conseil global</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="philo" id="philosophie">
+  <div class="wrap">
+    <blockquote>Notre philosophie : une approche globale axée sur <strong>le conseil</strong>.</blockquote>
+    <p style="margin-top:26px;max-width:62ch;font-size:1.1rem">Que vous soyez investisseurs, utilisateurs, particuliers à la recherche d'un bien à acheter ou particuliers investisseurs, vos problématiques sont variées. Nous y apportons des expertises spécifiques. Le client est au cœur de nos engagements.</p>
+    <div class="pillars">
+      <div>
+        <h3>Notre objectif</h3>
+        <p>Créer de la valeur à chaque étape de la vie d'un bien immobilier.</p>
+      </div>
+      <div>
+        <h3>Notre engagement</h3>
+        <p>Accompagner durablement nos clients tout au long du cycle de vie immobilier.</p>
+      </div>
+      <div>
+        <h3>Nos ambitions</h3>
+        <p>Proposer des solutions pertinentes et originales dans une optique de long terme, sur des emplacements de choix.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="contact" id="contact">
+  <div class="wrap two">
+    <div>
+      <div class="sec-head" style="margin-bottom:20px">
+        <h2>Contact</h2>
+        <p style="color:rgba(255,255,255,.72)">Particuliers comme investisseurs, nos équipes sont à vos côtés pour comprendre vos enjeux, vous conseiller et vous aider à concrétiser votre stratégie immobilière.</p>
+      </div>
+      <a class="cta-btn" href="tel:+262262979607">Parler à un conseiller</a>
+    </div>
+    <ul class="cinfo">
+      <li><b>Adresse</b><span>45 rue Alexis de Villeneuve<br>97400 Saint-Denis, La Réunion</span></li>
+      <li><b>Téléphone</b><span><a href="tel:+262262979607">0262 97 96 07</a></span></li>
+      <li><b>Horaires</b><span>Du lundi au vendredi<br>08h – 12h et 14h – 17h</span></li>
+    </ul>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap f-in">
+    <img src="assets/logo-blanc.webp" alt="Koytcha Immo">
+    <div>© 2026 Koytcha. All Rights Reserved. · <a href="#">Mentions Légales</a> · <a href="#">Retrouvez nos annonces sur Adrezio</a></div>
+  </div>
+</footer>
+
+<div class="note">
+  <div class="wrap">
+    <b>Maquette de refonte — page d'accueil koytchaimmo.re.</b>
+    Couleurs, logo et contenu textuel repris du site actuel. Le bloc de recherche ci-dessus est un <b>gabarit visuel</b> : en production il est remplacé par le point de montage du plugin React existant <b>elementor-search-react-ktp-v2</b>, qui reste inchangé. Photos issues du site actuel.
+  </div>
+</div>
+
+</body>
+</html>
