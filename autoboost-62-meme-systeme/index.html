@@ -58,7 +58,8 @@
       Format <b>1080×1920</b> · Durée <b>35,4 s</b> (1062 images @30 fps) ·
       <b>11 plans</b> (5 avatar + 6 écrans) · Voix <b>clonée</b> (tts-gen + voixUrl archiviste, atempo 1,12) ·
       Captions <b>mot-à-mot</b> · BGM <b>duckée en sidechain</b> · Audio natif des clips <b>coupé</b> ·
-      Mix <b>−14,9 LUFS / −1,4 dBTP</b> · Règle des lèvres <b>PASS</b> · Coût génération <b>0 €</b>
+      Mix <b>−16,0 LUFS / −4,9 dBTP</b> · Écart voix/musique <b>16,0 dB</b> ·
+      Règle des lèvres <b>PASS</b> · Coût génération <b>0 €</b>
     </div>
 
     <div class="cap">
@@ -110,6 +111,42 @@
         au milieu d'une phrase.
       </p>
 
+      <h3>Sound design du hook — v2 (2026-08-18)</h3>
+      <p style="margin:.4rem 0 .6rem">
+        Chaque impact est posé sur une <b>image mesurée</b> (différence inter-images + luminance
+        moyenne, puis vérification visuelle image par image), pas sur les valeurs approchées du
+        brief — et retardé de <code>t_cible − pic_du_fichier</code>, sinon le son arrive après
+        l'image. Le plan tourne à 1,15× donc <code>t_sortie = t_source / 1,15</code>.
+      </p>
+      <table>
+        <tr><th>t sortie</th><th>Image (frame source)</th><th>Son</th><th>Vol.</th></tr>
+        <tr><td class="n">0,00–2,90</td><td>balancement entre les tours</td><td>lit de vent</td><td class="n">0,55</td></tr>
+        <tr><td class="n">0,45</td><td>passage caméra</td><td>doppler vent</td><td class="n">0,42</td></tr>
+        <tr><td class="n">1,35</td><td>2<sup>e</sup> passage</td><td>doppler vent</td><td class="n">0,46</td></tr>
+        <tr><td class="n">2,15</td><td><b>bris de vitre</b> — f59→60</td><td><b>verre brisé</b></td><td class="n">0,72</td></tr>
+        <tr><td class="n">2,30</td><td>éclats qui retombent</td><td>gravats</td><td class="n">0,40</td></tr>
+        <tr><td class="n">2,42</td><td>contact pieds — f66-67</td><td>impact sol</td><td class="n">0,50</td></tr>
+        <tr><td class="n">2,62</td><td>réception accroupie + poussière — f72-74</td><td>sub lourd</td><td class="n">0,46</td></tr>
+        <tr><td class="n">4,98</td><td><b>tir de toile</b> — f137→138</td><td><b>thwip</b></td><td class="n">0,75</td></tr>
+        <tr><td class="n">5,02</td><td>claquement du fil</td><td>snap</td><td class="n">0,38</td></tr>
+        <tr><td class="n">5,36</td><td>la toile accroche — f148-152</td><td>mise en tension</td><td class="n">0,40</td></tr>
+        <tr><td class="n">6,30</td><td>dolly-in, pic — f171-176</td><td>rush accéléré</td><td class="n">0,50</td></tr>
+        <tr><td class="n">6,68</td><td><b>arrêt net</b> sur le visage — f183→184</td><td><b>impact d'arrivée</b></td><td class="n">0,55</td></tr>
+      </table>
+      <p style="margin:.7rem 0 0">
+        Sons : <b>Mixkit Free License</b> (usage commercial gratuit, sans attribution), rangés en
+        <code>_shared/sfx-palette/<b>v2</b>/</code> — <b>v1 n'a pas été touchée</b> (vérifié
+        octet par octet). Musique : <b>Mixkit #140 « Cyberpunk City »</b>, instrumental vérifié au
+        spectrogramme, choisi contre 5 autres pour son intro creuse de 2 s et son lit régulier
+        (un crescendo serait monté pile sous la voix).
+      </p>
+      <p style="margin:.5rem 0 0">
+        Courbe du hook mesurée, par seconde (dBFS RMS) :
+        <code>−23,0 · −21,7 · <b>−16,5</b> · −20,4 · −20,6 · −19,5 · <b>−14,8</b> · −17,0</code>
+        — creux sur le balancement, pic sur le bris de vitre, pic maximal sur l'arrivée.
+        Sur le hook les SFX sont <b>9,6 dB au-dessus</b> de la musique : percussif, pas musical.
+      </p>
+
       <h3>Garde-fou lèvres — sortie du contrôleur</h3>
       <pre>shot  src                  srcWindow       lips-active zone        still&amp;voiced
 S1    HOOK_spider_entree   0.00-7.97       NONE (silent clip)          0
@@ -143,10 +180,17 @@ PASS — no shot violates the lips-active rule</pre>
       montré dans la vidéo. <b>Aucune automatisation n'a été créée</b>, rien n'est programmé.
     </div>
 
+    <div class="note" style="color:#9fe8b0">
+      🔁 <b>Passe 2 = audio uniquement.</b> Le flux vidéo a été recopié tel quel
+      (<code>-c:v copy</code>) : md5 du flux vidéo <b>identique</b> avant/après
+      (<code>b87f1696…</code>), 1062 images, 35,400 s. Aucun plan, aucune caption n'a bougé.
+    </div>
+
     <div class="warn">
       ⚠️ <b>Deux points à trancher avant publication.</b><br>
-      1. <b>7 secondes sans voix</b> au début. Le hook visuel est très fort, mais c'est long pour un
-      feed : deux cartons texte compensent, la parole ne démarre qu'à 7,05 s.<br>
+      1. <b>7 secondes sans voix</b> au début. Le sound design porte maintenant le plan (bris de
+      vitre, réception, thwip, arrivée), mais ça reste long pour un feed : la parole ne démarre
+      qu'à 7,05 s.<br>
       2. <b>SYSTEME pointerait sur ShortForge</b>, qui est <b>payant</b> (67 €) et déjà servi par le
       mot-clé <b>STAR</b>. Soit on assume le doublon, soit il faut une ressource gratuite dédiée
       avant d'activer la gate.
