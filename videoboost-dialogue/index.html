@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prévisualisation — videoboost-dialogue</title>
+<style>
+  :root{ --bg:#0a0a0f; --panel:#111117; --border:#242430; --neon-yellow:#f5d90a; --neon-purple:#a855f7; --neon-orange:#ff7a1a; --text:#f2f2f5; --muted:#9a9aa8; }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;padding:2rem 1rem 4rem}
+  .wrap{max-width:480px;margin:0 auto}
+  a.back{color:var(--muted);font-size:.8rem;text-decoration:none;display:inline-block;margin-bottom:1rem}
+  header{text-align:center;margin-bottom:2rem}
+  header h1{font-size:1.4rem;margin:0 0 .3rem;background:linear-gradient(90deg,var(--neon-yellow),var(--neon-orange));-webkit-background-clip:text;background-clip:text;color:transparent}
+  header p{color:var(--muted);font-size:.85rem;margin:0}
+  .card{background:var(--panel);border:1px solid var(--border);border-radius:16px;overflow:hidden;box-shadow:0 0 0 1px rgba(245,217,10,.06),0 20px 60px -20px rgba(168,85,247,.35);margin-bottom:1.5rem}
+  .card-head{padding:1rem 1.2rem .8rem;display:flex;justify-content:space-between;align-items:center;gap:.5rem}
+  .badge{font-size:.7rem;font-weight:600;padding:.25rem .6rem;border-radius:999px;background:rgba(245,217,10,.12);color:var(--neon-yellow);border:1px solid rgba(245,217,10,.3);white-space:nowrap}
+  .card-head h2{font-size:1rem;margin:0;font-weight:600}
+  video{display:block;width:100%;aspect-ratio:9/16;background:#000}
+  .meta{padding:1rem 1.2rem 1.3rem;border-top:1px solid var(--border);font-size:.8rem;color:#c9c9d4;line-height:1.7}
+  .meta b{color:var(--neon-yellow)}
+  .script{padding:0 1.2rem 1.4rem;font-size:.78rem;color:#c9c9d4;line-height:1.75}
+  .script h3{font-size:.8rem;color:var(--neon-yellow);margin:.2rem 0 .6rem;text-transform:uppercase;letter-spacing:.08em}
+  .script ol{margin:0;padding-left:1.1rem}
+  .script li{margin-bottom:.55rem}
+  .script .beat{color:var(--muted);font-size:.72rem;display:block}
+  .script .leo{color:var(--neon-purple);font-size:.72rem;display:block}
+  .note{padding:0 1.2rem 1.4rem;font-size:.75rem;color:var(--muted);line-height:1.6}
+  .warn{padding:0 1.2rem 1.4rem;font-size:.75rem;color:#ffb4b4;line-height:1.6}
+  footer{text-align:center;margin-top:2rem;font-size:.75rem;color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="/">← Toutes les vidéos</a>
+  <header>
+    <h1>videoboost-dialogue</h1>
+    <p>Échantillon de validation — vrai faux dialogue avec l'extrait DiCaprio d'origine</p>
+  </header>
+  <div class="card">
+    <div class="card-head">
+      <h2>Échantillon ~8 s</h2>
+      <span class="badge">⏳ Valider le principe</span>
+    </div>
+    <video src="video.mp4" controls playsinline loop></video>
+    <div class="meta">
+      Format <b>1080×1920</b> · Durée <b>8,47 s</b> (254 images @30 fps) ·
+      Extrait DiCaprio <b>5,55 → 6,78 s</b> de la source, image + voix d'origine ·
+      Avatar <b>v3 plein cadre</b> · Voix <b>clonée</b> · Captions <b>calquées sur la réf</b> · Coût <b>0 €</b>
+    </div>
+    <div class="script">
+      <h3>Les 3 beats</h3>
+      <ol>
+        <li><span class="beat">Tony · avatar v3 (2 plans)</span>« MrBeast. Je sors une vidéo verticale complète en trente secondes. Voix, avatar, sous-titres. »</li>
+        <li><span class="leo">DiCaprio · extrait réel, sa voix, ses mots</span>« Y a personne qui peut. »</li>
+        <li><span class="beat">Tony · avatar v3 (punch-in)</span>« Moi je peux. »</li>
+      </ol>
+    </div>
+    <div class="note">
+      🎯 Ce qu'il faut valider : le raccord Tony → DiCaprio → Tony, le niveau sonore entre les deux mondes
+      (l'extrait a été remonté de +6,8 dB pour coller à la voix clonée), et le style de captions.
+      Les captions de DiCaprio sont celles d'origine, incrustées dans la source — les miennes ont été
+      calibrées dessus (Outfit Bold 78, contour noir 2 px, même hauteur).
+    </div>
+    <div class="warn">
+      ⚖️ Extrait de film protégé. DiCaprio ne dit que ce qu'il dit réellement dans la source : aucun doublage,
+      aucune voix synthétique, aucun remontage de ses propos. Sa réplique est sceptique — il ne recommande rien.
+      Risque Content ID réel et assumé, il porterait sur les comptes.
+    </div>
+  </div>
+  <footer>previsualisation.automatisationboost.com</footer>
+</div>
+</body>
+</html>
