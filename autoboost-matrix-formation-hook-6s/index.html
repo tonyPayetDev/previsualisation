@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prévisualisation — autoboost-matrix-formation-hook-6s</title>
+<style>
+  :root{ --bg:#0a0a0f; --panel:#111117; --border:#242430; --neon-yellow:#f5d90a; --neon-purple:#a855f7; --neon-orange:#ff7a1a; --neon-green:#22e07a; --text:#f2f2f5; --muted:#9a9aa8; }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;padding:2rem 1rem 4rem}
+  .wrap{max-width:480px;margin:0 auto}
+  a.back{color:var(--muted);font-size:.8rem;text-decoration:none;display:inline-block;margin-bottom:1rem}
+  header{text-align:center;margin-bottom:2rem}
+  header h1{font-size:1.4rem;margin:0 0 .3rem;background:linear-gradient(90deg,var(--neon-green),var(--neon-yellow));-webkit-background-clip:text;background-clip:text;color:transparent}
+  header p{color:var(--muted);font-size:.85rem;margin:0}
+  .card{background:var(--panel);border:1px solid var(--border);border-radius:16px;overflow:hidden;box-shadow:0 0 0 1px rgba(245,217,10,.06),0 20px 60px -20px rgba(34,224,122,.3);margin-bottom:1.5rem}
+  .card.old{box-shadow:0 0 0 1px rgba(255,255,255,.04);opacity:.92}
+  .card-head{padding:1rem 1.2rem .8rem;display:flex;justify-content:space-between;align-items:center;gap:.5rem}
+  .badge{font-size:.7rem;font-weight:600;padding:.25rem .6rem;border-radius:999px;background:rgba(245,217,10,.12);color:var(--neon-yellow);border:1px solid rgba(245,217,10,.3);white-space:nowrap}
+  .badge.grey{background:rgba(255,255,255,.06);color:var(--muted);border-color:rgba(255,255,255,.12)}
+  .card-head h2{font-size:1rem;margin:0;font-weight:600}
+  video{display:block;width:100%;aspect-ratio:9/16;background:#000}
+  .meta{padding:1rem 1.2rem 1.3rem;border-top:1px solid var(--border);font-size:.8rem;color:#c9c9d4;line-height:1.7}
+  .meta b{color:var(--neon-yellow)}
+  .hookline{padding:0 1.2rem 1.2rem;font-size:.95rem;line-height:1.6;color:#fff;font-weight:600}
+  .hookline span{color:var(--neon-green)}
+  .script{padding:0 1.2rem 1.4rem;font-size:.78rem;color:#c9c9d4;line-height:1.7}
+  .script h3{font-size:.8rem;color:var(--neon-yellow);margin:1rem 0 .6rem;text-transform:uppercase;letter-spacing:.08em}
+  table{width:100%;border-collapse:collapse;font-size:.72rem;margin-top:.4rem}
+  th,td{text-align:left;padding:.35rem .4rem;border-bottom:1px solid var(--border)}
+  th{color:var(--muted);font-weight:600}
+  td.n{font-variant-numeric:tabular-nums;color:var(--neon-yellow);white-space:nowrap}
+  td.ok{color:var(--neon-green)}
+  .note{padding:0 1.2rem 1.4rem;font-size:.75rem;color:var(--muted);line-height:1.6}
+  .warn{padding:0 1.2rem 1.4rem;font-size:.75rem;color:#ffd9a0;line-height:1.6}
+  footer{text-align:center;margin-top:2rem;font-size:.75rem;color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="/">← Toutes les vidéos</a>
+  <header>
+    <h1>Matrix × Formation — hook 6 s</h1>
+    <p>Combat + plan bureau, puis la vidéo validée enchaîne inchangée</p>
+  </header>
+
+  <div class="card">
+    <div class="card-head">
+      <h2>HOOK 6 s — la version à valider</h2>
+      <span class="badge">62,3 s</span>
+    </div>
+    <video src="video.mp4" controls playsinline preload="metadata" poster="cover.jpg"></video>
+    <div class="hookline">
+      Hook (6,00 s) : <span>« Tu ne travailles pas. Tu te bats. Contre tes propres outils. Et tu perds. »</span>
+    </div>
+    <div class="meta">
+      <b>0 → 4,27 s — combat.</b> Toute la voix clonée tient ici. Sortie exactement sur le flash blanc
+      du clip source (pic de luminance mesuré à 6,25 s), ce qui masque le raccord.<br>
+      <b>4,27 → 6,00 s — bureau.</b> La deuxième scène du clip Higgsfield, en <b>silence total</b>,
+      avec un léger travelling avant. Aucun mot n'est prononcé dessus.
+    </div>
+    <div class="script">
+      <h3>Pourquoi aucun décalage labial n'est possible</h3>
+      <p style="margin:.2rem 0 .6rem">Dans ce plan la bouche de Tony est visible et Higgsfield lui a fait
+      articuler des mots. La règle appliquée : <b>le plan ne couvre aucune portion de voix active</b>,
+      et la fenêtre choisie est en plus une fenêtre où <b>la bouche ne bouge pas</b>.</p>
+      <table>
+        <tr><th>Contrôle</th><th>Mesure</th></tr>
+        <tr><td>RMS de la piste voix sur 4,27 → 6,00 s</td><td class="n ok">−inf dB</td></tr>
+        <tr><td>Fenêtres au-dessus du seuil de voix (−38 dB)</td><td class="n ok">0 / 173</td></tr>
+        <tr><td>Fin du dernier mot du hook</td><td class="n">3,890 s</td></tr>
+        <tr><td>Marge avant le plan bureau</td><td class="n ok">0,377 s</td></tr>
+        <tr><td>Reprise de la voix (corps)</td><td class="n">6,210 s</td></tr>
+        <tr><td>Marge après le plan bureau</td><td class="n ok">0,210 s</td></tr>
+        <tr><td>Mouvement de bouche, fenêtre retenue</td><td class="n ok">0,24 (pic 0,58)</td></tr>
+        <tr><td>Mouvement de bouche quand il articule</td><td class="n">4,15 (pic 11,71)</td></tr>
+      </table>
+      <h3>Le montage</h3>
+      <table>
+        <tr><th>Bloc</th><th>Début</th><th>Durée</th><th>Source</th></tr>
+        <tr><td>combat</td><td class="n">0,00</td><td class="n">4,27 s</td><td class="n">2,003 → 6,270</td></tr>
+        <tr><td>bureau</td><td class="n">4,27</td><td class="n">1,73 s</td><td class="n">7,542 → 8,000</td></tr>
+        <tr><td>corps</td><td class="n">6,00</td><td class="n">56,27 s</td><td>inchangé, copie de flux</td></tr>
+      </table>
+    </div>
+    <div class="warn">
+      <b>Le compromis, dit franchement.</b> Le plan bureau ne contient <b>aucune</b> fenêtre bouche-fermée
+      de 1,7 s : la plus longue fait <b>0,46 s</b> (7,542 → 8,000 ; à 8,000 il recommence à articuler).
+      Ces 0,46 s sont donc étirées à 1,73 s par interpolation de mouvement, avec un léger travelling avant
+      pour que le plan respire. Sur une image quasi fixe le ralenti ne se voit pas — mais c'est bien
+      un plan tenu, pas 1,7 s de jeu d'acteur.
+    </div>
+    <div class="note">
+      Règle des lèvres <b>PASS</b> (code 0) rejouée sur toute la timeline décalée de 6 s, 22 plans avatar vérifiés ·
+      <b>−16,2 LUFS / −3,0 dBTP</b> · 1080×1920 · 30 fps · audio natif du clip coupé · le corps n'est pas ré-encodé.
+    </div>
+  </div>
+
+  <div class="card old">
+    <div class="card-head">
+      <h2>HOOK 4,27 s — première variante</h2>
+      <span class="badge grey">60,6 s</span>
+    </div>
+    <video src="/autoboost-matrix-formation-hook/video.mp4" controls playsinline preload="none" poster="cover.jpg"></video>
+    <div class="note">
+      Même accroche, mais le hook s'arrête net sur le flash blanc : le plan bureau n'y est pas.
+      Page dédiée : <a href="/autoboost-matrix-formation-hook" style="color:var(--neon-green)">/autoboost-matrix-formation-hook</a>.
+    </div>
+  </div>
+
+  <div class="card old">
+    <div class="card-head">
+      <h2>ORIGINE — sans hook</h2>
+      <span class="badge grey">56,3 s · programmée le 25/08</span>
+    </div>
+    <video src="/matrix-formation/video.mp4" controls playsinline preload="none" poster="cover.jpg"></video>
+    <div class="note">
+      Version de référence, intacte. Elle reste la vidéo programmée : le remplacement ne se fait
+      qu'après validation. Page dédiée : <a href="/matrix-formation" style="color:var(--neon-green)">/matrix-formation</a>.
+    </div>
+  </div>
+
+  <footer>Automation Boost — prévisualisation interne</footer>
+</div>
+</body>
+</html>
