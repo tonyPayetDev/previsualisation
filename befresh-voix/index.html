@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BeFresh — Choix de la voix off</title>
+<style>
+  :root{
+    --bg:#0A0A0A; --panel:#141210; --border:#2A241A;
+    --gold:#E0AE3A; --gold-soft:#C9A227; --magenta:#E9268C;
+    --ink:#F4EFE6; --muted:#9C9184;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;padding:2rem 1rem 4rem}
+  .wrap{max-width:520px;margin:0 auto}
+  a.back{color:var(--muted);font-size:.8rem;text-decoration:none;display:inline-block;margin-bottom:1.2rem}
+  a.back:hover{color:var(--gold)}
+  header{text-align:center;margin-bottom:1.8rem}
+  .logo{width:96px;height:96px;border-radius:50%;margin:0 auto .9rem;
+    background:#0A0A0A;border:2px solid var(--gold);display:flex;align-items:center;justify-content:center;
+    flex-direction:column;line-height:1.05;font-weight:800;letter-spacing:.06em;font-size:.82rem;color:#fff}
+  header h1{font-size:1.45rem;margin:0 0 .4rem;letter-spacing:-.01em;color:var(--gold)}
+  header p{color:var(--muted);font-size:.85rem;margin:0;line-height:1.6}
+  .lead{background:rgba(233,38,140,.08);border:1px solid rgba(233,38,140,.3);border-radius:14px;
+    padding:.95rem 1.1rem;font-size:.82rem;line-height:1.7;margin-bottom:1.6rem;color:#F2DCE9}
+  .lead b{color:var(--magenta)}
+  .phrase{font-style:italic;color:var(--muted);font-size:.8rem;line-height:1.7;
+    border-left:2px solid var(--gold);padding-left:.8rem;margin:.7rem 0 1.6rem}
+  .opt{background:var(--panel);border:1px solid var(--border);border-radius:16px;
+    padding:1rem 1.1rem 1.15rem;margin-bottom:1rem}
+  .opt.reco{border-color:var(--gold);box-shadow:0 0 0 1px rgba(224,174,58,.25),0 16px 40px -24px rgba(224,174,58,.5)}
+  .opt-head{display:flex;justify-content:space-between;align-items:center;gap:.6rem;margin-bottom:.5rem}
+  .opt-head h2{font-size:.98rem;margin:0;font-weight:700}
+  .tag{font-size:.66rem;font-weight:800;padding:.26rem .6rem;border-radius:999px;white-space:nowrap;letter-spacing:.04em}
+  .tag.reco{background:var(--gold);color:#0A0A0A}
+  .tag.cur{background:rgba(255,255,255,.09);color:var(--muted);border:1px solid var(--border)}
+  .tag.bug{background:rgba(233,38,140,.16);color:var(--magenta);border:1px solid rgba(233,38,140,.4)}
+  .desc{font-size:.78rem;color:var(--muted);line-height:1.65;margin:.1rem 0 .7rem}
+  audio{width:100%;height:38px;display:block}
+  .note{background:rgba(224,174,58,.07);border:1px solid rgba(224,174,58,.26);border-radius:12px;
+    padding:.85rem 1rem;font-size:.78rem;color:#E8D9B6;line-height:1.7;margin-top:1.6rem}
+  .note b{color:var(--gold)}
+  footer{text-align:center;margin-top:2.2rem;font-size:.72rem;color:#5E564C}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="/">← Toutes les vidéos</a>
+  <header>
+    <div class="logo"><span>BE</span><span>FRESH</span></div>
+    <h1>Quelle voix off ?</h1>
+    <p>Écoute les 5 extraits, dis-moi la lettre.<br>Tant que tu n'as pas tranché, la vidéo garde la voix actuelle.</p>
+  </header>
+
+  <div class="lead">
+    Deux sujets en même temps : la <b>prononciation d'« alouda »</b> et le <b>choix de la voix</b>.
+    A et B sont la même voix (celle de la vidéo actuelle) — c'est la <b>correction du mot</b> qu'on compare.
+    C, D et E sont des <b>voix différentes</b>, à départager à l'oreille.
+  </div>
+
+  <div class="phrase">
+    « Cocktails de fruits frais, mojito, matcha, … alouda&nbsp;! Le food truck BeFresh a servi non-stop.
+    Merci à tous ceux qui sont passés, vous étiez incroyables. »
+  </div>
+
+  <div class="opt">
+    <div class="opt-head"><h2>A — Vivian (actuelle, non corrigée)</h2><span class="tag bug">« oloda »</span></div>
+    <p class="desc">C'est ce qu'on entend dans la vidéo en ligne aujourd'hui. Le « a » d'alouda est avalé.</p>
+    <audio controls preload="none" src="a-vivian-actuelle.mp3"></audio>
+  </div>
+
+  <div class="opt reco">
+    <div class="opt-head"><h2>B — Vivian corrigée</h2><span class="tag reco">MA RECO</span></div>
+    <p class="desc">Même voix, texte retouché : « matcha, <b>et bien sûr</b>, alouda ! ». Le mot qui précède ne finit plus par un « a », donc les deux voyelles ne fusionnent plus. C'est la version montée dans la vidéo corrigée.</p>
+    <audio controls preload="none" src="b-vivian-corrigee.mp3"></audio>
+  </div>
+
+  <div class="opt">
+    <div class="opt-head"><h2>C — Céline</h2><span class="tag cur">autre moteur</span></div>
+    <p class="desc">Voix française, posée et chaleureuse. Débit plus lent, plus « marque » que « réseaux ».</p>
+    <audio controls preload="none" src="celine.mp3"></audio>
+  </div>
+
+  <div class="opt">
+    <div class="opt-head"><h2>D — Élodie</h2><span class="tag cur">autre moteur</span></div>
+    <p class="desc">Voix française plus jeune et plus tonique. La plus proche d'un ton « story Instagram ».</p>
+    <audio controls preload="none" src="elodie.mp3"></audio>
+  </div>
+
+  <div class="opt">
+    <div class="opt-head"><h2>E — Soraya</h2><span class="tag cur">autre moteur</span></div>
+    <p class="desc">Voix plus grave et plus ronde. Bon compromis si tu trouves Vivian un peu « robot ».</p>
+    <audio controls preload="none" src="soraya.mp3"></audio>
+  </div>
+
+  <div class="note">
+    <b>Pourquoi je recommande B</b> : c'est la seule option qui ne change <i>rien</i> à ce que tu as déjà validé
+    (même voix, même rythme, même montage) et qui règle quand même le mot. Si tu veux vraiment changer de voix,
+    D (Élodie) est celle qui colle le mieux au format réseau — mais ça oblige à re-caler tous les sous-titres.
+    <br><br>
+    <b>À savoir</b> : C, D et E viennent d'un autre fournisseur (Higgsfield). Le compte WaveSpeed qui fait la voix
+    actuelle est <b>à sec (0,01 $)</b> — il faut le recharger pour produire d'autres vidéos.
+  </div>
+
+  <footer>previsualisation.automatisationboost.com</footer>
+</div>
+</body>
+</html>
