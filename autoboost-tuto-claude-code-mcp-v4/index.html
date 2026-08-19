@@ -1,0 +1,407 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prévisualisation — autoboost-tuto-claude-code-mcp-v4</title>
+<style>
+  :root{ --bg:#0a0a0f; --panel:#111117; --border:#242430; --neon-yellow:#f5d90a; --neon-purple:#a855f7; --neon-orange:#ff7a1a; --neon-green:#22e07a; --neon-red:#ff4d4d; --text:#f2f2f5; --muted:#9a9aa8; }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;padding:2rem 1rem 4rem}
+  .wrap{max-width:480px;margin:0 auto}
+  a.back{color:var(--muted);font-size:.8rem;text-decoration:none;display:inline-block;margin-bottom:1rem}
+  header{text-align:center;margin-bottom:2rem}
+  header h1{font-size:1.4rem;margin:0 0 .3rem;background:linear-gradient(90deg,var(--neon-yellow),var(--neon-purple));-webkit-background-clip:text;background-clip:text;color:transparent}
+  header p{color:var(--muted);font-size:.85rem;margin:0}
+  .card{background:var(--panel);border:1px solid var(--border);border-radius:16px;overflow:hidden;box-shadow:0 0 0 1px rgba(245,217,10,.06),0 20px 60px -20px rgba(245,217,10,.28);margin-bottom:1.5rem}
+  .card.old{box-shadow:none;opacity:.92}
+  .card-head{padding:1rem 1.2rem .8rem;display:flex;justify-content:space-between;align-items:center;gap:.5rem}
+  .badge{font-size:.7rem;font-weight:600;padding:.25rem .6rem;border-radius:999px;background:rgba(245,217,10,.12);color:var(--neon-yellow);border:1px solid rgba(245,217,10,.3);white-space:nowrap}
+  .badge.grey{background:rgba(154,154,168,.12);color:var(--muted);border-color:rgba(154,154,168,.3)}
+  .card-head h2{font-size:1rem;margin:0;font-weight:600}
+  video{display:block;width:100%;aspect-ratio:9/16;background:#000}
+  .meta{padding:1rem 1.2rem 1.3rem;border-top:1px solid var(--border);font-size:.8rem;color:#c9c9d4;line-height:1.7}
+  .meta b{color:var(--neon-yellow)}
+  .script{padding:0 1.2rem 1.4rem;font-size:.78rem;color:#c9c9d4;line-height:1.7}
+  .script h3{font-size:.8rem;color:var(--neon-yellow);margin:1.5rem 0 .6rem;text-transform:uppercase;letter-spacing:.08em}
+  .script p{margin:.4rem 0 .6rem}
+  table{width:100%;border-collapse:collapse;font-size:.72rem;margin:.5rem 0}
+  th,td{border-bottom:1px solid var(--border);padding:.4rem .3rem;text-align:left;vertical-align:top}
+  th{color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.04em;font-size:.66rem}
+  td.n{font-variant-numeric:tabular-nums;white-space:nowrap}
+  .ok{color:var(--neon-green)} .ko{color:var(--neon-red)} .up{color:var(--neon-green)} .dn{color:var(--neon-orange)}
+  code{background:#1a1a24;padding:.1rem .3rem;border-radius:4px;font-size:.9em;word-break:break-all}
+  .note{margin:1rem 0;padding:.9rem 1rem;border-radius:12px;background:rgba(34,224,122,.07);border:1px solid rgba(34,224,122,.25);font-size:.78rem;line-height:1.65;color:#bfe9cd}
+  .warn{margin:1rem 0;padding:.9rem 1rem;border-radius:12px;background:rgba(255,122,26,.08);border:1px solid rgba(255,122,26,.3);font-size:.78rem;line-height:1.65;color:#f3cba6}
+  .warn h3{margin:0 0 .5rem;font-size:.8rem;color:var(--neon-orange);text-transform:uppercase;letter-spacing:.06em}
+  .warn ul{margin:.5rem 0 .2rem;padding-left:1.1rem} .warn li{margin-bottom:.4rem}
+  .quote{margin:1rem 0;padding:.9rem 1rem;border-left:3px solid var(--neon-purple);background:rgba(168,85,247,.07);font-size:.82rem;line-height:1.6;color:#e0d2f5}
+  .dl{display:inline-block;margin:.4rem 0 0;font-size:.78rem;color:var(--neon-purple);text-decoration:none}
+  .bars{margin:.8rem 0 1.2rem}
+  .barrow{margin-bottom:.55rem}
+  .barlab{font-size:.68rem;color:var(--muted);margin-bottom:.22rem;display:flex;justify-content:space-between}
+  .bar{display:flex;height:22px;border-radius:6px;overflow:hidden;border:1px solid var(--border)}
+  .seg{display:flex;align-items:center;justify-content:center;font-size:.6rem;font-weight:600;color:#0a0a0f;white-space:nowrap;overflow:hidden}
+  .s-hook{background:var(--neon-purple)} .s-e1{background:#f5d90a} .s-e2{background:#ffc857} .s-e3{background:#ffb01f} .s-cta{background:var(--neon-green)} .s-card{background:#5a5a6b;color:#f2f2f5}
+  .s-mute{background:#3a3a4a;color:#f2f2f5}
+  .shots{display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin:.8rem 0 1.2rem}
+  .shots figure{margin:0}
+  .shots img{width:100%;border-radius:10px;border:1px solid var(--border);display:block}
+  .shots figcaption{font-size:.66rem;color:var(--muted);margin-top:.3rem;line-height:1.4}
+  footer{text-align:center;margin-top:2rem;font-size:.75rem;color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="/">← toutes les prévisualisations</a>
+  <header>
+    <h1>Tuto express — Claude Code + MCP <span style="color:var(--neon-green)">v4</span></h1>
+    <p>5,000 s de moteur seul · plus aucune URL réelle à l'image · 34,3 s · 9:16</p>
+  </header>
+
+  <div class="quote">
+    Demande de Tony sur la v3 : <b>« Cette vidéo je trouve que entendre la voiture qui roule
+    5 secondes serait mieux, bruitage et tout — et aussi enlève référence à mes vrais URL dans le
+    montage hyperframe comme n7n.automatisation. etc. »</b>
+  </div>
+
+  <div class="card">
+    <div class="card-head">
+      <h2>v4 — 5 s de moteur, et zéro URL réelle</h2>
+      <span class="badge">⏳ À valider</span>
+    </div>
+    <video src="video.mp4" controls playsinline preload="metadata"></video>
+    <div class="meta">
+      <b>34,3 s</b> · 1080×1920 · 30 fps · voix clonée (F0 médian <b>124,0 Hz</b> sur la piste
+      complète — zone attendue 115–133 Hz, le repli OpenAI serait à ~200 Hz)<br>
+      Niveau : <b>−16,7 LUFS</b> · crête réelle <b>−3,7 dBTP</b><br>
+      Garde-fou lèvres : <b class="ok">PASS</b> — 0 image fautive sur les 8 plans avatar, code 0.<br>
+      <a class="dl" href="video.mp4" download>⬇ télécharger le MP4</a>
+    </div>
+
+    <div class="script">
+
+      <h3>Les deux demandes</h3>
+      <table>
+        <tr><th>Demande</th><th>Fait</th></tr>
+        <tr><td>Entendre la voiture <b>5 secondes</b></td><td class="ok">Oui — la voix démarre à <b>5,000 s</b> exactement. Avant : moteur seul, pas de musique, pas de caption, silence numérique sur la piste voix (−91 dB).</td></tr>
+        <tr><td>« Bruitage et tout »</td><td class="ok">Montée en régime en <b>trois reprises</b> au lieu d'une seule rampe, grondement 35–120 Hz réinjecté, trois bouffées de ruissellement de piste.</td></tr>
+        <tr><td>Retirer les <b>vraies URL</b> du montage</td><td class="ok">Captures <b>re-générées</b>, pas floutées. Détail exhaustif ci-dessous.</td></tr>
+        <tr><td>Rester dans la zone de durée du compte</td><td class="ok">34,3 s (plafond 35 s). Ce qui a été repris est détaillé plus bas.</td></tr>
+      </table>
+
+      <h3>Ce qui a été retiré de l'image</h3>
+      <p>Tout ce qui apparaissait à l'écran a été repassé en revue, pas seulement l'étape 02 :
+      les 3 captures, le clip Higgsfield (buggy + mur d'écrans), les 8 plans de la banque avatar,
+      l'habillage HyperFrames et le carton final. Voici <b>la totalité</b> de ce qui a changé.</p>
+      <table>
+        <tr><th>Où</th><th>Avant (v3)</th><th>Après (v4)</th></tr>
+        <tr>
+          <td>Étape 02 — commande tapée</td>
+          <td class="ko"><code>claude mcp add --transport http n8n https://n7n.automatisationboost.com/mcp-server/http</code></td>
+          <td class="ok"><code>… https://n8n.exemple.com/mcp-server/http</code></td>
+        </tr>
+        <tr>
+          <td>Étape 02 — sortie « Added HTTP MCP server »</td>
+          <td class="ko"><code>https://n7n.automatisationboost.com/mcp-server/http to local config</code></td>
+          <td class="ok"><code>https://n8n.exemple.com/mcp-server/http to local config</code></td>
+        </tr>
+        <tr>
+          <td>Étape 02 — sortie de <code>claude mcp list</code></td>
+          <td class="ko"><code>n8n: https://n7n.automatisationboost.com/… - ✔ Connected</code></td>
+          <td class="ok"><code>n8n: https://n8n.exemple.com/… - ✔ Connected</code></td>
+        </tr>
+        <tr>
+          <td>Étape 03 — en-tête de la TUI</td>
+          <td class="ko"><code>◆ Claude Code v2.1.235 — /work/automatisationboost</code></td>
+          <td class="ok"><code>◆ Claude Code v2.1.235 — ~/projet-demo</code></td>
+        </tr>
+      </table>
+      <div class="note">
+        <b>Re-généré, pas flouté.</b> Un flou attire l'œil et annonce qu'il y a quelque chose à
+        cacher. Les captures sont produites par une page HTML déterministe
+        (<code>work/capture/capture.html</code>) rejouée image par image : le texte a été changé
+        <i>à la source</i>, puis les 3 scènes ré-enregistrées. Le nombre d'images est fixé par le
+        scénario, pas par la longueur du texte, donc les 3 captures font toujours
+        <b>196 / 214 / 218 images</b>, exactement comme en v3.
+      </div>
+      <p><b>Ce qui a été vérifié et laissé tel quel :</b></p>
+      <ul style="font-size:.78rem;line-height:1.7;color:#c9c9d4">
+        <li><code>npm install -g @anthropic-ai/claude-code</code> et <code>claude --version</code> —
+        commandes publiques, aucun élément personnel.</li>
+        <li>Le titre des fenêtres <code>tony — claude — zsh</code> : prénom seul, c'est déjà
+        l'identité publique du compte.</li>
+        <li>Le mur d'écrans du clip Higgsfield : vérifié en pleine résolution, le « code » affiché
+        est du pseudo-code généré, illisible, sans aucune URL.</li>
+        <li>Les 8 plans de la banque avatar : fond studio uni, aucun écran à l'image.</li>
+        <li>Le pied de page <code>automatisationboost.com</code> de l'habillage et le carton
+        « COMMENTE MCP » : c'est la marque, c'est voulu.</li>
+      </ul>
+      <div class="warn">
+        <h3>Un choix à trancher</h3>
+        <p style="margin:0">Le <b>chemin</b> <code>/mcp-server/http</code> a été conservé. C'est le
+        chemin standard du serveur MCP de n8n, documenté publiquement, identique chez tout le monde :
+        il ne dit rien de ton instance une fois le domaine remplacé, et c'est lui qui rend le tuto
+        exploitable par celui qui regarde. Si tu préfères qu'il disparaisse aussi, c'est une ligne
+        à changer dans <code>capture.html</code> et une re-génération des captures.</p>
+      </div>
+
+      <h3>Les 5 secondes de moteur — ce qu'on entend</h3>
+      <p>La v3 partait le clip à <b>ss = 1,90 s</b> et jetait donc 1,90 s de plan buggy qui
+      existaient dans la source. La v4 part à <b>ss = 0,00</b> : on récupère ces 1,90 s
+      gratuitement. Le hook passe de 8,133 s à 10,033 s — <b>+1,900 s seulement</b> pour trois
+      secondes d'intro en plus.</p>
+      <table>
+        <tr><th>Temps</th><th>Ce qu'on entend</th><th>Niveau du mix</th></tr>
+        <tr><td class="n">0,00 – 0,50</td><td>moteur, régime bas</td><td class="n">−31,6 dB</td></tr>
+        <tr><td class="n">0,50 – 1,00</td><td>1<sup>re</sup> reprise — la montée</td><td class="n">−20,9 dB</td></tr>
+        <tr><td class="n">1,00 – 1,50</td><td><b>plein régime</b></td><td class="n">−13,7 dB</td></tr>
+        <tr><td class="n">1,50 – 2,20</td><td>redescente entre deux rapports</td><td class="n">−21,4 dB</td></tr>
+        <tr><td class="n">2,20 – 3,10</td><td><b>2<sup>e</sup> reprise</b> + ruissellement de piste</td><td class="n">−15,8 dB</td></tr>
+        <tr><td class="n">3,10 – 3,80</td><td>redescente</td><td class="n">−21,5 dB</td></tr>
+        <tr><td class="n">3,80 – 4,80</td><td><b>3<sup>e</sup> reprise</b> + ruissellement</td><td class="n">−16,0 dB</td></tr>
+        <tr><td class="n">4,80 – 5,00</td><td>whoosh à 4,85 — rampe vers la parole</td><td class="n">−23,7 dB</td></tr>
+        <tr><td class="n"><b>5,000</b></td><td><b>la voix clonée démarre</b></td><td class="n">—</td></tr>
+      </table>
+      <p>Vérifié sur les pistes isolées : <b>silence numérique (−91 dB) de 0,00 à 4,999 s</b> sur la
+      voix, et <b>−91 dB jusqu'à 4,50 s</b> sur la musique — la BGM ne monte qu'entre 4,50 et
+      5,50 s. Sans cette enveloppe la musique remplirait les 5 s et l'effet demandé disparaîtrait.</p>
+
+      <h3>Ce qui a été ajouté au lit sonore</h3>
+      <p>La v3 posait <b>une</b> accélération étirée puis bouclait un sustain. Tenir 5 s comme ça
+      aurait été une nappe. Trois choses ont été ajoutées :</p>
+      <table>
+        <tr><th>Ajout</th><th>Ce que ça fait</th><th>Matière</th></tr>
+        <tr><td><b>Trois reprises</b> au lieu d'une</td><td>on entend une voiture qui passe les rapports (0,00 / 2,18 / 3,83)</td><td>fenêtre <i>accélération</i> 0,00–0,95 de la source, rejouée</td></tr>
+        <tr><td><b>Grondement</b></td><td>la bande 35–120 Hz réinjectée ×2 : le moteur a du corps</td><td>issue du lit déjà filtré</td></tr>
+        <tr><td><b>Ruissellement de piste</b></td><td>trois bouffées de gravier/vent sur les reprises</td><td class="ok">100 % synthétique (<code>anoisesrc</code>), bandé 120–400 Hz</td></tr>
+      </table>
+      <p>Le lit fait maintenant <b>8,63 s</b> de matière (v3 : 5,95 s), en 13 segments recouverts
+      de 0,10 s.</p>
+
+      <h3>Reste-t-il de la voix native audible ? La mesure</h3>
+      <p>Même protocole qu'en v3, refait sur le lit v4 : bande d'intelligibilité <b>700–4000 Hz</b>,
+      la seule qui rend un mot reconnaissable, mesurée sur la fenêtre <b>0,00–5,00 s</b> — c'est-à-dire
+      exactement les 5 secondes où le moteur joue seul.</p>
+      <table>
+        <tr><th>Piste</th><th>Niveau 700–4000 Hz</th><th>Écart / parole</th><th>Mod. syllabique</th></tr>
+        <tr><td>parole native (référence)</td><td class="n">−27,7 dB</td><td class="n">—</td><td class="n">0,554</td></tr>
+        <tr><td>sélection seule, <i>avant</i> passe-bas</td><td class="n">−39,8 dB</td><td class="n ok">−12,1 dB</td><td class="n ok">0,107</td></tr>
+        <tr><td><b>lit servi v4, après passe-bas</b></td><td class="n ok"><b>−56,2 dB</b></td><td class="n ok"><b>−28,5 dB</b></td><td class="n ok"><b>0,129</b></td></tr>
+        <tr><td>pour mémoire, lit servi v3</td><td class="n">−56,5 dB</td><td class="n">−28,8 dB</td><td class="n">0,129</td></tr>
+      </table>
+      <p><b>Réponse : non.</b> Le lit est 28,5 dB sous la parole native dans la bande qui porte les
+      mots — la même marge qu'en v3 à 0,3 dB près, alors que la durée exposée a plus que doublé.
+      Et son enveloppe n'a aucune structure syllabique : 0,129 contre 0,554.</p>
+      <div class="warn">
+        <h3>La piste « passe-bas à 700-800 Hz » a été testée, puis écartée</h3>
+        <p style="margin:0">C'était la proposition laissée par la v3 pour rendre le moteur moins
+        sourd. Elle a été construite et <b>remesurée</b> : à 700 Hz la marge dans la bande
+        d'intelligibilité tombe de <b>−28,8 dB à −17,5 dB</b>. À 600 Hz : −19,9 dB. À 500 Hz :
+        −22,9 dB. Aucune de ces valeurs ne tient la promesse « aucun mot audible » au niveau où
+        elle a été faite. Un second essai — re-synthétiser du grain en transposant le grave de
+        deux octaves — rapportait <b>1,2 dB</b> de corps en 200–500 Hz pour <b>+4 dB</b> dans la
+        bande de preuve. Les deux ont été jetés. La coupure <b>reste à 400 Hz</b> ; le moteur
+        gagne sa vie par sa <i>structure</i> (les trois reprises) et par le grave, pas par un
+        élargissement de bande.</p>
+      </div>
+
+      <h3>Comment tenir sous 35 s</h3>
+      <p>+1,900 s de hook sur une v3 déjà à 33,400 s donnerait 35,300 s, au-dessus du plafond.
+      1,000 s a été repris, sans couper un mot ni une commande :</p>
+      <table>
+        <tr><th>Poste</th><th>v3</th><th>v4</th><th>Gain</th></tr>
+        <tr><td>Voix — <code>atempo</code> au traitement</td><td class="n">1,12</td><td class="n">1,18</td><td class="n ok">−0,53 s sur 12 segments</td></tr>
+        <tr><td>Capture étape 01</td><td class="n">×1,153</td><td class="n">×1,210</td><td class="n ok">−0,267 s</td></tr>
+        <tr><td>Capture étape 02</td><td class="n">×1,034</td><td class="n">×1,075</td><td class="n ok">−0,267 s</td></tr>
+        <tr><td>Capture étape 03</td><td class="n">×1,172</td><td class="n">×1,218</td><td class="n ok">−0,233 s</td></tr>
+        <tr><td>Bloc CTA (padding de fin)</td><td class="n">5,100 s</td><td class="n">4,867 s</td><td class="n ok">−0,233 s</td></tr>
+        <tr><td>Carton final</td><td class="n">1,400 s</td><td class="n">1,400 s</td><td class="n">intouché</td></tr>
+      </table>
+      <p>Les 3 captures sont toujours jouées <b>en entier</b> — 196, 214 et 218 images de contenu,
+      aucune commande, aucune sortie, aucun clic perdu ; elles défilent seulement un peu plus vite.
+      <code>atempo</code> conserve la hauteur : le F0 du clone est inchangé (124,0 Hz, mesuré).</p>
+
+      <h3>Durées — les quatre versions</h3>
+      <div class="bars">
+        <div class="barrow">
+          <div class="barlab"><span>v1 — 34,00 s</span><span>hook 19,7 % · 0,30 s sans voix</span></div>
+          <div class="bar">
+            <div class="seg s-hook" style="width:19.7%">hook 6,70</div>
+            <div class="seg s-e1" style="width:19.2%">6,53</div>
+            <div class="seg s-e2" style="width:21.0%">7,13</div>
+            <div class="seg s-e3" style="width:21.4%">7,27</div>
+            <div class="seg s-cta" style="width:15.5%">CTA 5,27</div>
+            <div class="seg s-card" style="width:3.2%"></div>
+          </div>
+        </div>
+        <div class="barrow">
+          <div class="barlab"><span>v2 — 33,40 s</span><span>hook 24,4 % · 0,30 s sans voix</span></div>
+          <div class="bar">
+            <div class="seg s-hook" style="width:24.4%">hook 8,13</div>
+            <div class="seg s-e1" style="width:17.0%">5,67</div>
+            <div class="seg s-e2" style="width:20.7%">6,90</div>
+            <div class="seg s-e3" style="width:18.6%">6,20</div>
+            <div class="seg s-cta" style="width:15.3%">CTA 5,10</div>
+            <div class="seg s-card" style="width:4.2%"></div>
+          </div>
+        </div>
+        <div class="barrow">
+          <div class="barlab"><span>v3 — 33,40 s</span><span>hook 24,4 % · 2,00 s sans voix</span></div>
+          <div class="bar">
+            <div class="seg s-mute" style="width:6.0%">2,0</div>
+            <div class="seg s-hook" style="width:18.4%">hook 6,13</div>
+            <div class="seg s-e1" style="width:17.0%">5,67</div>
+            <div class="seg s-e2" style="width:20.7%">6,90</div>
+            <div class="seg s-e3" style="width:18.6%">6,20</div>
+            <div class="seg s-cta" style="width:15.3%">CTA 5,10</div>
+            <div class="seg s-card" style="width:4.2%"></div>
+          </div>
+        </div>
+        <div class="barrow">
+          <div class="barlab"><span><b>v4 — 34,30 s</b></span><span>hook 29,3 % · <b>5,00 s sans voix</b></span></div>
+          <div class="bar">
+            <div class="seg s-mute" style="width:14.6%">moteur 5,0</div>
+            <div class="seg s-hook" style="width:14.7%">hook 5,03</div>
+            <div class="seg s-e1" style="width:15.7%">5,40</div>
+            <div class="seg s-e2" style="width:19.3%">6,63</div>
+            <div class="seg s-e3" style="width:17.4%">5,97</div>
+            <div class="seg s-cta" style="width:14.2%">CTA 4,87</div>
+            <div class="seg s-card" style="width:4.1%"></div>
+          </div>
+        </div>
+      </div>
+      <table>
+        <tr><th>Bloc</th><th>v1</th><th>v2</th><th>v3</th><th>v4</th></tr>
+        <tr><td>Hook</td><td class="n">6,700 s</td><td class="n">8,133 s</td><td class="n">8,133 s</td><td class="n"><b>10,033 s</b></td></tr>
+        <tr><td>— dont sans voix off</td><td class="n">0,30 s</td><td class="n">0,30 s</td><td class="n">2,00 s</td><td class="n ok"><b>5,00 s</b></td></tr>
+        <tr><td>Corps (3 étapes)</td><td class="n">20,933 s</td><td class="n">18,767 s</td><td class="n">18,767 s</td><td class="n">18,000 s</td></tr>
+        <tr><td>CTA avatar</td><td class="n">5,267 s</td><td class="n">5,100 s</td><td class="n">5,100 s</td><td class="n">4,867 s</td></tr>
+        <tr><td>Carton final</td><td class="n">1,100 s</td><td class="n">1,400 s</td><td class="n">1,400 s</td><td class="n">1,400 s</td></tr>
+        <tr><td><b>Total</b></td><td class="n"><b>34,000 s</b></td><td class="n"><b>33,400 s</b></td><td class="n"><b>33,400 s</b></td><td class="n"><b>34,300 s</b></td></tr>
+      </table>
+
+      <h3>Le hook, seconde par seconde</h3>
+      <table>
+        <tr><th>Temps</th><th>Image</th><th>Son</th></tr>
+        <tr><td class="n">0,00 – 5,00</td><td>buggy (source <b>0,00</b> →)</td><td><b>moteur seul</b> — 3 reprises, grondement, ruissellement. Ni voix ni musique.</td></tr>
+        <tr><td class="n">5,00 – 6,80</td><td>buggy</td><td>5,000 « Si tu regardes ça, c'est pas moi qui conduis. »</td></tr>
+        <tr><td class="n">6,80 – 6,95</td><td>buggy</td><td>moteur qui sort — la question reste ouverte</td></tr>
+        <tr><td class="n">6,95 – 7,17</td><td>volet — doigt sur l'objectif</td><td>impact à 7,167</td></tr>
+        <tr><td class="n">7,17 – 10,03</td><td><b>BUREAU — plein cadre, mur d'écrans</b></td><td>7,250 <b>« C'est le code. »</b><br>8,050 « Tu veux la même config ? »<br>9,200 « Trois étapes. » → fin 9,880</td></tr>
+      </table>
+      <div class="note">
+        <b>Un défaut de la v3 disparaît au passage.</b> En v3 le son d'accélération venait de
+        0,00–0,95 s de la source alors que l'image démarrait à 1,90 s : le moteur était
+        authentique mais décalé de sa propre image. En v4 l'image repart à 0,00 : <b>le son
+        d'accélération et l'image qu'il accompagne sont enfin au même instant de la source.</b>
+      </div>
+
+      <h3>Charte typo : inchangée</h3>
+      <p><code>TYPO.md</code> est repris <b>à l'identique</b> de la v1 et de la v3 — vérifié par
+      <code>diff</code>, aucune ligne ne change. C'est le point de réutilisabilité demandé. Inter
+      700 partout, captions 64 px majuscules sur bande basse (top 1452) avec mot chaud en or et
+      contour noir 6 directions, marque 30 px / interlettrage 4, pastille d'étape 22 px, ligne
+      néon beat-sync à 0,448 s, carton CTA 150 px, fenêtres
+      <code>#stage 43,199 · 994×1194</code> et <code>#pip 87,833 · 374×500</code>.</p>
+      <p>Seul ajustement de <i>timing</i>, pas de charte : la ligne néon ne peut pas pulser sur une
+      grille de temps inaudible pendant 4,5 s. Sur l'ouverture elle respire donc sur les trois
+      reprises du moteur, puis la grille BGM reprend à 4,52 s — qui est bien un temps de la grille
+      d'origine (0,04 + 10 × 0,448), donc la phase est conservée.</p>
+
+      <h3>Contrôles passés</h3>
+      <table>
+        <tr><th>Contrôle</th><th>Résultat</th></tr>
+        <tr><td>URL réelles à l'image</td><td class="ok">0 — <code>grep</code> sur la source des captures : plus aucune occurrence</td></tr>
+        <tr><td>Règle « lèvres actives » (<code>check_lips_rule.mjs</code>)</td><td class="ok">PASS — 0 image fautive / 8 plans, code de sortie 0</td></tr>
+        <tr><td>F0 médian, piste voix complète</td><td class="ok">124,0 Hz (zone 115–133)</td></tr>
+        <tr><td>Voix avant 5,0 s</td><td class="ok">aucune — silence numérique −91 dB</td></tr>
+        <tr><td>Musique avant 4,5 s</td><td class="ok">aucune — silence numérique −91 dB</td></tr>
+        <tr><td>Voix native résiduelle</td><td class="ok">−28,5 dB sous la parole en bande 700–4000 Hz</td></tr>
+        <tr><td>Niveau</td><td class="ok">−16,7 LUFS · crête −3,7 dBTP</td></tr>
+        <tr><td>Charte typo</td><td class="ok"><code>diff</code> avec v1 et v3 : identique</td></tr>
+        <tr><td>Contrôle de compo avant rendu</td><td class="ok">seek + capture Playwright, 15 instants</td></tr>
+        <tr><td>Durée dans la zone mesurée du compte</td><td class="ok">34,3 s (cible 28–35 s)</td></tr>
+      </table>
+
+      <h3>Compromis assumés</h3>
+      <div class="warn">
+        <h3>À savoir avant de valider</h3>
+        <ul>
+          <li><b>Pendant les 5 s de moteur, on voit Tony parler mais on ne l'entend pas.</b> Le clip
+            source est un plan où il rit et parle au volant ; sa voix native est retirée, remplacée
+            par le moteur. À 2 s (v3) ça passait pour une réaction ; à 5 s l'œil a plus de temps
+            pour le remarquer. Le contexte aide — buggy lancé, chien sur le volant, moteur à fond —
+            mais c'est le vrai prix des 3 secondes gagnées.</li>
+          <li><b>Le lit moteur reste bouclé, pas continu.</b> 8,63 s de son fabriqués à partir de
+            2,80 s de matière propre, en 13 segments recouverts de 0,10 s. Sur un grondement basse
+            fréquence les raccords ne s'entendent pas, mais ce n'est pas une prise continue.</li>
+          <li><b>Le moteur est toujours au passe-bas 400 Hz</b>, donc plus sourd que dans le clip
+            d'origine. Les alternatives ont été testées et chiffrées (voir plus haut) : elles
+            coûtent trop de marge sur la garantie « aucun mot audible ». Si tu acceptes de descendre
+            la garantie à −22,9 dB au lieu de −28,5 dB, la coupure à 500 Hz est prête à être posée.</li>
+          <li><b>La voix est 5 % plus rapide qu'en v3</b> (atempo 1,18 contre 1,12). C'est ce qui
+            paye une partie des 3 secondes d'intro. Le débit reste dans le registre « cash », mais
+            c'est perceptible si on compare les deux versions à la suite.</li>
+          <li><b>Le chemin <code>/mcp-server/http</code> est resté à l'image.</b> Choix expliqué
+            plus haut — dis-le si tu le veux retiré aussi.</li>
+          <li><b>Les lèvres ne disent pas les mots.</b> Inchangé depuis la v2 : le clip source n'a
+            pas été tourné sur ce script. Le garde-fou vérifie que la bouche <i>bouge</i> quand la
+            voix parle, pas qu'elle dise le texte.</li>
+          <li><b>Le niveau intégré est à −16,7 LUFS</b>, pas −16,0 pile : <code>loudnorm</code> en
+            une passe suivi du limiteur laisse ce genre d'écart. C'est dans la tolérance des
+            plateformes, mais ce n'est pas la valeur exacte.</li>
+        </ul>
+      </div>
+
+      <h3>Note technique — les pièges ffmpeg, toujours d'actualité</h3>
+      <p><code>acrossfade</code> en chaîne produit un fichier <b>vide de 78 octets</b> sur
+      ffmpeg 7.0.2, sans message d'erreur. Les 13 fondus du lit moteur sont donc faits à la main par
+      <code>afade</code> + <code>adelay</code> + <code>amix</code>. Par ailleurs
+      <code>apad,atrim</code> en sortie d'<code>amix</code> <b>déadlocke</b> ; la durée de la piste
+      voix est bornée par une piste de silence <code>anullsrc</code> mixée comme entrée
+      supplémentaire.</p>
+    </div>
+  </div>
+
+  <div class="card old">
+    <div class="card-head">
+      <h2>v3 — pour comparer</h2>
+      <span class="badge grey">remplacée</span>
+    </div>
+    <video src="/autoboost-tuto-claude-code-mcp-v3/video.mp4" controls playsinline preload="metadata"></video>
+    <div class="meta">
+      <b>33,4 s</b> · <b>2,0 s</b> de moteur seul · les URL réelles sont encore à l'image à
+      l'étape 02.<br>
+      <a class="dl" href="/autoboost-tuto-claude-code-mcp-v3/">→ fiche complète de la v3</a>
+    </div>
+  </div>
+
+  <div class="card old">
+    <div class="card-head">
+      <h2>v2 — pour comparer</h2>
+      <span class="badge grey">remplacée</span>
+    </div>
+    <video src="/autoboost-tuto-claude-code-mcp-v2/video.mp4" controls playsinline preload="metadata"></video>
+    <div class="meta">
+      <b>33,4 s</b> · <b>tout l'audio natif coupé</b> · la voix off démarre à 0,30 s.<br>
+      <a class="dl" href="/autoboost-tuto-claude-code-mcp-v2/">→ fiche complète de la v2</a>
+    </div>
+  </div>
+
+  <div class="card old">
+    <div class="card-head">
+      <h2>v1 — pour comparer</h2>
+      <span class="badge grey">remplacée</span>
+    </div>
+    <video src="/autoboost-tuto-claude-code-mcp/video.mp4" controls playsinline preload="metadata"></video>
+    <div class="meta">
+      <b>34,0 s</b> · hook 6,70 s · audio natif coupé.<br>
+      <a class="dl" href="/autoboost-tuto-claude-code-mcp/">→ fiche complète de la v1</a>
+    </div>
+  </div>
+
+  <footer>Rien n'est publié — aucun appel Blotato. En attente de validation.</footer>
+</div>
+</body>
+</html>
