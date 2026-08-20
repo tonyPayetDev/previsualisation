@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>AutomatisationBoost — Tes process tournent. Sans toi.</title>
+<title>AutomatisationBoost — De ta main à la matrice</title>
 <meta name="description" content="Agence d'automatisation IA à La Réunion. Systèmes n8n installés chez les PME.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -69,7 +69,7 @@ body::after{
 @media(max-width:860px){.nav-liens a:not(.btn-nav){display:none}}
 
 /* ---------- Le film : canvas épinglé, 4 chapitres ---------- */
-#film{position:relative;height:460vh}
+#film{position:relative;height:540vh}
 #colle{position:sticky;top:0;height:100vh;overflow:hidden}
 #toile{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
 #colle::after{ /* assombrit le bas pour que le texte tienne quel que soit le plan */
@@ -287,33 +287,39 @@ footer{border-top:1px solid var(--ligne);padding:42px 0;color:var(--mut);font-si
     <canvas id="toile"></canvas>
 
     <div class="jauge" id="jauge">
-      <b class="on"></b><b></b><b></b><b></b>
+      <b class="on"></b><b></b><b></b><b></b><b></b>
     </div>
 
     <div class="chapitres">
-      <div class="chap" data-chap="0">
+<div class="chap" data-chap="0">
         <span class="mono">Automatisation IA · La Réunion</span>
-        <h1 class="dsp">Tes process tournent.<br>Sans toi.</h1>
-        <p>J'installe des systèmes n8n chez les PME. Tu décris ton activité, je te renvoie sous 24 h les trois tâches à automatiser en premier.</p>
+        <h1 class="dsp">Tout part<br>d’une seule idée.</h1>
+        <p>Une tâche que tu refais chaque semaine. C’est le point de départ — le reste, c’est de la mécanique.</p>
         <a href="#reserver" class="cta-film">Recevoir mon audit gratuit →</a>
       </div>
 
       <div class="chap" data-chap="1">
-        <span class="mono">01 — Le constat</span>
-        <h2 class="dsp">Tu sais qu'il faut poster tous les jours.</h2>
-        <p>Tu ne le fais pas. Pas par manque d'idées — parce que chaque publication te coûte une heure que tu n'as pas, et que la semaine suivante recommence à zéro.</p>
+        <span class="mono">Étape 01</span>
+        <h2 class="dsp">On parle de<br>ton activité.</h2>
+        <p>Tes objectifs, ton ton, les réseaux à couvrir. C’est là qu’on décide ce qui mérite d’être automatisé — et ce qui n’en vaut pas la peine.</p>
       </div>
 
       <div class="chap" data-chap="2">
-        <span class="mono">02 — Le système</span>
-        <h2 class="dsp">Un seul contenu, quatre réseaux.</h2>
-        <p>L'IA rédige, adapte le format à chaque plateforme, planifie et publie. Instagram, LinkedIn, Facebook, TikTok. Le workflow tourne, tu regardes les résultats.</p>
+        <span class="mono">Étape 02</span>
+        <h2 class="dsp">On installe<br>l’automatisation.</h2>
+        <p>Les workflows n8n sont construits, branchés sur tes outils, mis en production. L’IA génère, adapte à chaque réseau, planifie.</p>
       </div>
 
       <div class="chap" data-chap="3">
-        <span class="mono">03 — Le résultat</span>
-        <h2 class="dsp">Tu récupères tes semaines.</h2>
-        <p>Ton audience voit du contenu en continu sans que tu y penses. Tu ajustes quand tu veux. Le reste tourne seul.</p>
+        <span class="mono">Étape 03</span>
+        <h2 class="dsp">Ça publie<br>tout seul.</h2>
+        <p>Le système tourne sans intervention. Tu n’as plus de publication à écrire ni à programmer. Tu regardes, tu ajustes.</p>
+      </div>
+
+      <div class="chap" data-chap="4">
+        <span class="mono">De l’autre côté</span>
+        <h2 class="dsp">Tu ne pilotes plus.<br>Tu supervises.</h2>
+        <p>Ton activité continue de tourner pendant que tu fais autre chose. C’est tout ce que l’automatisation promet — et tout ce qu’elle doit tenir.</p>
         <a href="#calculateur" class="cta-film">Calculer ce que ça te coûte →</a>
       </div>
     </div>
@@ -548,7 +554,7 @@ footer{border-top:1px solid var(--ligne);padding:42px 0;color:var(--mut);font-si
    on décode donc des images fixes et on ne dessine que celles déjà chargées.
    --------------------------------------------------------------------------- */
 (function () {
-  var NB = 120;
+  var NB = 140;
   var film = document.getElementById('film');
   var toile = document.getElementById('toile');
   var ctx = toile.getContext('2d', { alpha: false });
@@ -622,7 +628,7 @@ footer{border-top:1px solid var(--ligne);padding:42px 0;color:var(--mut);font-si
       peindre(Math.min(NB - 1, Math.round(p * (NB - 1))));
 
       // Les 4 chapitres se relaient sur la course, avec un fondu croisé.
-      var pos = p * 4;
+      var pos = p * 5;
       // Le chapitre le PLUS PROCHE gagne, toujours un seul. Un seuil laissait
       // passer deux chapitres a chaque frontiere : ils sont positionnes au meme
       // endroit, donc ils se superposaient.
@@ -633,7 +639,7 @@ footer{border-top:1px solid var(--ligne);padding:42px 0;color:var(--mut);font-si
       });
       chaps.forEach(function (c, i) { c.classList.toggle('vu', i === meilleur); });
       barres.forEach(function (b, i) {
-        b.classList.toggle('on', Math.floor(Math.min(3.99, pos)) === i);
+        b.classList.toggle('on', Math.floor(Math.min(4.99, pos)) === i);
       });
       defiler.style.opacity = p > 0.04 ? '0' : '1';
     });
@@ -641,13 +647,13 @@ footer{border-top:1px solid var(--ligne);padding:42px 0;color:var(--mut);font-si
 
   if (reduit) {
     // Pas de scrub : on montre une image forte et tous les chapitres.
-    charger(20, true);
-    imgs[20].onload = function () { prets[20] = true; peindre(20); };
+    charger(30, true);
+    imgs[30].onload = function () { prets[20] = true; peindre(20); };
     chaps.forEach(function (c) { c.classList.add('vu'); });
   } else {
     dimensionner();
     // On charge d'abord les images qu'on va voir en premier, puis le reste.
-    [0, 20, 40, 60, 80, 100, 119].forEach(function (i) { charger(i, true); });
+    [0, 20, 45, 70, 95, 120, 139].forEach(function (i) { charger(i, true); });
     var n = 0;
     (function suite() {
       while (n < NB && imgs[n]) n++;
