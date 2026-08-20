@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Prévisualisation — Pourquoi je copie ce format</title>
+  <style>
+    :root { --bg:#090a0e; --panel:#12141a; --border:#2a2d36; --text:#eceef2; --muted:#9da3af; --accent:#d8c88a; }
+    * { box-sizing:border-box; }
+    body { margin:0; min-height:100vh; padding:1.5rem 1rem 3rem; background:radial-gradient(circle at 50% 8%,#1d1a14 0,#090a0e 46%); color:var(--text); font-family:system-ui,sans-serif; }
+    .wrap { max-width:520px; margin:0 auto; }
+    .back { display:inline-block; margin-bottom:1rem; color:var(--muted); font-size:.8rem; text-decoration:none; }
+    .back:hover { color:var(--text); }
+    header { margin-bottom:1.1rem; }
+    h1 { margin:0 0 .4rem; font:400 1.5rem/1.22 Georgia,"Times New Roman",serif; }
+    header p { margin:0; color:var(--muted); font-size:.82rem; line-height:1.5; }
+    .card { overflow:hidden; border:1px solid var(--border); border-radius:18px; background:var(--panel); box-shadow:0 24px 70px rgba(0,0,0,.4); }
+    .stage { position:relative; overflow:hidden; aspect-ratio:9/16; background:#020306; }
+    video { position:absolute; inset:0; display:block; width:100%; height:100%; border:0; background:#020306; object-fit:contain; }
+    .meta { padding:1rem 1.15rem 1.2rem; color:var(--muted); font-size:.78rem; line-height:1.65; }
+    .meta b { color:var(--text); font-weight:600; }
+    h2 { margin:1.9rem 0 .6rem; font:600 .78rem/1.3 system-ui,sans-serif; letter-spacing:.14em; text-transform:uppercase; color:var(--accent); }
+    table { width:100%; border-collapse:collapse; font-size:.74rem; }
+    td, th { padding:.42rem .5rem; border-bottom:1px solid #1e212a; text-align:left; vertical-align:top; color:var(--muted); }
+    th { color:#c4c9d2; font-weight:600; }
+    td.t { color:var(--accent); white-space:nowrap; font-variant-numeric:tabular-nums; }
+    tr.breath td { color:#6f7580; font-style:italic; }
+    tr.mark td { color:var(--text); }
+    .keys { display:grid; grid-template-columns:repeat(auto-fit,minmax(120px,1fr)); gap:.55rem; margin-top:.5rem; }
+    .k { border:1px solid var(--border); border-radius:11px; padding:.6rem .7rem; background:#0f1116; }
+    .k span { display:block; font-size:.64rem; letter-spacing:.1em; text-transform:uppercase; color:#6f7580; margin-bottom:.2rem; }
+    .k b { font-size:.9rem; font-weight:600; color:var(--text); font-variant-numeric:tabular-nums; }
+    .note { margin-top:.7rem; padding:.75rem .85rem; border:1px solid #2a2d36; border-left:2px solid var(--accent); border-radius:0 10px 10px 0; background:#0f1116; color:var(--muted); font-size:.74rem; line-height:1.6; }
+    footer { margin-top:1.6rem; color:#6f7580; text-align:center; font-size:.7rem; }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <a class="back" href="/">← Toutes les vidéos</a>
+    <header>
+      <h1>Pourquoi je copie ce format</h1>
+      <p>Essai contemplatif · 9:16 · 86 s · voix clonée · aucun sous-titre, aucun appel à l'action</p>
+    </header>
+
+    <section class="card">
+      <div class="stage">
+        <video src="essai-ego-pourquoi-ce-format.mp4" controls preload="metadata" playsinline
+               title="Pourquoi je copie ce format — essai contemplatif"></video>
+      </div>
+      <div class="meta">
+        Le film ouvre sur une phrase sans rapport apparent — <b>« J'ai décidé de manger trente
+        pour cent moins de viande cette année »</b> — et ne referme le lien qu'à la
+        <b>38ᵉ</b> puis à la <b>73ᵉ</b> seconde. Cet écart est le seul mécanisme de rétention
+        de la vidéo : il n'a pas été raccourci.
+      </div>
+    </section>
+
+    <h2>Mesures</h2>
+    <div class="keys">
+      <div class="k"><span>Durée</span><b>86,0 s</b></div>
+      <div class="k"><span>Loudness</span><b>−16,1 LUFS</b></div>
+      <div class="k"><span>Crête vraie</span><b>−3,0 dBTP</b></div>
+      <div class="k"><span>F0 médian</span><b id="f0">—</b></div>
+      <div class="k"><span>Parole / silence</span><b>57,0 / 29,0 s</b></div>
+      <div class="k"><span>Avatar à l'écran</span><b>25,5 s</b></div>
+    </div>
+
+    <h2>Découpage</h2>
+    <table>
+      <tr><th>t</th><th>Contenu</th></tr>
+      <tr class="breath"><td class="t">0,0</td><td>l'image existe avant la voix</td></tr>
+      <tr><td class="t">1,6</td><td>J'ai décidé de manger trente pour cent moins de viande cette année.</td></tr>
+      <tr class="breath"><td class="t">4,5</td><td>silence — deux secondes pleines</td></tr>
+      <tr><td class="t">7,4</td><td>Tu te demandes pourquoi je te raconte ça. Moi aussi, au début.</td></tr>
+      <tr><td class="t">12,3</td><td>Il y a quelques semaines, j'ai regardé une vidéo. Elle parlait d'extraterrestres…</td></tr>
+      <tr class="breath"><td class="t">17,8</td><td>un temps</td></tr>
+      <tr><td class="t">20,1</td><td>Je l'ai regardée parce que le format était beau.</td></tr>
+      <tr><td class="t">26,9</td><td>… j'avais changé quelque chose dans ma vie.</td></tr>
+      <tr class="breath"><td class="t">30,9</td><td>un temps</td></tr>
+      <tr class="mark"><td class="t">32,8 → 38,0</td><td><b>1re fermeture du lien</b> — « Trente pour cent. Mais ça faisait des années… »</td></tr>
+      <tr class="breath"><td class="t">38,0</td><td>2,4 s — on laisse encaisser</td></tr>
+      <tr><td class="t">40,4</td><td>J'ai copié le format.</td></tr>
+      <tr class="breath"><td class="t">44,7</td><td>un temps</td></tr>
+      <tr><td class="t">46,7</td><td>Le rythme, les silences, la façon dont ça prend son temps.</td></tr>
+      <tr><td class="t">54,5</td><td>Et j'ai voulu voir si ça marchait quand c'était moi…</td></tr>
+      <tr><td class="t">64,6</td><td>Ce que tu regardes, c'est le test.</td></tr>
+      <tr class="breath"><td class="t">66,1</td><td><b>3,0 s — la plus longue respiration du film</b></td></tr>
+      <tr class="mark"><td class="t">69,1 → 73,5</td><td><b>2e fermeture du lien</b> — « si tu es encore là après une minute, c'est que le format tient »</td></tr>
+      <tr><td class="t">75,4</td><td>Parce qu'une vidéo a changé ce que je mange.</td></tr>
+      <tr class="breath"><td class="t">79,5</td><td>un temps</td></tr>
+      <tr><td class="t">81,4</td><td>Alors je me dis qu'une vidéo peut changer autre chose.</td></tr>
+      <tr class="breath"><td class="t">83,7 → 86,0</td><td>le blanc se referme en silence</td></tr>
+    </table>
+
+    <h2>Musique</h2>
+    <div class="note">
+      <b style="color:#eceef2">Voxscape</b> — Mixkit #571, <b style="color:#eceef2">Mixkit Stock Music Free License</b>
+      (relevée le 20/08/2026). Usage commercial et <b style="color:#eceef2">publicitaire explicitement
+      autorisé</b>, sans attribution : « can be used in your commercial and non-commercial projects
+      for free… on any web or social media platform… podcasts and advertisements ».
+      Fenêtre 95 → 181 s, mesurée plate à 1,2 dB sur 95 s, zéro attaque percussive.
+      Le lit ne remonte que de <b style="color:#eceef2">3,1 à 3,6 dB</b> dans une respiration :
+      il accompagne, il ne pousse jamais.
+    </div>
+
+    <h2>Parti pris</h2>
+    <div class="note">
+      Aucun appel à l'action, aucun sous-titre, aucune image illustrative. Crédits de génération
+      d'images à zéro : le film est porté par <b style="color:#eceef2">25,5 s de banque avatar
+      (une seule tenue, zéro plan réutilisé deux fois)</b> et par un décor entièrement
+      dessiné — une lumière basse dans l'atmosphère, approchée pendant 86 s jusqu'au blanc.
+    </div>
+
+    <footer>previsualisation.automatisationboost.com</footer>
+  </main>
+</body>
+</html>
