@@ -1,0 +1,247 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 400" fill="none">
+  <defs>
+    <linearGradient id="laptopBodyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1a3a6b"/>
+      <stop offset="100%" stop-color="#002855"/>
+    </linearGradient>
+    <linearGradient id="screenGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#001a3a"/>
+      <stop offset="100%" stop-color="#002060"/>
+    </linearGradient>
+    <linearGradient id="barGreen" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#10b981"/>
+      <stop offset="100%" stop-color="#059669"/>
+    </linearGradient>
+    <linearGradient id="barBlue" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#80b3ff"/>
+      <stop offset="100%" stop-color="#004080"/>
+    </linearGradient>
+    <linearGradient id="glowBlue" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#004080" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#80b3ff" stop-opacity="0"/>
+    </linearGradient>
+    <filter id="cardShadow">
+      <feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="#001a3a" flood-opacity="0.35"/>
+    </filter>
+    <filter id="glowFilter">
+      <feGaussianBlur stdDeviation="6" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <clipPath id="screenClip">
+      <rect x="72" y="28" width="310" height="210" rx="4"/>
+    </clipPath>
+  </defs>
+
+  <!-- Background glow -->
+  <ellipse cx="230" cy="220" rx="200" ry="150" fill="url(#glowBlue)" opacity="0.5"/>
+
+  <!-- ===== LAPTOP ===== -->
+  <!-- Laptop base / keyboard -->
+  <path d="M40 258 L420 258 L440 295 L20 295 Z" fill="url(#laptopBodyGrad)" rx="4"/>
+  <!-- Trackpad -->
+  <rect x="185" y="270" width="90" height="14" rx="5" fill="#0d2a4a" stroke="#1a4070" stroke-width="1"/>
+  <!-- Keyboard dots (simplified) -->
+  <g fill="#1a4070" opacity="0.6">
+    <rect x="55" y="263" width="16" height="6" rx="1.5"/>
+    <rect x="77" y="263" width="16" height="6" rx="1.5"/>
+    <rect x="99" y="263" width="16" height="6" rx="1.5"/>
+    <rect x="121" y="263" width="16" height="6" rx="1.5"/>
+    <rect x="143" y="263" width="16" height="6" rx="1.5"/>
+    <rect x="289" y="263" width="16" height="6" rx="1.5"/>
+    <rect x="311" y="263" width="16" height="6" rx="1.5"/>
+    <rect x="333" y="263" width="16" height="6" rx="1.5"/>
+    <rect x="355" y="263" width="16" height="6" rx="1.5"/>
+    <rect x="377" y="263" width="16" height="6" rx="1.5"/>
+  </g>
+  <!-- Hinge -->
+  <rect x="72" y="254" width="310" height="6" rx="2" fill="#1a3a6b"/>
+
+  <!-- Laptop lid / screen bezel -->
+  <rect x="58" y="16" width="338" height="240" rx="10" fill="url(#laptopBodyGrad)" filter="url(#cardShadow)"/>
+  <!-- Screen area -->
+  <rect x="72" y="28" width="310" height="210" rx="4" fill="url(#screenGrad)"/>
+
+  <!-- ===== SCREEN CONTENT ===== -->
+  <g clip-path="url(#screenClip)">
+
+    <!-- Header bar -->
+    <rect x="72" y="28" width="310" height="24" fill="#001235"/>
+    <circle cx="87" cy="40" r="4.5" fill="#ef4444" opacity="0.7"/>
+    <circle cx="100" cy="40" r="4.5" fill="#f59e0b" opacity="0.7"/>
+    <circle cx="113" cy="40" r="4.5" fill="#10b981" opacity="0.7"/>
+    <text x="200" y="44" font-family="Inter, Arial, sans-serif" font-size="8" fill="rgba(255,255,255,0.5)" text-anchor="middle">dashboard.seopro.fr</text>
+
+    <!-- Sidebar -->
+    <rect x="72" y="52" width="56" height="186" fill="#001640"/>
+    <rect x="78" y="64" width="44" height="24" rx="5" fill="#004080"/>
+    <text x="100" y="79" font-family="Inter, Arial, sans-serif" font-size="7.5" fill="white" text-anchor="middle" font-weight="600">Analytics</text>
+    <g fill="rgba(128,179,255,0.5)">
+      <rect x="78" y="95" width="44" height="18" rx="4"/>
+      <rect x="78" y="119" width="44" height="18" rx="4"/>
+      <rect x="78" y="143" width="44" height="18" rx="4"/>
+      <rect x="78" y="167" width="44" height="18" rx="4"/>
+    </g>
+    <text x="100" y="107" font-family="Inter, Arial, sans-serif" font-size="6.5" fill="rgba(255,255,255,0.6)" text-anchor="middle">Mots-clés</text>
+    <text x="100" y="131" font-family="Inter, Arial, sans-serif" font-size="6.5" fill="rgba(255,255,255,0.6)" text-anchor="middle">Backlinks</text>
+    <text x="100" y="155" font-family="Inter, Arial, sans-serif" font-size="6.5" fill="rgba(255,255,255,0.6)" text-anchor="middle">Performance</text>
+    <text x="100" y="179" font-family="Inter, Arial, sans-serif" font-size="6.5" fill="rgba(255,255,255,0.6)" text-anchor="middle">Rapports</text>
+
+    <!-- Main content area -->
+    <rect x="128" y="52" width="254" height="186" fill="#002040"/>
+
+    <!-- Title bar in content -->
+    <text x="138" y="68" font-family="Inter, Arial, sans-serif" font-size="9" fill="white" font-weight="700">Tableau de bord SEO</text>
+    <rect x="330" y="58" width="40" height="14" rx="5" fill="#004080"/>
+    <text x="350" y="68" font-family="Inter, Arial, sans-serif" font-size="7" fill="white" text-anchor="middle">+ Rapport</text>
+
+    <!-- KPI Cards row -->
+    <!-- Card 1 - Trafic -->
+    <rect x="134" y="76" width="70" height="46" rx="5" fill="#001a40" stroke="rgba(128,179,255,0.2)" stroke-width="1"/>
+    <text x="144" y="90" font-family="Inter, Arial, sans-serif" font-size="6.5" fill="rgba(255,255,255,0.5)">Trafic Organique</text>
+    <text x="144" y="103" font-family="Montserrat, Arial, sans-serif" font-size="12" fill="white" font-weight="700">24,891</text>
+    <text x="144" y="116" font-family="Inter, Arial, sans-serif" font-size="6.5" fill="#10b981">▲ +38%</text>
+
+    <!-- Card 2 - Position -->
+    <rect x="210" y="76" width="70" height="46" rx="5" fill="#001a40" stroke="rgba(128,179,255,0.2)" stroke-width="1"/>
+    <text x="220" y="90" font-family="Inter, Arial, sans-serif" font-size="6.5" fill="rgba(255,255,255,0.5)">Position moy.</text>
+    <text x="220" y="103" font-family="Montserrat, Arial, sans-serif" font-size="12" fill="white" font-weight="700">#4.2</text>
+    <text x="220" y="116" font-family="Inter, Arial, sans-serif" font-size="6.5" fill="#10b981">▲ +6 pos.</text>
+
+    <!-- Card 3 - Score -->
+    <rect x="286" y="76" width="84" height="46" rx="5" fill="#001a40" stroke="rgba(128,179,255,0.2)" stroke-width="1"/>
+    <text x="296" y="90" font-family="Inter, Arial, sans-serif" font-size="6.5" fill="rgba(255,255,255,0.5)">Score SEO</text>
+    <text x="296" y="103" font-family="Montserrat, Arial, sans-serif" font-size="12" fill="#10b981" font-weight="700">92/100</text>
+    <text x="296" y="116" font-family="Inter, Arial, sans-serif" font-size="6.5" fill="#10b981">▲ Excellent</text>
+
+    <!-- Line chart -->
+    <rect x="134" y="128" width="140" height="100" rx="5" fill="#001a40" stroke="rgba(128,179,255,0.15)" stroke-width="1"/>
+    <text x="144" y="141" font-family="Inter, Arial, sans-serif" font-size="7.5" fill="white" font-weight="600">Évolution du trafic</text>
+
+    <!-- Chart grid lines -->
+    <g stroke="rgba(255,255,255,0.05)" stroke-width="0.8">
+      <line x1="134" y1="165" x2="274" y2="165"/>
+      <line x1="134" y1="180" x2="274" y2="180"/>
+      <line x1="134" y1="195" x2="274" y2="195"/>
+      <line x1="134" y1="210" x2="274" y2="210"/>
+    </g>
+
+    <!-- Chart area fill -->
+    <path d="M145,210 L162,198 L179,200 L196,185 L213,188 L230,172 L247,175 L264,158 L264,220 L145,220 Z"
+      fill="url(#barBlue)" opacity="0.15"/>
+
+    <!-- Chart line -->
+    <polyline points="145,210 162,198 179,200 196,185 213,188 230,172 247,175 264,158"
+      fill="none" stroke="#80b3ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+
+    <!-- Chart dots -->
+    <g fill="#80b3ff">
+      <circle cx="145" cy="210" r="2.5"/>
+      <circle cx="162" cy="198" r="2.5"/>
+      <circle cx="179" cy="200" r="2.5"/>
+      <circle cx="196" cy="185" r="2.5"/>
+      <circle cx="213" cy="188" r="2.5"/>
+      <circle cx="230" cy="172" r="2.5"/>
+      <circle cx="247" cy="175" r="2.5"/>
+      <circle cx="264" cy="158" r="3.5"/>
+    </g>
+
+    <!-- Keyword rankings table -->
+    <rect x="280" y="128" width="94" height="100" rx="5" fill="#001a40" stroke="rgba(128,179,255,0.15)" stroke-width="1"/>
+    <text x="290" y="141" font-family="Inter, Arial, sans-serif" font-size="7.5" fill="white" font-weight="600">Top Mots-clés</text>
+    <!-- Table rows -->
+    <g font-family="Inter, Arial, sans-serif" font-size="6.5">
+      <text x="290" y="155" fill="rgba(255,255,255,0.7)">référencement seo</text>
+      <text x="354" y="155" fill="#10b981" text-anchor="end">#1</text>
+      <line x1="286" y1="159" x2="372" y2="159" stroke="rgba(255,255,255,0.05)" stroke-width="0.8"/>
+
+      <text x="290" y="170" fill="rgba(255,255,255,0.7)">agence seo paris</text>
+      <text x="354" y="170" fill="#10b981" text-anchor="end">#3</text>
+      <line x1="286" y1="174" x2="372" y2="174" stroke="rgba(255,255,255,0.05)" stroke-width="0.8"/>
+
+      <text x="290" y="185" fill="rgba(255,255,255,0.7)">audit seo gratuit</text>
+      <text x="354" y="185" fill="#f59e0b" text-anchor="end">#5</text>
+      <line x1="286" y1="189" x2="372" y2="189" stroke="rgba(255,255,255,0.05)" stroke-width="0.8"/>
+
+      <text x="290" y="200" fill="rgba(255,255,255,0.7)">optimisation seo</text>
+      <text x="354" y="200" fill="#f59e0b" text-anchor="end">#7</text>
+      <line x1="286" y1="204" x2="372" y2="204" stroke="rgba(255,255,255,0.05)" stroke-width="0.8"/>
+
+      <text x="290" y="215" fill="rgba(255,255,255,0.7)">netlinking service</text>
+      <text x="354" y="215" fill="#ef4444" text-anchor="end">#12</text>
+    </g>
+
+  </g>
+  <!-- Screen border / bezel reflection -->
+  <rect x="72" y="28" width="310" height="210" rx="4" fill="none" stroke="rgba(128,179,255,0.12)" stroke-width="1"/>
+
+  <!-- ===== FLOATING CARDS / BADGES ===== -->
+
+  <!-- Badge: +280% Traffic -->
+  <g filter="url(#cardShadow)" transform="translate(385, 60)">
+    <rect width="112" height="52" rx="10" fill="white"/>
+    <rect width="112" height="52" rx="10" fill="#f0f9ff" stroke="rgba(0,64,128,0.1)" stroke-width="1"/>
+    <text x="12" y="20" font-family="Inter, Arial, sans-serif" font-size="8" fill="#5a6a8a">Croissance trafic</text>
+    <text x="12" y="37" font-family="Montserrat, Arial, sans-serif" font-size="18" fill="#10b981" font-weight="800">+280%</text>
+    <!-- Tiny sparkline -->
+    <polyline points="70,38 80,28 90,32 100,20" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="100" cy="20" r="3" fill="#10b981"/>
+  </g>
+
+  <!-- Badge: Rank #1 -->
+  <g filter="url(#cardShadow)" transform="translate(390, 132)">
+    <rect width="100" height="52" rx="10" fill="#004080"/>
+    <text x="14" y="21" font-family="Inter, Arial, sans-serif" font-size="8" fill="rgba(255,255,255,0.7)">Classement Google</text>
+    <text x="14" y="40" font-family="Montserrat, Arial, sans-serif" font-size="20" fill="white" font-weight="900">#1</text>
+    <!-- Star -->
+    <text x="70" y="40" font-size="18" fill="#f59e0b">★</text>
+  </g>
+
+  <!-- Badge: Core Web Vitals - Score 98 -->
+  <g filter="url(#cardShadow)" transform="translate(380, 204)">
+    <rect width="116" height="52" rx="10" fill="white" stroke="rgba(0,64,128,0.08)" stroke-width="1"/>
+    <text x="12" y="20" font-family="Inter, Arial, sans-serif" font-size="8" fill="#5a6a8a">Core Web Vitals</text>
+    <!-- Progress bar -->
+    <rect x="12" y="27" width="90" height="8" rx="4" fill="#e8f0ff"/>
+    <rect x="12" y="27" width="88" height="8" rx="4" fill="#004080"/>
+    <text x="12" y="45" font-family="Montserrat, Arial, sans-serif" font-size="10" fill="#004080" font-weight="700">Score: 98/100</text>
+  </g>
+
+  <!-- Badge: Backlinks floating top left -->
+  <g filter="url(#cardShadow)" transform="translate(5, 80)">
+    <rect width="100" height="50" rx="10" fill="white" stroke="rgba(0,64,128,0.08)" stroke-width="1"/>
+    <text x="12" y="19" font-family="Inter, Arial, sans-serif" font-size="8" fill="#5a6a8a">Backlinks qualité</text>
+    <text x="12" y="36" font-family="Montserrat, Arial, sans-serif" font-size="16" fill="#004080" font-weight="800">1,248</text>
+    <text x="12" y="47" font-family="Inter, Arial, sans-serif" font-size="7" fill="#10b981">▲ +64 ce mois</text>
+  </g>
+
+  <!-- Decorative elements -->
+  <!-- Floating rings -->
+  <circle cx="468" cy="320" r="30" fill="none" stroke="#80b3ff" stroke-opacity="0.2" stroke-width="2"/>
+  <circle cx="468" cy="320" r="18" fill="none" stroke="#80b3ff" stroke-opacity="0.15" stroke-width="1.5"/>
+  <circle cx="468" cy="320" r="6" fill="#80b3ff" fill-opacity="0.3"/>
+
+  <circle cx="52" cy="340" r="22" fill="none" stroke="#80b3ff" stroke-opacity="0.15" stroke-width="1.5"/>
+  <circle cx="52" cy="340" r="10" fill="none" stroke="#80b3ff" stroke-opacity="0.1" stroke-width="1"/>
+
+  <!-- Dots -->
+  <g fill="#80b3ff" fill-opacity="0.4">
+    <circle cx="440" cy="370" r="3"/>
+    <circle cx="460" cy="370" r="3"/>
+    <circle cx="480" cy="370" r="3"/>
+    <circle cx="440" cy="390" r="3"/>
+    <circle cx="460" cy="390" r="3"/>
+    <circle cx="480" cy="390" r="3"/>
+  </g>
+
+  <g fill="#80b3ff" fill-opacity="0.3">
+    <circle cx="20" cy="155" r="3"/>
+    <circle cx="40" cy="155" r="3"/>
+    <circle cx="20" cy="175" r="3"/>
+    <circle cx="40" cy="175" r="3"/>
+    <circle cx="20" cy="195" r="3"/>
+    <circle cx="40" cy="195" r="3"/>
+  </g>
+</svg>

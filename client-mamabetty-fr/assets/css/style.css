@@ -1,0 +1,306 @@
+/* ============================================================
+   MAMA BETTY - Restaurant Steakhouse Laxou
+   Custom Styles – Tailwind CSS Extended
+   ============================================================ */
+
+/* ---------- CSS Variables ---------- */
+:root {
+  --primary: #f6d29f;
+  --primary-dark: #e8b96a;
+  --secondary: #333333;
+  --secondary-light: #555555;
+  --dark: #1a1a1a;
+  --cream: #fdf8f0;
+  --transition-base: 0.3s ease;
+}
+
+/* ---------- Base Reset & Scroll ---------- */
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  overflow-x: hidden;
+}
+
+/* ---------- NAVBAR ---------- */
+#navbar {
+  background: transparent;
+}
+
+#navbar.scrolled {
+  background: rgba(26, 26, 26, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(246, 210, 159, 0.15);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
+}
+
+.nav-link {
+  position: relative;
+}
+
+.nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: var(--primary);
+  border-radius: 2px;
+  transition: width var(--transition-base);
+}
+
+.nav-link:hover::after,
+.nav-link.active::after {
+  width: 100%;
+}
+
+/* ---------- HERO ---------- */
+.hero-overlay {
+  background: linear-gradient(
+    to bottom,
+    rgba(26, 26, 26, 0.55) 0%,
+    rgba(26, 26, 26, 0.40) 40%,
+    rgba(26, 26, 26, 0.85) 100%
+  );
+}
+
+.hero-title {
+  text-shadow: 0 2px 20px rgba(0, 0, 0, 0.4);
+}
+
+/* ---------- SECTION TAGS ---------- */
+.section-tag {
+  letter-spacing: 0.12em;
+}
+
+/* ---------- ATOUT CARDS ---------- */
+.atout-card {
+  transition: transform var(--transition-base);
+}
+
+.atout-card:hover {
+  transform: translateY(-4px);
+}
+
+/* ---------- AVIS CARDS ---------- */
+.avis-card {
+  transition: all var(--transition-base);
+}
+
+.avis-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+}
+
+/* ---------- PARTNER LOGO CARDS ---------- */
+.partner-logo-card {
+  cursor: pointer;
+}
+
+.partner-logo-card img {
+  max-height: 56px;
+  width: auto;
+  max-width: 100%;
+}
+
+/* ---------- MENU CATEGORY CARDS ---------- */
+.menu-category-card {
+  transition: all var(--transition-base);
+  cursor: default;
+}
+
+.menu-category-card:hover {
+  transform: translateY(-2px);
+  background: rgba(246, 210, 159, 0.08);
+}
+
+/* ---------- SCROLL REVEAL ANIMATIONS ---------- */
+.reveal-element {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+
+.reveal-element.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ---------- KEYFRAME ANIMATIONS ---------- */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(246, 210, 159, 0.4); }
+  50%       { box-shadow: 0 0 0 12px rgba(246, 210, 159, 0); }
+}
+
+/* ---------- FORM STYLES ---------- */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+  opacity: 0.5;
+  cursor: pointer;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(246, 210, 159, 0.2);
+}
+
+/* ---------- BACK TO TOP BUTTON ---------- */
+#back-to-top.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+#back-to-top:hover {
+  animation: pulse-glow 1.5s infinite;
+}
+
+/* ---------- MOBILE MENU ---------- */
+#mobile-menu {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s ease;
+  display: none;
+}
+
+#mobile-menu.open {
+  max-height: 500px;
+  display: block;
+}
+
+/* ---------- HAMBURGER ICON ANIMATION ---------- */
+#menu-toggle.open .menu-bar:nth-child(1) {
+  transform: translateY(8px) rotate(45deg);
+}
+
+#menu-toggle.open .menu-bar:nth-child(2) {
+  opacity: 0;
+  transform: scaleX(0);
+}
+
+#menu-toggle.open .menu-bar:nth-child(3) {
+  transform: translateY(-8px) rotate(-45deg);
+}
+
+/* ---------- SCROLLBAR CUSTOMIZATION ---------- */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--dark);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(246, 210, 159, 0.4);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary);
+}
+
+/* ---------- SELECTION ---------- */
+::selection {
+  background: var(--primary);
+  color: var(--secondary);
+}
+
+/* ---------- FOCUS VISIBLE ---------- */
+:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* ---------- LAZY LOAD FADE ---------- */
+img[loading="lazy"] {
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+img[loading="lazy"].loaded {
+  opacity: 1;
+}
+
+/* ---------- IFRAME MAP ---------- */
+iframe {
+  display: block;
+  border: none;
+}
+
+/* ---------- RESPONSIVE HELPERS ---------- */
+@media (max-width: 640px) {
+  .hero-title {
+    font-size: 2.5rem;
+    line-height: 1.2;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+/* ---------- GALLERY GRID ---------- */
+#galerie .grid {
+  grid-auto-rows: 180px;
+}
+
+#galerie .col-span-2.row-span-2 {
+  grid-row: span 2;
+  min-height: 368px !important;
+}
+
+#galerie .col-span-2:not(.row-span-2) {
+  min-height: 200px !important;
+}
+
+@media (max-width: 768px) {
+  #galerie .grid {
+    grid-auto-rows: 160px;
+  }
+  #galerie .col-span-2.row-span-2 {
+    min-height: 280px !important;
+  }
+}
+
+/* ---------- PRINT STYLES ---------- */
+@media print {
+  nav,
+  #back-to-top,
+  .hero-overlay {
+    display: none !important;
+  }
+}

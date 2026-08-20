@@ -1,0 +1,972 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sites clients — inventaire</title>
+<style>
+  :root{
+    --bg:#0a0a0f; --panel:#111117; --panel2:#16161e; --border:#242430;
+    --yellow:#f5d90a; --purple:#a855f7; --orange:#ff7a1a;
+    --green:#22c55e; --amber:#f59e0b; --red:#ef4444;
+    --text:#f2f2f5; --muted:#9a9aa8;
+    --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font);padding:1.5rem 1rem 4rem;-webkit-text-size-adjust:100%}
+  .wrap{max-width:1180px;margin:0 auto}
+  header h1{font-size:1.5rem;margin:0 0 .35rem;background:linear-gradient(90deg,var(--yellow),var(--orange));-webkit-background-clip:text;background-clip:text;color:transparent}
+  header p{color:var(--muted);font-size:.88rem;margin:0 0 1.2rem;line-height:1.5}
+  .stats{display:flex;flex-wrap:wrap;gap:.6rem;margin-bottom:1.2rem}
+  .stat{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:.6rem .9rem;font-size:.82rem;display:flex;align-items:center;gap:.45rem}
+  .stat b{font-size:1.1rem}
+  .controls{display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:1rem;position:sticky;top:0;background:var(--bg);padding:.6rem 0;z-index:5}
+  input[type=search]{flex:1 1 220px;min-width:0;background:var(--panel);border:1px solid var(--border);border-radius:9px;padding:.62rem .85rem;color:var(--text);font-size:.9rem;font-family:inherit}
+  input[type=search]:focus{outline:none;border-color:var(--yellow)}
+  .filters{display:flex;gap:.4rem;flex-wrap:wrap}
+  .filters button{background:var(--panel);border:1px solid var(--border);border-radius:999px;padding:.5rem .85rem;color:var(--muted);font-size:.8rem;font-weight:600;cursor:pointer;font-family:inherit}
+  .filters button[aria-pressed=true]{background:rgba(245,217,10,.12);border-color:var(--yellow);color:var(--yellow)}
+  table{width:100%;border-collapse:collapse;font-size:.86rem}
+  thead th{text-align:left;color:var(--muted);font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;font-weight:700;padding:.5rem .7rem;border-bottom:1px solid var(--border);white-space:nowrap}
+  tbody tr{border-bottom:1px solid var(--border)}
+  tbody tr:hover{background:var(--panel)}
+  td{padding:.8rem .7rem;vertical-align:top;line-height:1.45}
+  .c-client strong{display:block;font-size:.92rem}
+  .dir{display:block;color:var(--muted);font-size:.7rem;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;margin-top:.15rem;word-break:break-all}
+  .c-act{color:var(--muted);font-size:.8rem;white-space:nowrap}
+  .tel{color:var(--text);text-decoration:none;font-variant-numeric:tabular-nums;white-space:nowrap;border-bottom:1px dotted var(--muted)}
+  .src{display:block;color:var(--muted);font-size:.66rem;margin-top:.15rem}
+  .unknown{color:var(--muted);font-style:italic}
+  .btn{display:inline-block;background:rgba(245,217,10,.12);border:1px solid rgba(245,217,10,.35);color:var(--yellow);border-radius:8px;padding:.4rem .7rem;font-size:.78rem;font-weight:600;text-decoration:none;white-space:nowrap;margin:0 .3rem .3rem 0}
+  .btn:hover{background:rgba(245,217,10,.2)}
+  .btn.ghost{background:transparent;border-color:var(--border);color:var(--muted)}
+  .pill{display:inline-block;border-radius:999px;padding:.3rem .65rem;font-size:.74rem;font-weight:700;white-space:nowrap}
+  .p-ok{background:rgba(34,197,94,.14);color:var(--green);border:1px solid rgba(34,197,94,.35)}
+  .p-fix{background:rgba(245,158,11,.14);color:var(--amber);border:1px solid rgba(245,158,11,.35)}
+  .p-abandon{background:rgba(239,68,68,.14);color:var(--red);border:1px solid rgba(239,68,68,.35)}
+  .c-why{color:var(--muted);font-size:.79rem;max-width:32ch}
+  .c-why ul{margin:0;padding-left:1.05em}
+  .c-why li{margin-bottom:.25rem}
+  .none{color:#4a4a56}
+  .empty{padding:2rem;text-align:center;color:var(--muted)}
+  footer{margin-top:2rem;padding-top:1.2rem;border-top:1px solid var(--border);color:var(--muted);font-size:.76rem;line-height:1.6}
+  footer a{color:var(--orange)}
+  @media(max-width:760px){
+    body{padding:1rem .7rem 3rem}
+    thead{display:none}
+    tbody tr{display:block;background:var(--panel);border:1px solid var(--border);border-radius:12px;margin-bottom:.7rem;padding:.85rem}
+    td{display:block;padding:.28rem 0;max-width:none}
+    .c-act::before{content:"Activité — ";color:#5a5a66}
+    .c-why{max-width:none}
+    .c-why ul{padding-left:1.1em}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Sites clients — inventaire</h1>
+    <p>106 sites de démo recensés à la racine du dépôt, ouverts un par un dans un vrai navigateur (desktop 1280 px + mobile 390 px).
+    Chaque lien pointe vers une copie hébergée ici : ça s'envoie par message, là où une pièce jointe passerait à la trappe.
+    Les téléphones marqués <em>Sheet</em> viennent du Google Sheet « Lead n8n » ; ceux marqués <em>page</em> sont lus sur le site lui-même ; le reste est <em>inconnu</em> — jamais deviné.</p>
+  </header>
+
+  <div class="stats">
+    <div class="stat"><span class="pill p-ok">✅ Envoyable</span> <b>53</b></div>
+    <div class="stat"><span class="pill p-fix">⚠️ À corriger</span> <b>37</b></div>
+    <div class="stat"><span class="pill p-abandon">❌ À abandonner</span> <b>16</b></div>
+  </div>
+
+  <div class="controls">
+    <input type="search" id="q" placeholder="Chercher un client, une activité, un dossier…" autocomplete="off">
+    <div class="filters">
+      <button data-f="all" aria-pressed="true">Tous</button>
+      <button data-f="ok" aria-pressed="false">✅</button>
+      <button data-f="fix" aria-pressed="false">⚠️</button>
+      <button data-f="abandon" aria-pressed="false">❌</button>
+    </div>
+  </div>
+
+  <table>
+    <thead><tr><th>Client</th><th>Activité</th><th>Téléphone</th><th>Lien</th><th>État</th><th>Ce qui manque</th></tr></thead>
+    <tbody id="tb">
+<tr class="row s-ok" data-state="ok" data-q="au comptoir du potager au comptoir du potager – restaurant bistronomique à saint-denis, réunion au-comptoir-du-potager">
+  <td class="c-client"><strong>Au Comptoir du Potager</strong><span class="dir">au-comptoir-du-potager</span></td>
+  <td class="c-act">Restauration</td>
+  <td class="c-tel"><a class="tel" href="tel:+262262567437">+262 262 56 74 37</a><span class="src">page</span></td>
+  <td class="c-link"><a class="btn" href="/client-au-comptoir-du-potager/" target="_blank" rel="noopener">Ouvrir</a></td>
+  <td class="c-state"><span class="pill p-ok">✅ Envoyable</span></td>
+  <td class="c-why"><span class="none">—</span></td>
+</tr>
+<tr class="row s-ok" data-state="ok" data-q="beauséjour sportclub beauséjour sportclub : complexe sportif à sainte-marie - squash, golf, tennis &amp; fitnes beausejour-sportclub">
+  <td class="c-client"><strong>Beauséjour SportClub</strong><span class="dir">beausejour-sportclub</span></td>
+  <td class="c-act">Sport</td>
+  <td class="c-tel"><a class="tel" href="tel:+262262671081">+262 262 67 10 81</a><span class="src">page</span></td>
+  <td class="c-link"><a class="btn" href="/client-beausejour-sportclub/" target="_blank" rel="noopener">Ouvrir</a></td>
+  <td class="c-state"><span class="pill p-ok">✅ Envoyable</span></td>
+  <td class="c-why"><span class="none">—</span></td>
+</tr>
+<tr class="row s-ok" data-state="ok" data-q="bigmat brico 400 quincaillerie générale au tampon - bigmat brico 400, spécialiste en matériaux et outillage bigmat-brico400-quincaillerie-tampon">
+  <td class="c-client"><strong>BIGMAT Brico 400</strong><span class="dir">bigmat-brico400-quincaillerie-tampon</span></td>
+  <td class="c-act">Quincaillerie</td>
+  <td class="c-tel"><a class="tel" href="tel:+33974560144">+33 9 74 56 01 44</a><span class="src">page</span></td>
+  <td class="c-link"><a class="btn" href="/client-bigmat-brico400-quincaillerie-tampon/" target="_blank" rel="noopener">Ouvrir</a></td>
+  <td class="c-state"><span class="pill p-ok">✅ Envoyable</span></td>
+  <td class="c-why"><span class="none">—</span></td>
+</tr>
+<tr class="row s-ok" data-state="ok" data-q="blue — pêche au gros blue - pêche au gros à l'île de la réunion blue-peche-au-gros">
+  <td class="c-client"><strong>BLUE — Pêche au gros</strong><span class="dir">blue-peche-au-gros</span></td>
+  <td class="c-act">Pêche · Loisirs</td>
+  <td class="c-tel"><a class="tel" href="tel:+262692609010">+262 692 60 90 10</a><span class="src">page</span></td>
+  <td class="c-link"><a class="btn" href="/client-blue-peche-au-gros/" target="_blank" rel="noopener">Ouvrir</a></td>
+  <td class="c-state"><span class="pill p-ok">✅ Envoyable</span></td>
+  <td class="c-why"><span class="none">—</span></td>
+</tr>
+<tr class="row s-ok" data-state="ok" data-q="by glad café by glad café – boulangerie pâtisserie artisanale à saint-denis bygladcafe-optimisation-seo">
+  <td class="c-client"><strong>By Glad CAFÉ</strong><span class="dir">bygladcafe-optimisation-seo</span></td>
+  <td class="c-act">Boulangerie · Pâtisserie</td>
+  <td class="c-tel"><a class="tel" href="tel:+262262417403">+262 262 41 74 03</a><span class="src">Sheet</span></td>
+  <td class="c-link"><a class="btn" href="/client-bygladcafe-optimisation-seo/" target="_blank" rel="noopener">Ouvrir</a><a class="btn ghost" href="https://bygladcafe-optimisation-seo.automatisationboost.com" target="_blank" rel="noopener">En ligne</a></td>
+  <td class="c-state"><span class="pill p-ok">✅ Envoyable</span></td>
+  <td class="c-why"><span class="none">—</span></td>
+</tr>
+<tr class="row s-ok" data-state="ok" data-q="café coton réunion chemises homme café coton — élégance et style, -50% dès 2 articles chemises-homme">
+  <td class="c-client"><strong>Café Coton Réunion</strong><span class="dir">chemises-homme</span></td>
+  <td class="c-act">Café</td>
+  <td class="c-tel"><a class="tel" href="tel:+262262082942">+262 262 08 29 42</a><span class="src">Sheet</span></td>
+  <td class="c-link"><a class="btn" href="/client-chemises-homme/" target="_blank" rel="noopener">Ouvrir</a><a class="btn ghost" href="https://chemises-homme.automatisationboost.com" target="_blank" rel="noopener">En ligne</a></td>
+  <td class="c-state"><span class="pill p-ok">✅ Envoyable</span></td>
+  <td class="c-why"><span class="none">—</span></td>
+</tr>
+<tr class="row s-ok" data-state="ok" data-q="centre santé sport &amp; performance centre santé sport &amp; performance la réunion - kinésithérapie, analyse et préparation p centre-sante-sport-performance-la-reunion">
+  <td class="c-client"><strong>Centre Santé Sport &amp; Performance</strong><span class="dir">centre-sante-sport-performance-la-reunion</span></td>
+  <td class="c-act">Santé</td>
+  <td class="c-tel"><a class="tel" href="tel:0262781487">02 62 78 14 87</a><span class="src">page</span></td>
+  <td class="c-link"><a class="btn" href="/client-centre-sante-sport-performance-la-reunion/" target="_blank" rel="noopener">Ouvrir</a></td>
+  <td class="c-state"><span class="pill p-ok">✅ Envoyable</span></td>
+  <td class="c-why"><span class="none">—</span></td>
+</tr>
+<tr class="row s-ok" data-state="ok" data-q="club café club café - restaurant convivial à la réunion alliant saveurs créoles et cuisine maison club-cafe-la-reunion">
+  <td class="c-client"><strong>Club Café</strong><span class="dir">club-cafe-la-reunion</span></td>
+  <td class="c-act">Restauration</td>
+  <td class="c-tel"><a class="tel" href="tel:+262692109181">+262 692 10 91 81</a><span class="src">page</span></td>
+  <td class="c-link"><a class="btn" href="/client-club-cafe-la-reunion/" target="_blank" rel="noopener">Ouvrir</a></td>
+  <td class="c-state"><span class="pill p-ok">✅ Envoyable</span></td>
+  <td class="c-why"><span class="none">—</span></td>
+</tr>
+<tr class="row s-ok" data-state="ok" data-q="dan cake dan cake - créatrice de pâtisseries raffinées à saint-denis | la réunion dan-cake-patisserie">
+  <td class="c-client"><strong>Dan CaKe</strong><span class="dir">dan-cake-patisserie</span></td>
+  <td class="c-act">Boulangerie · Pâtisserie</td>
+  <td class="c-tel"><a class="tel" href="tel:+262692850959">+262 692 85 09 59</a><span class="src">page</span></td>
+  <td class="c-link"><a class="btn" href="/client-dan-cake-patisserie/" target="_blank" rel="noopener">Ouvrir</a></td>
+  <td class="c-state"><span class="pill p-ok">✅ Envoyable</span></td>
+  <td class="c-why"><span class="none">—</span></td>
+</tr>
+<tr class="row s-ok" data-state="ok" data-q="engen réunion engen réunion - votre réseau de stations-service et solutions énergétiques engen-reunion-optimisation-seo">
+  <td class="c-client"><strong>Engen Réunion</strong><span class="dir">engen-reunion-optimisation-seo</span></td>
+  <td class="c-act">Énergie</td>
+  <td class="c-tel"><a class="tel" href="tel:+262262427676">+262 262 42 76 76</a><span class="src">page</span></td>
+  <td class="c-link"><a class="btn" href="/client-engen-reunion-optimisation-seo/" target="_blank" rel="noopener">Ouvrir</a></td>
+  <td class="c-state"><span class="pill p-ok">✅ Envoyable</span></td>
+  <td class="c-why"><span class="none">—</span></td>
+</tr>
+<tr class="row s-ok" data-state="ok" data-q="gep santé réunion gep santé réunion - assistance respiratoire à domicile depuis 20 ans gep-sante-reunion">
+  <td class="c-client"><strong>GEP Santé Réunion</strong><span class="dir">gep-sante-reunion</span></td>
+  <td class="c-act">Santé</td>
+  <td class="c-tel"><a class="tel" href="tel:0262233826">02 62 23 38 26</a><span class="src">page</span></td>
+  <td class="c-link"><a class="btn" href="/client-gep-sante-reunion/" target="_blank" rel="noopener">Ouvrir</a></td>
+  <td class="c-state"><span class="pill p-ok">✅ Envoyable</span></td>
+  <td class="c-why"><span class="none">—</span></td>
+</tr>
+<tr class="row s-ok" data-state="ok" data-q="gîte matilona gîte matilona à sainte-rose, la réunion – piscine privée &amp; petit-déjeuner inclus gite-matilona-sainte-rose">
+  <td class="c-client"><strong>Gîte Matilona</strong><span class="dir">gite-matilona-sainte-rose</span></td>
+  <td class="c-act">Hébergement</td>
+  <td class="c-tel"><a class="tel" href="tel:+262692858686">+262 692 85 86 86</a><span class="src">page</span></td>
+  <td class="c-link"><a class="btn" href="/client-gite-matilona-sainte-rose/" target="_blank" rel="noopener">Ouvrir</a></td>
+  <td class="c-state"><span class="pill p-ok">✅ Envoyable</span></td>
+  <td class="c-why"><span class="none">—</span></td>
+</tr>
+<tr class="row s-ok" data-state="ok" data-q="giulietta giulietta - pizzeria artisanale à saint pierre, terre sainte, réunion giulietta-pizzeria-saint-pierre">
+  <td class="c-client"><strong>Giulietta</strong><span class="dir">giulietta-pizzeria-saint-pierre</span></td>
+  <td class="c-act">Pizzeria</td>
+  <td class="c-tel"><a class="tel" href="tel:0262122019">02 62 12 20 19</a><span class="src">page</span></td>
+  <td class="c-link"><a class="btn" href="/client-giulietta-pizzeria-saint-pierre/" target="_blank" rel="noopener">Ouvrir</a></td>
+  <td class="c-state"><span class="pill p-ok">✅ Envoyable</span></td>
+  <td class="c-why"><span class="none">—</span></td>
+</tr>
+<tr class="row s-ok" data-state="ok" data-q="hôtel austral saint-denis hôtel austral saint-denis — hôtel 3 étoiles la réunion | piscine, conférences hotel-austral-saint-denis">
+  <td class="c-client"><strong>Hôtel Austral Saint-Denis</strong><span class="dir">hotel-austral-saint-denis</span></td>
+  <td class="c-act">Hébergement</td>
+  <td class="c-tel"><a class="tel" href="tel:+262262948000">+262 262 94 80 00</a><span class="src">page</span></td>
+  <td class="c-link"><a class="btn" href="/client-hotel-austral-saint-denis/" target="_blank" rel="noopener">Ouvrir</a></td>
+  <td class="c-state"><span class="pill p-ok">✅ Envoyable</span></td>
+  <td class="c-why"><span class="none">—</span></td>
+</tr>
+<tr class="row s-ok" data-state="ok" data-q="k'mila pizza k'mila pizza - pizzerias à la réunion : st-pierre, st-joseph &amp; vincendo kmila-pizza-reunion">
+  <td class="c-client"><strong>K'Mila Pizza</strong><span class="dir">kmila-pizza-reunion</span></td>
+  <td class="c-act">Pizzeria</td>
+  <td class="c-tel"><a class="tel" href="tel:0262718879">02 62 71 88 79</a><span class="src">page</span></td>
+  <td class="c-link"><a class="btn" href="/client-kmila-pizza-reunion/" target="_blank" rel="noopener">Ouvrir</a></td>
+  <td class="c-state"><span class="pill p-ok">✅ Envoyable</span></td>
+  <td class="c-why"><span class="none">—</span></td>
+</tr>
+<tr class="row s-ok" data-state="ok" data-q="l'andalouse à saint joseph l'andalouse à saint joseph - pizzéria avec menu, photos et avis l-andalouse-saint-joseph">
+  <td class="c-client"><strong>L'andalouse à Saint Joseph</strong><span class="dir">l-andalouse-saint-joseph</span></td>
+  <td class="c-act">Pizzeria</td>
+  <td class="c-tel"><a class="tel" href="tel:0262982312">02 62 98 23 12</a><span class="src">page</span></td>
+  <td class="c-link"><a class="btn" href="/client-l-andalouse-saint-joseph/" target="_blank" rel="noopener">Ouvrir</a></td>
+  <td class="c-state"><span class="pill p-ok">✅ Envoyable</span></td>
+  <td class="c-why"><span class="none">—</span></td>
+</tr>
+<tr class="row s-ok" data-state="ok" data-q="la bande à clem éducateur canin comportementaliste à la réunion - la bande à clem educateur-canin-la-reunion">
+  <td class="c-client"><strong>La bande à Clem</strong><span class="dir">educateur-canin-la-reunion</span></td>
+  <td class="c-act">Services animaliers</td>
+  <td class="c-tel"><a class="tel" href="tel:+33787249794">+33 7 87 24 97 94</a><span class="src">page</span></td>
+  <td class="c-link"><a class="btn" href="/client-educateur-canin-la-reunion/" target="_blank" rel="noopener">Ouvrir</a></td>
+  <td class="c-state"><span class="pill p-ok">✅ Envoyable</span></td>
+  <td class="c-why"><span class="none">—</span></td>
+</tr>
+<tr class="row s-ok" data-state="ok" data-q="la casa blanca la casa blanca : un lieu pluriel et ensoleillé au cœur de saint-denis la-casa-blanca">
+  <td class="c-client"><strong>La Casa Blanca</strong><span class="dir">la-casa-blanca</span></td>
+  <td class="c-act">—</td>
+  <td class="c-tel"><a class="tel" href="tel:+262262735090">+262 262 73 50 90</a><span class="src">Sheet</span></td>
+  <td class="c-link"><a class="btn" href="/client-la-casa-blanca/" target="_blank" rel="noopener">Ouvrir</a></td>
+  <td class="c-state"><span class="pill p-ok">✅ Envoyable</span></td>
+  <td class="c-why"><span class="none">—</span></td>
+</tr>
+<tr class="row s-ok" data-state="ok" data-q="la gare brasserie la gare brasserie - cuisine réunionnaise &amp; tradition | saint-pierre lagare-brasserie-optimisation-seo">
+  <td class="c-client"><strong>La Gare Brasserie</strong><span class="dir">lagare-brasserie-optimisation-seo</span></td>
+  <td class="c-act">Restauration</td>
+  <td class="c-tel"><a class="tel" href="tel:+262262744973">+262 262 74 49 73</a><span class="src">Sheet</span></td>
+  <td class="c-link"><a class="btn" href="/client-lagare-brasserie-optimisation-seo/" target="_blank" rel="noopener">Ouvrir</a><a class="btn ghost" href="https://lagare-brasserie-optimisation-seo.automatisationboost.com" target="_blank" rel="noopener">En ligne</a></td>
+  <td class="c-state"><span class="pill p-ok">✅ Envoyable</span></td>
+  <td class="c-why"><span class="none">—</span></td>
+</tr>
+<tr class="row s-ok" data-state="ok" data-q="le bào le bào - restaurant et cocktails d'exception à saint-pierre 974 le-bao-restaurant-saint-pierre-974">
+  <td class="c-client"><strong>Le BàO</strong><span class="dir">le-bao-restaurant-saint-pierre-974</span></td>
+  <td class="c-act">Restauration</td>
+  <td class="c-tel"><a class="tel" href="tel:+262262248201">+262 262 24 82 01</a><span class="src">Sheet</span></td>
+  <td class="c-link"><a class="btn" href="/client-le-bao-restaurant-saint-pierre-974/" target="_blank" rel="noopener">Ouvrir</a><a class="btn ghost" href="https://le-bao-restaurant-saint-pierre-974.automatisationboost.com" target="_blank" rel="noopener">En ligne</a></td>
+  <td class="c-state"><span class="pill p-ok">✅ Envoyable</span></td>
+  <td class="c-why"><span class="none">—</span></td>
+</tr>
+<tr class="row s-ok" data-state="ok" data-q="le bonbon de pain le bonbon de pain - snack atchia, saveurs authentiques à la réunion le-bonbon-de-pain">
+  <td class="c-client"><strong>Le Bonbon de Pain</strong><span class="dir">le-bonbon-de-pain</span></td>
+  <td class="c-act">Boulangerie · Pâtisserie</td>
+  <td class="c-tel"><span class="unknown">inconnu</span></td>
+  <td class="c-link"><a class="btn" href="/client-le-bonbon-de-pain/" target="_blank" rel="noopener">Ouvrir</a></td>
+  <td class="c-state"><span class="pill p-ok">✅ Envoyable</span></td>
+  <td class="c-why"><span class="none">—</span></td>
+</tr>
+<tr class="row s-ok" data-state="ok" data-q="le clos de la rivière appart-hôtel de charme et design à saint-denis, la réunion - le clos de la rivière clos_de_la_riviere_seo_optimisation">
+  <td class="c-client"><strong>Le Clos de la Rivière</strong><span class="dir">clos_de_la_riviere_seo_optimisation</span></td>
+  <td class="c-act">Hébergement</td>
+  <td class="c-tel"><a class="tel" href="tel:+262693007648">+262 693 00 76 48</a><span class="src">page</span></td>
+  <td class="c-link"><a class="btn" href="/client-clos-de-la-riviere-seo-optimisation/" target="_blank" rel="noopener">Ouvrir</a></td>
+  <td class="c-state"><span class="pill p-ok">✅ Envoyable</span></td>
+  <td class="c-why"><span class="none">—</span></td>
+</tr>
+<tr class="row s-ok" data-state="ok" data-q="le comptoir saint michel le comptoir saint michel - bistrot traditionnel avec terrasse à nancy le-comptoir-saint-michel-nancy">
+  <td class="c-client"><strong>Le Comptoir Saint Michel</strong><span class="dir">le-comptoir-saint-michel-nancy</span></td>
+  <td class="c-act">Restauration</td>
+  <td class="c-tel"><a class="tel" href="tel:+33355400399">+33 3 55 40 03 99</a><span class="src">page</span></td>
+  <td class="c-link"><a class="btn" href="/client-le-comptoir-saint-michel-nancy/" target="_blank" rel="noopener">Ouvrir</a></td>
+  <td class="c-state"><span class="pill p-ok">✅ Envoyable</span></td>
+  <td class="c-why"><span class="none">—</span></td>
+</tr>
+<tr class="row s-ok" data-state="ok" data-q="le glacier de marie b le glacier de marie b - glaces artisanales et spécialités à saint-gilles les bains le-glacier-de-marie-b">
+  <td class="c-client"><strong>Le Glacier de Marie B</strong><span class="dir">le-glacier-de-marie-b</span></td>
+  <td class="c-act">Boulangerie · Pâtisserie</td>
+  <td class="c-tel"><a class="tel" href="tel:0262245306">02 62 24 53 06</a><span class="src">page</span></td>
+  <td class="c-link"><a class="btn" href="/client-le-glacier-de-marie-b/" target="_blank" rel="noopener">Ouvrir</a></td>
+  <td class="c-state"><span class="pill p-ok">✅ Envoyable</span></td>
+  <td class="c-why"><span class="none">—</span></td>
+</tr>
+<tr class="row s-ok" data-state="ok" data-q="le gourmand contactez le gourmand - réservations et informations contact-le-gourmand">
+  <td class="c-client"><strong>Le Gourmand</strong><span class="dir">contact-le-gourmand</span></td>
+  <td class="c-act">Formation</td>
+  <td class="c-tel"><a class="tel" href="tel:+262262599853">+262 262 59 98 53</a><span class="src">page</span></td>
+  <td class="c-link"><a class="btn" href="/client-contact-le-gourmand/" target="_blank" rel="noopener">Ouvrir</a></td>
+  <td class="c-state"><span class="pill p-ok">✅ Envoyable</span></td>
+  <td class="c-why"><span class="none">—</span></td>
+</tr>
+<tr class="row s-ok" data-state="ok" data-q="le majeur 2.0 le majeur 2.0 - cantine de quartier à nancy le-majeur-nancy">
+  <td class="c-client"><strong>Le Majeur 2.0</strong><span class="dir">le-majeur-nancy</span></td>
+  <td class="c-act">Restauration</td>
+  <td class="c-tel"><a class="tel" href="tel:+33951135394">+33 9 51 13 53 94</a><span class="src">page</span></td>
+  <td class="c-link"><a class="btn" href="/client-le-majeur-nancy/" target="_blank" rel="noopener">Ouvrir</a></td>
+  <td class="c-state"><span class="pill p-ok">✅ Envoyable</span></td>
+  <td class="c-why"><span class="none">—</span></td>
+</tr>
+<tr class="row s-ok" data-state="ok" data-q="le mamita boulangerie pâtisserie le mamita - saveurs, accueil et tradition à saint-denis boulangerie-le-mamita">
+  <td class="c-client"><strong>Le Mamita</strong><span class="dir">boulangerie-le-mamita</span></td>
+  <td class="c-act">Boulangerie · Pâtisserie</td>
+  <td class="c-tel"><a class="tel" href="tel:+262262212107">+262 262 21 21 07</a><span class="src">Sheet</span></td>
+  <td class="c-link"><a class="btn" href="/client-boulangerie-le-mamita/" target="_blank" rel="noopener">Ouvrir</a><a class="btn ghost" href="https://boulangerie-le-mamita.automatisationboost.com" target="_blank" rel="noopener">En ligne</a></td>
+  <td class="c-state"><span class="pill p-ok">✅ Envoyable</span></td>
+  <td class="c-why"><span class="none">—</span></td>
+</tr>
+<tr class="row s-ok" data-state="ok" data-q="le relais des cimes le relais des cimes – hôtel &amp; restaurant à salazie, île de la réunion relais-des-cimes">
+  <td class="c-client"><strong>Le Relais des Cimes</strong><span class="dir">relais-des-cimes</span></td>
+  <td class="c-act">Hébergement</td>
+  <td class="c-tel"><a class="tel" href="tel:+262262478158">+262 262 47 81 58</a><span class="src">page</span></td>
+  <td class="c-link"><a class="btn" href="/client-relais-des-cimes/" target="_blank" rel="noopener">Ouvrir</a></td>
+  <td class="c-state"><span class="pill p-ok">✅ Envoyable</span></td>
+  <td class="c-why"><span class="none">—</span></td>
+</tr>
+<tr class="row s-ok" data-state="ok" data-q="le saint-pierre — coulommiers le saint-pierre — restaurant franco-portugais · coulommiers restaurant-franco-portugais-coulommiers">
+  <td class="c-client"><strong>Le Saint-Pierre — Coulommiers</strong><span class="dir">restaurant-franco-portugais-coulommiers</span></td>
+  <td class="c-act">Restauration</td>
+  <td class="c-tel"><a class="tel" href="tel:+33974562539">+33 9 74 56 25 39</a><span class="src">page</span></td>
+  <td class="c-link"><a class="btn" href="/client-restaurant-franco-portugais-coulommiers/" target="_blank" rel="noopener">Ouvrir</a></td>
+  <td class="c-state"><span class="pill p-ok">✅ Envoyable</span></td>
+  <td class="c-why"><span class="none">—</span></td>
+</tr>
+<tr class="row s-ok" data-state="ok" data-q="le so'met by nono le so'met by nono - restaurant de cuisine traditionnelle au wok au maïdo le-somet-by-nono">
+  <td class="c-client"><strong>Le So'Met By Nono</strong><span class="dir">le-somet-by-nono</span></td>
+  <td class="c-act">Restauration</td>
+  <td class="c-tel"><a class="tel" href="tel:+262692765119">+262 692 76 51 19</a><span class="src">page</span></td>
+  <td class="c-link"><a class="btn" href="/client-le-somet-by-nono/" target="_blank" rel="noopener">Ouvrir</a></td>
+  <td class="c-state"><span class="pill p-ok">✅ Envoyable</span></td>
+  <td class="c-why"><span class="none">—</span></td>
+</tr>
+<tr class="row s-ok" data-state="ok" data-q="les sens de la rivière guide de pêche à la mouche en île de la réunion, verdon et alpes - les sens de la rivière guide-peche-mouche-reunion-verdon-alpes">
+  <td class="c-client"><strong>Les Sens de la Rivière</strong><span class="dir">guide-peche-mouche-reunion-verdon-alpes</span></td>
+  <td class="c-act">Pêche · Loisirs</td>
+  <td class="c-tel"><span class="unknown">inconnu</span></td>
+  <td class="c-link"><a class="btn" href="/client-guide-peche-mouche-reunion-verdon-alpes/" target="_blank" rel="noopener">Ouvrir</a></td>
+  <td class="c-state"><span class="pill p-ok">✅ Envoyable</span></td>
+  <td class="c-why"><span class="none">—</span></td>
+</tr>
+<tr class="row s-ok" data-state="ok" data-q="marie blachère — la possession votre magasin marie blachère possession - boulangerie, pâtisserie &amp; snacking à la poss marie-blachere-possession">
+  <td class="c-client"><strong>Marie Blachère — La Possession</strong><span class="dir">marie-blachere-possession</span></td>
+  <td class="c-act">Boulangerie · Pâtisserie</td>
+  <td class="c-tel"><span class="unknown">inconnu</span></td>
+  <td class="c-link"><a class="btn" href="/client-marie-blachere-possession/" target="_blank" rel="noopener">Ouvrir</a></td>
+  <td class="c-state"><span class="pill p-ok">✅ Envoyable</span></td>
+  <td class="c-why"><span class="none">—</span></td>
+</tr>
+<tr class="row s-ok" data-state="ok" data-q="mediterraneo mediterraneo - restaurant italien authentique à saint-denis mediterraneo-restaurant-italien-saint-denis">
+  <td class="c-client"><strong>Mediterraneo</strong><span class="dir">mediterraneo-restaurant-italien-saint-denis</span></td>
+  <td class="c-act">Restauration</td>
+  <td class="c-tel"><a class="tel" href="tel:+262262134702">+262 262 13 47 02</a><span class="src">page</span></td>
+  <td class="c-link"><a class="btn" href="/client-mediterraneo-restaurant-italien-saint-denis/" target="_blank" rel="noopener">Ouvrir</a></td>
+  <td class="c-state"><span class="pill p-ok">✅ Envoyable</span></td>
+  <td class="c-why"><span class="none">—</span></td>
+</tr>
+<tr class="row s-ok" data-state="ok" data-q="métisse réception métisse réception — salle de réception et services événementiels à saint-pierre, la réunio metisse-reception-saint-pierre">
+  <td class="c-client"><strong>Métisse Réception</strong><span class="dir">metisse-reception-saint-pierre</span></td>
+  <td class="c-act">Événementiel</td>
+  <td class="c-tel"><a class="tel" href="tel:+262692727736">+262 692 72 77 36</a><span class="src">page</span></td>
+  <td class="c-link"><a class="btn" href="/client-metisse-reception-saint-pierre/" target="_blank" rel="noopener">Ouvrir</a></td>
+  <td class="c-state"><span class="pill p-ok">✅ Envoyable</span></td>
+  <td class="c-why"><span class="none">—</span></td>
+</tr>
+<tr class="row s-ok" data-state="ok" data-q="mio pizza mio pizza – pizzeria artisanale à la réunion depuis 1984 mio-pizza-la-reunion">
+  <td class="c-client"><strong>MIO Pizza</strong><span class="dir">mio-pizza-la-reunion</span></td>
+  <td class="c-act">Pizzeria</td>
+  <td class="c-tel"><a class="tel" href="tel:+262262240011">+262 262 24 00 11</a><span class="src">page</span></td>
+  <td class="c-link"><a class="btn" href="/client-mio-pizza-la-reunion/" target="_blank" rel="noopener">Ouvrir</a></td>
+  <td class="c-state"><span class="pill p-ok">✅ Envoyable</span></td>
+  <td class="c-why"><span class="none">—</span></td>
+</tr>
+<tr class="row s-ok" data-state="ok" data-q="osmose bistro osmose bistro à saint-pierre — bistronomie réunionnaise authentique osmose-saint-pierre">
+  <td class="c-client"><strong>Osmose Bistro</strong><span class="dir">osmose-saint-pierre</span></td>
+  <td class="c-act">Restauration</td>
+  <td class="c-tel"><a class="tel" href="tel:+262693628829">+262 693 62 88 29</a><span class="src">Sheet</span></td>
+  <td class="c-link"><a class="btn" href="/client-osmose-saint-pierre/" target="_blank" rel="noopener">Ouvrir</a></td>
+  <td class="c-state"><span class="pill p-ok">✅ Envoyable</span></td>
+  <td class="c-why"><span class="none">—</span></td>
+</tr>
+<tr class="row s-ok" data-state="ok" data-q="pizza club saint-pierre pizza club saint-pierre : pizzas artisanales, pâtes, salades &amp; livraison à la réunion pizza-club-saint-pierre">
+  <td class="c-client"><strong>Pizza Club Saint-Pierre</strong><span class="dir">pizza-club-saint-pierre</span></td>
+  <td class="c-act">Pizzeria</td>
+  <td class="c-tel"><a class="tel" href="tel:0262668230">02 62 66 82 30</a><span class="src">page</span></td>
+  <td class="c-link"><a class="btn" href="/client-pizza-club-saint-pierre/" target="_blank" rel="noopener">Ouvrir</a></td>
+  <td class="c-state"><span class="pill p-ok">✅ Envoyable</span></td>
+  <td class="c-why"><span class="none">—</span></td>
+</tr>
+<tr class="row s-ok" data-state="ok" data-q="plan b plan b - restaurant de burgers maison à saint-denis, la réunion planb-restaurant-burgers-saint-denis">
+  <td class="c-client"><strong>Plan B</strong><span class="dir">planb-restaurant-burgers-saint-denis</span></td>
+  <td class="c-act">Restauration</td>
+  <td class="c-tel"><a class="tel" href="tel:0693771169">06 93 77 11 69</a><span class="src">page</span></td>
+  <td class="c-link"><a class="btn" href="/client-planb-restaurant-burgers-saint-denis/" target="_blank" rel="noopener">Ouvrir</a></td>
+  <td class="c-state"><span class="pill p-ok">✅ Envoyable</span></td>
+  <td class="c-why"><span class="none">—</span></td>
+</tr>
+<tr class="row s-ok" data-state="ok" data-q="r'eat'chy r'eat'chy - snack bar à saint-pierre, la réunion : sandwichs, salades &amp; livraison rapi reatchy-snack-bar">
+  <td class="c-client"><strong>R'eat'Chy</strong><span class="dir">reatchy-snack-bar</span></td>
+  <td class="c-act">Restauration</td>
+  <td class="c-tel"><a class="tel" href="tel:+262692117273">+262 692 11 72 73</a><span class="src">page</span></td>
+  <td class="c-link"><a class="btn" href="/client-reatchy-snack-bar/" target="_blank" rel="noopener">Ouvrir</a></td>
+  <td class="c-state"><span class="pill p-ok">✅ Envoyable</span></td>
+  <td class="c-why"><span class="none">—</span></td>
+</tr>
+<tr class="row s-ok" data-state="ok" data-q="radio sunlight fm radio sunlight fm - la radio qui rayonne sur l'île de la réunion sunlight-fm-optimisation-seo">
+  <td class="c-client"><strong>Radio SunLight FM</strong><span class="dir">sunlight-fm-optimisation-seo</span></td>
+  <td class="c-act">Média · Radio</td>
+  <td class="c-tel"><span class="unknown">inconnu</span></td>
+  <td class="c-link"><a class="btn" href="/client-sunlight-fm-optimisation-seo/" target="_blank" rel="noopener">Ouvrir</a></td>
+  <td class="c-state"><span class="pill p-ok">✅ Envoyable</span></td>
+  <td class="c-why"><span class="none">—</span></td>
+</tr>
+<tr class="row s-ok" data-state="ok" data-q="restaurant bateau pirate restaurant bateau pirate - snack et livraison à bois de nèfles saint paul bateau-pirate-restaurant">
+  <td class="c-client"><strong>Restaurant Bateau Pirate</strong><span class="dir">bateau-pirate-restaurant</span></td>
+  <td class="c-act">Restauration</td>
+  <td class="c-tel"><a class="tel" href="tel:+262262125273">+262 262 12 52 73</a><span class="src">page</span></td>
+  <td class="c-link"><a class="btn" href="/client-bateau-pirate-restaurant/" target="_blank" rel="noopener">Ouvrir</a></td>
+  <td class="c-state"><span class="pill p-ok">✅ Envoyable</span></td>
+  <td class="c-why"><span class="none">—</span></td>
+</tr>
+<tr class="row s-ok" data-state="ok" data-q="restaurant coulée 77 restaurant coulée 77 - savourez l'intensité de notre cuisine créole boutique-restaurant-coulee77-com-">
+  <td class="c-client"><strong>Restaurant Coulée 77</strong><span class="dir">boutique-restaurant-coulee77-com-</span></td>
+  <td class="c-act">Restauration</td>
+  <td class="c-tel"><a class="tel" href="tel:0262515241">02 62 51 52 41</a><span class="src">page</span></td>
+  <td class="c-link"><a class="btn" href="/client-boutique-restaurant-coulee77-com/" target="_blank" rel="noopener">Ouvrir</a></td>
+  <td class="c-state"><span class="pill p-ok">✅ Envoyable</span></td>
+  <td class="c-why"><span class="none">—</span></td>
+</tr>
+<tr class="row s-ok" data-state="ok" data-q="restaurant l'art abiata restaurant l'art abiata - cuisine italienne authentique à saint-pierre, réunion lartabiata-restaurant-fr">
+  <td class="c-client"><strong>Restaurant L'Art Abiata</strong><span class="dir">lartabiata-restaurant-fr</span></td>
+  <td class="c-act">Restauration</td>
+  <td class="c-tel"><a class="tel" href="tel:+262693536363">+262 693 53 63 63</a><span class="src">page</span></td>
+  <td class="c-link"><a class="btn" href="/client-lartabiata-restaurant-fr/" target="_blank" rel="noopener">Ouvrir</a></td>
+  <td class="c-state"><span class="pill p-ok">✅ Envoyable</span></td>
+  <td class="c-why"><span class="none">—</span></td>
+</tr>
+<tr class="row s-ok" data-state="ok" data-q="restaurant la fabrique restaurant la fabrique à saint-denis, la réunion - cuisine locale et vin nature par chef j restaurant-la-fabrique-saint-denis">
+  <td class="c-client"><strong>Restaurant La Fabrique</strong><span class="dir">restaurant-la-fabrique-saint-denis</span></td>
+  <td class="c-act">Restauration</td>
+  <td class="c-tel"><a class="tel" href="tel:+262262198060">+262 262 19 80 60</a><span class="src">page</span></td>
+  <td class="c-link"><a class="btn" href="/client-restaurant-la-fabrique-saint-denis/" target="_blank" rel="noopener">Ouvrir</a></td>
+  <td class="c-state"><span class="pill p-ok">✅ Envoyable</span></td>
+  <td class="c-why"><span class="none">—</span></td>
+</tr>
+<tr class="row s-ok" data-state="ok" data-q="restaurant la piscine restaurant la piscine - baignades gourmandes à melun restaurant-la-piscine-melun">
+  <td class="c-client"><strong>Restaurant La Piscine</strong><span class="dir">restaurant-la-piscine-melun</span></td>
+  <td class="c-act">Restauration</td>
+  <td class="c-tel"><a class="tel" href="tel:+33160990079">+33 1 60 99 00 79</a><span class="src">page</span></td>
+  <td class="c-link"><a class="btn" href="/client-restaurant-la-piscine-melun/" target="_blank" rel="noopener">Ouvrir</a></td>
+  <td class="c-state"><span class="pill p-ok">✅ Envoyable</span></td>
+  <td class="c-why"><span class="none">—</span></td>
+</tr>
+<tr class="row s-ok" data-state="ok" data-q="salaisons de bourbon salaisons de bourbon : charcuterie locale authentique depuis 1973 à la réunion salaisons-de-bourbon">
+  <td class="c-client"><strong>Salaisons de Bourbon</strong><span class="dir">salaisons-de-bourbon</span></td>
+  <td class="c-act">Agroalimentaire</td>
+  <td class="c-tel"><a class="tel" href="tel:+262262250176">+262 262 25 01 76</a><span class="src">page</span></td>
+  <td class="c-link"><a class="btn" href="/client-salaisons-de-bourbon/" target="_blank" rel="noopener">Ouvrir</a></td>
+  <td class="c-state"><span class="pill p-ok">✅ Envoyable</span></td>
+  <td class="c-why"><span class="none">—</span></td>
+</tr>
+<tr class="row s-ok" data-state="ok" data-q="sistbi sistbi - santé, prévention et formation en océan indien sistbi-optimisation-seo">
+  <td class="c-client"><strong>SISTBI</strong><span class="dir">sistbi-optimisation-seo</span></td>
+  <td class="c-act">Santé</td>
+  <td class="c-tel"><a class="tel" href="tel:+262262572572">+262 262 57 25 72</a><span class="src">page</span></td>
+  <td class="c-link"><a class="btn" href="/client-sistbi-optimisation-seo/" target="_blank" rel="noopener">Ouvrir</a></td>
+  <td class="c-state"><span class="pill p-ok">✅ Envoyable</span></td>
+  <td class="c-why"><span class="none">—</span></td>
+</tr>
+<tr class="row s-ok" data-state="ok" data-q="sphb sphb - leader en production et commercialisation d'huiles et condiments à la réunion sphb-optimisation-seo">
+  <td class="c-client"><strong>SPHB</strong><span class="dir">sphb-optimisation-seo</span></td>
+  <td class="c-act">Agroalimentaire</td>
+  <td class="c-tel"><a class="tel" href="tel:+262262357696">+262 262 35 76 96</a><span class="src">page</span></td>
+  <td class="c-link"><a class="btn" href="/client-sphb-optimisation-seo/" target="_blank" rel="noopener">Ouvrir</a></td>
+  <td class="c-state"><span class="pill p-ok">✅ Envoyable</span></td>
+  <td class="c-why"><span class="none">—</span></td>
+</tr>
+<tr class="row s-ok" data-state="ok" data-q="sud hôtel le tampon sud hôtel le tampon – reunion island | official site sud-hotel-reunion">
+  <td class="c-client"><strong>Sud Hôtel Le Tampon</strong><span class="dir">sud-hotel-reunion</span></td>
+  <td class="c-act">Hébergement</td>
+  <td class="c-tel"><a class="tel" href="tel:+262262270790">+262 262 27 07 90</a><span class="src">page</span></td>
+  <td class="c-link"><a class="btn" href="/client-sud-hotel-reunion/" target="_blank" rel="noopener">Ouvrir</a></td>
+  <td class="c-state"><span class="pill p-ok">✅ Envoyable</span></td>
+  <td class="c-why"><span class="none">—</span></td>
+</tr>
+<tr class="row s-ok" data-state="ok" data-q="ti' terre sainte ti' terre sainte - pizzeria artisanale au feu de bois à la réunion ti-terre-sainte-pizzeria">
+  <td class="c-client"><strong>Ti' Terre Sainte</strong><span class="dir">ti-terre-sainte-pizzeria</span></td>
+  <td class="c-act">Pizzeria</td>
+  <td class="c-tel"><a class="tel" href="tel:0692068688">06 92 06 86 88</a><span class="src">page</span></td>
+  <td class="c-link"><a class="btn" href="/client-ti-terre-sainte-pizzeria/" target="_blank" rel="noopener">Ouvrir</a></td>
+  <td class="c-state"><span class="pill p-ok">✅ Envoyable</span></td>
+  <td class="c-why"><span class="none">—</span></td>
+</tr>
+<tr class="row s-ok" data-state="ok" data-q="ticoeur ticoeur | l'écrin cœur &amp; roses - édition ferrero ticoeur.store">
+  <td class="c-client"><strong>TiCoeur</strong><span class="dir">ticoeur.store</span></td>
+  <td class="c-act">Commerce · Boutique</td>
+  <td class="c-tel"><a class="tel" href="tel:0692417749">06 92 41 77 49</a><span class="src">page</span></td>
+  <td class="c-link"><a class="btn" href="/client-ticoeur-store/" target="_blank" rel="noopener">Ouvrir</a></td>
+  <td class="c-state"><span class="pill p-ok">✅ Envoyable</span></td>
+  <td class="c-why"><span class="none">—</span></td>
+</tr>
+<tr class="row s-ok" data-state="ok" data-q="ttfishing guide de pêche à la réunion - ttfishing, votre expert en pêche sportive guide-peche-reunion-ttfishing">
+  <td class="c-client"><strong>TTFishing</strong><span class="dir">guide-peche-reunion-ttfishing</span></td>
+  <td class="c-act">Pêche · Loisirs</td>
+  <td class="c-tel"><a class="tel" href="tel:+262692638741">+262 692 63 87 41</a><span class="src">page</span></td>
+  <td class="c-link"><a class="btn" href="/client-guide-peche-reunion-ttfishing/" target="_blank" rel="noopener">Ouvrir</a></td>
+  <td class="c-state"><span class="pill p-ok">✅ Envoyable</span></td>
+  <td class="c-why"><span class="none">—</span></td>
+</tr>
+<tr class="row s-ok" data-state="ok" data-q="villa fleurié villa fleurié - restaurant gastronomique et séminaires d'exception à saint-denis, la réuni villa-fleurie-restaurant-seminaires">
+  <td class="c-client"><strong>Villa Fleurié</strong><span class="dir">villa-fleurie-restaurant-seminaires</span></td>
+  <td class="c-act">Restauration</td>
+  <td class="c-tel"><a class="tel" href="tel:0262803803">02 62 80 38 03</a><span class="src">page</span></td>
+  <td class="c-link"><a class="btn" href="/client-villa-fleurie-restaurant-seminaires/" target="_blank" rel="noopener">Ouvrir</a></td>
+  <td class="c-state"><span class="pill p-ok">✅ Envoyable</span></td>
+  <td class="c-why"><span class="none">—</span></td>
+</tr>
+<tr class="row s-fix" data-state="fix" data-q="centre hospitalier ouest réunion centre hospitalier ouest réunion - soins de qualité pour la population de l'ouest de l'île centre-hospitalier-ouest-reunion">
+  <td class="c-client"><strong>Centre Hospitalier Ouest Réunion</strong><span class="dir">centre-hospitalier-ouest-reunion</span></td>
+  <td class="c-act">Santé</td>
+  <td class="c-tel"><a class="tel" href="tel:0262453030">02 62 45 30 30</a><span class="src">page</span></td>
+  <td class="c-link"><a class="btn" href="/client-centre-hospitalier-ouest-reunion/" target="_blank" rel="noopener">Ouvrir</a></td>
+  <td class="c-state"><span class="pill p-fix">⚠️ À corriger</span></td>
+  <td class="c-why"><ul><li>47 % des liens sont des ancres mortes (38/81)</li></ul></td>
+</tr>
+<tr class="row s-fix" data-state="fix" data-q="clicknvan location de vans aménagés et camping-cars professionnels sur clicknvan.com clicknvan-location-vans-campingcars-pro">
+  <td class="c-client"><strong>CLICKnVAN</strong><span class="dir">clicknvan-location-vans-campingcars-pro</span></td>
+  <td class="c-act">Location de véhicules</td>
+  <td class="c-tel"><span class="unknown">inconnu</span></td>
+  <td class="c-link"><a class="btn" href="/client-clicknvan-location-vans-campingcars-pro/" target="_blank" rel="noopener">Ouvrir</a></td>
+  <td class="c-state"><span class="pill p-fix">⚠️ À corriger</span></td>
+  <td class="c-why"><ul><li>43 % des liens sont des ancres mortes (19/44)</li></ul></td>
+</tr>
+<tr class="row s-fix" data-state="fix" data-q="free dom free dom – l'actualité de la réunion en direct freedom-la-reunion-actualites">
+  <td class="c-client"><strong>Free Dom</strong><span class="dir">freedom-la-reunion-actualites</span></td>
+  <td class="c-act">Média · Presse</td>
+  <td class="c-tel"><span class="unknown">inconnu</span></td>
+  <td class="c-link"><a class="btn" href="/client-freedom-la-reunion-actualites/" target="_blank" rel="noopener">Ouvrir</a></td>
+  <td class="c-state"><span class="pill p-fix">⚠️ À corriger</span></td>
+  <td class="c-why"><ul><li>débordement horizontal sur mobile : la page fait 642 px de large sur un écran de 390 px</li><li>65 % des liens sont des ancres mortes (41/63)</li></ul></td>
+</tr>
+<tr class="row s-fix" data-state="fix" data-q="l'atelier de ben l'atelier de ben - restaurant gastronomique à saint-denis | la réunion latelierdeben_optimisation_seo">
+  <td class="c-client"><strong>L'Atelier de Ben</strong><span class="dir">latelierdeben_optimisation_seo</span></td>
+  <td class="c-act">Restauration</td>
+  <td class="c-tel"><span class="unknown">inconnu</span></td>
+  <td class="c-link"><a class="btn" href="/client-latelierdeben-optimisation-seo/" target="_blank" rel="noopener">Ouvrir</a></td>
+  <td class="c-state"><span class="pill p-fix">⚠️ À corriger</span></td>
+  <td class="c-why"><ul><li>téléphone bidon +262 262 00 00 00 comme seul contact</li></ul></td>
+</tr>
+<tr class="row s-fix" data-state="fix" data-q="l'atelier traiteur l'atelier traiteur - traiteur d'exception pour vos événements à la réunion latelier-traiteur-reunion">
+  <td class="c-client"><strong>L'Atelier Traiteur</strong><span class="dir">latelier-traiteur-reunion</span></td>
+  <td class="c-act">Traiteur</td>
+  <td class="c-tel"><a class="tel" href="tel:+262692979730">+262 692 97 97 30</a><span class="src">page</span></td>
+  <td class="c-link"><a class="btn" href="/client-latelier-traiteur-reunion/" target="_blank" rel="noopener">Ouvrir</a></td>
+  <td class="c-state"><span class="pill p-fix">⚠️ À corriger</span></td>
+  <td class="c-why"><ul><li>débordement horizontal sur mobile : la page fait 462 px de large sur un écran de 390 px</li></ul></td>
+</tr>
+<tr class="row s-fix" data-state="fix" data-q="l'atelier traiteur (doublon) l'atelier traiteur - traiteur d'événements sur mesure à la réunion latelier-traiteur-la-reunion">
+  <td class="c-client"><strong>L'Atelier Traiteur (doublon)</strong><span class="dir">latelier-traiteur-la-reunion</span></td>
+  <td class="c-act">Traiteur</td>
+  <td class="c-tel"><a class="tel" href="tel:+262692979730">+262 692 97 97 30</a><span class="src">page</span></td>
+  <td class="c-link"><a class="btn" href="/client-latelier-traiteur-la-reunion/" target="_blank" rel="noopener">Ouvrir</a></td>
+  <td class="c-state"><span class="pill p-fix">⚠️ À corriger</span></td>
+  <td class="c-why"><ul><li>doublon — garder plutôt latelier-traiteur-reunion (15 visuels contre 10 (même numéro sur les deux))</li></ul></td>
+</tr>
+<tr class="row s-fix" data-state="fix" data-q="l'impériale kazumi l'impériale kazumi — pizza &amp; sushi | le tampon limperiale-kazumi-re">
+  <td class="c-client"><strong>L'Impériale Kazumi</strong><span class="dir">limperiale-kazumi-re</span></td>
+  <td class="c-act">Pizzeria</td>
+  <td class="c-tel"><a class="tel" href="tel:0693940380">06 93 94 03 80</a><span class="src">page</span></td>
+  <td class="c-link"><a class="btn" href="/client-limperiale-kazumi-re/" target="_blank" rel="noopener">Ouvrir</a></td>
+  <td class="c-state"><span class="pill p-fix">⚠️ À corriger</span></td>
+  <td class="c-why"><ul><li>aucune photo dans la page</li></ul></td>
+</tr>
+<tr class="row s-fix" data-state="fix" data-q="la guinguette du grand morin restaurant la guinguette du grand morin - mouroux guinguette-du-grand-morin-eatbu-com-">
+  <td class="c-client"><strong>La Guinguette du Grand Morin</strong><span class="dir">guinguette-du-grand-morin-eatbu-com-</span></td>
+  <td class="c-act">Restauration</td>
+  <td class="c-tel"><a class="tel" href="tel:+33612320918">+33 6 12 32 09 18</a><span class="src">page</span></td>
+  <td class="c-link"><a class="btn" href="/client-guinguette-du-grand-morin-eatbu-com/" target="_blank" rel="noopener">Ouvrir</a></td>
+  <td class="c-state"><span class="pill p-fix">⚠️ À corriger</span></td>
+  <td class="c-why"><ul><li>1 image(s) absente(s) : restaurant-salle.jpg</li></ul></td>
+</tr>
+<tr class="row s-fix" data-state="fix" data-q="la kantine — traiteur oriental la kantine - traiteur oriental de qualité à prix raisonnable la-kantine-traiteur-oriental">
+  <td class="c-client"><strong>LA KANTINE — traiteur oriental</strong><span class="dir">la-kantine-traiteur-oriental</span></td>
+  <td class="c-act">Traiteur</td>
+  <td class="c-tel"><span class="unknown">inconnu</span></td>
+  <td class="c-link"><a class="btn" href="/client-la-kantine-traiteur-oriental/" target="_blank" rel="noopener">Ouvrir</a></td>
+  <td class="c-state"><span class="pill p-fix">⚠️ À corriger</span></td>
+  <td class="c-why"><ul><li>débordement horizontal sur mobile : la page fait 544 px de large sur un écran de 390 px</li><li>erreur JavaScript au chargement (ReferenceError: Cannot access 'backToTop' before initializat)</li></ul></td>
+</tr>
+<tr class="row s-fix" data-state="fix" data-q="la kantine (doublon seo) la kantine - traiteur de qualité à prix raisonnable | la réunion la-kantine-optimisation-seo">
+  <td class="c-client"><strong>LA KANTINE (doublon SEO)</strong><span class="dir">la-kantine-optimisation-seo</span></td>
+  <td class="c-act">Traiteur</td>
+  <td class="c-tel"><span class="unknown">inconnu</span></td>
+  <td class="c-link"><a class="btn" href="/client-la-kantine-optimisation-seo/" target="_blank" rel="noopener">Ouvrir</a></td>
+  <td class="c-state"><span class="pill p-fix">⚠️ À corriger</span></td>
+  <td class="c-why"><ul><li>débordement horizontal sur mobile : la page fait 535 px de large sur un écran de 390 px</li><li>doublon — garder plutôt la-kantine-traiteur-oriental (42 visuels contre 22 et 14)</li></ul></td>
+</tr>
+<tr class="row s-fix" data-state="fix" data-q="la kantine (doublon) la kantine - traiteur de qualité à prix raisonnable | la réunion la-kantine-traiteur">
+  <td class="c-client"><strong>LA KANTINE (doublon)</strong><span class="dir">la-kantine-traiteur</span></td>
+  <td class="c-act">Traiteur</td>
+  <td class="c-tel"><span class="unknown">inconnu</span></td>
+  <td class="c-link"><a class="btn" href="/client-la-kantine-traiteur/" target="_blank" rel="noopener">Ouvrir</a></td>
+  <td class="c-state"><span class="pill p-fix">⚠️ À corriger</span></td>
+  <td class="c-why"><ul><li>débordement horizontal sur mobile : la page fait 524 px de large sur un écran de 390 px</li><li>doublon — garder plutôt la-kantine-traiteur-oriental (42 visuels contre 22 et 14)</li></ul></td>
+</tr>
+<tr class="row s-fix" data-state="fix" data-q="laplace / koytcha conseil laplace / koytcha conseil — le spécialiste de la gestion de patrimoine à la réunion koytcha-conseil-landing-premium">
+  <td class="c-client"><strong>Laplace / Koytcha Conseil</strong><span class="dir">koytcha-conseil-landing-premium</span></td>
+  <td class="c-act">Immobilier · Conseil</td>
+  <td class="c-tel"><a class="tel" href="tel:+262262979607">+262 262 97 96 07</a><span class="src">page</span></td>
+  <td class="c-link"><a class="btn" href="/client-koytcha-conseil-landing-premium/" target="_blank" rel="noopener">Ouvrir</a></td>
+  <td class="c-state"><span class="pill p-fix">⚠️ À corriger</span></td>
+  <td class="c-why"><ul><li>un numéro bidon 06 92 00 00 00 traîne encore dans la page</li></ul></td>
+</tr>
+<tr class="row s-fix" data-state="fix" data-q="le caritologue restaurant traditionnel créole au feu de bois à saint-pierre, la réunion - le caritologue restaurant-creole-lecaritologue">
+  <td class="c-client"><strong>LE CARITOLOGUE</strong><span class="dir">restaurant-creole-lecaritologue</span></td>
+  <td class="c-act">Restauration</td>
+  <td class="c-tel"><a class="tel" href="tel:+262692799992">+262 692 79 99 92</a><span class="src">page</span></td>
+  <td class="c-link"><a class="btn" href="/client-restaurant-creole-lecaritologue/" target="_blank" rel="noopener">Ouvrir</a></td>
+  <td class="c-state"><span class="pill p-fix">⚠️ À corriger</span></td>
+  <td class="c-why"><ul><li>débordement horizontal sur mobile : la page fait 553 px de large sur un écran de 390 px</li></ul></td>
+</tr>
+<tr class="row s-fix" data-state="fix" data-q="le786 le786 - commandez vos apéritifs 100% halal en ligne à la réunion le786-halal-commande-en-ligne">
+  <td class="c-client"><strong>Le786</strong><span class="dir">le786-halal-commande-en-ligne</span></td>
+  <td class="c-act">—</td>
+  <td class="c-tel"><span class="unknown">inconnu</span></td>
+  <td class="c-link"><a class="btn" href="/client-le786-halal-commande-en-ligne/" target="_blank" rel="noopener">Ouvrir</a></td>
+  <td class="c-state"><span class="pill p-fix">⚠️ À corriger</span></td>
+  <td class="c-why"><ul><li>1 image(s) absente(s) : photo-1585325701165-2e5b8b6a37a4</li><li>11 visuels tirés d'Unsplash (banque d'images générique, pas les vraies photos du client)</li></ul></td>
+</tr>
+<tr class="row s-fix" data-state="fix" data-q="mam'zelle pizza mam'zelle pizza - la pizza des champions à l'île de la réunion mamzelle-pizza-ile-de-la-reunion">
+  <td class="c-client"><strong>Mam'Zelle Pizza</strong><span class="dir">mamzelle-pizza-ile-de-la-reunion</span></td>
+  <td class="c-act">Pizzeria</td>
+  <td class="c-tel"><a class="tel" href="tel:0262028442">02 62 02 84 42</a><span class="src">page</span></td>
+  <td class="c-link"><a class="btn" href="/client-mamzelle-pizza-ile-de-la-reunion/" target="_blank" rel="noopener">Ouvrir</a></td>
+  <td class="c-state"><span class="pill p-fix">⚠️ À corriger</span></td>
+  <td class="c-why"><ul><li>mention « Bientôt disponible / Coming soon » visible</li></ul></td>
+</tr>
+<tr class="row s-fix" data-state="fix" data-q="mam'zelle pizza (doublon) mam'zelle pizza - la pizza des champions à l'île de la réunion mamzelle-pizza-ile-reunion">
+  <td class="c-client"><strong>Mam'Zelle Pizza (doublon)</strong><span class="dir">mamzelle-pizza-ile-reunion</span></td>
+  <td class="c-act">Pizzeria</td>
+  <td class="c-tel"><a class="tel" href="tel:+262262028442">+262 262 02 84 42</a><span class="src">page</span></td>
+  <td class="c-link"><a class="btn" href="/client-mamzelle-pizza-ile-reunion/" target="_blank" rel="noopener">Ouvrir</a></td>
+  <td class="c-state"><span class="pill p-fix">⚠️ À corriger</span></td>
+  <td class="c-why"><ul><li>mention « Bientôt disponible / Coming soon » visible</li><li>doublon — garder plutôt mamzelle-pizza-ile-de-la-reunion (20 visuels et les 6 numéros d'agence, sans mention « Bientôt disponible »)</li></ul></td>
+</tr>
+<tr class="row s-fix" data-state="fix" data-q="mam'zelle pizza (doublon) mam'zelle pizza - la référence des pizzerias à la réunion mamzelle-pizza-optimisation">
+  <td class="c-client"><strong>Mam'Zelle Pizza (doublon)</strong><span class="dir">mamzelle-pizza-optimisation</span></td>
+  <td class="c-act">Pizzeria</td>
+  <td class="c-tel"><a class="tel" href="tel:0262028442">02 62 02 84 42</a><span class="src">page</span></td>
+  <td class="c-link"><a class="btn" href="/client-mamzelle-pizza-optimisation/" target="_blank" rel="noopener">Ouvrir</a></td>
+  <td class="c-state"><span class="pill p-fix">⚠️ À corriger</span></td>
+  <td class="c-why"><ul><li>doublon — garder plutôt mamzelle-pizza-ile-de-la-reunion (20 visuels et les 6 numéros d'agence, sans mention « Bientôt disponible »)</li></ul></td>
+</tr>
+<tr class="row s-fix" data-state="fix" data-q="mama betty mama betty - restaurant steakhouse à laxou près de nancy mamabetty-fr-">
+  <td class="c-client"><strong>Mama Betty</strong><span class="dir">mamabetty-fr-</span></td>
+  <td class="c-act">Restauration</td>
+  <td class="c-tel"><a class="tel" href="tel:+33383973617">+33 3 83 97 36 17</a><span class="src">page</span></td>
+  <td class="c-link"><a class="btn" href="/client-mamabetty-fr/" target="_blank" rel="noopener">Ouvrir</a></td>
+  <td class="c-state"><span class="pill p-fix">⚠️ À corriger</span></td>
+  <td class="c-why"><ul><li>un numéro bidon 06 00 00 00 00 traîne encore dans la page</li></ul></td>
+</tr>
+<tr class="row s-fix" data-state="fix" data-q="ofim réunion immobilier à la réunion : trouvez, achetez, louez et gérez vos biens avec ofim ofim-reunion">
+  <td class="c-client"><strong>OFIM Réunion</strong><span class="dir">ofim-reunion</span></td>
+  <td class="c-act">Immobilier · Conseil</td>
+  <td class="c-tel"><span class="unknown">inconnu</span></td>
+  <td class="c-link"><a class="btn" href="/client-ofim-reunion/" target="_blank" rel="noopener">Ouvrir</a></td>
+  <td class="c-state"><span class="pill p-fix">⚠️ À corriger</span></td>
+  <td class="c-why"><ul><li>aucune photo dans la page</li><li>42 % des liens sont des ancres mortes (18/43)</li></ul></td>
+</tr>
+<tr class="row s-fix" data-state="fix" data-q="picard moulin joli — la possession magasin picard moulin à la possession - produits surgelés de qualité picard-moulin-la-possession">
+  <td class="c-client"><strong>Picard Moulin Joli — La Possession</strong><span class="dir">picard-moulin-la-possession</span></td>
+  <td class="c-act">Plats préparés</td>
+  <td class="c-tel"><a class="tel" href="tel:+262262493202">+262 262 49 32 02</a><span class="src">Sheet</span></td>
+  <td class="c-link"><a class="btn" href="/client-picard-moulin-la-possession/" target="_blank" rel="noopener">Ouvrir</a><a class="btn ghost" href="https://picard-moulin-la-possession.automatisationboost.com" target="_blank" rel="noopener">En ligne</a></td>
+  <td class="c-state"><span class="pill p-fix">⚠️ À corriger</span></td>
+  <td class="c-why"><ul><li>un numéro bidon 06 12 34 56 78 traîne encore dans la page</li></ul></td>
+</tr>
+<tr class="row s-fix" data-state="fix" data-q="pizza di muro pizza di muro : recettes, astuces cuisine et actualités food au quotidien pizza-di-muro-optimisation-seo">
+  <td class="c-client"><strong>Pizza Di Muro</strong><span class="dir">pizza-di-muro-optimisation-seo</span></td>
+  <td class="c-act">Pizzeria</td>
+  <td class="c-tel"><span class="unknown">inconnu</span></td>
+  <td class="c-link"><a class="btn" href="/client-pizza-di-muro-optimisation-seo/" target="_blank" rel="noopener">Ouvrir</a></td>
+  <td class="c-state"><span class="pill p-fix">⚠️ À corriger</span></td>
+  <td class="c-why"><ul><li>1 image(s) absente(s) : recette-carbonara.webp</li></ul></td>
+</tr>
+<tr class="row s-fix" data-state="fix" data-q="pizza di muro (doublon) pizza di muro : recettes faciles, astuces cuisine et actualités food au quotidien pizza-di-muro-optimisation">
+  <td class="c-client"><strong>Pizza Di Muro (doublon)</strong><span class="dir">pizza-di-muro-optimisation</span></td>
+  <td class="c-act">Pizzeria</td>
+  <td class="c-tel"><span class="unknown">inconnu</span></td>
+  <td class="c-link"><a class="btn" href="/client-pizza-di-muro-optimisation/" target="_blank" rel="noopener">Ouvrir</a></td>
+  <td class="c-state"><span class="pill p-fix">⚠️ À corriger</span></td>
+  <td class="c-why"><ul><li>27 % de liens en ancre morte</li><li>doublon — garder plutôt pizza-di-muro-optimisation-seo (27 visuels, aucune ancre morte (contre 27 % et 53 % pour les deux autres))</li></ul></td>
+</tr>
+<tr class="row s-fix" data-state="fix" data-q="pizza di muro (doublon) pizza di muro : recettes faciles, astuces cuisine et actualités food au quotidien pizza-di-muro-seo-optimisation">
+  <td class="c-client"><strong>Pizza Di Muro (doublon)</strong><span class="dir">pizza-di-muro-seo-optimisation</span></td>
+  <td class="c-act">Pizzeria</td>
+  <td class="c-tel"><span class="unknown">inconnu</span></td>
+  <td class="c-link"><a class="btn" href="/client-pizza-di-muro-seo-optimisation/" target="_blank" rel="noopener">Ouvrir</a></td>
+  <td class="c-state"><span class="pill p-fix">⚠️ À corriger</span></td>
+  <td class="c-why"><ul><li>débordement horizontal sur mobile : la page fait 735 px de large sur un écran de 390 px</li><li>53 % des liens sont des ancres mortes (29/55)</li><li>doublon — garder plutôt pizza-di-muro-optimisation-seo (27 visuels, aucune ancre morte (contre 27 % et 53 % pour les deux autres))</li></ul></td>
+</tr>
+<tr class="row s-fix" data-state="fix" data-q="qualitropic qualitropic : pôle de compétitivité en bioéconomie tropicale à la réunion qualitropic-bioeconomie-tropicale">
+  <td class="c-client"><strong>Qualitropic</strong><span class="dir">qualitropic-bioeconomie-tropicale</span></td>
+  <td class="c-act">Agroalimentaire</td>
+  <td class="c-tel"><a class="tel" href="tel:+262262971088">+262 262 97 10 88</a><span class="src">page</span></td>
+  <td class="c-link"><a class="btn" href="/client-qualitropic-bioeconomie-tropicale/" target="_blank" rel="noopener">Ouvrir</a></td>
+  <td class="c-state"><span class="pill p-fix">⚠️ À corriger</span></td>
+  <td class="c-why"><ul><li>35 % de liens en ancre morte</li></ul></td>
+</tr>
+<tr class="row s-fix" data-state="fix" data-q="r'eat'chy (doublon) snack bar r'eat'chy à saint-pierre, la réunion - sandwichs, salades &amp; livraison rapide reatchy-snackbar-optimisation">
+  <td class="c-client"><strong>R'eat'Chy (doublon)</strong><span class="dir">reatchy-snackbar-optimisation</span></td>
+  <td class="c-act">Restauration</td>
+  <td class="c-tel"><a class="tel" href="tel:+262692117273">+262 692 11 72 73</a><span class="src">page</span></td>
+  <td class="c-link"><a class="btn" href="/client-reatchy-snackbar-optimisation/" target="_blank" rel="noopener">Ouvrir</a></td>
+  <td class="c-state"><span class="pill p-fix">⚠️ À corriger</span></td>
+  <td class="c-why"><ul><li>débordement horizontal sur mobile : la page fait 552 px de large sur un écran de 390 px</li><li>doublon — garder plutôt reatchy-snack-bar (débordement mobile bien moindre (411 px contre 552 px))</li></ul></td>
+</tr>
+<tr class="row s-fix" data-state="fix" data-q="radio sunlight fm (doublon) radio sunlight fm - la radio qui rayonne sur l'île de la réunion sunlightfm_optimisation_seo">
+  <td class="c-client"><strong>Radio SunLight FM (doublon)</strong><span class="dir">sunlightfm_optimisation_seo</span></td>
+  <td class="c-act">Média · Radio</td>
+  <td class="c-tel"><span class="unknown">inconnu</span></td>
+  <td class="c-link"><a class="btn" href="/client-sunlightfm-optimisation-seo/" target="_blank" rel="noopener">Ouvrir</a></td>
+  <td class="c-state"><span class="pill p-fix">⚠️ À corriger</span></td>
+  <td class="c-why"><ul><li>doublon — garder plutôt sunlight-fm-optimisation-seo (23 visuels, la version la plus complète des trois)</li></ul></td>
+</tr>
+<tr class="row s-fix" data-state="fix" data-q="radio sunlight fm (doublon) radio sunlight fm - la radio qui rayonne sur l'île de la réunion sunlightfm_website">
+  <td class="c-client"><strong>Radio SunLight FM (doublon)</strong><span class="dir">sunlightfm_website</span></td>
+  <td class="c-act">Média · Radio</td>
+  <td class="c-tel"><span class="unknown">inconnu</span></td>
+  <td class="c-link"><a class="btn" href="/client-sunlightfm-website/" target="_blank" rel="noopener">Ouvrir</a></td>
+  <td class="c-state"><span class="pill p-fix">⚠️ À corriger</span></td>
+  <td class="c-why"><ul><li>doublon — garder plutôt sunlight-fm-optimisation-seo (23 visuels, la version la plus complète des trois)</li></ul></td>
+</tr>
+<tr class="row s-fix" data-state="fix" data-q="restaurant bateau pirate (doublon) restaurant bateau pirate - snack &amp; livraison à bois de nèfles saint paul restaurant-bateau-pirate">
+  <td class="c-client"><strong>Restaurant Bateau Pirate (doublon)</strong><span class="dir">restaurant-bateau-pirate</span></td>
+  <td class="c-act">Restauration</td>
+  <td class="c-tel"><a class="tel" href="tel:+262262125273">+262 262 12 52 73</a><span class="src">page</span></td>
+  <td class="c-link"><a class="btn" href="/client-restaurant-bateau-pirate/" target="_blank" rel="noopener">Ouvrir</a></td>
+  <td class="c-state"><span class="pill p-fix">⚠️ À corriger</span></td>
+  <td class="c-why"><ul><li>doublon — garder plutôt bateau-pirate-restaurant (10 visuels et pas de débordement mobile)</li></ul></td>
+</tr>
+<tr class="row s-fix" data-state="fix" data-q="restaurant la parenthèse restaurant la parenthèse à saint-gilles - saveurs créoles et gastronomie d'exception restaurant-la-parenthese-latitude21">
+  <td class="c-client"><strong>Restaurant La Parenthèse</strong><span class="dir">restaurant-la-parenthese-latitude21</span></td>
+  <td class="c-act">Restauration</td>
+  <td class="c-tel"><a class="tel" href="tel:+262262331333">+262 262 33 13 33</a><span class="src">page</span></td>
+  <td class="c-link"><a class="btn" href="/client-restaurant-la-parenthese-latitude21/" target="_blank" rel="noopener">Ouvrir</a></td>
+  <td class="c-state"><span class="pill p-fix">⚠️ À corriger</span></td>
+  <td class="c-why"><ul><li>débordement horizontal sur mobile : la page fait 522 px de large sur un écran de 390 px</li></ul></td>
+</tr>
+<tr class="row s-fix" data-state="fix" data-q="restaurant le bourg murat restaurant le bourg murat | cuisine créole &amp; métropolitaine — la plaine des cafres restaurant-le-bourg-murat">
+  <td class="c-client"><strong>Restaurant Le Bourg Murat</strong><span class="dir">restaurant-le-bourg-murat</span></td>
+  <td class="c-act">Restauration</td>
+  <td class="c-tel"><a class="tel" href="tel:+262262593612">+262 262 59 36 12</a><span class="src">Sheet</span></td>
+  <td class="c-link"><a class="btn" href="/client-restaurant-le-bourg-murat/" target="_blank" rel="noopener">Ouvrir</a><a class="btn ghost" href="https://restaurant-le-bourg-murat.automatisationboost.com" target="_blank" rel="noopener">En ligne</a></td>
+  <td class="c-state"><span class="pill p-fix">⚠️ À corriger</span></td>
+  <td class="c-why"><ul><li>le lien d'appel est malformé (tel:+262593612, il manque « 262 ») — le clic-pour-appeler ne fonctionne pas</li></ul></td>
+</tr>
+<tr class="row s-fix" data-state="fix" data-q="smok'eat smok'eat - premier smokehouse à la réunion, spécialités fumées et cuisine américaine smokehouse-reunion">
+  <td class="c-client"><strong>SMOK'EAT</strong><span class="dir">smokehouse-reunion</span></td>
+  <td class="c-act">Restauration</td>
+  <td class="c-tel"><a class="tel" href="tel:+262693879840">+262 693 87 98 40</a><span class="src">page</span></td>
+  <td class="c-link"><a class="btn" href="/client-smokehouse-reunion/" target="_blank" rel="noopener">Ouvrir</a></td>
+  <td class="c-state"><span class="pill p-fix">⚠️ À corriger</span></td>
+  <td class="c-why"><ul><li>un numéro bidon 06 92 00 00 00 traîne encore dans la page</li></ul></td>
+</tr>
+<tr class="row s-fix" data-state="fix" data-q="sphb (doublon) sphb - société de production des huiles de bourbon | la réunion sphb-production-huiles-bourbon">
+  <td class="c-client"><strong>SPHB (doublon)</strong><span class="dir">sphb-production-huiles-bourbon</span></td>
+  <td class="c-act">Agroalimentaire</td>
+  <td class="c-tel"><a class="tel" href="tel:+262262357696">+262 262 35 76 96</a><span class="src">page</span></td>
+  <td class="c-link"><a class="btn" href="/client-sphb-production-huiles-bourbon/" target="_blank" rel="noopener">Ouvrir</a></td>
+  <td class="c-state"><span class="pill p-fix">⚠️ À corriger</span></td>
+  <td class="c-why"><ul><li>un numéro bidon 06 92 00 00 00 traîne encore dans la page</li><li>débordement horizontal sur mobile : la page fait 432 px de large sur un écran de 390 px</li><li>doublon — garder plutôt sphb-optimisation-seo (25 visuels, seule version sans numéro bidon)</li></ul></td>
+</tr>
+<tr class="row s-fix" data-state="fix" data-q="sphb (doublon) sphb - leader de la production et commercialisation d'huiles et condiments à la réunion sphb-production-huiles-optimisation">
+  <td class="c-client"><strong>SPHB (doublon)</strong><span class="dir">sphb-production-huiles-optimisation</span></td>
+  <td class="c-act">Agroalimentaire</td>
+  <td class="c-tel"><a class="tel" href="tel:+262262357696">+262 262 35 76 96</a><span class="src">page</span></td>
+  <td class="c-link"><a class="btn" href="/client-sphb-production-huiles-optimisation/" target="_blank" rel="noopener">Ouvrir</a></td>
+  <td class="c-state"><span class="pill p-fix">⚠️ À corriger</span></td>
+  <td class="c-why"><ul><li>doublon — garder plutôt sphb-optimisation-seo (25 visuels, seule version sans numéro bidon)</li></ul></td>
+</tr>
+<tr class="row s-fix" data-state="fix" data-q="sphb (doublon) sphb - leader en production et commercialisation d'huiles et condiments à la réunion sphb-production-huiles-optimise">
+  <td class="c-client"><strong>SPHB (doublon)</strong><span class="dir">sphb-production-huiles-optimise</span></td>
+  <td class="c-act">Agroalimentaire</td>
+  <td class="c-tel"><a class="tel" href="tel:+262262357696">+262 262 35 76 96</a><span class="src">page</span></td>
+  <td class="c-link"><a class="btn" href="/client-sphb-production-huiles-optimise/" target="_blank" rel="noopener">Ouvrir</a></td>
+  <td class="c-state"><span class="pill p-fix">⚠️ À corriger</span></td>
+  <td class="c-why"><ul><li>débordement horizontal sur mobile : la page fait 436 px de large sur un écran de 390 px</li><li>doublon — garder plutôt sphb-optimisation-seo (25 visuels, seule version sans numéro bidon)</li></ul></td>
+</tr>
+<tr class="row s-fix" data-state="fix" data-q="sud service traiteur plats frais et surgelés à saint-pierre | sud service traiteur plats-frais-surgeles-saint-pierre">
+  <td class="c-client"><strong>Sud Service Traiteur</strong><span class="dir">plats-frais-surgeles-saint-pierre</span></td>
+  <td class="c-act">Traiteur</td>
+  <td class="c-tel"><a class="tel" href="tel:+262974563547">+262 974 56 35 47</a><span class="src">page</span></td>
+  <td class="c-link"><a class="btn" href="/client-plats-frais-surgeles-saint-pierre/" target="_blank" rel="noopener">Ouvrir</a></td>
+  <td class="c-state"><span class="pill p-fix">⚠️ À corriger</span></td>
+  <td class="c-why"><ul><li>un numéro bidon 06 92 00 00 00 traîne encore dans la page</li></ul></td>
+</tr>
+<tr class="row s-fix" data-state="fix" data-q="sud service traiteur (doublon) plat frais et surgelé à saint-pierre - sud service traiteur plat-frais-surgeles-saint-pierre">
+  <td class="c-client"><strong>Sud Service Traiteur (doublon)</strong><span class="dir">plat-frais-surgeles-saint-pierre</span></td>
+  <td class="c-act">Traiteur</td>
+  <td class="c-tel"><a class="tel" href="tel:0974563547">09 74 56 35 47</a><span class="src">page</span></td>
+  <td class="c-link"><a class="btn" href="/client-plat-frais-surgeles-saint-pierre/" target="_blank" rel="noopener">Ouvrir</a></td>
+  <td class="c-state"><span class="pill p-fix">⚠️ À corriger</span></td>
+  <td class="c-why"><ul><li>doublon — garder plutôt plats-frais-surgeles-saint-pierre (28 visuels contre 15 — mais c'est l'autre qui porte le numéro propre)</li></ul></td>
+</tr>
+<tr class="row s-fix" data-state="fix" data-q="vtc réunion vtc réunion - transferts, visites et services professionnels de transport vtc-reunion-optimisation">
+  <td class="c-client"><strong>VTC Réunion</strong><span class="dir">vtc-reunion-optimisation</span></td>
+  <td class="c-act">Transport · Voyage</td>
+  <td class="c-tel"><a class="tel" href="tel:+262692549074">+262 692 54 90 74</a><span class="src">page</span></td>
+  <td class="c-link"><a class="btn" href="/client-vtc-reunion-optimisation/" target="_blank" rel="noopener">Ouvrir</a></td>
+  <td class="c-state"><span class="pill p-fix">⚠️ À corriger</span></td>
+  <td class="c-why"><ul><li>2 image(s) absente(s) : touristique.jpg, disposition.jpg</li></ul></td>
+</tr>
+<tr class="row s-abandon" data-state="abandon" data-q="arts de santé arts de santé – formations à distance en qi gong, digitopuncture et arts énergétiques chin arts-de-sante-formation">
+  <td class="c-client"><strong>Arts de Santé</strong><span class="dir">arts-de-sante-formation</span></td>
+  <td class="c-act">Santé</td>
+  <td class="c-tel"><span class="unknown">inconnu</span></td>
+  <td class="c-link"><a class="btn" href="/client-arts-de-sante-formation/" target="_blank" rel="noopener">Ouvrir</a></td>
+  <td class="c-state"><span class="pill p-abandon">❌ À abandonner</span></td>
+  <td class="c-why"><ul><li>Téléphone bidon +33 1 23 45 67 89 comme seul contact ; à reprendre avec le vrai numéro avant tout envoi.</li></ul></td>
+</tr>
+<tr class="row s-abandon" data-state="abandon" data-q="clicknvan (ancienne version) location de vans aménagés et camping-cars professionnels avec clicknvan clicknvan-location-vans-campingcars">
+  <td class="c-client"><strong>CLICKnVAN (ancienne version)</strong><span class="dir">clicknvan-location-vans-campingcars</span></td>
+  <td class="c-act">Location de véhicules</td>
+  <td class="c-tel"><span class="unknown">inconnu</span></td>
+  <td class="c-link"><a class="btn" href="/client-clicknvan-location-vans-campingcars/" target="_blank" rel="noopener">Ouvrir</a></td>
+  <td class="c-state"><span class="pill p-abandon">❌ À abandonner</span></td>
+  <td class="c-why"><ul><li>Version antérieure de clicknvan-...-pro : 65 % des liens sont des ancres mortes, débordement mobile à 455 px.</li></ul></td>
+</tr>
+<tr class="row s-abandon" data-state="abandon" data-q="gabarit seo « seo expert » optimisation complète de votre site web pour un meilleur référencement | seo expert optimisation-site-seo">
+  <td class="c-client"><strong>Gabarit SEO « SEO Expert »</strong><span class="dir">optimisation-site-seo</span></td>
+  <td class="c-act">—</td>
+  <td class="c-tel"><span class="unknown">inconnu</span></td>
+  <td class="c-link"><a class="btn" href="/client-optimisation-site-seo/" target="_blank" rel="noopener">Ouvrir</a></td>
+  <td class="c-state"><span class="pill p-abandon">❌ À abandonner</span></td>
+  <td class="c-why"><ul><li>Page de service SEO générique (pas un site client) — téléphone bidon +33 1 23 45 67 89.</li></ul></td>
+</tr>
+<tr class="row s-abandon" data-state="abandon" data-q="gabarit seo « seo expert » (bis) optimisation seo complète de votre site web | seo expert optimisation_site_seo">
+  <td class="c-client"><strong>Gabarit SEO « SEO Expert » (bis)</strong><span class="dir">optimisation_site_seo</span></td>
+  <td class="c-act">—</td>
+  <td class="c-tel"><span class="unknown">inconnu</span></td>
+  <td class="c-link"><a class="btn" href="/client-optimisation-site-seo/" target="_blank" rel="noopener">Ouvrir</a></td>
+  <td class="c-state"><span class="pill p-abandon">❌ À abandonner</span></td>
+  <td class="c-why"><ul><li>Page de service SEO générique (pas un site client) — téléphone bidon +33 1 23 45 67 89.</li></ul></td>
+</tr>
+<tr class="row s-abandon" data-state="abandon" data-q="gabarit seo « seo pro » optimisation seo complète de votre site web | seo pro optimisation-seo-site">
+  <td class="c-client"><strong>Gabarit SEO « SEO Pro »</strong><span class="dir">optimisation-seo-site</span></td>
+  <td class="c-act">—</td>
+  <td class="c-tel"><span class="unknown">inconnu</span></td>
+  <td class="c-link"><a class="btn" href="/client-optimisation-seo-site/" target="_blank" rel="noopener">Ouvrir</a></td>
+  <td class="c-state"><span class="pill p-abandon">❌ À abandonner</span></td>
+  <td class="c-why"><ul><li>Page de service SEO générique (pas un site client) — doublon de seo-optimisation-site.</li></ul></td>
+</tr>
+<tr class="row s-abandon" data-state="abandon" data-q="gabarit seo « seopro » optimisation complète de votre site web pour un référencement efficace | seopro seo-optimisation-site">
+  <td class="c-client"><strong>Gabarit SEO « SEOPro »</strong><span class="dir">seo-optimisation-site</span></td>
+  <td class="c-act">—</td>
+  <td class="c-tel"><span class="unknown">inconnu</span></td>
+  <td class="c-link"><a class="btn" href="/client-seo-optimisation-site/" target="_blank" rel="noopener">Ouvrir</a></td>
+  <td class="c-state"><span class="pill p-abandon">❌ À abandonner</span></td>
+  <td class="c-why"><ul><li>Page de service SEO générique (pas un site client) — téléphone bidon +33 1 23 45 67 89, aucune image.</li></ul></td>
+</tr>
+<tr class="row s-abandon" data-state="abandon" data-q="l'atelier de ben (doublon) l'atelier de ben - gastronomie française à saint-denis, inspirée par la réunion et le mond latelier-de-ben-optimisation-seo">
+  <td class="c-client"><strong>L'Atelier de Ben (doublon)</strong><span class="dir">latelier-de-ben-optimisation-seo</span></td>
+  <td class="c-act">—</td>
+  <td class="c-tel"><span class="unknown">inconnu</span></td>
+  <td class="c-link"><a class="btn" href="/client-latelier-de-ben-optimisation-seo/" target="_blank" rel="noopener">Ouvrir</a></td>
+  <td class="c-state"><span class="pill p-abandon">❌ À abandonner</span></td>
+  <td class="c-why"><ul><li>Doublon moins bon de latelierdeben_optimisation_seo (38 % de liens morts), téléphone bidon +262 262 00 00 00.</li></ul></td>
+</tr>
+<tr class="row s-abandon" data-state="abandon" data-q="le vieux pressoir le vieux pressoir - restaurant créole à la réunion vieux-pressoir">
+  <td class="c-client"><strong>Le Vieux Pressoir</strong><span class="dir">vieux-pressoir</span></td>
+  <td class="c-act">Restauration</td>
+  <td class="c-tel"><span class="unknown">inconnu</span></td>
+  <td class="c-link"><a class="btn" href="/client-vieux-pressoir/" target="_blank" rel="noopener">Ouvrir</a></td>
+  <td class="c-state"><span class="pill p-abandon">❌ À abandonner</span></td>
+  <td class="c-why"><ul><li>Aucun asset local (6 images Unsplash génériques), téléphone bidon +262 262 00 00 00, 27 % des liens morts.</li></ul></td>
+</tr>
+<tr class="row s-abandon" data-state="abandon" data-q="les petites mains de lisa les petites mains de lisa — massage &amp; soins à domicile | la réunion lespetitesmainsdelisa-optimized">
+  <td class="c-client"><strong>Les Petites Mains de Lisa</strong><span class="dir">lespetitesmainsdelisa-optimized</span></td>
+  <td class="c-act">—</td>
+  <td class="c-tel"><span class="unknown">inconnu</span></td>
+  <td class="c-link"><a class="btn" href="/client-lespetitesmainsdelisa-optimized/" target="_blank" rel="noopener">Ouvrir</a></td>
+  <td class="c-state"><span class="pill p-abandon">❌ À abandonner</span></td>
+  <td class="c-why"><ul><li>Coquille de 8 ko : les 2 seules images (hero + bio) sont absentes du dépôt, le héros s'affiche en aplat gris, téléphone bidon +262 262 12 34 56. À refaire de zéro.</li></ul></td>
+</tr>
+<tr class="row s-abandon" data-state="abandon" data-q="ludovic riviere ludovic riviere - photographe immobilier &amp; vidéaste à la réunion pour particuliers et  photographe-immobilier-reunion">
+  <td class="c-client"><strong>Ludovic RIVIERE</strong><span class="dir">photographe-immobilier-reunion</span></td>
+  <td class="c-act">Immobilier · Conseil</td>
+  <td class="c-tel"><span class="unknown">inconnu</span></td>
+  <td class="c-link"><a class="btn" href="/client-photographe-immobilier-reunion/" target="_blank" rel="noopener">Ouvrir</a></td>
+  <td class="c-state"><span class="pill p-abandon">❌ À abandonner</span></td>
+  <td class="c-why"><ul><li>Téléphone bidon +262 692 00 00 00 comme seul contact.</li></ul></td>
+</tr>
+<tr class="row s-abandon" data-state="abandon" data-q="menuauto (produit interne) menuauto — génération automatique de menus pour restaurants resto-automatisationboost">
+  <td class="c-client"><strong>MenuAuto (produit interne)</strong><span class="dir">resto-automatisationboost</span></td>
+  <td class="c-act">Restauration</td>
+  <td class="c-tel"><span class="unknown">inconnu</span></td>
+  <td class="c-link"><a class="btn" href="/client-resto-automatisationboost/" target="_blank" rel="noopener">Ouvrir</a></td>
+  <td class="c-state"><span class="pill p-abandon">❌ À abandonner</span></td>
+  <td class="c-why"><ul><li>Démo du produit MenuAuto de Tony, pas un site client — n'a pas sa place dans un envoi de démo client.</li></ul></td>
+</tr>
+<tr class="row s-abandon" data-state="abandon" data-q="mr services mr services - serrurerie &amp; encadrement | la réunion mrservices-optimized">
+  <td class="c-client"><strong>Mr Services</strong><span class="dir">mrservices-optimized</span></td>
+  <td class="c-act">—</td>
+  <td class="c-tel"><span class="unknown">inconnu</span></td>
+  <td class="c-link"><a class="btn" href="/client-mrservices-optimized/" target="_blank" rel="noopener">Ouvrir</a></td>
+  <td class="c-state"><span class="pill p-abandon">❌ À abandonner</span></td>
+  <td class="c-why"><ul><li>Stub de 11 ko sans aucune image (dégradé CSS en guise de héros), téléphone bidon +262 262 12 34 56.</li></ul></td>
+</tr>
+<tr class="row s-abandon" data-state="abandon" data-q="pêche au gros réunion pêche au gros réunion - sorties en mer peche-au-gros-reunion">
+  <td class="c-client"><strong>Pêche au Gros Réunion</strong><span class="dir">peche-au-gros-reunion</span></td>
+  <td class="c-act">Pêche · Loisirs</td>
+  <td class="c-tel"><span class="unknown">inconnu</span></td>
+  <td class="c-link"><a class="btn" href="/client-peche-au-gros-reunion/" target="_blank" rel="noopener">Ouvrir</a></td>
+  <td class="c-state"><span class="pill p-abandon">❌ À abandonner</span></td>
+  <td class="c-why"><ul><li>Stub de 14 ko, 5 visuels Unsplash génériques, téléphone bidon +262 692 12 34 56. Remplacé par blue-peche-au-gros, complet et avec le vrai numéro.</li></ul></td>
+</tr>
+<tr class="row s-abandon" data-state="abandon" data-q="planet pizza planet pizza - livraison rapide de pizzas artisanales | saint-denis planet-pizza">
+  <td class="c-client"><strong>Planet Pizza</strong><span class="dir">planet-pizza</span></td>
+  <td class="c-act">Pizzeria</td>
+  <td class="c-tel"><span class="unknown">inconnu</span></td>
+  <td class="c-link"><a class="btn" href="/client-planet-pizza/" target="_blank" rel="noopener">Ouvrir</a></td>
+  <td class="c-state"><span class="pill p-abandon">❌ À abandonner</span></td>
+  <td class="c-why"><ul><li>Page de 18 ko, téléphone bidon +262 262 00 00 00 comme seul contact.</li></ul></td>
+</tr>
+<tr class="row s-abandon" data-state="abandon" data-q="transcontinents voyages voyages sur mesure à l'île maurice avec transcontinents | experts depuis 1959 transcontinents-voyages-ile-maurice">
+  <td class="c-client"><strong>Transcontinents Voyages</strong><span class="dir">transcontinents-voyages-ile-maurice</span></td>
+  <td class="c-act">Transport · Voyage</td>
+  <td class="c-tel"><span class="unknown">inconnu</span></td>
+  <td class="c-link"><a class="btn" href="/client-transcontinents-voyages-ile-maurice/" target="_blank" rel="noopener">Ouvrir</a></td>
+  <td class="c-state"><span class="pill p-abandon">❌ À abandonner</span></td>
+  <td class="c-why"><ul><li>Téléphone bidon +262 262 00 00 00 comme seul contact et 41 % des liens sont des ancres mortes.</li></ul></td>
+</tr>
+<tr class="row s-abandon" data-state="abandon" data-q="vtc réunion — felix transports vtc réunion - transferts, visites et services professionnels | felix transports vtc-reunion-felixtransports">
+  <td class="c-client"><strong>VTC Réunion — Felix Transports</strong><span class="dir">vtc-reunion-felixtransports</span></td>
+  <td class="c-act">Transport · Voyage</td>
+  <td class="c-tel"><span class="unknown">inconnu</span></td>
+  <td class="c-link"><a class="btn" href="/client-vtc-reunion-felixtransports/" target="_blank" rel="noopener">Ouvrir</a></td>
+  <td class="c-state"><span class="pill p-abandon">❌ À abandonner</span></td>
+  <td class="c-why"><ul><li>Téléphone bidon +262 692 00 00 00 comme seul contact ; vtc-reunion-optimisation porte le vrai numéro.</li></ul></td>
+</tr>
+    </tbody>
+  </table>
+  <div class="empty" id="empty" hidden>Aucun site ne correspond.</div>
+
+  <footer>
+    <p><strong>Comment lire les états.</strong>
+    <b>✅ Envoyable</b> — la page s'ouvre, les images chargent, le contact affiché est un vrai numéro, rien de bloquant sur mobile.
+    <b>⚠️ À corriger</b> — montrable une fois le point listé réglé.
+    <b>❌ À abandonner</b> — coquille vide, gabarit générique ou faux contact : plus coûteux à réparer qu'à refaire.</p>
+    <p><strong>Un numéro bidon</strong> (00 00 00 00, 12 34 56 78, 01 23 45 67 89) qui traîne dans une page est traité comme bloquant : c'est ce qu'un client verrait en premier.</p>
+    <p>Inventaire généré le 2026-08-20 · <a href="/">retour à la prévisualisation</a></p>
+  </footer>
+</div>
+<script>
+  var q=document.getElementById('q'),tb=document.getElementById('tb'),empty=document.getElementById('empty');
+  var btns=[].slice.call(document.querySelectorAll('.filters button')),f='all';
+  function apply(){
+    var t=q.value.trim().toLowerCase(),n=0;
+    [].forEach.call(tb.rows,function(r){
+      var okF=(f==='all'||r.dataset.state===f);
+      var okQ=(!t||r.dataset.q.indexOf(t)>-1);
+      var show=okF&&okQ; r.hidden=!show; if(show)n++;
+    });
+    empty.hidden=n>0;
+  }
+  q.addEventListener('input',apply);
+  btns.forEach(function(b){b.addEventListener('click',function(){
+    f=b.dataset.f; btns.forEach(function(x){x.setAttribute('aria-pressed',String(x===b))}); apply();
+  })});
+</script>
+</body>
+</html>

@@ -1,0 +1,1440 @@
+<html lang="fr" class="scroll-smooth"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TiCoeur | L'Écrin Cœur &amp; Roses - Édition Ferrero</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        bordeaux: {
+                            50: '#fdf2f4',
+                            100: '#fce7ea',
+                            800: '#9b1c34',
+                            900: '#801b2d',
+                            950: '#4a0a16',
+                        },
+                        gold: {
+                            500: '#d4af37',
+                            600: '#b4941f',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+        .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        ::-webkit-scrollbar {
+            width: 0px;
+            background: transparent;
+        }
+        .text-bordeaux {
+            color: #4a0a16;
+        }
+        .bg-bordeaux {
+            background-color: #4a0a16;
+        }
+        .product-select-card {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .product-select-card.selected {
+            border-color: #4a0a16 !important;
+            box-shadow: 0 0 0 2px #4a0a16;
+        }
+        .product-select-card:hover {
+            border-color: #801b2d;
+        }
+        .avatar-circle {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 18px;
+            color: white;
+            flex-shrink: 0;
+        }
+    </style>
+</head>
+<body class="bg-[#faf9f9] text-zinc-900 selection:bg-bordeaux-100 selection:text-bordeaux-900 overflow-x-hidden">
+
+    <!-- Bandeau Promo Top -->
+    <div class="bg-bordeaux-950 text-white text-center py-2.5 text-xs font-medium tracking-wide relative z-50">
+        <span class="hidden sm:inline">Prévente Saint-Valentin : stock limité à 20 coffrets – ne tardez pas.</span>
+        <span class="sm:hidden">Stock limité à 20 coffrets !</span>
+        <span class="mx-2">|</span>
+        <a href="tel:0692417749" class="underline hover:text-gold-500 transition-colors">
+            <iconify-icon icon="solar:phone-bold" class="align-middle mr-1"></iconify-icon>0692 41 77 49
+        </a>
+    </div>
+
+    <!-- Decorative Background Roses -->
+    <div class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+        <iconify-icon icon="solar:rose-linear" class="absolute -top-10 -right-10 text-bordeaux-900/5 rotate-12" width="400" height="400"></iconify-icon>
+        <iconify-icon icon="solar:rose-linear" class="absolute top-[40%] -left-20 text-bordeaux-900/5 -rotate-45" width="300" height="300"></iconify-icon>
+        <iconify-icon icon="solar:rose-linear" class="absolute bottom-0 right-10 text-bordeaux-900/5 rotate-12" width="200" height="200"></iconify-icon>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full z-50 border-b border-rose-100/50 glass-panel">
+        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+            <div class="flex items-center">
+                <a href="#" class="flex items-center">
+                    <img src="./images/logo.jpg" alt="TiCoeur Logo" class="h-16 w-auto object-contain">
+                </a>
+            </div>
+
+            <div class="hidden md:flex items-center gap-8 text-sm font-medium absolute left-1/2 transform -translate-x-1/2">
+                <a href="#produit" class="text-zinc-600 hover:text-bordeaux-900 transition-colors">Nos Coffrets</a>
+                <a href="#video" class="text-zinc-600 hover:text-bordeaux-900 transition-colors">Vidéos</a>
+                <a href="#savoir-faire" class="text-zinc-600 hover:text-bordeaux-900 transition-colors">Savoir-faire</a>
+                <a href="#avis" class="text-zinc-600 hover:text-bordeaux-900 transition-colors">Avis</a>
+                <a href="#faq" class="text-zinc-600 hover:text-bordeaux-900 transition-colors">Détails</a>
+            </div>
+
+            <div class="flex items-center gap-3">
+                <!-- Bouton Appeler -->
+                <a href="tel:0692417749" class="hidden sm:flex px-4 py-2.5 border border-bordeaux-950 text-bordeaux-950 rounded-full font-medium hover:bg-bordeaux-50 transition-all items-center gap-2 text-sm">
+                    <iconify-icon icon="solar:phone-bold" width="16" height="16"></iconify-icon>
+                    <span>Appelez-nous</span>
+                </a>
+                <!-- Bouton Commandez -->
+                <a href="#produit" class="px-6 py-2.5 bg-bordeaux-950 text-white rounded-full font-medium hover:bg-bordeaux-900 transition-all shadow-lg shadow-bordeaux-900/20 flex items-center gap-2 group text-sm">
+                    <iconify-icon icon="solar:bag-heart-linear" width="18" height="18"></iconify-icon>
+                    <span class="hidden sm:inline">Commandez</span>
+                </a>
+            </div>
+
+            <button onclick="toggleMobileMenu()" class="md:hidden w-10 h-10 flex items-center justify-center text-bordeaux-950">
+                <iconify-icon icon="solar:hamburger-menu-linear" width="24" id="menuIcon"></iconify-icon>
+            </button>
+        </div>
+
+        <!-- Menu mobile -->
+        <div id="mobileMenu" class="hidden md:hidden border-t border-rose-100/50 bg-white/95 backdrop-blur-lg">
+            <div class="px-6 py-4 space-y-3">
+                <a href="#produit" class="block text-zinc-600 hover:text-bordeaux-900 transition-colors py-2">Nos Coffrets</a>
+                <a href="#video" class="block text-zinc-600 hover:text-bordeaux-900 transition-colors py-2">Vidéos</a>
+                <a href="#savoir-faire" class="block text-zinc-600 hover:text-bordeaux-900 transition-colors py-2">Savoir-faire</a>
+                <a href="#avis" class="block text-zinc-600 hover:text-bordeaux-900 transition-colors py-2">Avis</a>
+                <a href="#faq" class="block text-zinc-600 hover:text-bordeaux-900 transition-colors py-2">Détails</a>
+                <a href="tel:0692417749" class="flex items-center gap-2 text-bordeaux-900 font-medium py-2">
+                    <iconify-icon icon="solar:phone-bold" width="18"></iconify-icon>
+                    0692 41 77 49
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <main class="relative pt-28 pb-16 px-6 z-10">
+        <div class="max-w-4xl mx-auto text-center mb-16">
+            <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-rose-100 text-bordeaux-900 text-xs font-medium mb-8 shadow-sm shadow-rose-100/50">
+                <span class="relative flex h-2 w-2">
+                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-600 opacity-75"></span>
+                  <span class="relative inline-flex rounded-full h-2 w-2 bg-red-700"></span>
+                </span>
+                Prévente Saint Valentin 2026
+            </div>
+            <h1 class="text-5xl md:text-7xl font-medium tracking-tight text-bordeaux-950 mb-6 leading-[1.1]">
+                TiCoeur, le coffret qui dit <br class="hidden md:block"> « je t'aime » sans mots.
+            </h1>
+            <p class="text-lg text-zinc-600 max-w-xl mx-auto mb-10 font-light leading-relaxed">
+                Un écrin noir en forme de coeur, garni de 12 Ferrero Rocher et de 4 roses rouges (fraîches ou éternelles) pour un moment inoubliable le 14 février.
+            </p>
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+                <button onclick="openModal()" class="w-full sm:w-auto px-8 py-4 bg-bordeaux-950 text-white rounded-full font-medium hover:bg-bordeaux-900 transition-all flex items-center justify-center gap-2 group shadow-xl shadow-bordeaux-900/10 hover:shadow-bordeaux-900/20">
+                    Précommander l'édition limitée – Livraison offerte
+                    <iconify-icon icon="solar:arrow-right-linear" class="group-hover:translate-x-1 transition-transform"></iconify-icon>
+                </button>
+                <a href="tel:0692417749" class="w-full sm:w-auto px-8 py-4 bg-white border border-rose-100 text-zinc-700 rounded-full font-medium hover:bg-rose-50 transition-all flex items-center justify-center gap-2">
+                    <iconify-icon icon="solar:phone-bold" width="18"></iconify-icon>
+                    Appelez-nous
+                </a>
+            </div>
+            <p class="text-sm text-bordeaux-900 font-medium mt-4">Édition limitée – Plus que 20 coffrets disponibles.</p>
+        </div>
+
+        <!-- Hero Image -->
+        <div class="max-w-5xl mx-auto relative group">
+            <div class="absolute -inset-1 bg-gradient-to-tr from-bordeaux-100 via-transparent to-rose-100 rounded-[2rem] blur opacity-40 group-hover:opacity-60 transition duration-1000"></div>
+            <div class="relative aspect-[4/3] sm:aspect-[16/10] md:aspect-[21/9] overflow-hidden rounded-[1.5rem] bg-zinc-100 border border-white shadow-2xl shadow-bordeaux-950/5">
+                <img src="./images/coffret-coeur-roses-ferrero.jpg" alt="Coffret Cœur Noir avec Roses Rouges et Chocolats Ferrero Rocher" class="w-full h-full object-cover object-center opacity-95 hover:scale-105 transition-transform duration-700">
+                <div class="absolute bottom-6 left-6 md:bottom-10 md:left-10 bg-white/95 backdrop-blur px-5 py-3 rounded-xl border border-rose-100 shadow-lg shadow-bordeaux-900/5 flex items-center gap-4">
+                    <div class="flex items-center justify-center w-10 h-10 rounded-full bg-bordeaux-50 text-bordeaux-900">
+                        <iconify-icon icon="solar:heart-bold" width="20"></iconify-icon>
+                    </div>
+                    <div>
+                        <p class="text-xs text-zinc-500 uppercase tracking-wide font-semibold mb-0.5">Édition Limitée</p>
+                        <p class="text-sm text-bordeaux-950 font-medium">20 pièces restantes</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Bandeau Appel / Commande sécurisée -->
+    <section class="py-6 bg-bordeaux-50 border-y border-bordeaux-100 relative z-10">
+        <div class="max-w-4xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-8 text-center">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-full bg-bordeaux-950 text-white flex items-center justify-center">
+                    <iconify-icon icon="solar:phone-bold" width="20"></iconify-icon>
+                </div>
+                <div class="text-left">
+                    <p class="text-xs text-zinc-500 uppercase font-semibold tracking-wide">Appelez-nous pour commander</p>
+                    <a href="tel:0692417749" class="text-lg font-bold text-bordeaux-950 hover:text-bordeaux-900 transition-colors">0692 41 77 49</a>
+                </div>
+            </div>
+            <span class="hidden sm:block text-zinc-300">|</span>
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-full bg-green-600 text-white flex items-center justify-center">
+                    <iconify-icon icon="solar:shield-check-bold" width="20"></iconify-icon>
+                </div>
+                <div class="text-left">
+                    <p class="text-xs text-zinc-500 uppercase font-semibold tracking-wide">Ou commandez en ligne</p>
+                    <button onclick="openModal()" class="text-lg font-bold text-bordeaux-950 hover:text-bordeaux-900 transition-colors underline decoration-dotted">
+                        Lien sécurisé
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Video Section -->
+    <section id="video" class="py-16 bg-gradient-to-b from-white to-bordeaux-50/30 relative z-10">
+        <div class="max-w-6xl mx-auto px-6">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-medium tracking-tight text-bordeaux-950 mb-4">
+                    Découvrez TiCoeur en vidéo
+                </h2>
+                <p class="text-lg text-zinc-600 max-w-2xl mx-auto font-light">
+                    Plongez dans l'univers élégant de notre coffret signature et découvrez l'attention portée à chaque détail.
+                </p>
+            </div>
+
+            <div class="max-w-4xl mx-auto relative group mb-8">
+                <div class="absolute -inset-1 bg-gradient-to-tr from-bordeaux-100 via-rose-100 to-bordeaux-100 rounded-2xl blur-xl opacity-50 group-hover:opacity-75 transition duration-1000"></div>
+                <div class="relative aspect-video rounded-2xl overflow-hidden bg-zinc-900 border border-white shadow-2xl shadow-bordeaux-950/10">
+                    <video id="mainVideo" class="w-full h-full object-cover" controls preload="metadata">
+                        <source src="./video/Download.mp4" type="video/mp4">
+                        Votre navigateur ne supporte pas la lecture de vidéos.
+                    </video>
+                </div>
+                <iconify-icon icon="solar:rose-linear" class="absolute -bottom-8 -right-8 text-bordeaux-900/10 rotate-12 z-[-1]" width="120" height="120"></iconify-icon>
+            </div>
+
+            <div class="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-4 mb-16">
+                <div class="group cursor-pointer" onclick="changeVideo('./video/Download.mp4', 0)">
+                    <div class="relative aspect-video rounded-lg overflow-hidden bg-zinc-900 border-2 border-bordeaux-900 transition-all hover:border-bordeaux-800 hover:shadow-lg">
+                        <video class="w-full h-full object-cover" preload="metadata">
+                            <source src="./video/Download.mp4" type="video/mp4">
+                        </video>
+                        <div class="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all flex items-center justify-center">
+                            <div class="w-12 h-12 rounded-full bg-white/90 backdrop-blur flex items-center justify-center">
+                                <iconify-icon icon="solar:play-bold" class="text-bordeaux-900" width="24"></iconify-icon>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="text-sm font-medium text-zinc-900 mt-2 text-center">Présentation principale</p>
+                </div>
+                <div class="group cursor-pointer" onclick="changeVideo('./video/premi_re_frame_0_0_5s_gros_plan_sur.mp4', 1)">
+                    <div class="relative aspect-video rounded-lg overflow-hidden bg-zinc-900 border-2 border-zinc-200 transition-all hover:border-bordeaux-800 hover:shadow-lg">
+                        <video class="w-full h-full object-cover" preload="metadata">
+                            <source src="./video/premi_re_frame_0_0_5s_gros_plan_sur.mp4" type="video/mp4">
+                        </video>
+                        <div class="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all flex items-center justify-center">
+                            <div class="w-12 h-12 rounded-full bg-white/90 backdrop-blur flex items-center justify-center">
+                                <iconify-icon icon="solar:play-bold" class="text-bordeaux-900" width="24"></iconify-icon>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="text-sm font-medium text-zinc-900 mt-2 text-center">Gros plan détails</p>
+                </div>
+                <div class="group cursor-pointer" onclick="changeVideo('./video/premi_re_frame_0_0_5s_gros_plan_sur (1).mp4', 2)">
+                    <div class="relative aspect-video rounded-lg overflow-hidden bg-zinc-900 border-2 border-zinc-200 transition-all hover:border-bordeaux-800 hover:shadow-lg">
+                        <video class="w-full h-full object-cover" preload="metadata">
+                            <source src="./video/premi_re_frame_0_0_5s_gros_plan_sur (1).mp4" type="video/mp4">
+                        </video>
+                        <div class="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all flex items-center justify-center">
+                            <div class="w-12 h-12 rounded-full bg-white/90 backdrop-blur flex items-center justify-center">
+                                <iconify-icon icon="solar:play-bold" class="text-bordeaux-900" width="24"></iconify-icon>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="text-sm font-medium text-zinc-900 mt-2 text-center">Vue alternative</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+                <div class="text-center">
+                    <div class="w-12 h-12 rounded-full bg-white border border-rose-100 flex items-center justify-center mx-auto mb-3 shadow-sm">
+                        <iconify-icon icon="solar:videocamera-record-linear" class="text-bordeaux-900" width="24"></iconify-icon>
+                    </div>
+                    <h4 class="text-sm font-medium text-zinc-900 mb-1">Présentation détaillée</h4>
+                    <p class="text-xs text-zinc-500">Découvrez chaque élément du coffret</p>
+                </div>
+                <div class="text-center">
+                    <div class="w-12 h-12 rounded-full bg-white border border-rose-100 flex items-center justify-center mx-auto mb-3 shadow-sm">
+                        <iconify-icon icon="solar:box-minimalistic-linear" class="text-bordeaux-900" width="24"></iconify-icon>
+                    </div>
+                    <h4 class="text-sm font-medium text-zinc-900 mb-1">Déballage premium</h4>
+                    <p class="text-xs text-zinc-500">Une expérience luxueuse garantie</p>
+                </div>
+                <div class="text-center">
+                    <div class="w-12 h-12 rounded-full bg-white border border-rose-100 flex items-center justify-center mx-auto mb-3 shadow-sm">
+                        <iconify-icon icon="solar:heart-shine-linear" class="text-bordeaux-900" width="24"></iconify-icon>
+                    </div>
+                    <h4 class="text-sm font-medium text-zinc-900 mb-1">Moment inoubliable</h4>
+                    <p class="text-xs text-zinc-500">L'émotion capturée en image</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ PRODUIT 1 : Coffret Noir Élégance ============ -->
+    <section id="produit" class="py-20 bg-white border-y border-zinc-100 relative z-10">
+        <div class="max-w-6xl mx-auto px-6">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-medium tracking-tight text-bordeaux-950 mb-3">Nos Coffrets Saint-Valentin</h2>
+                <p class="text-zinc-600">Choisissez le cadeau parfait pour votre moitié.</p>
+            </div>
+
+            <div class="flex flex-col lg:flex-row items-center gap-16 mb-24">
+                <!-- Product Image Area - Carousel -->
+                <div class="w-full lg:w-1/2 relative">
+                    <div class="aspect-square bg-bordeaux-50 rounded-3xl overflow-hidden border border-zinc-100 relative group">
+                        <div class="relative w-full h-full" id="carousel">
+                            <div class="carousel-item absolute w-full h-full transition-opacity duration-500 opacity-100">
+                                <img src="./images/produit-ferrero (1).jpg" alt="Coffret Cœur Noir - Vue 1" class="w-full h-full object-cover">
+                            </div>
+                            <div class="carousel-item absolute w-full h-full transition-opacity duration-500 opacity-0">
+                                <img src="./images/produit-ferrero (2).jpg" alt="Coffret Cœur Noir - Vue 2" class="w-full h-full object-cover">
+                            </div>
+                            <div class="carousel-item absolute w-full h-full transition-opacity duration-500 opacity-0">
+                                <img src="./images/produit-ferrero (3).jpg" alt="Coffret Cœur Noir - Vue 3" class="w-full h-full object-cover">
+                            </div>
+                            <button onclick="prevSlide()" class="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/90 backdrop-blur rounded-full flex items-center justify-center text-bordeaux-950 hover:bg-white transition-all shadow-lg hover:scale-110 z-10">
+                                <iconify-icon icon="solar:alt-arrow-left-linear" width="20"></iconify-icon>
+                            </button>
+                            <button onclick="nextSlide()" class="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/90 backdrop-blur rounded-full flex items-center justify-center text-bordeaux-950 hover:bg-white transition-all shadow-lg hover:scale-110 z-10">
+                                <iconify-icon icon="solar:alt-arrow-right-linear" width="20"></iconify-icon>
+                            </button>
+                            <div class="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-10">
+                                <button onclick="goToSlide(0)" class="indicator w-2 h-2 rounded-full bg-white transition-all"></button>
+                                <button onclick="goToSlide(1)" class="indicator w-2 h-2 rounded-full bg-white/50 transition-all"></button>
+                                <button onclick="goToSlide(2)" class="indicator w-2 h-2 rounded-full bg-white/50 transition-all"></button>
+                            </div>
+                        </div>
+                        <div class="absolute top-6 right-6 bg-white/90 backdrop-blur px-4 py-2 rounded-lg border border-white/50 text-xs font-semibold text-bordeaux-950 shadow-sm z-10">
+                            Édition Signature
+                        </div>
+                    </div>
+                    <iconify-icon icon="solar:rose-linear" class="absolute -bottom-6 -left-6 text-bordeaux-900/10 rotate-12 z-[-1]" width="100" height="100"></iconify-icon>
+                </div>
+
+                <!-- Product Text Area -->
+                <div class="w-full lg:w-1/2" id="preorder">
+                    <h2 class="text-3xl md:text-4xl font-medium tracking-tight text-bordeaux-950 mb-2">Le Coffret Noir Élégance</h2>
+                    <div class="flex items-center gap-3 mb-6">
+                        <p class="text-sm font-medium text-red-700 flex items-center gap-1">
+                            <iconify-icon icon="solar:star-fall-bold"></iconify-icon> Best-seller Saint Valentin
+                        </p>
+                        <span class="px-3 py-1 bg-red-50 border border-red-200 text-red-700 text-xs font-bold rounded-full uppercase tracking-wider">
+                            Édition Limitée
+                        </span>
+                    </div>
+                    <div class="flex items-end gap-4 mb-8 pb-8 border-b border-zinc-100">
+                        <div class="flex items-baseline gap-3">
+                            <span class="text-2xl font-light text-zinc-400 line-through">79,90€</span>
+                            <span class="text-4xl font-bold text-bordeaux-950">59,00€</span>
+                            <span class="px-2 py-1 bg-green-50 border border-green-200 text-green-700 text-xs font-bold rounded-md">-26%</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2 mb-8">
+                        <span class="text-xs text-bordeaux-800 bg-bordeaux-50 px-2.5 py-1 rounded-md border border-bordeaux-100 font-medium">Livraison offerte</span>
+                        <span class="text-xs text-green-800 bg-green-50 px-2.5 py-1 rounded-md border border-green-100 font-medium">Garantie fraîcheur</span>
+                        <span class="text-xs text-purple-800 bg-purple-50 px-2.5 py-1 rounded-md border border-purple-100 font-medium">Musique offerte</span>
+                    </div>
+                    <p class="text-zinc-600 mb-8 leading-relaxed">
+                        Ce coffret n'est pas qu'une gourmandise, c'est une <span class="text-zinc-900 font-medium">déclaration d'amour</span>. Dans une boîte noire premium au logo doré, retrouvez 12 Rochers Ferrero Rocher et 4 roses rouges (fraîches ou éternelles) pour symboliser passion, élégance et attention aux détails.
+                    </p>
+                    <div class="space-y-4 mb-10">
+                        <div class="flex items-start gap-3">
+                            <span class="text-lg">✨</span>
+                            <span class="text-sm text-zinc-600">Boîte en forme de coeur réutilisable (20 cm)</span>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <span class="text-lg">🍫</span>
+                            <span class="text-sm text-zinc-600">12 Ferrero Rocher au croquant iconique et coeur fondant</span>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <span class="text-lg">🌹</span>
+                            <span class="text-sm text-zinc-600">4 roses rouges au choix : fraîches (effet waouh) ou éternelles (souvenir durable)</span>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <span class="text-lg">💌</span>
+                            <span class="text-sm text-zinc-600">Carte manuscrite personnalisée incluse</span>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <span class="text-lg">🎵</span>
+                            <span class="text-sm text-zinc-600">Musique personnalisée offerte avec le prénom de votre moitié</span>
+                        </div>
+                    </div>
+                    <div class="flex flex-col gap-4">
+                        <button onclick="openModal('coffret')" class="w-full py-4 bg-bordeaux-950 text-white rounded-xl font-medium hover:bg-bordeaux-900 transition-all shadow-xl shadow-bordeaux-900/10 flex items-center justify-center gap-3 group relative overflow-hidden">
+                            <div class="absolute inset-0 bg-white/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
+                            <iconify-icon icon="solar:bag-heart-linear" width="22" height="22"></iconify-icon>
+                            <span class="relative">Précommander pour le 14 Février</span>
+                        </button>
+                        <p class="text-xs text-center text-zinc-400 mt-2 flex justify-center items-center gap-3">
+                            <span class="flex items-center gap-1"><iconify-icon icon="solar:shield-check-linear"></iconify-icon> Paiement sécurisé</span>
+                            <span>Livraison offerte</span>
+                            <span>Édition limitée</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ============ PRODUIT 2 : Mini Tableau Apéro pour Deux ============ -->
+            <div id="minitableau" class="flex flex-col lg:flex-row-reverse items-center gap-16">
+                <!-- Product Image Area -->
+                <div class="w-full lg:w-1/2 relative">
+                    <div class="aspect-square bg-gradient-to-br from-amber-50 to-rose-50 rounded-3xl overflow-hidden border border-zinc-100 relative group">
+                        <div class="relative w-full h-full" id="carouselMini">
+                            <div class="carousel-mini-item absolute w-full h-full transition-opacity duration-500 opacity-100">
+                                <img src="./images/minitableau1.png" alt="Mini Tableau Apéro - Vue 1" class="w-full h-full object-cover">
+                            </div>
+                            <div class="carousel-mini-item absolute w-full h-full transition-opacity duration-500 opacity-0">
+                                <img src="./images/minitableau2.png" alt="Mini Tableau Apéro - Vue 2" class="w-full h-full object-cover">
+                            </div>
+                            <div class="carousel-mini-item absolute w-full h-full transition-opacity duration-500 opacity-0">
+                                <img src="./images/minitableau.png" alt="Mini Tableau Apéro - Vue 3" class="w-full h-full object-cover">
+                            </div>
+                            <!-- Navigation -->
+                            <button onclick="prevMiniSlide()" class="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/90 backdrop-blur rounded-full flex items-center justify-center text-bordeaux-950 hover:bg-white transition-all shadow-lg hover:scale-110 z-10">
+                                <iconify-icon icon="solar:alt-arrow-left-linear" width="20"></iconify-icon>
+                            </button>
+                            <button onclick="nextMiniSlide()" class="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/90 backdrop-blur rounded-full flex items-center justify-center text-bordeaux-950 hover:bg-white transition-all shadow-lg hover:scale-110 z-10">
+                                <iconify-icon icon="solar:alt-arrow-right-linear" width="20"></iconify-icon>
+                            </button>
+                            <!-- Indicators -->
+                            <div class="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-10">
+                                <button onclick="goToMiniSlide(0)" class="indicator-mini w-2 h-2 rounded-full bg-white transition-all"></button>
+                                <button onclick="goToMiniSlide(1)" class="indicator-mini w-2 h-2 rounded-full bg-white/50 transition-all"></button>
+                                <button onclick="goToMiniSlide(2)" class="indicator-mini w-2 h-2 rounded-full bg-white/50 transition-all"></button>
+                            </div>
+                        </div>
+                        <div class="absolute top-6 left-6 bg-amber-500 text-white px-4 py-2 rounded-lg text-xs font-semibold shadow-sm z-10">
+                            Nouveau
+                        </div>
+                        <div class="absolute top-6 right-6 bg-white/90 backdrop-blur px-4 py-2 rounded-lg border border-white/50 text-xs font-semibold text-bordeaux-950 shadow-sm z-10">
+                            Pour Deux
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Product Text Area -->
+                <div class="w-full lg:w-1/2">
+                    <h2 class="text-3xl md:text-4xl font-medium tracking-tight text-bordeaux-950 mb-2">Mini Tableau Apéro pour Deux</h2>
+                    <div class="flex items-center gap-3 mb-6">
+                        <p class="text-sm font-medium text-amber-700 flex items-center gap-1">
+                            <iconify-icon icon="solar:chef-hat-heart-bold"></iconify-icon> Le moment parfait à deux
+                        </p>
+                        <span class="px-3 py-1 bg-amber-50 border border-amber-200 text-amber-700 text-xs font-bold rounded-full uppercase tracking-wider">
+                            Nouveau
+                        </span>
+                    </div>
+                    <div class="flex items-end gap-4 mb-8 pb-8 border-b border-zinc-100">
+                        <div class="flex items-baseline gap-3">
+                            <span class="text-2xl font-light text-zinc-400 line-through">99,00€</span>
+                            <span class="text-4xl font-bold text-bordeaux-950">59,00€</span>
+                            <span class="px-2 py-1 bg-green-50 border border-green-200 text-green-700 text-xs font-bold rounded-md">-40%</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2 mb-8 flex-wrap">
+                        <span class="text-xs text-bordeaux-800 bg-bordeaux-50 px-2.5 py-1 rounded-md border border-bordeaux-100 font-medium">Livraison offerte</span>
+                        <span class="text-xs text-amber-800 bg-amber-50 px-2.5 py-1 rounded-md border border-amber-100 font-medium">Produits peu périssables</span>
+                        <span class="text-xs text-purple-800 bg-purple-50 px-2.5 py-1 rounded-md border border-purple-100 font-medium">Tuto offert</span>
+                    </div>
+                    <p class="text-zinc-600 mb-8 leading-relaxed">
+                        Créez un <span class="text-zinc-900 font-medium">moment parfait pour la Saint-Valentin</span> avec notre Mini Tableau Apéro pour Deux. Un assortiment élégant d'aliments peu périssables, soigneusement sélectionnés pour un apéritif romantique en tête-à-tête. Inclut le tuto « Comment créer le Moment Parfait ».
+                    </p>
+                    <div class="space-y-4 mb-10">
+                        <div class="flex items-start gap-3">
+                            <span class="text-lg">🧀</span>
+                            <span class="text-sm text-zinc-600">Assortiment de fromages à pâte dure et crackers artisanaux</span>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <span class="text-lg">🍇</span>
+                            <span class="text-sm text-zinc-600">Fruits secs, noix caramélisées et confitures fines</span>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <span class="text-lg">🥖</span>
+                            <span class="text-sm text-zinc-600">Gressins, mini tartines et charcuterie sèche de qualité</span>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <span class="text-lg">🍫</span>
+                            <span class="text-sm text-zinc-600">Touches sucrées : chocolat artisanal et miel parfumé</span>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <span class="text-lg">📖</span>
+                            <span class="text-sm text-zinc-600">Tuto « Moment Parfait » : comment dresser votre tableau et créer l'ambiance idéale</span>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <span class="text-lg">🎵</span>
+                            <span class="text-sm text-zinc-600">Musique personnalisée offerte avec le prénom de votre moitié</span>
+                        </div>
+                    </div>
+                    <div class="flex flex-col gap-4">
+                        <button onclick="openModal('minitableau')" class="w-full py-4 bg-bordeaux-950 text-white rounded-xl font-medium hover:bg-bordeaux-900 transition-all shadow-xl shadow-bordeaux-900/10 flex items-center justify-center gap-3 group relative overflow-hidden">
+                            <div class="absolute inset-0 bg-white/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
+                            <iconify-icon icon="solar:bag-heart-linear" width="22" height="22"></iconify-icon>
+                            <span class="relative">Précommander le Mini Tableau Apéro</span>
+                        </button>
+                        <p class="text-xs text-center text-zinc-400 mt-2 flex justify-center items-center gap-3">
+                            <span class="flex items-center gap-1"><iconify-icon icon="solar:shield-check-linear"></iconify-icon> Paiement sécurisé</span>
+                            <span>Livraison offerte</span>
+                            <span>Tuto inclus</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Social Proof / Features -->
+    <section id="savoir-faire" class="py-24 border-t border-rose-100/50 bg-white/50 relative z-10">
+        <!-- Bandeau Urgence -->
+        <div class="max-w-3xl mx-auto px-6 mb-12">
+            <div class="bg-gradient-to-r from-red-600 to-bordeaux-950 text-white rounded-2xl p-6 shadow-xl shadow-red-900/20 relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2"></div>
+                <div class="flex flex-col sm:flex-row items-center gap-4 text-center sm:text-left relative z-10">
+                    <div class="w-14 h-14 rounded-full bg-white/15 flex items-center justify-center flex-shrink-0 animate-pulse">
+                        <iconify-icon icon="solar:alarm-bold" width="28" class="text-white"></iconify-icon>
+                    </div>
+                    <div class="flex-1">
+                        <p class="text-lg font-bold mb-1">Plus que 20 coffrets disponibles !</p>
+                        <p class="text-sm text-white/80">La Saint-Valentin approche et les stocks s'épuisent vite. Ne passez pas à côté du cadeau parfait.</p>
+                    </div>
+                    <button onclick="openModal()" class="px-6 py-3 bg-white text-bordeaux-950 rounded-full font-bold text-sm hover:bg-white/90 transition-all shadow-lg flex-shrink-0">
+                        Commander maintenant
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="max-w-6xl mx-auto px-6">
+            <h2 class="text-3xl md:text-4xl font-medium tracking-tight text-bordeaux-950 text-center mb-16">Un coffret pensé dans les moindres détails.</h2>
+            <div class="hidden md:grid grid-cols-1 md:grid-cols-3 gap-12">
+                <div class="flex flex-col items-start gap-4 p-6 rounded-2xl bg-white border border-zinc-100 hover:border-rose-200 hover:shadow-xl hover:shadow-bordeaux-900/5 transition-all duration-300 group">
+                    <div class="w-12 h-12 rounded-full bg-bordeaux-50 flex items-center justify-center text-bordeaux-900 mb-2 group-hover:scale-110 transition-transform">
+                        <iconify-icon icon="solar:heart-shine-linear" width="24" height="24"></iconify-icon>
+                    </div>
+                    <h3 class="text-xl font-medium text-bordeaux-950 tracking-tight">Design Romantique</h3>
+                    <p class="text-zinc-500 leading-relaxed text-sm">
+                        Une boîte rigide noire au toucher premium, rehaussée d'un logo doré élégant, conçue pour être conservée après le 14 février.
+                    </p>
+                </div>
+                <div class="flex flex-col items-start gap-4 p-6 rounded-2xl bg-white border border-zinc-100 hover:border-rose-200 hover:shadow-xl hover:shadow-bordeaux-900/5 transition-all duration-300 group">
+                    <div class="w-12 h-12 rounded-full bg-zinc-50 flex items-center justify-center text-zinc-900 mb-2 group-hover:scale-110 transition-transform">
+                        <iconify-icon icon="solar:chef-hat-heart-linear" width="24" height="24"></iconify-icon>
+                    </div>
+                    <h3 class="text-xl font-medium text-zinc-900 tracking-tight">Chocolat Ferrero</h3>
+                    <p class="text-zinc-500 leading-relaxed text-sm">
+                        Les 12 Ferrero Rocher offrent l'association parfaite : noisettes croustillantes, gaufrette légère et coeur fondant.
+                    </p>
+                </div>
+                <div class="flex flex-col items-start gap-4 p-6 rounded-2xl bg-white border border-zinc-100 hover:border-rose-200 hover:shadow-xl hover:shadow-bordeaux-900/5 transition-all duration-300 group">
+                    <div class="w-16 h-16 rounded-full bg-bordeaux-50 flex items-center justify-center text-bordeaux-900 mb-2 group-hover:scale-110 transition-transform">
+                        <span class="text-4xl">🌹</span>
+                    </div>
+                    <h3 class="text-xl font-medium text-zinc-900 tracking-tight">Roses au Choix</h3>
+                    <p class="text-zinc-500 leading-relaxed text-sm">
+                        Quatre véritables roses rouges, symboles de passion, disponibles en version fraîches ou éternelles.
+                    </p>
+                </div>
+            </div>
+            <!-- Mobile Carousel -->
+            <div class="md:hidden relative">
+                <div class="overflow-x-auto snap-x snap-mandatory flex gap-4 pb-4 scrollbar-hide" id="featuresCarousel">
+                    <div class="flex-shrink-0 w-[85%] snap-center">
+                        <div class="flex flex-col items-start gap-4 p-6 rounded-2xl bg-white border border-zinc-100 h-full">
+                            <div class="w-12 h-12 rounded-full bg-bordeaux-50 flex items-center justify-center text-bordeaux-900 mb-2">
+                                <iconify-icon icon="solar:heart-shine-linear" width="24" height="24"></iconify-icon>
+                            </div>
+                            <h3 class="text-xl font-medium text-bordeaux-950 tracking-tight">Design Romantique</h3>
+                            <p class="text-zinc-500 leading-relaxed text-sm">Une boîte rigide noire au toucher premium, rehaussée d'un logo doré élégant.</p>
+                        </div>
+                    </div>
+                    <div class="flex-shrink-0 w-[85%] snap-center">
+                        <div class="flex flex-col items-start gap-4 p-6 rounded-2xl bg-white border border-zinc-100 h-full">
+                            <div class="w-12 h-12 rounded-full bg-zinc-50 flex items-center justify-center text-zinc-900 mb-2">
+                                <iconify-icon icon="solar:chef-hat-heart-linear" width="24" height="24"></iconify-icon>
+                            </div>
+                            <h3 class="text-xl font-medium text-zinc-900 tracking-tight">Chocolat Ferrero</h3>
+                            <p class="text-zinc-500 leading-relaxed text-sm">12 Ferrero Rocher : noisettes croustillantes, gaufrette et coeur fondant.</p>
+                        </div>
+                    </div>
+                    <div class="flex-shrink-0 w-[85%] snap-center">
+                        <div class="flex flex-col items-start gap-4 p-6 rounded-2xl bg-white border border-zinc-100 h-full">
+                            <div class="w-16 h-16 rounded-full bg-bordeaux-50 flex items-center justify-center text-bordeaux-900 mb-2">
+                                <span class="text-4xl">🌹</span>
+                            </div>
+                            <h3 class="text-xl font-medium text-zinc-900 tracking-tight">Roses au Choix</h3>
+                            <p class="text-zinc-500 leading-relaxed text-sm">Quatre roses rouges, fraîches ou éternelles selon votre choix.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Avis Clients -->
+    <section id="avis" class="py-24 bg-white border-t border-zinc-100 relative z-10">
+        <div class="max-w-6xl mx-auto px-6">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-medium tracking-tight text-bordeaux-950 mb-3">Avis de nos clients</h2>
+                <p class="text-zinc-600 mb-6">Ils ont offert TiCoeur pour la Saint-Valentin.</p>
+                <div class="flex items-center justify-center gap-2">
+                    <div class="flex text-gold-500">
+                        <iconify-icon icon="solar:star-bold" width="20"></iconify-icon>
+                        <iconify-icon icon="solar:star-bold" width="20"></iconify-icon>
+                        <iconify-icon icon="solar:star-bold" width="20"></iconify-icon>
+                        <iconify-icon icon="solar:star-bold" width="20"></iconify-icon>
+                        <iconify-icon icon="solar:star-bold" width="20"></iconify-icon>
+                    </div>
+                    <span class="text-sm font-semibold text-zinc-900">4,9/5</span>
+                    <span class="text-sm text-zinc-500">– Basé sur 37 avis vérifiés</span>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                <!-- Avis 1 - Thomas -->
+                <div class="bg-white border border-zinc-100 rounded-2xl p-6 hover:shadow-lg hover:shadow-bordeaux-900/5 transition-all">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="avatar-circle" style="background: linear-gradient(135deg, #4a0a16, #801b2d);">T</div>
+                        <div>
+                            <p class="text-sm font-semibold text-zinc-900">Thomas R.</p>
+                            <div class="flex items-center gap-2">
+                                <div class="flex text-gold-500">
+                                    <iconify-icon icon="solar:star-bold" width="14"></iconify-icon>
+                                    <iconify-icon icon="solar:star-bold" width="14"></iconify-icon>
+                                    <iconify-icon icon="solar:star-bold" width="14"></iconify-icon>
+                                    <iconify-icon icon="solar:star-bold" width="14"></iconify-icon>
+                                    <iconify-icon icon="solar:star-bold" width="14"></iconify-icon>
+                                </div>
+                                <span class="text-xs text-green-600 font-medium flex items-center gap-1">
+                                    <iconify-icon icon="solar:verified-check-bold" width="12"></iconify-icon> Achat vérifié
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="text-sm text-zinc-600 leading-relaxed mb-3">
+                        « Ma compagne a été bluffée. Le coffret est encore plus beau en vrai que sur les photos, et la combinaison roses + Ferrero, c'est le sans-faute assuré. Elle a gardé la boîte pour y ranger ses bijoux. »
+                    </p>
+                    <div class="flex items-center gap-2">
+                        <img src="./images/produit-ferrero (1).jpg" alt="Photo avis Thomas" class="w-16 h-16 rounded-lg object-cover border border-zinc-100">
+                        <img src="./images/coffret-coeur-roses-ferrero.jpg" alt="Photo avis Thomas 2" class="w-16 h-16 rounded-lg object-cover border border-zinc-100">
+                    </div>
+                    <p class="text-xs text-zinc-400 mt-3">Il y a 3 jours - Saint-Denis, La Réunion</p>
+                </div>
+
+                <!-- Avis 2 - Sarah -->
+                <div class="bg-white border border-zinc-100 rounded-2xl p-6 hover:shadow-lg hover:shadow-bordeaux-900/5 transition-all">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="avatar-circle" style="background: linear-gradient(135deg, #E91E63, #C2185B);">S</div>
+                        <div>
+                            <p class="text-sm font-semibold text-zinc-900">Sarah M.</p>
+                            <div class="flex items-center gap-2">
+                                <div class="flex text-gold-500">
+                                    <iconify-icon icon="solar:star-bold" width="14"></iconify-icon>
+                                    <iconify-icon icon="solar:star-bold" width="14"></iconify-icon>
+                                    <iconify-icon icon="solar:star-bold" width="14"></iconify-icon>
+                                    <iconify-icon icon="solar:star-bold" width="14"></iconify-icon>
+                                    <iconify-icon icon="solar:star-bold" width="14"></iconify-icon>
+                                </div>
+                                <span class="text-xs text-green-600 font-medium flex items-center gap-1">
+                                    <iconify-icon icon="solar:verified-check-bold" width="12"></iconify-icon> Achat vérifié
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="text-sm text-zinc-600 leading-relaxed mb-3">
+                        « J'ai choisi les roses éternelles et c'était le bon choix : un effet waouh le jour J, et un souvenir qui reste dans la chambre. Le coffret respire la qualité, on sent que ce n'est pas un cadeau "vu partout". »
+                    </p>
+                    <div class="flex items-center gap-2">
+                        <img src="./images/produit-ferrero (2).jpg" alt="Photo avis Sarah" class="w-16 h-16 rounded-lg object-cover border border-zinc-100">
+                    </div>
+                    <p class="text-xs text-zinc-400 mt-3">Il y a 5 jours - Saint-Pierre, La Réunion</p>
+                </div>
+
+                <!-- Avis 3 - Julien -->
+                <div class="bg-white border border-zinc-100 rounded-2xl p-6 hover:shadow-lg hover:shadow-bordeaux-900/5 transition-all">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="avatar-circle" style="background: linear-gradient(135deg, #1565C0, #0D47A1);">J</div>
+                        <div>
+                            <p class="text-sm font-semibold text-zinc-900">Julien P.</p>
+                            <div class="flex items-center gap-2">
+                                <div class="flex text-gold-500">
+                                    <iconify-icon icon="solar:star-bold" width="14"></iconify-icon>
+                                    <iconify-icon icon="solar:star-bold" width="14"></iconify-icon>
+                                    <iconify-icon icon="solar:star-bold" width="14"></iconify-icon>
+                                    <iconify-icon icon="solar:star-bold" width="14"></iconify-icon>
+                                    <iconify-icon icon="solar:star-bold" width="14"></iconify-icon>
+                                </div>
+                                <span class="text-xs text-green-600 font-medium flex items-center gap-1">
+                                    <iconify-icon icon="solar:verified-check-bold" width="12"></iconify-icon> Achat vérifié
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="text-sm text-zinc-600 leading-relaxed mb-3">
+                        « Livraison rapide, emballage soigné, rien à redire. Le rapport qualité/prix est excellent, surtout pour un cadeau aussi original. On a dévoré les Ferrero devant un film, moment parfait. »
+                    </p>
+                    <div class="flex items-center gap-2">
+                        <img src="./images/produit-ferrero (3).jpg" alt="Photo avis Julien" class="w-16 h-16 rounded-lg object-cover border border-zinc-100">
+                    </div>
+                    <p class="text-xs text-zinc-400 mt-3">Il y a 1 semaine - Le Tampon, La Réunion</p>
+                </div>
+
+                <!-- Avis 4 - Amandine -->
+                <div class="bg-white border border-zinc-100 rounded-2xl p-6 hover:shadow-lg hover:shadow-bordeaux-900/5 transition-all">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="avatar-circle" style="background: linear-gradient(135deg, #7B1FA2, #4A148C);">A</div>
+                        <div>
+                            <p class="text-sm font-semibold text-zinc-900">Amandine L.</p>
+                            <div class="flex items-center gap-2">
+                                <div class="flex text-gold-500">
+                                    <iconify-icon icon="solar:star-bold" width="14"></iconify-icon>
+                                    <iconify-icon icon="solar:star-bold" width="14"></iconify-icon>
+                                    <iconify-icon icon="solar:star-bold" width="14"></iconify-icon>
+                                    <iconify-icon icon="solar:star-bold" width="14"></iconify-icon>
+                                    <iconify-icon icon="solar:star-linear" width="14"></iconify-icon>
+                                </div>
+                                <span class="text-xs text-green-600 font-medium flex items-center gap-1">
+                                    <iconify-icon icon="solar:verified-check-bold" width="12"></iconify-icon> Achat vérifié
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="text-sm text-zinc-600 leading-relaxed mb-3">
+                        « J'avais peur que ce soit "juste une boîte avec des chocolats", mais c'est clairement plus premium que ce à quoi je m'attendais. La carte manuscrite personnalisée fait vraiment la différence. Mon homme a adoré ! »
+                    </p>
+                    <p class="text-xs text-zinc-400 mt-3">Il y a 2 semaines - Saint-Paul, La Réunion</p>
+                </div>
+
+                <!-- Avis 5 - Nicolas -->
+                <div class="bg-white border border-zinc-100 rounded-2xl p-6 hover:shadow-lg hover:shadow-bordeaux-900/5 transition-all">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="avatar-circle" style="background: linear-gradient(135deg, #2E7D32, #1B5E20);">N</div>
+                        <div>
+                            <p class="text-sm font-semibold text-zinc-900">Nicolas D.</p>
+                            <div class="flex items-center gap-2">
+                                <div class="flex text-gold-500">
+                                    <iconify-icon icon="solar:star-bold" width="14"></iconify-icon>
+                                    <iconify-icon icon="solar:star-bold" width="14"></iconify-icon>
+                                    <iconify-icon icon="solar:star-bold" width="14"></iconify-icon>
+                                    <iconify-icon icon="solar:star-bold" width="14"></iconify-icon>
+                                    <iconify-icon icon="solar:star-bold" width="14"></iconify-icon>
+                                </div>
+                                <span class="text-xs text-green-600 font-medium flex items-center gap-1">
+                                    <iconify-icon icon="solar:verified-check-bold" width="12"></iconify-icon> Achat vérifié
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="text-sm text-zinc-600 leading-relaxed mb-3">
+                        « Idéal pour ceux qui n'ont pas d'idée de cadeau mais veulent quand même marquer le coup. Simple à commander, livré à temps, et effet garanti. La musique personnalisée avec son prénom, elle n'en revenait pas ! »
+                    </p>
+                    <div class="flex items-center gap-2">
+                        <img src="./images/coffret-coeur-roses-ferrero.jpg" alt="Photo avis Nicolas" class="w-16 h-16 rounded-lg object-cover border border-zinc-100">
+                    </div>
+                    <p class="text-xs text-zinc-400 mt-3">Il y a 2 semaines - Saint-André, La Réunion</p>
+                </div>
+            </div>
+
+            <p class="text-center text-sm text-zinc-500">TiCoeur est imaginé et préparé à La Réunion, avec une attention particulière portée à chaque coffret.</p>
+        </div>
+    </section>
+
+    <!-- FAQ Accordion -->
+    <section id="faq" class="py-24 relative z-10">
+        <div class="max-w-2xl mx-auto px-6">
+            <h2 class="text-2xl font-medium tracking-tight text-center mb-12 text-bordeaux-950">Questions fréquentes</h2>
+
+            <div class="space-y-3">
+                <div class="border border-zinc-200 rounded-lg bg-white hover:border-bordeaux-200 transition-colors shadow-sm overflow-hidden">
+                    <button onclick="toggleFaq(0)" class="w-full p-5 flex justify-between items-center cursor-pointer group">
+                        <h4 class="text-sm font-medium text-zinc-800 group-hover:text-bordeaux-900 text-left">Quelle est la différence entre roses fraîches et éternelles ?</h4>
+                        <iconify-icon icon="solar:alt-arrow-down-linear" class="text-zinc-400 group-hover:text-bordeaux-900 transition-all faq-icon" id="faq-icon-0"></iconify-icon>
+                    </button>
+                    <div class="faq-content hidden px-5 pb-5" id="faq-content-0">
+                        <p class="text-sm text-zinc-600 leading-relaxed mb-3">
+                            <strong>🌹 Roses fraîches :</strong> Les roses fraîches offrent un impact visuel et olfactif fort le jour de la Saint-Valentin et se conservent plusieurs jours.
+                        </p>
+                        <p class="text-sm text-zinc-600 leading-relaxed">
+                            <strong>🌺 Roses éternelles :</strong> Les roses éternelles sont des roses naturelles stabilisées qui gardent leur beauté pendant plusieurs mois, voire années.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="border border-zinc-200 rounded-lg bg-white hover:border-bordeaux-200 transition-colors shadow-sm overflow-hidden">
+                    <button onclick="toggleFaq(1)" class="w-full p-5 flex justify-between items-center cursor-pointer group">
+                        <h4 class="text-sm font-medium text-zinc-800 group-hover:text-bordeaux-900 text-left">Qu'est-ce que le Mini Tableau Apéro pour Deux ?</h4>
+                        <iconify-icon icon="solar:alt-arrow-down-linear" class="text-zinc-400 group-hover:text-bordeaux-900 transition-all faq-icon" id="faq-icon-1"></iconify-icon>
+                    </button>
+                    <div class="faq-content hidden px-5 pb-5" id="faq-content-1">
+                        <p class="text-sm text-zinc-600 leading-relaxed">
+                            C'est un assortiment d'aliments peu périssables soigneusement sélectionnés pour créer un apéritif romantique à deux : fromages secs, crackers, fruits secs, charcuterie, chocolat et miel. Il inclut un tuto « Moment Parfait » pour dresser un magnifique tableau et créer l'ambiance parfaite pour la Saint-Valentin.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="border border-zinc-200 rounded-lg bg-white hover:border-bordeaux-200 transition-colors shadow-sm overflow-hidden">
+                    <button onclick="toggleFaq(2)" class="w-full p-5 flex justify-between items-center cursor-pointer group">
+                        <h4 class="text-sm font-medium text-zinc-800 group-hover:text-bordeaux-900 text-left">Qu'est-ce que la musique personnalisée offerte ?</h4>
+                        <iconify-icon icon="solar:alt-arrow-down-linear" class="text-zinc-400 group-hover:text-bordeaux-900 transition-all faq-icon" id="faq-icon-2"></iconify-icon>
+                    </button>
+                    <div class="faq-content hidden px-5 pb-5" id="faq-content-2">
+                        <p class="text-sm text-zinc-600 leading-relaxed">
+                            Avec chaque commande, nous créons une musique romantique personnalisée avec le prénom de votre moitié. Un cadeau unique en plus de votre coffret, pour rendre ce moment encore plus spécial.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="border border-zinc-200 rounded-lg bg-white hover:border-bordeaux-200 transition-colors shadow-sm overflow-hidden">
+                    <button onclick="toggleFaq(3)" class="w-full p-5 flex justify-between items-center cursor-pointer group">
+                        <h4 class="text-sm font-medium text-zinc-800 group-hover:text-bordeaux-900 text-left">Ingrédients &amp; Allergènes</h4>
+                        <iconify-icon icon="solar:alt-arrow-down-linear" class="text-zinc-400 group-hover:text-bordeaux-900 transition-all faq-icon" id="faq-icon-3"></iconify-icon>
+                    </button>
+                    <div class="faq-content hidden px-5 pb-5" id="faq-content-3">
+                        <p class="text-sm text-zinc-600 leading-relaxed">
+                            Les chocolats Ferrero Rocher contiennent notamment <strong>noisettes, lait, soja et gluten</strong>. Ne pas consommer en cas d'allergie à l'un de ces ingrédients. La liste complète est disponible sur l'emballage Ferrero Rocher.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="border border-zinc-200 rounded-lg bg-white hover:border-bordeaux-200 transition-colors shadow-sm overflow-hidden">
+                    <button onclick="toggleFaq(4)" class="w-full p-5 flex justify-between items-center cursor-pointer group">
+                        <h4 class="text-sm font-medium text-zinc-800 group-hover:text-bordeaux-900 text-left">Options de livraison et retrait</h4>
+                        <iconify-icon icon="solar:alt-arrow-down-linear" class="text-zinc-400 group-hover:text-bordeaux-900 transition-all faq-icon" id="faq-icon-4"></iconify-icon>
+                    </button>
+                    <div class="faq-content hidden px-5 pb-5" id="faq-content-4">
+                        <p class="text-sm text-zinc-600 leading-relaxed">
+                            La livraison est offerte pour tous les coffrets TiCoeur. Les précommandes Saint-Valentin sont expédiées pour une réception avant le 14 février.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-zinc-200 pt-16 pb-8 relative z-10">
+        <div class="max-w-6xl mx-auto px-6">
+            <div class="flex flex-col md:flex-row justify-between items-start gap-12 mb-16">
+                <div>
+                    <span class="text-lg font-semibold tracking-tighter uppercase block mb-4 text-bordeaux-950">TiCoeur</span>
+                    <p class="text-sm text-zinc-500 max-w-xs mb-4">
+                        L'art d'aimer, l'art du chocolat.<br>
+                        Une expérience sensorielle unique.
+                    </p>
+                    <a href="tel:0692417749" class="flex items-center gap-2 text-sm font-medium text-bordeaux-950 hover:text-bordeaux-900 transition-colors">
+                        <iconify-icon icon="solar:phone-bold" width="16"></iconify-icon>
+                        0692 41 77 49
+                    </a>
+                </div>
+                <div class="flex gap-16">
+                    <div class="flex flex-col gap-3">
+                        <span class="text-xs font-semibold text-bordeaux-950 uppercase tracking-wide">Aide</span>
+                        <a href="tel:0692417749" class="text-sm text-zinc-500 hover:text-bordeaux-900">Contact</a>
+                        <a href="#faq" class="text-sm text-zinc-500 hover:text-bordeaux-900">Livraison</a>
+                    </div>
+                    <div class="flex flex-col gap-3">
+                        <span class="text-xs font-semibold text-bordeaux-950 uppercase tracking-wide">Légal</span>
+                        <a href="#" onclick="openCgvModal(); return false;" class="text-sm text-zinc-500 hover:text-bordeaux-900">CGV</a>
+                        <a href="#" onclick="openMentionsModal(); return false;" class="text-sm text-zinc-500 hover:text-bordeaux-900">Mentions légales</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex flex-col md:flex-row justify-between items-center pt-8 border-t border-zinc-100 gap-4">
+                <p class="text-xs text-zinc-400">© 2026 TiCoeur Collection. Tous droits réservés.</p>
+                <div class="flex gap-4">
+                    <iconify-icon icon="solar:camera-linear" class="text-zinc-400 hover:text-bordeaux-900 cursor-pointer transition-colors"></iconify-icon>
+                    <iconify-icon icon="solar:letter-linear" class="text-zinc-400 hover:text-bordeaux-900 cursor-pointer transition-colors"></iconify-icon>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ============ MODAL FORMULAIRE DE PRÉCOMMANDE ============ -->
+    <div id="preorderModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
+            <!-- Header -->
+            <div class="sticky top-0 bg-white border-b border-zinc-100 px-8 py-6 flex justify-between items-center rounded-t-2xl">
+                <div>
+                    <h3 class="text-2xl font-medium text-bordeaux-950">Précommande</h3>
+                    <p class="text-sm text-zinc-500 mt-1">Édition Saint Valentin 2026</p>
+                </div>
+                <button onclick="closeModal()" class="w-10 h-10 rounded-full hover:bg-zinc-100 flex items-center justify-center text-zinc-400 hover:text-zinc-900 transition-colors">
+                    <iconify-icon icon="solar:close-circle-linear" width="24"></iconify-icon>
+                </button>
+            </div>
+
+            <!-- Form -->
+            <form id="preorderForm" class="px-8 py-6 space-y-6">
+                <!-- Cadeau musique offerte -->
+                <div class="bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-200 rounded-xl p-4 flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 flex-shrink-0">
+                        <iconify-icon icon="solar:music-notes-bold" width="24"></iconify-icon>
+                    </div>
+                    <div>
+                        <p class="text-sm font-semibold text-purple-900">Musique personnalisée offerte !</p>
+                        <p class="text-xs text-purple-700">Recevez une musique romantique avec le prénom de votre moitié incluse avec votre commande.</p>
+                    </div>
+                </div>
+
+                <!-- Sélection du produit -->
+                <div>
+                    <label class="block text-sm font-medium text-zinc-700 mb-3">Choisissez votre coffret *</label>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <!-- Coffret Noir -->
+                        <div class="product-select-card selected border-2 border-bordeaux-950 rounded-xl p-3 relative" onclick="selectProduct('coffret', this)">
+                            <input type="radio" name="produit" value="Le Coffret Noir Élégance" checked class="sr-only">
+                            <div class="flex items-center gap-3">
+                                <img src="./images/produit-ferrero (1).jpg" alt="Coffret Noir" class="w-20 h-20 rounded-lg object-cover flex-shrink-0">
+                                <div>
+                                    <p class="text-sm font-semibold text-zinc-900">Coffret Noir Élégance</p>
+                                    <p class="text-xs text-zinc-500">Roses + Ferrero Rocher</p>
+                                    <p class="text-sm font-bold text-bordeaux-950 mt-1">59,00€</p>
+                                </div>
+                            </div>
+                            <div class="absolute top-2 right-2 w-5 h-5 rounded-full bg-bordeaux-950 text-white flex items-center justify-center product-check">
+                                <iconify-icon icon="solar:check-read-linear" width="12"></iconify-icon>
+                            </div>
+                        </div>
+
+                        <!-- Mini Tableau Apéro -->
+                        <div class="product-select-card border-2 border-zinc-200 rounded-xl p-3 relative" onclick="selectProduct('minitableau', this)">
+                            <input type="radio" name="produit" value="Mini Tableau Apéro pour Deux" class="sr-only">
+                            <div class="flex items-center gap-3">
+                                <div class="w-20 h-20 rounded-lg bg-gradient-to-br from-amber-50 to-rose-50 flex items-center justify-center flex-shrink-0 overflow-hidden">
+                                    <img src="./images/minitableau1.png" alt="Mini Tableau" class="w-full h-full object-cover">
+                                </div>
+                                <div>
+                                    <p class="text-sm font-semibold text-zinc-900">Mini Tableau Apéro</p>
+                                    <p class="text-xs text-zinc-500">Apéro romantique + Tuto</p>
+                                    <p class="text-sm font-bold text-bordeaux-950 mt-1">59,00€</p>
+                                </div>
+                            </div>
+                            <div class="absolute top-2 right-2 w-5 h-5 rounded-full bg-zinc-200 text-white flex items-center justify-center product-check">
+                                <iconify-icon icon="solar:check-read-linear" width="12"></iconify-icon>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Nom et Prénom -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-zinc-700 mb-2">Votre prénom *</label>
+                        <input type="text" name="prenom" required class="w-full px-4 py-3 border border-zinc-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-bordeaux-900 focus:border-transparent transition-all">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-zinc-700 mb-2">Votre nom *</label>
+                        <input type="text" name="nom" required class="w-full px-4 py-3 border border-zinc-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-bordeaux-900 focus:border-transparent transition-all">
+                    </div>
+                </div>
+
+                <!-- Prénom de la personne (pour la musique) -->
+                <div class="bg-purple-50 border border-purple-100 rounded-xl p-4">
+                    <label class="block text-sm font-medium text-purple-900 mb-2">
+                        <iconify-icon icon="solar:music-notes-bold" class="align-middle mr-1"></iconify-icon>
+                        Prénom de votre moitié (pour la musique offerte) *
+                    </label>
+                    <input type="text" name="prenom_destinataire" required placeholder="Ex : Marie, Lucas..." class="w-full px-4 py-3 border border-purple-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all bg-white">
+                    <p class="text-xs text-purple-600 mt-1">Ce prénom sera intégré à la musique personnalisée que vous recevrez.</p>
+                </div>
+
+                <!-- Email et Téléphone -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-zinc-700 mb-2">Email *</label>
+                        <input type="email" name="email" required class="w-full px-4 py-3 border border-zinc-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-bordeaux-900 focus:border-transparent transition-all">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-zinc-700 mb-2">Téléphone *</label>
+                        <input type="tel" name="telephone" required class="w-full px-4 py-3 border border-zinc-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-bordeaux-900 focus:border-transparent transition-all">
+                    </div>
+                </div>
+
+                <!-- Ville -->
+                <div>
+                    <label class="block text-sm font-medium text-zinc-700 mb-2">Ville *</label>
+                    <input type="text" name="ville" required class="w-full px-4 py-3 border border-zinc-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-bordeaux-900 focus:border-transparent transition-all">
+                </div>
+
+                <!-- Occasion et Date -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-zinc-700 mb-2">Occasion</label>
+                        <select name="occasion" class="w-full px-4 py-3 border border-zinc-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-bordeaux-900 focus:border-transparent transition-all bg-white">
+                            <option value="Saint Valentin">Saint Valentin</option>
+                            <option value="Anniversaire">Anniversaire</option>
+                            <option value="Déclaration">Déclaration d'amour</option>
+                            <option value="Autre">Autre</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-zinc-700 mb-2">Date de livraison souhaitée</label>
+                        <input type="date" name="date_souhaitee" class="w-full px-4 py-3 border border-zinc-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-bordeaux-900 focus:border-transparent transition-all">
+                    </div>
+                </div>
+
+                <!-- Type de roses (visible uniquement pour le coffret) -->
+                <div id="rosesField">
+                    <label class="block text-sm font-medium text-zinc-700 mb-2">Type de roses *</label>
+                    <select name="type_roses" class="w-full px-4 py-3 border border-zinc-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-bordeaux-900 focus:border-transparent transition-all bg-white">
+                        <option value="">Sélectionnez le type de roses</option>
+                        <option value="Roses fraîches">🌹 Roses fraîches (7-10 jours)</option>
+                        <option value="Roses éternelles">🌺 Roses éternelles (plusieurs années)</option>
+                    </select>
+                </div>
+
+                <!-- Quantité -->
+                <div>
+                    <label class="block text-sm font-medium text-zinc-700 mb-2">Quantité *</label>
+                    <input type="number" name="quantite" value="1" min="1" required class="w-full px-4 py-3 border border-zinc-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-bordeaux-900 focus:border-transparent transition-all">
+                </div>
+
+                <!-- Message personnalisé -->
+                <div>
+                    <label class="block text-sm font-medium text-zinc-700 mb-2">Message pour la carte personnalisée</label>
+                    <textarea name="message_personnalise" rows="3" placeholder="Votre message d'amour..." class="w-full px-4 py-3 border border-zinc-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-bordeaux-900 focus:border-transparent transition-all resize-none"></textarea>
+                    <p class="text-xs text-zinc-400 mt-1">Ce message sera inscrit sur la carte incluse dans le coffret</p>
+                </div>
+
+                <!-- Autorisation contact -->
+                <div class="flex items-start gap-3">
+                    <input type="checkbox" name="autorisation_contact" id="autorisation" class="mt-1 w-4 h-4 text-bordeaux-900 border-zinc-300 rounded focus:ring-bordeaux-900">
+                    <label for="autorisation" class="text-sm text-zinc-600">J'accepte d'être contacté(e) pour le suivi de ma commande et les offres exclusives</label>
+                </div>
+
+                <!-- CGV -->
+                <div class="flex items-start gap-3">
+                    <input type="checkbox" name="cgv_acceptees" id="cgv_check" required class="mt-1 w-4 h-4 text-bordeaux-900 border-zinc-300 rounded focus:ring-bordeaux-900">
+                    <label for="cgv_check" class="text-sm text-zinc-600">J'ai lu et j'accepte les <a href="#" onclick="openCgvModal(); return false;" class="text-bordeaux-900 underline">CGV</a> et les <a href="#" onclick="openMentionsModal(); return false;" class="text-bordeaux-900 underline">mentions légales</a> *</label>
+                </div>
+
+                <!-- Bouton Submit -->
+                <div class="pt-4 flex flex-col sm:flex-row gap-4">
+                    <button type="button" onclick="closeModal()" class="w-full sm:flex-1 px-6 py-3 border border-zinc-200 text-zinc-700 rounded-lg font-medium hover:bg-zinc-50 transition-all order-2 sm:order-1">
+                        Annuler
+                    </button>
+                    <button type="submit" class="w-full sm:flex-1 px-6 py-3 bg-bordeaux-950 text-white rounded-lg font-medium hover:bg-bordeaux-900 transition-all shadow-lg shadow-bordeaux-900/20 flex items-center justify-center gap-2 order-1 sm:order-2">
+                        <iconify-icon icon="solar:heart-bold" width="18"></iconify-icon>
+                        Confirmer la précommande
+                    </button>
+                </div>
+            </form>
+
+            <!-- Message de remerciement -->
+            <div id="thankYouMessage" class="hidden px-8 py-12 text-center">
+                <div class="w-20 h-20 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <iconify-icon icon="solar:check-circle-bold" class="text-green-600" width="48"></iconify-icon>
+                </div>
+                <h3 class="text-2xl font-medium text-bordeaux-950 mb-3">Merci pour votre précommande !</h3>
+                <p class="text-zinc-600 mb-4">Nous avons bien reçu votre précommande. Vous recevrez un email de confirmation dans quelques instants.</p>
+                <div class="bg-purple-50 border border-purple-200 rounded-xl p-4 mb-6 inline-block">
+                    <p class="text-sm text-purple-900 font-medium">
+                        <iconify-icon icon="solar:music-notes-bold" class="align-middle mr-1"></iconify-icon>
+                        Votre musique personnalisée sera envoyée sous 24h !
+                    </p>
+                </div>
+                <br>
+                <p class="text-sm text-zinc-500 mb-6">Vous pouvez aussi nous appeler au <a href="tel:0692417749" class="font-semibold text-bordeaux-950">0692 41 77 49</a></p>
+                <button onclick="closeModal()" class="px-8 py-3 bg-bordeaux-950 text-white rounded-lg font-medium hover:bg-bordeaux-900 transition-all">
+                    Fermer
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============ MODAL CGV ============ -->
+    <div id="cgvModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-[60] hidden items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
+            <div class="sticky top-0 bg-white border-b border-zinc-100 px-8 py-6 flex justify-between items-center rounded-t-2xl">
+                <h3 class="text-xl font-medium text-bordeaux-950">Conditions Générales de Vente</h3>
+                <button onclick="closeCgvModal()" class="w-10 h-10 rounded-full hover:bg-zinc-100 flex items-center justify-center text-zinc-400 hover:text-zinc-900 transition-colors">
+                    <iconify-icon icon="solar:close-circle-linear" width="24"></iconify-icon>
+                </button>
+            </div>
+            <div class="px-8 py-6 text-sm text-zinc-600 leading-relaxed space-y-6">
+                <div>
+                    <h4 class="font-semibold text-zinc-900 mb-2">Article 1 - Objet</h4>
+                    <p>Les présentes Conditions Générales de Vente régissent les ventes de coffrets et produits TiCoeur effectuées via le site ticoeur.store. Toute commande implique l'acceptation sans réserve des présentes CGV.</p>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-zinc-900 mb-2">Article 2 - Produits</h4>
+                    <p>TiCoeur propose des coffrets cadeaux pour la Saint-Valentin comprenant chocolats Ferrero Rocher, roses (fraîches ou éternelles), carte personnalisée et musique personnalisée. Le Mini Tableau Apéro pour Deux comprend un assortiment d'aliments peu périssables avec un tuto « Moment Parfait ». Les photographies sont non contractuelles.</p>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-zinc-900 mb-2">Article 3 - Prix</h4>
+                    <p>Les prix sont indiqués en euros TTC. La livraison est offerte sur tous les coffrets. TiCoeur se réserve le droit de modifier les prix à tout moment, les commandes étant facturées au prix en vigueur au moment de la validation.</p>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-zinc-900 mb-2">Article 4 - Commande</h4>
+                    <p>La commande est validée après confirmation par email et/ou par téléphone. TiCoeur se réserve le droit de refuser une commande pour tout motif légitime.</p>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-zinc-900 mb-2">Article 5 - Livraison</h4>
+                    <p>Les livraisons sont effectuées à La Réunion. Les délais de livraison sont donnés à titre indicatif. Pour la Saint-Valentin, les commandes sont expédiées pour une réception avant le 14 février, sous réserve de commande passée dans les délais indiqués.</p>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-zinc-900 mb-2">Article 6 - Droit de rétractation</h4>
+                    <p>Conformément au Code de la consommation, les produits alimentaires périssables et les produits personnalisés (musique, carte manuscrite) ne bénéficient pas du droit de rétractation.</p>
+                </div>
+                <div class="bg-amber-50 border border-amber-200 rounded-xl p-4">
+                    <h4 class="font-semibold text-amber-900 mb-2">Article 7 - Offre promotionnelle « Cadeau Offert »</h4>
+                    <p class="text-amber-800">L'offre promotionnelle « Cadeau Offert » est <strong>limitée aux 10 premières commandes</strong> validées. Au-delà de cette limite, le cadeau ne sera plus inclus dans les commandes suivantes. Cette offre est non cumulable avec d'autres promotions et est valable dans la limite des stocks disponibles. TiCoeur se réserve le droit de modifier ou d'interrompre cette offre à tout moment.</p>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-zinc-900 mb-2">Article 8 - Protection des données</h4>
+                    <p>Les données personnelles collectées sont traitées conformément au RGPD. Elles sont utilisées uniquement pour le traitement des commandes et, avec votre accord, pour l'envoi de communications commerciales. Vous pouvez exercer vos droits d'accès, de rectification et de suppression en nous contactant.</p>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-zinc-900 mb-2">Article 9 - Contact</h4>
+                    <p>Pour toute question, contactez-nous au <strong>0692 41 77 49</strong> ou via le formulaire de précommande sur le site.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============ MODAL MENTIONS LÉGALES ============ -->
+    <div id="mentionsModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-[60] hidden items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
+            <div class="sticky top-0 bg-white border-b border-zinc-100 px-8 py-6 flex justify-between items-center rounded-t-2xl">
+                <h3 class="text-xl font-medium text-bordeaux-950">Mentions Légales</h3>
+                <button onclick="closeMentionsModal()" class="w-10 h-10 rounded-full hover:bg-zinc-100 flex items-center justify-center text-zinc-400 hover:text-zinc-900 transition-colors">
+                    <iconify-icon icon="solar:close-circle-linear" width="24"></iconify-icon>
+                </button>
+            </div>
+            <div class="px-8 py-6 text-sm text-zinc-600 leading-relaxed space-y-6">
+                <div>
+                    <h4 class="font-semibold text-zinc-900 mb-2">Éditeur du site</h4>
+                    <p>TiCoeur Collection<br>
+                    Responsable de publication : TiCoeur<br>
+                    Téléphone : 0692 41 77 49<br>
+                    Site web : ticoeur.store</p>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-zinc-900 mb-2">Hébergement</h4>
+                    <p>Netlify, Inc.<br>
+                    44 Montgomery Street, Suite 300<br>
+                    San Francisco, California 94104<br>
+                    USA</p>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-zinc-900 mb-2">Propriété intellectuelle</h4>
+                    <p>L'ensemble du contenu du site ticoeur.store (textes, images, vidéos, logos) est protégé par le droit d'auteur. Toute reproduction, même partielle, est interdite sans autorisation préalable.</p>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-zinc-900 mb-2">Protection des données personnelles</h4>
+                    <p>Conformément au Règlement Général sur la Protection des Données (RGPD), vous disposez d'un droit d'accès, de rectification et de suppression de vos données personnelles. Pour exercer ces droits, contactez-nous au 0692 41 77 49.</p>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-zinc-900 mb-2">Cookies</h4>
+                    <p>Ce site n'utilise pas de cookies de traçage publicitaire. Seuls des cookies techniques nécessaires au bon fonctionnement du site sont utilisés.</p>
+                </div>
+                <div class="bg-amber-50 border border-amber-200 rounded-xl p-4">
+                    <h4 class="font-semibold text-amber-900 mb-2">Jeu promotionnel – Cadeau Offert</h4>
+                    <p class="text-amber-800">Le jeu promotionnel « Cadeau Offert » est <strong>limité aux 10 premières commandes</strong> validées sur le site ticoeur.store. Passé ce seuil, le cadeau n'est plus garanti. L'offre est valable dans la limite des stocks disponibles et ne peut être échangée contre sa valeur en argent.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============ SCRIPTS ============ -->
+    <script>
+        // Carousel
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.carousel-item');
+        const indicators = document.querySelectorAll('.indicator');
+
+        function showSlide(index) {
+            slides.forEach(slide => {
+                slide.classList.remove('opacity-100');
+                slide.classList.add('opacity-0');
+            });
+            indicators.forEach(indicator => {
+                indicator.classList.remove('bg-white');
+                indicator.classList.add('bg-white/50');
+            });
+            slides[index].classList.remove('opacity-0');
+            slides[index].classList.add('opacity-100');
+            indicators[index].classList.remove('bg-white/50');
+            indicators[index].classList.add('bg-white');
+        }
+
+        function nextSlide() {
+            currentSlide = (currentSlide + 1) % slides.length;
+            showSlide(currentSlide);
+        }
+
+        function prevSlide() {
+            currentSlide = (currentSlide - 1 + slides.length) % slides.length;
+            showSlide(currentSlide);
+        }
+
+        function goToSlide(index) {
+            currentSlide = index;
+            showSlide(currentSlide);
+        }
+
+        setInterval(nextSlide, 4000);
+
+        // Mini Tableau Carousel
+        let currentMiniSlide = 0;
+        const miniSlides = document.querySelectorAll('.carousel-mini-item');
+        const miniIndicators = document.querySelectorAll('.indicator-mini');
+
+        function showMiniSlide(index) {
+            miniSlides.forEach(slide => {
+                slide.classList.remove('opacity-100');
+                slide.classList.add('opacity-0');
+            });
+            miniIndicators.forEach(ind => {
+                ind.classList.remove('bg-white');
+                ind.classList.add('bg-white/50');
+            });
+            miniSlides[index].classList.remove('opacity-0');
+            miniSlides[index].classList.add('opacity-100');
+            miniIndicators[index].classList.remove('bg-white/50');
+            miniIndicators[index].classList.add('bg-white');
+        }
+
+        function nextMiniSlide() {
+            currentMiniSlide = (currentMiniSlide + 1) % miniSlides.length;
+            showMiniSlide(currentMiniSlide);
+        }
+
+        function prevMiniSlide() {
+            currentMiniSlide = (currentMiniSlide - 1 + miniSlides.length) % miniSlides.length;
+            showMiniSlide(currentMiniSlide);
+        }
+
+        function goToMiniSlide(index) {
+            currentMiniSlide = index;
+            showMiniSlide(currentMiniSlide);
+        }
+
+        setInterval(nextMiniSlide, 5000);
+
+        // Mobile Menu
+        function toggleMobileMenu() {
+            const mobileMenu = document.getElementById('mobileMenu');
+            const menuIcon = document.getElementById('menuIcon');
+            if (mobileMenu.classList.contains('hidden')) {
+                mobileMenu.classList.remove('hidden');
+                menuIcon.setAttribute('icon', 'solar:close-circle-linear');
+            } else {
+                mobileMenu.classList.add('hidden');
+                menuIcon.setAttribute('icon', 'solar:hamburger-menu-linear');
+            }
+        }
+
+        document.querySelectorAll('#mobileMenu a').forEach(link => {
+            link.addEventListener('click', () => {
+                document.getElementById('mobileMenu').classList.add('hidden');
+                document.getElementById('menuIcon').setAttribute('icon', 'solar:hamburger-menu-linear');
+            });
+        });
+
+        // Video Gallery
+        function changeVideo(videoSrc, index) {
+            const mainVideo = document.getElementById('mainVideo');
+            const source = mainVideo.querySelector('source');
+            source.src = videoSrc;
+            mainVideo.load();
+            mainVideo.play();
+            const thumbnails = document.querySelectorAll('.group.cursor-pointer > div');
+            thumbnails.forEach((thumb, i) => {
+                if (i === index) {
+                    thumb.classList.remove('border-zinc-200');
+                    thumb.classList.add('border-bordeaux-900');
+                } else {
+                    thumb.classList.remove('border-bordeaux-900');
+                    thumb.classList.add('border-zinc-200');
+                }
+            });
+        }
+
+        // FAQ
+        function toggleFaq(index) {
+            const content = document.getElementById(`faq-content-${index}`);
+            const icon = document.getElementById(`faq-icon-${index}`);
+            if (content.classList.contains('hidden')) {
+                content.classList.remove('hidden');
+                icon.style.transform = 'rotate(180deg)';
+            } else {
+                content.classList.add('hidden');
+                icon.style.transform = 'rotate(0deg)';
+            }
+        }
+
+        // Product Selection in Form
+        let selectedProduct = 'coffret';
+
+        function selectProduct(product, cardEl) {
+            selectedProduct = product;
+            // Update visual selection
+            document.querySelectorAll('.product-select-card').forEach(card => {
+                card.classList.remove('selected');
+                card.style.borderColor = '';
+                const check = card.querySelector('.product-check');
+                check.classList.remove('bg-bordeaux-950');
+                check.classList.add('bg-zinc-200');
+                card.querySelector('input[type="radio"]').checked = false;
+            });
+            cardEl.classList.add('selected');
+            cardEl.querySelector('input[type="radio"]').checked = true;
+            const check = cardEl.querySelector('.product-check');
+            check.classList.remove('bg-zinc-200');
+            check.classList.add('bg-bordeaux-950');
+
+            // Show/hide roses field
+            const rosesField = document.getElementById('rosesField');
+            if (product === 'coffret') {
+                rosesField.style.display = 'block';
+            } else {
+                rosesField.style.display = 'none';
+            }
+        }
+
+        // Modal Functions
+        function openModal(product) {
+            document.getElementById('preorderModal').classList.remove('hidden');
+            document.getElementById('preorderModal').classList.add('flex');
+            document.body.style.overflow = 'hidden';
+
+            // Pre-select the product if specified
+            if (product) {
+                const cards = document.querySelectorAll('.product-select-card');
+                if (product === 'minitableau') {
+                    selectProduct('minitableau', cards[1]);
+                } else {
+                    selectProduct('coffret', cards[0]);
+                }
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('preorderModal').classList.add('hidden');
+            document.getElementById('preorderModal').classList.remove('flex');
+            document.body.style.overflow = 'auto';
+            document.getElementById('preorderForm').reset();
+            document.getElementById('preorderForm').classList.remove('hidden');
+            document.getElementById('thankYouMessage').classList.add('hidden');
+            // Reset product selection to coffret
+            const cards = document.querySelectorAll('.product-select-card');
+            selectProduct('coffret', cards[0]);
+        }
+
+        // CGV Modal
+        function openCgvModal() {
+            document.getElementById('cgvModal').classList.remove('hidden');
+            document.getElementById('cgvModal').classList.add('flex');
+        }
+        function closeCgvModal() {
+            document.getElementById('cgvModal').classList.add('hidden');
+            document.getElementById('cgvModal').classList.remove('flex');
+        }
+
+        // Mentions Légales Modal
+        function openMentionsModal() {
+            document.getElementById('mentionsModal').classList.remove('hidden');
+            document.getElementById('mentionsModal').classList.add('flex');
+        }
+        function closeMentionsModal() {
+            document.getElementById('mentionsModal').classList.add('hidden');
+            document.getElementById('mentionsModal').classList.remove('flex');
+        }
+
+        // Form Submission
+        document.getElementById('preorderForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const formData = new FormData(e.target);
+            const produitSelectionne = formData.get('produit') || 'Le Coffret Noir Élégance';
+            const budget = selectedProduct === 'coffret' ? '59.00' : '59.00';
+
+            const data = {
+                date_inscription: new Date().toISOString(),
+                nom: formData.get('nom'),
+                prenom: formData.get('prenom'),
+                prenom_destinataire: formData.get('prenom_destinataire'),
+                email: formData.get('email'),
+                telephone: formData.get('telephone'),
+                ville: formData.get('ville'),
+                pays: 'France',
+                canal_acquisition: 'Site Web',
+                produit_interesse: produitSelectionne,
+                type_roses: formData.get('type_roses') || 'N/A',
+                occasion: formData.get('occasion'),
+                date_souhaitee: formData.get('date_souhaitee'),
+                budget_estime: budget,
+                quantite: formData.get('quantite'),
+                message_personnalise: formData.get('message_personnalise'),
+                musique_prenom: formData.get('prenom_destinataire'),
+                autorisation_contact: formData.get('autorisation_contact') ? 'Oui' : 'Non',
+                statut_lead: 'Nouveau'
+            };
+
+            try {
+                const response = await fetch('https://n8n.tonypayet.com/webhook/leadchocolatrose', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                if (response.ok) {
+                    document.getElementById('preorderForm').classList.add('hidden');
+                    document.getElementById('thankYouMessage').classList.remove('hidden');
+                } else {
+                    alert('Une erreur est survenue. Veuillez réessayer ou appelez-nous au 0692 41 77 49.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Une erreur est survenue. Veuillez réessayer ou appelez-nous au 0692 41 77 49.');
+            }
+        });
+    </script>
+
+</body></html>
