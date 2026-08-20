@@ -1,0 +1,533 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Feed démo premium — Osmose Bistro : 3 directions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0d0e0f;
+    --panel:#151719;
+    --panel-2:#1c1f21;
+    --line:#2a2e31;
+    --txt:#eceae6;
+    --dim:#9aa0a4;
+    --dim-2:#6d7478;
+    --accent:#d8b26a;
+    --bad:#e2705f;
+    --good:#7fbf8e;
+    --radius:14px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    background:var(--bg);color:var(--txt);
+    font-family:'Montserrat',system-ui,-apple-system,'Segoe UI',sans-serif;
+    font-weight:400;line-height:1.6;
+    padding:0 20px 100px;
+  }
+  .wrap{max-width:1240px;margin:0 auto}
+
+  /* ---------- header ---------- */
+  header{padding:70px 0 46px;border-bottom:1px solid var(--line);margin-bottom:52px}
+  .eyebrow{
+    font-size:11px;letter-spacing:.22em;text-transform:uppercase;
+    color:var(--accent);font-weight:600;margin-bottom:18px;
+  }
+  h1{
+    font-family:'Playfair Display',Georgia,serif;font-weight:500;
+    font-size:clamp(30px,5vw,52px);line-height:1.12;letter-spacing:-.01em;
+    margin-bottom:20px;
+  }
+  .lede{color:var(--dim);font-size:16px;max-width:66ch;font-weight:300}
+  .lede strong{color:var(--txt);font-weight:500}
+
+  .meta{
+    display:flex;flex-wrap:wrap;gap:10px;margin-top:28px;
+  }
+  .chip{
+    border:1px solid var(--line);border-radius:100px;
+    padding:7px 15px;font-size:12px;color:var(--dim);
+    background:var(--panel);
+  }
+  .chip b{color:var(--txt);font-weight:500}
+
+  /* ---------- sections ---------- */
+  section{margin-bottom:76px}
+  h2{
+    font-family:'Playfair Display',Georgia,serif;font-weight:500;
+    font-size:clamp(23px,3.2vw,33px);margin-bottom:12px;letter-spacing:-.01em;
+  }
+  h3{
+    font-size:12px;letter-spacing:.2em;text-transform:uppercase;
+    color:var(--dim-2);font-weight:600;margin-bottom:16px;
+  }
+  .sub{color:var(--dim);font-size:15px;max-width:74ch;font-weight:300;margin-bottom:32px}
+
+  /* ---------- the phone / profile mockup ---------- */
+  .grid3{
+    display:grid;
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:34px;
+    align-items:start;
+  }
+  @media(max-width:1000px){.grid3{grid-template-columns:1fr;gap:52px;max-width:460px;margin:0 auto}}
+
+  .variant{min-width:0}
+  .vhead{margin-bottom:18px}
+  .vtag{
+    display:inline-block;font-size:10px;letter-spacing:.2em;text-transform:uppercase;
+    color:var(--bg);background:var(--accent);font-weight:700;
+    padding:4px 10px;border-radius:4px;margin-bottom:12px;
+  }
+  .vname{
+    font-family:'Playfair Display',Georgia,serif;font-size:25px;font-weight:500;
+    margin-bottom:9px;
+  }
+  .vpitch{color:var(--dim);font-size:14px;font-weight:300;line-height:1.62}
+  .vdiff{
+    margin-top:13px;padding-left:13px;border-left:2px solid var(--line);
+    color:var(--dim-2);font-size:13px;font-weight:300;font-style:italic;
+  }
+
+  .phone{
+    margin-top:22px;
+    background:#000;border:1px solid var(--line);
+    border-radius:var(--radius);overflow:hidden;
+  }
+  .pbar{
+    display:flex;align-items:center;gap:9px;
+    padding:11px 13px;border-bottom:1px solid #222;
+    font-size:13px;font-weight:600;
+  }
+  .pbar .back{color:var(--dim-2);font-weight:400}
+  .pprof{display:flex;align-items:center;gap:16px;padding:15px 13px 0}
+  .pavatar{
+    width:56px;height:56px;border-radius:50%;flex:0 0 56px;
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Playfair Display',serif;font-size:19px;font-weight:600;
+    color:#f4efe6;
+  }
+  .pstats{display:flex;gap:22px;flex:1;justify-content:space-around;text-align:center}
+  .pstats div{font-size:11px;color:var(--dim)}
+  .pstats b{display:block;font-size:14px;color:#fff;font-weight:600}
+  .pbio{padding:11px 13px 15px;font-size:12px;line-height:1.55}
+  .pbio .pname{font-weight:600;font-size:12.5px}
+  .pbio .pcat{color:var(--dim-2);font-size:11.5px;margin-bottom:3px}
+  .pbio .ptxt{color:#cfd3d6;font-weight:300}
+  .ptabs{display:flex;border-top:1px solid #222}
+  .ptabs span{
+    flex:1;text-align:center;padding:9px 0;font-size:15px;color:var(--dim-2);
+  }
+  .ptabs span.on{color:#fff;box-shadow:inset 0 2px 0 #fff}
+
+  .tiles{
+    display:grid;grid-template-columns:repeat(3,1fr);gap:2px;background:#000;
+  }
+  .tiles img{display:block;width:100%;aspect-ratio:1/1;object-fit:cover}
+  .tiles .miss{
+    width:100%;aspect-ratio:1/1;background:var(--panel-2);
+    display:flex;align-items:center;justify-content:center;
+    color:var(--dim-2);font-size:10px;letter-spacing:.1em;text-align:center;padding:6px;
+  }
+
+  /* typographic tiles rendered as real HTML (variante B) */
+  .ttile{
+    width:100%;aspect-ratio:1/1;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;text-align:center;
+    padding:11% 13%;
+  }
+  .ttile .t-l{
+    font-family:'Playfair Display',Georgia,serif;
+    font-size:clamp(11px,3.1vw,19px);line-height:1.28;font-weight:400;
+  }
+  @media(max-width:1000px){.ttile .t-l{font-size:20px}}
+  .ttile .t-r{
+    width:26px;height:1px;margin:11% 0 0;opacity:.5;
+  }
+  .ttile.dark{background:#14301f;color:#f2ece0}
+  .ttile.dark .t-r{background:#c9a227}
+  .ttile.cream{background:#f2ece0;color:#14301f}
+  .ttile.cream .t-r{background:#14301f}
+
+  /* ---------- before ---------- */
+  .before{
+    display:grid;grid-template-columns:minmax(0,340px) minmax(0,1fr);gap:44px;align-items:start;
+  }
+  @media(max-width:820px){.before{grid-template-columns:1fr;gap:28px}}
+  .before img{width:100%;border-radius:10px;border:1px solid var(--line);display:block}
+
+  ul.faults{list-style:none;display:flex;flex-direction:column;gap:15px}
+  ul.faults li{
+    position:relative;padding-left:26px;
+    font-size:14.5px;color:var(--dim);font-weight:300;line-height:1.6;
+  }
+  ul.faults li::before{
+    content:"×";position:absolute;left:0;top:0;
+    color:var(--bad);font-size:17px;line-height:1.35;font-weight:600;
+  }
+  ul.faults li b{color:var(--txt);font-weight:600;display:block;margin-bottom:2px;font-size:14px}
+
+  ul.rules{list-style:none;display:grid;grid-template-columns:repeat(auto-fit,minmax(258px,1fr));gap:17px}
+  ul.rules li{
+    background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:19px 20px;
+    font-size:14px;color:var(--dim);font-weight:300;line-height:1.6;
+  }
+  ul.rules li b{
+    display:block;color:var(--txt);font-weight:600;font-size:13px;margin-bottom:7px;
+    letter-spacing:.01em;
+  }
+  ul.rules li .n{
+    display:block;color:var(--accent);font-size:10px;letter-spacing:.18em;
+    font-weight:700;margin-bottom:9px;
+  }
+
+  table{width:100%;border-collapse:collapse;font-size:13.5px;font-weight:300}
+  th,td{text-align:left;padding:13px 15px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{
+    font-size:10px;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--dim-2);font-weight:700;
+  }
+  td{color:var(--dim)}
+  td.k{color:var(--txt);font-weight:500;white-space:nowrap}
+  .tscroll{overflow-x:auto;border:1px solid var(--line);border-radius:11px;background:var(--panel)}
+
+  .note{
+    background:var(--panel);border:1px solid var(--line);
+    border-left:2px solid var(--accent);
+    border-radius:0 11px 11px 0;padding:19px 22px;
+    font-size:13.5px;color:var(--dim);font-weight:300;line-height:1.66;
+  }
+  .note b{color:var(--txt);font-weight:600}
+  .note + .note{margin-top:13px}
+
+  footer{
+    border-top:1px solid var(--line);padding-top:26px;
+    color:var(--dim-2);font-size:12px;font-weight:300;
+  }
+  a{color:var(--accent)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="eyebrow">Feed de démonstration · refonte</div>
+  <h1>Osmose Bistro — trois directions<br>pour un feed qui tient debout</h1>
+  <p class="lede">
+    La version d'hier produisait <strong>une seule image</strong> : une affiche 9:16 contenant douze
+    vignettes miniatures. Un feed ne se juge pas sur une affiche, il se juge sur
+    <strong>la grille du profil</strong>. Ces trois variantes sont donc générées
+    <strong>tuile par tuile</strong>, en pleine résolution, et présentées telles qu'on les verrait
+    en ouvrant le compte.
+  </p>
+  <div class="meta">
+    <span class="chip"><b>@osmosebistro</b> · 4 438 abonnés</span>
+    <span class="chip">30 Bd Hubert Delisle, Saint-Pierre</span>
+    <span class="chip">4,3 ★ · 138 avis Google</span>
+    <span class="chip">9 tuiles × 3 variantes</span>
+  </div>
+</header>
+
+<!-- ============ AVANT ============ -->
+<section>
+  <h2>Ce que produisait la version actuelle</h2>
+  <p class="sub">
+    Exécution n8n <code>75713</code> du 19/08. Une image unique, générée d'un seul coup.
+    Voici précisément ce qui l'éloigne d'un feed premium — ce sont des constats sur cette image,
+    pas des généralités.
+  </p>
+  <div class="before">
+    <img src="avant.jpg" alt="Version précédente : affiche 9:16 de 12 vignettes" />
+    <ul class="faults">
+      <li><b>Ce n'est pas un feed, c'est une affiche</b>Des cartes arrondies avec ombre portée, flottant sur un fond crème. Aucun profil Instagram ne ressemble à ça — le restaurateur ne peut pas s'y projeter.</li>
+      <li><b>12 vignettes sur 12 portent du texte</b>Étiquette + titre + ligne descriptive, douze fois. Les feeds travaillés font l'inverse : le texte est l'exception.</li>
+      <li><b>La taxonomie interne fuit dans l'image</b>On lit « AVIS CLIENT 5 ÉTOILES » et surtout « CITATION OU SLOGAN » — le nom de la catégorie du prompt, avec son « ou ». Signature de génération automatique.</li>
+      <li><b>Vocabulaire promo discount</b>Pastille « −20 % AUJOURD'HUI SEULEMENT », badge « NOUVEAU », médaillon « 2 PLATS ACHETÉS = LE DESSERT OFFERT ». C'est le registre du fast-food, pas de la bistronomie.</li>
+      <li><b>Des faits inventés, et faux</b>L'image annonce « Plage de l'Hermitage 97434 » — Osmose est à Saint-Pierre, à l'autre bout de l'île. Elle annonce « ouvert lundi–dimanche 11h–23h » alors que la bio dit Mer-Sam 11h-23h et Dim 8h30-23h. Et sept prix (19 €, 26 €, 21 €, 29 €, 8 €…) sortis de nulle part.</li>
+      <li><b>Douze fois la même composition</b>Photo en haut, panneau vert dégradé en bas, titre serif centré, deux lignes. Aucune variation d'échelle ni de cadrage : pas de respiration.</li>
+      <li><b>Chaque vignette fait ~290 px de large</b>Le texte est mou et illisible. Aucune de ces douze « publications » n'est réellement publiable.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============ CE QUI FAIT PREMIUM ============ -->
+<section>
+  <h2>Ce qui sépare un feed travaillé d'un feed bricolé</h2>
+  <p class="sub">
+    Le point commun des comptes de restaurants qui tiennent : la grille est traitée comme
+    <em>une seule image en neuf morceaux</em>. C'est ce principe qui est câblé dans les trois variantes.
+  </p>
+  <ul class="rules">
+    <li><span class="n">01</span><b>Un étalonnage unique</b>La cohérence ne vient pas du logo, elle vient de la lumière. Erreur n°3 des feeds ratés selon Studio Kahi : des températures de couleur qui changent d'une photo à l'autre. Ici, un seul bloc d'étalonnage est injecté dans les neuf prompts.</li>
+    <li><span class="n">02</span><b>Deux ou trois couleurs, pas douze</b>Erreur n°1 : « beaucoup de couleurs différentes sur leur feed ». La recommandation sourcée est 2–3 couleurs principales + 2 secondaires. L'ancienne version en empilait cinq plus les couleurs de chaque photo.</li>
+    <li><span class="n">03</span><b>Une seule typographie</b>Erreur n°2 : le mélange de polices « véhicule des messages contradictoires ». Trois caractères maximum. L'ancienne version en utilisait deux par vignette, plus une étiquette.</li>
+    <li><span class="n">04</span><b>Un rythme structurel</b>Erreur n°4 : sans mise en page récurrente, l'audience a « des difficultés à identifier votre marque ». Les grilles travaillées reposent sur 3–4 gabarits réutilisés — damier, colonne du milieu, ou diagonale (une tuile similaire toutes les 4 positions).</li>
+    <li><span class="n">05</span><b>De la respiration</b>Erreur n°5 : des marges trop fines donnent « un rendu visuel surchargé et oppressant ». Une tuile sur trois porte une matière, un mur, une nappe — pas un argument.</li>
+    <li><span class="n">06</span><b>Une résolution réelle</b>Chaque tuile est une vraie image 1:1 exportable, pas une miniature dans un poster. C'est la différence entre une maquette et un feed livrable.</li>
+  </ul>
+
+  <div class="note" style="margin-top:26px">
+    <b>Le texte sur l'image n'est pas l'ennemi — c'est un arbitrage.</b>
+    Sur un échantillon de 1 000 publications Instagram, Fanpage Karma trouve que
+    <b>plus des deux tiers</b> portent du texte directement sur l'image, et que ces
+    publications font <b>+38 % de portée</b> et <b>+40 % d'engagement</b> par abonné.
+    Mais les visuels <em>sans</em> texte surperforment de <b>près de 60 %</b> en interactions
+    par vue. Autrement dit : le texte achète de la portée et coûte de l'intensité.
+    C'est exactement l'axe sur lequel les trois variantes ci-dessous se séparent —
+    A et C n'en portent aucun, B en porte trois sur neuf.
+    <br><br>
+    Contre-exemple utile : <b>Big Mamma</b> (439 519 abonnés) a un feed
+    <em>maximaliste</em>, pas minimal — vaisselle et casseroles vintage, codes très marqués.
+    « Premium » ne veut donc pas dire « vide ». Ça veut dire <em>tenu</em>.
+    À noter aussi : leur taux d'engagement calculé est d'environ 0,24 %, contre 0,77 %
+    pour @osmosebistro aujourd'hui. Un gros feed premium n'est pas un feed très engageant.
+  </div>
+
+  <div class="note">
+    <b>Limite de cette analyse, dite franchement : aucune grille de restaurant n'a pu être observée directement.</b>
+    Instagram renvoie un mur de connexion en navigation automatisée (test de contrôle effectué sur
+    un site simple au préalable : le navigateur fonctionnait, c'est bien Instagram qui bloque),
+    le miroir <code>imginn.com</code> répond 403, et le listing des publications de l'outil de scraping
+    est réservé à un abonnement Pro (message exact : <em>« Listing Instagram user posts requires a
+    Pro or Premium subscription »</em>). Seules les <b>fiches de profil</b> ont pu être lues —
+    @bigmammagroup et @osmosebistro ont répondu ; septime_paris, noma_cph, frenchie_rue_du_nil,
+    mokonuts_paris, clamato_paris et lemeurice_paris ont tous échoué.
+    Les six règles ci-dessus viennent donc de la <b>littérature de design de grille</b>
+    (Studio Kahi, Plann, Hootsuite, Malou, Fanpage Karma), pas de l'observation de ces comptes.
+    Le seul moyen d'avoir la vérité tuile par tuile serait le scraper Apify facturé (~0,15 $/appel),
+    volontairement non déclenché ici.
+  </div>
+</section>
+
+<!-- ============ LES 3 VARIANTES ============ -->
+<section>
+  <h2>Les trois directions</h2>
+  <p class="sub">
+    Elles ne sont pas trois nuances du même parti pris : elles se contredisent volontairement sur
+    <em>combien un feed doit vendre</em>. A ne vend rien et séduit. B affiche la marque et achète de la
+    portée avec ses trois tuiles typographiques. C change carrément le créneau du restaurant.
+    Chaque grille est un <b>ensemble de neuf images distinctes</b> partageant un seul bloc
+    d'étalonnage — c'est ce partage, et rien d'autre, qui fait la cohérence.
+  </p>
+
+  <div class="grid3">
+
+    <!-- ---- A ---- -->
+    <div class="variant">
+      <div class="vhead">
+        <span class="vtag">Variante A</span>
+        <div class="vname">L'Oasis</div>
+        <p class="vpitch">
+          Zéro texte sur les neuf tuiles : le feed se feuillette comme un magazine, c'est la
+          lumière et la matière qui donnent envie, jamais un argument.
+        </p>
+        <p class="vdiff">La seule sans un seul mot. Le risque assumé : « ça ne vend rien ».</p>
+      </div>
+      <div class="phone">
+        <div class="pbar"><span class="back">‹</span> osmosebistro</div>
+        <div class="pprof">
+          <div class="pavatar" style="background:#1B4332">OB</div>
+          <div class="pstats">
+            <div><b>9</b>publications</div>
+            <div><b>4 438</b>abonnés</div>
+            <div><b>312</b>suivis</div>
+          </div>
+        </div>
+        <div class="pbio">
+          <div class="pname">Osmose Bistro</div>
+          <div class="pcat">Restaurant</div>
+          <div class="ptxt">L'oasis du front de mer<br>Bistronomie locale · cocktails peï<br>Terrasse végétale &amp; rooftop</div>
+        </div>
+        <div class="ptabs"><span class="on">▦</span><span>▶</span><span>♡</span></div>
+        <div class="tiles" id="gA"></div>
+      </div>
+    </div>
+
+    <!-- ---- B ---- -->
+    <div class="variant">
+      <div class="vhead">
+        <span class="vtag">Variante B</span>
+        <div class="vname">Signature</div>
+        <p class="vpitch">
+          Six photos nettes et graphiques, plus trois cartons typographiques posés en diagonale :
+          la marque respire entre les plats au lieu de crier dessus.
+        </p>
+        <p class="vdiff">La seule qui porte des mots — et seulement trois tuiles sur neuf.</p>
+      </div>
+      <div class="phone">
+        <div class="pbar"><span class="back">‹</span> osmosebistro</div>
+        <div class="pprof">
+          <div class="pavatar" style="background:#14301f">OB</div>
+          <div class="pstats">
+            <div><b>9</b>publications</div>
+            <div><b>4 438</b>abonnés</div>
+            <div><b>312</b>suivis</div>
+          </div>
+        </div>
+        <div class="pbio">
+          <div class="pname">Osmose Bistro</div>
+          <div class="pcat">Restaurant</div>
+          <div class="ptxt">L'oasis du front de mer<br>Bistronomie locale · cocktails peï<br>Terrasse végétale &amp; rooftop</div>
+        </div>
+        <div class="ptabs"><span class="on">▦</span><span>▶</span><span>♡</span></div>
+        <div class="tiles" id="gB"></div>
+      </div>
+    </div>
+
+    <!-- ---- C ---- -->
+    <div class="variant">
+      <div class="vhead">
+        <span class="vtag">Variante C</span>
+        <div class="vname">Nuit Peï</div>
+        <p class="vpitch">
+          On bascule le compte sur le créneau du soir : nocturne, macro serré, quasi-monochrome,
+          une seule couleur d'accent. L'ambiance d'un bar à cocktails, pas d'une brasserie du midi.
+        </p>
+        <p class="vdiff">La seule qui change le positionnement et pas seulement l'habillage.</p>
+      </div>
+      <div class="phone">
+        <div class="pbar"><span class="back">‹</span> osmosebistro</div>
+        <div class="pprof">
+          <div class="pavatar" style="background:#0f1a14">OB</div>
+          <div class="pstats">
+            <div><b>9</b>publications</div>
+            <div><b>4 438</b>abonnés</div>
+            <div><b>312</b>suivis</div>
+          </div>
+        </div>
+        <div class="pbio">
+          <div class="pname">Osmose Bistro</div>
+          <div class="pcat">Bar · Restaurant</div>
+          <div class="ptxt">L'oasis du front de mer<br>Cocktails peï · sunset &amp; live<br>Rooftop face au lagon</div>
+        </div>
+        <div class="ptabs"><span class="on">▦</span><span>▶</span><span>♡</span></div>
+        <div class="tiles" id="gC"></div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============ COMPARATIF ============ -->
+<section>
+  <h2>Les trois, ligne à ligne</h2>
+  <div class="tscroll">
+    <table>
+      <thead>
+        <tr><th>&nbsp;</th><th>A — L'Oasis</th><th>B — Signature</th><th>C — Nuit Peï</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="k">Tuiles avec texte</td><td>0 / 9</td><td>3 / 9 (positions 1, 5, 9)</td><td>0 / 9</td></tr>
+        <tr><td class="k">Lumière</td><td>Jour, naturelle, latérale</td><td>Jour, vive et égale</td><td>Nuit, une source chaude</td></tr>
+        <tr><td class="k">Cadrage</td><td>Asymétrique, décentré</td><td>Centré, symétrique</td><td>Macro très serré</td></tr>
+        <tr><td class="k">Palette</td><td>Vert feuillage, ocre, bois, crème</td><td>Vert bouteille + crème + terracotta</td><td>Noir, vert-noir, corail</td></tr>
+        <tr><td class="k">Grain</td><td>Grain argentique fin</td><td>Aucun, tout net</td><td>Voile atmosphérique</td></tr>
+        <tr><td class="k">Ce que ça vend</td><td>Une envie, un lieu</td><td>Une marque identifiable</td><td>Une soirée</td></tr>
+        <tr><td class="k">Créneau visé</td><td>Déjeuner &amp; dîner</td><td>Toute la journée</td><td>18 h → minuit</td></tr>
+        <tr><td class="k">Objection prévisible</td><td>« On ne voit ni prix ni promo »</td><td>« C'est le choix sage »</td><td>« Trop sombre pour un midi front de mer »</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ============ NOTES ============ -->
+<section>
+  <h2>Notes honnêtes</h2>
+  <div class="note">
+    <b>Aucun plat, aucun prix, aucun horaire n'a été inventé.</b>
+    Les visuels montrent des standards de bistrot réunionnais (poisson grillé, rougail, riz, poke,
+    cocktails) <em>sans les nommer comme des plats de la carte et sans aucun prix</em> — la vraie carte
+    d'Osmose n'est pas connue. Les seuls textes affichés (bio, horaires, adresse, nom, nombre
+    d'abonnés) viennent de leur propre compte @osmosebistro et de leur fiche Google.
+    <b>À remplacer par la vraie carte avant tout envoi client.</b>
+  </div>
+  <div class="note">
+    <b>Les trois cartons typographiques de la variante B sont rendus en HTML, pas générés en image.</b>
+    C'est volontaire : les modèles d'image massacrent les accents français et inventent des mots.
+    En production, ces trois tuiles doivent être exportées en PNG 1080×1080 par une étape
+    HTML→image — cette étape n'est pas encore câblée dans le workflow.
+  </div>
+  <div class="note">
+    <b>Les photos sont générées, pas photographiées.</b> Elles servent à montrer une direction
+    artistique, pas à être publiées telles quelles : un feed final utilise les vrais plats et la
+    vraie salle du restaurant. C'est la maquette d'un feed, pas son contenu.
+  </div>
+</section>
+
+<section>
+  <h2>Sources</h2>
+  <p class="sub">Tout ce qui est chiffré ci-dessus vient de là.</p>
+  <ul class="rules">
+    <li><b>Les 5 erreurs d'un feed non harmonieux</b><a href="https://www.studiokahi.com/journal/feed-instagram-harmonieux-5-erreurs">studiokahi.com</a> — couleurs, polices, photographie, rythme, marges.</li>
+    <li><b>Texte sur l'image : 1 000 posts analysés</b><a href="https://www.fanpagekarma.com/insights/instagram-text-overlays/">fanpagekarma.com</a> — +38 % portée, +40 % engagement, −60 % interactions/vue.</li>
+    <li><b>15 gabarits de grille</b><a href="https://www.plannthat.com/15-instagram-grid-layout-examples/">plannthat.com</a> — diagonale toutes les 4 positions, colonne du milieu, puzzle 9–12 posts.</li>
+    <li><b>Taxonomie des grilles</b><a href="https://blog.hootsuite.com/instagram-grid-layout/">blog.hootsuite.com</a> — damier, thème par rangée, palette unique.</li>
+    <li><b>Big Mamma, codes de communication</b><a href="https://www.malou.io/blog/big-mamma-recette-communication-reussie-reseaux-sociaux">malou.io</a> — direction artistique interne, feed maximaliste assumé.</li>
+    <li><b>Profils Instagram</b>@bigmammagroup (439 519 abonnés, 1 076 likes moy.) et @osmosebistro (4 443 abonnés, 51 publications, 34 likes moy.) — lus via l'API de profil, août 2026.</li>
+  </ul>
+</section>
+
+<footer>
+  Osmose Bistro · 3 directions de feed · 24 tuiles générées une par une (Kie.ai,
+  <code>gpt-image-2-text-to-image</code>, 1:1) · comparaison avec l'exécution n8n <code>75713</code>
+</footer>
+
+</div>
+
+<script>
+// ---------------------------------------------------------------------------
+// Grids are declared here so a missing tile degrades to a labelled placeholder
+// instead of a broken image.
+// ---------------------------------------------------------------------------
+var GRIDS = {
+  gA: [
+    {img:'tiles/A1.jpg'},{img:'tiles/A2.jpg'},{img:'tiles/A3.jpg'},
+    {img:'tiles/A4.jpg'},{img:'tiles/A5.jpg'},{img:'tiles/A6.jpg'},
+    {img:'tiles/A7.jpg'},{img:'tiles/A8.jpg'},{img:'tiles/A9.jpg'}
+  ],
+  gB: [
+    {type:'t', cls:'dark',  line:"L'oasis du<br>front de mer"},
+    {img:'tiles/B1.jpg'},{img:'tiles/B2.jpg'},
+    {img:'tiles/B3.jpg'},
+    {type:'t', cls:'cream', line:"Bistronomie<br>locale"},
+    {img:'tiles/B4.jpg'},
+    {img:'tiles/B5.jpg'},{img:'tiles/B6.jpg'},
+    {type:'t', cls:'dark',  line:"Cocktails peï<br>&amp; happy vibes"}
+  ],
+  gC: [
+    {img:'tiles/C1.jpg'},{img:'tiles/C2.jpg'},{img:'tiles/C3.jpg'},
+    {img:'tiles/C4.jpg'},{img:'tiles/C5.jpg'},{img:'tiles/C6.jpg'},
+    {img:'tiles/C7.jpg'},{img:'tiles/C8.jpg'},{img:'tiles/C9.jpg'}
+  ]
+};
+
+Object.keys(GRIDS).forEach(function(id){
+  var host = document.getElementById(id);
+  if(!host) return;
+  GRIDS[id].forEach(function(cell){
+    if(cell.type === 't'){
+      var d = document.createElement('div');
+      d.className = 'ttile ' + cell.cls;
+      d.innerHTML = '<div class="t-l">' + cell.line + '</div><div class="t-r"></div>';
+      host.appendChild(d);
+      return;
+    }
+    var img = document.createElement('img');
+    img.alt = '';
+    img.src = cell.img;
+    img.onerror = function(){
+      var ph = document.createElement('div');
+      ph.className = 'miss';
+      ph.textContent = cell.img.split('/').pop().replace(".jpg","") + ' — manquante';
+      host.replaceChild(ph, img);
+    };
+    host.appendChild(img);
+  });
+});
+</script>
+</body>
+</html>
