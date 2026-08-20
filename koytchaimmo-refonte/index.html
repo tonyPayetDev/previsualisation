@@ -46,7 +46,24 @@ p{margin:0}
 a{color:inherit}
 img{display:block;max-width:100%}
 .wrap{max-width:var(--wrap);margin:0 auto;padding:0 24px}
-:focus-visible{outline:2px solid var(--magenta);outline-offset:3px}
+:focus-visible{outline:2px solid var(--magenta);outline-offset:3px;border-radius:2px}
+
+/* Surfaces que le navigateur dessine par défaut et qui n'appartiennent à
+   aucune charte : sélection, caret, barre de défilement, soulignement.
+   Les laisser aux réglages d'usine se voit, même sans savoir pourquoi. */
+::selection{background:var(--magenta);color:#fff}
+::-moz-selection{background:var(--magenta);color:#fff}
+input,select,textarea{caret-color:var(--magenta)}
+html{scrollbar-color:var(--gris) var(--surface);scrollbar-width:thin}
+::-webkit-scrollbar{width:11px;height:11px}
+::-webkit-scrollbar-track{background:var(--surface)}
+::-webkit-scrollbar-thumb{background:var(--gris);border:3px solid var(--surface);border-radius:6px}
+::-webkit-scrollbar-thumb:hover{background:var(--gris-txt)}
+a:not([class]){text-underline-offset:.18em;text-decoration-thickness:1px;
+  text-decoration-color:var(--gris)}
+a:not([class]):hover{text-decoration-color:var(--magenta)}
+/* Un numéro de téléphone et une adresse s'alignent mieux en chiffres tabulaires. */
+.cinfo,.nav .tel,.call-fab{font-variant-numeric:tabular-nums}
 
 /* ---------- header ---------- */
 .hdr{position:sticky;top:0;z-index:60;background:#fff;border-bottom:1px solid var(--line)}
@@ -134,11 +151,17 @@ img{display:block;max-width:100%}
   #ktp-search-root{padding:18px 16px}
   .search-grid{grid-template-columns:1fr}
   .search-go{width:100%;padding:16px 30px}
-  /* Les trois onglets ne tiennent pas en 390px : « Professionnel » sortait du
-     cadre. On les laisse défiler plutôt que de les tronquer ou de les empiler. */
-  .search-tabs{overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+  /* Les trois onglets ne tenaient pas en 390px et « Professionnel » sortait
+     tranché — ce qui se lit comme un défaut, pas comme un défilement. En
+     resserrant la chasse et le rembourrage les trois entrent. Le défilement
+     et le fondu à droite restent en filet pour les écrans plus étroits. */
+  .search-tabs{overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;
+    position:relative;
+    -webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 18px),transparent);
+    mask-image:linear-gradient(90deg,#000 calc(100% - 18px),transparent)}
   .search-tabs::-webkit-scrollbar{display:none}
-  .search-tabs button{padding:10px 13px;white-space:nowrap;flex:0 0 auto}
+  .search-tabs button{padding:10px 9px;white-space:nowrap;flex:0 0 auto;letter-spacing:0}
+  .search-tabs button:first-child{padding-left:0}
 }
 
 /* ---------- sections ---------- */
@@ -186,10 +209,10 @@ section{padding:var(--pad-sec) 0}
 /* ---------- philosophie ---------- */
 .philo blockquote{margin:0;font-weight:700;color:var(--ink);
   font-size:clamp(1.5rem,2.9vw,2.2rem);line-height:1.32;max-width:24ch}
-.philo blockquote strong{color:var(--magenta);font-weight:700}
+.philo blockquote strong{color:var(--magenta-deep);font-weight:700}
 .pillars{display:grid;grid-template-columns:repeat(3,1fr);gap:38px;margin-top:52px;
   border-top:1px solid var(--line);padding-top:34px}
-.pillars h3{font-size:var(--fs-base);color:var(--magenta);margin-bottom:10px;
+.pillars h3{font-size:var(--fs-base);color:var(--magenta-deep);margin-bottom:10px;
   text-transform:uppercase;letter-spacing:.04em}
 @media(max-width:940px){.pillars{grid-template-columns:1fr;gap:28px}}
 
@@ -216,20 +239,16 @@ footer img{height:32px}
 footer a{color:rgba(255,255,255,.75);text-decoration:none}
 footer a:hover{color:#fff}
 
-/* ---------- repères chiffrés ---------- */
-/* Chaque chiffre vient du texte existant du client. Rien n'est estimé :
-   une agence qui affiche un chiffre faux le paie plus cher que pas de chiffre. */
-.chiffres{background:var(--surface);padding:clamp(40px,5vw,64px) 0}
-.chiffres-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(20px,3vw,44px)}
-/* Le filet épais coloré en tête de carte est la signature la plus reconnaissable
-   d'une interface générée. On garde un filet d'un pixel, neutre, et c'est le
-   chiffre lui-même qui porte la couleur — la hiérarchie y gagne. */
-.ch{border-top:1px solid var(--line);padding-top:20px}
-.ch b{display:block;font-size:clamp(2rem,4vw,3rem);line-height:1;color:var(--magenta);
-  font-weight:700;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
-.ch:nth-child(2n) b{color:var(--vert-deep)}
-.ch span{display:block;margin-top:10px;font-size:var(--fs-sm);color:var(--gris-txt);line-height:1.5}
-@media(max-width:820px){.chiffres-grid{grid-template-columns:1fr 1fr;gap:26px}}
+/* ---------- les deux métiers ---------- */
+.metiers{background:var(--surface)}
+.metiers-lead{font-size:clamp(1.5rem,3vw,2.4rem);line-height:1.25;font-weight:700;
+  color:var(--ink);max-width:22ch;letter-spacing:-.02em;margin-bottom:clamp(36px,4vw,54px)}
+.metiers-lead em{font-style:normal;color:var(--magenta-deep)}
+.metiers-two{display:grid;grid-template-columns:1fr 1fr;gap:clamp(32px,5vw,72px)}
+.metiers-two>div{border-top:1px solid var(--gris);padding-top:22px}
+.metiers-two h2{font-size:var(--fs-md);margin-bottom:12px}
+.metiers-two p{max-width:44ch;color:var(--texte)}
+@media(max-width:820px){.metiers-two{grid-template-columns:1fr;gap:34px}}
 
 .note{background:#FDF0F7;border-top:1px solid #F3C9E1;padding:26px 0;
   font-size:var(--fs-sm);color:var(--ink);line-height:1.6}
@@ -246,7 +265,7 @@ footer a:hover{color:#fff}
     <nav class="nav" id="nav">
       <a href="#opportunites">Opportunités</a>
       <a href="#accompagnement">Accompagnement</a>
-      <a href="#chiffres">Repères</a>
+      <a href="#metiers">Nos métiers</a>
       <a href="#philosophie">À propos</a>
       <a href="#contact">Contact</a>
       <a class="tel" href="tel:+262262979607">0262 97 96 07</a>
@@ -323,12 +342,19 @@ footer a:hover{color:#fff}
   </div>
 </section>
 
-<section class="chiffres" id="chiffres">
-  <div class="wrap chiffres-grid">
-    <div class="ch"><b>30 ans</b><span>d'expertise en immobilier à La Réunion</span></div>
-    <div class="ch"><b>2004</b><span>année depuis laquelle Koytcha Immo accompagne ses clients</span></div>
-    <div class="ch"><b>3 000 m²</b><span>par bâtiment sur Ze Bure@u 1 &amp; 2, à l'Éperon</span></div>
-    <div class="ch"><b>2 métiers</b><span>conseil en transaction et promotion immobilière</span></div>
+<section class="metiers" id="metiers">
+  <div class="wrap">
+    <p class="metiers-lead">Koytcha Immo conseille en transaction <em>et</em> construit en promotion.</p>
+    <div class="metiers-two">
+      <div>
+        <h2>Le conseil</h2>
+        <p>Accompagner particuliers, entreprises et investisseurs sur l'ensemble de leurs enjeux immobiliers : valorisation du patrimoine, transaction, recherche de locaux adaptés à l'activité et aux équipes.</p>
+      </div>
+      <div>
+        <h2>La promotion</h2>
+        <p>Concevoir et commercialiser des programmes pensés pour les spécificités locales — immeubles résidentiels, bureaux, locaux d'activités, et des centres d'affaires comme Ze Bure@u 1 et 2 à l'Éperon.</p>
+      </div>
+    </div>
   </div>
 </section>
 
