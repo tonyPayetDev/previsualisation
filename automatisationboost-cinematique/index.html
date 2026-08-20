@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AutomatisationBoost — Tes process tournent. Sans toi.</title>
+<meta name="description" content="Agence d'automatisation IA à La Réunion. Systèmes n8n installés chez les PME.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+/* ---------------------------------------------------------------------------
+   AutomatisationBoost — landing cinématique.
+   Un seul accent (#eab308) sur fond quasi noir : tout ce qui brille est
+   l'accent, tout le reste est neutre. C'est ce qui fait tenir le contraste
+   au-dessus d'une séquence d'images.
+   --------------------------------------------------------------------------- */
+:root{
+  --noir:#07070a;
+  --noir-2:#0d0d12;
+  --ligne:#1c1c24;
+  --txt:#ece9e3;        /* blanc cassé légèrement chaud : accordé à l'ambre */
+  --mut:#7d7a86;
+  --acc:#eab308;
+  --acc-clair:#fde68a;
+  --dsp:'Archivo','Arial Narrow',sans-serif;
+  --bdy:'Inter',system-ui,sans-serif;
+  --mno:'JetBrains Mono',ui-monospace,monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  background:var(--noir);color:var(--txt);font-family:var(--bdy);
+  font-size:17px;line-height:1.6;-webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+/* Grain fin sur toute la page — colle la typo aux images de la séquence. */
+body::after{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:9;opacity:.05;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+.dsp{
+  font-family:var(--dsp);font-variation-settings:'wdth' 74,'wght' 800;
+  text-transform:uppercase;letter-spacing:-.005em;line-height:.94;
+  text-wrap:balance;
+}
+.mono{font-family:var(--mno);font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--acc)}
+.wrap{max-width:1180px;margin:0 auto;padding:0 28px}
+
+/* ---------- Barre de navigation ---------- */
+.nav{
+  position:fixed;top:0;left:0;right:0;z-index:20;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:16px 28px;
+  background:linear-gradient(to bottom,rgba(7,7,10,.9),rgba(7,7,10,0));
+  backdrop-filter:blur(2px);
+}
+.nav .marque{font-family:var(--dsp);font-variation-settings:'wdth' 70,'wght' 800;
+  text-transform:uppercase;font-size:19px;letter-spacing:.02em}
+.nav .marque i{font-style:normal;color:var(--acc)}
+.nav-liens{display:flex;gap:26px;align-items:center}
+.nav-liens a{color:var(--mut);text-decoration:none;font-size:14px;transition:color .2s}
+.nav-liens a:hover,.nav-liens a:focus-visible{color:var(--txt)}
+.nav .btn-nav{
+  border:1px solid var(--acc);color:var(--acc);padding:9px 18px;border-radius:2px;
+  font-size:13px;font-weight:600;text-decoration:none;transition:background .2s,color .2s;
+}
+.nav .btn-nav:hover{background:var(--acc);color:var(--noir)}
+@media(max-width:860px){.nav-liens a:not(.btn-nav){display:none}}
+
+/* ---------- Le film : canvas épinglé, 4 chapitres ---------- */
+#film{position:relative;height:460vh}
+#colle{position:sticky;top:0;height:100vh;overflow:hidden}
+#toile{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+#colle::after{ /* assombrit le bas pour que le texte tienne quel que soit le plan */
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(to top,rgba(7,7,10,.94) 0%,rgba(7,7,10,.45) 34%,rgba(7,7,10,.1) 62%,rgba(7,7,10,.55) 100%);
+}
+.chapitres{position:absolute;inset:0;z-index:2;display:flex;align-items:flex-end;padding-bottom:11vh}
+.chap{
+  position:absolute;left:0;right:0;bottom:11vh;padding:0 28px;
+  max-width:1180px;margin:0 auto;
+  opacity:0;transform:translateY(26px);
+  transition:opacity .45s ease,transform .45s ease;
+  will-change:opacity,transform;
+}
+.chap.vu{opacity:1;transform:translateY(0)}
+.chap .mono{display:block;margin-bottom:16px}
+.chap h1,.chap h2{font-size:clamp(42px,7.4vw,104px);max-width:15ch}
+.chap p{margin-top:20px;max-width:46ch;color:#bdb9b2;font-size:clamp(15px,1.5vw,19px)}
+.chap .cta-film{
+  display:inline-flex;align-items:center;gap:10px;margin-top:30px;
+  background:var(--acc);color:var(--noir);text-decoration:none;
+  padding:15px 26px;border-radius:2px;font-weight:600;font-size:15px;
+  transition:transform .2s,box-shadow .2s;
+}
+.chap .cta-film:hover{transform:translateY(-2px);box-shadow:0 10px 34px rgba(234,179,8,.28)}
+.defiler{
+  position:absolute;bottom:26px;left:50%;transform:translateX(-50%);z-index:3;
+  font-family:var(--mno);font-size:10.5px;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--mut);display:flex;flex-direction:column;align-items:center;gap:9px;
+  transition:opacity .3s;
+}
+.defiler span{display:block;width:1px;height:34px;background:linear-gradient(var(--acc),transparent)}
+/* Jauge de progression du film */
+.jauge{position:absolute;left:28px;top:50%;transform:translateY(-50%);z-index:3;
+  display:flex;flex-direction:column;gap:9px}
+.jauge b{display:block;width:2px;height:26px;background:var(--ligne);transition:background .3s}
+.jauge b.on{background:var(--acc)}
+@media(max-width:860px){.jauge{display:none}}
+
+/* ---------- Sections ---------- */
+section{position:relative;z-index:2;background:var(--noir)}
+.sec{padding:112px 0}
+.sec-t{font-size:clamp(30px,4.4vw,54px);max-width:20ch;margin-bottom:18px}
+.sec-i{color:var(--mut);max-width:52ch;margin-bottom:52px}
+.eyebrow{display:block;margin-bottom:18px}
+
+/* Bande de chiffres */
+.chiffres{border-top:1px solid var(--ligne);border-bottom:1px solid var(--ligne);
+  display:grid;grid-template-columns:repeat(3,1fr)}
+.chiffres div{padding:52px 26px;text-align:center;border-left:1px solid var(--ligne)}
+.chiffres div:first-child{border-left:0}
+.chiffres .n{font-family:var(--dsp);font-variation-settings:'wdth' 68,'wght' 800;
+  font-size:clamp(48px,7vw,88px);color:var(--acc);line-height:1;
+  font-variant-numeric:tabular-nums}
+.chiffres .l{margin-top:12px;color:var(--mut);font-size:14px}
+@media(max-width:760px){.chiffres{grid-template-columns:1fr}
+  .chiffres div{border-left:0;border-top:1px solid var(--ligne);padding:38px 26px}
+  .chiffres div:first-child{border-top:0}}
+
+/* Calculateur */
+.calc{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:start}
+@media(max-width:900px){.calc{grid-template-columns:1fr;gap:38px}}
+.curseur{margin-bottom:34px}
+.curseur label{display:flex;justify-content:space-between;align-items:baseline;
+  font-size:14px;color:var(--mut);margin-bottom:12px;gap:14px}
+.curseur label b{font-family:var(--mno);font-size:16px;color:var(--txt);font-weight:600;
+  font-variant-numeric:tabular-nums;white-space:nowrap}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:2px;
+  background:var(--ligne);outline:none;cursor:pointer}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;
+  width:17px;height:17px;border-radius:50%;background:var(--acc);cursor:pointer;
+  box-shadow:0 0 0 5px rgba(234,179,8,.14)}
+input[type=range]::-moz-range-thumb{width:17px;height:17px;border:0;border-radius:50%;
+  background:var(--acc);cursor:pointer;box-shadow:0 0 0 5px rgba(234,179,8,.14)}
+input[type=range]:focus-visible{outline:2px solid var(--acc);outline-offset:6px}
+.resultat{background:var(--noir-2);border:1px solid var(--ligne);padding:38px 34px;border-radius:3px}
+.resultat .bloc{padding:22px 0;border-top:1px solid var(--ligne)}
+.resultat .bloc:first-child{border-top:0;padding-top:0}
+.resultat .k{font-size:13px;color:var(--mut);letter-spacing:.02em}
+.resultat .v{font-family:var(--dsp);font-variation-settings:'wdth' 70,'wght' 800;
+  font-size:clamp(34px,4.6vw,54px);line-height:1;margin-top:9px;font-variant-numeric:tabular-nums}
+.resultat .perdu .v{color:#c9c4ba}
+.resultat .gagne .v{color:var(--acc)}
+.resultat .note{font-size:12.5px;color:var(--mut);margin-top:26px;line-height:1.5;
+  padding-top:18px;border-top:1px solid var(--ligne)}
+
+/* Offres */
+.offres{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+@media(max-width:940px){.offres{grid-template-columns:1fr}}
+.offre{border:1px solid var(--ligne);padding:34px 30px 30px;border-radius:3px;
+  display:flex;flex-direction:column;background:var(--noir-2);transition:border-color .25s}
+.offre:hover{border-color:#33323d}
+.offre.phare{border-color:var(--acc)}
+.offre h3{font-family:var(--dsp);font-variation-settings:'wdth' 72,'wght' 800;
+  text-transform:uppercase;font-size:27px;margin-bottom:8px}
+.offre .prix{font-family:var(--dsp);font-variation-settings:'wdth' 68,'wght' 800;
+  font-size:44px;color:var(--acc);line-height:1;margin:20px 0 4px;font-variant-numeric:tabular-nums}
+.offre .prix small{font-family:var(--bdy);font-size:14px;color:var(--mut);font-weight:400;
+  display:block;margin-top:11px;letter-spacing:0;text-transform:none;line-height:1.5}
+.offre ul{list-style:none;margin:24px 0 28px;flex:1}
+.offre li{padding:9px 0 9px 22px;position:relative;font-size:14.5px;color:#b8b4ad;
+  border-top:1px solid var(--ligne)}
+.offre li:first-child{border-top:0}
+.offre li::before{content:'';position:absolute;left:0;top:17px;width:7px;height:1px;background:var(--acc)}
+.offre .lien{display:block;text-align:center;padding:14px;border-radius:2px;
+  text-decoration:none;font-weight:600;font-size:15px;transition:transform .2s,background .2s}
+.offre .lien.plein{background:var(--acc);color:var(--noir)}
+.offre .lien.creux{border:1px solid var(--ligne);color:var(--txt)}
+.offre .lien:hover{transform:translateY(-2px)}
+.offre .lien.creux:hover{border-color:var(--acc);color:var(--acc)}
+.offre .tag{font-family:var(--mno);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--acc)}
+
+/* Avant / Après / Gain */
+.aag{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;border:1px solid var(--ligne)}
+@media(max-width:860px){.aag{grid-template-columns:1fr}}
+.aag > div{padding:38px 32px;border-left:1px solid var(--ligne)}
+.aag > div:first-child{border-left:0}
+@media(max-width:860px){.aag > div{border-left:0;border-top:1px solid var(--ligne)}
+  .aag > div:first-child{border-top:0}}
+.aag h4{font-family:var(--mno);font-size:11px;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--mut);margin-bottom:20px}
+.aag .gain h4{color:var(--acc)}
+.aag p{font-size:15.5px;color:#b8b4ad}
+.aag .gain p{color:var(--txt)}
+.aag .gain strong{color:var(--acc);font-weight:600}
+
+/* Frise */
+.frise{border-top:1px solid var(--ligne)}
+.etape{display:grid;grid-template-columns:88px 1fr;gap:28px;padding:34px 0;
+  border-bottom:1px solid var(--ligne);align-items:start}
+.etape .num{font-family:var(--dsp);font-variation-settings:'wdth' 66,'wght' 800;
+  font-size:44px;color:var(--ligne);line-height:.9;font-variant-numeric:tabular-nums;
+  transition:color .4s}
+.etape.vu .num{color:var(--acc)}
+.etape h4{font-size:21px;font-weight:600;margin-bottom:7px}
+.etape p{color:var(--mut);font-size:15.5px;max-width:56ch}
+@media(max-width:640px){.etape{grid-template-columns:56px 1fr;gap:18px}
+  .etape .num{font-size:32px}}
+
+/* Réserver */
+#reserver{border-top:1px solid var(--ligne);background:var(--noir-2)}
+.resa{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:start}
+@media(max-width:900px){.resa{grid-template-columns:1fr;gap:38px}}
+.champ{margin-bottom:20px}
+.champ label{display:block;font-size:13px;color:var(--mut);margin-bottom:8px}
+.champ input,.champ textarea{
+  width:100%;background:var(--noir);border:1px solid var(--ligne);color:var(--txt);
+  padding:13px 15px;border-radius:2px;font-family:var(--bdy);font-size:15px;
+}
+.champ textarea{min-height:96px;resize:vertical}
+.champ input:focus,.champ textarea:focus{outline:none;border-color:var(--acc)}
+.creneaux{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin:10px 0 26px}
+@media(max-width:520px){.creneaux{grid-template-columns:1fr}}
+.creneau{
+  border:1px solid var(--ligne);background:var(--noir);color:var(--txt);
+  padding:14px 16px;border-radius:2px;cursor:pointer;text-align:left;
+  font-family:var(--bdy);font-size:14.5px;transition:border-color .2s,background .2s;
+}
+.creneau .j{display:block;font-family:var(--mno);font-size:10.5px;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--mut);margin-bottom:5px;transition:color .2s}
+.creneau:hover{border-color:#3a3945}
+.creneau[aria-pressed=true]{border-color:var(--acc);background:rgba(234,179,8,.07)}
+.creneau[aria-pressed=true] .j{color:var(--acc)}
+.creneau:focus-visible{outline:2px solid var(--acc);outline-offset:3px}
+#envoyer{
+  width:100%;padding:16px;border:0;border-radius:2px;font-family:var(--bdy);
+  font-weight:600;font-size:15.5px;cursor:pointer;
+  background:var(--acc);color:var(--noir);transition:opacity .2s,transform .2s;
+}
+#envoyer:disabled{background:var(--ligne);color:var(--mut);cursor:not-allowed}
+#envoyer:not(:disabled):hover{transform:translateY(-2px)}
+.aide{font-size:12.5px;color:var(--mut);margin-top:14px}
+.err{color:#ff8080;font-size:14px;margin-bottom:14px}
+.ok{border:1px solid var(--acc);padding:34px;border-radius:3px}
+.ok h3{font-family:var(--dsp);font-variation-settings:'wdth' 72,'wght' 800;
+  text-transform:uppercase;font-size:28px;color:var(--acc);margin-bottom:10px}
+
+footer{border-top:1px solid var(--ligne);padding:42px 0;color:var(--mut);font-size:13.5px}
+.pied{display:flex;justify-content:space-between;gap:22px;flex-wrap:wrap;align-items:center}
+.pied a{color:var(--mut);text-decoration:none;margin-left:22px}
+.pied a:hover{color:var(--acc)}
+@media(max-width:640px){.pied a{margin:0 18px 0 0}}
+
+/* Apparition au scroll */
+.ap{opacity:0;transform:translateY(22px);transition:opacity .6s ease,transform .6s ease}
+.ap.vu{opacity:1;transform:none}
+
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .ap,.chap{opacity:1!important;transform:none!important;transition:none}
+  #film{height:auto}
+  #colle{position:relative;height:auto;min-height:78vh}
+  .chapitres{position:relative;flex-direction:column;align-items:flex-start;gap:44px;
+    padding:120px 0 60px}
+  .chap{position:relative;bottom:auto}
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="#" class="marque" style="text-decoration:none;color:inherit">Automatisation<i>Boost</i></a>
+  <div class="nav-liens">
+    <a href="#calculateur">Calculateur</a>
+    <a href="#offres">Offres</a>
+    <a href="#methode">Méthode</a>
+    <a href="#reserver" class="btn-nav">Audit gratuit</a>
+  </div>
+</nav>
+
+<!-- ============ LE FILM ============ -->
+<div id="film">
+  <div id="colle">
+    <canvas id="toile"></canvas>
+
+    <div class="jauge" id="jauge">
+      <b class="on"></b><b></b><b></b><b></b>
+    </div>
+
+    <div class="chapitres">
+      <div class="chap" data-chap="0">
+        <span class="mono">Automatisation IA · La Réunion</span>
+        <h1 class="dsp">Tes process tournent.<br>Sans toi.</h1>
+        <p>J'installe des systèmes n8n chez les PME. Tu décris ton activité, je te renvoie sous 24 h les trois tâches à automatiser en premier.</p>
+        <a href="#reserver" class="cta-film">Recevoir mon audit gratuit →</a>
+      </div>
+
+      <div class="chap" data-chap="1">
+        <span class="mono">01 — Le constat</span>
+        <h2 class="dsp">Tu sais qu'il faut poster tous les jours.</h2>
+        <p>Tu ne le fais pas. Pas par manque d'idées — parce que chaque publication te coûte une heure que tu n'as pas, et que la semaine suivante recommence à zéro.</p>
+      </div>
+
+      <div class="chap" data-chap="2">
+        <span class="mono">02 — Le système</span>
+        <h2 class="dsp">Un seul contenu, quatre réseaux.</h2>
+        <p>L'IA rédige, adapte le format à chaque plateforme, planifie et publie. Instagram, LinkedIn, Facebook, TikTok. Le workflow tourne, tu regardes les résultats.</p>
+      </div>
+
+      <div class="chap" data-chap="3">
+        <span class="mono">03 — Le résultat</span>
+        <h2 class="dsp">Tu récupères tes semaines.</h2>
+        <p>Ton audience voit du contenu en continu sans que tu y penses. Tu ajustes quand tu veux. Le reste tourne seul.</p>
+        <a href="#calculateur" class="cta-film">Calculer ce que ça te coûte →</a>
+      </div>
+    </div>
+
+    <div class="defiler" id="defiler">Défiler<span></span></div>
+  </div>
+</div>
+
+<!-- ============ CHIFFRES ============ -->
+<section>
+  <div class="chiffres">
+    <div><div class="n" data-vers="10" data-suf=" h">0</div><div class="l">récupérées par semaine</div></div>
+    <div><div class="n" data-vers="4" data-suf="">0</div><div class="l">réseaux couverts</div></div>
+    <div><div class="n" data-vers="100" data-suf=" %">0</div><div class="l">de la publication automatisée</div></div>
+  </div>
+</section>
+
+<!-- ============ CALCULATEUR ============ -->
+<section class="sec" id="calculateur">
+  <div class="wrap">
+    <span class="mono eyebrow ap">Ce que ça te coûte aujourd'hui</span>
+    <h2 class="dsp sec-t ap">Fais le calcul toi-même.</h2>
+    <p class="sec-i ap">Trois curseurs. Le chiffre bouge en direct. Aucune inscription pour voir le résultat.</p>
+
+    <div class="calc">
+      <div class="ap">
+        <div class="curseur">
+          <label for="c1">Tâches manuelles par semaine <b><span id="v1">12</span></b></label>
+          <input type="range" id="c1" min="1" max="80" step="1" value="12">
+        </div>
+        <div class="curseur">
+          <label for="c2">Minutes par tâche <b><span id="v2">20</span> min</b></label>
+          <input type="range" id="c2" min="2" max="120" step="1" value="20">
+        </div>
+        <div class="curseur">
+          <label for="c3">Ton taux horaire <b><span id="v3">45</span> €</b></label>
+          <input type="range" id="c3" min="10" max="300" step="5" value="45">
+        </div>
+        <p class="aide">Compte le temps réel, pas le temps facturé : relances, copier-coller, remise en forme, publication.</p>
+      </div>
+
+      <div class="resultat">
+        <div class="bloc perdu">
+          <div class="k">Temps passé sur ces tâches, par an</div>
+          <div class="v" id="rHeures">208 h</div>
+        </div>
+        <div class="bloc perdu">
+          <div class="k">Ce que ça représente en coût annuel</div>
+          <div class="v" id="rCout">9 360 €</div>
+        </div>
+        <div class="bloc gagne">
+          <div class="k">Récupérable en automatisant</div>
+          <div class="v" id="rGain">7 488 €</div>
+        </div>
+        <p class="note" id="rNote">
+          Hypothèse affichée&nbsp;: l'automatisation absorbe 80&nbsp;% du temps passé sur des tâches
+          répétitives. Les 20&nbsp;% restants sont la supervision, qui reste humaine.
+          C'est une estimation à partir de tes chiffres — pas un devis.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ OFFRES ============ -->
+<section class="sec" id="offres" style="border-top:1px solid var(--ligne)">
+  <div class="wrap">
+    <span class="mono eyebrow ap">Les offres</span>
+    <h2 class="dsp sec-t ap">Trois façons d'entrer.</h2>
+    <p class="sec-i ap">On commence toujours par l'audit. Le reste dépend de ce qu'il révèle.</p>
+
+    <div class="offres">
+      <div class="offre ap">
+        <span class="tag">Point de départ</span>
+        <h3>Audit</h3>
+        <div class="prix">Gratuit<small>Réponse sous 24 h · sans engagement</small></div>
+        <ul>
+          <li>Les 3 tâches à automatiser en premier</li>
+          <li>Ce que chacune te fait gagner</li>
+          <li>L'ordre dans lequel les prendre</li>
+        </ul>
+        <a href="#reserver" class="lien plein">Recevoir mon audit →</a>
+      </div>
+
+      <div class="offre phare ap">
+        <span class="tag">Tarif fondateur · 20 places</span>
+        <h3>ShortForge</h3>
+        <div class="prix">67 €<small>puis 97 € · paiement unique · mises à jour incluses</small></div>
+        <ul>
+          <li>Un brief texte → une vidéo verticale 1080×1920 complète</li>
+          <li>Voix clonée, avatar animé, captions synchronisées</li>
+          <li>10 formats × 10 directions artistiques</li>
+          <li>Un seul tournage : 30 s de voix, 45 s face caméra</li>
+          <li>≈ 0,50 € d'API par vidéo</li>
+          <li>Garantie 14 jours — remboursé</li>
+        </ul>
+        <a href="https://automatisationboost.com/" class="lien plein">Obtenir ShortForge →</a>
+      </div>
+
+      <div class="offre ap">
+        <span class="tag">Sur mesure</span>
+        <h3>Installation</h3>
+        <div class="prix">Sur devis<small>Chiffré après l'audit, jamais avant</small></div>
+        <ul>
+          <li>Les workflows n8n construits et mis en production</li>
+          <li>Branchés sur tes outils existants</li>
+          <li>Documentés : tu peux les ouvrir et les lire</li>
+        </ul>
+        <a href="#reserver" class="lien creux">Demander un chiffrage →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ AVANT / APRÈS / GAIN ============ -->
+<section class="sec" style="border-top:1px solid var(--ligne)">
+  <div class="wrap">
+    <span class="mono eyebrow ap">Ce que ça change</span>
+    <h2 class="dsp sec-t ap">Avant, après, gain.</h2>
+    <p class="sec-i ap">Le cas le plus courant : la publication sur les réseaux.</p>
+
+    <div class="aag ap">
+      <div>
+        <h4>Avant</h4>
+        <p>Chaque publication est écrite, reformatée et postée à la main, réseau par réseau. Les semaines chargées, rien ne sort. L'audience décroche entre deux posts.</p>
+      </div>
+      <div>
+        <h4>Après</h4>
+        <p>Un seul contenu entre dans le workflow. L'IA l'adapte à Instagram, LinkedIn, Facebook et TikTok, le planifie et le publie. Tu passes en supervision.</p>
+      </div>
+      <div class="gain">
+        <h4>Gain</h4>
+        <p><strong>10 h par semaine</strong> récupérées, <strong>4 réseaux</strong> tenus en continu, <strong>100 %</strong> de la publication automatisée.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ MÉTHODE ============ -->
+<section class="sec" id="methode" style="border-top:1px solid var(--ligne)">
+  <div class="wrap">
+    <span class="mono eyebrow ap">Comment ça se passe</span>
+    <h2 class="dsp sec-t ap">Quatre étapes. Zéro prise de tête.</h2>
+
+    <div class="frise">
+      <div class="etape"><div class="num">01</div><div>
+        <h4>On parle de ton activité</h4>
+        <p>Tes objectifs, ton ton, les réseaux à couvrir. C'est là qu'on décide ce qui mérite d'être automatisé et ce qui n'en vaut pas la peine.</p>
+      </div></div>
+      <div class="etape"><div class="num">02</div><div>
+        <h4>On installe l'automatisation</h4>
+        <p>Les workflows n8n sont construits, branchés sur tes outils, et mis en production. L'IA génère tes posts, les adapte à chaque réseau et les planifie.</p>
+      </div></div>
+      <div class="etape"><div class="num">03</div><div>
+        <h4>Ça publie tout seul</h4>
+        <p>Le système tourne sans intervention. Tu n'as plus de publication à écrire ni à programmer.</p>
+      </div></div>
+      <div class="etape"><div class="num">04</div><div>
+        <h4>Tu suis et tu ajustes</h4>
+        <p>Tu regardes les résultats et tu corriges le tir quand tu veux. Le reste continue de tourner pendant ce temps.</p>
+      </div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ RÉSERVER ============ -->
+<section class="sec" id="reserver">
+  <div class="wrap">
+    <div class="resa">
+      <div class="ap">
+        <span class="mono eyebrow">Audit gratuit</span>
+        <h2 class="dsp sec-t">Décris ton activité<br>en deux lignes.</h2>
+        <p class="sec-i" style="margin-bottom:0">Je te renvoie sous 24 h les 3 tâches que tu peux automatiser en premier, et ce que ça te fait gagner. Sans engagement.</p>
+      </div>
+
+      <div class="ap">
+        <form id="fResa" novalidate>
+          <div class="champ">
+            <label for="fNom">Prénom</label>
+            <input type="text" id="fNom" name="nom" autocomplete="given-name" required>
+          </div>
+          <div class="champ">
+            <label for="fMail">Email</label>
+            <input type="email" id="fMail" name="email" autocomplete="email" required>
+          </div>
+          <div class="champ">
+            <label for="fAct">Ton activité</label>
+            <textarea id="fAct" name="activite" required></textarea>
+          </div>
+
+          <label style="display:block;font-size:13px;color:var(--mut);margin-bottom:4px">
+            Quand est-ce que je peux t'appeler&nbsp;?
+          </label>
+          <div class="creneaux" id="creneaux">
+            <button type="button" class="creneau" aria-pressed="false" data-c="Lundi – matin"><span class="j">Lundi</span>Matin · 9 h – 12 h</button>
+            <button type="button" class="creneau" aria-pressed="false" data-c="Lundi – après-midi"><span class="j">Lundi</span>Après-midi · 14 h – 18 h</button>
+            <button type="button" class="creneau" aria-pressed="false" data-c="Mercredi – matin"><span class="j">Mercredi</span>Matin · 9 h – 12 h</button>
+            <button type="button" class="creneau" aria-pressed="false" data-c="Mercredi – après-midi"><span class="j">Mercredi</span>Après-midi · 14 h – 18 h</button>
+            <button type="button" class="creneau" aria-pressed="false" data-c="Vendredi – matin"><span class="j">Vendredi</span>Matin · 9 h – 12 h</button>
+            <button type="button" class="creneau" aria-pressed="false" data-c="Vendredi – après-midi"><span class="j">Vendredi</span>Après-midi · 14 h – 18 h</button>
+          </div>
+
+          <p class="err" id="fErr" hidden></p>
+          <button type="submit" id="envoyer" disabled>Choisis un créneau pour continuer</button>
+          <p class="aide">Pas de spam. Ton email sert uniquement à t'envoyer l'audit. Le créneau est une préférence, pas un rendez-vous confirmé — je te réponds pour caler l'heure exacte.</p>
+        </form>
+
+        <div class="ok" id="fOk" hidden>
+          <h3>C'est envoyé</h3>
+          <p>Je reviens vers toi sous 24 h avec ton audit, et je te propose une heure sur le créneau que tu as choisi. Regarde tes spams si tu ne vois rien passer.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap pied">
+    <span>© 2026 AutomatisationBoost · Tony Payet · La Réunion</span>
+    <span>
+      <a href="#calculateur">Calculateur</a>
+      <a href="#offres">Offres</a>
+      <a href="#reserver">Audit gratuit</a>
+    </span>
+  </div>
+</footer>
+
+<script>
+/* ---------------------------------------------------------------------------
+   1. LE FILM — scrub d'une séquence de 120 images sur 4 chapitres épinglés.
+   Une <video> scrubbée au scroll saccade sur presque tous les navigateurs :
+   on décode donc des images fixes et on ne dessine que celles déjà chargées.
+   --------------------------------------------------------------------------- */
+(function () {
+  var NB = 120;
+  var film = document.getElementById('film');
+  var toile = document.getElementById('toile');
+  var ctx = toile.getContext('2d', { alpha: false });
+  var chaps = [].slice.call(document.querySelectorAll('.chap'));
+  var barres = [].slice.call(document.querySelectorAll('#jauge b'));
+  var defiler = document.getElementById('defiler');
+
+  var reduit = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  var imgs = new Array(NB);
+  var prets = new Array(NB);
+  var dernierDessine = -1;
+
+  function url(i) { return 'seq/' + String(i).padStart(3, '0') + '.webp'; }
+
+  function charger(i, prio) {
+    if (imgs[i]) return;
+    var im = new Image();
+    if (prio) im.fetchPriority = 'high';
+    im.onload = function () {
+      prets[i] = true;
+      // Première image disponible : on peint tout de suite, la page ne doit
+      // jamais rester sur un canvas vide.
+      if (dernierDessine < 0) peindre(0);
+    };
+    im.src = url(i);
+    imgs[i] = im;
+  }
+
+  function dimensionner() {
+    var r = Math.min(window.devicePixelRatio || 1, 2);
+    toile.width = Math.round(toile.clientWidth * r);
+    toile.height = Math.round(toile.clientHeight * r);
+    if (dernierDessine >= 0) { var d = dernierDessine; dernierDessine = -1; peindre(d); }
+  }
+
+  function peindre(i) {
+    // Si l'image visée n'est pas encore décodée, on garde la plus proche
+    // disponible plutôt que d'afficher du noir.
+    var j = i;
+    if (!prets[j]) {
+      var trouve = -1;
+      for (var d = 1; d < NB; d++) {
+        if (j - d >= 0 && prets[j - d]) { trouve = j - d; break; }
+        if (j + d < NB && prets[j + d]) { trouve = j + d; break; }
+      }
+      if (trouve < 0) return;
+      j = trouve;
+    }
+    if (j === dernierDessine) return;
+    dernierDessine = j;
+
+    var im = imgs[j], cw = toile.width, ch = toile.height;
+    var e = Math.max(cw / im.width, ch / im.height);
+    var w = im.width * e, h = im.height * e;
+    ctx.fillStyle = '#07070a';
+    ctx.fillRect(0, 0, cw, ch);
+    ctx.drawImage(im, (cw - w) / 2, (ch - h) / 2, w, h);
+  }
+
+  var tick = false;
+  function auScroll() {
+    if (tick) return;
+    tick = true;
+    requestAnimationFrame(function () {
+      tick = false;
+      var r = film.getBoundingClientRect();
+      var course = film.offsetHeight - window.innerHeight;
+      var p = course > 0 ? Math.min(1, Math.max(0, -r.top / course)) : 0;
+
+      peindre(Math.min(NB - 1, Math.round(p * (NB - 1))));
+
+      // Les 4 chapitres se relaient sur la course, avec un fondu croisé.
+      var pos = p * 4;
+      chaps.forEach(function (c, i) {
+        var d = Math.abs(pos - (i + 0.5));
+        c.classList.toggle('vu', d < 0.62);
+      });
+      barres.forEach(function (b, i) {
+        b.classList.toggle('on', Math.floor(Math.min(3.99, pos)) === i);
+      });
+      defiler.style.opacity = p > 0.04 ? '0' : '1';
+    });
+  }
+
+  if (reduit) {
+    // Pas de scrub : on montre une image forte et tous les chapitres.
+    charger(20, true);
+    imgs[20].onload = function () { prets[20] = true; peindre(20); };
+    chaps.forEach(function (c) { c.classList.add('vu'); });
+  } else {
+    dimensionner();
+    // On charge d'abord les images qu'on va voir en premier, puis le reste.
+    [0, 20, 40, 60, 80, 100, 119].forEach(function (i) { charger(i, true); });
+    var n = 0;
+    (function suite() {
+      while (n < NB && imgs[n]) n++;
+      if (n >= NB) return;
+      charger(n);
+      imgs[n].addEventListener('load', suite, { once: true });
+      imgs[n].addEventListener('error', suite, { once: true });
+    })();
+
+    window.addEventListener('scroll', auScroll, { passive: true });
+    window.addEventListener('resize', function () { dimensionner(); auScroll(); });
+    auScroll();
+  }
+})();
+
+/* ---------------------------------------------------------------------------
+   2. LE CALCULATEUR — recalcule à chaque mouvement de curseur.
+   --------------------------------------------------------------------------- */
+(function () {
+  var ABSORPTION = 0.8;   // hypothèse affichée sous le résultat
+  var c1 = document.getElementById('c1'), c2 = document.getElementById('c2'), c3 = document.getElementById('c3');
+  var v1 = document.getElementById('v1'), v2 = document.getElementById('v2'), v3 = document.getElementById('v3');
+  var rH = document.getElementById('rHeures'), rC = document.getElementById('rCout'), rG = document.getElementById('rGain');
+  if (!c1) return;
+
+  var fmt = new Intl.NumberFormat('fr-FR');
+
+  // Le chiffre glisse vers sa nouvelle valeur au lieu de sauter : c'est ce qui
+  // rend le curseur agréable. Une animation par cible, annulée si on rebouge.
+  function anim(el, de, vers, suffixe) {
+    if (el._raf) cancelAnimationFrame(el._raf);
+    var t0 = performance.now(), duree = 260;
+    (function pas(t) {
+      var k = Math.min(1, (t - t0) / duree);
+      var e = 1 - Math.pow(1 - k, 3);
+      el.textContent = fmt.format(Math.round(de + (vers - de) * e)) + suffixe;
+      if (k < 1) el._raf = requestAnimationFrame(pas);
+    })(t0);
+  }
+
+  var etat = { h: 0, c: 0, g: 0 };
+
+  function calcule() {
+    var taches = +c1.value, mins = +c2.value, taux = +c3.value;
+    v1.textContent = taches;
+    v2.textContent = mins;
+    v3.textContent = taux;
+
+    var heures = Math.round(taches * mins * 52 / 60);
+    var cout = Math.round(heures * taux);
+    var gain = Math.round(cout * ABSORPTION);
+
+    anim(rH, etat.h, heures, ' h');
+    anim(rC, etat.c, cout, ' €');
+    anim(rG, etat.g, gain, ' €');
+    etat = { h: heures, c: cout, g: gain };
+  }
+
+  [c1, c2, c3].forEach(function (c) { c.addEventListener('input', calcule); });
+  calcule();
+})();
+
+/* ---------------------------------------------------------------------------
+   3. LE FORMULAIRE — même webhook n8n que le site en production.
+   Le bouton reste bloqué tant qu'aucun créneau n'est choisi.
+   --------------------------------------------------------------------------- */
+(function () {
+  var WEBHOOK = 'https://n7n.automatisationboost.com/webhook/Form-lead-autoboost';
+  var form = document.getElementById('fResa');
+  if (!form) return;
+
+  var btn = document.getElementById('envoyer');
+  var err = document.getElementById('fErr');
+  var ok = document.getElementById('fOk');
+  var creneau = null;
+
+  document.getElementById('creneaux').addEventListener('click', function (e) {
+    var b = e.target.closest('.creneau');
+    if (!b) return;
+    [].forEach.call(this.querySelectorAll('.creneau'), function (x) {
+      x.setAttribute('aria-pressed', String(x === b));
+    });
+    creneau = b.dataset.c;
+    btn.disabled = false;
+    btn.textContent = 'Recevoir mon audit gratuit →';
+  });
+
+  function rate(msg, champ) {
+    err.textContent = msg;
+    err.hidden = false;
+    if (champ) champ.focus();
+  }
+
+  form.addEventListener('submit', async function (e) {
+    e.preventDefault();
+    if (!creneau) return rate('Choisis d’abord un créneau.');
+
+    var nomEl = document.getElementById('fNom');
+    var mailEl = document.getElementById('fMail');
+    var actEl = document.getElementById('fAct');
+    var nom = nomEl.value.trim(), mail = mailEl.value.trim(), act = actEl.value.trim();
+
+    if (nom.length < 2) return rate('Entre ton prénom.', nomEl);
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(mail)) return rate('Entre une adresse email valide.', mailEl);
+    if (act.length < 10) return rate('Décris ton activité en une phrase au moins.', actEl);
+
+    err.hidden = true;
+    btn.disabled = true;
+    var label = btn.textContent;
+    btn.textContent = 'Envoi…';
+
+    try {
+      var res = await fetch(WEBHOOK, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: nom, email: mail, message: act,
+          creneau: creneau,
+          source: 'audit-cinematique',
+          page: window.location.pathname,
+          date: new Date().toISOString()
+        })
+      });
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+    } catch (_) {
+      /* Un lead perdu doit se voir : on rend la main plutôt que de simuler un succès. */
+      btn.disabled = false;
+      btn.textContent = label;
+      return rate('L’envoi a échoué. Réessaie, ou écris-moi à tony.payet.professionnel@gmail.com.');
+    }
+
+    form.hidden = true;
+    ok.hidden = false;
+    ok.setAttribute('tabindex', '-1');
+    ok.focus();
+  });
+})();
+
+/* ---------------------------------------------------------------------------
+   4. APPARITIONS + COMPTEURS
+   --------------------------------------------------------------------------- */
+(function () {
+  var cibles = document.querySelectorAll('.ap, .etape');
+  var io = new IntersectionObserver(function (ents) {
+    ents.forEach(function (e) {
+      if (!e.isIntersecting) return;
+      e.target.classList.add('vu');
+      io.unobserve(e.target);
+    });
+  }, { rootMargin: '0px 0px -10% 0px', threshold: 0.12 });
+  cibles.forEach(function (c) { io.observe(c); });
+
+  var fmt = new Intl.NumberFormat('fr-FR');
+  var io2 = new IntersectionObserver(function (ents) {
+    ents.forEach(function (e) {
+      if (!e.isIntersecting) return;
+      var el = e.target, vers = +el.dataset.vers, suf = el.dataset.suf || '';
+      var t0 = performance.now(), duree = 1100;
+      (function pas(t) {
+        var k = Math.min(1, (t - t0) / duree);
+        var ea = 1 - Math.pow(1 - k, 3);
+        el.textContent = fmt.format(Math.round(vers * ea)) + suf;
+        if (k < 1) requestAnimationFrame(pas);
+      })(t0);
+      io2.unobserve(el);
+    });
+  }, { threshold: 0.5 });
+  document.querySelectorAll('[data-vers]').forEach(function (n) { io2.observe(n); });
+})();
+</script>
+</body>
+</html>
