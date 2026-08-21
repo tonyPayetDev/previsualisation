@@ -3,655 +3,1320 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Prévisualisation — Autoboost Neon Video</title>
+<title>Prévisualisation — Autoboost</title>
 <style>
-  :root{
-    --bg:#0a0a0f; --panel:#111117; --border:#242430;
-    --neon-yellow:#f5d90a; --neon-purple:#a855f7; --neon-orange:#ff7a1a;
-    --text:#f2f2f5; --muted:#9a9aa8;
-  }
-  *{box-sizing:border-box}
-  body{
-    margin:0; background:var(--bg); color:var(--text);
-    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
-    padding:2rem 1rem 4rem;
-  }
-  .wrap{max-width:480px;margin:0 auto}
-  header{text-align:center;margin-bottom:2rem}
-  header h1{
-    font-size:1.4rem;margin:0 0 .3rem;
-    background:linear-gradient(90deg,var(--neon-yellow),var(--neon-orange));
-    -webkit-background-clip:text;background-clip:text;color:transparent;
-  }
-  header p{color:var(--muted);font-size:.85rem;margin:0}
-  ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.8rem}
-  li a{
-    display:flex;justify-content:space-between;align-items:center;gap:.5rem;
-    background:var(--panel);border:1px solid var(--border);border-radius:12px;
-    padding:1rem 1.2rem;text-decoration:none;color:var(--text);
-  }
-  li a:hover{border-color:var(--neon-yellow)}
-  li a span.name{font-weight:600;font-size:.95rem}
-  .badge{
-    font-size:.7rem;font-weight:600;letter-spacing:.02em;
-    padding:.25rem .6rem;border-radius:999px;white-space:nowrap;
-    background:rgba(245,217,10,.12);color:var(--neon-yellow);
-    border:1px solid rgba(245,217,10,.3);
-  }
-  footer{text-align:center;margin-top:2rem;font-size:.75rem;color:var(--muted)}
-  footer a{color:var(--neon-orange)}
+:root{
+  --bg:#0a0a0f; --panel:#111117; --panel-2:#16161e; --border:#242430;
+  --jaune:#eab308; --violet:#8b5cf6; --texte:#f2f2f5; --mut:#8f8f9e;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--texte);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  padding:1.1rem .9rem 4rem;font-size:15px;line-height:1.5}
+.wrap{max-width:760px;margin:0 auto}
+
+/* Titre volontairement discret : c'est un outil de travail, pas une vitrine. */
+header{display:flex;align-items:baseline;justify-content:space-between;gap:.8rem;
+  margin-bottom:1rem;flex-wrap:wrap}
+header h1{font-size:.95rem;margin:0;font-weight:700;letter-spacing:.01em;color:var(--texte)}
+header h1 i{font-style:normal;color:var(--jaune)}
+header .compte{font-size:.75rem;color:var(--mut);font-variant-numeric:tabular-nums}
+
+/* Barre de filtre — collante, pour rester accessible sur 297 entrées */
+.filtres{position:sticky;top:0;z-index:5;background:var(--bg);
+  padding:.5rem 0 .7rem;margin-bottom:.3rem;border-bottom:1px solid var(--border)}
+#q{width:100%;background:var(--panel);border:1px solid var(--border);color:var(--texte);
+  padding:.6rem .8rem;border-radius:9px;font-size:.9rem;font-family:inherit}
+#q:focus{outline:none;border-color:var(--jaune)}
+#q::placeholder{color:var(--mut)}
+.chips{display:flex;flex-wrap:wrap;gap:.35rem;margin-top:.55rem}
+.chip{background:var(--panel);border:1px solid var(--border);color:var(--mut);
+  padding:.28rem .6rem;border-radius:999px;font-size:.72rem;cursor:pointer;
+  font-family:inherit;transition:border-color .15s,color .15s}
+.chip:hover{color:var(--texte)}
+.chip[aria-pressed=true]{border-color:var(--jaune);color:var(--jaune);
+  background:rgba(234,179,8,.08)}
+.chip b{font-weight:600;opacity:.55;margin-left:.3rem;font-variant-numeric:tabular-nums}
+
+ul{list-style:none;margin:.6rem 0 0;padding:0;display:flex;flex-direction:column;gap:.4rem}
+li a{display:flex;max-width:100%;overflow:hidden;justify-content:space-between;align-items:center;gap:.7rem;
+  background:var(--panel);border:1px solid var(--border);border-radius:9px;
+  padding:.65rem .85rem;text-decoration:none;color:var(--texte);transition:border-color .15s}
+li a:hover{border-color:var(--jaune);background:var(--panel-2)}
+.nom{font-size:.86rem;font-weight:500;min-width:0;overflow-wrap:anywhere}
+.nom small{display:block;color:var(--mut);font-size:.72rem;font-weight:400;margin-top:.12rem}
+.droite{display:flex;align-items:center;gap:.4rem;flex-shrink:0;max-width:55%;overflow:hidden}
+.fam{font-size:.66rem;color:var(--mut);border:1px solid var(--border);
+  padding:.16rem .45rem;border-radius:999px;white-space:nowrap}
+.badge{font-size:.66rem;font-weight:600;padding:.16rem .45rem;border-radius:999px;
+  white-space:nowrap;max-width:11rem;overflow:hidden;text-overflow:ellipsis;background:rgba(234,179,8,.12);color:var(--jaune);
+  border:1px solid rgba(234,179,8,.28)}
+.mp4{font-size:.66rem;color:var(--violet);border:1px solid rgba(139,92,246,.3);
+  padding:.16rem .4rem;border-radius:999px}
+#vide{display:none;color:var(--mut);text-align:center;padding:2rem .5rem;font-size:.85rem}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <header>
-    <h1>Autoboost Neon Video — Prévisualisation</h1>
-    <p>Valider avant publication Instagram / TikTok</p>
-  </header>
 
-  <ul>
-    <li><a href="/journal-ia-2026-08-21">
-      <span class="name">Journal IA — 2026-08-21</span>
-      <span class="badge">⏳ En attente</span>
-    </a></li>
-      <span class="name">📁 Sites clients — inventaire (106 sites, état + téléphone)</span>
-      <span class="badge">Démos à envoyer</span>
-    </a></li>
-    <li><a href="/essai-ego-pourquoi-ce-format">
-      <span class="name">essai-ego-pourquoi-ce-format · essai contemplatif 86 s — « J'ai décidé de manger 30 % moins de viande » → le lien se referme à 38 s puis à 73 s · sans sous-titres, sans CTA, musique libre de droits</span>
-      <span class="badge">⏳ À valider</span>
-    </a></li>
-    <li><a href="/journal-ia-2026-08-20">
-      <span class="name">Journal IA — 2026-08-20</span>
-      <span class="badge">⏳ En attente</span>
-    </a></li>
-    <li><a href="/autoboost-formation-dechirure-v2">
-      <span class="name">Formation Claude Code · la déchirure v2 — la voix n'entre qu'à 6,000 s (piste voix à −inf dB de 0,000 à 5,999) : les 6 premières secondes sont portées par le SEUL audio natif d'action, renforcé (crêtes −3,0 dBFS) · nouveau CTA gaté « commente FORMATION + sois abonné » — la porte existe (Blotato 1954 IG / 1955 FB, actives) · comparatif v1/v2 sur la page</span>
-      <span class="badge">⏳ À valider — 32,4s · F0 114–137 Hz · −16,2 LUFS / −2,8 dBTP · silence final 3,65 s à −inf · lèvres PASS (0 image fautive) · 0 crédit Higgsfield</span>
-    <li><a href="/autoboost-61-debunk-10k-freelance">
-      <span class="name">autoboost-61-debunk-10k-freelance · Debunk « 10k€/mois en freelance grâce à l'IA » — hook « c'est du bullshit » (carte promesse-virale + tampon BULLSHIT), la vérité (l'IA remplace tes heures, pas tes clients), le vrai système n8n (prospection → relances → devis), résultat (+ temps facturable), CTA LEVIER · voix clonée archiviste · style néon Autoboost seedance</span>
-      <span class="badge">🟡 En attente validation — ~31,0s · 1080×1920 30 fps · coupes sur silences −40 dB · captions 27 px mot-à-mot · BGM flowers_horror 0.05 + SFX palette v1 · CTA LEVIER</span>
-    </a></li>
-    <li><a href="/autoboost-matrix-revelation">
-      <span class="name">Matrix · la révélation — clip Seedance 9:16 NATIF (aucun recadrage), combat contre les avatars TikTok/YouTube/Instagram puis raccord par le projectile vers le bureau · voix clonée AUSSI sur l'accroche « Je vais te faire découvrir la Matrix », calée sur la fenêtre de lèvres MESURÉE (8,458 → 9,833 s, marge 7 ms) et parole Seedance supprimée (−inf dB) · audio natif d'action CONSERVÉ, mesuré exploitable (19 dB de dynamique, pics à −14 dB) donc palette SFX v2 NON utilisée et NON modifiée · seule coupe : 0,54 s en tête de combat, où Tony est de dos · CTA CHAOS</span>
-      <span class="badge">⏳ À valider — 33,900s · 1080×1920 30 fps · F0 120,3 Hz sur l'accroche ET sur le corps (clone, pas le repli OpenAI ~200 Hz) · −15,6 LUFS / −3,0 dBTP · lèvres PASS (0 image fautive / 11 plans, clip Seedance inclus dans la porte) · ⚠️ porte CHAOS sur Instagram SEULEMENT, absente de Facebook, et sensible à la casse · 0 crédit Higgsfield</span>
-    </a></li>
-    <li><a href="/autoboost-formation-dechirure">
-      <span class="name">Formation Claude Code · la déchirure — clip Seedance 16:9 posé en 9:16 (letterbox pleine largeur + fond flou tiré du clip, aucun recadrage vertical : la déchirure reste entière) · audio natif d'action CONSERVÉ (crête −5,2 dBFS sur la déchirure) et parole Seedance coupée, remplacée par la voix clonée · fin sur un impact puis SILENCE NUMÉRIQUE TOTAL de 26,0 s à 29,6 s · CTA sans mot-clé : aucune porte Blotato ne pointe vers la formation, donc lien en bio et aucune promesse d'envoi</span>
-      <span class="badge">⏳ À valider — 29,6s · 1080×1920 30 fps · F0 114–137 Hz (clone, pas le repli OpenAI ~200 Hz) · −15,9 LUFS / −2,9 dBTP · silence final −inf mesuré · lèvres PASS (0 image fautive / 4 plans avatar) · 0 crédit Higgsfield</span>
-    </a></li>
-    <li><a href="/journal-ia-2026-08-19">
-      <span class="name">Journal IA — 2026-08-19</span>
-      <span class="badge">⏳ En attente</span>
-    </a></li>
-    <li><a href="/autoboost-tuto-claude-code-mcp-v4">
-      <span class="name">autoboost-tuto-claude-code-mcp-v4 · 5 S DE MOTEUR + PLUS AUCUNE URL RÉELLE — la voix n'entre qu'à 5,000 s (v3 : 2,000 s), obtenu en repartant le clip à ss=0,00 au lieu de 1,90 (+1,900 s de hook seulement) · bruitage étoffé : montée en régime en 3 reprises, grondement 35–120 Hz, ruissellement de piste synthétique · les captures d'écran sont RE-GÉNÉRÉES (pas floutées) : n7n.automatisation… → n8n.exemple.com aux 3 endroits, chemin de projet de la TUI → ~/projet-demo · comparatif v1/v2/v3/v4 sur la page · charte TYPO.md inchangée</span>
-      <span class="badge">⏳ À valider — 34,3s · voix clonée démarre à 5,000 s (silence −91 dB avant, musique muette jusqu'à 4,50 s) · voix native résiduelle −28,5 dB sous la parole en bande 700–4000 Hz, mod. syllabique 0,129 vs 0,554 · F0 124,0 Hz · −16,7 LUFS / −3,7 dBTP · lèvres PASS (0 image fautive / 8 plans) · 0 €</span>
-    </a></li>
-    <li><a href="/autoboost-tuto-claude-code-mcp-v3">
-      <span class="name">autoboost-tuto-claude-code-mcp-v3 · LE MOTEUR REVIENT — le son du buggy est réintroduit (v1/v2 coupaient tout l'audio natif) mais la voix native de Higgsfield n'entre jamais : le lit moteur est reconstruit uniquement à partir des fenêtres mesurées sans parole, plus un passe-bas 400 Hz · 2 premières secondes sans voix off ni musique, juste l'accélération · nouveau hook « si tu regardes ça, c'est pas moi qui conduis — c'est le code » · comparatif v1/v2/v3 sur la page · charte TYPO.md inchangée</span>
-      <span class="badge">⏳ À valider — 33,4s · voix clonée démarre à 2,000 s (silence −91 dB avant) · voix native résiduelle −28,8 dB sous la parole en bande 700–4000 Hz, mod. syllabique 0,129 vs 0,554 · F0 124,0 Hz · −16,3 LUFS / −3,7 dBTP · lèvres PASS (0 image fautive / 8 plans) · 0 €</span>
-    </a></li>
-    <li><a href="/autoboost-tuto-claude-code-mcp-v2">
-      <span class="name">autoboost-tuto-claude-code-mcp-v2 · HOOK ALLONGÉ — le plan où Tony est plein cadre face objectif passe de 1,43 s à 2,86 s et porte 2 lignes de voix ajoutées ; en v1 la coupe vers le terminal tombait 0,05 s après « Regarde » · captures accélérées (×1,15 / ×1,03 / ×1,17), aucun contenu perdu · comparatif v1/v2 sur la page · charte TYPO.md inchangée</span>
-      <span class="badge">⏳ À valider — 33,4s · intervalle du hook choisi sur mesure image par image du mouvement de bouche (net 6,43 · 13 % d'images immobiles) · voix clonée F0 120,3 / 123,1 Hz · lèvres PASS (0 image fautive / 8 plans) · 0 €</span>
-    </a></li>
-    <li><a href="/autoboost-tuto-claude-code-mcp">
-      <span class="name">autoboost-tuto-claude-code-mcp · TUTO EXPRESS — hook Higgsfield (buggy → volet au doigt → mur d'écrans de code) puis 3 étapes en capture écran avec curseur qui clique : installer Claude Code, brancher un MCP, s'en servir · avatar v3 incrusté dans la scène · charte typo figée dans TYPO.md</span>
-      <span class="badge">⏳ À valider — 34,0s · sorties npm + claude mcp RÉELLES, TUI étape 3 reconstituée · voix clonée F0 115–133 Hz · lèvres PASS (0 image fautive / 8 plans) · 0 €</span>
-    </a></li>
-    <li><a href="/autoboost-matrix-formation-music">
-      <span class="name">autoboost-matrix-formation-music · MUSIQUE + SFX — le plan bureau figé est retiré (retour au hook 4,27 s), l'action d'ouverture reçoit 8 impacts de la palette v2 (sons d’action physique), et un lit électro sombre « Cyberpunk City » (Mixkit, licence commerciale) court sur toute la vidéo, son drop calé sur le flash du raccord · comparatif des 4 versions sur la page</span>
-      <span class="badge">⏳ À valider — 60,6s · musique −26 LUFS duckée −5,1 dB sous la voix · −16,1 LUFS / −3,2 dBTP · F0 121,2 Hz · lèvres PASS · flux vidéo bit à bit identique (corps jamais ré-encodé) · 0 €</span>
-    </a></li>
-    <li><a href="/autoboost-matrix-formation-hook-6s">
-      <span class="name">autoboost-matrix-formation-hook-6s · HOOK 6 s — combat Matrix (4,27 s, toute la voix) puis le plan bureau en silence total (1,73 s), avant que la vidéo validée enchaîne inchangée · comparatif des 3 versions sur la page</span>
-      <span class="badge">⏳ À valider — 62,3s · plan bureau à 0 voix active (RMS −inf, 0/173 fenêtres) et bouche immobile (diff 0,24 vs 4,15) · −16,2 LUFS / −3,0 dBTP · lèvres PASS · 0 €</span>
-    </a></li>
-    <li><a href="/autoboost-matrix-formation-hook">
-      <span class="name">autoboost-matrix-formation-hook · VARIANTE HOOK — clip de combat Matrix (Seedance 2.5 / Higgsfield) en tête, accroche « Tu ne travailles pas. Tu te bats. Contre tes propres outils. Et tu perds. » en voix clonée, puis la vidéo validée enchaîne inchangée · comparatif avant/après sur la page</span>
-      <span class="badge">⏳ À valider — 60,6s · hook 4,27s · sortie sur le flash blanc · audio natif du clip coupé · −16,1 LUFS · lèvres PASS · 0 € · la version programmée du 25/08 reste intacte</span>
-    </a></li>
-    <li><a href="/autoboost-62-valse-full">
-      <span class="name">autoboost-62-valse-full · LA VALSE SUR TOUTE LA LONGUEUR — phonogramme produit par nous (partition domaine public + FluidSynth) : tutti sur le hook, orchestration évidée sous la voix, la musique ne s'arrête jamais · les deux autres versions sont intactes</span>
-      <span class="badge">✅ Publiable — 0 droit voisin de tiers · 35,4s · −16,1 LUFS / −4,9 dBTP · bande voix +20,4 dB · lèvres PASS · 0 €</span>
-    </a></li>
-    <li><a href="/autoboost-62-valse">
-      <span class="name">autoboost-62-valse · VARIANTE COMPARATIVE — même image, la Valse des fleurs remplace Cyberpunk City sur les 6,68 s de hook muet, coupe franche sur l'arrivée · la version de référence est intacte</span>
-      <span class="badge">⚠️ NE PAS PUBLIER — enregistrement LSO 1989 sous droits voisins, Content ID quasi certain · 35,4s · −16,1 LUFS / −4,7 dBTP · lèvres PASS · 0 €</span>
-    </a></li>
-    <li><a href="/autoboost-62-meme-systeme">
-      <span class="name">autoboost-62-meme-systeme · « Tu veux le même système ? » — hook spider muet de 7 s (nouvelle entrée de banque), puis la chaîne complète : une phrase → script, voix clonée, montage, sous-titres, 5 réseaux · CTA SYSTEME</span>
-      <span class="badge">⏳ À valider — 35,4s · 9:16 · 11 plans (5 avatar + 6 écrans) · sound design v2 (verre, réception, thwip, arrivée) · musique Cyberpunk City · −16,0 LUFS · lèvres PASS · 0 € · ⚠️ SYSTEME pointerait sur une ressource payante déjà servie par STAR</span>
-    </a></li>
-    <li><a href="/matrix-formation">
-      <span class="name">matrix-formation · Faux dialogue Matrix : Tony en position Morpheus pitche la formation, Neo garde ses 5 repliques d'origine (image + voix) et n'approuve jamais rien · formation Automation Boost</span>
-      <span class="badge">⏳ À valider — 56,3s · 9:16 · 5 extraits reels transcrits + 1 reaction silencieuse + 22 plans avatar v3 · lèvres PASS · 0 €</span>
-    </a></li>
-    <li><a href="/autoboost-61-dix-questions">
-      <span class="name">autoboost-61-dix-questions · Les 10 questions à poser à Claude sur toi-même — le twist : Claude vide vs Claude qui a ton historique, montré en split écran · CTA MIROIR</span>
-      <span class="badge">⏳ À valider — 36,6s · 9:16 · 4 clips talking-head neufs + voix clonée · règle des lèvres PASS · 0 € · ⚠️ ressource MIROIR à créer</span>
-    </a></li>
-    <li><a href="/formation-vsl">
-      <span class="name">formation-vsl · VSL de la formation Automation Boost — démontre au lieu de promettre : 6 sites clients réellement en ligne, 15 vidéos déjà produites, le workflow n8n du Journal IA · 29,90 € tarif fondateur</span>
-      <span class="badge">⏳ À valider — 101,2s · 9:16 · avatar v3 + voix clonée · 0 € de génération · réserves listées sur la page</span>
-    </a></li>
-    <li><a href="/videoboost-dialogue">
-      <span class="name">videoboost-dialogue · Faux dialogue avec Leonardo DiCaprio : ses 5 repliques d’origine conservees (sa voix), l’agriculteur remplace par l’avatar v3 de Tony · VideoBoost 67 € · CTA STAR</span>
-      <span class="badge">⏳ À valider — 51,1s · 9:16 · 5 extraits reels + 19 plans avatar v3 + captions calquees · 💰 version PUBLICITAIRE (Meta Ads)</span>
-    </a></li>
-    <li><a href="/videoboost-dialogue-organique">
-      <span class="name">videoboost-dialogue-organique · Le meme montage SANS le prix — comparatif des deux versions cote a cote · CTA VIDEOBOOST (porte auto-DM active IG 1270 / FB 1065)</span>
-      <span class="badge">⏳ À valider — 51,1s · 9:16 · version ORGANIQUE (TikTok/IG/FB/LinkedIn/YouTube) · 2 segments de voix clonee regeneres, le reste identique au bit pres · F0 117-120 Hz · lèvres PASS · 0 €</span>
-    </a></li>
-    <li><a href="/videoboost-star">
-      <span class="name">videoboost-star · Format « j'interpelle une star » (transposé de la réf agriculteur/DiCaprio) : Tony écrit à MrBeast pour lui vendre VideoBoost à 67 €, zéro réponse · CTA STAR</span>
-      <span class="badge">⏳ À valider — 49,4s · 9:16 · avatar v3 plein cadre · captions blanches contour noir</span>
-    </a></li>
-    <li><a href="/build-in-public">
-      <span class="name">build-in-public · Transparence chiffrée : 124 vidéos, 3 €, 1 centime la vidéo — et les 2 ratés assumés (lien de paiement en mode test, prospect réécrit 12 jours) · CTA CHIFFRES</span>
-      <span class="badge">⏳ À valider — 45s · 9:16 · voix clonée + avatar v3</span>
-    </a></li>
-    <li><a href="/hook-chaos-automatiser">
-      <span class="name">hook-chaos-automatiser · Hook 10 s réutilisable (chaos → freeze → clic AUTOMATISER → exécution → lockup) + vidéo qui l'utilise · CTA CHAOS</span>
-      <span class="badge">⏳ À valider — 34,6s · 9:16 · hook muet · template réutilisable</span>
-    </a></li>
-    <li><a href="/blacksshade-showcase">
-      <span class="name">blacksshade-showcase · Le site BLACKSSHADE filmé en scroll — rotation, coloris qui change le prix, panier · CTA ECOM</span>
-      <span class="badge">⏳ À valider — 34s · 9:16 · voix clonée</span>
-    </a></li>
-    <li><a href="/blacksshade">
-      <span class="name">blacksshade · Site e-commerce cinématique BLACKSSHADE — hero scroll-scrub 4 chapitres, configurateur + panier</span>
-      <span class="badge">⏳ À valider — maquette, visuels IA, aucun paiement</span>
-    </a></li>
-    <li><a href="/trailer-doom">
-      <span class="name">trailer-doom · Le vrai trailer Avengers Doomsday vs ma version IA + prompt · CTA TRAILER</span>
-      <span class="badge">⏳ À valider — bande du haut en placeholder</span>
-    </a></li>
-    <li><a href="/yapping-algo">
-      <span class="name">yapping-algo · Toi vs l'algo — combat + impact voiture · CTA DM</span>
-      <span class="badge">⏳ À valider — 2 plans en placeholder</span>
-    </a></li>
-    <li><a href="/prompt-reveal-01">
-      <span class="name">prompt-reveal-01 · Le regard — portrait cinéma IA, push-in dans l'œil · CTA REGARD</span>
-      <span class="badge">⏳ À valider</span>
-    </a></li>
-    <li><a href="/prompt-reveal-02">
-      <span class="name">prompt-reveal-02 · Le burger — food reel 100 % IA, 0 tournage · CTA BURGER</span>
-      <span class="badge">⏳ À valider</span>
-    </a></li>
-    <li><a href="/prompt-reveal-03">
-      <span class="name">prompt-reveal-03 · La transformation — live-action anime, VFX Hollywood · CTA SHONEN</span>
-      <span class="badge">⏳ À valider</span>
-    </a></li>
-    <li><a href="/prompt-reveal-04">
-      <span class="name">prompt-reveal-04 · Le clip néon — clip musique cyberpunk, boule d'énergie · CTA NEON</span>
-      <span class="badge">⏳ À valider</span>
-    </a></li>
-    <li><a href="/prompt-reveal-05">
-      <span class="name">prompt-reveal-05 · La téléportation — combat live-action, 1 seule prise · CTA COMBAT</span>
-      <span class="badge">⏳ À valider</span>
-    </a></li>
-    <li><a href="/combat-beatsync">
-      <span class="name">combat-beatsync · combat anime 9:16 — chaque impact calé sur la grille mesurée (114,5 BPM, 17 impacts) · 100 % réutilisation, 0 crédit</span>
-      <span class="badge">⏳ À valider</span>
-    </a></li>
-    <li><a href="/autoboost-principe">
-      <span class="name">autoboost-principe · landing scrollytelling « le principe d'Automatisation Boost » — 5 chapitres canvas (charge → explosion de couleur → route néon → preuves réelles → la boucle) + estimateur, CTA VideoBoost (proposition)</span>
-      <span class="badge">⏳ À valider</span>
-    </a></li>
-    <li><a href="/journal-ia-2026-08-17">
-      <span class="name">Journal IA — 2026-08-17</span>
-      <span class="badge">⏳ En attente</span>
-    </a></li>
-    <li><a href="/chanson-voix-tony">
-      <span class="name">chanson-voix-tony · « Pendant Que Tu Dors » — chanson FR Automation Boost (Suno V5, 2 versions) + clonage voix chantée : nouvelle phrase à réenregistrer</span>
-      <span class="badge">⏳ À valider</span>
-    </a></li>
-    <li><a href="/befresh-evenementiel">
-      <span class="name">befresh-evenementiel · client BeFresh — ACCÈS ÉVÉNEMENTIEL (mariages &amp; réceptions) · COMPARATIF des 3 montages du même rush</span>
-      <span class="badge">⏳ À valider</span>
-    </a></li>
-    <li><a href="/befresh-evenementiel-a">
-      <span class="name">befresh-evenementiel-a · BeFresh — montage A « le moment que personne n'anticipe » · 30,8 s, découpage chronologique calé sur les silences de la voix</span>
-      <span class="badge">⏳ À valider</span>
-    </a></li>
-    <li><a href="/befresh-evenementiel-b">
-      <span class="name">befresh-evenementiel-b · BeFresh — montage B « l'objet que tout le monde tient » · 25,9 s, autre ouverture, rafale de 8 plans à 0,7 s au milieu</span>
-      <span class="badge">⏳ À valider</span>
-    </a></li>
-    <li><a href="/befresh-evenementiel-beatsync">
-      <span class="name">befresh-evenementiel-beatsync · BeFresh — montage beat-sync · coupes sur la grille MESURÉE à 130,00 BPM (bande de kick), pas sur le BPM annoncé</span>
-      <span class="badge">⏳ À valider</span>
-    </a></li>
-    <li><a href="/befresh-voix">
-      <span class="name">befresh-voix · BeFresh — 5 extraits de voix off à départager (correction « alouda » + 3 voix alternatives)</span>
-      <span class="badge">⏳ À valider</span>
-    </a></li>
-    <li><a href="/befresh-decathlon">
-      <span class="name">befresh-decathlon · client BeFresh — reel IG 9:16 « on était à Decathlon » · v2 CORRIGÉE : « alouda » prononcé + charte BeFresh noir/or/magenta</span>
-      <span class="badge">⏳ À valider</span>
-    </a></li>
-    <li><a href="/autoboost-tele-3-0">
-      <span class="name">autoboost-tele-3-0 · « j'ai créé une chaîne de télé en une nuit » — 4 preuves (JT auto 7h, pub auto, sites web auto, avatar réutilisable = coût proche de zéro) + b-roll train · CTA TELE</span>
-      <span class="badge">⏳ À valider</span>
-    </a></li>
-    <li><a href="/koytcha-reveal">
-      <span class="name">koytcha-reveal · site immobilier cinématique « The Reveal » — Villa Solèy, 4 chapitres scroll-scrub + recherche, niveaux, prêt, visite (démo)</span>
-      <span class="badge">⏳ À valider</span>
-    </a></li>
-    <li><a href="/essai-ego-tom-odell">
-      <span class="name">essai-ego-tom-odell · essai contemplatif style EGO — tasse qui refroidit → le temps → fondu au blanc (voix posée + Tom Odell)</span>
-      <span class="badge">⏳ À valider</span>
-    </a></li>
-    <li><a href="/humian-anime-living-cartoon">
-      <span class="name">humian — anime living cartoon · guerrier anime réaliste power-up + vol (style @subscribe_humian) · CTA PODER</span>
-      <span class="badge">⏳ À valider</span>
-    </a></li>
-    <li><a href="/journal-ia-2026-08-15">
-      <span class="name">Journal IA — 15 août 2026 · Gemini 3.7 Flash, GPT-5.6 Sol, DeepSeek V4 Pro, Databricks 5 Md$ · CTA VEILLE</span>
-      <span class="badge">⏳ À valider</span>
-    </a></li>
-    <li><a href="/hook-puissant">
-      <span class="name">hook-puissant · hook stacking (entrée studio parlée + question) → climax countdown + décollage, CTA HOOK</span>
-      <span class="badge">⏳ À valider</span>
-    </a></li>
-    <li><a href="/yapping-oneclick">
-      <span class="name">yapping-oneclick · le yapping expliqué EN yappant (méta) + écran brisé, CTA YAPPING</span>
-      <span class="badge">⏳ À valider</span>
-    </a></li>
-    <li><a href="/veille-to-avatar-v3-test">
-      <span class="name">veille-to-avatar-v3-test · Auto-DM Instagram (test style verrouillé)</span>
-      <span class="badge">⏳ À valider</span>
-    </a></li>
-    <li><a href="/veille-to-avatar-v3-v3">
-      <span class="name">veille-to-avatar-v3-v3</span>
-      <span class="badge">⏳ À valider</span>
-    </a></li>
-    <li><a href="/twingo-turbo-v4">
-      <span class="name">twingo-turbo-v4 · concept IA + CTA TURBO</span>
-      <span class="badge">⏳ À valider</span>
-    </a></li>
-    <li><a href="/showcase-claude-max-v2">
-      <span class="name">showcase-claude-max</span>
-      <span class="badge">⏳ En attente</span>
-    </a></li>
-    <li><a href="/showcase-claude-max">
-      <span class="name">showcase-claude-max</span>
-      <span class="badge">⏳ En attente</span>
-    </a></li>
-    <li><a href="/veille-to-avatar-v3-v2">
-      <span class="name">veille-to-avatar-v3</span>
-      <span class="badge">⏳ En attente</span>
-    </a></li>
-    <li><a href="/videoboost-editorial-avant-apres-v2">
-      <span class="name">videoboost-editorial-avant-apres</span>
-      <span class="badge">⏳ En attente</span>
-    </a></li>
-    <li><a href="/videoboost-editorial-avant-apres">
-      <span class="name">videoboost-editorial-avant-apres</span>
-      <span class="badge">⏳ À valider — POC éditorial</span>
-    </a></li>
-    <li><a href="/shortforge-04-etude">
-      <span class="name">shortforge-04-etude</span>
-      <span class="badge">⏳ En attente</span>
-    </a></li>
-    <li><a href="/shortforge-05-veille">
-      <span class="name">shortforge-05-veille</span>
-      <span class="badge">⏳ En attente</span>
-    </a></li>
-    <li><a href="/autoboost-55-twingo-remix-v3">
-      <span class="name">autoboost-55-twingo-remix</span>
-      <span class="badge">⏳ En attente</span>
-    </a></li>
-    <li><a href="/shortforge-02-erreur">
-      <span class="name">shortforge-02-erreur</span>
-      <span class="badge">⏳ En attente</span>
-    </a></li>
-    <li><a href="/shortforge-03-top3">
-      <span class="name">shortforge-03-top3</span>
-      <span class="badge">⏳ En attente</span>
-    </a></li>
-    <li><a href="/autoboost-debunk-lambo-n8n">
-      <span class="name">Débunk Lambo → Workflow n8n</span>
-      <span class="badge">⏳ En attente</span>
-    </a></li>
-    <li><a href="/shortforge-01-avant-apres">
-      <span class="name">shortforge-01-avant-apres</span>
-      <span class="badge">⏳ En attente</span>
-    </a></li>
-    <li><a href="/autoboost-55-twingo-remix-v2">
-      <span class="name">autoboost-55-twingo-remix</span>
-      <span class="badge">⏳ En attente</span>
-    </a></li>
-    <li><a href="/autoboost-55-twingo-remix">
-      <span class="name">autoboost-55-twingo-remix</span>
-      <span class="badge">⏳ En attente</span>
-    </a></li>
-    <li><a href="/autoboost-54-mille-problemes">
-      <span class="name">autoboost-54-mille-problemes</span>
-      <span class="badge">⏳ En attente</span>
-    <li><a href="/shortforge-avant-apres">
-      <span class="name">ShortForge · Avant / Après</span>
-      <span class="badge">⏳ À valider</span>
-    </a></li>
-    <li><a href="/shortforge-erreur">
-      <span class="name">ShortForge · Erreur à éviter</span>
-      <span class="badge">⏳ À valider</span>
-    </a></li>
-    <li><a href="/shortforge-top3">
-      <span class="name">ShortForge · Top 3 outils</span>
-      <span class="badge">⏳ À valider</span>
-    </a></li>
-    <li><a href="/shortforge-etude">
-      <span class="name">ShortForge · Étude de cas</span>
-      <span class="badge">⏳ À valider</span>
-    </a></li>
-    <li><a href="/shortforge-veille">
-      <span class="name">ShortForge · Veille IA</span>
-      <span class="badge">⏳ À valider</span>
-    </a></li>
-    <li><a href="/twingo-ferrari-sf90-keynote">
-      <span class="name">Twingo Ferrari SF90 · reel keynote Higgsfield</span>
-      <span class="badge">⏳ À valider</span>
-    </a></li>
-    <li><a href="/my-video">
-      <span class="name">my-video</span>
-      <span class="badge">⏳ En attente</span>
-    </a></li>
-    <li><a href="/autoboost-53-usine-ia">
-      <span class="name">autoboost-53-usine-ia</span>
-      <span class="badge">⏳ En attente</span>
-    </a></li>
-    <li><a href="/autoboost-52-keynote-template-v2">
-      <span class="name">autoboost-52-keynote-template</span>
-      <span class="badge">⏳ En attente</span>
-    </a></li>
-    <li><a href="/autoboost-opencode">
-      <span class="name">autoboost-opencode</span>
-      <span class="badge">⏳ En attente</span>
-    </a></li>
-    <li><a href="/autoboost-seedance-tuto-v7">
-      <span class="name">autoboost-seedance-tuto</span>
-      <span class="badge">⏳ En attente</span>
-    </a></li>
-    <li><a href="/autoboost-seedance-tuto-v6">
-      <span class="name">autoboost-seedance-tuto</span>
-      <span class="badge">⏳ En attente</span>
-    </a></li>
-    <li><a href="/autoboost-seedance-tuto-v5">
-      <span class="name">autoboost-seedance-tuto</span>
-      <span class="badge">⏳ En attente</span>
-    </a></li>
-    <li><a href="/autoboost-seedance-tuto-v4">
-      <span class="name">autoboost-seedance-tuto</span>
-      <span class="badge">⏳ En attente</span>
-    </a></li>
-    <li><a href="/autoboost-seedance-tuto-v3">
-      <span class="name">autoboost-seedance-tuto</span>
-      <span class="badge">⏳ En attente</span>
-    </a></li>
-    <li><a href="/autoboost-52-recyclage">
-      <span class="name">autoboost-52-recyclage (Recyclage auto des meilleurs posts n8n · seedance néon) · 10/08</span>
-      <span class="badge">⏳ À valider</span>
-    </a></li>
-    <li><a href="/autoboost-seedance-tuto-v2">
-      <span class="name">autoboost-seedance-tuto v2 (Seedance 2.5 — avatar néon + mockup) · 10/08</span>
-      <span class="badge">⏳ À valider</span>
-    </a></li>
-    <li><a href="/autoboost-seedance-tuto">
-      <span class="name">autoboost-seedance-tuto (Seedance 2.5 — v4 avatars)</span>
-      <span class="badge">⏳ À valider</span>
-    </a></li>
-    <li><a href="/autoboost-site-immersif-v4">
-      <span class="name">autoboost-site-immersif</span>
-      <span class="badge">⏳ En attente</span>
-    </a></li>
-    <li><a href="/autoboost-site-immersif-v3">
-      <span class="name">autoboost-site-immersif · v3 (mobile + musique)</span>
-      <span class="badge">⏳ À valider</span>
-    </a></li>
-    <li><a href="/meigen-galerie-ia">
-      <span class="name">meigen · galerie IA</span>
-      <span class="badge">⏳ À valider</span>
-    </a></li>
-    <li><a href="/autoboost-site-immersif-v2">
-      <span class="name">autoboost-site-immersif (ancienne v)</span>
-      <span class="badge">⏳ En attente</span>
-    </a></li>
-    <li><a href="/autoboost-data-tables">
-      <span class="name">autoboost-data-tables</span>
-      <span class="badge">⏳ En attente</span>
-    </a></li>
-    <li><a href="/autoboost-relance-clients">
-      <span class="name">autoboost-relance-clients</span>
-      <span class="badge">⏳ En attente</span>
-    </a></li>
-    <li><a href="/render-hf">
-      <span class="name">render-hf</span>
-      <span class="badge">⏳ En attente</span>
-    </a></li>
-    <li><a href="/autoboost-50-skills">
-      <span class="name">autoboost-50-skills</span>
-      <span class="badge">⏳ En attente</span>
-    </a></li>
-    <li><a href="/autoboost-48-codeur-v2">
-      <span class="name">autoboost-48-codeur</span>
-      <span class="badge">⏳ En attente</span>
-    </a></li>
-    <li><a href="/koytcha-cercles-motion-v2">
-      <span class="name">koytcha-cercles-motion</span>
-      <span class="badge">⏳ En attente</span>
-    </a></li>
-    <li><a href="/koytcha-cercles-motion">
-      <span class="name">koytcha-cercles-motion</span>
-      <span class="badge">⏳ En attente</span>
-    </a></li>
-    <li><a href="/autoboost-48-codeur">
-      <span class="name">autoboost-48-codeur</span>
-      <span class="badge">⏳ En attente</span>
-    </a></li>
-    <li><a href="/autoboost-47-opus">
-      <span class="name">autoboost-47-opus</span>
-      <span class="badge">⏳ En attente</span>
-    </a></li>
-    <li><a href="/autoboost-45-mcp-v3">
-      <span class="name">autoboost-45-mcp</span>
-      <span class="badge">⏳ En attente</span>
-    </a></li>
-    <li><a href="/autoboost-45-mcp-v2">
-      <span class="name">autoboost-45-mcp</span>
-      <span class="badge">⏳ En attente</span>
-    </a></li>
-    <li><a href="/autoboost-45-mcp">
-      <span class="name">autoboost-45-mcp</span>
-      <span class="badge">⏳ En attente</span>
-    </a></li>
-    <li><a href="/autoboost-44-trois-agents">
-      <span class="name">autoboost-44-trois-agents</span>
-      <span class="badge">⏳ En attente</span>
-    </a></li>
-    <li><a href="/videoboost-luxe-01-v2">
-      <span class="name">videoboost-luxe-01</span>
-      <span class="badge">⏳ En attente</span>
-    </a></li>
-    <li><a href="/videoboost-luxe-01">
-      <span class="name">videoboost-luxe-01</span>
-      <span class="badge">⏳ En attente</span>
-    </a></li>
-    <li><a href="/foodboost-12-boissons">
-      <span class="name">foodboost-12-boissons</span>
-      <span class="badge">⏳ En attente</span>
-    </a></li>
-    <li><a href="/foodboost-07-pizza">
-      <span class="name">foodboost-07-pizza</span>
-      <span class="badge">⏳ En attente</span>
-    </a></li>
-    <li><a href="/foodboost-11-grillades">
-      <span class="name">foodboost-11-grillades</span>
-      <span class="badge">⏳ En attente</span>
-    </a></li>
-    <li><a href="/foodboost-08-sushi">
-      <span class="name">foodboost-08-sushi</span>
-      <span class="badge">⏳ En attente</span>
-    </a></li>
-    <li><a href="/foodboost-09-petitdej">
-      <span class="name">foodboost-09-petitdej</span>
-      <span class="badge">⏳ En attente</span>
-    </a></li>
-    <li><a href="/foodboost-10-desserts">
-      <span class="name">foodboost-10-desserts</span>
-      <span class="badge">⏳ En attente</span>
-    </a></li>
-    <li><a href="/foodboost-06-snacking">
-      <span class="name">foodboost-06-snacking</span>
-      <span class="badge">⏳ En attente</span>
-    </a></li>
-    <li><a href="/autoboost-14-tiktok-repurpose">
-      <span class="name">autoboost-14-tiktok-repurpose</span>
-      <span class="badge">⏳ En attente</span>
-    </a></li>
-    <li><a href="/tab-mind">
-      <span class="name">#38 — Tab Mind (réorganiseur d'onglets IA)</span>
-      <span class="badge">⏳ En attente</span>
-    </a></li>
-    <li><a href="/dashboard-notion">
-      <span class="name">#7 — Dashboard Sync Notion</span>
-      <span class="badge">⏳ En attente</span>
-    </a></li>
-    <li><a href="/pinterest-automation">
-      <span class="name">#8 — Pinterest Automation</span>
-      <span class="badge">⏳ En attente</span>
-    </a></li>
-    <li><a href="/content-ideas">
-      <span class="name">#9 — 1200+ Content Ideas</span>
-      <span class="badge">⏳ En attente</span>
-    </a></li>
-    <li><a href="/livres-enfants">
-      <span class="name">#10 — Générateur Livres Enfants</span>
-      <span class="badge">✅ Publié</span>
-    </a></li>
-    <li><a href="/blog">
-      <span class="name">#15 — Article de Blog SEO</span>
-      <span class="badge">📅 12 juil.</span>
-    </a></li>
-    <li><a href="/veille">
-      <span class="name">#16 — Veille RSS automatique</span>
-      <span class="badge">📅 14 juil.</span>
-    </a></li>
-    <li><a href="/createur">
-      <span class="name">#17 — Agent IA Créateur</span>
-      <span class="badge">📅 16 juil.</span>
-    </a></li>
-    <li><a href="/devis-auto">
-      <span class="name">#19 — Génération Proposition Complète (DEVIS)</span>
-      <span class="badge">📅 13 juil. 17h UTC</span>
-    </a></li>
-    <li><a href="/analyse-seo">
-      <span class="name">#20 — Analyse SEO Google (remplace Veille)</span>
-      <span class="badge">📅 13 juil. 18h UTC</span>
-    </a></li>
-    <li><a href="/kilo-code">
-      <span class="name">#21 — Création Site Kilo Code (remplace Créateur)</span>
-      <span class="badge">📅 13 juil. 19h UTC</span>
-    </a></li>
-    <li><a href="/meta">
-      <span class="name">#30 — Pubs Meta → Emergent</span>
-      <span class="badge">⏳ En attente</span>
-    </a></li>
-    <li><a href="/systeme">
-      <span class="name">#34 — Ce n'est pas du talent, c'est un système</span>
-      <span class="badge">⏳ En attente</span>
-    </a></li>
-    <li><a href="/claude-mem">
-      <span class="name">#35 — Claude mem (horror beat-sync)</span>
-      <span class="badge">⏳ En attente</span>
-    </a></li>
-    <li><a href="/open-generative-ai">
-      <span class="name">#36 — Open Generative AI (alternative Higgsfield)</span>
-      <span class="badge">⏳ En attente</span>
-    </a></li>
-    <li><a href="/fable">
-      <span class="name">#37 — Fable (ton IA coûte 5× trop cher)</span>
-      <span class="badge">⏳ En attente</span>
-    </a></li>
-    <li><a href="/terminal">
-      <span class="name">#39 — Terminal · le temps perdu, tu le rattrapes</span>
-      <span class="badge">🔊 À valider</span>
-    </a></li>
-    <li><a href="/fable-sfx">
-      <span class="name">#37 — Fable · test palette SFX (avant / après)</span>
-      <span class="badge">🔊 À valider</span>
-    </a></li>
-    <li><a href="/tokens">
-      <span class="name">#38 — Ne gaspillez pas vos tokens</span>
-      <span class="badge">⏳ En attente</span>
-    </a></li>
-    <li><a href="/seedance">
-      <span class="name">#40 — Seedance (3 astuces de prompt)</span>
-      <span class="badge">🔊 À valider</span>
-    </a></li>
-    <li><a href="/sous-titres">
-      <span class="name">🎬 Sous-titres — 7 designs à choisir</span>
-      <span class="badge">👉 À toi</span>
-    </a></li>
-    <li><a href="/sound-design">
-      <span class="name">🔊 Sound design — 3 positions à choisir</span>
-      <span class="badge">👉 À toi</span>
-    </a></li>
-    <li><a href="/foodboost">
-      <span class="name">FoodBoost — Démo compte resto (Commente MENU)</span>
-      <span class="badge">⏳ En attente</span>
-    </a></li>
-    <li><a href="/foodboost-02">
-      <span class="name">FoodBoost #02 — Vitrine cinemagraph (Commente MENU)</span>
-      <span class="badge">⏳ En attente</span>
-    </a></li>
-    <li><a href="/foodboost-03">
-      <span class="name">FoodBoost #03 — Burgers &amp; frites (Commente MENU)</span>
-      <span class="badge">⏳ En attente</span>
-    </a></li>
-    <li><a href="/foodboost-04">
-      <span class="name">FoodBoost #04 — Sandwichs &amp; bagels (Commente MENU)</span>
-      <span class="badge">⏳ En attente</span>
-    </a></li>
-    <li><a href="/foodboost-05">
-      <span class="name">FoodBoost #05 — Poke bowls &amp; fruits (Commente MENU)</span>
-      <span class="badge">⏳ En attente</span>
-    </a></li>
-    <li><a href="/foodboost-06">
-      <span class="name">FoodBoost #06 — Snacking créole · format 2 clips 3s</span>
-      <span class="badge">📅 23 juil. 18h</span>
-    </a></li>
-    <li><a href="/foodboost-07">
-      <span class="name">FoodBoost #07 — Pizzas · format 2 clips 3s</span>
-      <span class="badge">📅 25 juil. 18h</span>
-    </a></li>
-    <li><a href="/foodboost-08">
-      <span class="name">FoodBoost #08 — Sushis · format 2 clips 3s</span>
-      <span class="badge">📅 27 juil. 18h</span>
-    </a></li>
-    <li><a href="/foodboost-09">
-      <span class="name">FoodBoost #09 — Petit-déjeuner · format 2 clips 3s</span>
-      <span class="badge">📅 29 juil. 18h</span>
-    </a></li>
-    <li><a href="/foodboost-10">
-      <span class="name">FoodBoost #10 — Desserts · format 2 clips 3s</span>
-      <span class="badge">📅 31 juil. 18h</span>
-    </a></li>
-    <li><a href="/foodboost-11">
-      <span class="name">FoodBoost #11 — Grillades · format 2 clips 3s</span>
-      <span class="badge">📅 2 août 18h</span>
-    </a></li>
-    <li><a href="/foodboost-12">
-      <span class="name">FoodBoost #12 — Boissons · format 2 clips 3s</span>
-      <span class="badge">📅 4 août 18h</span>
-    </a></li>
-  </ul>
+<header>
+  <h1>Prévisualisation <i>Autoboost</i></h1>
+  <span class="compte"><b id="n">297</b> / 297 routes</span>
+</header>
 
-  <footer>
-    Déployé via <a href="https://github.com/tonyPayetDev/kilo-skills/tree/main/coolify-deploy">coolify-deploy</a>
-  </footer>
+<div class="filtres">
+  <input id="q" type="search" placeholder="Filtrer : nom de route, sujet, client…" autocomplete="off">
+  <div class="chips" id="chips">
+    <button class="chip" data-f="" aria-pressed="true">Tout <b>297</b></button>
+    <button class="chip" data-f="Clients" aria-pressed="false">Clients <b>106</b></button>
+    <button class="chip" data-f="Autoboost" aria-pressed="false">Autoboost <b>69</b></button>
+    <button class="chip" data-f="Divers" aria-pressed="false">Divers <b>62</b></button>
+    <button class="chip" data-f="FoodBoost" aria-pressed="false">FoodBoost <b>19</b></button>
+    <button class="chip" data-f="ShortForge" aria-pressed="false">ShortForge <b>10</b></button>
+    <button class="chip" data-f="Journal IA" aria-pressed="false">Journal IA <b>7</b></button>
+    <button class="chip" data-f="BeFresh" aria-pressed="false">BeFresh <b>6</b></button>
+    <button class="chip" data-f="Koytcha" aria-pressed="false">Koytcha <b>6</b></button>
+    <button class="chip" data-f="Prompt reveal" aria-pressed="false">Prompt reveal <b>5</b></button>
+    <button class="chip" data-f="Essais" aria-pressed="false">Essais <b>4</b></button>
+    <button class="chip" data-f="Site Autoboost" aria-pressed="false">Site Autoboost <b>2</b></button>
+    <button class="chip" data-f="Family Arena" aria-pressed="false">Family Arena <b>1</b></button>
+    <button class="chip" data-f="__mp4" aria-pressed="false">Avec vidéo <b>166</b></button>
+  </div>
 </div>
+
+<ul id="liste">
+  <li data-fam="Essais" data-mp4="0" data-k="essai-ego-tom-odell-v2 essai-ego-tom-odell-v2 · même essai, image refaite — zéro accent doré, texte gris clair, musique « au bord des étoiles » essais"><a href="/essai-ego-tom-odell-v2/">
+    <span class="nom">essai-ego-tom-odell-v2 · même essai, image refaite — zéro accent doré, texte gris clair, musique « Au bord des étoiles »<small>/essai-ego-tom-odell-v2</small></span>
+    <span class="droite"><span class="badge">⏳ À valider</span><span class="fam">Essais</span></span>
+  </a></li>
+  <li data-fam="Family Arena" data-mp4="0" data-k="family-arena-portail family-arena-portail family arena"><a href="/family-arena-portail/">
+    <span class="nom">family-arena-portail</span>
+    <span class="droite"><span class="fam">Family Arena</span></span>
+  </a></li>
+  <li data-fam="Journal IA" data-mp4="1" data-k="journal-ia-2026-08-21 journal ia — 2026-08-21 journal ia"><a href="/journal-ia-2026-08-21/">
+    <span class="nom">Journal IA — 2026-08-21<small>/journal-ia-2026-08-21</small></span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ En attente</span><span class="fam">Journal IA</span></span>
+  </a></li>
+  <li data-fam="Journal IA" data-mp4="0" data-k="journal-ia journal-ia journal ia"><a href="/journal-ia/">
+    <span class="nom">journal-ia</span>
+    <span class="droite"><span class="fam">Journal IA</span></span>
+  </a></li>
+  <li data-fam="Autoboost" data-mp4="1" data-k="autoboost-63-zapier-n8n autoboost-63-zapier-n8n autoboost"><a href="/autoboost-63-zapier-n8n/">
+    <span class="nom">autoboost-63-zapier-n8n</span>
+    <span class="droite"><span class="mp4">mp4</span><span class="fam">Autoboost</span></span>
+  </a></li>
+  <li data-fam="Site Autoboost" data-mp4="0" data-k="automatisationboost-matrix automatisationboost-matrix site autoboost"><a href="/automatisationboost-matrix/">
+    <span class="nom">automatisationboost-matrix</span>
+    <span class="droite"><span class="fam">Site Autoboost</span></span>
+  </a></li>
+  <li data-fam="BeFresh" data-mp4="1" data-k="befresh-evenementiel-beatsync befresh-evenementiel-beatsync · befresh — montage beat-sync · coupes sur la grille mesurée à 130,00 bpm (bande de kick), pas sur le bpm annoncé befresh"><a href="/befresh-evenementiel-beatsync/">
+    <span class="nom">befresh-evenementiel-beatsync · BeFresh — montage beat-sync · coupes sur la grille MESURÉE à 130,00 BPM (bande de kick), pas sur le BPM annoncé<small>/befresh-evenementiel-beatsync</small></span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ À valider</span><span class="fam">BeFresh</span></span>
+  </a></li>
+  <li data-fam="BeFresh" data-mp4="1" data-k="befresh-evenementiel-b befresh-evenementiel-b · befresh — montage b « l'objet que tout le monde tient » · 25,9 s, autre ouverture, rafale de 8 plans à 0,7 s au milieu befresh"><a href="/befresh-evenementiel-b/">
+    <span class="nom">befresh-evenementiel-b · BeFresh — montage B « l'objet que tout le monde tient » · 25,9 s, autre ouverture, rafale de 8 plans à 0,7 s au milieu<small>/befresh-evenementiel-b</small></span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ À valider</span><span class="fam">BeFresh</span></span>
+  </a></li>
+  <li data-fam="BeFresh" data-mp4="1" data-k="befresh-evenementiel-a befresh-evenementiel-a · befresh — montage a « le moment que personne n'anticipe » · 30,8 s, découpage chronologique calé sur les silences de la voix befresh"><a href="/befresh-evenementiel-a/">
+    <span class="nom">befresh-evenementiel-a · BeFresh — montage A « le moment que personne n'anticipe » · 30,8 s, découpage chronologique calé sur les silences de la voix<small>/befresh-evenementiel-a</small></span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ À valider</span><span class="fam">BeFresh</span></span>
+  </a></li>
+  <li data-fam="BeFresh" data-mp4="0" data-k="befresh-evenementiel befresh-evenementiel · client befresh — accès événementiel (mariages &amp; réceptions) · comparatif des 3 montages du même rush befresh"><a href="/befresh-evenementiel/">
+    <span class="nom">befresh-evenementiel · client BeFresh — ACCÈS ÉVÉNEMENTIEL (mariages &amp; réceptions) · COMPARATIF des 3 montages du même rush<small>/befresh-evenementiel</small></span>
+    <span class="droite"><span class="badge">⏳ À valider</span><span class="fam">BeFresh</span></span>
+  </a></li>
+  <li data-fam="Site Autoboost" data-mp4="0" data-k="automatisationboost-cinematique automatisationboost-cinematique site autoboost"><a href="/automatisationboost-cinematique/">
+    <span class="nom">automatisationboost-cinematique</span>
+    <span class="droite"><span class="fam">Site Autoboost</span></span>
+  </a></li>
+  <li data-fam="Autoboost" data-mp4="1" data-k="autoboost-top3-split autoboost-top3-split autoboost"><a href="/autoboost-top3-split/">
+    <span class="nom">autoboost-top3-split</span>
+    <span class="droite"><span class="mp4">mp4</span><span class="fam">Autoboost</span></span>
+  </a></li>
+  <li data-fam="Autoboost" data-mp4="1" data-k="autoboost-top3-outils autoboost-top3-outils autoboost"><a href="/autoboost-top3-outils/">
+    <span class="nom">autoboost-top3-outils</span>
+    <span class="droite"><span class="mp4">mp4</span><span class="fam">Autoboost</span></span>
+  </a></li>
+  <li data-fam="Koytcha" data-mp4="0" data-k="koytchaimmo-refonte koytchaimmo-refonte koytcha"><a href="/koytchaimmo-refonte/">
+    <span class="nom">koytchaimmo-refonte</span>
+    <span class="droite"><span class="fam">Koytcha</span></span>
+  </a></li>
+  <li data-fam="Autoboost" data-mp4="1" data-k="autoboost-storytime-terminal autoboost-storytime-terminal autoboost"><a href="/autoboost-storytime-terminal/">
+    <span class="nom">autoboost-storytime-terminal</span>
+    <span class="droite"><span class="mp4">mp4</span><span class="fam">Autoboost</span></span>
+  </a></li>
+  <li data-fam="Divers" data-mp4="1" data-k="tuto-graphify-16-9 tuto-graphify-16-9 divers"><a href="/tuto-graphify-16-9/">
+    <span class="nom">tuto-graphify-16-9</span>
+    <span class="droite"><span class="mp4">mp4</span><span class="fam">Divers</span></span>
+  </a></li>
+  <li data-fam="Essais" data-mp4="1" data-k="essai-ego-pourquoi-ce-format essai-ego-pourquoi-ce-format · essai contemplatif 86 s — « j'ai décidé de manger 30 % moins de viande » → le lien se referme à 38 s puis à 73 s · sans sous-titres, sans cta, musique libre de droits essais"><a href="/essai-ego-pourquoi-ce-format/">
+    <span class="nom">essai-ego-pourquoi-ce-format · essai contemplatif 86 s — « J'ai décidé de manger 30 % moins de viande » → le lien se referme à 38 s puis à 73 s · sans sous-titres, sans CTA, musique libre de droits<small>/essai-ego-pourquoi-ce-format</small></span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ À valider</span><span class="fam">Essais</span></span>
+  </a></li>
+  <li data-fam="Autoboost" data-mp4="0" data-k="autoboost-landing-scroll autoboost-landing-scroll autoboost"><a href="/autoboost-landing-scroll/">
+    <span class="nom">autoboost-landing-scroll</span>
+    <span class="droite"><span class="fam">Autoboost</span></span>
+  </a></li>
+  <li data-fam="Divers" data-mp4="0" data-k="sites-clients sites-clients divers"><a href="/sites-clients/">
+    <span class="nom">sites-clients</span>
+    <span class="droite"><span class="fam">Divers</span></span>
+  </a></li>
+  <li data-fam="Divers" data-mp4="0" data-k="docker-entrypoint.d docker-entrypoint.d divers"><a href="/docker-entrypoint.d/">
+    <span class="nom">docker-entrypoint.d</span>
+    <span class="droite"><span class="fam">Divers</span></span>
+  </a></li>
+  <li data-fam="Clients" data-mp4="0" data-k="client-vtc-reunion-optimisation client-vtc-reunion-optimisation clients"><a href="/client-vtc-reunion-optimisation/">
+    <span class="nom">client-vtc-reunion-optimisation</span>
+    <span class="droite"><span class="fam">Clients</span></span>
+  </a></li>
+  <li data-fam="Clients" data-mp4="0" data-k="client-vtc-reunion-felixtransports client-vtc-reunion-felixtransports clients"><a href="/client-vtc-reunion-felixtransports/">
+    <span class="nom">client-vtc-reunion-felixtransports</span>
+    <span class="droite"><span class="fam">Clients</span></span>
+  </a></li>
+  <li data-fam="Clients" data-mp4="0" data-k="client-villa-fleurie-restaurant-seminaires client-villa-fleurie-restaurant-seminaires clients"><a href="/client-villa-fleurie-restaurant-seminaires/">
+    <span class="nom">client-villa-fleurie-restaurant-seminaires</span>
+    <span class="droite"><span class="fam">Clients</span></span>
+  </a></li>
+  <li data-fam="Clients" data-mp4="0" data-k="client-transcontinents-voyages-ile-maurice client-transcontinents-voyages-ile-maurice clients"><a href="/client-transcontinents-voyages-ile-maurice/">
+    <span class="nom">client-transcontinents-voyages-ile-maurice</span>
+    <span class="droite"><span class="fam">Clients</span></span>
+  </a></li>
+  <li data-fam="Clients" data-mp4="0" data-k="client-ticoeur-store client-ticoeur-store clients"><a href="/client-ticoeur-store/">
+    <span class="nom">client-ticoeur-store</span>
+    <span class="droite"><span class="fam">Clients</span></span>
+  </a></li>
+  <li data-fam="Clients" data-mp4="0" data-k="client-ti-terre-sainte-pizzeria client-ti-terre-sainte-pizzeria clients"><a href="/client-ti-terre-sainte-pizzeria/">
+    <span class="nom">client-ti-terre-sainte-pizzeria</span>
+    <span class="droite"><span class="fam">Clients</span></span>
+  </a></li>
+  <li data-fam="Clients" data-mp4="0" data-k="client-sunlightfm-optimisation-seo client-sunlightfm-optimisation-seo clients"><a href="/client-sunlightfm-optimisation-seo/">
+    <span class="nom">client-sunlightfm-optimisation-seo</span>
+    <span class="droite"><span class="fam">Clients</span></span>
+  </a></li>
+  <li data-fam="Clients" data-mp4="0" data-k="client-sunlight-fm-optimisation-seo client-sunlight-fm-optimisation-seo clients"><a href="/client-sunlight-fm-optimisation-seo/">
+    <span class="nom">client-sunlight-fm-optimisation-seo</span>
+    <span class="droite"><span class="fam">Clients</span></span>
+  </a></li>
+  <li data-fam="Clients" data-mp4="0" data-k="client-sud-hotel-reunion client-sud-hotel-reunion clients"><a href="/client-sud-hotel-reunion/">
+    <span class="nom">client-sud-hotel-reunion</span>
+    <span class="droite"><span class="fam">Clients</span></span>
+  </a></li>
+  <li data-fam="Clients" data-mp4="0" data-k="client-sphb-production-huiles-optimise client-sphb-production-huiles-optimise clients"><a href="/client-sphb-production-huiles-optimise/">
+    <span class="nom">client-sphb-production-huiles-optimise</span>
+    <span class="droite"><span class="fam">Clients</span></span>
+  </a></li>
+  <li data-fam="Clients" data-mp4="0" data-k="client-sphb-production-huiles-optimisation client-sphb-production-huiles-optimisation clients"><a href="/client-sphb-production-huiles-optimisation/">
+    <span class="nom">client-sphb-production-huiles-optimisation</span>
+    <span class="droite"><span class="fam">Clients</span></span>
+  </a></li>
+  <li data-fam="Clients" data-mp4="0" data-k="client-sphb-production-huiles-bourbon client-sphb-production-huiles-bourbon clients"><a href="/client-sphb-production-huiles-bourbon/">
+    <span class="nom">client-sphb-production-huiles-bourbon</span>
+    <span class="droite"><span class="fam">Clients</span></span>
+  </a></li>
+  <li data-fam="Clients" data-mp4="0" data-k="client-smokehouse-reunion client-smokehouse-reunion clients"><a href="/client-smokehouse-reunion/">
+    <span class="nom">client-smokehouse-reunion</span>
+    <span class="droite"><span class="fam">Clients</span></span>
+  </a></li>
+  <li data-fam="Clients" data-mp4="0" data-k="client-sistbi-optimisation-seo client-sistbi-optimisation-seo clients"><a href="/client-sistbi-optimisation-seo/">
+    <span class="nom">client-sistbi-optimisation-seo</span>
+    <span class="droite"><span class="fam">Clients</span></span>
+  </a></li>
+  <li data-fam="Clients" data-mp4="0" data-k="client-seo-optimisation-site client-seo-optimisation-site clients"><a href="/client-seo-optimisation-site/">
+    <span class="nom">client-seo-optimisation-site</span>
+    <span class="droite"><span class="fam">Clients</span></span>
+  </a></li>
+  <li data-fam="Clients" data-mp4="0" data-k="client-salaisons-de-bourbon client-salaisons-de-bourbon clients"><a href="/client-salaisons-de-bourbon/">
+    <span class="nom">client-salaisons-de-bourbon</span>
+    <span class="droite"><span class="fam">Clients</span></span>
+  </a></li>
+  <li data-fam="Clients" data-mp4="0" data-k="client-resto-automatisationboost client-resto-automatisationboost clients"><a href="/client-resto-automatisationboost/">
+    <span class="nom">client-resto-automatisationboost</span>
+    <span class="droite"><span class="fam">Clients</span></span>
+  </a></li>
+  <li data-fam="Clients" data-mp4="0" data-k="client-restaurant-le-bourg-murat client-restaurant-le-bourg-murat clients"><a href="/client-restaurant-le-bourg-murat/">
+    <span class="nom">client-restaurant-le-bourg-murat</span>
+    <span class="droite"><span class="fam">Clients</span></span>
+  </a></li>
+  <li data-fam="Clients" data-mp4="0" data-k="client-restaurant-la-piscine-melun client-restaurant-la-piscine-melun clients"><a href="/client-restaurant-la-piscine-melun/">
+    <span class="nom">client-restaurant-la-piscine-melun</span>
+    <span class="droite"><span class="fam">Clients</span></span>
+  </a></li>
+  <li data-fam="Clients" data-mp4="0" data-k="client-restaurant-la-parenthese-latitude21 client-restaurant-la-parenthese-latitude21 clients"><a href="/client-restaurant-la-parenthese-latitude21/">
+    <span class="nom">client-restaurant-la-parenthese-latitude21</span>
+    <span class="droite"><span class="fam">Clients</span></span>
+  </a></li>
+  <li data-fam="Clients" data-mp4="0" data-k="client-restaurant-la-fabrique-saint-denis client-restaurant-la-fabrique-saint-denis clients"><a href="/client-restaurant-la-fabrique-saint-denis/">
+    <span class="nom">client-restaurant-la-fabrique-saint-denis</span>
+    <span class="droite"><span class="fam">Clients</span></span>
+  </a></li>
+  <li data-fam="Clients" data-mp4="0" data-k="client-restaurant-franco-portugais-coulommiers client-restaurant-franco-portugais-coulommiers clients"><a href="/client-restaurant-franco-portugais-coulommiers/">
+    <span class="nom">client-restaurant-franco-portugais-coulommiers</span>
+    <span class="droite"><span class="fam">Clients</span></span>
+  </a></li>
+  <li data-fam="Clients" data-mp4="0" data-k="client-restaurant-creole-lecaritologue client-restaurant-creole-lecaritologue clients"><a href="/client-restaurant-creole-lecaritologue/">
+    <span class="nom">client-restaurant-creole-lecaritologue</span>
+    <span class="droite"><span class="fam">Clients</span></span>
+  </a></li>
+  <li data-fam="Clients" data-mp4="0" data-k="client-restaurant-bateau-pirate client-restaurant-bateau-pirate clients"><a href="/client-restaurant-bateau-pirate/">
+    <span class="nom">client-restaurant-bateau-pirate</span>
+    <span class="droite"><span class="fam">Clients</span></span>
+  </a></li>
+  <li data-fam="Clients" data-mp4="0" data-k="client-relais-des-cimes client-relais-des-cimes clients"><a href="/client-relais-des-cimes/">
+    <span class="nom">client-relais-des-cimes</span>
+    <span class="droite"><span class="fam">Clients</span></span>
+  </a></li>
+  <li data-fam="Clients" data-mp4="0" data-k="client-reatchy-snackbar-optimisation client-reatchy-snackbar-optimisation clients"><a href="/client-reatchy-snackbar-optimisation/">
+    <span class="nom">client-reatchy-snackbar-optimisation</span>
+    <span class="droite"><span class="fam">Clients</span></span>
+  </a></li>
+  <li data-fam="Clients" data-mp4="0" data-k="client-reatchy-snack-bar client-reatchy-snack-bar clients"><a href="/client-reatchy-snack-bar/">
+    <span class="nom">client-reatchy-snack-bar</span>
+    <span class="droite"><span class="fam">Clients</span></span>
+  </a></li>
+  <li data-fam="Clients" data-mp4="0" data-k="client-plats-frais-surgeles-saint-pierre client-plats-frais-surgeles-saint-pierre clients"><a href="/client-plats-frais-surgeles-saint-pierre/">
+    <span class="nom">client-plats-frais-surgeles-saint-pierre</span>
+    <span class="droite"><span class="fam">Clients</span></span>
+  </a></li>
+  <li data-fam="Clients" data-mp4="0" data-k="client-planet-pizza client-planet-pizza clients"><a href="/client-planet-pizza/">
+    <span class="nom">client-planet-pizza</span>
+    <span class="droite"><span class="fam">Clients</span></span>
+  </a></li>
+  <li data-fam="Clients" data-mp4="0" data-k="client-planb-restaurant-burgers-saint-denis client-planb-restaurant-burgers-saint-denis clients"><a href="/client-planb-restaurant-burgers-saint-denis/">
+    <span class="nom">client-planb-restaurant-burgers-saint-denis</span>
+    <span class="droite"><span class="fam">Clients</span></span>
+  </a></li>
+  <li data-fam="Clients" data-mp4="0" data-k="client-pizza-di-muro-seo-optimisation client-pizza-di-muro-seo-optimisation clients"><a href="/client-pizza-di-muro-seo-optimisation/">
+    <span class="nom">client-pizza-di-muro-seo-optimisation</span>
+    <span class="droite"><span class="fam">Clients</span></span>
+  </a></li>
+  <li data-fam="Clients" data-mp4="0" data-k="client-pizza-di-muro-optimisation-seo client-pizza-di-muro-optimisation-seo clients"><a href="/client-pizza-di-muro-optimisation-seo/">
+    <span class="nom">client-pizza-di-muro-optimisation-seo</span>
+    <span class="droite"><span class="fam">Clients</span></span>
+  </a></li>
+  <li data-fam="Clients" data-mp4="0" data-k="client-pizza-di-muro-optimisation client-pizza-di-muro-optimisation clients"><a href="/client-pizza-di-muro-optimisation/">
+    <span class="nom">client-pizza-di-muro-optimisation</span>
+    <span class="droite"><span class="fam">Clients</span></span>
+  </a></li>
+  <li data-fam="Clients" data-mp4="0" data-k="client-pizza-club-saint-pierre client-pizza-club-saint-pierre clients"><a href="/client-pizza-club-saint-pierre/">
+    <span class="nom">client-pizza-club-saint-pierre</span>
+    <span class="droite"><span class="fam">Clients</span></span>
+  </a></li>
+  <li data-fam="Clients" data-mp4="0" data-k="client-picard-moulin-la-possession client-picard-moulin-la-possession clients"><a href="/client-picard-moulin-la-possession/">
+    <span class="nom">client-picard-moulin-la-possession</span>
+    <span class="droite"><span class="fam">Clients</span></span>
+  </a></li>
+  <li data-fam="Clients" data-mp4="0" data-k="client-photographe-immobilier-reunion client-photographe-immobilier-reunion clients"><a href="/client-photographe-immobilier-reunion/">
+    <span class="nom">client-photographe-immobilier-reunion</span>
+    <span class="droite"><span class="fam">Clients</span></span>
+  </a></li>
+  <li data-fam="Clients" data-mp4="0" data-k="client-peche-au-gros-reunion client-peche-au-gros-reunion clients"><a href="/client-peche-au-gros-reunion/">
+    <span class="nom">client-peche-au-gros-reunion</span>
+    <span class="droite"><span class="fam">Clients</span></span>
+  </a></li>
+  <li data-fam="Clients" data-mp4="0" data-k="client-osmose-saint-pierre client-osmose-saint-pierre clients"><a href="/client-osmose-saint-pierre/">
+    <span class="nom">client-osmose-saint-pierre</span>
+    <span class="droite"><span class="fam">Clients</span></span>
+  </a></li>
+  <li data-fam="Clients" data-mp4="0" data-k="client-optimisation-site-seo client-optimisation-site-seo clients"><a href="/client-optimisation-site-seo/">
+    <span class="nom">client-optimisation-site-seo</span>
+    <span class="droite"><span class="fam">Clients</span></span>
+  </a></li>
+  <li data-fam="Clients" data-mp4="0" data-k="client-optimisation-seo-site client-optimisation-seo-site clients"><a href="/client-optimisation-seo-site/">
+    <span class="nom">client-optimisation-seo-site</span>
+    <span class="droite"><span class="fam">Clients</span></span>
+  </a></li>
+  <li data-fam="Clients" data-mp4="0" data-k="client-mrservices-optimized client-mrservices-optimized clients"><a href="/client-mrservices-optimized/">
+    <span class="nom">client-mrservices-optimized</span>
+    <span class="droite"><span class="fam">Clients</span></span>
+  </a></li>
+  <li data-fam="Clients" data-mp4="0" data-k="client-mio-pizza-la-reunion client-mio-pizza-la-reunion clients"><a href="/client-mio-pizza-la-reunion/">
+    <span class="nom">client-mio-pizza-la-reunion</span>
+    <span class="droite"><span class="fam">Clients</span></span>
+  </a></li>
+  <li data-fam="Clients" data-mp4="0" data-k="client-metisse-reception-saint-pierre client-metisse-reception-saint-pierre clients"><a href="/client-metisse-reception-saint-pierre/">
+    <span class="nom">client-metisse-reception-saint-pierre</span>
+    <span class="droite"><span class="fam">Clients</span></span>
+  </a></li>
+  <li data-fam="Clients" data-mp4="0" data-k="client-mediterraneo-restaurant-italien-saint-denis client-mediterraneo-restaurant-italien-saint-denis clients"><a href="/client-mediterraneo-restaurant-italien-saint-denis/">
+    <span class="nom">client-mediterraneo-restaurant-italien-saint-denis</span>
+    <span class="droite"><span class="fam">Clients</span></span>
+  </a></li>
+  <li data-fam="Clients" data-mp4="0" data-k="client-marie-blachere-possession client-marie-blachere-possession clients"><a href="/client-marie-blachere-possession/">
+    <span class="nom">client-marie-blachere-possession</span>
+    <span class="droite"><span class="fam">Clients</span></span>
+  </a></li>
+  <li data-fam="Clients" data-mp4="0" data-k="client-mamzelle-pizza-ile-reunion client-mamzelle-pizza-ile-reunion clients"><a href="/client-mamzelle-pizza-ile-reunion/">
+    <span class="nom">client-mamzelle-pizza-ile-reunion</span>
+    <span class="droite"><span class="fam">Clients</span></span>
+  </a></li>
+  <li data-fam="Clients" data-mp4="0" data-k="client-mamzelle-pizza-ile-de-la-reunion client-mamzelle-pizza-ile-de-la-reunion clients"><a href="/client-mamzelle-pizza-ile-de-la-reunion/">
+    <span class="nom">client-mamzelle-pizza-ile-de-la-reunion</span>
+    <span class="droite"><span class="fam">Clients</span></span>
+  </a></li>
+  <li data-fam="Clients" data-mp4="0" data-k="client-mamabetty-fr client-mamabetty-fr clients"><a href="/client-mamabetty-fr/">
+    <span class="nom">client-mamabetty-fr</span>
+    <span class="droite"><span class="fam">Clients</span></span>
+  </a></li>
+  <li data-fam="Clients" data-mp4="0" data-k="client-limperiale-kazumi-re client-limperiale-kazumi-re clients"><a href="/client-limperiale-kazumi-re/">
+    <span class="nom">client-limperiale-kazumi-re</span>
+    <span class="droite"><span class="fam">Clients</span></span>
+  </a></li>
+  <li data-fam="Clients" data-mp4="0" data-k="client-lespetitesmainsdelisa-optimized client-lespetitesmainsdelisa-optimized clients"><a href="/client-lespetitesmainsdelisa-optimized/">
+    <span class="nom">client-lespetitesmainsdelisa-optimized</span>
+    <span class="droite"><span class="fam">Clients</span></span>
+  </a></li>
+  <li data-fam="Clients" data-mp4="0" data-k="client-le786-halal-commande-en-ligne client-le786-halal-commande-en-ligne clients"><a href="/client-le786-halal-commande-en-ligne/">
+    <span class="nom">client-le786-halal-commande-en-ligne</span>
+    <span class="droite"><span class="fam">Clients</span></span>
+  </a></li>
+  <li data-fam="Clients" data-mp4="0" data-k="client-le-somet-by-nono client-le-somet-by-nono clients"><a href="/client-le-somet-by-nono/">
+    <span class="nom">client-le-somet-by-nono</span>
+    <span class="droite"><span class="fam">Clients</span></span>
+  </a></li>
+  <li data-fam="Clients" data-mp4="0" data-k="client-le-majeur-nancy client-le-majeur-nancy clients"><a href="/client-le-majeur-nancy/">
+    <span class="nom">client-le-majeur-nancy</span>
+    <span class="droite"><span class="fam">Clients</span></span>
+  </a></li>
+  <li data-fam="Clients" data-mp4="0" data-k="client-le-glacier-de-marie-b client-le-glacier-de-marie-b clients"><a href="/client-le-glacier-de-marie-b/">
+    <span class="nom">client-le-glacier-de-marie-b</span>
+    <span class="droite"><span class="fam">Clients</span></span>
+  </a></li>
+  <li data-fam="Clients" data-mp4="0" data-k="client-le-comptoir-saint-michel-nancy client-le-comptoir-saint-michel-nancy clients"><a href="/client-le-comptoir-saint-michel-nancy/">
+    <span class="nom">client-le-comptoir-saint-michel-nancy</span>
+    <span class="droite"><span class="fam">Clients</span></span>
+  </a></li>
+  <li data-fam="Clients" data-mp4="0" data-k="client-le-bonbon-de-pain client-le-bonbon-de-pain clients"><a href="/client-le-bonbon-de-pain/">
+    <span class="nom">client-le-bonbon-de-pain</span>
+    <span class="droite"><span class="fam">Clients</span></span>
+  </a></li>
+  <li data-fam="Clients" data-mp4="0" data-k="client-le-bao-restaurant-saint-pierre-974 client-le-bao-restaurant-saint-pierre-974 clients"><a href="/client-le-bao-restaurant-saint-pierre-974/">
+    <span class="nom">client-le-bao-restaurant-saint-pierre-974</span>
+    <span class="droite"><span class="fam">Clients</span></span>
+  </a></li>
+  <li data-fam="Clients" data-mp4="0" data-k="client-latelier-traiteur-reunion client-latelier-traiteur-reunion clients"><a href="/client-latelier-traiteur-reunion/">
+    <span class="nom">client-latelier-traiteur-reunion</span>
+    <span class="droite"><span class="fam">Clients</span></span>
+  </a></li>
+  <li data-fam="Clients" data-mp4="0" data-k="client-latelier-traiteur-la-reunion client-latelier-traiteur-la-reunion clients"><a href="/client-latelier-traiteur-la-reunion/">
+    <span class="nom">client-latelier-traiteur-la-reunion</span>
+    <span class="droite"><span class="fam">Clients</span></span>
+  </a></li>
+  <li data-fam="Clients" data-mp4="0" data-k="client-latelier-de-ben-optimisation-seo client-latelier-de-ben-optimisation-seo clients"><a href="/client-latelier-de-ben-optimisation-seo/">
+    <span class="nom">client-latelier-de-ben-optimisation-seo</span>
+    <span class="droite"><span class="fam">Clients</span></span>
+  </a></li>
+  <li data-fam="Clients" data-mp4="0" data-k="client-lartabiata-restaurant-fr client-lartabiata-restaurant-fr clients"><a href="/client-lartabiata-restaurant-fr/">
+    <span class="nom">client-lartabiata-restaurant-fr</span>
+    <span class="droite"><span class="fam">Clients</span></span>
+  </a></li>
+  <li data-fam="Clients" data-mp4="0" data-k="client-lagare-brasserie-optimisation-seo client-lagare-brasserie-optimisation-seo clients"><a href="/client-lagare-brasserie-optimisation-seo/">
+    <span class="nom">client-lagare-brasserie-optimisation-seo</span>
+    <span class="droite"><span class="fam">Clients</span></span>
+  </a></li>
+  <li data-fam="Clients" data-mp4="0" data-k="client-la-kantine-traiteur-oriental client-la-kantine-traiteur-oriental clients"><a href="/client-la-kantine-traiteur-oriental/">
+    <span class="nom">client-la-kantine-traiteur-oriental</span>
+    <span class="droite"><span class="fam">Clients</span></span>
+  </a></li>
+  <li data-fam="Clients" data-mp4="0" data-k="client-la-casa-blanca client-la-casa-blanca clients"><a href="/client-la-casa-blanca/">
+    <span class="nom">client-la-casa-blanca</span>
+    <span class="droite"><span class="fam">Clients</span></span>
+  </a></li>
+  <li data-fam="Clients" data-mp4="0" data-k="client-l-andalouse-saint-joseph client-l-andalouse-saint-joseph clients"><a href="/client-l-andalouse-saint-joseph/">
+    <span class="nom">client-l-andalouse-saint-joseph</span>
+    <span class="droite"><span class="fam">Clients</span></span>
+  </a></li>
+  <li data-fam="Clients" data-mp4="0" data-k="client-koytcha-conseil-landing-premium client-koytcha-conseil-landing-premium clients"><a href="/client-koytcha-conseil-landing-premium/">
+    <span class="nom">client-koytcha-conseil-landing-premium</span>
+    <span class="droite"><span class="fam">Clients</span></span>
+  </a></li>
+  <li data-fam="Clients" data-mp4="0" data-k="client-kmila-pizza-reunion client-kmila-pizza-reunion clients"><a href="/client-kmila-pizza-reunion/">
+    <span class="nom">client-kmila-pizza-reunion</span>
+    <span class="droite"><span class="fam">Clients</span></span>
+  </a></li>
+  <li data-fam="Clients" data-mp4="0" data-k="client-hotel-austral-saint-denis client-hotel-austral-saint-denis clients"><a href="/client-hotel-austral-saint-denis/">
+    <span class="nom">client-hotel-austral-saint-denis</span>
+    <span class="droite"><span class="fam">Clients</span></span>
+  </a></li>
+  <li data-fam="Clients" data-mp4="0" data-k="client-guinguette-du-grand-morin-eatbu-com client-guinguette-du-grand-morin-eatbu-com clients"><a href="/client-guinguette-du-grand-morin-eatbu-com/">
+    <span class="nom">client-guinguette-du-grand-morin-eatbu-com</span>
+    <span class="droite"><span class="fam">Clients</span></span>
+  </a></li>
+  <li data-fam="Clients" data-mp4="0" data-k="client-guide-peche-reunion-ttfishing client-guide-peche-reunion-ttfishing clients"><a href="/client-guide-peche-reunion-ttfishing/">
+    <span class="nom">client-guide-peche-reunion-ttfishing</span>
+    <span class="droite"><span class="fam">Clients</span></span>
+  </a></li>
+  <li data-fam="Clients" data-mp4="0" data-k="client-guide-peche-mouche-reunion-verdon-alpes client-guide-peche-mouche-reunion-verdon-alpes clients"><a href="/client-guide-peche-mouche-reunion-verdon-alpes/">
+    <span class="nom">client-guide-peche-mouche-reunion-verdon-alpes</span>
+    <span class="droite"><span class="fam">Clients</span></span>
+  </a></li>
+  <li data-fam="Clients" data-mp4="0" data-k="client-giulietta-pizzeria-saint-pierre client-giulietta-pizzeria-saint-pierre clients"><a href="/client-giulietta-pizzeria-saint-pierre/">
+    <span class="nom">client-giulietta-pizzeria-saint-pierre</span>
+    <span class="droite"><span class="fam">Clients</span></span>
+  </a></li>
+  <li data-fam="Clients" data-mp4="0" data-k="client-gite-matilona-sainte-rose client-gite-matilona-sainte-rose clients"><a href="/client-gite-matilona-sainte-rose/">
+    <span class="nom">client-gite-matilona-sainte-rose</span>
+    <span class="droite"><span class="fam">Clients</span></span>
+  </a></li>
+  <li data-fam="Clients" data-mp4="0" data-k="client-gep-sante-reunion client-gep-sante-reunion clients"><a href="/client-gep-sante-reunion/">
+    <span class="nom">client-gep-sante-reunion</span>
+    <span class="droite"><span class="fam">Clients</span></span>
+  </a></li>
+  <li data-fam="Clients" data-mp4="0" data-k="client-freedom-la-reunion-actualites client-freedom-la-reunion-actualites clients"><a href="/client-freedom-la-reunion-actualites/">
+    <span class="nom">client-freedom-la-reunion-actualites</span>
+    <span class="droite"><span class="fam">Clients</span></span>
+  </a></li>
+  <li data-fam="Clients" data-mp4="0" data-k="client-engen-reunion-optimisation-seo client-engen-reunion-optimisation-seo clients"><a href="/client-engen-reunion-optimisation-seo/">
+    <span class="nom">client-engen-reunion-optimisation-seo</span>
+    <span class="droite"><span class="fam">Clients</span></span>
+  </a></li>
+  <li data-fam="Clients" data-mp4="0" data-k="client-educateur-canin-la-reunion client-educateur-canin-la-reunion clients"><a href="/client-educateur-canin-la-reunion/">
+    <span class="nom">client-educateur-canin-la-reunion</span>
+    <span class="droite"><span class="fam">Clients</span></span>
+  </a></li>
+  <li data-fam="Clients" data-mp4="0" data-k="client-dan-cake-patisserie client-dan-cake-patisserie clients"><a href="/client-dan-cake-patisserie/">
+    <span class="nom">client-dan-cake-patisserie</span>
+    <span class="droite"><span class="fam">Clients</span></span>
+  </a></li>
+  <li data-fam="Clients" data-mp4="0" data-k="client-contact-le-gourmand client-contact-le-gourmand clients"><a href="/client-contact-le-gourmand/">
+    <span class="nom">client-contact-le-gourmand</span>
+    <span class="droite"><span class="fam">Clients</span></span>
+  </a></li>
+  <li data-fam="Clients" data-mp4="0" data-k="client-club-cafe-la-reunion client-club-cafe-la-reunion clients"><a href="/client-club-cafe-la-reunion/">
+    <span class="nom">client-club-cafe-la-reunion</span>
+    <span class="droite"><span class="fam">Clients</span></span>
+  </a></li>
+  <li data-fam="Clients" data-mp4="0" data-k="client-clos-de-la-riviere-seo-optimisation client-clos-de-la-riviere-seo-optimisation clients"><a href="/client-clos-de-la-riviere-seo-optimisation/">
+    <span class="nom">client-clos-de-la-riviere-seo-optimisation</span>
+    <span class="droite"><span class="fam">Clients</span></span>
+  </a></li>
+  <li data-fam="Clients" data-mp4="0" data-k="client-clicknvan-location-vans-campingcars-pro client-clicknvan-location-vans-campingcars-pro clients"><a href="/client-clicknvan-location-vans-campingcars-pro/">
+    <span class="nom">client-clicknvan-location-vans-campingcars-pro</span>
+    <span class="droite"><span class="fam">Clients</span></span>
+  </a></li>
+  <li data-fam="Clients" data-mp4="0" data-k="client-chemises-homme client-chemises-homme clients"><a href="/client-chemises-homme/">
+    <span class="nom">client-chemises-homme</span>
+    <span class="droite"><span class="fam">Clients</span></span>
+  </a></li>
+  <li data-fam="Clients" data-mp4="0" data-k="client-centre-sante-sport-performance-la-reunion client-centre-sante-sport-performance-la-reunion clients"><a href="/client-centre-sante-sport-performance-la-reunion/">
+    <span class="nom">client-centre-sante-sport-performance-la-reunion</span>
+    <span class="droite"><span class="fam">Clients</span></span>
+  </a></li>
+  <li data-fam="Clients" data-mp4="0" data-k="client-centre-hospitalier-ouest-reunion client-centre-hospitalier-ouest-reunion clients"><a href="/client-centre-hospitalier-ouest-reunion/">
+    <span class="nom">client-centre-hospitalier-ouest-reunion</span>
+    <span class="droite"><span class="fam">Clients</span></span>
+  </a></li>
+  <li data-fam="Clients" data-mp4="0" data-k="client-bygladcafe-optimisation-seo client-bygladcafe-optimisation-seo clients"><a href="/client-bygladcafe-optimisation-seo/">
+    <span class="nom">client-bygladcafe-optimisation-seo</span>
+    <span class="droite"><span class="fam">Clients</span></span>
+  </a></li>
+  <li data-fam="Clients" data-mp4="0" data-k="client-boutique-restaurant-coulee77-com client-boutique-restaurant-coulee77-com clients"><a href="/client-boutique-restaurant-coulee77-com/">
+    <span class="nom">client-boutique-restaurant-coulee77-com</span>
+    <span class="droite"><span class="fam">Clients</span></span>
+  </a></li>
+  <li data-fam="Clients" data-mp4="0" data-k="client-boulangerie-le-mamita client-boulangerie-le-mamita clients"><a href="/client-boulangerie-le-mamita/">
+    <span class="nom">client-boulangerie-le-mamita</span>
+    <span class="droite"><span class="fam">Clients</span></span>
+  </a></li>
+  <li data-fam="Clients" data-mp4="0" data-k="client-blue-peche-au-gros client-blue-peche-au-gros clients"><a href="/client-blue-peche-au-gros/">
+    <span class="nom">client-blue-peche-au-gros</span>
+    <span class="droite"><span class="fam">Clients</span></span>
+  </a></li>
+  <li data-fam="Clients" data-mp4="0" data-k="client-bigmat-brico400-quincaillerie-tampon client-bigmat-brico400-quincaillerie-tampon clients"><a href="/client-bigmat-brico400-quincaillerie-tampon/">
+    <span class="nom">client-bigmat-brico400-quincaillerie-tampon</span>
+    <span class="droite"><span class="fam">Clients</span></span>
+  </a></li>
+  <li data-fam="Clients" data-mp4="0" data-k="client-beausejour-sportclub client-beausejour-sportclub clients"><a href="/client-beausejour-sportclub/">
+    <span class="nom">client-beausejour-sportclub</span>
+    <span class="droite"><span class="fam">Clients</span></span>
+  </a></li>
+  <li data-fam="Clients" data-mp4="0" data-k="client-bateau-pirate-restaurant client-bateau-pirate-restaurant clients"><a href="/client-bateau-pirate-restaurant/">
+    <span class="nom">client-bateau-pirate-restaurant</span>
+    <span class="droite"><span class="fam">Clients</span></span>
+  </a></li>
+  <li data-fam="Clients" data-mp4="0" data-k="client-au-comptoir-du-potager client-au-comptoir-du-potager clients"><a href="/client-au-comptoir-du-potager/">
+    <span class="nom">client-au-comptoir-du-potager</span>
+    <span class="droite"><span class="fam">Clients</span></span>
+  </a></li>
+  <li data-fam="Clients" data-mp4="0" data-k="client-arts-de-sante-formation client-arts-de-sante-formation clients"><a href="/client-arts-de-sante-formation/">
+    <span class="nom">client-arts-de-sante-formation</span>
+    <span class="droite"><span class="fam">Clients</span></span>
+  </a></li>
+  <li data-fam="Divers" data-mp4="0" data-k="feed-demo-premium feed-demo-premium divers"><a href="/feed-demo-premium/">
+    <span class="nom">feed-demo-premium</span>
+    <span class="droite"><span class="fam">Divers</span></span>
+  </a></li>
+  <li data-fam="Journal IA" data-mp4="1" data-k="journal-ia-2026-08-20 journal ia — 2026-08-20 journal ia"><a href="/journal-ia-2026-08-20/">
+    <span class="nom">Journal IA — 2026-08-20<small>/journal-ia-2026-08-20</small></span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ En attente</span><span class="fam">Journal IA</span></span>
+  </a></li>
+  <li data-fam="Autoboost" data-mp4="1" data-k="autoboost-formation-dechirure-v2 formation claude code · la déchirure v2 — la voix n'entre qu'à 6,000 s (piste voix à −inf db de 0,000 à 5,999) : les 6 premières secondes sont portées par le seul audio natif d'action, renforcé (crêtes −3,0 dbfs) · nouveau cta gaté « commente formation + sois abonné » — la porte existe (blotato 1954 ig / 1955 fb, actives) · comparatif v1/v2 sur la page autoboost"><a href="/autoboost-formation-dechirure-v2/">
+    <span class="nom">Formation Claude Code · la déchirure v2 — la voix n'entre qu'à 6,000 s (piste voix à −inf dB de 0,000 à 5,999) : les 6 premières secondes sont portées par le SEUL audio natif d'action, renforcé (crêtes −3,0 dBFS) · nouveau CTA gaté « commente FORMATION + sois abonné » — la porte existe (Blotato 1954 IG / 1955 FB, actives) · comparatif v1/v2 sur la page<small>/autoboost-formation-dechirure-v2</small><small>32,4s · F0 114–137 Hz · −16,2 LUFS / −2,8 dBTP · silence final 3,65 s à −inf · lèvres PASS (0 image fautive) · 0 crédit Higgsfield</small></span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ À valider</span><span class="fam">Autoboost</span></span>
+  </a></li>
+  <li data-fam="Autoboost" data-mp4="1" data-k="autoboost-61-debunk-10k-freelance autoboost-61-debunk-10k-freelance · debunk « 10k€/mois en freelance grâce à l'ia » — hook « c'est du bullshit » (carte promesse-virale + tampon bullshit), la vérité (l'ia remplace tes heures, pas tes clients), le vrai système n8n (prospection → relances → devis), résultat (+ temps facturable), cta levier · voix clonée archiviste · style néon autoboost seedance autoboost"><a href="/autoboost-61-debunk-10k-freelance/">
+    <span class="nom">autoboost-61-debunk-10k-freelance · Debunk « 10k€/mois en freelance grâce à l'IA » — hook « c'est du bullshit » (carte promesse-virale + tampon BULLSHIT), la vérité (l'IA remplace tes heures, pas tes clients), le vrai système n8n (prospection → relances → devis), résultat (+ temps facturable), CTA LEVIER · voix clonée archiviste · style néon Autoboost seedance<small>/autoboost-61-debunk-10k-freelance</small><small>~31,0s · 1080×1920 30 fps · coupes sur silences −40 dB · captions 27 px mot-à-mot · BGM flowers_horror 0.05 + SFX palette v1 · CTA LEVIER</small></span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">🟡 En attente validation</span><span class="fam">Autoboost</span></span>
+  </a></li>
+  <li data-fam="Autoboost" data-mp4="1" data-k="autoboost-matrix-revelation matrix · la révélation — clip seedance 9:16 natif (aucun recadrage), combat contre les avatars tiktok/youtube/instagram puis raccord par le projectile vers le bureau · voix clonée aussi sur l'accroche « je vais te faire découvrir la matrix », calée sur la fenêtre de lèvres mesurée (8,458 → 9,833 s, marge 7 ms) et parole seedance supprimée (−inf db) · audio natif d'action conservé, mesuré exploitable (19 db de dynamique, pics à −14 db) donc palette sfx v2 non utilisée et non modifiée · seule coupe : 0,54 s en tête de combat, où tony est de dos · cta chaos autoboost"><a href="/autoboost-matrix-revelation/">
+    <span class="nom">Matrix · la révélation — clip Seedance 9:16 NATIF (aucun recadrage), combat contre les avatars TikTok/YouTube/Instagram puis raccord par le projectile vers le bureau · voix clonée AUSSI sur l'accroche « Je vais te faire découvrir la Matrix », calée sur la fenêtre de lèvres MESURÉE (8,458 → 9,833 s, marge 7 ms) et parole Seedance supprimée (−inf dB) · audio natif d'action CONSERVÉ, mesuré exploitable (19 dB de dynamique, pics à −14 dB) donc palette SFX v2 NON utilisée et NON modifiée · seule coupe : 0,54 s en tête de combat, où Tony est de dos · CTA CHAOS<small>/autoboost-matrix-revelation</small><small>33,900s · 1080×1920 30 fps · F0 120,3 Hz sur l'accroche ET sur le corps (clone, pas le repli OpenAI ~200 Hz) · −15,6 LUFS / −3,0 dBTP · lèvres PASS (0 image fautive / 11 plans, clip Seedance inclus dans la porte) · ⚠️ porte CHAOS sur Instagram SEULEMENT, absente de Facebook, et sensible à la casse · 0 crédit Higgsfield</small></span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ À valider</span><span class="fam">Autoboost</span></span>
+  </a></li>
+  <li data-fam="Autoboost" data-mp4="1" data-k="autoboost-formation-dechirure formation claude code · la déchirure — clip seedance 16:9 posé en 9:16 (letterbox pleine largeur + fond flou tiré du clip, aucun recadrage vertical : la déchirure reste entière) · audio natif d'action conservé (crête −5,2 dbfs sur la déchirure) et parole seedance coupée, remplacée par la voix clonée · fin sur un impact puis silence numérique total de 26,0 s à 29,6 s · cta sans mot-clé : aucune porte blotato ne pointe vers la formation, donc lien en bio et aucune promesse d'envoi autoboost"><a href="/autoboost-formation-dechirure/">
+    <span class="nom">Formation Claude Code · la déchirure — clip Seedance 16:9 posé en 9:16 (letterbox pleine largeur + fond flou tiré du clip, aucun recadrage vertical : la déchirure reste entière) · audio natif d'action CONSERVÉ (crête −5,2 dBFS sur la déchirure) et parole Seedance coupée, remplacée par la voix clonée · fin sur un impact puis SILENCE NUMÉRIQUE TOTAL de 26,0 s à 29,6 s · CTA sans mot-clé : aucune porte Blotato ne pointe vers la formation, donc lien en bio et aucune promesse d'envoi<small>/autoboost-formation-dechirure</small><small>29,6s · 1080×1920 30 fps · F0 114–137 Hz (clone, pas le repli OpenAI ~200 Hz) · −15,9 LUFS / −2,9 dBTP · silence final −inf mesuré · lèvres PASS (0 image fautive / 4 plans avatar) · 0 crédit Higgsfield</small></span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ À valider</span><span class="fam">Autoboost</span></span>
+  </a></li>
+  <li data-fam="Divers" data-mp4="1" data-k="videoboost-dialogue-organique videoboost-dialogue-organique · le meme montage sans le prix — comparatif des deux versions cote a cote · cta videoboost (porte auto-dm active ig 1270 / fb 1065) divers"><a href="/videoboost-dialogue-organique/">
+    <span class="nom">videoboost-dialogue-organique · Le meme montage SANS le prix — comparatif des deux versions cote a cote · CTA VIDEOBOOST (porte auto-DM active IG 1270 / FB 1065)<small>/videoboost-dialogue-organique</small><small>51,1s · 9:16 · version ORGANIQUE (TikTok/IG/FB/LinkedIn/YouTube) · 2 segments de voix clonee regeneres, le reste identique au bit pres · F0 117-120 Hz · lèvres PASS · 0 €</small></span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ À valider</span><span class="fam">Divers</span></span>
+  </a></li>
+  <li data-fam="Autoboost" data-mp4="1" data-k="autoboost-matrix-formation-music autoboost-matrix-formation-music · musique + sfx — le plan bureau figé est retiré (retour au hook 4,27 s), l'action d'ouverture reçoit 8 impacts de la palette v2 (sons d’action physique), et un lit électro sombre « cyberpunk city » (mixkit, licence commerciale) court sur toute la vidéo, son drop calé sur le flash du raccord · comparatif des 4 versions sur la page autoboost"><a href="/autoboost-matrix-formation-music/">
+    <span class="nom">autoboost-matrix-formation-music · MUSIQUE + SFX — le plan bureau figé est retiré (retour au hook 4,27 s), l'action d'ouverture reçoit 8 impacts de la palette v2 (sons d’action physique), et un lit électro sombre « Cyberpunk City » (Mixkit, licence commerciale) court sur toute la vidéo, son drop calé sur le flash du raccord · comparatif des 4 versions sur la page<small>/autoboost-matrix-formation-music</small><small>60,6s · musique −26 LUFS duckée −5,1 dB sous la voix · −16,1 LUFS / −3,2 dBTP · F0 121,2 Hz · lèvres PASS · flux vidéo bit à bit identique (corps jamais ré-encodé) · 0 €</small></span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ À valider</span><span class="fam">Autoboost</span></span>
+  </a></li>
+  <li data-fam="Autoboost" data-mp4="1" data-k="autoboost-tuto-claude-code-mcp-v4 autoboost-tuto-claude-code-mcp-v4 · 5 s de moteur + plus aucune url réelle — la voix n'entre qu'à 5,000 s (v3 : 2,000 s), obtenu en repartant le clip à ss=0,00 au lieu de 1,90 (+1,900 s de hook seulement) · bruitage étoffé : montée en régime en 3 reprises, grondement 35–120 hz, ruissellement de piste synthétique · les captures d'écran sont re-générées (pas floutées) : n7n.automatisation… → n8n.exemple.com aux 3 endroits, chemin de projet de la tui → ~/projet-demo · comparatif v1/v2/v3/v4 sur la page · charte typo.md inchangée autoboost"><a href="/autoboost-tuto-claude-code-mcp-v4/">
+    <span class="nom">autoboost-tuto-claude-code-mcp-v4 · 5 S DE MOTEUR + PLUS AUCUNE URL RÉELLE — la voix n'entre qu'à 5,000 s (v3 : 2,000 s), obtenu en repartant le clip à ss=0,00 au lieu de 1,90 (+1,900 s de hook seulement) · bruitage étoffé : montée en régime en 3 reprises, grondement 35–120 Hz, ruissellement de piste synthétique · les captures d'écran sont RE-GÉNÉRÉES (pas floutées) : n7n.automatisation… → n8n.exemple.com aux 3 endroits, chemin de projet de la TUI → ~/projet-demo · comparatif v1/v2/v3/v4 sur la page · charte TYPO.md inchangée<small>/autoboost-tuto-claude-code-mcp-v4</small><small>34,3s · voix clonée démarre à 5,000 s (silence −91 dB avant, musique muette jusqu'à 4,50 s) · voix native résiduelle −28,5 dB sous la parole en bande 700–4000 Hz, mod. syllabique 0,129 vs 0,554 · F0 124,0 Hz · −16,7 LUFS / −3,7 dBTP · lèvres PASS (0 image fautive / 8 plans) · 0 €</small></span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ À valider</span><span class="fam">Autoboost</span></span>
+  </a></li>
+  <li data-fam="Journal IA" data-mp4="1" data-k="journal-ia-2026-08-19 journal ia — 2026-08-19 journal ia"><a href="/journal-ia-2026-08-19/">
+    <span class="nom">Journal IA — 2026-08-19<small>/journal-ia-2026-08-19</small></span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ En attente</span><span class="fam">Journal IA</span></span>
+  </a></li>
+  <li data-fam="Autoboost" data-mp4="1" data-k="autoboost-tuto-claude-code-mcp-v3 autoboost-tuto-claude-code-mcp-v3 · le moteur revient — le son du buggy est réintroduit (v1/v2 coupaient tout l'audio natif) mais la voix native de higgsfield n'entre jamais : le lit moteur est reconstruit uniquement à partir des fenêtres mesurées sans parole, plus un passe-bas 400 hz · 2 premières secondes sans voix off ni musique, juste l'accélération · nouveau hook « si tu regardes ça, c'est pas moi qui conduis — c'est le code » · comparatif v1/v2/v3 sur la page · charte typo.md inchangée autoboost"><a href="/autoboost-tuto-claude-code-mcp-v3/">
+    <span class="nom">autoboost-tuto-claude-code-mcp-v3 · LE MOTEUR REVIENT — le son du buggy est réintroduit (v1/v2 coupaient tout l'audio natif) mais la voix native de Higgsfield n'entre jamais : le lit moteur est reconstruit uniquement à partir des fenêtres mesurées sans parole, plus un passe-bas 400 Hz · 2 premières secondes sans voix off ni musique, juste l'accélération · nouveau hook « si tu regardes ça, c'est pas moi qui conduis — c'est le code » · comparatif v1/v2/v3 sur la page · charte TYPO.md inchangée<small>/autoboost-tuto-claude-code-mcp-v3</small><small>33,4s · voix clonée démarre à 2,000 s (silence −91 dB avant) · voix native résiduelle −28,8 dB sous la parole en bande 700–4000 Hz, mod. syllabique 0,129 vs 0,554 · F0 124,0 Hz · −16,3 LUFS / −3,7 dBTP · lèvres PASS (0 image fautive / 8 plans) · 0 €</small></span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ À valider</span><span class="fam">Autoboost</span></span>
+  </a></li>
+  <li data-fam="Divers" data-mp4="0" data-k="concept-vr-contrechamp concept-vr-contrechamp divers"><a href="/concept-vr-contrechamp/">
+    <span class="nom">concept-vr-contrechamp</span>
+    <span class="droite"><span class="fam">Divers</span></span>
+  </a></li>
+  <li data-fam="Autoboost" data-mp4="1" data-k="autoboost-tuto-claude-code-mcp-v2 autoboost-tuto-claude-code-mcp-v2 · hook allongé — le plan où tony est plein cadre face objectif passe de 1,43 s à 2,86 s et porte 2 lignes de voix ajoutées ; en v1 la coupe vers le terminal tombait 0,05 s après « regarde » · captures accélérées (×1,15 / ×1,03 / ×1,17), aucun contenu perdu · comparatif v1/v2 sur la page · charte typo.md inchangée autoboost"><a href="/autoboost-tuto-claude-code-mcp-v2/">
+    <span class="nom">autoboost-tuto-claude-code-mcp-v2 · HOOK ALLONGÉ — le plan où Tony est plein cadre face objectif passe de 1,43 s à 2,86 s et porte 2 lignes de voix ajoutées ; en v1 la coupe vers le terminal tombait 0,05 s après « Regarde » · captures accélérées (×1,15 / ×1,03 / ×1,17), aucun contenu perdu · comparatif v1/v2 sur la page · charte TYPO.md inchangée<small>/autoboost-tuto-claude-code-mcp-v2</small><small>33,4s · intervalle du hook choisi sur mesure image par image du mouvement de bouche (net 6,43 · 13 % d'images immobiles) · voix clonée F0 120,3 / 123,1 Hz · lèvres PASS (0 image fautive / 8 plans) · 0 €</small></span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ À valider</span><span class="fam">Autoboost</span></span>
+  </a></li>
+  <li data-fam="Divers" data-mp4="0" data-k="osmose-bistro-saint-pierre osmose-bistro-saint-pierre divers"><a href="/osmose-bistro-saint-pierre/">
+    <span class="nom">osmose-bistro-saint-pierre</span>
+    <span class="droite"><span class="fam">Divers</span></span>
+  </a></li>
+  <li data-fam="Autoboost" data-mp4="1" data-k="autoboost-tuto-claude-code-mcp autoboost-tuto-claude-code-mcp · tuto express — hook higgsfield (buggy → volet au doigt → mur d'écrans de code) puis 3 étapes en capture écran avec curseur qui clique : installer claude code, brancher un mcp, s'en servir · avatar v3 incrusté dans la scène · charte typo figée dans typo.md autoboost"><a href="/autoboost-tuto-claude-code-mcp/">
+    <span class="nom">autoboost-tuto-claude-code-mcp · TUTO EXPRESS — hook Higgsfield (buggy → volet au doigt → mur d'écrans de code) puis 3 étapes en capture écran avec curseur qui clique : installer Claude Code, brancher un MCP, s'en servir · avatar v3 incrusté dans la scène · charte typo figée dans TYPO.md<small>/autoboost-tuto-claude-code-mcp</small><small>34,0s · sorties npm + claude mcp RÉELLES, TUI étape 3 reconstituée · voix clonée F0 115–133 Hz · lèvres PASS (0 image fautive / 8 plans) · 0 €</small></span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ À valider</span><span class="fam">Autoboost</span></span>
+  </a></li>
+  <li data-fam="Divers" data-mp4="0" data-k="conte-trois-petits-cochons conte-trois-petits-cochons divers"><a href="/conte-trois-petits-cochons/">
+    <span class="nom">conte-trois-petits-cochons</span>
+    <span class="droite"><span class="fam">Divers</span></span>
+  </a></li>
+  <li data-fam="Autoboost" data-mp4="1" data-k="autoboost-matrix-formation-hook-6s autoboost-matrix-formation-hook-6s · hook 6 s — combat matrix (4,27 s, toute la voix) puis le plan bureau en silence total (1,73 s), avant que la vidéo validée enchaîne inchangée · comparatif des 3 versions sur la page autoboost"><a href="/autoboost-matrix-formation-hook-6s/">
+    <span class="nom">autoboost-matrix-formation-hook-6s · HOOK 6 s — combat Matrix (4,27 s, toute la voix) puis le plan bureau en silence total (1,73 s), avant que la vidéo validée enchaîne inchangée · comparatif des 3 versions sur la page<small>/autoboost-matrix-formation-hook-6s</small><small>62,3s · plan bureau à 0 voix active (RMS −inf, 0/173 fenêtres) et bouche immobile (diff 0,24 vs 4,15) · −16,2 LUFS / −3,0 dBTP · lèvres PASS · 0 €</small></span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ À valider</span><span class="fam">Autoboost</span></span>
+  </a></li>
+  <li data-fam="Divers" data-mp4="1" data-k="pub-3-videos pub-3-videos divers"><a href="/pub-3-videos/">
+    <span class="nom">pub-3-videos</span>
+    <span class="droite"><span class="mp4">mp4</span><span class="fam">Divers</span></span>
+  </a></li>
+  <li data-fam="Autoboost" data-mp4="1" data-k="autoboost-matrix-formation-hook autoboost-matrix-formation-hook · variante hook — clip de combat matrix (seedance 2.5 / higgsfield) en tête, accroche « tu ne travailles pas. tu te bats. contre tes propres outils. et tu perds. » en voix clonée, puis la vidéo validée enchaîne inchangée · comparatif avant/après sur la page autoboost"><a href="/autoboost-matrix-formation-hook/">
+    <span class="nom">autoboost-matrix-formation-hook · VARIANTE HOOK — clip de combat Matrix (Seedance 2.5 / Higgsfield) en tête, accroche « Tu ne travailles pas. Tu te bats. Contre tes propres outils. Et tu perds. » en voix clonée, puis la vidéo validée enchaîne inchangée · comparatif avant/après sur la page<small>/autoboost-matrix-formation-hook</small><small>60,6s · hook 4,27s · sortie sur le flash blanc · audio natif du clip coupé · −16,1 LUFS · lèvres PASS · 0 € · la version programmée du 25/08 reste intacte</small></span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ À valider</span><span class="fam">Autoboost</span></span>
+  </a></li>
+  <li data-fam="Autoboost" data-mp4="1" data-k="autoboost-62-valse-full autoboost-62-valse-full · la valse sur toute la longueur — phonogramme produit par nous (partition domaine public + fluidsynth) : tutti sur le hook, orchestration évidée sous la voix, la musique ne s'arrête jamais · les deux autres versions sont intactes autoboost"><a href="/autoboost-62-valse-full/">
+    <span class="nom">autoboost-62-valse-full · LA VALSE SUR TOUTE LA LONGUEUR — phonogramme produit par nous (partition domaine public + FluidSynth) : tutti sur le hook, orchestration évidée sous la voix, la musique ne s'arrête jamais · les deux autres versions sont intactes<small>/autoboost-62-valse-full</small><small>0 droit voisin de tiers · 35,4s · −16,1 LUFS / −4,9 dBTP · bande voix +20,4 dB · lèvres PASS · 0 €</small></span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">✅ Publiable</span><span class="fam">Autoboost</span></span>
+  </a></li>
+  <li data-fam="Autoboost" data-mp4="1" data-k="autoboost-62-valse autoboost-62-valse · variante comparative — même image, la valse des fleurs remplace cyberpunk city sur les 6,68 s de hook muet, coupe franche sur l'arrivée · la version de référence est intacte autoboost"><a href="/autoboost-62-valse/">
+    <span class="nom">autoboost-62-valse · VARIANTE COMPARATIVE — même image, la Valse des fleurs remplace Cyberpunk City sur les 6,68 s de hook muet, coupe franche sur l'arrivée · la version de référence est intacte<small>/autoboost-62-valse</small><small>enregistrement LSO 1989 sous droits voisins, Content ID quasi certain · 35,4s · −16,1 LUFS / −4,7 dBTP · lèvres PASS · 0 €</small></span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⚠️ NE PAS PUBLIER</span><span class="fam">Autoboost</span></span>
+  </a></li>
+  <li data-fam="BeFresh" data-mp4="1" data-k="befresh-decathlon befresh-decathlon · client befresh — reel ig 9:16 « on était à decathlon » · v2 corrigée : « alouda » prononcé + charte befresh noir/or/magenta befresh"><a href="/befresh-decathlon/">
+    <span class="nom">befresh-decathlon · client BeFresh — reel IG 9:16 « on était à Decathlon » · v2 CORRIGÉE : « alouda » prononcé + charte BeFresh noir/or/magenta<small>/befresh-decathlon</small></span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ À valider</span><span class="fam">BeFresh</span></span>
+  </a></li>
+  <li data-fam="Autoboost" data-mp4="1" data-k="autoboost-62-meme-systeme autoboost-62-meme-systeme · « tu veux le même système ? » — hook spider muet de 7 s (nouvelle entrée de banque), puis la chaîne complète : une phrase → script, voix clonée, montage, sous-titres, 5 réseaux · cta systeme autoboost"><a href="/autoboost-62-meme-systeme/">
+    <span class="nom">autoboost-62-meme-systeme · « Tu veux le même système ? » — hook spider muet de 7 s (nouvelle entrée de banque), puis la chaîne complète : une phrase → script, voix clonée, montage, sous-titres, 5 réseaux · CTA SYSTEME<small>/autoboost-62-meme-systeme</small><small>35,4s · 9:16 · 11 plans (5 avatar + 6 écrans) · sound design v2 (verre, réception, thwip, arrivée) · musique Cyberpunk City · −16,0 LUFS · lèvres PASS · 0 € · ⚠️ SYSTEME pointerait sur une ressource payante déjà servie par STAR</small></span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ À valider</span><span class="fam">Autoboost</span></span>
+  </a></li>
+  <li data-fam="BeFresh" data-mp4="0" data-k="befresh-voix befresh-voix · befresh — 5 extraits de voix off à départager (correction « alouda » + 3 voix alternatives) befresh"><a href="/befresh-voix/">
+    <span class="nom">befresh-voix · BeFresh — 5 extraits de voix off à départager (correction « alouda » + 3 voix alternatives)<small>/befresh-voix</small></span>
+    <span class="droite"><span class="badge">⏳ À valider</span><span class="fam">BeFresh</span></span>
+  </a></li>
+  <li data-fam="Divers" data-mp4="1" data-k="matrix-formation matrix-formation · faux dialogue matrix : tony en position morpheus pitche la formation, neo garde ses 5 repliques d'origine (image + voix) et n'approuve jamais rien · formation automation boost divers"><a href="/matrix-formation/">
+    <span class="nom">matrix-formation · Faux dialogue Matrix : Tony en position Morpheus pitche la formation, Neo garde ses 5 repliques d'origine (image + voix) et n'approuve jamais rien · formation Automation Boost<small>/matrix-formation</small><small>56,3s · 9:16 · 5 extraits reels transcrits + 1 reaction silencieuse + 22 plans avatar v3 · lèvres PASS · 0 €</small></span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ À valider</span><span class="fam">Divers</span></span>
+  </a></li>
+  <li data-fam="Autoboost" data-mp4="1" data-k="autoboost-61-dix-questions autoboost-61-dix-questions · les 10 questions à poser à claude sur toi-même — le twist : claude vide vs claude qui a ton historique, montré en split écran · cta miroir autoboost"><a href="/autoboost-61-dix-questions/">
+    <span class="nom">autoboost-61-dix-questions · Les 10 questions à poser à Claude sur toi-même — le twist : Claude vide vs Claude qui a ton historique, montré en split écran · CTA MIROIR<small>/autoboost-61-dix-questions</small><small>36,6s · 9:16 · 4 clips talking-head neufs + voix clonée · règle des lèvres PASS · 0 € · ⚠️ ressource MIROIR à créer</small></span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ À valider</span><span class="fam">Autoboost</span></span>
+  </a></li>
+  <li data-fam="Divers" data-mp4="1" data-k="formation-vsl formation-vsl · vsl de la formation automation boost — démontre au lieu de promettre : 6 sites clients réellement en ligne, 15 vidéos déjà produites, le workflow n8n du journal ia · 29,90 € tarif fondateur divers"><a href="/formation-vsl/">
+    <span class="nom">formation-vsl · VSL de la formation Automation Boost — démontre au lieu de promettre : 6 sites clients réellement en ligne, 15 vidéos déjà produites, le workflow n8n du Journal IA · 29,90 € tarif fondateur<small>/formation-vsl</small><small>101,2s · 9:16 · avatar v3 + voix clonée · 0 € de génération · réserves listées sur la page</small></span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ À valider</span><span class="fam">Divers</span></span>
+  </a></li>
+  <li data-fam="Divers" data-mp4="1" data-k="videoboost-dialogue videoboost-dialogue · faux dialogue avec leonardo dicaprio : ses 5 repliques d’origine conservees (sa voix), l’agriculteur remplace par l’avatar v3 de tony · videoboost 67 € · cta star divers"><a href="/videoboost-dialogue/">
+    <span class="nom">videoboost-dialogue · Faux dialogue avec Leonardo DiCaprio : ses 5 repliques d’origine conservees (sa voix), l’agriculteur remplace par l’avatar v3 de Tony · VideoBoost 67 € · CTA STAR<small>/videoboost-dialogue</small><small>51,1s · 9:16 · 5 extraits reels + 19 plans avatar v3 + captions calquees · 💰 version PUBLICITAIRE (Meta Ads)</small></span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ À valider</span><span class="fam">Divers</span></span>
+  </a></li>
+  <li data-fam="Divers" data-mp4="1" data-k="videoboost-star videoboost-star · format « j'interpelle une star » (transposé de la réf agriculteur/dicaprio) : tony écrit à mrbeast pour lui vendre videoboost à 67 €, zéro réponse · cta star divers"><a href="/videoboost-star/">
+    <span class="nom">videoboost-star · Format « j'interpelle une star » (transposé de la réf agriculteur/DiCaprio) : Tony écrit à MrBeast pour lui vendre VideoBoost à 67 €, zéro réponse · CTA STAR<small>/videoboost-star</small><small>49,4s · 9:16 · avatar v3 plein cadre · captions blanches contour noir</small></span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ À valider</span><span class="fam">Divers</span></span>
+  </a></li>
+  <li data-fam="Divers" data-mp4="1" data-k="build-in-public build-in-public · transparence chiffrée : 124 vidéos, 3 €, 1 centime la vidéo — et les 2 ratés assumés (lien de paiement en mode test, prospect réécrit 12 jours) · cta chiffres divers"><a href="/build-in-public/">
+    <span class="nom">build-in-public · Transparence chiffrée : 124 vidéos, 3 €, 1 centime la vidéo — et les 2 ratés assumés (lien de paiement en mode test, prospect réécrit 12 jours) · CTA CHIFFRES<small>/build-in-public</small><small>45s · 9:16 · voix clonée + avatar v3</small></span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ À valider</span><span class="fam">Divers</span></span>
+  </a></li>
+  <li data-fam="Divers" data-mp4="1" data-k="hook-chaos-automatiser hook-chaos-automatiser · hook 10 s réutilisable (chaos → freeze → clic automatiser → exécution → lockup) + vidéo qui l'utilise · cta chaos divers"><a href="/hook-chaos-automatiser/">
+    <span class="nom">hook-chaos-automatiser · Hook 10 s réutilisable (chaos → freeze → clic AUTOMATISER → exécution → lockup) + vidéo qui l'utilise · CTA CHAOS<small>/hook-chaos-automatiser</small><small>34,6s · 9:16 · hook muet · template réutilisable</small></span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ À valider</span><span class="fam">Divers</span></span>
+  </a></li>
+  <li data-fam="Divers" data-mp4="0" data-k="blacksshade blacksshade · site e-commerce cinématique blacksshade — hero scroll-scrub 4 chapitres, configurateur + panier divers"><a href="/blacksshade/">
+    <span class="nom">blacksshade · Site e-commerce cinématique BLACKSSHADE — hero scroll-scrub 4 chapitres, configurateur + panier<small>/blacksshade</small><small>maquette, visuels IA, aucun paiement</small></span>
+    <span class="droite"><span class="badge">⏳ À valider</span><span class="fam">Divers</span></span>
+  </a></li>
+  <li data-fam="Autoboost" data-mp4="1" data-k="autoboost-59-qualif autoboost-59-qualif autoboost"><a href="/autoboost-59-qualif/">
+    <span class="nom">autoboost-59-qualif</span>
+    <span class="droite"><span class="mp4">mp4</span><span class="fam">Autoboost</span></span>
+  </a></li>
+  <li data-fam="Divers" data-mp4="1" data-k="blacksshade-showcase blacksshade-showcase · le site blacksshade filmé en scroll — rotation, coloris qui change le prix, panier · cta ecom divers"><a href="/blacksshade-showcase/">
+    <span class="nom">blacksshade-showcase · Le site BLACKSSHADE filmé en scroll — rotation, coloris qui change le prix, panier · CTA ECOM<small>/blacksshade-showcase</small><small>34s · 9:16 · voix clonée</small></span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ À valider</span><span class="fam">Divers</span></span>
+  </a></li>
+  <li data-fam="Divers" data-mp4="1" data-k="trailer-doom trailer-doom · le vrai trailer avengers doomsday vs ma version ia + prompt · cta trailer divers"><a href="/trailer-doom/">
+    <span class="nom">trailer-doom · Le vrai trailer Avengers Doomsday vs ma version IA + prompt · CTA TRAILER<small>/trailer-doom</small><small>bande du haut en placeholder</small></span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ À valider</span><span class="fam">Divers</span></span>
+  </a></li>
+  <li data-fam="Divers" data-mp4="1" data-k="yapping-algo yapping-algo · toi vs l'algo — combat + impact voiture · cta dm divers"><a href="/yapping-algo/">
+    <span class="nom">yapping-algo · Toi vs l'algo — combat + impact voiture · CTA DM<small>/yapping-algo</small><small>2 plans en placeholder</small></span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ À valider</span><span class="fam">Divers</span></span>
+  </a></li>
+  <li data-fam="Divers" data-mp4="1" data-k="combat-beatsync combat-beatsync · combat anime 9:16 — chaque impact calé sur la grille mesurée (114,5 bpm, 17 impacts) · 100 % réutilisation, 0 crédit divers"><a href="/combat-beatsync/">
+    <span class="nom">combat-beatsync · combat anime 9:16 — chaque impact calé sur la grille mesurée (114,5 BPM, 17 impacts) · 100 % réutilisation, 0 crédit<small>/combat-beatsync</small></span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ À valider</span><span class="fam">Divers</span></span>
+  </a></li>
+  <li data-fam="Autoboost" data-mp4="0" data-k="autoboost-principe autoboost-principe · landing scrollytelling « le principe d'automatisation boost » — 5 chapitres canvas (charge → explosion de couleur → route néon → preuves réelles → la boucle) + estimateur, cta videoboost (proposition) autoboost"><a href="/autoboost-principe/">
+    <span class="nom">autoboost-principe · landing scrollytelling « le principe d'Automatisation Boost » — 5 chapitres canvas (charge → explosion de couleur → route néon → preuves réelles → la boucle) + estimateur, CTA VideoBoost (proposition)<small>/autoboost-principe</small></span>
+    <span class="droite"><span class="badge">⏳ À valider</span><span class="fam">Autoboost</span></span>
+  </a></li>
+  <li data-fam="Prompt reveal" data-mp4="1" data-k="prompt-reveal-05 prompt-reveal-05 · la téléportation — combat live-action, 1 seule prise · cta combat prompt reveal"><a href="/prompt-reveal-05/">
+    <span class="nom">prompt-reveal-05 · La téléportation — combat live-action, 1 seule prise · CTA COMBAT<small>/prompt-reveal-05</small></span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ À valider</span><span class="fam">Prompt reveal</span></span>
+  </a></li>
+  <li data-fam="Prompt reveal" data-mp4="1" data-k="prompt-reveal-04 prompt-reveal-04 · le clip néon — clip musique cyberpunk, boule d'énergie · cta neon prompt reveal"><a href="/prompt-reveal-04/">
+    <span class="nom">prompt-reveal-04 · Le clip néon — clip musique cyberpunk, boule d'énergie · CTA NEON<small>/prompt-reveal-04</small></span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ À valider</span><span class="fam">Prompt reveal</span></span>
+  </a></li>
+  <li data-fam="Prompt reveal" data-mp4="1" data-k="prompt-reveal-03 prompt-reveal-03 · la transformation — live-action anime, vfx hollywood · cta shonen prompt reveal"><a href="/prompt-reveal-03/">
+    <span class="nom">prompt-reveal-03 · La transformation — live-action anime, VFX Hollywood · CTA SHONEN<small>/prompt-reveal-03</small></span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ À valider</span><span class="fam">Prompt reveal</span></span>
+  </a></li>
+  <li data-fam="Prompt reveal" data-mp4="1" data-k="prompt-reveal-02 prompt-reveal-02 · le burger — food reel 100 % ia, 0 tournage · cta burger prompt reveal"><a href="/prompt-reveal-02/">
+    <span class="nom">prompt-reveal-02 · Le burger — food reel 100 % IA, 0 tournage · CTA BURGER<small>/prompt-reveal-02</small></span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ À valider</span><span class="fam">Prompt reveal</span></span>
+  </a></li>
+  <li data-fam="Prompt reveal" data-mp4="1" data-k="prompt-reveal-01 prompt-reveal-01 · le regard — portrait cinéma ia, push-in dans l'œil · cta regard prompt reveal"><a href="/prompt-reveal-01/">
+    <span class="nom">prompt-reveal-01 · Le regard — portrait cinéma IA, push-in dans l'œil · CTA REGARD<small>/prompt-reveal-01</small></span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ À valider</span><span class="fam">Prompt reveal</span></span>
+  </a></li>
+  <li data-fam="Journal IA" data-mp4="1" data-k="journal-ia-2026-08-17 journal ia — 2026-08-17 journal ia"><a href="/journal-ia-2026-08-17/">
+    <span class="nom">Journal IA — 2026-08-17<small>/journal-ia-2026-08-17</small></span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ En attente</span><span class="fam">Journal IA</span></span>
+  </a></li>
+  <li data-fam="Divers" data-mp4="1" data-k="hook-puissant hook-puissant · hook stacking (entrée studio parlée + question) → climax countdown + décollage, cta hook divers"><a href="/hook-puissant/">
+    <span class="nom">hook-puissant · hook stacking (entrée studio parlée + question) → climax countdown + décollage, CTA HOOK<small>/hook-puissant</small></span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ À valider</span><span class="fam">Divers</span></span>
+  </a></li>
+  <li data-fam="Divers" data-mp4="0" data-k="chanson-voix-tony chanson-voix-tony · « pendant que tu dors » — chanson fr automation boost (suno v5, 2 versions) + clonage voix chantée : nouvelle phrase à réenregistrer divers"><a href="/chanson-voix-tony/">
+    <span class="nom">chanson-voix-tony · « Pendant Que Tu Dors » — chanson FR Automation Boost (Suno V5, 2 versions) + clonage voix chantée : nouvelle phrase à réenregistrer<small>/chanson-voix-tony</small></span>
+    <span class="droite"><span class="badge">⏳ À valider</span><span class="fam">Divers</span></span>
+  </a></li>
+  <li data-fam="Journal IA" data-mp4="0" data-k="journal-ia-2026-08-16 journal-ia-2026-08-16 journal ia"><a href="/journal-ia-2026-08-16/">
+    <span class="nom">journal-ia-2026-08-16</span>
+    <span class="droite"><span class="fam">Journal IA</span></span>
+  </a></li>
+  <li data-fam="Koytcha" data-mp4="0" data-k="koytcha-reveal koytcha-reveal · site immobilier cinématique « the reveal » — villa solèy, 4 chapitres scroll-scrub + recherche, niveaux, prêt, visite (démo) koytcha"><a href="/koytcha-reveal/">
+    <span class="nom">koytcha-reveal · site immobilier cinématique « The Reveal » — Villa Solèy, 4 chapitres scroll-scrub + recherche, niveaux, prêt, visite (démo)<small>/koytcha-reveal</small></span>
+    <span class="droite"><span class="badge">⏳ À valider</span><span class="fam">Koytcha</span></span>
+  </a></li>
+  <li data-fam="Autoboost" data-mp4="1" data-k="autoboost-tele-3-0 autoboost-tele-3-0 · « j'ai créé une chaîne de télé en une nuit » — 4 preuves (jt auto 7h, pub auto, sites web auto, avatar réutilisable = coût proche de zéro) + b-roll train · cta tele autoboost"><a href="/autoboost-tele-3-0/">
+    <span class="nom">autoboost-tele-3-0 · « j'ai créé une chaîne de télé en une nuit » — 4 preuves (JT auto 7h, pub auto, sites web auto, avatar réutilisable = coût proche de zéro) + b-roll train · CTA TELE<small>/autoboost-tele-3-0</small></span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ À valider</span><span class="fam">Autoboost</span></span>
+  </a></li>
+  <li data-fam="Essais" data-mp4="1" data-k="essai-ego-tom-odell essai-ego-tom-odell · essai contemplatif style ego — tasse qui refroidit → le temps → fondu au blanc (voix posée + tom odell) essais"><a href="/essai-ego-tom-odell/">
+    <span class="nom">essai-ego-tom-odell · essai contemplatif style EGO — tasse qui refroidit → le temps → fondu au blanc (voix posée + Tom Odell)<small>/essai-ego-tom-odell</small></span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ À valider</span><span class="fam">Essais</span></span>
+  </a></li>
+  <li data-fam="Divers" data-mp4="1" data-k="humian-anime-living-cartoon humian — anime living cartoon · guerrier anime réaliste power-up + vol (style @subscribe_humian) · cta poder divers"><a href="/humian-anime-living-cartoon/">
+    <span class="nom">humian — anime living cartoon · guerrier anime réaliste power-up + vol (style @subscribe_humian) · CTA PODER<small>/humian-anime-living-cartoon</small></span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ À valider</span><span class="fam">Divers</span></span>
+  </a></li>
+  <li data-fam="Divers" data-mp4="1" data-k="videoboost-editorial-avant-apres-v3 videoboost-editorial-avant-apres-v3 divers"><a href="/videoboost-editorial-avant-apres-v3/">
+    <span class="nom">videoboost-editorial-avant-apres-v3</span>
+    <span class="droite"><span class="mp4">mp4</span><span class="fam">Divers</span></span>
+  </a></li>
+  <li data-fam="Journal IA" data-mp4="1" data-k="journal-ia-2026-08-15 journal ia — 15 août 2026 · gemini 3.7 flash, gpt-5.6 sol, deepseek v4 pro, databricks 5 md$ · cta veille journal ia"><a href="/journal-ia-2026-08-15/">
+    <span class="nom">Journal IA — 15 août 2026 · Gemini 3.7 Flash, GPT-5.6 Sol, DeepSeek V4 Pro, Databricks 5 Md$ · CTA VEILLE<small>/journal-ia-2026-08-15</small></span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ À valider</span><span class="fam">Journal IA</span></span>
+  </a></li>
+  <li data-fam="Divers" data-mp4="1" data-k="yapping-oneclick yapping-oneclick · le yapping expliqué en yappant (méta) + écran brisé, cta yapping divers"><a href="/yapping-oneclick/">
+    <span class="nom">yapping-oneclick · le yapping expliqué EN yappant (méta) + écran brisé, CTA YAPPING<small>/yapping-oneclick</small></span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ À valider</span><span class="fam">Divers</span></span>
+  </a></li>
+  <li data-fam="Autoboost" data-mp4="1" data-k="veille-to-avatar-v3-test veille-to-avatar-v3-test · auto-dm instagram (test style verrouillé) autoboost"><a href="/veille-to-avatar-v3-test/">
+    <span class="nom">veille-to-avatar-v3-test · Auto-DM Instagram (test style verrouillé)<small>/veille-to-avatar-v3-test</small></span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ À valider</span><span class="fam">Autoboost</span></span>
+  </a></li>
+  <li data-fam="Autoboost" data-mp4="1" data-k="veille-to-avatar-v3-v3 veille-to-avatar-v3-v3 autoboost"><a href="/veille-to-avatar-v3-v3/">
+    <span class="nom">veille-to-avatar-v3-v3</span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ À valider</span><span class="fam">Autoboost</span></span>
+  </a></li>
+  <li data-fam="Divers" data-mp4="1" data-k="twingo-turbo-v4 twingo-turbo-v4 · concept ia + cta turbo divers"><a href="/twingo-turbo-v4/">
+    <span class="nom">twingo-turbo-v4 · concept IA + CTA TURBO<small>/twingo-turbo-v4</small></span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ À valider</span><span class="fam">Divers</span></span>
+  </a></li>
+  <li data-fam="Autoboost" data-mp4="1" data-k="autoboost-55-rappel-rdv autoboost-55-rappel-rdv autoboost"><a href="/autoboost-55-rappel-rdv/">
+    <span class="nom">autoboost-55-rappel-rdv</span>
+    <span class="droite"><span class="mp4">mp4</span><span class="fam">Autoboost</span></span>
+  </a></li>
+  <li data-fam="Divers" data-mp4="1" data-k="showcase-claude-max-reel showcase-claude-max-reel divers"><a href="/showcase-claude-max-reel/">
+    <span class="nom">showcase-claude-max-reel</span>
+    <span class="droite"><span class="mp4">mp4</span><span class="fam">Divers</span></span>
+  </a></li>
+  <li data-fam="Divers" data-mp4="1" data-k="showcase-claude-max-v2 showcase-claude-max divers"><a href="/showcase-claude-max-v2/">
+    <span class="nom">showcase-claude-max<small>/showcase-claude-max-v2</small></span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ En attente</span><span class="fam">Divers</span></span>
+  </a></li>
+  <li data-fam="Divers" data-mp4="1" data-k="showcase-claude-max showcase-claude-max divers"><a href="/showcase-claude-max/">
+    <span class="nom">showcase-claude-max</span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ En attente</span><span class="fam">Divers</span></span>
+  </a></li>
+  <li data-fam="Autoboost" data-mp4="1" data-k="veille-to-avatar-v3-v2 veille-to-avatar-v3 autoboost"><a href="/veille-to-avatar-v3-v2/">
+    <span class="nom">veille-to-avatar-v3<small>/veille-to-avatar-v3-v2</small></span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ En attente</span><span class="fam">Autoboost</span></span>
+  </a></li>
+  <li data-fam="Autoboost" data-mp4="1" data-k="veille-to-avatar-v3 veille-to-avatar-v3 autoboost"><a href="/veille-to-avatar-v3/">
+    <span class="nom">veille-to-avatar-v3</span>
+    <span class="droite"><span class="mp4">mp4</span><span class="fam">Autoboost</span></span>
+  </a></li>
+  <li data-fam="Divers" data-mp4="1" data-k="videoboost-v3-demo videoboost-v3-demo divers"><a href="/videoboost-v3-demo/">
+    <span class="nom">videoboost-v3-demo</span>
+    <span class="droite"><span class="mp4">mp4</span><span class="fam">Divers</span></span>
+  </a></li>
+  <li data-fam="Divers" data-mp4="1" data-k="videoboost-editorial-avant-apres videoboost-editorial-avant-apres divers"><a href="/videoboost-editorial-avant-apres/">
+    <span class="nom">videoboost-editorial-avant-apres<small>POC éditorial</small></span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ À valider</span><span class="fam">Divers</span></span>
+  </a></li>
+  <li data-fam="Divers" data-mp4="1" data-k="videoboost-editorial-avant-apres-v2 videoboost-editorial-avant-apres divers"><a href="/videoboost-editorial-avant-apres-v2/">
+    <span class="nom">videoboost-editorial-avant-apres<small>/videoboost-editorial-avant-apres-v2</small></span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ En attente</span><span class="fam">Divers</span></span>
+  </a></li>
+  <li data-fam="ShortForge" data-mp4="1" data-k="shortforge-05-veille shortforge-05-veille shortforge"><a href="/shortforge-05-veille/">
+    <span class="nom">shortforge-05-veille</span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ En attente</span><span class="fam">ShortForge</span></span>
+  </a></li>
+  <li data-fam="ShortForge" data-mp4="1" data-k="shortforge-04-etude shortforge-04-etude shortforge"><a href="/shortforge-04-etude/">
+    <span class="nom">shortforge-04-etude</span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ En attente</span><span class="fam">ShortForge</span></span>
+  </a></li>
+  <li data-fam="ShortForge" data-mp4="1" data-k="shortforge-veille shortforge · veille ia shortforge"><a href="/shortforge-veille/">
+    <span class="nom">ShortForge · Veille IA<small>/shortforge-veille</small></span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ À valider</span><span class="fam">ShortForge</span></span>
+  </a></li>
+  <li data-fam="ShortForge" data-mp4="1" data-k="shortforge-top3 shortforge · top 3 outils shortforge"><a href="/shortforge-top3/">
+    <span class="nom">ShortForge · Top 3 outils<small>/shortforge-top3</small></span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ À valider</span><span class="fam">ShortForge</span></span>
+  </a></li>
+  <li data-fam="ShortForge" data-mp4="1" data-k="shortforge-etude shortforge · étude de cas shortforge"><a href="/shortforge-etude/">
+    <span class="nom">ShortForge · Étude de cas<small>/shortforge-etude</small></span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ À valider</span><span class="fam">ShortForge</span></span>
+  </a></li>
+  <li data-fam="ShortForge" data-mp4="1" data-k="shortforge-erreur shortforge · erreur à éviter shortforge"><a href="/shortforge-erreur/">
+    <span class="nom">ShortForge · Erreur à éviter<small>/shortforge-erreur</small></span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ À valider</span><span class="fam">ShortForge</span></span>
+  </a></li>
+  <li data-fam="ShortForge" data-mp4="1" data-k="shortforge-avant-apres shortforge · avant / après shortforge"><a href="/shortforge-avant-apres/">
+    <span class="nom">ShortForge · Avant / Après<small>/shortforge-avant-apres</small></span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ À valider</span><span class="fam">ShortForge</span></span>
+  </a></li>
+  <li data-fam="ShortForge" data-mp4="1" data-k="shortforge-03-top3 shortforge-03-top3 shortforge"><a href="/shortforge-03-top3/">
+    <span class="nom">shortforge-03-top3</span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ En attente</span><span class="fam">ShortForge</span></span>
+  </a></li>
+  <li data-fam="ShortForge" data-mp4="1" data-k="shortforge-02-erreur shortforge-02-erreur shortforge"><a href="/shortforge-02-erreur/">
+    <span class="nom">shortforge-02-erreur</span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ En attente</span><span class="fam">ShortForge</span></span>
+  </a></li>
+  <li data-fam="ShortForge" data-mp4="1" data-k="shortforge-01-avant-apres shortforge-01-avant-apres shortforge"><a href="/shortforge-01-avant-apres/">
+    <span class="nom">shortforge-01-avant-apres</span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ En attente</span><span class="fam">ShortForge</span></span>
+  </a></li>
+  <li data-fam="Autoboost" data-mp4="1" data-k="autoboost-debunk-lambo-n8n débunk lambo → workflow n8n autoboost"><a href="/autoboost-debunk-lambo-n8n/">
+    <span class="nom">Débunk Lambo → Workflow n8n<small>/autoboost-debunk-lambo-n8n</small></span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ En attente</span><span class="fam">Autoboost</span></span>
+  </a></li>
+  <li data-fam="Autoboost" data-mp4="1" data-k="autoboost-55-twingo-remix autoboost-55-twingo-remix autoboost"><a href="/autoboost-55-twingo-remix/">
+    <span class="nom">autoboost-55-twingo-remix</span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ En attente</span><span class="fam">Autoboost</span></span>
+  </a></li>
+  <li data-fam="Autoboost" data-mp4="1" data-k="autoboost-55-twingo-remix-v3 autoboost-55-twingo-remix autoboost"><a href="/autoboost-55-twingo-remix-v3/">
+    <span class="nom">autoboost-55-twingo-remix<small>/autoboost-55-twingo-remix-v3</small></span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ En attente</span><span class="fam">Autoboost</span></span>
+  </a></li>
+  <li data-fam="Autoboost" data-mp4="1" data-k="autoboost-55-twingo-remix-v2 autoboost-55-twingo-remix autoboost"><a href="/autoboost-55-twingo-remix-v2/">
+    <span class="nom">autoboost-55-twingo-remix<small>/autoboost-55-twingo-remix-v2</small></span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ En attente</span><span class="fam">Autoboost</span></span>
+  </a></li>
+  <li data-fam="Autoboost" data-mp4="1" data-k="autoboost-54-mille-problemes autoboost-54-mille-problemes autoboost"><a href="/autoboost-54-mille-problemes/">
+    <span class="nom">autoboost-54-mille-problemes</span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ En attente</span><span class="fam">Autoboost</span></span>
+  </a></li>
+  <li data-fam="Essais" data-mp4="1" data-k="essai-contemplatif-plafond essai-contemplatif-plafond essais"><a href="/essai-contemplatif-plafond/">
+    <span class="nom">essai-contemplatif-plafond</span>
+    <span class="droite"><span class="mp4">mp4</span><span class="fam">Essais</span></span>
+  </a></li>
+  <li data-fam="Divers" data-mp4="1" data-k="twingo-ferrari-sf90-keynote twingo ferrari sf90 · reel keynote higgsfield divers"><a href="/twingo-ferrari-sf90-keynote/">
+    <span class="nom">Twingo Ferrari SF90 · reel keynote Higgsfield<small>/twingo-ferrari-sf90-keynote</small></span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ À valider</span><span class="fam">Divers</span></span>
+  </a></li>
+  <li data-fam="Divers" data-mp4="1" data-k="my-video my-video divers"><a href="/my-video/">
+    <span class="nom">my-video</span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ En attente</span><span class="fam">Divers</span></span>
+  </a></li>
+  <li data-fam="Autoboost" data-mp4="1" data-k="autoboost-54-omniroute autoboost-54-omniroute autoboost"><a href="/autoboost-54-omniroute/">
+    <span class="nom">autoboost-54-omniroute</span>
+    <span class="droite"><span class="mp4">mp4</span><span class="fam">Autoboost</span></span>
+  </a></li>
+  <li data-fam="Autoboost" data-mp4="1" data-k="autoboost-53-usine-ia autoboost-53-usine-ia autoboost"><a href="/autoboost-53-usine-ia/">
+    <span class="nom">autoboost-53-usine-ia</span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ En attente</span><span class="fam">Autoboost</span></span>
+  </a></li>
+  <li data-fam="Divers" data-mp4="0" data-k="videoboost videoboost divers"><a href="/videoboost/">
+    <span class="nom">videoboost</span>
+    <span class="droite"><span class="fam">Divers</span></span>
+  </a></li>
+  <li data-fam="Autoboost" data-mp4="1" data-k="autoboost-52-keynote-template-v2 autoboost-52-keynote-template autoboost"><a href="/autoboost-52-keynote-template-v2/">
+    <span class="nom">autoboost-52-keynote-template<small>/autoboost-52-keynote-template-v2</small></span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ En attente</span><span class="fam">Autoboost</span></span>
+  </a></li>
+  <li data-fam="Autoboost" data-mp4="1" data-k="autoboost-52-keynote-template autoboost-52-keynote-template autoboost"><a href="/autoboost-52-keynote-template/">
+    <span class="nom">autoboost-52-keynote-template</span>
+    <span class="droite"><span class="mp4">mp4</span><span class="fam">Autoboost</span></span>
+  </a></li>
+  <li data-fam="Autoboost" data-mp4="1" data-k="autoboost-seedance-tuto-v7 autoboost-seedance-tuto autoboost"><a href="/autoboost-seedance-tuto-v7/">
+    <span class="nom">autoboost-seedance-tuto<small>/autoboost-seedance-tuto-v7</small></span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ En attente</span><span class="fam">Autoboost</span></span>
+  </a></li>
+  <li data-fam="Autoboost" data-mp4="1" data-k="autoboost-opencode autoboost-opencode autoboost"><a href="/autoboost-opencode/">
+    <span class="nom">autoboost-opencode</span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ En attente</span><span class="fam">Autoboost</span></span>
+  </a></li>
+  <li data-fam="Autoboost" data-mp4="1" data-k="autoboost-53-shopify autoboost-53-shopify autoboost"><a href="/autoboost-53-shopify/">
+    <span class="nom">autoboost-53-shopify</span>
+    <span class="droite"><span class="mp4">mp4</span><span class="fam">Autoboost</span></span>
+  </a></li>
+  <li data-fam="Koytcha" data-mp4="1" data-k="koytcha-header koytcha-header koytcha"><a href="/koytcha-header/">
+    <span class="nom">koytcha-header</span>
+    <span class="droite"><span class="mp4">mp4</span><span class="fam">Koytcha</span></span>
+  </a></li>
+  <li data-fam="Koytcha" data-mp4="0" data-k="koytcha-comparatif koytcha-comparatif koytcha"><a href="/koytcha-comparatif/">
+    <span class="nom">koytcha-comparatif</span>
+    <span class="droite"><span class="fam">Koytcha</span></span>
+  </a></li>
+  <li data-fam="Autoboost" data-mp4="1" data-k="autoboost-seedance-tuto-v6 autoboost-seedance-tuto autoboost"><a href="/autoboost-seedance-tuto-v6/">
+    <span class="nom">autoboost-seedance-tuto<small>/autoboost-seedance-tuto-v6</small></span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ En attente</span><span class="fam">Autoboost</span></span>
+  </a></li>
+  <li data-fam="Autoboost" data-mp4="1" data-k="autoboost-seedance-tuto-v5 autoboost-seedance-tuto autoboost"><a href="/autoboost-seedance-tuto-v5/">
+    <span class="nom">autoboost-seedance-tuto<small>/autoboost-seedance-tuto-v5</small></span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ En attente</span><span class="fam">Autoboost</span></span>
+  </a></li>
+  <li data-fam="Autoboost" data-mp4="1" data-k="autoboost-seedance-tuto-v4 autoboost-seedance-tuto autoboost"><a href="/autoboost-seedance-tuto-v4/">
+    <span class="nom">autoboost-seedance-tuto<small>/autoboost-seedance-tuto-v4</small></span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ En attente</span><span class="fam">Autoboost</span></span>
+  </a></li>
+  <li data-fam="Autoboost" data-mp4="1" data-k="autoboost-seedance-tuto-v3 autoboost-seedance-tuto autoboost"><a href="/autoboost-seedance-tuto-v3/">
+    <span class="nom">autoboost-seedance-tuto<small>/autoboost-seedance-tuto-v3</small></span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ En attente</span><span class="fam">Autoboost</span></span>
+  </a></li>
+  <li data-fam="Autoboost" data-mp4="1" data-k="autoboost-52-recyclage autoboost-52-recyclage (recyclage auto des meilleurs posts n8n · seedance néon) · 10/08 autoboost"><a href="/autoboost-52-recyclage/">
+    <span class="nom">autoboost-52-recyclage (Recyclage auto des meilleurs posts n8n · seedance néon) · 10/08<small>/autoboost-52-recyclage</small></span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ À valider</span><span class="fam">Autoboost</span></span>
+  </a></li>
+  <li data-fam="Autoboost" data-mp4="1" data-k="autoboost-seedance-tuto-v2 autoboost-seedance-tuto v2 (seedance 2.5 — avatar néon + mockup) · 10/08 autoboost"><a href="/autoboost-seedance-tuto-v2/">
+    <span class="nom">autoboost-seedance-tuto v2 (Seedance 2.5 — avatar néon + mockup) · 10/08<small>/autoboost-seedance-tuto-v2</small></span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ À valider</span><span class="fam">Autoboost</span></span>
+  </a></li>
+  <li data-fam="Autoboost" data-mp4="1" data-k="autoboost-50-audit autoboost-50-audit autoboost"><a href="/autoboost-50-audit/">
+    <span class="nom">autoboost-50-audit</span>
+    <span class="droite"><span class="mp4">mp4</span><span class="fam">Autoboost</span></span>
+  </a></li>
+  <li data-fam="Autoboost" data-mp4="1" data-k="autoboost-seedance-tuto autoboost-seedance-tuto (seedance 2.5 — v4 avatars) autoboost"><a href="/autoboost-seedance-tuto/">
+    <span class="nom">autoboost-seedance-tuto (Seedance 2.5 — v4 avatars)<small>/autoboost-seedance-tuto</small></span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ À valider</span><span class="fam">Autoboost</span></span>
+  </a></li>
+  <li data-fam="Autoboost" data-mp4="1" data-k="autoboost-site-immersif-v4 autoboost-site-immersif autoboost"><a href="/autoboost-site-immersif-v4/">
+    <span class="nom">autoboost-site-immersif<small>/autoboost-site-immersif-v4</small></span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ En attente</span><span class="fam">Autoboost</span></span>
+  </a></li>
+  <li data-fam="Divers" data-mp4="1" data-k="meigen-galerie-ia meigen · galerie ia divers"><a href="/meigen-galerie-ia/">
+    <span class="nom">meigen · galerie IA<small>/meigen-galerie-ia</small></span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ À valider</span><span class="fam">Divers</span></span>
+  </a></li>
+  <li data-fam="Autoboost" data-mp4="1" data-k="autoboost-site-immersif-v3 autoboost-site-immersif · v3 (mobile + musique) autoboost"><a href="/autoboost-site-immersif-v3/">
+    <span class="nom">autoboost-site-immersif · v3 (mobile + musique)<small>/autoboost-site-immersif-v3</small></span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ À valider</span><span class="fam">Autoboost</span></span>
+  </a></li>
+  <li data-fam="Autoboost" data-mp4="1" data-k="autoboost-site-immersif-v2 autoboost-site-immersif (ancienne v) autoboost"><a href="/autoboost-site-immersif-v2/">
+    <span class="nom">autoboost-site-immersif (ancienne v)<small>/autoboost-site-immersif-v2</small></span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ En attente</span><span class="fam">Autoboost</span></span>
+  </a></li>
+  <li data-fam="Autoboost" data-mp4="1" data-k="autoboost-n8n-canvas autoboost-n8n-canvas autoboost"><a href="/autoboost-n8n-canvas/">
+    <span class="nom">autoboost-n8n-canvas</span>
+    <span class="droite"><span class="mp4">mp4</span><span class="fam">Autoboost</span></span>
+  </a></li>
+  <li data-fam="Autoboost" data-mp4="1" data-k="autoboost-48-skillz autoboost-48-skillz autoboost"><a href="/autoboost-48-skillz/">
+    <span class="nom">autoboost-48-skillz</span>
+    <span class="droite"><span class="mp4">mp4</span><span class="fam">Autoboost</span></span>
+  </a></li>
+  <li data-fam="Autoboost" data-mp4="1" data-k="autoboost-site-immersif autoboost-site-immersif autoboost"><a href="/autoboost-site-immersif/">
+    <span class="nom">autoboost-site-immersif</span>
+    <span class="droite"><span class="mp4">mp4</span><span class="fam">Autoboost</span></span>
+  </a></li>
+  <li data-fam="Autoboost" data-mp4="1" data-k="autoboost-data-tables autoboost-data-tables autoboost"><a href="/autoboost-data-tables/">
+    <span class="nom">autoboost-data-tables</span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ En attente</span><span class="fam">Autoboost</span></span>
+  </a></li>
+  <li data-fam="Autoboost" data-mp4="1" data-k="autoboost-45-data-tables autoboost-45-data-tables autoboost"><a href="/autoboost-45-data-tables/">
+    <span class="nom">autoboost-45-data-tables</span>
+    <span class="droite"><span class="mp4">mp4</span><span class="fam">Autoboost</span></span>
+  </a></li>
+  <li data-fam="Divers" data-mp4="1" data-k="videoboost-luxe-01 videoboost-luxe-01 divers"><a href="/videoboost-luxe-01/">
+    <span class="nom">videoboost-luxe-01</span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ En attente</span><span class="fam">Divers</span></span>
+  </a></li>
+  <li data-fam="Divers" data-mp4="1" data-k="videoboost-luxe-01-v2 videoboost-luxe-01 divers"><a href="/videoboost-luxe-01-v2/">
+    <span class="nom">videoboost-luxe-01<small>/videoboost-luxe-01-v2</small></span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ En attente</span><span class="fam">Divers</span></span>
+  </a></li>
+  <li data-fam="Divers" data-mp4="1" data-k="tab-mind #38 — tab mind (réorganiseur d'onglets ia) divers"><a href="/tab-mind/">
+    <span class="nom">#38 — Tab Mind (réorganiseur d'onglets IA)<small>/tab-mind</small></span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ En attente</span><span class="fam">Divers</span></span>
+  </a></li>
+  <li data-fam="Divers" data-mp4="1" data-k="tab-mind-seedance tab-mind-seedance divers"><a href="/tab-mind-seedance/">
+    <span class="nom">tab-mind-seedance</span>
+    <span class="droite"><span class="mp4">mp4</span><span class="fam">Divers</span></span>
+  </a></li>
+  <li data-fam="Divers" data-mp4="1" data-k="render-hf render-hf divers"><a href="/render-hf/">
+    <span class="nom">render-hf</span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ En attente</span><span class="fam">Divers</span></span>
+  </a></li>
+  <li data-fam="Koytcha" data-mp4="1" data-k="koytcha-cercles-motion koytcha-cercles-motion koytcha"><a href="/koytcha-cercles-motion/">
+    <span class="nom">koytcha-cercles-motion</span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ En attente</span><span class="fam">Koytcha</span></span>
+  </a></li>
+  <li data-fam="Koytcha" data-mp4="1" data-k="koytcha-cercles-motion-v2 koytcha-cercles-motion koytcha"><a href="/koytcha-cercles-motion-v2/">
+    <span class="nom">koytcha-cercles-motion<small>/koytcha-cercles-motion-v2</small></span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ En attente</span><span class="fam">Koytcha</span></span>
+  </a></li>
+  <li data-fam="FoodBoost" data-mp4="1" data-k="foodboost-12 foodboost #12 — boissons · format 2 clips 3s foodboost"><a href="/foodboost-12/">
+    <span class="nom">FoodBoost #12 — Boissons · format 2 clips 3s<small>/foodboost-12</small></span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">📅 4 août 18h</span><span class="fam">FoodBoost</span></span>
+  </a></li>
+  <li data-fam="FoodBoost" data-mp4="1" data-k="foodboost-12-boissons foodboost-12-boissons foodboost"><a href="/foodboost-12-boissons/">
+    <span class="nom">foodboost-12-boissons</span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ En attente</span><span class="fam">FoodBoost</span></span>
+  </a></li>
+  <li data-fam="FoodBoost" data-mp4="1" data-k="foodboost-11 foodboost #11 — grillades · format 2 clips 3s foodboost"><a href="/foodboost-11/">
+    <span class="nom">FoodBoost #11 — Grillades · format 2 clips 3s<small>/foodboost-11</small></span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">📅 2 août 18h</span><span class="fam">FoodBoost</span></span>
+  </a></li>
+  <li data-fam="FoodBoost" data-mp4="1" data-k="foodboost-11-grillades foodboost-11-grillades foodboost"><a href="/foodboost-11-grillades/">
+    <span class="nom">foodboost-11-grillades</span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ En attente</span><span class="fam">FoodBoost</span></span>
+  </a></li>
+  <li data-fam="FoodBoost" data-mp4="1" data-k="foodboost-10 foodboost #10 — desserts · format 2 clips 3s foodboost"><a href="/foodboost-10/">
+    <span class="nom">FoodBoost #10 — Desserts · format 2 clips 3s<small>/foodboost-10</small></span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">📅 31 juil. 18h</span><span class="fam">FoodBoost</span></span>
+  </a></li>
+  <li data-fam="FoodBoost" data-mp4="1" data-k="foodboost-10-desserts foodboost-10-desserts foodboost"><a href="/foodboost-10-desserts/">
+    <span class="nom">foodboost-10-desserts</span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ En attente</span><span class="fam">FoodBoost</span></span>
+  </a></li>
+  <li data-fam="FoodBoost" data-mp4="1" data-k="foodboost-09 foodboost #09 — petit-déjeuner · format 2 clips 3s foodboost"><a href="/foodboost-09/">
+    <span class="nom">FoodBoost #09 — Petit-déjeuner · format 2 clips 3s<small>/foodboost-09</small></span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">📅 29 juil. 18h</span><span class="fam">FoodBoost</span></span>
+  </a></li>
+  <li data-fam="FoodBoost" data-mp4="1" data-k="foodboost-09-petitdej foodboost-09-petitdej foodboost"><a href="/foodboost-09-petitdej/">
+    <span class="nom">foodboost-09-petitdej</span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ En attente</span><span class="fam">FoodBoost</span></span>
+  </a></li>
+  <li data-fam="FoodBoost" data-mp4="1" data-k="foodboost-08 foodboost #08 — sushis · format 2 clips 3s foodboost"><a href="/foodboost-08/">
+    <span class="nom">FoodBoost #08 — Sushis · format 2 clips 3s<small>/foodboost-08</small></span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">📅 27 juil. 18h</span><span class="fam">FoodBoost</span></span>
+  </a></li>
+  <li data-fam="FoodBoost" data-mp4="1" data-k="foodboost-08-sushi foodboost-08-sushi foodboost"><a href="/foodboost-08-sushi/">
+    <span class="nom">foodboost-08-sushi</span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ En attente</span><span class="fam">FoodBoost</span></span>
+  </a></li>
+  <li data-fam="FoodBoost" data-mp4="1" data-k="foodboost-07 foodboost #07 — pizzas · format 2 clips 3s foodboost"><a href="/foodboost-07/">
+    <span class="nom">FoodBoost #07 — Pizzas · format 2 clips 3s<small>/foodboost-07</small></span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">📅 25 juil. 18h</span><span class="fam">FoodBoost</span></span>
+  </a></li>
+  <li data-fam="FoodBoost" data-mp4="1" data-k="foodboost-07-pizza foodboost-07-pizza foodboost"><a href="/foodboost-07-pizza/">
+    <span class="nom">foodboost-07-pizza</span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ En attente</span><span class="fam">FoodBoost</span></span>
+  </a></li>
+  <li data-fam="FoodBoost" data-mp4="1" data-k="foodboost-06 foodboost #06 — snacking créole · format 2 clips 3s foodboost"><a href="/foodboost-06/">
+    <span class="nom">FoodBoost #06 — Snacking créole · format 2 clips 3s<small>/foodboost-06</small></span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">📅 23 juil. 18h</span><span class="fam">FoodBoost</span></span>
+  </a></li>
+  <li data-fam="FoodBoost" data-mp4="1" data-k="foodboost-06-snacking foodboost-06-snacking foodboost"><a href="/foodboost-06-snacking/">
+    <span class="nom">foodboost-06-snacking</span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ En attente</span><span class="fam">FoodBoost</span></span>
+  </a></li>
+  <li data-fam="FoodBoost" data-mp4="1" data-k="foodboost-05 foodboost #05 — poke bowls &amp; fruits (commente menu) foodboost"><a href="/foodboost-05/">
+    <span class="nom">FoodBoost #05 — Poke bowls &amp; fruits (Commente MENU)<small>/foodboost-05</small></span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ En attente</span><span class="fam">FoodBoost</span></span>
+  </a></li>
+  <li data-fam="FoodBoost" data-mp4="1" data-k="foodboost-04 foodboost #04 — sandwichs &amp; bagels (commente menu) foodboost"><a href="/foodboost-04/">
+    <span class="nom">FoodBoost #04 — Sandwichs &amp; bagels (Commente MENU)<small>/foodboost-04</small></span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ En attente</span><span class="fam">FoodBoost</span></span>
+  </a></li>
+  <li data-fam="Autoboost" data-mp4="1" data-k="autoboost-relance-clients autoboost-relance-clients autoboost"><a href="/autoboost-relance-clients/">
+    <span class="nom">autoboost-relance-clients</span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ En attente</span><span class="fam">Autoboost</span></span>
+  </a></li>
+  <li data-fam="FoodBoost" data-mp4="1" data-k="foodboost-03 foodboost #03 — burgers &amp; frites (commente menu) foodboost"><a href="/foodboost-03/">
+    <span class="nom">FoodBoost #03 — Burgers &amp; frites (Commente MENU)<small>/foodboost-03</small></span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ En attente</span><span class="fam">FoodBoost</span></span>
+  </a></li>
+  <li data-fam="Autoboost" data-mp4="1" data-k="autoboost-50-skills autoboost-50-skills autoboost"><a href="/autoboost-50-skills/">
+    <span class="nom">autoboost-50-skills</span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ En attente</span><span class="fam">Autoboost</span></span>
+  </a></li>
+  <li data-fam="Autoboost" data-mp4="1" data-k="autoboost-48-codeur autoboost-48-codeur autoboost"><a href="/autoboost-48-codeur/">
+    <span class="nom">autoboost-48-codeur</span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ En attente</span><span class="fam">Autoboost</span></span>
+  </a></li>
+  <li data-fam="Autoboost" data-mp4="1" data-k="autoboost-48-codeur-v2 autoboost-48-codeur autoboost"><a href="/autoboost-48-codeur-v2/">
+    <span class="nom">autoboost-48-codeur<small>/autoboost-48-codeur-v2</small></span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ En attente</span><span class="fam">Autoboost</span></span>
+  </a></li>
+  <li data-fam="Autoboost" data-mp4="1" data-k="autoboost-47-opus autoboost-47-opus autoboost"><a href="/autoboost-47-opus/">
+    <span class="nom">autoboost-47-opus</span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ En attente</span><span class="fam">Autoboost</span></span>
+  </a></li>
+  <li data-fam="Autoboost" data-mp4="1" data-k="autoboost-46-positionnement-freelance autoboost-46-positionnement-freelance autoboost"><a href="/autoboost-46-positionnement-freelance/">
+    <span class="nom">autoboost-46-positionnement-freelance</span>
+    <span class="droite"><span class="mp4">mp4</span><span class="fam">Autoboost</span></span>
+  </a></li>
+  <li data-fam="Autoboost" data-mp4="1" data-k="autoboost-45-mcp autoboost-45-mcp autoboost"><a href="/autoboost-45-mcp/">
+    <span class="nom">autoboost-45-mcp</span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ En attente</span><span class="fam">Autoboost</span></span>
+  </a></li>
+  <li data-fam="Autoboost" data-mp4="1" data-k="autoboost-45-mcp-v3 autoboost-45-mcp autoboost"><a href="/autoboost-45-mcp-v3/">
+    <span class="nom">autoboost-45-mcp<small>/autoboost-45-mcp-v3</small></span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ En attente</span><span class="fam">Autoboost</span></span>
+  </a></li>
+  <li data-fam="Autoboost" data-mp4="1" data-k="autoboost-45-mcp-v2 autoboost-45-mcp autoboost"><a href="/autoboost-45-mcp-v2/">
+    <span class="nom">autoboost-45-mcp<small>/autoboost-45-mcp-v2</small></span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ En attente</span><span class="fam">Autoboost</span></span>
+  </a></li>
+  <li data-fam="Autoboost" data-mp4="1" data-k="autoboost-44-trois-agents autoboost-44-trois-agents autoboost"><a href="/autoboost-44-trois-agents/">
+    <span class="nom">autoboost-44-trois-agents</span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ En attente</span><span class="fam">Autoboost</span></span>
+  </a></li>
+  <li data-fam="Autoboost" data-mp4="1" data-k="autoboost-42-continue-cursor autoboost-42-continue-cursor autoboost"><a href="/autoboost-42-continue-cursor/">
+    <span class="nom">autoboost-42-continue-cursor</span>
+    <span class="droite"><span class="mp4">mp4</span><span class="fam">Autoboost</span></span>
+  </a></li>
+  <li data-fam="Autoboost" data-mp4="1" data-k="autoboost-14-tiktok-repurpose autoboost-14-tiktok-repurpose autoboost"><a href="/autoboost-14-tiktok-repurpose/">
+    <span class="nom">autoboost-14-tiktok-repurpose</span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ En attente</span><span class="fam">Autoboost</span></span>
+  </a></li>
+  <li data-fam="Divers" data-mp4="1" data-k="seedance #40 — seedance (3 astuces de prompt) divers"><a href="/seedance/">
+    <span class="nom">#40 — Seedance (3 astuces de prompt)<small>/seedance</small></span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">🔊 À valider</span><span class="fam">Divers</span></span>
+  </a></li>
+  <li data-fam="Clients" data-mp4="0" data-k="site-neon site-neon clients"><a href="/site-neon/">
+    <span class="nom">site-neon</span>
+    <span class="droite"><span class="fam">Clients</span></span>
+  </a></li>
+  <li data-fam="Divers" data-mp4="1" data-k="terminal #39 — terminal · le temps perdu, tu le rattrapes divers"><a href="/terminal/">
+    <span class="nom">#39 — Terminal · le temps perdu, tu le rattrapes<small>/terminal</small></span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">🔊 À valider</span><span class="fam">Divers</span></span>
+  </a></li>
+  <li data-fam="Divers" data-mp4="1" data-k="tokens #38 — ne gaspillez pas vos tokens divers"><a href="/tokens/">
+    <span class="nom">#38 — Ne gaspillez pas vos tokens<small>/tokens</small></span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ En attente</span><span class="fam">Divers</span></span>
+  </a></li>
+  <li data-fam="Divers" data-mp4="1" data-k="fable #37 — fable (ton ia coûte 5× trop cher) divers"><a href="/fable/">
+    <span class="nom">#37 — Fable (ton IA coûte 5× trop cher)<small>/fable</small></span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ En attente</span><span class="fam">Divers</span></span>
+  </a></li>
+  <li data-fam="Divers" data-mp4="1" data-k="fable-sfx #37 — fable · test palette sfx (avant / après) divers"><a href="/fable-sfx/">
+    <span class="nom">#37 — Fable · test palette SFX (avant / après)<small>/fable-sfx</small></span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">🔊 À valider</span><span class="fam">Divers</span></span>
+  </a></li>
+  <li data-fam="Divers" data-mp4="0" data-k="sound-design 🔊 sound design — 3 positions à choisir divers"><a href="/sound-design/">
+    <span class="nom">🔊 Sound design — 3 positions à choisir<small>/sound-design</small></span>
+    <span class="droite"><span class="badge">👉 À toi</span><span class="fam">Divers</span></span>
+  </a></li>
+  <li data-fam="Divers" data-mp4="0" data-k="sous-titres 🎬 sous-titres — 7 designs à choisir divers"><a href="/sous-titres/">
+    <span class="nom">🎬 Sous-titres — 7 designs à choisir<small>/sous-titres</small></span>
+    <span class="droite"><span class="badge">👉 À toi</span><span class="fam">Divers</span></span>
+  </a></li>
+  <li data-fam="Autoboost" data-mp4="1" data-k="veille #16 — veille rss automatique autoboost"><a href="/veille/">
+    <span class="nom">#16 — Veille RSS automatique<small>/veille</small></span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">📅 14 juil.</span><span class="fam">Autoboost</span></span>
+  </a></li>
+  <li data-fam="Divers" data-mp4="1" data-k="systeme #34 — ce n'est pas du talent, c'est un système divers"><a href="/systeme/">
+    <span class="nom">#34 — Ce n'est pas du talent, c'est un système<small>/systeme</small></span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ En attente</span><span class="fam">Divers</span></span>
+  </a></li>
+  <li data-fam="Divers" data-mp4="1" data-k="open-generative-ai #36 — open generative ai (alternative higgsfield) divers"><a href="/open-generative-ai/">
+    <span class="nom">#36 — Open Generative AI (alternative Higgsfield)<small>/open-generative-ai</small></span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ En attente</span><span class="fam">Divers</span></span>
+  </a></li>
+  <li data-fam="Divers" data-mp4="1" data-k="meta #30 — pubs meta → emergent divers"><a href="/meta/">
+    <span class="nom">#30 — Pubs Meta → Emergent<small>/meta</small></span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ En attente</span><span class="fam">Divers</span></span>
+  </a></li>
+  <li data-fam="Divers" data-mp4="1" data-k="kilo-code #21 — création site kilo code (remplace créateur) divers"><a href="/kilo-code/">
+    <span class="nom">#21 — Création Site Kilo Code (remplace Créateur)<small>/kilo-code</small></span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">📅 13 juil. 19h UTC</span><span class="fam">Divers</span></span>
+  </a></li>
+  <li data-fam="FoodBoost" data-mp4="1" data-k="foodboost foodboost — démo compte resto (commente menu) foodboost"><a href="/foodboost/">
+    <span class="nom">FoodBoost — Démo compte resto (Commente MENU)<small>/foodboost</small></span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ En attente</span><span class="fam">FoodBoost</span></span>
+  </a></li>
+  <li data-fam="FoodBoost" data-mp4="1" data-k="foodboost-02 foodboost #02 — vitrine cinemagraph (commente menu) foodboost"><a href="/foodboost-02/">
+    <span class="nom">FoodBoost #02 — Vitrine cinemagraph (Commente MENU)<small>/foodboost-02</small></span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ En attente</span><span class="fam">FoodBoost</span></span>
+  </a></li>
+  <li data-fam="Divers" data-mp4="1" data-k="devis-auto #19 — génération proposition complète (devis) divers"><a href="/devis-auto/">
+    <span class="nom">#19 — Génération Proposition Complète (DEVIS)<small>/devis-auto</small></span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">📅 13 juil. 17h UTC</span><span class="fam">Divers</span></span>
+  </a></li>
+  <li data-fam="Divers" data-mp4="1" data-k="createur #17 — agent ia créateur divers"><a href="/createur/">
+    <span class="nom">#17 — Agent IA Créateur<small>/createur</small></span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">📅 16 juil.</span><span class="fam">Divers</span></span>
+  </a></li>
+  <li data-fam="Divers" data-mp4="1" data-k="claude-mem #35 — claude mem (horror beat-sync) divers"><a href="/claude-mem/">
+    <span class="nom">#35 — Claude mem (horror beat-sync)<small>/claude-mem</small></span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ En attente</span><span class="fam">Divers</span></span>
+  </a></li>
+  <li data-fam="Divers" data-mp4="0" data-k="apercu-effets apercu-effets divers"><a href="/apercu-effets/">
+    <span class="nom">apercu-effets</span>
+    <span class="droite"><span class="fam">Divers</span></span>
+  </a></li>
+  <li data-fam="Divers" data-mp4="1" data-k="blog #15 — article de blog seo divers"><a href="/blog/">
+    <span class="nom">#15 — Article de Blog SEO<small>/blog</small></span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">📅 12 juil.</span><span class="fam">Divers</span></span>
+  </a></li>
+  <li data-fam="Divers" data-mp4="1" data-k="analyse-seo #20 — analyse seo google (remplace veille) divers"><a href="/analyse-seo/">
+    <span class="nom">#20 — Analyse SEO Google (remplace Veille)<small>/analyse-seo</small></span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">📅 13 juil. 18h UTC</span><span class="fam">Divers</span></span>
+  </a></li>
+  <li data-fam="Clients" data-mp4="0" data-k="client-plat-frais-surgeles-saint-pierre client-plat-frais-surgeles-saint-pierre clients"><a href="/client-plat-frais-surgeles-saint-pierre/">
+    <span class="nom">client-plat-frais-surgeles-saint-pierre</span>
+    <span class="droite"><span class="fam">Clients</span></span>
+  </a></li>
+  <li data-fam="Divers" data-mp4="1" data-k="content-ideas #9 — 1200+ content ideas divers"><a href="/content-ideas/">
+    <span class="nom">#9 — 1200+ Content Ideas<small>/content-ideas</small></span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ En attente</span><span class="fam">Divers</span></span>
+  </a></li>
+  <li data-fam="Divers" data-mp4="1" data-k="pinterest-automation #8 — pinterest automation divers"><a href="/pinterest-automation/">
+    <span class="nom">#8 — Pinterest Automation<small>/pinterest-automation</small></span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ En attente</span><span class="fam">Divers</span></span>
+  </a></li>
+  <li data-fam="Divers" data-mp4="1" data-k="dashboard-notion #7 — dashboard sync notion divers"><a href="/dashboard-notion/">
+    <span class="nom">#7 — Dashboard Sync Notion<small>/dashboard-notion</small></span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">⏳ En attente</span><span class="fam">Divers</span></span>
+  </a></li>
+  <li data-fam="Divers" data-mp4="1" data-k="livres-enfants #10 — générateur livres enfants divers"><a href="/livres-enfants/">
+    <span class="nom">#10 — Générateur Livres Enfants<small>/livres-enfants</small></span>
+    <span class="droite"><span class="mp4">mp4</span><span class="badge">✅ Publié</span><span class="fam">Divers</span></span>
+  </a></li>
+  <li data-fam="Clients" data-mp4="0" data-k="client-la-kantine-traiteur client-la-kantine-traiteur clients"><a href="/client-la-kantine-traiteur/">
+    <span class="nom">client-la-kantine-traiteur</span>
+    <span class="droite"><span class="fam">Clients</span></span>
+  </a></li>
+  <li data-fam="Clients" data-mp4="0" data-k="client-la-kantine-optimisation-seo client-la-kantine-optimisation-seo clients"><a href="/client-la-kantine-optimisation-seo/">
+    <span class="nom">client-la-kantine-optimisation-seo</span>
+    <span class="droite"><span class="fam">Clients</span></span>
+  </a></li>
+  <li data-fam="Clients" data-mp4="0" data-k="client-mamzelle-pizza-optimisation client-mamzelle-pizza-optimisation clients"><a href="/client-mamzelle-pizza-optimisation/">
+    <span class="nom">client-mamzelle-pizza-optimisation</span>
+    <span class="droite"><span class="fam">Clients</span></span>
+  </a></li>
+  <li data-fam="Clients" data-mp4="0" data-k="client-sphb-optimisation-seo client-sphb-optimisation-seo clients"><a href="/client-sphb-optimisation-seo/">
+    <span class="nom">client-sphb-optimisation-seo</span>
+    <span class="droite"><span class="fam">Clients</span></span>
+  </a></li>
+  <li data-fam="Clients" data-mp4="0" data-k="client-clicknvan-location-vans-campingcars client-clicknvan-location-vans-campingcars clients"><a href="/client-clicknvan-location-vans-campingcars/">
+    <span class="nom">client-clicknvan-location-vans-campingcars</span>
+    <span class="droite"><span class="fam">Clients</span></span>
+  </a></li>
+  <li data-fam="Clients" data-mp4="0" data-k="client-sunlightfm-website client-sunlightfm-website clients"><a href="/client-sunlightfm-website/">
+    <span class="nom">client-sunlightfm-website</span>
+    <span class="droite"><span class="fam">Clients</span></span>
+  </a></li>
+  <li data-fam="Clients" data-mp4="0" data-k="client-qualitropic-bioeconomie-tropicale client-qualitropic-bioeconomie-tropicale clients"><a href="/client-qualitropic-bioeconomie-tropicale/">
+    <span class="nom">client-qualitropic-bioeconomie-tropicale</span>
+    <span class="droite"><span class="fam">Clients</span></span>
+  </a></li>
+  <li data-fam="Clients" data-mp4="0" data-k="client-latelierdeben-optimisation-seo client-latelierdeben-optimisation-seo clients"><a href="/client-latelierdeben-optimisation-seo/">
+    <span class="nom">client-latelierdeben-optimisation-seo</span>
+    <span class="droite"><span class="fam">Clients</span></span>
+  </a></li>
+  <li data-fam="Clients" data-mp4="0" data-k="client-vieux-pressoir client-vieux-pressoir clients"><a href="/client-vieux-pressoir/">
+    <span class="nom">client-vieux-pressoir</span>
+    <span class="droite"><span class="fam">Clients</span></span>
+  </a></li>
+  <li data-fam="Clients" data-mp4="0" data-k="client-ofim-reunion client-ofim-reunion clients"><a href="/client-ofim-reunion/">
+    <span class="nom">client-ofim-reunion</span>
+    <span class="droite"><span class="fam">Clients</span></span>
+  </a></li>
+</ul>
+
+<p id="vide">Aucune route ne correspond.</p>
+
+</div>
+<script>
+(function(){
+  var q = document.getElementById('q');
+  var chips = [].slice.call(document.querySelectorAll('.chip'));
+  var lis = [].slice.call(document.querySelectorAll('#liste li'));
+  var n = document.getElementById('n');
+  var vide = document.getElementById('vide');
+  var fam = '';
+
+  function appliquer(){
+    var t = q.value.trim().toLowerCase();
+    // Chaque mot doit matcher : « befresh beat » trouve la beat-sync BeFresh.
+    var mots = t ? t.split(/\s+/) : [];
+    var vus = 0;
+    lis.forEach(function(li){
+      var okFam = !fam || (fam === '__mp4' ? li.dataset.mp4 === '1' : li.dataset.fam === fam);
+      var k = li.dataset.k;
+      var okTxt = mots.every(function(w){ return k.indexOf(w) !== -1; });
+      var ok = okFam && okTxt;
+      li.style.display = ok ? '' : 'none';
+      if (ok) vus++;
+    });
+    n.textContent = vus;
+    vide.style.display = vus ? 'none' : 'block';
+  }
+
+  q.addEventListener('input', appliquer);
+  chips.forEach(function(c){
+    c.addEventListener('click', function(){
+      fam = c.dataset.f;
+      chips.forEach(function(x){ x.setAttribute('aria-pressed', String(x === c)); });
+      appliquer();
+    });
+  });
+  // Échap vide la recherche sans toucher au filtre de famille.
+  q.addEventListener('keydown', function(e){
+    if (e.key === 'Escape'){ q.value = ''; appliquer(); }
+  });
+})();
+</script>
 </body>
 </html>
