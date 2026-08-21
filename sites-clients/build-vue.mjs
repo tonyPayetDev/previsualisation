@@ -12,6 +12,10 @@ const VIG = path.join(DOSSIER, 'vignettes');
 const OUT = path.join(DOSSIER, 'vue.html');
 
 const sites = JSON.parse(fs.readFileSync('/tmp/sites.json', 'utf8'));
+// Écrit par la passe de capture des « avant ». Absent au premier lancement.
+const ETATS_AV = fs.existsSync(path.join(DOSSIER, 'avant-etats.json'))
+  ? JSON.parse(fs.readFileSync(path.join(DOSSIER, 'avant-etats.json'), 'utf8'))
+  : { morts: [], casses: [], doutes: [] };
 const journal = fs.existsSync('/tmp/capture-journal.json')
   ? JSON.parse(fs.readFileSync('/tmp/capture-journal.json', 'utf8')) : [];
 const routeDe = Object.fromEntries(journal.map(j => [j.dir, j.route]));
@@ -20,11 +24,14 @@ const ETIQ = { ok: ['Envoyable', '#4ade80'], fix: ['À corriger', '#eab308'], ab
 
 const items = sites.map(s => {
   const vig = fs.existsSync(path.join(VIG, s.dir + '.jpg')) ? 'vignettes/' + s.dir + '.jpg' : '';
-  // L'« avant » n'existe que si on a capturé le site actuel du client.
-  // Déposer la capture dans sites-clients/avant/<dossier>.jpg et régénérer.
+  // L'« avant » a quatre cas, et ils ne disent pas la même chose au client :
+  //   une capture sûre · une capture à vérifier · un domaine mort · rien.
+  // Déposer une capture dans sites-clients/avant/<dossier>.jpg et régénérer.
   const AV = path.join(DOSSIER, 'avant');
   const avant = fs.existsSync(path.join(AV, s.dir + '.jpg')) ? 'avant/' + s.dir + '.jpg' : '';
-  return { ...s, vig, avant, route: routeDe[s.dir] || ('client-' + s.dir) };
+  const mort = ETATS_AV.morts.find(m => m.dir === s.dir);
+  const doute = ETATS_AV.doutes.includes(s.dir);
+  return { ...s, vig, avant, mort, doute, route: routeDe[s.dir] || ('client-' + s.dir) };
 }).sort((a, b) => (b.vig ? 1 : 0) - (a.vig ? 1 : 0) || a.nom.localeCompare(b.nom, 'fr'));
 
 const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -79,6 +86,11 @@ a.retour:hover{color:var(--or)}
 .vue .avant img{width:calc(100% / (var(--left) / 100%));max-width:none;height:100%}
 .vue .avant .neant{position:absolute;inset:0;background:#0e0e14;display:flex;
   flex-direction:column;align-items:center;justify-content:center;gap:.2rem;text-align:center;padding:.5rem}
+.vue .avant .doute{position:absolute;top:8px;left:8px;font-size:.58rem;font-weight:700;
+  padding:.12rem .38rem;border-radius:999px;background:rgba(239,100,97,.92);color:#140505;z-index:2}
+.vue .avant .neant.mort span{color:var(--rouge)}
+.vue .avant .neant em{font-style:normal;font-size:.6rem;color:var(--mut);margin-top:.15rem;
+  overflow-wrap:anywhere;padding:0 .4rem}
 .vue .avant .neant b{font-size:.7rem;color:var(--mut);font-weight:600}
 .vue .avant .neant span{font-size:.78rem;color:var(--rouge);font-weight:700}
 .vue .poignee{position:absolute;top:0;bottom:0;left:var(--left);width:2px;
@@ -174,8 +186,13 @@ ${items.map(i => `  <article class="carte" data-dir="${esc(i.dir)}" data-etat="$
            de vieux site à montrer — il n'y a rien du tout, et c'est justement
            l'argument. Une capture réelle prendra sa place dès qu'on l'aura. -->
       <div class="avant"${i.avant ? '' : ' data-vide="1"'}>
-        ${i.avant ? `<img src="${esc(i.avant)}" alt="Site actuel de ${esc(i.nom)}" loading="lazy">`
-                  : `<div class="neant"><b>Aujourd'hui</b><span>aucun site</span></div>`}
+        ${i.avant
+            ? `<img src="${esc(i.avant)}" alt="Site actuel de ${esc(i.nom)}" loading="lazy">${
+                i.doute ? '<span class="doute">à vérifier</span>' : ''}`
+            : i.mort
+              ? `<div class="neant mort"><b>Aujourd'hui</b><span>domaine injoignable</span><em>${
+                  esc(i.mort.url.replace(/^https?:\/\//, ''))}</em></div>`
+              : `<div class="neant"><b>Aujourd'hui</b><span>aucun site</span></div>`}
       </div>
       <div class="poignee"><i></i></div>
       <span class="etiq g">Avant</span>
