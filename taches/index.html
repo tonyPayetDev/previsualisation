@@ -1,0 +1,432 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Où en sont mes demandes</title>
+<style>
+:root{
+  --fond:#0e1013; --carte:#16191e; --bord:#252a31;
+  --texte:#e8eaed; --gris:#9aa3ad; --gris2:#6b747e;
+  --vert:#3ecf8e; --ambre:#f0b429; --rouge:#e5544b; --bleu:#5b9dff;
+}
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--fond); color:var(--texte);
+  font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  -webkit-font-smoothing:antialiased;
+}
+.page{max-width:820px; margin:0 auto; padding:28px 18px 80px}
+header h1{font-size:26px; line-height:1.2; margin:0 0 6px; letter-spacing:-.02em}
+header p{margin:0; color:var(--gris); font-size:14px}
+
+/* Compteurs — cliquables, ils FILTRENT. Un chiffre qui ne fait rien
+   quand on le touche, sur téléphone, passe pour un bug. */
+.compteurs{display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin:22px 0 8px}
+.c{
+  background:var(--carte); border:1px solid var(--bord); border-radius:12px;
+  padding:12px 10px; text-align:left; cursor:pointer; color:inherit;
+  font:inherit; transition:border-color .15s, background .15s;
+}
+.c:hover{border-color:#39414b}
+.c[aria-pressed="true"]{background:#1d2229; border-color:#454f5b}
+.c b{display:block; font-size:26px; line-height:1; font-variant-numeric:tabular-nums; margin-bottom:5px}
+.c span{font-size:12px; color:var(--gris); display:block}
+.c.livre b{color:var(--vert)} .c.bloque b{color:var(--rouge)} .c.attente b{color:var(--ambre)}
+.aide{font-size:12px; color:var(--gris2); margin:0 0 20px; min-height:16px}
+
+h2{font-size:13px; text-transform:uppercase; letter-spacing:.09em; color:var(--gris);
+   margin:30px 0 10px; font-weight:600}
+ul{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:8px}
+.t{
+  display:flex; gap:11px; align-items:flex-start;
+  background:var(--carte); border:1px solid var(--bord); border-radius:11px; padding:12px 13px;
+}
+.t[hidden]{display:none}
+.pastille{width:8px; height:8px; border-radius:50%; margin-top:8px; flex:0 0 8px}
+.pastille.livre{background:var(--vert)} .pastille.bloque{background:var(--rouge)}
+.pastille.attente{background:var(--ambre)} .pastille.toi{background:var(--bleu)}
+.corps{flex:1; min-width:0}
+.titre{margin:0; font-size:15px; line-height:1.4}
+.note{margin:4px 0 0; font-size:13px; color:var(--gris); line-height:1.45}
+.voir{
+  flex:0 0 auto; font-size:13px; color:var(--bleu); text-decoration:none;
+  border:1px solid #2c3b52; border-radius:7px; padding:4px 10px; margin-top:1px;
+}
+.voir:hover{background:#182338}
+.voir.vide{border:0; padding:0; width:0}
+.toi .titre{font-weight:500}
+.rappel{
+  border:1px solid #2a3446; background:#141a24; border-radius:11px;
+  padding:13px 14px; margin:10px 0 0; font-size:13.5px; color:#b8c4d4; line-height:1.5;
+}
+footer{margin-top:34px; font-size:12px; color:var(--gris2); line-height:1.6}
+@media(max-width:520px){
+  .compteurs{grid-template-columns:1fr 1fr 1fr; gap:7px}
+  .c{padding:10px 8px} .c b{font-size:22px} .c span{font-size:11px}
+  header h1{font-size:22px}
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+<header>
+  <h1>Où en sont mes demandes</h1>
+  <p>Tout ce que tu m'as demandé, et où ça en est. Mis à jour le 2026-08-21.</p>
+</header>
+
+<div class="compteurs">
+  <button class="c livre"   data-f="livre"   aria-pressed="false"><b>16</b><span>Livré</span></button>
+  <button class="c bloque"  data-f="bloque"  aria-pressed="false"><b>2</b><span>Bloqué</span></button>
+  <button class="c attente" data-f="attente" aria-pressed="false"><b>13</b><span>Attend toi</span></button>
+</div>
+<p class="aide" id="aide">Touche un chiffre pour ne voir que celles-là.</p>
+
+<h2>De mon côté</h2>
+<ul id="liste">
+<li class="t" data-etat="livre">
+  <span class="pastille livre" aria-hidden="true"></span>
+  <div class="corps">
+    <p class="titre">Top 3 en écran scindé, avatar qui pointe vers les logos</p>
+    <p class="note">Le geste ne durait que 3 s dans le clip source : portion isolée et bouclée.</p>
+  </div>
+  <a class="voir" href="/autoboost-top3-split/">Voir</a>
+</li>
+<li class="t" data-etat="livre">
+  <span class="pastille livre" aria-hidden="true"></span>
+  <div class="corps">
+    <p class="titre">Landing AutomatisationBoost cinématique (salle de contrôle)</p>
+    
+  </div>
+  <a class="voir" href="/automatisationboost-cinematique/">Voir</a>
+</li>
+<li class="t" data-etat="livre">
+  <span class="pastille livre" aria-hidden="true"></span>
+  <div class="corps">
+    <p class="titre">Landing avec ton visage, boule d'énergie, casque VR, matrice</p>
+    <p class="note">Boule dessinée en canvas : incrustée dans la photo, elle n'aurait pas pu grossir.</p>
+  </div>
+  <a class="voir" href="/automatisationboost-matrix/">Voir</a>
+</li>
+<li class="t" data-etat="livre">
+  <span class="pastille livre" aria-hidden="true"></span>
+  <div class="corps">
+    <p class="titre">3 vidéos BeFresh — accès événementiel, 2 montages + beat-sync</p>
+    <p class="note">BPM mesuré à 130,00 — le manifeste annonçait 128.</p>
+  </div>
+  <a class="voir" href="/befresh-evenementiel/">Voir</a>
+</li>
+<li class="t" data-etat="livre">
+  <span class="pastille livre" aria-hidden="true"></span>
+  <div class="corps">
+    <p class="titre">Site Family Arena, style cinématique au scroll</p>
+    <p class="note">Portail qui s'ouvre depuis la tête de la joueuse.</p>
+  </div>
+  <a class="voir" href="/family-arena-portail/">Voir</a>
+</li>
+<li class="t" data-etat="livre">
+  <span class="pastille livre" aria-hidden="true"></span>
+  <div class="corps">
+    <p class="titre">Essai ego refait sans or ni néon</p>
+    <p class="note">0 pixel doré mesuré sur toute la durée. Musique « Au bord des étoiles ».</p>
+  </div>
+  <a class="voir" href="/essai-ego-tom-odell-v2/">Voir</a>
+</li>
+<li class="t" data-etat="livre">
+  <span class="pastille livre" aria-hidden="true"></span>
+  <div class="corps">
+    <p class="titre">Vidéo du contenu de la formation</p>
+    <p class="note">Les 6 titres de modules sont les vrais, lus dans le cours.</p>
+  </div>
+  <a class="voir" href="/autoboost-formation-contenu/">Voir</a>
+</li>
+<li class="t" data-etat="livre">
+  <span class="pastille livre" aria-hidden="true"></span>
+  <div class="corps">
+    <p class="titre">Journal IA du 21/08 réparé (il était vide)</p>
+    <p class="note">64,3 s au lieu de 18,9. Garde-fou posé : sous 3 brèves, le rendu refuse.</p>
+  </div>
+  <a class="voir" href="/journal-ia-2026-08-21/">Voir</a>
+</li>
+<li class="t" data-etat="livre">
+  <span class="pastille livre" aria-hidden="true"></span>
+  <div class="corps">
+    <p class="titre">Carte des projets — bulles, objectifs, pourquoi</p>
+    <p class="note">Avec pomodoro et accès Notion.</p>
+  </div>
+  <a class="voir" href="/carte/">Voir</a>
+</li>
+<li class="t" data-etat="livre">
+  <span class="pastille livre" aria-hidden="true"></span>
+  <div class="corps">
+    <p class="titre">Sites clients — galerie, avant/après, suivi d'appels</p>
+    <p class="note">66 captures du vrai site actuel. 5 domaines ne résolvent plus.</p>
+  </div>
+  <a class="voir" href="/sites-clients/vue.html">Voir</a>
+</li>
+<li class="t" data-etat="livre">
+  <span class="pastille livre" aria-hidden="true"></span>
+  <div class="corps">
+    <p class="titre">Ressource sur le volume en acquisition + calculateur</p>
+    <p class="note">MOFU. Écrite sur tes chiffres : 15 posts sur 16 sans commentaire.</p>
+  </div>
+  <a class="voir" href="/ressource-volume-acquisition/">Voir</a>
+</li>
+<li class="t" data-etat="livre">
+  <span class="pastille livre" aria-hidden="true"></span>
+  <div class="corps">
+    <p class="titre">Index de prévisualisation filtrable, titres raccourcis</p>
+    <p class="note">560 caractères max → 79. 297 routes listées au lieu de 150.</p>
+  </div>
+  <a class="voir" href="/">Voir</a>
+</li>
+<li class="t" data-etat="livre">
+  <span class="pastille livre" aria-hidden="true"></span>
+  <div class="corps">
+    <p class="titre">Souvenir HADO pour Family Arena</p>
+    <p class="note">Clip de 5 s généré par Seedance, 0,90 $. Envoyé en fichier.</p>
+  </div>
+  <span class="voir vide" aria-hidden="true"></span>
+</li>
+<li class="t" data-etat="livre">
+  <span class="pastille livre" aria-hidden="true"></span>
+  <div class="corps">
+    <p class="titre">Time-lapse « je suis réel » à partir de tes 3 vidéos</p>
+    <p class="note">18,9 s → 4,4 s, en 9:16 et 16:9, sans musique pour s'insérer partout.</p>
+  </div>
+  <span class="voir vide" aria-hidden="true"></span>
+</li>
+<li class="t" data-etat="livre">
+  <span class="pastille livre" aria-hidden="true"></span>
+  <div class="corps">
+    <p class="titre">Production vidéo basculée sur v3, fond vert en pause</p>
+    <p class="note">Skills + 2 agents + 1 routine cloud. Le cercle néon jaune est conservé.</p>
+  </div>
+  <span class="voir vide" aria-hidden="true"></span>
+</li>
+<li class="t" data-etat="livre">
+  <span class="pastille livre" aria-hidden="true"></span>
+  <div class="corps">
+    <p class="titre">Journal IA élargi — GitHub, clivant, coup à jouer</p>
+    <p class="note">Effectif à la prochaine édition, 00h05 UTC.</p>
+  </div>
+  <span class="voir vide" aria-hidden="true"></span>
+</li>
+<li class="t" data-etat="bloque">
+  <span class="pastille bloque" aria-hidden="true"></span>
+  <div class="corps">
+    <p class="titre">Publier le Journal IA corrigé sur les 5 réseaux</p>
+    <p class="note">Média déjà uploadé chez Blotato. Seul le create_post est refusé par les permissions.</p>
+  </div>
+  <span class="voir vide" aria-hidden="true"></span>
+</li>
+<li class="t" data-etat="bloque">
+  <span class="pastille bloque" aria-hidden="true"></span>
+  <div class="corps">
+    <p class="titre">Programmer les 4 prompt-reveal (sauf REGARD)</p>
+    <p class="note">Même blocage de permission — et BURGER, SHONEN, NEON, COMBAT n'ont aucune porte.</p>
+  </div>
+  <span class="voir vide" aria-hidden="true"></span>
+</li>
+<li class="t" data-etat="attente">
+  <span class="pastille attente" aria-hidden="true"></span>
+  <div class="corps">
+    <p class="titre">Choisir la voix BeFresh</p>
+    <p class="note">9 voix ElevenLabs envoyées. Dès que tu choisis, je refais les 3 montages pour 12 centimes.</p>
+  </div>
+  <span class="voir vide" aria-hidden="true"></span>
+</li>
+<li class="t" data-etat="attente">
+  <span class="pastille attente" aria-hidden="true"></span>
+  <div class="corps">
+    <p class="titre">Family Arena — vraie séquence HADO filmée</p>
+    <p class="note">Le clip actuel part d'une image générée. Avec 10-20 s filmées chez eux, le rendez-vous se conclut seul.</p>
+  </div>
+  <span class="voir vide" aria-hidden="true"></span>
+</li>
+<li class="t" data-etat="attente">
+  <span class="pastille attente" aria-hidden="true"></span>
+  <div class="corps">
+    <p class="titre">Projet Kripia — orthographe, style, et vendre le clip ou la méthode</p>
+    <p class="note">La fourche décide de tout : prestation ou produit.</p>
+  </div>
+  <span class="voir vide" aria-hidden="true"></span>
+</li>
+<li class="t" data-etat="attente">
+  <span class="pastille attente" aria-hidden="true"></span>
+  <div class="corps">
+    <p class="titre">Clip de 3 minutes beat-sync</p>
+    <p class="note">Ta banque avatar n'a que 38,8 s exploitables. Il faut tourner davantage, ou inverser le rapport image/avatar.</p>
+  </div>
+  <span class="voir vide" aria-hidden="true"></span>
+</li>
+<li class="t" data-etat="attente">
+  <span class="pastille attente" aria-hidden="true"></span>
+  <div class="corps">
+    <p class="titre">Mot-clé et porte pour les 2 ressources écrites aujourd'hui</p>
+    <p class="note">Tu as déjà 15 mots annoncés sans porte. Je n'en ajoute pas un 16e sans ton accord.</p>
+  </div>
+  <span class="voir vide" aria-hidden="true"></span>
+</li>
+<li class="t" data-etat="attente">
+  <span class="pastille attente" aria-hidden="true"></span>
+  <div class="corps">
+    <p class="titre">Planifier cron-watchdog en routine quotidienne</p>
+    <p class="note">Il n'a jamais tourné : rien ne l'invoque. C'est lui qui aurait vu le journal vide.</p>
+  </div>
+  <span class="voir vide" aria-hidden="true"></span>
+</li>
+<li class="t" data-etat="attente">
+  <span class="pastille attente" aria-hidden="true"></span>
+  <div class="corps">
+    <p class="titre">Relancer gite-matilona-sainte-rose (503)</p>
+    <p class="note">Site client hors ligne.</p>
+  </div>
+  <span class="voir vide" aria-hidden="true"></span>
+</li>
+<li class="t" data-etat="attente">
+  <span class="pastille attente" aria-hidden="true"></span>
+  <div class="corps">
+    <p class="titre">Repointer les 2 autres routines cloud en v3</p>
+    <p class="note">Dont le doublon quotidien de 22h, qui produit une 2e vidéo depuis la même file.</p>
+  </div>
+  <span class="voir vide" aria-hidden="true"></span>
+</li>
+<li class="t" data-etat="attente">
+  <span class="pastille attente" aria-hidden="true"></span>
+  <div class="corps">
+    <p class="titre">Feed Instagram BeFresh</p>
+    <p class="note">Mentionné en passant, jamais traité. Dis-moi si c'est toujours d'actualité.</p>
+  </div>
+  <span class="voir vide" aria-hidden="true"></span>
+</li>
+<li class="t" data-etat="attente">
+  <span class="pastille attente" aria-hidden="true"></span>
+  <div class="corps">
+    <p class="titre">Skill reel-tempo-match (mesurer le BPM d'un Reel de référence)</p>
+    <p class="note">Proposé, pas construit. Il me faut un Reel de calibrage.</p>
+  </div>
+  <span class="voir vide" aria-hidden="true"></span>
+</li>
+<li class="t" data-etat="attente">
+  <span class="pastille attente" aria-hidden="true"></span>
+  <div class="corps">
+    <p class="titre">3 autres clips Higgsfield + musique tendance</p>
+    <p class="note">Le blocage vidéo est levé — Seedance marche via WaveSpeed. Il me manque le choix des clips.</p>
+  </div>
+  <span class="voir vide" aria-hidden="true"></span>
+</li>
+<li class="t" data-etat="attente">
+  <span class="pastille attente" aria-hidden="true"></span>
+  <div class="corps">
+    <p class="titre">VideoBoost 100 % hors ligne</p>
+    <p class="note">Faisable : il ne reste que TTS et Whisper à remplacer en local. Dis-moi ta machine.</p>
+  </div>
+  <span class="voir vide" aria-hidden="true"></span>
+</li>
+<li class="t" data-etat="attente">
+  <span class="pastille attente" aria-hidden="true"></span>
+  <div class="corps">
+    <p class="titre">Décider du sort du dépôt public (106 noms, 73 numéros dans l'historique)</p>
+    <p class="note">Le mot de passe protège le serveur, pas GitHub.</p>
+  </div>
+  <span class="voir vide" aria-hidden="true"></span>
+</li>
+</ul>
+<p class="rappel" id="rien" hidden>Rien dans cette catégorie.</p>
+
+<h2>De ton côté — personne d'autre ne peut le faire</h2>
+<ul>
+<li class="t toi">
+  <span class="pastille toi" aria-hidden="true"></span>
+  <div class="corps">
+    <p class="titre">Appeler les ~30 personnes qui ont reçu un site</p>
+    <p class="note">0 appel passé à ce jour. C'est la ligne qui décide de tout le reste.</p>
+  </div>
+</li>
+<li class="t toi">
+  <span class="pastille toi" aria-hidden="true"></span>
+  <div class="corps">
+    <p class="titre">Appeler Osmose Bistro</p>
+    <p class="note">138 avis Google, aucun site, la maquette est prête.</p>
+  </div>
+</li>
+<li class="t toi">
+  <span class="pastille toi" aria-hidden="true"></span>
+  <div class="corps">
+    <p class="titre">Appeler Family Arena</p>
+    <p class="note">Dossier complet, souvenir HADO en main, concurrents fermés.</p>
+  </div>
+</li>
+<li class="t toi">
+  <span class="pastille toi" aria-hidden="true"></span>
+  <div class="corps">
+    <p class="titre">Contacter The Grill</p>
+    <p class="note">La vidéo démo est faite. Seule ligne verte de tes contacts chauds.</p>
+  </div>
+</li>
+<li class="t toi">
+  <span class="pastille toi" aria-hidden="true"></span>
+  <div class="corps">
+    <p class="titre">Connecter @automationboost7 à Blotato</p>
+    <p class="note">Tes TikTok partent sur un compte à 0 abonné.</p>
+  </div>
+</li>
+<li class="t toi">
+  <span class="pastille toi" aria-hidden="true"></span>
+  <div class="corps">
+    <p class="titre">Activer le connecteur Meta Ads</p>
+    <p class="note">Aucune campagne possible sans, même à 5 €.</p>
+  </div>
+</li>
+<li class="t toi">
+  <span class="pastille toi" aria-hidden="true"></span>
+  <div class="corps">
+    <p class="titre">Remplir le tableau de suivi hebdomadaire</p>
+    <p class="note">Les deux semaines sont vides. 30 minutes le vendredi.</p>
+  </div>
+</li>
+</ul>
+
+<footer>
+  Une ligne par demande de Tony. L'état est vérifié, pas déclaré : « livré » veut dire testé en ligne, pas poussé.<br>
+  Les 7 lignes bleues ne sont pas des tâches que je peux prendre : ce sont des appels
+  et des connexions de compte. C'est là que se trouve ton chiffre d'affaires, pas ici.
+</footer>
+
+</div>
+
+<script>
+// Filtre. Un second clic sur le même chiffre remet tout — sinon on reste
+// coincé dans une vue sans savoir comment en sortir.
+var boutons = [].slice.call(document.querySelectorAll('.c'));
+var items = [].slice.call(document.querySelectorAll('#liste .t'));
+var aide = document.getElementById('aide');
+var rien = document.getElementById('rien');
+var AIDES = {"livre":"Livré — testé en ligne, pas seulement poussé","bloque":"Bloqué — une permission me refuse l'action","attente":"En attente de toi — il me manque une décision ou une info"};
+var actif = null;
+
+function appliquer(){
+  var vus = 0;
+  items.forEach(function(li){
+    var ok = !actif || li.dataset.etat === actif;
+    li.hidden = !ok;
+    if (ok) vus++;
+  });
+  rien.hidden = vus > 0;
+  boutons.forEach(function(b){ b.setAttribute('aria-pressed', String(b.dataset.f === actif)); });
+  aide.textContent = actif ? AIDES[actif] : 'Touche un chiffre pour ne voir que celles-là.';
+}
+
+boutons.forEach(function(b){
+  b.addEventListener('click', function(){
+    actif = (actif === b.dataset.f) ? null : b.dataset.f;
+    appliquer();
+  });
+});
+appliquer();
+</script>
+</body>
+</html>
