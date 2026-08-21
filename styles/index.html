@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Mes styles de site</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=Montserrat:wght@300;400;500;600&family=Fraunces:ital,opsz,wght@0,9..144,300..600;1,9..144,300..600&family=Poppins:wght@300;400;500;600&family=Bebas+Neue&display=swap" rel="stylesheet">
+<style>
+:root{
+  --fond:#0e1013; --carte:#16191e; --bord:#242a32; --bord2:#39424e;
+  --texte:#e9ecf0; --gris:#98a2ae; --gris2:#6c7683; --bleu:#5b9dff; --vert:#3ecf8e;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--fond);color:var(--texte);
+  font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased}
+.page{max-width:1180px;margin:0 auto;padding:28px 18px 90px}
+h1{font-size:25px;margin:0 0 6px;letter-spacing:-.02em}
+.sous{color:var(--gris);font-size:14px;margin:0 0 10px;max-width:70ch}
+.nav{display:flex;flex-wrap:wrap;gap:7px;margin:14px 0 34px}
+.nav a{font-size:12.5px;color:var(--gris);text-decoration:none;border:1px solid var(--bord);
+  border-radius:99px;padding:4px 11px}
+.nav a:hover{color:var(--texte);border-color:var(--bord2)}
+
+.style{border:1px solid var(--bord);border-radius:14px;overflow:hidden;margin-bottom:34px;background:var(--carte)}
+.entete{display:flex;align-items:flex-start;justify-content:space-between;gap:20px;
+  flex-wrap:wrap;padding:18px 20px;border-bottom:1px solid var(--bord)}
+.entete h2{font-size:18px;margin:0 0 4px}
+.cle{font-family:ui-monospace,Menlo,monospace;font-size:12px;color:var(--vert);
+  background:#12241b;border:1px solid #1f4433;border-radius:5px;padding:2px 8px}
+.entete p{margin:6px 0 0;color:var(--gris);font-size:13.5px;max-width:62ch}
+.pour{margin-top:9px;font-size:12.5px;color:var(--gris2)}
+.jetons{display:flex;flex-wrap:wrap;gap:7px;margin-top:11px}
+.jeton{font-size:11.5px;color:var(--gris);border:1px solid var(--bord);border-radius:99px;
+  padding:3px 9px;display:inline-flex;align-items:center;gap:6px}
+.pastille{width:11px;height:11px;border-radius:3px;display:inline-block}
+
+/* Chaque démo est une vraie page miniature, pas une pastille de couleur.
+   Un style se juge sur une mise en page complète — titre, image, corps de
+   texte, bouton — pas sur trois carrés colorés. */
+.demo{height:430px;overflow-y:auto;overflow-x:hidden;position:relative}
+.demo::-webkit-scrollbar{width:8px}
+.demo::-webkit-scrollbar-thumb{background:#2b323b;border-radius:4px}
+.indic{position:absolute;right:14px;bottom:12px;z-index:9;font-size:11px;
+  background:rgba(0,0,0,.6);color:#fff;border-radius:99px;padding:4px 11px;
+  backdrop-filter:blur(4px);pointer-events:none}
+
+/* ─────────── STYLE A — Villa Fleurie ─────────── */
+.sA{--or:#b3a780;--noir:#000;--txt:#1a1a1a;--mid:#555550;--clair:#f5f5f3;--bord-a:#e8e4dc;
+  font-family:'Montserrat',sans-serif;background:#fff;color:var(--txt)}
+.sA .h{height:250px;background:linear-gradient(rgba(0,0,0,.42),rgba(0,0,0,.42)),
+  url('../client-villa-fleurie-restaurant-seminaires/assets/images/home-hero.jpg') center/cover;
+  display:flex;align-items:center;justify-content:center;text-align:center;padding:20px}
+.sA .h h3{font-family:'Cormorant Garamond',serif;font-weight:300;color:#fff;
+  font-size:40px;margin:0;letter-spacing:.01em;line-height:1.1}
+.sA .h span{display:block;font-size:10px;letter-spacing:.34em;text-transform:uppercase;
+  color:var(--or);margin-bottom:14px;font-weight:500}
+.sA .c{padding:38px 34px}
+.sA .c h4{font-family:'Cormorant Garamond',serif;font-weight:400;font-size:27px;margin:0 0 14px}
+.sA .c p{color:var(--mid);font-size:14px;line-height:1.75;margin:0 0 18px;max-width:56ch}
+.sA .b{display:inline-block;border:1px solid var(--or);color:var(--or);text-decoration:none;
+  padding:12px 28px;font-size:11px;letter-spacing:.22em;text-transform:uppercase}
+.sA .g{display:grid;grid-template-columns:repeat(3,1fr);gap:3px}
+.sA .g div{aspect-ratio:1;background-size:cover;background-position:center}
+.sA .band{background:var(--clair);padding:28px 34px;display:grid;grid-template-columns:repeat(3,1fr);gap:20px;text-align:center}
+.sA .band b{font-family:'Cormorant Garamond',serif;font-weight:400;font-size:26px;display:block}
+.sA .band span{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--mid)}
+
+/* ─────────── STYLE B — Scroll descendant ─────────── */
+.sB{background:#0b0b0d;color:#f2f2f0;font-family:'Poppins',sans-serif}
+.sB .piste{height:900px;position:relative}
+.sB .scene{position:sticky;top:0;height:430px;overflow:hidden}
+.sB .img{position:absolute;inset:-8%;background-size:cover;background-position:center;
+  animation:kb 30s ease-in-out infinite alternate}
+@keyframes kb{0%{transform:scale(1)}100%{transform:scale(1.13) translate(-2%,-1.5%)}}
+.sB .voile{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.62),rgba(0,0,0,.28) 45%,rgba(0,0,0,.82))}
+.sB .txt{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;padding:0 36px;z-index:3}
+.sB .txt h3{font-family:'Fraunces',serif;font-weight:300;font-size:38px;margin:0;line-height:1.05;letter-spacing:-.02em}
+.sB .txt h3 i{font-style:italic;display:block;color:#d9c9a3}
+.sB .txt p{color:rgba(255,255,255,.78);font-size:13.5px;max-width:40ch;margin:16px 0 0}
+.sB .suite{padding:40px 36px;background:#0b0b0d}
+.sB .suite h4{font-family:'Fraunces',serif;font-weight:300;font-size:24px;margin:0 0 12px}
+.sB .suite p{color:rgba(255,255,255,.6);font-size:14px;line-height:1.7;max-width:56ch}
+.sB .fleche{position:absolute;left:50%;bottom:16px;transform:translateX(-50%);z-index:4;
+  font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.5);
+  animation:bat 2.4s ease-in-out infinite}
+@keyframes bat{0%,100%{transform:translateX(-50%) translateY(0);opacity:.5}50%{transform:translateX(-50%) translateY(6px);opacity:1}}
+
+/* ─────────── STYLE C — Chaleureux ─────────── */
+.sC{--terre:#8c4a2f;--beige:#f4ece1;--sable:#e0cdb4;--enc:#2b211a;
+  background:var(--beige);color:var(--enc);font-family:'Poppins',sans-serif}
+.sC .h{position:relative;height:230px;background-size:cover;background-position:center;
+  display:flex;align-items:flex-end}
+.sC .h .in{background:linear-gradient(transparent,rgba(43,33,26,.88));width:100%;padding:26px 32px}
+.sC .h h3{font-family:'Bebas Neue',sans-serif;font-size:42px;letter-spacing:.02em;margin:0;color:#fff;line-height:1}
+.sC .h span{font-size:10.5px;letter-spacing:.28em;text-transform:uppercase;color:var(--sable)}
+.sC .c{padding:34px 32px}
+.sC .c h4{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:.02em;margin:0 0 12px}
+.sC .c p{font-size:14px;line-height:1.72;color:#5c4c40;margin:0 0 20px;max-width:56ch}
+.sC .b{display:inline-block;background:var(--terre);color:#fff;text-decoration:none;
+  padding:13px 30px;border-radius:99px;font-size:12px;letter-spacing:.1em;text-transform:uppercase;font-weight:500}
+.sC .cartes{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;padding:0 32px 34px}
+.sC .cartes div{background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 6px 24px rgba(43,33,26,.09)}
+.sC .cartes i{display:block;height:86px;background-size:cover;background-position:center}
+.sC .cartes b{display:block;padding:12px 14px 4px;font-size:14px;font-weight:600;font-style:normal}
+.sC .cartes em{display:block;padding:0 14px 14px;font-size:12px;color:#7a6757;font-style:normal}
+
+footer{margin-top:30px;font-size:12.5px;color:var(--gris2);line-height:1.65}
+@media(max-width:640px){
+  .sA .c,.sB .suite,.sB .txt,.sC .c{padding-left:20px;padding-right:20px}
+  .sC .cartes{grid-template-columns:1fr;padding-left:20px;padding-right:20px}
+  .sA .band{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+<h1>Mes styles de site</h1>
+<p class="sous">Trois lignes graphiques, chacune montrée sur une vraie mise en page — pas sur
+des pastilles de couleur. Un style se juge sur un titre, une image, un corps de texte et un
+bouton réunis.</p>
+<p class="sous">Dans la <b>vue en vignettes</b>, chaque fiche a désormais un sélecteur de style.
+Le style choisi part avec l'ordre de correction : je sais alors quoi appliquer, sans que tu aies
+à le redécrire à chaque fois.</p>
+<nav class="nav">
+  <a href="/sites-clients/vue.html">Vue en vignettes</a>
+  <a href="/taches/">Mes demandes</a>
+  <a href="/carte/">La carte</a>
+  <a href="/">Prévisualisation</a>
+</nav>
+
+<!-- A -->
+<div class="style">
+  <div class="entete">
+    <div>
+      <h2>Élégant sobre <span class="cle">villa-fleurie</span></h2>
+      <p>Or sourd, serif classique, beaucoup de blanc, transitions lentes. La photo porte tout,
+         la mise en page s'efface. C'est le style de Villa Fleurie, que tu as trouvé bon.</p>
+      <p class="pour">Pour : restaurant gastronomique, hôtel, salle de réception, traiteur.</p>
+      <div class="jetons">
+        <span class="jeton"><i class="pastille" style="background:#b3a780"></i>#b3a780 or sourd</span>
+        <span class="jeton"><i class="pastille" style="background:#1a1a1a"></i>#1a1a1a encre</span>
+        <span class="jeton"><i class="pastille" style="background:#f5f5f3;outline:1px solid #333"></i>#f5f5f3 papier</span>
+        <span class="jeton">Cormorant Garamond + Montserrat</span>
+      </div>
+    </div>
+  </div>
+  <div class="demo sA">
+    <span class="indic">démo · fais défiler</span>
+    <div class="h"><div><span>Restaurant &amp; réceptions</span><h3>Une table,<br>une parenthèse.</h3></div></div>
+    <div class="c">
+      <h4>La maison</h4>
+      <p>Une cuisine de saison, servie dans un cadre qui prend son temps. Les produits viennent
+         de l'île, la carte change avec eux.</p>
+      <a class="b" href="#">Réserver une table</a>
+    </div>
+    <div class="g">
+      <div style="background-image:url('../client-villa-fleurie-restaurant-seminaires/assets/images/plat-1.jpg')"></div>
+      <div style="background-image:url('../client-villa-fleurie-restaurant-seminaires/assets/images/int-1.jpg')"></div>
+      <div style="background-image:url('../client-villa-fleurie-restaurant-seminaires/assets/images/ext-1.jpg')"></div>
+    </div>
+    <div class="band">
+      <div><b>Midi &amp; soir</b><span>du mardi au samedi</span></div>
+      <div><b>80 couverts</b><span>en salle</span></div>
+      <div><b>Séminaires</b><span>sur demande</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- B -->
+<div class="style">
+  <div class="entete">
+    <div>
+      <h2>Scroll descendant <span class="cle">scroll-cinema</span></h2>
+      <p>L'image reste fixe et le texte descend par-dessus. Le fond dérive lentement en
+         Ken Burns. C'est le style que tu as demandé — celui qui donne l'impression d'entrer
+         dans le lieu plutôt que de consulter une page.</p>
+      <p class="pour">Pour : restaurant qui a de belles photos de lieu, hôtel, bar, plage.</p>
+      <div class="jetons">
+        <span class="jeton"><i class="pastille" style="background:#0b0b0d"></i>#0b0b0d nuit</span>
+        <span class="jeton"><i class="pastille" style="background:#d9c9a3"></i>#d9c9a3 accent chaud</span>
+        <span class="jeton">Fraunces + Poppins</span>
+        <span class="jeton">exige de vraies photos de lieu</span>
+      </div>
+    </div>
+  </div>
+  <div class="demo sB">
+    <span class="indic">démo · fais défiler</span>
+    <div class="piste">
+      <div class="scene">
+        <div class="img" style="background-image:url('../client-villa-fleurie-restaurant-seminaires/assets/images/ext-2.jpg')"></div>
+        <div class="voile"></div>
+        <div class="txt">
+          <h3>Le lieu<i>avant le menu.</i></h3>
+          <p>On entre, on s'assoit, on regarde autour. Le reste vient après.</p>
+        </div>
+        <span class="fleche">▼ descendre</span>
+      </div>
+    </div>
+    <div class="suite">
+      <h4>Puis la carte</h4>
+      <p>Le texte arrive une fois le lieu installé. Chaque section garde son image au fond
+         pendant qu'on la lit, et cède la place à la suivante.</p>
+    </div>
+  </div>
+</div>
+
+<!-- C -->
+<div class="style">
+  <div class="entete">
+    <div>
+      <h2>Chaleureux <span class="cle">chaleureux</span></h2>
+      <p>Beige, terre cuite, titres larges, coins arrondis. Plus direct et plus gourmand que
+         les deux autres — on voit le produit tout de suite.</p>
+      <p class="pour">Pour : pizzeria, snack, boulangerie, food-truck, cuisine de rue.</p>
+      <div class="jetons">
+        <span class="jeton"><i class="pastille" style="background:#8c4a2f"></i>#8c4a2f terre cuite</span>
+        <span class="jeton"><i class="pastille" style="background:#f4ece1;outline:1px solid #333"></i>#f4ece1 beige</span>
+        <span class="jeton"><i class="pastille" style="background:#e0cdb4"></i>#e0cdb4 sable</span>
+        <span class="jeton">Bebas Neue + Poppins</span>
+      </div>
+    </div>
+  </div>
+  <div class="demo sC">
+    <span class="indic">démo · fais défiler</span>
+    <div class="h" style="background-image:url('../client-villa-fleurie-restaurant-seminaires/assets/images/plat-2.jpg')">
+      <div class="in"><span>Pizzeria · La Réunion</span><h3>La pâte, tous les jours</h3></div>
+    </div>
+    <div class="c">
+      <h4>Notre carte</h4>
+      <p>Des recettes simples, faites sur place. On commande, on emporte, on se régale.</p>
+      <a class="b" href="#">Voir la carte</a>
+    </div>
+    <div class="cartes">
+      <div><i style="background-image:url('../client-villa-fleurie-restaurant-seminaires/assets/images/plat-1.jpg')"></i><b>Classiques</b><em>la base, bien faite</em></div>
+      <div><i style="background-image:url('../client-villa-fleurie-restaurant-seminaires/assets/images/plat-3.jpg')"></i><b>Du moment</b><em>selon l'arrivage</em></div>
+      <div><i style="background-image:url('../client-villa-fleurie-restaurant-seminaires/assets/images/int-2.jpg')"></i><b>Sur place</b><em>ou à emporter</em></div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  Les photos des démos viennent de Villa Fleurie : ce sont de vraies images de restaurant, pas
+  des visuels de banque. Aucun texte de ces démos n'est un contenu client — ni prix, ni horaire,
+  ni adresse. Ce sont des exemples de mise en page.<br>
+  Un style ne se substitue pas au contenu : il décide de la palette, des polices, du rythme et
+  des effets. Le texte et les photos restent ceux du client.
+</footer>
+
+</div>
+</body>
+</html>

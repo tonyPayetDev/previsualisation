@@ -204,6 +204,15 @@ a.retour:hover{color:var(--or)}
 .vue:has(a.loupe) .etiq.d{right:41px}
 
 /* Choix d'état, y compris « abandonner » */
+.choix-style{display:block;margin:.5rem 0 .45rem}
+.choix-style span{display:block;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--mut);margin-bottom:.22rem}
+.choix-style select{width:100%;background:var(--pan2);border:1px solid var(--bord);
+  color:var(--txt);border-radius:6px;padding:.4rem .5rem;font:inherit;font-size:.74rem}
+.choix-style select:focus{outline:none;border-color:#4d7fd6}
+/* Une fiche dont le style a ete choisi se repere sans lire : sinon, sur 106
+   fiches, on ne sait plus lesquelles ont ete traitees. */
+.carte[data-style]:not([data-style=""]) .choix-style select{border-color:#7c5cd6;color:#c3b0f0}
 .etats{display:flex;gap:.25rem;flex-wrap:wrap}
 .etats .et{flex:1;min-width:0;background:none;border:1px solid var(--bord);color:var(--mut);
   border-radius:6px;padding:.24rem .3rem;font-size:.68rem;cursor:pointer;font-family:inherit;
@@ -331,6 +340,7 @@ a.retour:hover{color:var(--or)}
 ${items.map(i => `  <article class="carte" data-dir="${esc(i.dir)}" data-etat="${esc(i.etat)}" data-flag="0"
     data-resp="${AUDIT[i.dir] && AUDIT[i.dir].mien ? AUDIT[i.dir].mien.note : 0}"
     data-verdict="${esc((AUDIT[i.dir] && AUDIT[i.dir].verdict) || '')}"
+    data-route="${esc(i.route)}"
     data-k="${esc((i.nom + ' ' + i.act + ' ' + i.dir).toLowerCase())}">
     <div class="vue">
       ${i.vig ? `<img class="apres" src="${esc(i.vig)}" alt="Aperçu de ${esc(i.nom)}" loading="lazy">`
@@ -360,6 +370,15 @@ ${items.map(i => `  <article class="carte" data-dir="${esc(i.dir)}" data-etat="$
       <div class="nom">${esc(i.nom)}</div>
       <div class="meta">${esc(i.act || '—')}${i.tel ? ' · ' + esc(i.tel) : ''}</div>
       ${badgeResp(i.dir)}
+      <label class="choix-style">
+        <span>Style à appliquer</span>
+        <select class="style-sel">
+          <option value="">— inchangé —</option>
+          <option value="villa-fleurie">Élégant sobre (Villa Fleurie)</option>
+          <option value="scroll-cinema">Scroll descendant</option>
+          <option value="chaleureux">Chaleureux (pizzeria, snack)</option>
+        </select>
+      </label>
       <div class="etats">
         <button class="et" data-e="ok" type="button">Envoyable</button>
         <button class="et" data-e="fix" type="button">À corriger</button>
@@ -566,6 +585,15 @@ ${items.map(i => `  <article class="carte" data-dir="${esc(i.dir)}" data-etat="$
     // restent invisibles jusqu'au prochain rechargement de page.
     c._raviver = function(){ s = etat[dir] || { f: 0, note: '' }; peindre(); };
 
+    var sel = c.querySelector('.style-sel');
+    if (sel) {
+      sel.value = s.style || '';
+      c.dataset.style = s.style || '';
+      sel.addEventListener('change', function(){
+        s.style = sel.value; etat[dir] = s; c.dataset.style = sel.value; sauver();
+      });
+    }
+
     peindre();
   });
   function raviver(c){ if (c._raviver) c._raviver(); }
@@ -634,8 +662,9 @@ ${items.map(i => `  <article class="carte" data-dir="${esc(i.dir)}" data-etat="$
     marques.forEach(function(c, i){
       var s = etat[c.dataset.dir] || {};
       lignes.push((i + 1) + '. ' + c.querySelector('.nom').textContent.trim());
-      lignes.push('   dossier : /work/previsualisation/' + c.dataset.dir);
-      lignes.push('   en ligne : https://previsualisation.automatisationboost.com/' + c.dataset.dir + '/');
+      lignes.push('   dossier publie : /work/previsualisation/' + (c.dataset.route || ('client-' + c.dataset.dir)));
+      lignes.push('   source        : /work/' + c.dataset.dir + '  (si elle existe)');
+      lignes.push('   en ligne : https://previsualisation.automatisationboost.com/' + (c.dataset.route || ('client-' + c.dataset.dir)) + '/');
       // On distingue l'état d'origine de celui que Tony a posé lui-même :
       // « à abandonner » décidé après avoir REGARDÉ le site ne vaut pas la
       // même chose qu'un état hérité de l'inventaire automatique.
@@ -646,6 +675,13 @@ ${items.map(i => `  <article class="carte" data-dir="${esc(i.dir)}" data-etat="$
         + ((s.note || '').trim() || '(à préciser)'));
       // Les défauts mesurés partent AVEC la demande. Sans ça, Tony devrait
       // les retaper à la main pour chaque site, et il ne le ferait pas.
+      var st = (etat[c.dataset.dir] || {}).style;
+      if (st) {
+        var LIBS = { 'villa-fleurie':'Élégant sobre (Villa Fleurie)',
+                     'scroll-cinema':'Scroll descendant', 'chaleureux':'Chaleureux' };
+        lignes.push('   STYLE À APPLIQUER : ' + (LIBS[st] || st) + '  (clé ' + st + ')');
+        lignes.push('   → voir https://previsualisation.automatisationboost.com/styles/#' + st);
+      }
       var r = c.querySelector('.resp b');
       if (r && Number(c.dataset.resp || 0) > 0) {
         lignes.push('   mesuré au téléphone (390 px) : ' + r.textContent.trim());
