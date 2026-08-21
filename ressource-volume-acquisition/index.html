@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Le volume — et pourquoi il ne marche presque jamais</title>
+<meta name="description" content="Faire du volume pour acquérir des clients : les quatre méthodes qui marchent, où l'IA change vraiment quelque chose, et l'ordre dans lequel l'implémenter.">
+<style>
+:root{--bg:#0a0a0f;--pan:#111118;--pan2:#16161f;--bord:#242430;
+  --txt:#ececf0;--mut:#8b8b9a;--or:#eab308;--vio:#8b5cf6;--rouge:#ef6461;--vert:#4ade80}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--txt);font-size:17px;line-height:1.68;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  -webkit-font-smoothing:antialiased}
+.container{max-width:720px;margin:0 auto;padding:0 24px}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11.5px;
+  letter-spacing:.16em;text-transform:uppercase}
+
+header{border-bottom:1px solid var(--bord);padding:18px 0}
+.logo{display:flex;align-items:center;gap:.55rem;text-decoration:none;color:var(--txt)}
+.logo-icon{width:26px;height:26px;border-radius:6px;background:var(--or);color:#141000;
+  display:grid;place-items:center;font-weight:800;font-size:14px}
+.logo-text{font-weight:700;letter-spacing:-.01em}
+.logo-text i{font-style:normal;color:var(--or)}
+
+.hero{padding:64px 0 44px}
+.cat-badge{display:inline-block;color:var(--or);border:1px solid rgba(234,179,8,.35);
+  border-radius:999px;padding:.28rem .75rem;margin-bottom:22px}
+h1{font-size:clamp(34px,5.6vw,54px);line-height:1.06;letter-spacing:-.03em;font-weight:800;
+  text-wrap:balance}
+h1 em{font-style:normal;color:var(--or)}
+.lede{margin-top:22px;font-size:19px;color:#c2c2ce;max-width:60ch}
+
+.chiffres{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--bord);
+  border-radius:8px;overflow:hidden;margin:38px 0 8px}
+.chiffres div{padding:24px 16px;text-align:center;border-left:1px solid var(--bord)}
+.chiffres div:first-child{border-left:0}
+.chiffres .v{font-size:42px;font-weight:800;line-height:1;font-variant-numeric:tabular-nums}
+.chiffres .v.or{color:var(--or)}.chiffres .v.rouge{color:var(--rouge)}
+.chiffres .l{margin-top:9px;color:var(--mut);font-size:13px;line-height:1.4}
+.src{color:var(--mut);font-size:12.5px;text-align:center;margin-bottom:44px}
+@media(max-width:620px){.chiffres{grid-template-columns:1fr}
+  .chiffres div{border-left:0;border-top:1px solid var(--bord)}
+  .chiffres div:first-child{border-top:0}}
+
+h2{font-size:clamp(24px,3.4vw,34px);line-height:1.14;letter-spacing:-.02em;font-weight:800;
+  margin:56px 0 18px;text-wrap:balance}
+h3{font-size:20px;font-weight:700;margin:34px 0 10px}
+p{margin-bottom:18px}
+p strong{color:#fff;font-weight:650}
+.content-block{color:#cdcdd8}
+
+.callout{border-left:3px solid var(--or);background:var(--pan);border-radius:0 8px 8px 0;
+  padding:22px 26px;margin:32px 0}
+.callout-label{color:var(--or);margin-bottom:10px;display:block}
+.callout p:last-child{margin-bottom:0}
+.callout.rouge{border-left-color:var(--rouge)}
+.callout.rouge .callout-label{color:var(--rouge)}
+
+table{width:100%;border-collapse:collapse;margin:28px 0;font-size:15px;display:block;overflow-x:auto}
+th,td{text-align:left;padding:13px 14px;border-bottom:1px solid var(--bord);vertical-align:top}
+th{color:var(--mut);font-weight:600;font-size:12.5px;text-transform:uppercase;letter-spacing:.08em;
+  white-space:nowrap}
+td strong{color:var(--txt)}
+.oui{color:var(--vert)}.non{color:var(--rouge)}
+
+ol,ul{margin:0 0 20px 22px}
+li{margin-bottom:11px;color:#cdcdd8}
+li strong{color:#fff}
+
+.etape{border:1px solid var(--bord);border-radius:8px;padding:22px 24px;margin-bottom:14px;
+  background:var(--pan)}
+.etape .n{color:var(--or);font-weight:800;font-size:14px;letter-spacing:.06em;display:block;
+  margin-bottom:8px}
+.etape h3{margin:0 0 8px;font-size:19px}
+.etape p{margin-bottom:0;font-size:15.5px;color:#c2c2ce}
+
+.fin{border-top:1px solid var(--bord);margin-top:64px;padding:44px 0 72px;color:var(--mut);
+  font-size:14px}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="container">
+    <a class="logo" href="/">
+      <span class="logo-icon">A</span>
+      <span class="logo-text">Automatisation<i>Boost</i></span>
+    </a>
+  </div>
+</header>
+
+<div class="container">
+
+  <div class="hero">
+    <span class="cat-badge mono">Acquisition</span>
+    <h1>Le volume, et pourquoi<br>il ne marche <em>presque jamais</em>.</h1>
+    <p class="lede">Tout le monde dit qu'il faut faire du volume. Presque personne ne dit sur quoi. Voici les chiffres d'un cas réel — le mien — et ce qu'ils démontrent.</p>
+  </div>
+
+  <div class="chiffres">
+    <div><div class="v or">106</div><div class="l">sites de démonstration<br>construits</div></div>
+    <div><div class="v rouge">13</div><div class="l">emails envoyés<br>à des restaurants</div></div>
+    <div><div class="v rouge">0</div><div class="l">réponse</div></div>
+  </div>
+  <p class="src">Chiffres constatés sur mon propre système, août 2026.</p>
+
+  <div class="content-block">
+
+    <h2>Le volume ne se fait pas là où on croit</h2>
+
+    <p>J'ai construit <strong>106 sites de démonstration</strong>. Chacun est un vrai site, personnalisé, en ligne, prêt à montrer. J'ai récupéré <strong>89 numéros de téléphone</strong>. C'est un volume de préparation que très peu de freelances atteignent.</p>
+
+    <p>Et j'ai envoyé <strong>13 emails</strong>. Zéro réponse. Puis j'ai passé <strong>zéro appel</strong>.</p>
+
+    <p>Voilà l'erreur, et elle est plus courante qu'on ne croit : <strong>j'ai fait du volume sur la partie chère, et aucun volume sur la partie gratuite.</strong> Construire un site coûte du temps et de l'énergie. Décrocher un téléphone ne coûte rien. J'ai industrialisé le difficile et évité le facile.</p>
+
+    <div class="callout rouge">
+      <span class="callout-label mono">La règle qui en découle</span>
+      <p>Le volume de préparation ne vaut rien sans volume de contact. Cent sites que personne ne voit valent exactement autant que zéro site.</p>
+    </div>
+
+    <h2>Les quatre façons de faire du volume</h2>
+
+    <p>Elles ne se valent pas, et surtout elles ne coûtent pas la même chose. Le tableau ci-dessous n'invente rien : il classe par ce qu'il faut dépenser pour un contact utile.</p>
+
+    <table>
+      <thead><tr><th>Méthode</th><th>Ce qu'elle produit</th><th>Son vrai coût</th><th>Là où elle casse</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Email de masse</strong></td>
+          <td>beaucoup d'envois, peu de lectures</td>
+          <td>quasi nul par envoi</td>
+          <td class="non">se reconnaît en une seconde ; 13 envois → 0 réponse</td>
+        </tr>
+        <tr>
+          <td><strong>Contenu public</strong></td>
+          <td>de la portée, puis des commentaires, puis des messages</td>
+          <td>élevé au départ, décroissant</td>
+          <td>lent : rien avant plusieurs semaines</td>
+        </tr>
+        <tr>
+          <td><strong>Sortant avec un objet</strong></td>
+          <td>un artefact déjà fait qu'on montre</td>
+          <td>cher à produire — sauf avec l'IA</td>
+          <td class="oui">c'est la seule que l'IA rend vraiment scalable</td>
+        </tr>
+        <tr>
+          <td><strong>Recommandation</strong></td>
+          <td>peu de contacts, très qualifiés</td>
+          <td>nul, mais non contrôlable</td>
+          <td>ne se déclenche pas seul : il faut le demander</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p>La troisième ligne est celle qui change tout. <strong>Un email générique se reconnaît en une seconde.</strong> Un message qui dit « j'ai fait votre site, il est en ligne, voici le lien » n'est pas du démarchage : c'est une démonstration. Le taux de réponse n'a rien à voir — mais historiquement, produire cet artefact coûtait une journée par prospect. C'est exactement ce que l'IA fait tomber.</p>
+
+    <h2>Où l'IA change réellement quelque chose</h2>
+
+    <p>Et où elle ne change rien. La distinction compte, parce que la moitié des promesses faites sur ce sujet sont fausses.</p>
+
+    <h3 class="oui">Ce qu'elle fait bien</h3>
+    <ul>
+      <li><strong>Trouver qui contacter.</strong> Recouper des sources publiques pour isoler ceux qui ont un vrai problème : beaucoup d'avis et pas de site, un site cassé sur mobile, aucune fiche à jour. C'est du travail de recherche, répétitif et vérifiable.</li>
+      <li><strong>Produire l'objet.</strong> Le site, la maquette, la vidéo de démonstration. C'est ici que se trouve tout le levier : ce qui prenait une journée prend une heure, donc l'approche personnalisée devient possible à l'échelle.</li>
+      <li><strong>Ne jamais lâcher un contact.</strong> Relancer au bon moment, garder l'historique, savoir qui a répondu quoi. Un humain oublie ; un système non.</li>
+      <li><strong>Qualifier, pas vendre.</strong> Un agent vocal qui annonce qu'il est une IA, pose deux questions et cale un rendez-vous. La vente reste humaine.</li>
+    </ul>
+
+    <h3 class="non">Ce qu'elle ne fait pas</h3>
+    <ul>
+      <li><strong>Rendre pertinent un message qui ne l'est pas.</strong> Générer mille variantes d'un email vide donne mille emails vides. La personnalisation de surface — le prénom, le nom de la ville — ne trompe plus personne.</li>
+      <li><strong>Remplacer le premier contact humain sur une vente.</strong> Ce que tu délègues, c'est la qualification, jamais la décision.</li>
+      <li><strong>Réparer un message que tu n'as pas testé toi-même.</strong> Automatiser un message qui ne marche pas, c'est répéter une erreur plus vite.</li>
+    </ul>
+
+    <div class="callout">
+      <span class="callout-label mono">La ligne rouge</span>
+      <p>Un système qui parle à quelqu'un doit dire qu'il est une machine. Ce n'est pas seulement une obligation de transparence : c'est ce qui décide si ça marche. Quelqu'un qui découvre en cours d'échange qu'il a été berné ne devient jamais client — et sur un marché de la taille de La Réunion, ça se sait vite.</p>
+    </div>
+
+    <h2>Comment l'implémenter, dans l'ordre</h2>
+
+    <p>L'ordre importe plus que les outils. Presque tous ceux qui échouent commencent par l'étape quatre.</p>
+
+    <div class="etape">
+      <span class="n mono">Étape 1</span>
+      <h3>Valider le message à la main</h3>
+      <p>Dix contacts, faits par toi, sans aucune automatisation. Tu cherches une seule chose : la phrase qui fait réagir. Tant que tu ne l'as pas, il n'y a rien à automatiser.</p>
+    </div>
+    <div class="etape">
+      <span class="n mono">Étape 2</span>
+      <h3>Industrialiser l'objet, pas le message</h3>
+      <p>C'est le site, la maquette, la vidéo. Le message reste court et personnel ; c'est l'objet qui porte la valeur et qui prouve que tu as travaillé avant de demander quelque chose.</p>
+    </div>
+    <div class="etape">
+      <span class="n mono">Étape 3</span>
+      <h3>Rendre le suivi impossible à oublier</h3>
+      <p>Une liste unique, un état par contact, une prochaine action datée. La majorité des affaires perdues ne le sont pas sur un refus : elles le sont sur un oubli.</p>
+    </div>
+    <div class="etape">
+      <span class="n mono">Étape 4</span>
+      <h3>Automatiser seulement ce qui est déjà prouvé</h3>
+      <p>Et uniquement la qualification, jamais la décision. Un agent qui prend rendez-vous, pas un agent qui vend.</p>
+    </div>
+
+    <h2>Le test qui ne coûte rien</h2>
+
+    <p>Avant de construire quoi que ce soit, appelle-en cinq. Toi, cette semaine.</p>
+
+    <p>Si trois te disent « ah oui, le site, je l'ai vu », alors ton objet fonctionne et l'automatiser vaut le coup. <strong>Si cinq sur cinq ne se souviennent de rien, le problème est en amont</strong> — dans ce que tu envoies — et aucun outil ne le réparera.</p>
+
+    <div class="callout">
+      <span class="callout-label mono">Ce que ces chiffres disent vraiment</span>
+      <p>106 sites, 89 numéros, 13 emails, 0 réponse, 0 appel. Ce n'est pas une histoire de manque d'outils : j'en ai plus qu'il n'en faut. C'est une histoire d'ordre des opérations. Le volume qui manquait n'était pas celui de la production.</p>
+    </div>
+
+  </div>
+
+  <div class="fin">
+    Écrit à partir de chiffres constatés sur mon propre système en août 2026. Aucun chiffre de résultat n'est promis ici : ce qui marche pour un marché ne se transpose pas tel quel à un autre.
+  </div>
+
+</div>
+</body>
+</html>
