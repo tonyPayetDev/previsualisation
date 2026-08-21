@@ -57,6 +57,14 @@ const loupe = i => `<a class="loupe" href="${esc(rechercheUrl(i))}" target="_bla
     stroke-width="2.1" stroke-linecap="round"/></svg></a>`;
 const nSansSite = items.filter(i => !i.avant).length;
 
+// URL réelle du site du client, quand la capture « avant » a réussi.
+// Sans ça, la fiche montre une image de leur site sans donner le moyen d'y
+// aller — et Tony devait le retrouver à la main avant d'appeler.
+const AV_JOURNAL = fs.existsSync(path.join(DOSSIER, 'data', 'avant-journal.json'))
+  ? JSON.parse(fs.readFileSync(path.join(DOSSIER, 'data', 'avant-journal.json'), 'utf8')) : { journal: [] };
+const urlDe = Object.fromEntries((AV_JOURNAL.journal || []).filter(j => !j.err).map(j => [j.dir, j.url]));
+const nAvecUrl = items.filter(i => urlDe[i.dir]).length;
+
 // --- Audit responsive ---------------------------------------------------------
 // Produit par audit-responsive.mjs puis analyse-responsive.mjs. Absent tant
 // que l'audit n'a pas tourné : la galerie doit rester générable sans lui.
@@ -107,6 +115,15 @@ h1{font-size:1rem;margin:0;font-weight:700}
 h1 i{font-style:normal;color:var(--or)}
 .cpt{font-size:.75rem;color:var(--mut);font-variant-numeric:tabular-nums;text-align:right}
 .cpt2{font-size:.7rem;color:#8d99a8}
+/* Témoin d'enregistrement. Il est toujours visible : c'est le seul moyen de
+   savoir si une décision est partie sur le serveur ou seulement sur l'appareil. */
+.temoin{display:inline-block;margin-top:.25rem;font-size:.68rem;font-weight:600;
+  padding:.13rem .45rem;border-radius:99px;border:1px solid var(--mut);color:var(--mut)}
+.temoin.ok{color:var(--vert);border-color:rgba(74,222,128,.45);background:rgba(74,222,128,.07)}
+.temoin.encours{color:var(--or);border-color:rgba(234,179,8,.45)}
+.temoin.ko{color:var(--rouge);border-color:rgba(239,100,97,.5);background:rgba(239,100,97,.08)}
+.bt.leur{border-color:#3b5372;color:#8fb6ff}
+.bt.leur:hover{background:#182338}
 a.retour{color:var(--mut);font-size:.78rem;text-decoration:none}
 a.retour:hover{color:var(--or)}
 
@@ -240,7 +257,9 @@ a.retour:hover{color:var(--or)}
     <a class="retour" href="/sites-clients/">← revenir à l'inventaire détaillé</a>
   </div>
   <span class="cpt"><b id="n">${items.length}</b> / ${items.length} sites · ${nVig} capturés · ${nSansSite} à vérifier <span class="lp" aria-hidden="true">🔍</span>${
-    nAudit ? `<br><span class="cpt2">audit responsive : ${nSains}/${nAudit} sans défaut</span>` : ''}</span>
+    nAudit ? `<br><span class="cpt2">audit responsive : ${nSains}/${nAudit} sans défaut</span>` : ''}${
+    nAvecUrl ? `<br><span class="cpt2">${nAvecUrl} sites clients en ligne, lien direct sur la fiche</span>` : ''}
+    <br><span class="temoin" id="temoin">…</span></span>
 </header>
 
 <div class="barre">
@@ -301,7 +320,10 @@ ${items.map(i => `  <article class="carte" data-dir="${esc(i.dir)}" data-etat="$
       </div>
       <div class="actions">
         <button class="bt f" type="button" title="Marquer pour l'ordre de correction">★ marquer</button>
-        <a class="bt" href="/${esc(i.route)}/" target="_blank" rel="noopener">ouvrir</a>
+        <a class="bt" href="/${esc(i.route)}/" target="_blank" rel="noopener">ma maquette</a>
+        ${urlDe[i.dir]
+            ? `<a class="bt leur" href="${esc(urlDe[i.dir])}" target="_blank" rel="noopener">leur site ↗</a>`
+            : ''}
         ${i.tel ? `<a class="bt" href="tel:${esc(i.tel)}">appeler</a>` : ''}
       </div>
       <textarea class="note" rows="2" placeholder="Ce qu'il faut corriger — ou pourquoi abandonner…"></textarea>
@@ -333,9 +355,70 @@ ${items.map(i => `  <article class="carte" data-dir="${esc(i.dir)}" data-etat="$
   var vide = document.getElementById('vide');
   var filtre = '';
 
+  /* --- Enregistrement ---------------------------------------------------
+     Avant : localStorage seul. Ça ne tenait pas, et pas à cause d'un bug —
+     localStorage est lié à UN navigateur. Ouvrir le lien depuis un message
+     l'ouvre dans le navigateur intégré de l'app, qui se vide à la fermeture ;
+     et Safari iOS efface le stockage d'un site non revisité pendant 7 jours.
+     Les décisions disparaissaient sans que rien ne signale l'échec.
+
+     Maintenant : n8n fait autorité (webhook /sites-etat, table EtatSitesClients),
+     localStorage sert de cache local pour l'affichage immédiat et le hors-ligne.
+     Le témoin en haut à droite dit toujours où on en est — un enregistrement
+     invisible se lit comme un enregistrement raté. */
+  var SERVEUR = 'https://n7n.automatisationboost.com/webhook/sites-etat';
   var etat = {};
   try { etat = JSON.parse(localStorage.getItem(CLE) || '{}'); } catch (_) { etat = {}; }
-  function sauver(){ try { localStorage.setItem(CLE, JSON.stringify(etat)); } catch (_) {} }
+
+  var temoin = document.getElementById('temoin');
+  function dire(txt, cls){ if (temoin){ temoin.textContent = txt; temoin.className = 'temoin ' + (cls || ''); } }
+
+  function cache(){ try { localStorage.setItem(CLE, JSON.stringify(etat)); } catch (_) {} }
+
+  var enAttente = null, enVol = false;
+  function envoyer(){
+    enVol = true; dire('enregistrement…', 'encours');
+    // text/plain volontairement : avec application/json le navigateur envoie
+    // d'abord une requête OPTIONS de contrôle, que le webhook ne traite pas —
+    // et l'enregistrement échoue avant même de partir.
+    fetch(SERVEUR, { method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify(etat) })
+      .then(function(r){ if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+      .then(function(){ dire('enregistré', 'ok'); })
+      .catch(function(e){ dire('hors ligne — gardé sur cet appareil', 'ko'); })
+      .then(function(){
+        enVol = false;
+        if (enAttente){ clearTimeout(enAttente); enAttente = null; envoyer(); }
+      });
+  }
+  function sauver(){
+    cache();
+    // Groupé : à la frappe dans une note, un envoi par caractère saturerait
+    // le webhook pour rien.
+    if (enAttente) clearTimeout(enAttente);
+    enAttente = setTimeout(function(){ enAttente = null; if (!enVol) envoyer(); }, 900);
+    dire('modifié…', 'encours');
+  }
+
+  // Au chargement : le serveur écrase le cache local. C'est ce qui permet de
+  // décider sur le téléphone et de retrouver la même chose sur l'ordinateur.
+  function charger(){
+    dire('lecture…', 'encours');
+    fetch(SERVEUR, { cache: 'no-store' })
+      .then(function(r){ if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+      .then(function(j){
+        var d = {};
+        try { d = JSON.parse(j.donnees || '{}'); } catch (_) { d = {}; }
+        var nLocal = Object.keys(etat).length, nServeur = Object.keys(d).length;
+        // Filet : si le serveur est vide et que l'appareil a des décisions,
+        // on ne les efface pas — on les remonte.
+        if (nServeur === 0 && nLocal > 0){ dire('appareil plus récent — envoi', 'encours'); envoyer(); return; }
+        etat = d; cache();
+        cartes.forEach(function(c){ raviver(c); });
+        compter(); appliquer();
+        dire(nServeur + ' décision' + (nServeur > 1 ? 's' : '') + ' chargée' + (nServeur > 1 ? 's' : ''), 'ok');
+      })
+      .catch(function(){ dire('serveur injoignable — mode local', 'ko'); });
+  }
 
   var ETIQ = { ok: ['Envoyable', '#4ade80'], fix: ['À corriger', '#eab308'], abandon: ['À abandonner', '#ef6461'] };
 
@@ -418,8 +501,14 @@ ${items.map(i => `  <article class="carte" data-dir="${esc(i.dir)}" data-etat="$
       });
     }
 
+    // Point d'entrée pour redessiner la fiche depuis l'extérieur, une fois
+    // l'état chargé du serveur. Sans lui, les décisions arrivent bien mais
+    // restent invisibles jusqu'au prochain rechargement de page.
+    c._raviver = function(){ s = etat[dir] || { f: 0, note: '' }; peindre(); };
+
     peindre();
   });
+  function raviver(c){ if (c._raviver) c._raviver(); }
 
   function compter(){
     var f = cartes.filter(function(c){ return c.dataset.flag === '1'; }).length;
@@ -530,6 +619,7 @@ ${items.map(i => `  <article class="carte" data-dir="${esc(i.dir)}" data-etat="$
   });
 
   compter(); appliquer();
+  charger();
 })();
 </script>
 </body>
