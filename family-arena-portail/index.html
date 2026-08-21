@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Family Arena — Un autre monde à chaque pas</title>
+<meta name="description" content="Proposition de refonte cinématique — Family Arena, centre multi-activité de 400 m² à Saint-Pierre, La Réunion.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+/* ---------------------------------------------------------------------------
+   Family Arena — proposition.
+   Palette relevée sur familyarena.re : bleu nuit #111E3C, or #EFB509,
+   bleu #0274be. L'interface porte LEUR charte ; les mondes gardent la leur,
+   ce sont les jeux, pas la marque.
+   --------------------------------------------------------------------------- */
+:root{
+  --nuit:#080d1c;
+  --nuit-2:#111E3C;
+  --nuit-3:#16224a;
+  --ligne:#22305c;
+  --txt:#eef2fb;
+  --mut:#8a97ba;
+  --or:#EFB509;
+  --bleu:#0274be;
+  --bleu-clair:#71AFDB;
+  --dsp:'Archivo','Arial Narrow',sans-serif;
+  --bdy:'Inter',system-ui,sans-serif;
+  --mno:'JetBrains Mono',ui-monospace,monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--nuit);color:var(--txt);font-family:var(--bdy);font-size:17px;
+  line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+.dsp{font-family:var(--dsp);font-variation-settings:'wdth' 76,'wght' 800;
+  text-transform:uppercase;letter-spacing:-.005em;line-height:.94;text-wrap:balance}
+.mono{font-family:var(--mno);font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--or)}
+.wrap{max-width:1180px;margin:0 auto;padding:0 28px}
+
+.bandeau{background:var(--or);color:#1a1400;text-align:center;padding:9px 16px;
+  font-size:13px;font-weight:600;position:relative;z-index:30}
+
+.nav{position:sticky;top:0;z-index:20;display:flex;align-items:center;
+  justify-content:space-between;padding:15px 28px;
+  background:rgba(8,13,28,.86);backdrop-filter:blur(8px);
+  border-bottom:1px solid var(--ligne)}
+.nav .marque{font-family:var(--dsp);font-variation-settings:'wdth' 72,'wght' 800;
+  text-transform:uppercase;font-size:19px;letter-spacing:.03em;color:var(--txt);text-decoration:none}
+.nav .marque i{font-style:normal;color:var(--or)}
+.nav-liens{display:flex;gap:24px;align-items:center}
+.nav-liens a{color:var(--mut);text-decoration:none;font-size:14px;transition:color .2s}
+.nav-liens a:hover{color:var(--txt)}
+.nav .btn{background:var(--or);color:#1a1400;padding:10px 18px;border-radius:3px;
+  font-size:13px;font-weight:700;text-decoration:none;transition:transform .2s}
+.nav .btn:hover{transform:translateY(-2px)}
+@media(max-width:900px){.nav-liens a:not(.btn){display:none}}
+
+/* ---------- Le passage ---------- */
+#film{position:relative;height:620vh}
+#colle{position:sticky;top:0;height:100vh;overflow:hidden}
+#toile{position:absolute;inset:0;width:100%;height:100%;display:block}
+#colle::after{content:'';position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(to top,rgba(8,13,28,.95) 0%,rgba(8,13,28,.42) 36%,
+    rgba(8,13,28,.06) 62%,rgba(8,13,28,.5) 100%)}
+.chapitres{position:absolute;inset:0;z-index:2}
+.chap{position:absolute;left:0;right:0;bottom:10vh;padding:0 28px;max-width:1180px;margin:0 auto;
+  opacity:0;transform:translateY(26px);transition:opacity .45s ease,transform .45s ease;
+  will-change:opacity,transform}
+.chap.vu{opacity:1;transform:none}
+.chap .mono{display:block;margin-bottom:14px}
+.chap h1,.chap h2{font-size:clamp(38px,6.6vw,92px);max-width:16ch}
+.chap p{margin-top:18px;max-width:48ch;color:#c2cbe4;font-size:clamp(15px,1.5vw,19px)}
+.chap .prix{display:inline-block;margin-top:22px;font-family:var(--mno);font-size:13px;
+  letter-spacing:.06em;color:var(--or);border:1px solid rgba(239,181,9,.45);
+  padding:8px 14px;border-radius:3px}
+.chap .cta{display:inline-flex;align-items:center;gap:10px;margin-top:26px;
+  background:var(--or);color:#1a1400;text-decoration:none;padding:15px 26px;
+  border-radius:3px;font-weight:700;font-size:15px;transition:transform .2s,box-shadow .2s}
+.chap .cta:hover{transform:translateY(-2px);box-shadow:0 12px 34px rgba(239,181,9,.3)}
+.defiler{position:absolute;bottom:24px;left:50%;transform:translateX(-50%);z-index:3;
+  font-family:var(--mno);font-size:10.5px;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--mut);display:flex;flex-direction:column;align-items:center;gap:9px;transition:opacity .3s}
+.defiler span{display:block;width:1px;height:32px;background:linear-gradient(var(--or),transparent)}
+.jauge{position:absolute;left:26px;top:50%;transform:translateY(-50%);z-index:3;
+  display:flex;flex-direction:column;gap:8px}
+.jauge b{display:block;width:2px;height:24px;background:var(--ligne);transition:background .3s}
+.jauge b.on{background:var(--or)}
+@media(max-width:900px){.jauge{display:none}}
+
+section{position:relative;z-index:2;background:var(--nuit)}
+.sec{padding:104px 0}
+.sec-t{font-size:clamp(30px,4.4vw,54px);max-width:20ch;margin-bottom:16px}
+.sec-i{color:var(--mut);max-width:56ch;margin-bottom:48px}
+.eyebrow{display:block;margin-bottom:16px}
+
+/* Activités */
+.grille{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+@media(max-width:980px){.grille{grid-template-columns:1fr 1fr}}
+@media(max-width:660px){.grille{grid-template-columns:1fr}}
+.act{border:1px solid var(--ligne);background:var(--nuit-2);border-radius:5px;
+  padding:30px 26px;transition:border-color .25s,transform .25s}
+.act:hover{border-color:var(--or);transform:translateY(-3px)}
+.act h3{font-family:var(--dsp);font-variation-settings:'wdth' 74,'wght' 800;
+  text-transform:uppercase;font-size:23px;margin-bottom:10px}
+.act .age{font-family:var(--mno);font-size:11px;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--bleu-clair);display:block;margin-bottom:14px}
+.act p{font-size:14.5px;color:#b3bed9}
+
+/* Tarifs */
+.tarifs{display:grid;grid-template-columns:repeat(5,1fr);gap:14px}
+@media(max-width:1040px){.tarifs{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:540px){.tarifs{grid-template-columns:1fr}}
+.tar{border:1px solid var(--ligne);background:var(--nuit-2);border-radius:5px;
+  padding:26px 20px;text-align:center;display:flex;flex-direction:column}
+.tar.phare{border-color:var(--or)}
+.tar h4{font-family:var(--dsp);font-variation-settings:'wdth' 74,'wght' 800;
+  text-transform:uppercase;font-size:18px;margin-bottom:14px}
+.tar .p{font-family:var(--dsp);font-variation-settings:'wdth' 68,'wght' 800;
+  font-size:46px;color:var(--or);line-height:1;font-variant-numeric:tabular-nums}
+.tar .u{font-size:12.5px;color:var(--mut);margin-top:10px;flex:1}
+.tar .note{font-size:11.5px;color:var(--mut);margin-top:14px;padding-top:12px;
+  border-top:1px solid var(--ligne);line-height:1.45}
+.autres{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:22px}
+@media(max-width:760px){.autres{grid-template-columns:1fr}}
+.bloc{border:1px solid var(--ligne);background:var(--nuit-2);border-radius:5px;padding:26px}
+.bloc h4{font-family:var(--dsp);font-variation-settings:'wdth' 74,'wght' 800;
+  text-transform:uppercase;font-size:19px;margin-bottom:16px}
+.bloc .l{display:flex;justify-content:space-between;gap:16px;padding:11px 0;
+  border-top:1px solid var(--ligne);font-size:14.5px}
+.bloc .l:first-of-type{border-top:0}
+.bloc .l b{font-family:var(--mno);color:var(--or);white-space:nowrap}
+.bloc .d{font-size:12.5px;color:var(--mut);margin-top:14px}
+
+.reserve{border-top:1px solid var(--ligne);background:var(--nuit-2)}
+.reserve .in{display:grid;grid-template-columns:1fr auto;gap:36px;align-items:center}
+@media(max-width:820px){.reserve .in{grid-template-columns:1fr;gap:26px}}
+.reserve .cta{display:inline-flex;align-items:center;gap:10px;background:var(--or);
+  color:#1a1400;text-decoration:none;padding:17px 30px;border-radius:3px;
+  font-weight:700;font-size:16px;white-space:nowrap;transition:transform .2s}
+.reserve .cta:hover{transform:translateY(-2px)}
+
+footer{border-top:1px solid var(--ligne);padding:38px 0;color:var(--mut);font-size:13.5px}
+.avert{margin-top:26px;padding:18px 20px;border:1px solid var(--ligne);border-radius:5px;
+  background:rgba(2,116,190,.07);font-size:13px;color:var(--mut);line-height:1.6}
+.avert b{color:var(--bleu-clair)}
+
+.ap{opacity:0;transform:translateY(22px);transition:opacity .6s ease,transform .6s ease}
+.ap.vu{opacity:1;transform:none}
+
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .ap,.chap{opacity:1!important;transform:none!important;transition:none}
+  #film{height:auto}
+  #colle{position:relative;height:auto;min-height:74vh}
+  .chapitres{position:relative}
+  .chap{position:relative;bottom:auto;padding:80px 28px 40px}
+}
+</style>
+</head>
+<body>
+
+<div class="bandeau">Proposition de refonte — page de démonstration, non publiée</div>
+
+<nav class="nav">
+  <a href="#" class="marque">Family<i>Arena</i></a>
+  <div class="nav-liens">
+    <a href="#activites">Activités</a>
+    <a href="#tarifs">Tarifs</a>
+    <a href="#venir">Venir</a>
+    <a href="#venir" class="btn">Réserver</a>
+  </div>
+</nav>
+
+<!-- ============ LE PASSAGE ============ -->
+<div id="film">
+  <div id="colle">
+    <canvas id="toile"></canvas>
+
+    <div class="jauge" id="jauge"><b class="on"></b><b></b><b></b><b></b><b></b><b></b></div>
+
+    <div class="chapitres">
+      <div class="chap" data-chap="0">
+        <span class="mono">Saint-Pierre · La Réunion</span>
+        <h1 class="dsp">400 m².<br>Et rien<br>de réel.</h1>
+        <p>Un centre multi-activité où tu entres les mains vides. Ce que tu fais ensuite ne se raconte pas — ça se met sur la tête.</p>
+        <a href="#venir" class="cta">Réserver un créneau →</a>
+      </div>
+
+      <div class="chap" data-chap="1">
+        <span class="mono">Le passage</span>
+        <h2 class="dsp">Tu poses<br>le casque.</h2>
+        <p>HTC Vive Pro, un pod de 9 m² rien qu'à toi. À partir de là, la salle n'existe plus.</p>
+      </div>
+
+      <div class="chap" data-chap="2">
+        <span class="mono">Monde 1 · Pods VR</span>
+        <h2 class="dsp">Le mur<br>s'ouvre.</h2>
+        <p>Jeux de tir, zombies, escape games. Seul, ou jusqu'à 9 dans la même partie. À partir de 6 joueurs, on passe en tournoi par équipes.</p>
+        <span class="prix">à partir de 9 €</span>
+      </div>
+
+      <div class="chap" data-chap="3">
+        <span class="mono">Monde 2 · HADO</span>
+        <h2 class="dsp">Tu lances<br>des boules<br>d'énergie.</h2>
+        <p>Capteurs de mouvement, réalité augmentée et vrai sport. Tu tires, tu montes ton bouclier, tu esquives. Tu es littéralement dans le jeu vidéo.</p>
+      </div>
+
+      <div class="chap" data-chap="4">
+        <span class="mono">Monde 3 · Simulateurs</span>
+        <h2 class="dsp">Tu prends<br>le volant.</h2>
+        <p>Deux baquets de course pour prendre la place d'un vrai pilote. Et le X-MOTION, près de 10 aventures en 9D — avec un effet vent qui coupe le dernier lien avec le réel.</p>
+        <span class="prix">10 € et 18 €</span>
+      </div>
+
+      <div class="chap" data-chap="5">
+        <span class="mono">Monde 4 · Escape Game</span>
+        <h2 class="dsp">La porte<br>se referme.</h2>
+        <p>Maison hantée, vaisseau spatial, chambre d'enfant : tablette tactile en main, rassemble les indices. Ou traverse la pièce sans couper un seul laser. Unique à La Réunion.</p>
+        <a href="#tarifs" class="cta">Voir tous les tarifs →</a>
+      </div>
+    </div>
+
+    <div class="defiler" id="defiler">Défiler<span></span></div>
+  </div>
+</div>
+
+<!-- ============ ACTIVITÉS ============ -->
+<section class="sec" id="activites">
+  <div class="wrap">
+    <span class="mono eyebrow ap">Ce qu'il y a dans les 400 m²</span>
+    <h2 class="dsp sec-t ap">Six façons<br>de ne plus être là.</h2>
+    <p class="sec-i ap">Venez seul, à deux, entre amis ou en famille. Tout est sur place, y compris de quoi manger.</p>
+
+    <div class="grille">
+      <div class="act ap">
+        <h3>Pods VR</h3>
+        <span class="age">Casque HTC Vive Pro</span>
+        <p>Des espaces de jeu de 9 m² chacun. En solo ou en multijoueur jusqu'à 9 personnes dans la même partie — et à partir de 6, un tournoi par équipes.</p>
+      </div>
+      <div class="act ap">
+        <h3>HADO</h3>
+        <span class="age">Réalité augmentée · sport</span>
+        <p>Capteur de mouvement, AR et sport réunis. Tirer des boules d'énergie, remonter les boucliers, combattre des monstres. L'expérience d'être dans un jeu vidéo réel.</p>
+      </div>
+      <div class="act ap">
+        <h3>Simulateurs</h3>
+        <span class="age">Course auto · X-MOTION 9D</span>
+        <p>Deux baquets pour les amateurs de course automobile. Et le X-MOTION, près de 10 aventures en 9D avec un effet vent.</p>
+      </div>
+      <div class="act ap">
+        <h3>Escape Game</h3>
+        <span class="age">Dès 5-6 ans · 30 à 50 min</span>
+        <p>Deux escape games d'un nouveau genre, uniques à La Réunion. En réalité augmentée sur tablette dès 7-8 ans, ou en version laser à traverser dès 5-6 ans.</p>
+      </div>
+      <div class="act ap">
+        <h3>Karaoké en box</h3>
+        <span class="age">Small 2-8 · Big 9-16</span>
+        <p>Plus de 44 000 titres, micro, écran TV et jeux de lumière. En privé, sans embêter personne.</p>
+      </div>
+      <div class="act ap">
+        <h3>i-Quiz</h3>
+        <span class="age">Dès 5 ans</span>
+        <p>Le premier quiz game de La Réunion. Questions-réponses sur écran géant, et de vrais buzzers pour affronter vos amis, votre famille ou vos collègues.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ TARIFS ============ -->
+<section class="sec" id="tarifs" style="border-top:1px solid var(--ligne)">
+  <div class="wrap">
+    <span class="mono eyebrow ap">Tarifs</span>
+    <h2 class="dsp sec-t ap">À partir de 9 €.</h2>
+    <p class="sec-i ap">Que vous soyez novice ou confirmé, plusieurs forfaits. Tous disponibles en bon cadeau.</p>
+
+    <div class="tarifs">
+      <div class="tar ap"><h4>Starter</h4><div class="p">9 €</div>
+        <div class="u">1 personne / pod VR</div>
+        <div class="note">Facile à prolonger sur une expérience plus longue.</div></div>
+      <div class="tar ap"><h4>Confirmé</h4><div class="p">17 €</div>
+        <div class="u">1 personne / pod VR</div>
+        <div class="note">Multijoueur possible sur cette formule : 15 € / personne.</div></div>
+      <div class="tar phare ap"><h4>Le Top</h4><div class="p">24 €</div>
+        <div class="u">1 personne / pod VR</div>
+        <div class="note">Les meilleurs jeux et expériences, dans un temps optimal.</div></div>
+      <div class="tar ap"><h4>Winner</h4><div class="p">29 €</div>
+        <div class="u">1 personne / pod VR</div>
+        <div class="note">Multijoueur possible sur cette formule : 15 € / personne.</div></div>
+      <div class="tar ap"><h4>Pack Family</h4><div class="p">49 €</div>
+        <div class="u">4 personnes max / pod VR</div>
+        <div class="note">2 h à partager. Lundi, mardi, jeudi et vendredi, hors vacances scolaires.</div></div>
+    </div>
+
+    <div class="autres">
+      <div class="bloc ap">
+        <h4>Simulateur</h4>
+        <div class="l"><span>1 personne</span><b>10 €</b></div>
+        <div class="l"><span>1 personne — format long</span><b>18 €</b></div>
+        <div class="d">Baquet de course ou X-MOTION 9D.</div>
+      </div>
+      <div class="bloc ap">
+        <h4>Escape Game</h4>
+        <div class="l"><span>1 à 2 personnes</span><b>19 €</b></div>
+        <div class="l"><span>3 à 4 personnes</span><b>35 €</b></div>
+        <div class="d">Durée entre 20 et 30 minutes selon votre niveau.</div>
+      </div>
+    </div>
+
+    <p class="sec-i ap" style="margin:28px 0 0;font-size:14px">
+      Tarif de groupe à partir de 20 personnes. Restauration sur place ou à emporter,
+      midi et soir : tapas, sandwichs, tacos, salades, pâtes, confiserie.
+    </p>
+  </div>
+</section>
+
+<!-- ============ VENIR ============ -->
+<section class="sec reserve" id="venir">
+  <div class="wrap in">
+    <div class="ap">
+      <span class="mono eyebrow">Venir</span>
+      <h2 class="dsp sec-t" style="margin-bottom:14px">Family Arena,<br>Saint-Pierre.</h2>
+      <p style="color:var(--mut);max-width:50ch;margin:0">
+        Centre multi-activité de plus de 400 m². Réalité virtuelle, HADO, simulateurs
+        dynamiques et karaoké en box privé. Bons cadeaux disponibles sur toutes les formules.
+      </p>
+    </div>
+    <a href="https://familyarena.re/infos-pratiques/contact/" class="cta">Réserver un créneau →</a>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div>Family Arena · Saint-Pierre, La Réunion · familyarena.re</div>
+    <div class="avert">
+      <b>Page de démonstration.</b> Proposition de refonte réalisée par AutomatisationBoost.
+      Tous les textes, activités et tarifs proviennent du site actuel de Family Arena et n'ont
+      pas été modifiés. Les images du parcours sont des <b>illustrations générées</b> : elles
+      représentent les univers de jeu proposés, ce ne sont pas des photographies du centre.
+      Rien n'a été publié ni mis en ligne sur le site du client.
+    </div>
+  </div>
+</footer>
+
+<script>
+/* --- Le passage : scrub d'une séquence de 132 images sur 6 mondes --- */
+(function () {
+  var NB = 132;
+  var film = document.getElementById('film');
+  var toile = document.getElementById('toile');
+  var ctx = toile.getContext('2d', { alpha: false });
+  var chaps = [].slice.call(document.querySelectorAll('.chap'));
+  var barres = [].slice.call(document.querySelectorAll('#jauge b'));
+  var defiler = document.getElementById('defiler');
+  var reduit = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  var imgs = new Array(NB), prets = new Array(NB), dernier = -1;
+  function url(i) { return 'seq/' + String(i).padStart(3, '0') + '.webp'; }
+
+  function charger(i, prio) {
+    if (imgs[i]) return;
+    var im = new Image();
+    if (prio) im.fetchPriority = 'high';
+    im.onload = function () { prets[i] = true; if (dernier < 0) peindre(0); };
+    im.src = url(i);
+    imgs[i] = im;
+  }
+
+  function dimensionner() {
+    var r = Math.min(window.devicePixelRatio || 1, 2);
+    toile.width = Math.round(toile.clientWidth * r);
+    toile.height = Math.round(toile.clientHeight * r);
+    if (dernier >= 0) { var d = dernier; dernier = -1; peindre(d); }
+  }
+
+  function peindre(i) {
+    // Jamais de noir : à défaut de l'image visée, la plus proche déjà décodée.
+    var j = i;
+    if (!prets[j]) {
+      var t = -1;
+      for (var d = 1; d < NB; d++) {
+        if (j - d >= 0 && prets[j - d]) { t = j - d; break; }
+        if (j + d < NB && prets[j + d]) { t = j + d; break; }
+      }
+      if (t < 0) return;
+      j = t;
+    }
+    if (j === dernier) return;
+    dernier = j;
+    var im = imgs[j], cw = toile.width, ch = toile.height;
+    var e = Math.max(cw / im.width, ch / im.height);
+    var w = im.width * e, h = im.height * e;
+    ctx.fillStyle = '#05070f';
+    ctx.fillRect(0, 0, cw, ch);
+    ctx.drawImage(im, (cw - w) / 2, (ch - h) / 2, w, h);
+  }
+
+  var tick = false;
+  function auScroll() {
+    if (tick) return;
+    tick = true;
+    requestAnimationFrame(function () {
+      tick = false;
+      var r = film.getBoundingClientRect();
+      var course = film.offsetHeight - window.innerHeight;
+      var p = course > 0 ? Math.min(1, Math.max(0, -r.top / course)) : 0;
+      peindre(Math.min(NB - 1, Math.round(p * (NB - 1))));
+
+      // Le chapitre le plus proche gagne : jamais deux textes superposés.
+      var pos = p * 6, meilleur = 0, dmin = Infinity;
+      chaps.forEach(function (c, i) {
+        var d = Math.abs(pos - (i + 0.5));
+        if (d < dmin) { dmin = d; meilleur = i; }
+      });
+      chaps.forEach(function (c, i) { c.classList.toggle('vu', i === meilleur); });
+      barres.forEach(function (b, i) { b.classList.toggle('on', i === meilleur); });
+      defiler.style.opacity = p > 0.04 ? '0' : '1';
+    });
+  }
+
+  if (reduit) {
+    charger(30, true);
+    chaps.forEach(function (c) { c.classList.add('vu'); });
+  } else {
+    dimensionner();
+    [0, 22, 44, 66, 88, 110, 131].forEach(function (i) { charger(i, true); });
+    var n = 0;
+    (function suite() {
+      while (n < NB && imgs[n]) n++;
+      if (n >= NB) return;
+      charger(n);
+      imgs[n].addEventListener('load', suite, { once: true });
+      imgs[n].addEventListener('error', suite, { once: true });
+    })();
+    window.addEventListener('scroll', auScroll, { passive: true });
+    window.addEventListener('resize', function () { dimensionner(); auScroll(); });
+    auScroll();
+  }
+})();
+
+/* --- Apparitions au scroll --- */
+(function () {
+  var io = new IntersectionObserver(function (ents) {
+    ents.forEach(function (e) {
+      if (!e.isIntersecting) return;
+      e.target.classList.add('vu');
+      io.unobserve(e.target);
+    });
+  }, { rootMargin: '0px 0px -10% 0px', threshold: 0.12 });
+  document.querySelectorAll('.ap').forEach(function (c) { io.observe(c); });
+})();
+</script>
+</body>
+</html>
