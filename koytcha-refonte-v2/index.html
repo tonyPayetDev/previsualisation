@@ -100,14 +100,23 @@ img{max-width:100%;display:block}
   100%{transform:scale(1.11) translate3d(-2.2%,-1.6%,0)}
 }
 @media(prefers-reduced-motion:reduce){ .bati{animation:none} }
-.bati img{width:100%;height:100%;object-fit:cover}
+/* Trois fonds qui se succedent. Ils sont empiles et on croise l opacite :
+   changer l attribut source ferait clignoter le temps du chargement, et la
+   deuxieme image ne serait pas encore decodee au moment de l echange. */
+.bati img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+  opacity:0;transition:opacity 1.6s var(--ease)}
+.bati img.on{opacity:1}
 /* Voile de lisibilité : sans lui le texte blanc sur photo claire disparaît.
    Dégradé et pas aplat — un aplat éteindrait la photo, qui est l'argument. */
 .voile{position:absolute;inset:0;
   background:linear-gradient(100deg,rgba(10,10,10,.88) 0%,rgba(10,10,10,.66) 30%,rgba(10,10,10,.34) 58%,rgba(10,10,10,.62) 100%)}
 .hero{position:absolute;inset:0;display:flex;align-items:center;z-index:3}
 .hero .wrap{width:100%}
-.grille-hero{display:grid;grid-template-columns:1.15fr .85fr;gap:clamp(30px,5vw,80px);align-items:start;padding-top:6vh}
+/* Retour a la disposition d origine : texte a gauche, module dessous.
+   La version en deux colonnes poussait le module sur la partie la plus
+   claire de la photo et rognait le titre a droite. */
+.grille-hero{display:block;padding-top:2vh}
+.grille-hero .boite{max-width:660px;margin-top:34px}
 @media(max-width:980px){
   .grille-hero{grid-template-columns:1fr;gap:26px;padding-top:0}
   .boite{margin-top:8px}
@@ -207,6 +216,13 @@ img{max-width:100%;display:block}
 h2.tt{font-family:var(--serif);font-weight:300;font-size:clamp(30px,4.2vw,52px);line-height:1.08;
   letter-spacing:-.02em;margin:0 0 12px;max-width:20ch}
 h2.tt i{font-style:italic}
+/* Apparition des titres, mot a mot. Chaque mot est enveloppe par le script
+   au chargement : ecrire les span a la main dans le HTML rendrait le texte
+   illisible a la relecture et casserait la cesure des lignes. */
+.mot{display:inline-block;opacity:0;transform:translateY(.5em) rotate(1.2deg);
+  transition:opacity .62s var(--ease),transform .62s var(--ease);
+  transition-delay:var(--dm,0ms)}
+.vu .mot,.monte.vu .mot{opacity:1;transform:none}
 /* Mots mis en avant dans le corps de texte. Le magenta est reserve a ce qui
    compte : un mot sur vingt, pas un mot sur trois — sinon plus rien ne
    ressort et la page devient criarde. */
@@ -253,6 +269,27 @@ h2.tt i{font-style:italic}
 
 /* ── 3. À propos, l'image en cercle ──────────────────────────────────── */
 .apropos{background:var(--sourd)}
+/* Rythme demande : blanc, gris clair, rose, blanc, gris clair. Le rose n est
+   pas un aplat mais un voile flou — un aplat magenta ecraserait la page et
+   sortirait de la charte quasi-monochrome. */
+.rose{position:relative;background:#fff;overflow:hidden}
+.rose::before{content:'';position:absolute;inset:-20% -10%;pointer-events:none;
+  background:
+    radial-gradient(46% 52% at 18% 28%,rgba(230,0,126,.20),transparent 62%),
+    radial-gradient(40% 46% at 82% 72%,rgba(230,0,126,.14),transparent 64%),
+    radial-gradient(58% 40% at 52% 110%,rgba(230,0,126,.10),transparent 60%);
+  filter:blur(46px)}
+.rose>*{position:relative;z-index:1}
+/* Section a fond revele : l image reste fixe derriere pendant que le contenu
+   glisse dessus. background-attachment:fixed est ignore sur iOS — on passe
+   donc par une couche en position:fixed rognee par la section. */
+.revele{position:relative;overflow:hidden;background:transparent}
+.revele .derriere{position:absolute;inset:0;z-index:0;clip-path:inset(0)}
+.revele .derriere img{position:fixed;top:0;left:0;width:100%;height:100vh;
+  object-fit:cover}
+.revele .derriere::after{content:'';position:absolute;inset:0;
+  background:linear-gradient(180deg,rgba(255,255,255,.94),rgba(255,255,255,.88) 45%,rgba(255,255,255,.95))}
+.revele>*{position:relative;z-index:1}
 .duo{display:grid;grid-template-columns:1fr 1fr;gap:clamp(40px,6vw,90px);align-items:center}
 .txt p{color:var(--gris);font-size:15.5px;max-width:46ch}
 .txt p+p{margin-top:17px}
@@ -273,6 +310,15 @@ h2.tt i{font-style:italic}
 .chapo{font-family:var(--serif);font-weight:300;font-size:clamp(20px,2.2vw,27px);
   line-height:1.35;color:var(--noir);margin:0 0 26px;max-width:26ch}
 .corps{max-width:62ch}
+/* Notre metier : deux colonnes, le texte cale a gauche et la galerie a
+   droite. En pleine largeur, le texte partait a 62 caracteres par ligne et
+   la galerie tombait dessous, ce qui allongeait la section pour rien. */
+.metier{display:grid;grid-template-columns:1.05fr .95fr;gap:clamp(34px,5vw,72px);align-items:start}
+.metier .corps{max-width:52ch}
+.metier .gal{margin-top:0;grid-template-columns:repeat(2,1fr)}
+.metier .gal figure:first-child{grid-column:1/-1;aspect-ratio:16/10}
+.metier .gal figure:nth-child(4){grid-column:auto}
+@media(max-width:900px){.metier{grid-template-columns:1fr}.metier .gal{margin-top:30px}}
 .corps p{color:var(--gris);font-size:15.5px;margin:0 0 17px}
 .puces{list-style:none;margin:26px 0 0;padding:0;display:grid;gap:13px}
 .puces li{position:relative;padding-left:30px;font-size:15.5px;color:var(--noir)}
@@ -403,7 +449,9 @@ footer a:hover{color:var(--magenta)}
   <div class="scene">
     <div class="cadre">
       <div class="bati" id="bati">
-        <img src="../koytchaimmo-refonte/assets/alpha1.webp" alt="Résidence Koytcha Immo à La Réunion">
+        <img class="on" src="../koytchaimmo-refonte/assets/alpha1.webp" alt="Résidence Koytcha Immo à La Réunion">
+        <img src="../koytchaimmo-refonte/assets/photo1.webp" alt="Programme immobilier à La Réunion">
+        <img src="../koytchaimmo-refonte/assets/drone.webp" alt="Vue aérienne d'un programme Koytcha Immo">
       </div>
       <div class="voile"></div>
     </div>
@@ -437,32 +485,6 @@ footer a:hover{color:var(--magenta)}
     </div>
   </div>
 </div>
-
-<!-- Section cinématique — la scène reste, les chapitres défilent -->
-<section class="cine" id="cine">
-  <div class="scene2">
-    <div class="plan on" data-plan="0"><img src="../koytcha-reveal/assets/web/reveal.jpg" alt="Façade d'un programme Koytcha Immo"></div>
-    <div class="plan" data-plan="1"><img src="../koytcha-reveal/assets/web/varangue.jpg" alt="Varangue ouverte sur le jardin"></div>
-    <div class="plan" data-plan="2"><img src="../koytcha-reveal/assets/web/sejour.jpg" alt="Séjour lumineux d'un logement"></div>
-    <div class="vign"></div>
-    <div class="chap on" data-chap="0"><div class="wrap">
-      <p class="n">01 · LE LIEU</p>
-      <h2>D'abord le terrain, <i>ensuite le projet.</i></h2>
-      <p>Un emplacement se choisit avant de se dessiner. C'est là que se joue la valeur d'un bien, bien avant la première pierre.</p>
-    </div></div>
-    <div class="chap" data-chap="1"><div class="wrap">
-      <p class="n">02 · LA CONCEPTION</p>
-      <h2>Pensé pour le climat, <i>pas contre lui.</i></h2>
-      <p>Varangues, ventilation traversante, orientation : à La Réunion, le confort se conçoit, il ne se rattrape pas.</p>
-    </div></div>
-    <div class="chap" data-chap="2"><div class="wrap">
-      <p class="n">03 · LA VIE</p>
-      <h2>Un logement se juge <i>au bout de dix ans.</i></h2>
-      <p>Nous accompagnons nos clients sur tout le cycle de vie du bien — pas seulement jusqu'à la signature.</p>
-    </div></div>
-    <div class="jauge"><i class="on"></i><i></i><i></i></div>
-  </div>
-</section>
 
 <!-- 2 · PROGRAMMES -->
 <section class="sect haut" id="programmes">
@@ -505,7 +527,7 @@ footer a:hover{color:var(--magenta)}
 </section>
 
 <!-- Carrousel de biens — chaque carte mène à la page de recherche -->
-<section class="sect" id="biens">
+<section class="sect apropos" id="biens">
   <div class="wrap">
     <div class="tete monte">
       <div>
@@ -548,8 +570,35 @@ footer a:hover{color:var(--magenta)}
   </div>
 </section>
 
+<!-- Section cinématique — la scène reste, les chapitres défilent -->
+<section class="cine" id="cine">
+  <div class="scene2">
+    <div class="plan on" data-plan="0"><img src="../koytcha-reveal/assets/web/reveal.jpg" alt="Façade d'un programme Koytcha Immo"></div>
+    <div class="plan" data-plan="1"><img src="../koytcha-reveal/assets/web/varangue.jpg" alt="Varangue ouverte sur le jardin"></div>
+    <div class="plan" data-plan="2"><img src="../koytcha-reveal/assets/web/sejour.jpg" alt="Séjour lumineux d'un logement"></div>
+    <div class="vign"></div>
+    <div class="chap on" data-chap="0"><div class="wrap">
+      <p class="n">01 · LE LIEU</p>
+      <h2>D'abord le terrain, <i>ensuite le projet.</i></h2>
+      <p>Un emplacement se choisit avant de se dessiner. C'est là que se joue la valeur d'un bien, bien avant la première pierre.</p>
+    </div></div>
+    <div class="chap" data-chap="1"><div class="wrap">
+      <p class="n">02 · LA CONCEPTION</p>
+      <h2>Pensé pour le climat, <i>pas contre lui.</i></h2>
+      <p>Varangues, ventilation traversante, orientation : à La Réunion, le confort se conçoit, il ne se rattrape pas.</p>
+    </div></div>
+    <div class="chap" data-chap="2"><div class="wrap">
+      <p class="n">03 · LA VIE</p>
+      <h2>Un logement se juge <i>au bout de dix ans.</i></h2>
+      <p>Nous accompagnons nos clients sur tout le cycle de vie du bien — pas seulement jusqu'à la signature.</p>
+    </div></div>
+    <div class="jauge"><i class="on"></i><i></i><i></i></div>
+  </div>
+</section>
+
+
 <!-- 3 · À PROPOS — la troisième photo, en cercle -->
-<section class="sect apropos" id="apropos">
+<section class="sect rose" id="apropos">
   <div class="wrap">
     <div class="duo">
       <div class="txt monte">
@@ -584,6 +633,7 @@ footer a:hover{color:var(--magenta)}
       <p class="eyebrow">Notre métier</p>
       <h2 class="tt">Koytcha Immo vous accompagne <i>depuis 2004.</i></h2>
     </div>
+    <div class="metier">
     <div class="corps monte">
       <p>Koytcha Immo accompagne depuis 2004 avec le même niveau d'exigence les entreprises, propriétaires et investisseurs sur l'ensemble de leurs enjeux immobiliers.</p>
       <p>Que vous cherchiez à investir, à vendre, ou que vous soyez tout simplement à la recherche d'un achat ou d'une location, Koytcha Immo vous apporte toute son expertise et son savoir-faire afin de vous faciliter la vie tout en optimisant votre projet.</p>
@@ -600,6 +650,7 @@ footer a:hover{color:var(--magenta)}
       <figure><img src="../koytcha-reveal/assets/web/varangue-sm.jpg" alt="Varangue ouverte sur le jardin" loading="lazy"><figcaption>La varangue</figcaption></figure>
       <figure><img src="../koytcha-reveal/assets/web/sejour-sm.jpg" alt="Séjour lumineux" loading="lazy"><figcaption>Le séjour</figcaption></figure>
       <figure><img src="../koytcha-reveal/assets/web/arrival-sm.jpg" alt="Jardin planté en fin de journée" loading="lazy"><figcaption>Le jardin, fin de journée</figcaption></figure>
+    </div>
     </div>
   </div>
 </section>
@@ -622,7 +673,8 @@ footer a:hover{color:var(--magenta)}
   </div>
 </section>
 
-<section class="sect" id="philosophie">
+<section class="sect revele" id="philosophie">
+  <div class="derriere"><img src="../koytcha-reveal/assets/web/arrival.jpg" alt=""></div>
   <div class="wrap">
     <div class="monte">
       <p class="eyebrow">Notre philosophie</p>
@@ -759,6 +811,42 @@ footer a:hover{color:var(--magenta)}
   window.addEventListener('scroll', auScroll, { passive:true });
   window.addEventListener('resize', auScroll);
   peindre();
+
+  /* Titres mot a mot. On enveloppe au chargement plutot que dans le HTML :
+     ecrire les span a la main rendrait le texte illisible en relecture, et
+     surtout la cesure des lignes casserait — un inline-block ne se coupe
+     pas au milieu, donc on n enveloppe QUE les mots, jamais les espaces. */
+  [].forEach.call(document.querySelectorAll('h2.tt'), function(h){
+    if (h.querySelector('.mot')) return;
+    var parcourir = function(noeud){
+      [].slice.call(noeud.childNodes).forEach(function(n){
+        if (n.nodeType === 3) {
+          var frag = document.createDocumentFragment();
+          n.textContent.split(/(\s+)/).forEach(function(bout){
+            if (!bout) return;
+            if (/^\s+$/.test(bout)) { frag.appendChild(document.createTextNode(bout)); return; }
+            var sp = document.createElement('span');
+            sp.className = 'mot'; sp.textContent = bout;
+            frag.appendChild(sp);
+          });
+          n.parentNode.replaceChild(frag, n);
+        } else if (n.nodeType === 1) parcourir(n);
+      });
+    };
+    parcourir(h);
+    [].forEach.call(h.querySelectorAll('.mot'), function(m,i){ m.style.setProperty('--dm',(i*62)+'ms'); });
+  });
+
+  /* Les trois fonds de l en-tete se succedent. */
+  var fonds = [].slice.call(document.querySelectorAll('#bati img'));
+  if (fonds.length > 1 && !reduit) {
+    var iF = 0;
+    setInterval(function(){
+      fonds[iF].classList.remove('on');
+      iF = (iF + 1) % fonds.length;
+      fonds[iF].classList.add('on');
+    }, 6500);
+  }
 
   /* Mots qui défilent dans le titre. La liste vit dans data-mots : ajouter
      un mot ne demande pas de toucher au script. */
