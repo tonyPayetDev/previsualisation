@@ -20,7 +20,11 @@ const ETIQ = { ok: ['Envoyable', '#4ade80'], fix: ['À corriger', '#eab308'], ab
 
 const items = sites.map(s => {
   const vig = fs.existsSync(path.join(VIG, s.dir + '.jpg')) ? 'vignettes/' + s.dir + '.jpg' : '';
-  return { ...s, vig, route: routeDe[s.dir] || ('client-' + s.dir) };
+  // L'« avant » n'existe que si on a capturé le site actuel du client.
+  // Déposer la capture dans sites-clients/avant/<dossier>.jpg et régénérer.
+  const AV = path.join(DOSSIER, 'avant');
+  const avant = fs.existsSync(path.join(AV, s.dir + '.jpg')) ? 'avant/' + s.dir + '.jpg' : '';
+  return { ...s, vig, avant, route: routeDe[s.dir] || ('client-' + s.dir) };
 }).sort((a, b) => (b.vig ? 1 : 0) - (a.vig ? 1 : 0) || a.nom.localeCompare(b.nom, 'fr'));
 
 const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -67,6 +71,41 @@ a.retour:hover{color:var(--or)}
 .carte[data-flag="1"]{border-color:var(--or);box-shadow:0 0 0 1px rgba(234,179,8,.25)}
 .vue{position:relative;display:block;aspect-ratio:1280/900;background:#08080c;overflow:hidden}
 .vue img{width:100%;height:100%;object-fit:cover;object-position:top center;display:block}
+/* Comparateur avant/après — la couche « avant » est rognée par la gauche,
+   la poignée se déplace au doigt ou à la souris. --left est la seule
+   variable pilotée : tout le reste en découle. */
+.vue{--left:50%;touch-action:pan-y;cursor:ew-resize;user-select:none}
+.vue .avant{position:absolute;inset:0;width:var(--left);overflow:hidden;z-index:2}
+.vue .avant img{width:calc(100% / (var(--left) / 100%));max-width:none;height:100%}
+.vue .avant .neant{position:absolute;inset:0;background:#0e0e14;display:flex;
+  flex-direction:column;align-items:center;justify-content:center;gap:.2rem;text-align:center;padding:.5rem}
+.vue .avant .neant b{font-size:.7rem;color:var(--mut);font-weight:600}
+.vue .avant .neant span{font-size:.78rem;color:var(--rouge);font-weight:700}
+.vue .poignee{position:absolute;top:0;bottom:0;left:var(--left);width:2px;
+  background:var(--or);z-index:3;pointer-events:none}
+.vue .poignee i{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  width:26px;height:26px;border-radius:50%;background:var(--or);
+  box-shadow:0 2px 10px rgba(0,0,0,.55)}
+.vue .poignee i::before{content:'';position:absolute;inset:0;
+  background:linear-gradient(90deg,transparent 34%,#141000 34%,#141000 42%,transparent 42%,
+    transparent 58%,#141000 58%,#141000 66%,transparent 66%)}
+.vue .etiq{position:absolute;bottom:8px;font-size:.6rem;font-weight:700;z-index:4;
+  padding:.14rem .4rem;border-radius:999px;background:rgba(10,10,15,.8);letter-spacing:.06em}
+.vue .etiq.g{left:8px;color:var(--rouge)}
+.vue .etiq.d{right:8px;color:var(--vert)}
+
+/* Choix d'état, y compris « abandonner » */
+.etats{display:flex;gap:.25rem;flex-wrap:wrap}
+.etats .et{flex:1;min-width:0;background:none;border:1px solid var(--bord);color:var(--mut);
+  border-radius:6px;padding:.24rem .3rem;font-size:.68rem;cursor:pointer;font-family:inherit;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:border-color .15s,color .15s}
+.etats .et:hover{color:var(--txt)}
+.etats .et[aria-pressed=true][data-e=ok]{border-color:var(--vert);color:var(--vert);background:rgba(74,222,128,.1)}
+.etats .et[aria-pressed=true][data-e=fix]{border-color:var(--or);color:var(--or);background:rgba(234,179,8,.1)}
+.etats .et[aria-pressed=true][data-e=abandon]{border-color:var(--rouge);color:var(--rouge);background:rgba(239,100,97,.1)}
+.carte[data-etat=abandon]{opacity:.55}
+.carte[data-etat=abandon]:hover{opacity:1}
+
 .vue .rien{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
   color:#4a4a58;font-size:.75rem;text-align:center;padding:1rem}
 .pastille{position:absolute;top:8px;left:8px;font-size:.64rem;font-weight:700;padding:.16rem .45rem;
@@ -128,20 +167,35 @@ a.retour:hover{color:var(--or)}
 <div class="grille" id="grille">
 ${items.map(i => `  <article class="carte" data-dir="${esc(i.dir)}" data-etat="${esc(i.etat)}" data-flag="0"
     data-k="${esc((i.nom + ' ' + i.act + ' ' + i.dir).toLowerCase())}">
-    <a class="vue" href="/${esc(i.route)}/" target="_blank" rel="noopener">
-      ${i.vig ? `<img src="${esc(i.vig)}" alt="Aperçu de ${esc(i.nom)}" loading="lazy">`
+    <div class="vue">
+      ${i.vig ? `<img class="apres" src="${esc(i.vig)}" alt="Aperçu de ${esc(i.nom)}" loading="lazy">`
               : `<span class="rien">pas de capture<br>— site non rendu</span>`}
-      <span class="pastille" style="color:${ETIQ[i.etat] ? ETIQ[i.etat][1] : '#8f8f9e'}">${ETIQ[i.etat] ? ETIQ[i.etat][0] : i.etat}</span>
-    </a>
+      <!-- L'« avant » : leur situation actuelle. Pour la plupart, il n'y a pas
+           de vieux site à montrer — il n'y a rien du tout, et c'est justement
+           l'argument. Une capture réelle prendra sa place dès qu'on l'aura. -->
+      <div class="avant"${i.avant ? '' : ' data-vide="1"'}>
+        ${i.avant ? `<img src="${esc(i.avant)}" alt="Site actuel de ${esc(i.nom)}" loading="lazy">`
+                  : `<div class="neant"><b>Aujourd'hui</b><span>aucun site</span></div>`}
+      </div>
+      <div class="poignee"><i></i></div>
+      <span class="etiq g">Avant</span>
+      <span class="etiq d">Après</span>
+      <span class="pastille" data-p>${ETIQ[i.etat] ? ETIQ[i.etat][0] : i.etat}</span>
+    </div>
     <div class="corps">
       <div class="nom">${esc(i.nom)}</div>
       <div class="meta">${esc(i.act || '—')}${i.tel ? ' · ' + esc(i.tel) : ''}</div>
+      <div class="etats">
+        <button class="et" data-e="ok" type="button">Envoyable</button>
+        <button class="et" data-e="fix" type="button">À corriger</button>
+        <button class="et" data-e="abandon" type="button">Abandonner</button>
+      </div>
       <div class="actions">
-        <button class="bt f" type="button" title="Marquer pour correction">★ à corriger</button>
+        <button class="bt f" type="button" title="Marquer pour l'ordre de correction">★ marquer</button>
         <a class="bt" href="/${esc(i.route)}/" target="_blank" rel="noopener">ouvrir</a>
         ${i.tel ? `<a class="bt" href="tel:${esc(i.tel)}">appeler</a>` : ''}
       </div>
-      <textarea class="note" rows="2" placeholder="Ce qu'il faut corriger sur ce site…"></textarea>
+      <textarea class="note" rows="2" placeholder="Ce qu'il faut corriger — ou pourquoi abandonner…"></textarea>
     </div>
   </article>`).join('\n')}
 </div>
@@ -174,32 +228,95 @@ ${items.map(i => `  <article class="carte" data-dir="${esc(i.dir)}" data-etat="$
   try { etat = JSON.parse(localStorage.getItem(CLE) || '{}'); } catch (_) { etat = {}; }
   function sauver(){ try { localStorage.setItem(CLE, JSON.stringify(etat)); } catch (_) {} }
 
+  var ETIQ = { ok: ['Envoyable', '#4ade80'], fix: ['À corriger', '#eab308'], abandon: ['À abandonner', '#ef6461'] };
+
   cartes.forEach(function(c){
     var dir = c.dataset.dir;
+    var origine = c.dataset.etat;                  // l'état venu de l'inventaire
     var s = etat[dir] || { f: 0, note: '' };
     var bt = c.querySelector('.bt.f');
     var note = c.querySelector('.note');
+    var vue = c.querySelector('.vue');
+    var pastille = c.querySelector('[data-p]');
+    var boutons = [].slice.call(c.querySelectorAll('.etats .et'));
+
+    function courant(){ return s.etat || origine; }
 
     function peindre(){
       c.dataset.flag = s.f ? '1' : '0';
       bt.classList.toggle('on', !!s.f);
-      note.value = s.note || '';
+      if (document.activeElement !== note) note.value = s.note || '';
+      var e = courant();
+      c.dataset.etat = e;
+      if (pastille && ETIQ[e]) {
+        pastille.textContent = ETIQ[e][0];
+        pastille.style.color = ETIQ[e][1];
+      }
+      boutons.forEach(function(b){ b.setAttribute('aria-pressed', String(b.dataset.e === e)); });
     }
+
     bt.addEventListener('click', function(){
       s.f = s.f ? 0 : 1;
       etat[dir] = s; sauver(); peindre(); compter(); appliquer();
       if (s.f) note.focus();
     });
+
+    boutons.forEach(function(b){
+      b.addEventListener('click', function(){
+        // Cliquer un état le POSE, toujours. Le basculer sur un second clic
+        // était un piège : confirmer « à abandonner » sur une fiche déjà
+        // marquée ainsi l'annulait silencieusement.
+        s.etat = b.dataset.e;
+        // Abandonner sans dire pourquoi ne sert à rien dans six mois.
+        if (s.etat === 'abandon' && !(s.note || '').trim()) {
+          note.placeholder = 'Pourquoi abandonner ce site ?';
+          setTimeout(function(){ note.focus(); }, 0);
+        }
+        etat[dir] = s; sauver(); peindre(); compter(); appliquer();
+      });
+    });
+
     // On enregistre à la frappe : une note perdue est une note qu'il faut réécrire.
     note.addEventListener('input', function(){
       s.note = note.value; etat[dir] = s; sauver();
     });
+
+    /* --- Comparateur avant / après ---------------------------------------
+       Une seule variable CSS pilote tout. On écoute pointerdown/move plutôt
+       que mouse+touch séparément : un seul chemin de code pour le doigt et
+       la souris, et pas de double déclenchement sur les écrans tactiles. */
+    if (vue) {
+      var glisse = false;
+      function place(ev){
+        var r = vue.getBoundingClientRect();
+        var x = Math.min(Math.max(ev.clientX - r.left, 0), r.width);
+        vue.style.setProperty('--left', (x / r.width * 100).toFixed(2) + '%');
+      }
+      vue.addEventListener('pointerdown', function(ev){
+        glisse = true; vue.setPointerCapture(ev.pointerId); place(ev); ev.preventDefault();
+      });
+      vue.addEventListener('pointermove', function(ev){ if (glisse) place(ev); });
+      ['pointerup','pointercancel'].forEach(function(t){
+        vue.addEventListener(t, function(){ glisse = false; });
+      });
+      // Un double-tap ouvre le site : le glissement a pris la place du clic.
+      vue.addEventListener('dblclick', function(){
+        window.open('/' + c.dataset.dir + '/', '_blank', 'noopener');
+      });
+    }
+
     peindre();
   });
 
   function compter(){
     var f = cartes.filter(function(c){ return c.dataset.flag === '1'; }).length;
     document.getElementById('n-flag').textContent = f;
+    // Les compteurs des pastilles étaient figés à la génération : dès qu'on
+    // change un état à la main, ils mentaient. On les recalcule à chaque fois.
+    ['ok', 'fix', 'abandon'].forEach(function(e){
+      var b = document.querySelector('.ch[data-f="' + e + '"] b');
+      if (b) b.textContent = cartes.filter(function(c){ return c.dataset.etat === e; }).length;
+    });
   }
 
   function appliquer(){
@@ -253,8 +370,14 @@ ${items.map(i => `  <article class="carte" data-dir="${esc(i.dir)}" data-etat="$
       lignes.push((i + 1) + '. ' + c.querySelector('.nom').textContent.trim());
       lignes.push('   dossier : /work/previsualisation/' + c.dataset.dir);
       lignes.push('   en ligne : https://previsualisation.automatisationboost.com/' + c.dataset.dir + '/');
-      lignes.push('   état actuel : ' + c.dataset.etat);
-      lignes.push('   correction : ' + ((s.note || '').trim() || '(à préciser)'));
+      // On distingue l'état d'origine de celui que Tony a posé lui-même :
+      // « à abandonner » décidé après avoir REGARDÉ le site ne vaut pas la
+      // même chose qu'un état hérité de l'inventaire automatique.
+      var LIB = { ok: 'envoyable', fix: 'à corriger', abandon: 'à abandonner' };
+      var e = c.dataset.etat;
+      lignes.push('   état : ' + (LIB[e] || e) + (s.etat ? '  (décidé à la revue)' : '  (issu de l’inventaire)'));
+      lignes.push('   ' + (e === 'abandon' ? 'motif d’abandon' : 'correction') + ' : '
+        + ((s.note || '').trim() || '(à préciser)'));
       lignes.push('');
     });
     return lignes.join('\\n');
