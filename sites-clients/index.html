@@ -969,5 +969,230 @@
     f=b.dataset.f; btns.forEach(function(x){x.setAttribute('aria-pressed',String(x===b))}); apply();
   })});
 </script>
+<style>
+/* --- Suivi d'appels ajouté le 2026-08-21 -----------------------------------
+   Se greffe sur la table existante sans toucher à son filtre : cette couche
+   ne fait que MASQUER en plus, elle ne réaffiche jamais une ligne que le
+   filtre d'origine a cachée. --------------------------------------------- */
+.suivi{position:sticky;top:0;z-index:20;background:#0a0a0f;
+  border-bottom:1px solid #242430;padding:.6rem 0 .7rem;margin-bottom:.5rem}
+.suivi .barre{display:flex;flex-wrap:wrap;gap:.35rem;align-items:center}
+.sc{background:#111117;border:1px solid #242430;color:#8f8f9e;padding:.3rem .65rem;
+  border-radius:999px;font-size:.74rem;cursor:pointer;font-family:inherit;
+  transition:border-color .15s,color .15s}
+.sc:hover{color:#f2f2f5}
+.sc[aria-pressed=true]{border-color:#eab308;color:#eab308;background:rgba(234,179,8,.09)}
+.sc b{font-weight:600;opacity:.55;margin-left:.28rem;font-variant-numeric:tabular-nums}
+.sc.act{margin-left:auto;border-color:#2f2f3d}
+.c-suivi{white-space:nowrap;width:1%}
+.et,.fav{background:none;border:1px solid #2a2a36;border-radius:6px;cursor:pointer;
+  font-size:.78rem;padding:.22rem .5rem;color:#8f8f9e;font-family:inherit;
+  transition:border-color .15s,color .15s,background .15s}
+.fav{margin-right:.3rem;padding:.22rem .42rem}
+.fav[aria-pressed=true]{border-color:#eab308;color:#eab308;background:rgba(234,179,8,.1)}
+.et[data-e="1"]{border-color:#eab308;color:#eab308}
+.et[data-e="2"]{border-color:#4ade80;color:#4ade80}
+.et[data-e="3"]{border-color:#60a5fa;color:#60a5fa}
+.et[data-e="4"]{border-color:#a78bfa;color:#a78bfa;background:rgba(167,139,250,.12)}
+.et[data-e="5"]{border-color:#3a3a46;color:#5c5c6b;text-decoration:line-through}
+tr.row[data-fav="1"] td:first-child{box-shadow:inset 3px 0 0 #eab308}
+#echange{width:100%;margin-top:.5rem;background:#111117;border:1px solid #242430;
+  color:#f2f2f5;padding:.5rem .65rem;border-radius:8px;font-family:ui-monospace,monospace;
+  font-size:.72rem;display:none}
+.aide-suivi{color:#8f8f9e;font-size:.72rem;margin-top:.45rem;line-height:1.45}
+/* La colonne de suivi elargit la table : on la fait defiler dans son propre
+   cadre plutot que de laisser la page deborder lateralement. */
+table{display:block;overflow-x:auto;max-width:100%;-webkit-overflow-scrolling:touch}
+.c-suivi{position:sticky;left:0;background:#0a0a0f;z-index:2}
+thead th:first-child{position:sticky;left:0;background:#0a0a0f;z-index:3}
+</style>
+
+<script>
+/* ---------------------------------------------------------------------------
+   Suivi d'appels. Stocké dans le navigateur de CET appareil : c'est immédiat
+   et sans serveur, mais ça ne suit pas d'un téléphone à un ordinateur, et un
+   nettoyage des données du navigateur l'efface. D'où le bouton « Copier le
+   suivi » : il produit une ligne de texte réimportable ailleurs — c'est le
+   filet, et c'est aussi ce que tu peux me coller pour que je le reprenne.
+   --------------------------------------------------------------------------- */
+(function () {
+  var CLE = 'suivi-appels-v1';
+  var ETATS = [
+    { e: 0, t: '—',          l: 'Rien' },
+    { e: 1, t: '📞 à appeler', l: 'À appeler' },
+    { e: 2, t: '✅ appelé',    l: 'Appelés' },
+    { e: 3, t: '💬 répondu',   l: 'Répondu' },
+    { e: 4, t: '🤝 RDV',       l: 'Rendez-vous' },
+    { e: 5, t: '✖ sans suite', l: 'Sans suite' }
+  ];
+
+  var tb = document.getElementById('tb');
+  var q  = document.getElementById('q');
+  if (!tb) return;
+  var lignes = [].slice.call(tb.rows);
+
+  var etat = {};
+  try { etat = JSON.parse(localStorage.getItem(CLE) || '{}'); } catch (_) { etat = {}; }
+  var sauver = function () {
+    try { localStorage.setItem(CLE, JSON.stringify(etat)); } catch (_) {}
+  };
+
+  // Identifiant stable : le dossier du client, pas sa position dans la table.
+  function idDe(tr) {
+    var d = tr.querySelector('.dir');
+    return d ? d.textContent.trim() : (tr.dataset.q || '').slice(0, 40);
+  }
+
+  // --- En-tête : colonne « Suivi » ---
+  var thead = document.querySelector('thead tr');
+  if (thead) {
+    var th = document.createElement('th');
+    th.textContent = 'Suivi';
+    thead.insertBefore(th, thead.firstChild);
+  }
+
+  // --- Contrôles par ligne ---
+  lignes.forEach(function (tr) {
+    var id = idDe(tr);
+    var s = etat[id] || { f: 0, e: 0 };
+    var td = document.createElement('td');
+    td.className = 'c-suivi';
+
+    var fav = document.createElement('button');
+    fav.className = 'fav';
+    fav.type = 'button';
+    fav.textContent = '★';
+    fav.title = 'Mettre en favori';
+
+    var et = document.createElement('button');
+    et.className = 'et';
+    et.type = 'button';
+    et.title = 'Changer l’état d’appel';
+
+    function peindre() {
+      fav.setAttribute('aria-pressed', String(!!s.f));
+      et.dataset.e = String(s.e);
+      et.textContent = ETATS[s.e].t;
+      tr.dataset.fav = s.f ? '1' : '0';
+      tr.dataset.et = String(s.e);
+    }
+
+    fav.addEventListener('click', function () {
+      s.f = s.f ? 0 : 1;
+      etat[id] = s; sauver(); peindre(); compter(); filtrer();
+    });
+    et.addEventListener('click', function () {
+      s.e = (s.e + 1) % ETATS.length;
+      etat[id] = s; sauver(); peindre(); compter(); filtrer();
+    });
+
+    peindre();
+    td.appendChild(fav);
+    td.appendChild(et);
+    tr.insertBefore(td, tr.firstChild);
+  });
+
+  // --- Barre de suivi ---
+  var barre = document.createElement('div');
+  barre.className = 'suivi';
+  barre.innerHTML =
+    '<div class="barre">' +
+      '<button class="sc" data-s="" aria-pressed="true">Tous <b id="n-tous">0</b></button>' +
+      '<button class="sc" data-s="fav" aria-pressed="false">★ Favoris <b id="n-fav">0</b></button>' +
+      ETATS.slice(1).map(function (x) {
+        return '<button class="sc" data-s="e' + x.e + '" aria-pressed="false">' +
+               x.l + ' <b id="n-e' + x.e + '">0</b></button>';
+      }).join('') +
+      '<button class="sc act" id="b-copier" type="button">Copier le suivi</button>' +
+      '<button class="sc" id="b-coller" type="button">Coller</button>' +
+    '</div>' +
+    '<textarea id="echange" rows="3" spellcheck="false" ' +
+      'placeholder="Colle ici un suivi copié depuis un autre appareil, puis appuie sur Entrée."></textarea>' +
+    '<p class="aide-suivi">Le suivi est enregistré dans ce navigateur, sur cet appareil. ' +
+      'Pour le retrouver ailleurs — ou me l’envoyer — utilise « Copier le suivi ».</p>';
+
+  var ancre = tb.closest('table');
+  ancre.parentNode.insertBefore(barre, ancre);
+
+  var filtreS = '';
+  var boutons = [].slice.call(barre.querySelectorAll('.sc[data-s]'));
+
+  function compter() {
+    var c = { tous: lignes.length, fav: 0 };
+    ETATS.forEach(function (x) { c['e' + x.e] = 0; });
+    lignes.forEach(function (tr) {
+      var s = etat[idDe(tr)] || { f: 0, e: 0 };
+      if (s.f) c.fav++;
+      c['e' + s.e]++;
+    });
+    var maj = function (id, v) { var el = document.getElementById(id); if (el) el.textContent = v; };
+    maj('n-tous', c.tous); maj('n-fav', c.fav);
+    ETATS.slice(1).forEach(function (x) { maj('n-e' + x.e, c['e' + x.e]); });
+  }
+
+  // On ne fait que masquer EN PLUS : jamais de réaffichage, sinon on
+  // écraserait le filtre d'origine de la page.
+  function filtrer() {
+    if (!filtreS) return;
+    lignes.forEach(function (tr) {
+      if (tr.hidden) return;
+      var s = etat[idDe(tr)] || { f: 0, e: 0 };
+      var ok = filtreS === 'fav' ? !!s.f : ('e' + s.e) === filtreS;
+      if (!ok) tr.hidden = true;
+    });
+  }
+
+  // Le filtre d'origine se relance sur ses propres événements : on repasse
+  // juste après lui, à la microtâche suivante.
+  function apresEux() { setTimeout(filtrer, 0); }
+  if (q) q.addEventListener('input', apresEux);
+  document.addEventListener('click', function (e) {
+    if (e.target.closest('[data-f]')) apresEux();
+  });
+
+  boutons.forEach(function (b) {
+    b.addEventListener('click', function () {
+      filtreS = b.dataset.s;
+      boutons.forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); });
+      // Rejouer le filtre d'origine pour repartir d'une base propre.
+      if (q) q.dispatchEvent(new Event('input', { bubbles: true }));
+      setTimeout(filtrer, 0);
+    });
+  });
+
+  // --- Échange entre appareils ---
+  var zone = document.getElementById('echange');
+  document.getElementById('b-copier').addEventListener('click', function () {
+    var txt = JSON.stringify(etat);
+    zone.style.display = 'block';
+    zone.value = txt;
+    zone.select();
+    try { navigator.clipboard.writeText(txt); } catch (_) {}
+  });
+  document.getElementById('b-coller').addEventListener('click', function () {
+    zone.style.display = 'block';
+    zone.value = '';
+    zone.focus();
+  });
+  zone.addEventListener('keydown', function (e) {
+    if (e.key !== 'Enter' || e.shiftKey) return;
+    e.preventDefault();
+    try {
+      var v = JSON.parse(zone.value.trim());
+      if (v && typeof v === 'object') {
+        etat = v; sauver();
+        zone.style.display = 'none';
+        location.reload();
+      }
+    } catch (_) {
+      zone.style.borderColor = '#ef6461';
+      setTimeout(function () { zone.style.borderColor = '#242430'; }, 1200);
+    }
+  });
+
+  compter();
+})();
+</script>
+
 </body>
 </html>

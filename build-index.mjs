@@ -49,6 +49,21 @@ const FAMILLES = [
 ];
 const famille = (n) => (FAMILLES.find(([r]) => r.test(n)) || [, 'Divers'])[1];
 
+// Les descriptions montent jusqu'à 560 caractères, moyenne 85, et 50 dépassent
+// 70. Sur une liste de 297 lignes ça devient illisible. On coupe à la dernière
+// unité de sens avant la limite — jamais au milieu d'un mot — et le texte
+// entier reste dans l'infobulle ET dans l'index de recherche.
+function court(txt, max = 78) {
+  const t = String(txt).replace(/\s+/g, ' ').trim();
+  if (t.length <= max) return { court: t, complet: t, coupe: false };
+  const zone = t.slice(0, max);
+  let i = Math.max(zone.lastIndexOf(' · '), zone.lastIndexOf(' — '), zone.lastIndexOf(' – '));
+  if (i < max * 0.45) i = zone.lastIndexOf(', ');
+  if (i < max * 0.45) i = zone.lastIndexOf(' ');
+  if (i < max * 0.45) i = max;
+  return { court: t.slice(0, i).replace(/[·,—–\s]+$/, '') + ' …', complet: t, coupe: true };
+}
+
 const items = routes.map(nom => {
   const dir = path.join(BASE, nom);
   let fichiers = [];
@@ -67,7 +82,10 @@ const items = routes.map(nom => {
   try { t = fs.statSync(dir).mtimeMs; } catch { /* ignore */ }
   return {
     nom,
-    titre: k?.nom || nom,
+    ...(() => {
+      const c = court(k?.nom || nom);
+      return { titre: c.court, titreComplet: c.complet, coupe: c.coupe };
+    })(),
     badge, detail,
     famille: famille(nom),
     video, page, t,
@@ -163,7 +181,7 @@ ${famillesTriees.map(([f, n]) => `    <button class="chip" data-f="${esc(f)}" ar
 </div>
 
 <ul id="liste">
-${items.map(i => `  <li data-fam="${esc(i.famille)}" data-mp4="${i.video ? 1 : 0}" data-k="${esc((i.nom + ' ' + i.titre + ' ' + i.famille).toLowerCase())}"><a href="/${esc(i.nom)}/">
+${items.map(i => `  <li data-fam="${esc(i.famille)}" data-mp4="${i.video ? 1 : 0}" data-k="${esc((i.nom + ' ' + i.titreComplet + ' ' + i.famille).toLowerCase())}"><a href="/${esc(i.nom)}/"${i.coupe ? ` title="${esc(i.titreComplet)}"` : ''}>
     <span class="nom">${esc(i.titre === i.nom ? i.nom : i.titre)}${i.titre !== i.nom ? `<small>/${esc(i.nom)}</small>` : ''}${i.detail ? `<small>${esc(i.detail)}</small>` : ''}</span>
     <span class="droite">${i.video ? '<span class="mp4">mp4</span>' : ''}${i.badge ? `<span class="badge">${esc(i.badge)}</span>` : ''}<span class="fam">${esc(i.famille)}</span></span>
   </a></li>`).join('\n')}
