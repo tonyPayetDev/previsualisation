@@ -288,7 +288,16 @@ h2.tt i{font-style:italic}
 .revele .derriere img{position:fixed;top:0;left:0;width:100%;height:100vh;
   object-fit:cover}
 .revele .derriere::after{content:'';position:absolute;inset:0;
-  background:linear-gradient(180deg,rgba(255,255,255,.94),rgba(255,255,255,.88) 45%,rgba(255,255,255,.95))}
+  background:linear-gradient(180deg,rgba(255,255,255,.94),rgba(255,255,255,.88) 45%,rgba(255,255,255,.95));
+  transition:opacity .85s var(--ease)}
+/* Au survol, le voile blanc se lève et la photo apparaît vraiment.
+   Il ne descend pas à zéro : sous 0,55 d'opacité, le texte gris passe sous
+   le seuil de contraste sur les zones claires de la photo. On compense donc
+   AUSSI en fonçant le texte — lever le voile sans ça rendrait la section
+   jolie et illisible. */
+.revele:hover .derriere::after{opacity:.62}
+.revele:hover .corps p,.revele:hover .pilier p,.revele:hover .fin-txt{color:var(--noir)}
+.revele .corps p,.revele .pilier p,.revele .fin-txt{transition:color .85s var(--ease)}
 .revele>*{position:relative;z-index:1}
 .duo{display:grid;grid-template-columns:1fr 1fr;gap:clamp(40px,6vw,90px);align-items:center}
 .txt p{color:var(--gris);font-size:15.5px;max-width:46ch}
@@ -301,6 +310,42 @@ h2.tt i{font-style:italic}
 /* Un anneau très fin détache le cercle du fond sourd sans faire décoratif. */
 .cercle::after{content:'';position:absolute;inset:0;border-radius:50%;
   box-shadow:inset 0 0 0 1px rgba(255,255,255,.5);pointer-events:none}
+
+/* ── Le cercle qui éclate en trois angles ─────────────────────────────
+   Au survol, la photo principale se retire et deux vues du MÊME bâtiment
+   sortent d'elle. Les trois photos sont celles de l'agence (façade, patio
+   intérieur, angle arrière) — on montre trois angles réels, on n'en invente
+   aucun.
+   Le conteneur porte le survol, pas le cercle : sinon les satellites, qui
+   sortent du disque, feraient sortir la souris du cercle et l'effet
+   clignoterait à chaque déplacement. */
+.eclat{position:relative;isolation:isolate}
+.eclat .cercle{transition:transform .75s var(--ease),box-shadow .75s var(--ease)}
+.sat{position:absolute;width:46%;aspect-ratio:1;border-radius:50%;overflow:hidden;
+  top:27%;left:27%;opacity:0;pointer-events:none;z-index:2;
+  box-shadow:0 24px 54px -22px rgba(0,0,0,.45);
+  /* Départ : posés au centre, à l'échelle 0. Ils naissent donc DANS la photo
+     principale au lieu d'apparaître à côté. */
+  transform:translate(0,0) scale(.2);
+  transition:transform .78s var(--ease),opacity .5s var(--ease)}
+.sat img{width:100%;height:100%;object-fit:cover}
+.sat::after{content:'';position:absolute;inset:0;border-radius:50%;
+  box-shadow:inset 0 0 0 2px rgba(255,255,255,.85)}
+/* Les trois disques forment un triangle INSCRIT dans le carré du cercle
+   d'origine : mesuré, aucun ne dépasse. Une première version envoyait le
+   satellite bas hors du cadre — invisible à la lecture du CSS, évident dès
+   qu'on mesure les rectangles. */
+.eclat:hover .cercle,.eclat:focus-within .cercle{transform:scale(.60) translate(-26%,-4%)}
+.eclat:hover .sat,.eclat:focus-within .sat{opacity:1}
+.eclat:hover .s1,.eclat:focus-within .s1{transform:translate(52%,-50%) scale(.94)}
+.eclat:hover .s2,.eclat:focus-within .s2{transform:translate(46%,46%) scale(.88);transition-delay:.09s}
+/* Sur mobile il n'y a pas de survol : les trois vues se posent côte à côte
+   plutôt que de rester invisibles. */
+@media(hover:none),(max-width:980px){
+  .eclat{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;align-items:center}
+  .eclat .cercle{transform:none !important}
+  .sat{position:static;width:auto;opacity:1;transform:none !important;pointer-events:auto}
+}
 .chiffres{display:grid;grid-template-columns:repeat(4,1fr);gap:24px;
   margin-top:clamp(60px,8vw,100px);padding-top:clamp(40px,5vw,60px);border-top:1px solid var(--ligne)}
 .chiffre b{display:block;font-family:var(--serif);font-weight:300;font-size:clamp(28px,3.6vw,44px);line-height:1}
@@ -318,6 +363,17 @@ h2.tt i{font-style:italic}
 .metier .gal{margin-top:0;grid-template-columns:repeat(2,1fr)}
 .metier .gal figure:first-child{grid-column:1/-1;aspect-ratio:16/10}
 .metier .gal figure:nth-child(4){grid-column:auto}
+/* Les quatre images entrent UNE À UNE, pas ensemble. Le décalage était déjà
+   posé en `--retard` par le script, mais seul le bloc `.gal` portait la
+   transition : les figures arrivaient donc toutes au même instant. La
+   transition descend ici, sur chaque figure. */
+.metier .gal figure{opacity:0;transform:translateY(26px) scale(.985);
+  transition:opacity .7s var(--ease),transform .7s var(--ease);
+  transition-delay:var(--retard,0ms)}
+.metier .gal.vu figure{opacity:1;transform:none}
+@media(prefers-reduced-motion:reduce){
+  .metier .gal figure{opacity:1;transform:none;transition:none}
+}
 @media(max-width:900px){.metier{grid-template-columns:1fr}.metier .gal{margin-top:30px}}
 .corps p{color:var(--gris);font-size:15.5px;margin:0 0 17px}
 .puces{list-style:none;margin:26px 0 0;padding:0;display:grid;gap:13px}
@@ -348,6 +404,22 @@ h2.tt i{font-style:italic}
 .final .fond img{width:100%;height:100%;object-fit:cover}
 .final .teinte{position:absolute;inset:0;
   background:linear-gradient(75deg,rgba(184,0,101,.80) 0%,rgba(230,0,126,.52) 45%,rgba(20,20,20,.30) 100%)}
+/* Un effet simple sur le rose : une seule bande de lumière qui traverse
+   lentement le dégradé. Pas d'animation sur le dégradé lui-même — animer
+   `background` force un repaint de toute la surface à chaque image ; une
+   couche à part translatée reste sur le compositeur. */
+.final .teinte::after{content:'';position:absolute;top:-30%;bottom:-30%;width:55%;
+  left:-60%;pointer-events:none;
+  background:linear-gradient(100deg,transparent,rgba(255,255,255,.16) 42%,rgba(255,255,255,.24) 52%,transparent);
+  filter:blur(14px);transform:skewX(-14deg);
+  animation:balayage 7.5s var(--ease) infinite}
+@keyframes balayage{
+  0%,100%{transform:translateX(0) skewX(-14deg);opacity:0}
+  12%{opacity:1}
+  62%{opacity:1}
+  75%,100%{transform:translateX(340%) skewX(-14deg);opacity:0}
+}
+@media(prefers-reduced-motion:reduce){ .final .teinte::after{animation:none;opacity:0} }
 .final .dedans{position:absolute;inset:0;display:flex;align-items:center;z-index:3}
 .final h2{font-family:var(--serif);font-weight:300;color:#fff;font-size:clamp(30px,4.6vw,58px);
   line-height:1.06;margin:0;max-width:14ch}
@@ -486,48 +558,8 @@ footer a:hover{color:var(--magenta)}
   </div>
 </div>
 
-<!-- 2 · PROGRAMMES -->
-<section class="sect haut" id="programmes">
-  <div class="wrap">
-    <div class="tete monte">
-      <div>
-        <p class="eyebrow">Sélectionnés pour vous</p>
-        <h2 class="tt">Nos programmes <i>d'exception.</i></h2>
-      </div>
-      <a class="lien-fleche" href="#">Découvrir tous nos biens
-        <svg width="20" height="11" viewBox="0 0 20 11" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M0 5.5h18M13.5 1l4.5 4.5-4.5 4.5"/></svg></a>
-    </div>
-    <div class="cartes">
-      <a class="carte monte" href="#">
-        <div class="vue"><span class="ville">Saint-Paul</span>
-          <img src="../koytchaimmo-refonte/assets/alpha1-net.webp" alt="Cambaie Park, Saint-Paul" loading="lazy"></div>
-        <h3>Cambaie Park</h3>
-        <p>Résidence contemporaine au cœur d'un quartier recherché, à deux pas des commodités.</p>
-        <span class="dec">Découvrir
-          <svg width="16" height="9" viewBox="0 0 20 11" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M0 5.5h18M13.5 1l4.5 4.5-4.5 4.5"/></svg></span>
-      </a>
-      <a class="carte monte" href="#">
-        <div class="vue"><span class="ville">Sainte-Marie</span>
-          <img src="../koytchaimmo-refonte/assets/photo1-net.webp" alt="Grand Prado, Sainte-Marie" loading="lazy"></div>
-        <h3>Grand Prado</h3>
-        <p>Maisons d'exception entre nature et modernité, pensées pour le confort au quotidien.</p>
-        <span class="dec">Découvrir
-          <svg width="16" height="9" viewBox="0 0 20 11" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M0 5.5h18M13.5 1l4.5 4.5-4.5 4.5"/></svg></span>
-      </a>
-      <a class="carte monte" href="#">
-        <div class="vue"><span class="ville">La Possession</span>
-          <img src="../koytchaimmo-refonte/assets/drone-net.webp" alt="ZE Lokal, La Possession" loading="lazy"></div>
-        <h3>ZE Lokal</h3>
-        <p>Un emplacement stratégique pour vos projets professionnels et mixtes.</p>
-        <span class="dec">Découvrir
-          <svg width="16" height="9" viewBox="0 0 20 11" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M0 5.5h18M13.5 1l4.5 4.5-4.5 4.5"/></svg></span>
-      </a>
-    </div>
-  </div>
-</section>
-
 <!-- Carrousel de biens — chaque carte mène à la page de recherche -->
-<section class="sect apropos" id="biens">
+<section class="sect haut" id="biens">
   <div class="wrap">
     <div class="tete monte">
       <div>
@@ -566,6 +598,46 @@ footer a:hover{color:var(--magenta)}
       <button type="button" data-cf-point aria-label="Bien 4"></button>
       <button type="button" data-cf-point aria-label="Bien 5"></button>
       <button type="button" data-cf-point aria-label="Bien 6"></button>
+    </div>
+  </div>
+</section>
+
+<!-- 2 · PROGRAMMES -->
+<section class="sect apropos" id="programmes">
+  <div class="wrap">
+    <div class="tete monte">
+      <div>
+        <p class="eyebrow">Sélectionnés pour vous</p>
+        <h2 class="tt">Nos programmes <i>d'exception.</i></h2>
+      </div>
+      <a class="lien-fleche" href="#">Découvrir tous nos biens
+        <svg width="20" height="11" viewBox="0 0 20 11" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M0 5.5h18M13.5 1l4.5 4.5-4.5 4.5"/></svg></a>
+    </div>
+    <div class="cartes">
+      <a class="carte monte" href="#">
+        <div class="vue"><span class="ville">Saint-Paul</span>
+          <img src="../koytchaimmo-refonte/assets/alpha1-net.webp" alt="Cambaie Park, Saint-Paul" loading="lazy"></div>
+        <h3>Cambaie Park</h3>
+        <p>Résidence contemporaine au cœur d'un quartier recherché, à deux pas des commodités.</p>
+        <span class="dec">Découvrir
+          <svg width="16" height="9" viewBox="0 0 20 11" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M0 5.5h18M13.5 1l4.5 4.5-4.5 4.5"/></svg></span>
+      </a>
+      <a class="carte monte" href="#">
+        <div class="vue"><span class="ville">Sainte-Marie</span>
+          <img src="../koytchaimmo-refonte/assets/photo1-net.webp" alt="Grand Prado, Sainte-Marie" loading="lazy"></div>
+        <h3>Grand Prado</h3>
+        <p>Maisons d'exception entre nature et modernité, pensées pour le confort au quotidien.</p>
+        <span class="dec">Découvrir
+          <svg width="16" height="9" viewBox="0 0 20 11" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M0 5.5h18M13.5 1l4.5 4.5-4.5 4.5"/></svg></span>
+      </a>
+      <a class="carte monte" href="#">
+        <div class="vue"><span class="ville">La Possession</span>
+          <img src="../koytchaimmo-refonte/assets/drone-net.webp" alt="ZE Lokal, La Possession" loading="lazy"></div>
+        <h3>ZE Lokal</h3>
+        <p>Un emplacement stratégique pour vos projets professionnels et mixtes.</p>
+        <span class="dec">Découvrir
+          <svg width="16" height="9" viewBox="0 0 20 11" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M0 5.5h18M13.5 1l4.5 4.5-4.5 4.5"/></svg></span>
+      </a>
     </div>
   </div>
 </section>
@@ -612,8 +684,12 @@ footer a:hover{color:var(--magenta)}
            relations durables fondées sur la confiance.</p>
         <p style="margin-top:30px"><a class="bt" href="#contact">En savoir plus sur nous</a></p>
       </div>
-      <div class="cercle monte" id="cercle">
-        <img src="../koytchaimmo-refonte/assets/drone.webp" alt="Agence Koytcha Immo">
+      <div class="eclat monte" id="eclat" tabindex="0">
+        <div class="cercle" id="cercle">
+          <img src="../koytchaimmo-refonte/assets/drone.webp" alt="L'agence Koytcha Immo, vue de face">
+        </div>
+        <div class="sat s1"><img src="../koytchaimmo-refonte/assets/alpha1.webp" alt="Le patio intérieur de l'agence" loading="lazy"></div>
+        <div class="sat s2"><img src="../koytchaimmo-refonte/assets/photo1.webp" alt="L'agence vue de l'arrière" loading="lazy"></div>
       </div>
     </div>
     <div class="chiffres monte">
@@ -873,7 +949,11 @@ footer a:hover{color:var(--magenta)}
 
   /* Cascade : chaque enfant direct d'un bloc révélé entre à son tour. */
   [].forEach.call(document.querySelectorAll('.cartes, .gal, .piliers, .trois-chiffres, .puces'), function(g){
-    [].forEach.call(g.children, function(el, i){ el.style.setProperty('--retard', (i * 90) + 'ms'); });
+    // La galerie de « Notre métier » monte à 190 ms : à 90 ms les quatre
+    // images se chevauchent et l'oeil lit une seule apparition. Au-delà de
+    // 200 ms, la derniere se fait attendre.
+    var pas = g.classList.contains('gal') ? 190 : 90;
+    [].forEach.call(g.children, function(el, i){ el.style.setProperty('--retard', (i * pas) + 'ms'); });
   });
 
   /* Section cinématique : trois chapitres sur une scène collante. */
