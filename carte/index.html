@@ -1,0 +1,546 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0b0b10">
+<title>La Carte</title>
+<style>
+/* ---------------------------------------------------------------------------
+   Carte d'avancement — Tony PAYET / AutomatisationBoost.
+   Charte du projet (_shared/CHARTE.md) : or #eab308, violet #8b5cf6, fond noir.
+   Elle prime sur mes préférences : c'est son système, pas le mien.
+   Pas de webfont : la CSP de l'artefact bloque les CDN, donc la typo travaille
+   par la graisse, la casse et l'interlettrage plutôt que par une fonte exotique.
+   --------------------------------------------------------------------------- */
+:root{
+  --nuit:#0b0b10;
+  --panneau:#14141c;
+  --panneau-2:#1a1a24;
+  --ligne:#262633;
+  --texte:#ece9e3;
+  --mut:#8a8798;
+  --or:#eab308;
+  --violet:#8b5cf6;
+  --rouge:#ef6461;
+  --vert:#4ade80;
+  --dsp:'Arial Narrow','Helvetica Neue',system-ui,sans-serif;
+  --bdy:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --mno:ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--nuit);color:var(--texte);font-family:var(--bdy);
+  font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+.wrap{max-width:1120px;margin:0 auto;padding:0 22px}
+.dsp{font-family:var(--dsp);text-transform:uppercase;font-weight:700;
+  letter-spacing:.01em;line-height:1.02;text-wrap:balance}
+.mono{font-family:var(--mno);font-size:11px;letter-spacing:.16em;text-transform:uppercase}
+
+/* ---------- Ouverture ---------- */
+.hero{padding:44px 0 40px;border-bottom:1px solid var(--ligne)}
+.hero .mono{color:var(--or);display:block;margin-bottom:18px}
+.hero h1{font-size:clamp(34px,6vw,68px);max-width:17ch}
+.hero h1 em{font-style:normal;color:var(--or)}
+.hero p{margin-top:20px;max-width:62ch;color:#bab6c4;font-size:clamp(15px,1.5vw,18px)}
+.regle{margin-top:28px;display:inline-flex;align-items:center;gap:14px;flex-wrap:wrap;
+  border:1px solid var(--ligne);background:var(--panneau);border-radius:4px;padding:13px 18px}
+.regle b{font-family:var(--dsp);text-transform:uppercase;font-size:17px;letter-spacing:.02em}
+.regle .s{color:var(--mut);font-size:13px}
+.regle .f{color:var(--or)}.regle .v{color:var(--texte)}.regle .c{color:var(--mut)}
+
+/* ---------- Bandeau de chiffres ---------- */
+.chiffres{display:grid;grid-template-columns:repeat(5,1fr);border-bottom:1px solid var(--ligne)}
+.chiffres div{padding:26px 16px;border-left:1px solid var(--ligne);text-align:center}
+.chiffres div:first-child{border-left:0}
+.chiffres .n{font-family:var(--dsp);font-size:clamp(26px,3.4vw,40px);line-height:1;
+  font-variant-numeric:tabular-nums}
+.chiffres .n.or{color:var(--or)}
+.chiffres .n.rouge{color:var(--rouge)}
+.chiffres .l{margin-top:8px;color:var(--mut);font-size:12px;line-height:1.35}
+@media(max-width:820px){.chiffres{grid-template-columns:repeat(2,1fr)}
+  .chiffres div{border-left:0;border-top:1px solid var(--ligne)}
+  .chiffres div:nth-child(-n+2){border-top:0}
+  .chiffres div:nth-child(odd){border-right:1px solid var(--ligne)}}
+
+section{padding:60px 0}
+.tete{margin-bottom:34px}
+.tete .mono{color:var(--or);display:block;margin-bottom:14px}
+.tete h2{font-size:clamp(26px,3.6vw,44px);max-width:22ch}
+.tete p{margin-top:14px;color:var(--mut);max-width:64ch;font-size:15px}
+
+/* ---------- La carte : bulles + liaisons ---------- */
+#carte{position:relative}
+#fils{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0}
+.colonnes{position:relative;z-index:1;display:grid;grid-template-columns:1fr 1fr 1fr;gap:30px;align-items:start}
+.col h3{font-family:var(--mno);font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--mut);margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid var(--ligne)}
+.bulles{display:flex;flex-direction:column;gap:9px}
+.b{display:block;width:100%;text-align:left;background:var(--panneau);border:1px solid var(--ligne);
+  border-radius:22px;padding:11px 15px;cursor:pointer;color:var(--texte);
+  font-family:inherit;font-size:14px;transition:border-color .18s,background .18s,opacity .18s}
+.b:hover{border-color:#3a3a4a}
+.b .t{font-weight:600;display:block}
+.b .s{display:block;color:var(--mut);font-size:11.5px;margin-top:2px}
+.b .pt{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:8px;
+  vertical-align:middle;background:var(--mut)}
+.b.argent .pt{background:var(--or)}
+.b.produit .pt{background:var(--violet)}
+.b.socle .pt{background:#5b5b70}
+.b.perso .pt{background:var(--vert)}
+.b[aria-pressed=true]{border-color:var(--or);background:rgba(234,179,8,.09)}
+.b.obj{border-radius:6px;background:var(--panneau-2)}
+.b.pourquoi{border-radius:6px;border-color:rgba(234,179,8,.4);background:rgba(234,179,8,.06)}
+.b.pourquoi .t{color:var(--or)}
+#carte.actif .b:not(.on){opacity:.22}
+.aide{margin-top:20px;color:var(--mut);font-size:12.5px}
+@media(max-width:860px){
+  .colonnes{grid-template-columns:1fr;gap:26px}
+  #fils{display:none}
+}
+
+/* ---------- Semaine ---------- */
+.semaine{border:1px solid var(--ligne);border-radius:5px;overflow:hidden}
+.jour{display:grid;grid-template-columns:96px 1fr;border-top:1px solid var(--ligne)}
+.jour:first-child{border-top:0}
+.jour .d{padding:16px 14px;background:var(--panneau);font-family:var(--mno);font-size:11px;
+  letter-spacing:.12em;text-transform:uppercase;color:var(--mut);border-right:1px solid var(--ligne)}
+.jour .d b{display:block;color:var(--texte);font-size:13px;letter-spacing:.04em;margin-bottom:3px}
+.blocs{display:flex;flex-wrap:wrap;gap:7px;padding:14px}
+.bloc{border:1px solid var(--ligne);border-radius:3px;padding:7px 11px;font-size:12.5px;
+  display:flex;align-items:center;gap:7px;background:var(--panneau)}
+.bloc i{font-style:normal;width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.bloc .h{font-family:var(--mno);font-size:10.5px;color:var(--mut)}
+.bloc.arg{border-color:rgba(234,179,8,.35)}.bloc.arg i{background:var(--or)}
+.bloc.prod i{background:var(--violet)}
+.bloc.soc i{background:#5b5b70}
+.bloc.spo{border-color:rgba(74,222,128,.3)}.bloc.spo i{background:var(--vert)}
+@media(max-width:640px){.jour{grid-template-columns:1fr}
+  .jour .d{border-right:0;border-bottom:1px solid var(--ligne);display:flex;gap:10px;align-items:baseline}
+  .jour .d b{margin:0}}
+
+/* ---------- Blocages ---------- */
+.bloque{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:780px){.bloque{grid-template-columns:1fr}}
+.bq{border:1px solid var(--ligne);border-left:3px solid var(--rouge);background:var(--panneau);
+  border-radius:0 5px 5px 0;padding:18px 20px}
+.bq h4{font-size:15px;margin-bottom:7px}
+.bq p{color:var(--mut);font-size:13.5px}
+.bq .eff{margin-top:10px;padding-top:10px;border-top:1px solid var(--ligne);
+  color:var(--rouge);font-size:12.5px}
+
+.note{margin-top:38px;border:1px solid var(--ligne);border-radius:5px;padding:20px 22px;
+  background:var(--panneau);color:var(--mut);font-size:13.5px;line-height:1.6}
+.note b{color:var(--texte)}
+footer{border-top:1px solid var(--ligne);padding:30px 0 60px;color:var(--mut);font-size:12.5px}
+</style>
+
+<style>
+/* --- Bandeau permanent : pomodoro + accès Notion ---------------------------
+   La carte devient une page qu'on garde ouverte. Le bandeau reste visible en
+   haut, et le minuteur s'écrit dans le titre de l'onglet pour se voir même
+   quand la page est en arrière-plan. ------------------------------------- */
+.bandeau{position:sticky;top:0;z-index:50;background:rgba(11,11,16,.94);
+  backdrop-filter:blur(8px);border-bottom:1px solid var(--ligne)}
+.bandeau .in{max-width:1120px;margin:0 auto;padding:.55rem 22px;
+  display:flex;align-items:center;gap:.7rem;flex-wrap:wrap}
+.pomo{display:flex;align-items:center;gap:.5rem}
+.chrono{font-family:var(--mno);font-size:1.35rem;font-weight:600;letter-spacing:.03em;
+  font-variant-numeric:tabular-nums;min-width:4.6ch;color:var(--texte)}
+.chrono.pause{color:var(--mut)}
+.chrono.repos{color:var(--vert)}
+.phase{font-family:var(--mno);font-size:10px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--mut);min-width:8ch}
+.bp{background:var(--panneau);border:1px solid var(--ligne);color:var(--texte);
+  border-radius:6px;padding:.32rem .7rem;font-size:.78rem;cursor:pointer;font-family:inherit;
+  transition:border-color .15s,color .15s}
+.bp:hover{border-color:#3a3a4a}
+.bp.go{border-color:var(--or);color:var(--or);background:rgba(234,179,8,.1);font-weight:600}
+.cycles{font-family:var(--mno);font-size:10.5px;color:var(--mut);letter-spacing:.1em}
+.bandeau .droite{margin-left:auto;display:flex;align-items:center;gap:.5rem;flex-wrap:wrap}
+.lien{display:inline-flex;align-items:center;gap:.4rem;border:1px solid var(--ligne);
+  background:var(--panneau);color:var(--texte);text-decoration:none;border-radius:6px;
+  padding:.32rem .7rem;font-size:.78rem;transition:border-color .15s}
+.lien:hover{border-color:var(--or);color:var(--or)}
+.lien.notion{border-color:rgba(234,179,8,.4);color:var(--or)}
+@media(max-width:700px){
+  .bandeau .in{padding:.5rem 16px;gap:.5rem}
+  .phase{display:none}
+  .cycles{display:none}
+  .lien span.txt{display:none}
+}
+</style>
+
+<div class="bandeau">
+  <div class="in">
+    <div class="pomo">
+      <span class="chrono pause" id="chrono">25:00</span>
+      <span class="phase" id="phase">Prêt</span>
+      <button class="bp go" id="b-go" type="button">Démarrer</button>
+      <button class="bp" id="b-raz" type="button">Remettre à zéro</button>
+      <span class="cycles" id="cycles"></span>
+    </div>
+    <div class="droite">
+      <a class="lien notion" href="https://www.notion.so/63f7542b9b8641898864022f1c1961a8" target="_blank" rel="noopener">
+        Notion <span class="txt">· liste de tâches</span></a>
+      <a class="lien" href="/sites-clients/vue.html">Sites <span class="txt">clients</span></a>
+      <a class="lien" href="/">Prévisualisation</a>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ---------------------------------------------------------------------------
+   Pomodoro. L'échéance est stockée en heure absolue, pas en secondes
+   restantes : un onglet en arrière-plan voit son minuteur ralenti par le
+   navigateur, alors qu'une échéance reste juste même après une mise en veille.
+   --------------------------------------------------------------------------- */
+(function(){
+  var CLE = 'pomo-v1';
+  var TRAVAIL = 25 * 60 * 1000, REPOS = 5 * 60 * 1000, LONG = 15 * 60 * 1000;
+
+  var chrono = document.getElementById('chrono');
+  var phase  = document.getElementById('phase');
+  var bGo    = document.getElementById('b-go');
+  var bRaz   = document.getElementById('b-raz');
+  var cycles = document.getElementById('cycles');
+  var titre0 = document.title;
+
+  var s;
+  try { s = JSON.parse(localStorage.getItem(CLE) || 'null'); } catch (_) { s = null; }
+  if (!s) s = { phase: 'travail', fin: 0, reste: TRAVAIL, marche: false, faits: 0, jour: aujourdhui() };
+  if (s.jour !== aujourdhui()) { s.faits = 0; s.jour = aujourdhui(); }
+
+  function aujourdhui(){ return new Date().toISOString().slice(0, 10); }
+  function sauver(){ try { localStorage.setItem(CLE, JSON.stringify(s)); } catch (_) {} }
+  function duree(p){ return p === 'travail' ? TRAVAIL : (p === 'long' ? LONG : REPOS); }
+
+  function restant(){
+    return s.marche ? Math.max(0, s.fin - Date.now()) : s.reste;
+  }
+
+  function ecrire(){
+    var ms = restant();
+    var m = Math.floor(ms / 60000), sec = Math.floor((ms % 60000) / 1000);
+    var t = String(m).padStart(2, '0') + ':' + String(sec).padStart(2, '0');
+    chrono.textContent = t;
+    chrono.className = 'chrono' + (!s.marche ? ' pause' : (s.phase === 'travail' ? '' : ' repos'));
+    phase.textContent = s.phase === 'travail' ? 'Concentration'
+                      : (s.phase === 'long' ? 'Grande pause' : 'Pause');
+    bGo.textContent = s.marche ? 'Pause' : (restant() < duree(s.phase) ? 'Reprendre' : 'Démarrer');
+    bGo.classList.toggle('go', !s.marche);
+    cycles.textContent = s.faits ? s.faits + ' pomodoro' + (s.faits > 1 ? 's' : '') + ' aujourd’hui' : '';
+    // Visible depuis un autre onglet.
+    document.title = s.marche ? t + ' · ' + titre0 : titre0;
+  }
+
+  function basculer(){
+    if (s.phase === 'travail') {
+      s.faits++;
+      s.phase = (s.faits % 4 === 0) ? 'long' : 'repos';
+    } else {
+      s.phase = 'travail';
+    }
+    s.reste = duree(s.phase);
+    s.marche = false;
+    s.fin = 0;
+    sauver();
+    ecrire();
+    // Un signal discret : le titre clignote, pas de son imposé.
+    var n = 0, id = setInterval(function(){
+      document.title = (n % 2 ? '⏰ ' : '') + (s.phase === 'travail' ? 'Au travail' : 'Pause') + ' · ' + titre0;
+      if (++n > 9) { clearInterval(id); ecrire(); }
+    }, 700);
+  }
+
+  bGo.addEventListener('click', function(){
+    if (s.marche) { s.reste = restant(); s.marche = false; s.fin = 0; }
+    else { s.fin = Date.now() + s.reste; s.marche = true; }
+    sauver(); ecrire();
+  });
+  bRaz.addEventListener('click', function(){
+    s.phase = 'travail'; s.reste = TRAVAIL; s.marche = false; s.fin = 0;
+    sauver(); ecrire();
+  });
+
+  setInterval(function(){
+    if (s.marche && restant() <= 0) basculer();
+    else ecrire();
+  }, 1000);
+
+  ecrire();
+})();
+</script>
+
+<div class="wrap">
+
+<div class="hero">
+  <span class="mono">État au 21 août 2026 · reconstruit depuis le dépôt, les routines et Blotato</span>
+  <h1 class="dsp">Dix chantiers.<br>Une seule question :<br><em>lequel te fait facturer ?</em></h1>
+  <p>Tu m'as donné neuf lignes. Il y en a plus — et surtout, elles ne pèsent pas pareil. Cette carte les relie à ce qu'elles produisent vraiment, et remonte jusqu'au bout de la chaîne.</p>
+  <div class="regle">
+    <span class="s">Ta règle d'or, écrite de ta main :</span>
+    <b><span class="f">Facturer</span> <span class="s">&gt;</span> <span class="v">Vendre</span> <span class="s">&gt;</span> <span class="c">Construire</span></b>
+  </div>
+</div>
+
+</div>
+
+<div class="chiffres">
+  <div><div class="n or">297</div><div class="l">routes en prévisualisation<br>dont 166 avec vidéo</div></div>
+  <div><div class="n or">74</div><div class="l">publications programmées<br>jusqu'au 26 août</div></div>
+  <div><div class="n">8</div><div class="l">routines cloud<br>dont 3 quotidiennes</div></div>
+  <div><div class="n rouge">0</div><div class="l">appel passé<br>aux ~30 sites livrés</div></div>
+  <div><div class="n rouge">0</div><div class="l">ligne remplie<br>dans ton suivi hebdo</div></div>
+</div>
+
+<div class="wrap">
+
+<!-- ============ LA CARTE ============ -->
+<section>
+  <div class="tete">
+    <span class="mono">La carte</span>
+    <h2 class="dsp">Ce que chaque chantier produit, et où ça mène.</h2>
+    <p>Touche un chantier : la carte isole ce qu'il alimente. Trois familles — ce qui rapporte maintenant, ce qui construit un produit, ce qui tient le socle — plus ta vie, qui n'est pas un chantier mais qui conditionne tous les autres.</p>
+  </div>
+
+  <div id="carte">
+    <svg id="fils"></svg>
+    <div class="colonnes">
+
+      <div class="col">
+        <h3>Les chantiers</h3>
+        <div class="bulles" id="projets">
+          <button class="b argent" data-obj="o1" data-id="p1"><span class="pt"></span><span class="t">Appels &amp; relances</span><span class="s">~30 sites livrés, jamais rappelés · 13 emails, 0 réponse</span></button>
+          <button class="b argent" data-obj="o1" data-id="p2"><span class="pt"></span><span class="t">Sites démo clients</span><span class="s">106 sites inventoriés · Osmose, The Grill, Pizza Ok en attente</span></button>
+          <button class="b argent" data-obj="o1,o2" data-id="p3"><span class="pt"></span><span class="t">Family Arena</span><span class="s">dossier complet + site portail livré · rendez-vous à prendre</span></button>
+          <button class="b argent" data-obj="o1,o2" data-id="p4"><span class="pt"></span><span class="t">BeFresh</span><span class="s">client test = ta vitrine · 3 vidéos livrées, 4 angles bloqués</span></button>
+          <button class="b argent" data-obj="o1" data-id="p5"><span class="pt"></span><span class="t">Koytcha</span><span class="s">refonte immo + landing conseil, les deux en ligne</span></button>
+          <button class="b produit" data-obj="o2,o3" data-id="p6"><span class="pt"></span><span class="t">VideoBoost / ShortForge</span><span class="s">67 € tarif fondateur · le produit qui scale</span></button>
+          <button class="b produit" data-obj="o3" data-id="p7"><span class="pt"></span><span class="t">VideoBoost — vidéo</span><span class="s">prompt reveal ×5, essais, top 3 · la preuve en public</span></button>
+          <button class="b produit" data-obj="o3" data-id="p8"><span class="pt"></span><span class="t">VideoBoost — pub</span><span class="s">organique d'abord, puis promouvoir le meilleur par vue</span></button>
+          <button class="b produit" data-obj="o3" data-id="p9"><span class="pt"></span><span class="t">Journal IA</span><span class="s">quotidien 7h · la promesse d'être à jour</span></button>
+          <button class="b socle" data-obj="o4" data-id="p10"><span class="pt"></span><span class="t">Comment-to-DM</span><span class="s">la porte entre une vue et un contact · 15 mots sans porte</span></button>
+          <button class="b socle" data-obj="o4" data-id="p11"><span class="pt"></span><span class="t">Agents &amp; routines</span><span class="s">8 routines cloud · ce qui tourne sans toi</span></button>
+          <button class="b socle" data-obj="o4" data-id="p12"><span class="pt"></span><span class="t">Freelance — postuler auto</span><span class="s">le filet de sécurité pendant que le reste monte</span></button>
+          <button class="b perso" data-obj="o5" data-id="p13"><span class="pt"></span><span class="t">Sport</span><span class="s">3 à 4 h par jour · non négociable</span></button>
+        </div>
+      </div>
+
+      <div class="col">
+        <h3>Ce que ça produit</h3>
+        <div class="bulles" id="objectifs">
+          <button class="b obj" data-obj="w1" data-id="o1"><span class="t">Des clients qui paient</span><span class="s">un devis signé, pas une maquette de plus</span></button>
+          <button class="b obj" data-obj="w1" data-id="o2"><span class="t">Des preuves montrables</span><span class="s">un cas réel vaut dix arguments</span></button>
+          <button class="b obj" data-obj="w1,w2" data-id="o3"><span class="t">Une audience qui revient</span><span class="s">être connu avant d'avoir besoin de vendre</span></button>
+          <button class="b obj" data-obj="w2" data-id="o4"><span class="t">Du temps qui se libère</span><span class="s">chaque automatisation te rend une soirée</span></button>
+          <button class="b obj" data-obj="w2" data-id="o5"><span class="t">Un corps et une tête qui tiennent</span><span class="s">la seule ressource non renouvelable</span></button>
+        </div>
+      </div>
+
+      <div class="col">
+        <h3>Le pourquoi</h3>
+        <div class="bulles" id="pourquoi">
+          <button class="b pourquoi" data-id="w1"><span class="t">Vivre de ça</span><span class="s">ne plus dépendre d'un client unique ni d'un employeur</span></button>
+          <button class="b pourquoi" data-id="w2"><span class="t">Récupérer ton temps</span><span class="s">« ça ne te rend pas riche du jour au lendemain. Ça te rend ton temps, et c'est déjà beaucoup. » — toi, sur LinkedIn</span></button>
+        </div>
+        <div class="note" style="margin-top:22px">
+          <b>Le dernier étage t'appartient.</b> Les deux cases ci-dessus, je les ai tirées de tes propres textes. Ce qu'il y a derrière — pourquoi tu veux ce temps et cette indépendance — ça, personne ne peut l'écrire à ta place. C'est la seule ligne de cette carte que je te laisse remplir.
+        </div>
+      </div>
+
+    </div>
+    <p class="aide">Touche une bulle pour isoler son chemin. Touche-la à nouveau pour tout réafficher.</p>
+  </div>
+</section>
+
+<!-- ============ LA SEMAINE ============ -->
+<section style="border-top:1px solid var(--ligne)">
+  <div class="tete">
+    <span class="mono">La semaine</span>
+    <h2 class="dsp">3 à 4 h de sport, 5 à 6 h de travail, découpé par thème.</h2>
+    <p>Le principe : un seul thème par bloc, et les appels toujours le matin — c'est la seule tâche qui dépend des horaires des autres. Le vendredi ne produit rien de neuf : il ferme la semaine et remplit ton tableau de suivi.</p>
+  </div>
+
+  <div class="semaine">
+    <div class="jour"><div class="d"><b>Lundi</b>argent</div><div class="blocs">
+      <span class="bloc spo"><i></i>Sport<span class="h">2 h</span></span>
+      <span class="bloc arg"><i></i>Appels — les 30 sites livrés<span class="h">2 h</span></span>
+      <span class="bloc arg"><i></i>Relances écrites + devis<span class="h">1 h 30</span></span>
+      <span class="bloc prod"><i></i>Production vidéo<span class="h">2 h</span></span>
+      <span class="bloc spo"><i></i>Sport<span class="h">1 h 30</span></span>
+    </div></div>
+
+    <div class="jour"><div class="d"><b>Mardi</b>produit</div><div class="blocs">
+      <span class="bloc spo"><i></i>Sport<span class="h">2 h</span></span>
+      <span class="bloc arg"><i></i>Appels — Osmose, Family Arena<span class="h">1 h 30</span></span>
+      <span class="bloc prod"><i></i>ShortForge — le produit<span class="h">3 h</span></span>
+      <span class="bloc prod"><i></i>Tournage / montage<span class="h">1 h 30</span></span>
+      <span class="bloc spo"><i></i>Sport<span class="h">1 h 30</span></span>
+    </div></div>
+
+    <div class="jour"><div class="d"><b>Mercredi</b>socle</div><div class="blocs">
+      <span class="bloc spo"><i></i>Sport<span class="h">2 h</span></span>
+      <span class="bloc arg"><i></i>Relances — jamais zéro appel<span class="h">1 h</span></span>
+      <span class="bloc soc"><i></i>Portes CTA, agents, workflows<span class="h">3 h</span></span>
+      <span class="bloc soc"><i></i>Freelance — candidatures<span class="h">1 h 30</span></span>
+      <span class="bloc spo"><i></i>Sport<span class="h">1 h 30</span></span>
+    </div></div>
+
+    <div class="jour"><div class="d"><b>Jeudi</b>argent</div><div class="blocs">
+      <span class="bloc spo"><i></i>Sport<span class="h">2 h</span></span>
+      <span class="bloc arg"><i></i>Appels + rendez-vous<span class="h">2 h</span></span>
+      <span class="bloc arg"><i></i>Propositions chiffrées<span class="h">1 h 30</span></span>
+      <span class="bloc prod"><i></i>Production vidéo<span class="h">2 h</span></span>
+      <span class="bloc spo"><i></i>Sport<span class="h">1 h 30</span></span>
+    </div></div>
+
+    <div class="jour"><div class="d"><b>Vendredi</b>bilan</div><div class="blocs">
+      <span class="bloc spo"><i></i>Sport<span class="h">2 h</span></span>
+      <span class="bloc arg"><i></i>Dernières relances de la semaine<span class="h">1 h</span></span>
+      <span class="bloc prod"><i></i>Valider les vidéos en attente<span class="h">1 h 30</span></span>
+      <span class="bloc soc"><i></i><b style="font-weight:600">Remplir le tableau de suivi</b><span class="h">30 min</span></span>
+      <span class="bloc spo"><i></i>Sport<span class="h">1 h 30</span></span>
+    </div></div>
+  </div>
+
+  <div class="note">
+    <b>Une chose que la carte ne peut pas dire à ta place.</b> Ton tableau de suivi hebdomadaire existe, avec les bonnes colonnes — appels, réponses, rendez-vous — et <b>les deux semaines sont vides</b>. Tu l'as écrit toi-même : si la colonne « appels » est à zéro, aucune analyse n'est nécessaire, tu as ta réponse. Le bloc de 30 minutes du vendredi est le plus important de la semaine, parce que c'est le seul qui te dit si le reste a servi.
+  </div>
+</section>
+
+<!-- ============ CE QUI BLOQUE ============ -->
+<section style="border-top:1px solid var(--ligne)">
+  <div class="tete">
+    <span class="mono">Ce qui bloque</span>
+    <h2 class="dsp">Quatre choses que personne ne peut débloquer à ta place.</h2>
+    <p>Elles ne sont pas techniques. Chacune arrête une chaîne entière en aval.</p>
+  </div>
+
+  <div class="bloque">
+    <div class="bq">
+      <h4>Le compte TikTok n'est pas le bon</h4>
+      <p>Tout part sur <span class="mono" style="letter-spacing:.04em;text-transform:none">tonypayet4</span>, qui n'a aucun abonné. Ton vrai compte, <span class="mono" style="letter-spacing:.04em;text-transform:none">automationboost7</span>, en a 131.</p>
+      <div class="eff">Chaque vidéo publiée depuis des semaines part dans le vide.</div>
+    </div>
+    <div class="bq">
+      <h4>15 mots-clés sans porte</h4>
+      <p>Dont BURGER, SHONEN, NEON et COMBAT — les quatre prompt reveal prêts à programmer.</p>
+      <div class="eff">Le commentaire le plus qualifié qui soit reçoit une ressource générique.</div>
+    </div>
+    <div class="bq">
+      <h4>Meta Ads n'est pas connecté</h4>
+      <p>Aucune campagne possible depuis ici, même à 5 €.</p>
+      <div class="eff">La boucle « organique puis promouvoir le meilleur » ne peut pas se fermer.</div>
+    </div>
+    <div class="bq">
+      <h4>Cinq vidéos attendent ton œil</h4>
+      <p>Produites, en ligne, jamais publiées : tuto Claude Code v4, Matrix révélation, hook Matrix, formation déchirure v2, conte enfant.</p>
+      <div class="eff">Du travail fini qui ne rapporte rien tant qu'il dort.</div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div>Carte reconstruite le 21 août 2026 à partir du dépôt, des 8 routines cloud, des 74 publications programmées et de tes propres documents — <span class="mono" style="letter-spacing:.04em;text-transform:none">BACKLOG-TONY.md</span>, <span class="mono" style="letter-spacing:.04em;text-transform:none">QUI-FAIT-QUOI.md</span>, <span class="mono" style="letter-spacing:.04em;text-transform:none">STRATEGIE.md</span>. Rien n'y est inventé.</div>
+</footer>
+
+</div>
+
+<script>
+/* ---------------------------------------------------------------------------
+   Les liaisons sont tracées au moment du rendu depuis la position réelle des
+   bulles : aucune coordonnée écrite à la main, donc rien à recalculer quand la
+   page change de largeur ou qu'on ajoute un chantier.
+   --------------------------------------------------------------------------- */
+(function(){
+  var carte = document.getElementById('carte');
+  var svg   = document.getElementById('fils');
+  var toutes = [].slice.call(carte.querySelectorAll('.b'));
+  var NS = 'http://www.w3.org/2000/svg';
+
+  function liens(){
+    var out = [];
+    toutes.forEach(function(el){
+      var cibles = (el.dataset.obj || '').split(',').filter(Boolean);
+      cibles.forEach(function(c){
+        var t = carte.querySelector('[data-id="' + c + '"]');
+        if (t) out.push({ de: el, vers: t });
+      });
+    });
+    return out;
+  }
+  var L = liens();
+
+  function tracer(){
+    var r0 = carte.getBoundingClientRect();
+    svg.setAttribute('viewBox', '0 0 ' + r0.width + ' ' + r0.height);
+    svg.setAttribute('width', r0.width);
+    svg.setAttribute('height', r0.height);
+    while (svg.firstChild) svg.removeChild(svg.firstChild);
+
+    L.forEach(function(l, i){
+      var a = l.de.getBoundingClientRect(), b = l.vers.getBoundingClientRect();
+      var x1 = a.right - r0.left, y1 = a.top - r0.top + a.height / 2;
+      var x2 = b.left  - r0.left, y2 = b.top - r0.top + b.height / 2;
+      if (x2 < x1) return;                       // colonnes empilées : pas de fil
+      var dx = Math.max(28, (x2 - x1) * 0.5);
+      var p = document.createElementNS(NS, 'path');
+      p.setAttribute('d', 'M' + x1 + ',' + y1 + ' C' + (x1 + dx) + ',' + y1 +
+                          ' ' + (x2 - dx) + ',' + y2 + ' ' + x2 + ',' + y2);
+      p.setAttribute('fill', 'none');
+      p.setAttribute('stroke', '#eab308');
+      p.setAttribute('stroke-opacity', '.17');
+      p.setAttribute('stroke-width', '1.2');
+      p.dataset.de = l.de.dataset.id;
+      p.dataset.vers = l.vers.dataset.id;
+      svg.appendChild(p);
+    });
+  }
+
+  /* Isoler un chemin : on remonte de proche en proche, donc un chantier
+     éclaire son objectif ET le pourquoi derrière, sans les coder en dur. */
+  function chemin(id){
+    var vus = {}, file = [id];
+    while (file.length){
+      var cur = file.shift();
+      if (vus[cur]) continue;
+      vus[cur] = 1;
+      var el = carte.querySelector('[data-id="' + cur + '"]');
+      if (!el) continue;
+      (el.dataset.obj || '').split(',').filter(Boolean).forEach(function(n){ file.push(n); });
+    }
+    return vus;
+  }
+
+  var actif = null;
+  function peindre(){
+    carte.classList.toggle('actif', !!actif);
+    var vus = actif ? chemin(actif) : null;
+    toutes.forEach(function(el){
+      el.classList.toggle('on', !vus || !!vus[el.dataset.id]);
+      el.setAttribute('aria-pressed', String(el.dataset.id === actif));
+    });
+    [].forEach.call(svg.querySelectorAll('path'), function(p){
+      var on = !vus || (vus[p.dataset.de] && vus[p.dataset.vers]);
+      p.setAttribute('stroke-opacity', on ? (vus ? '.6' : '.17') : '.04');
+      p.setAttribute('stroke-width', on && vus ? '1.9' : '1.2');
+    });
+  }
+
+  toutes.forEach(function(el){
+    el.addEventListener('click', function(){
+      actif = (actif === el.dataset.id) ? null : el.dataset.id;
+      peindre();
+    });
+  });
+
+  function maj(){ tracer(); peindre(); }
+  window.addEventListener('resize', maj);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(maj);
+  window.addEventListener('load', maj);
+  maj();
+})();
+</script>
+
+</body>
+</html>
