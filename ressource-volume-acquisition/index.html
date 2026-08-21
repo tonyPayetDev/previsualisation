@@ -78,6 +78,45 @@ li strong{color:#fff}
 
 .fin{border-top:1px solid var(--bord);margin-top:64px;padding:44px 0 72px;color:var(--mut);
   font-size:14px}
+
+/* --- Entonnoir + calculateur ------------------------------------------- */
+.entonnoir{margin:30px 0;display:flex;flex-direction:column;align-items:center;gap:2px}
+.entonnoir .e{width:100%;max-width:520px;border:1px solid var(--bord);background:var(--pan);
+  border-radius:7px;padding:13px 18px;display:flex;align-items:baseline;gap:12px}
+.entonnoir .e.or{border-color:rgba(234,179,8,.45);background:rgba(234,179,8,.07)}
+.entonnoir .e .n{color:var(--or);flex-shrink:0}
+.entonnoir .e b{font-weight:650}
+.entonnoir .e i{font-style:normal;color:var(--mut);font-size:13.5px;margin-left:auto;text-align:right}
+.entonnoir .fl{color:#3b3b48;font-size:15px;line-height:1}
+@media(max-width:520px){.entonnoir .e{flex-wrap:wrap}
+  .entonnoir .e i{margin-left:0;width:100%;text-align:left}}
+
+.calc{display:grid;grid-template-columns:1fr 1fr;gap:26px;align-items:start;margin:30px 0}
+@media(max-width:760px){.calc{grid-template-columns:1fr;gap:20px}}
+.ch-in{margin-bottom:20px}
+.ch-in label{display:flex;justify-content:space-between;align-items:baseline;gap:12px;
+  font-size:14px;color:var(--mut);margin-bottom:9px}
+.ch-in label b{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:15px;
+  color:var(--txt);font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
+.calc input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:2px;
+  background:var(--bord);outline:none;cursor:pointer}
+.calc input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;
+  width:16px;height:16px;border-radius:50%;background:var(--or);cursor:pointer;
+  box-shadow:0 0 0 5px rgba(234,179,8,.14)}
+.calc input[type=range]::-moz-range-thumb{width:16px;height:16px;border:0;border-radius:50%;
+  background:var(--or);cursor:pointer;box-shadow:0 0 0 5px rgba(234,179,8,.14)}
+.calc input[type=range]:focus-visible{outline:2px solid var(--or);outline-offset:6px}
+.calc-out{border:1px solid var(--bord);border-radius:8px;padding:24px 22px;background:var(--pan)}
+.calc-out .bl{padding:15px 0;border-top:1px solid var(--bord)}
+.calc-out .bl:first-child{border-top:0;padding-top:0}
+.calc-out .k{font-size:13px;color:var(--mut)}
+.calc-out .vv{font-size:36px;font-weight:800;line-height:1.05;margin-top:6px;
+  font-variant-numeric:tabular-nums}
+.calc-out .vv.sm{font-size:19px;font-weight:600;color:#c2c2ce}
+.calc-out .bl.or .vv{color:var(--or)}
+.note-calc{margin:16px 0 0;padding-top:14px;border-top:1px solid var(--bord);
+  font-size:13px;color:var(--mut);line-height:1.55}
+.note-calc b{color:var(--or)}
 </style>
 </head>
 <body>
@@ -216,6 +255,81 @@ li strong{color:#fff}
       <p>On multiplie l'angle qui a produit des commentaires, pas la cadence de publication. Le volume vient à la fin, sur une chose prouvée.</p>
     </div>
 
+    <h2>Combien il en faut, vraiment</h2>
+
+    <p>« Publie régulièrement et les clients viendront » n'est pas une réponse. La vraie réponse est une multiplication, et elle est brutale : <strong>chaque étape de l'entonnoir divise</strong>. Ce n'est pas une addition de vues, c'est une chaîne de pourcentages.</p>
+
+    <div class="entonnoir">
+      <div class="e"><span class="n mono">1</span><b>Des vues</b><i>tu interromps quelqu'un</i></div>
+      <div class="fl">↓</div>
+      <div class="e"><span class="n mono">2</span><b>Un commentaire</b><i>il lève la main</i></div>
+      <div class="fl">↓</div>
+      <div class="e"><span class="n mono">3</span><b>Un message privé ouvert</b><i>la porte s'ouvre</i></div>
+      <div class="fl">↓</div>
+      <div class="e"><span class="n mono">4</span><b>Un appel</b><i>vous vous parlez</i></div>
+      <div class="fl">↓</div>
+      <div class="e or"><span class="n mono">5</span><b>Un client</b><i>il signe</i></div>
+    </div>
+
+    <p>L'arithmétique est certaine. <strong>Ce sont les taux qui ne le sont pas</strong> — ils varient énormément d'une niche à l'autre. Un artisan local avec cinq cents abonnés qualifiés convertit mieux qu'un compte généraliste à cinquante mille. C'est pour ça que je ne te donne pas un chiffre : je te donne le calcul, avec mes taux mesurés comme point de départ.</p>
+
+    <div class="calc">
+      <div class="calc-in">
+        <div class="ch-in">
+          <label for="c1">Vues par publication <b><span id="v1">273</span></b></label>
+          <input type="range" id="c1" min="50" max="20000" step="50" value="273">
+        </div>
+        <div class="ch-in">
+          <label for="c2">Publications par semaine <b><span id="v2">5</span></b></label>
+          <input type="range" id="c2" min="1" max="35" step="1" value="5">
+        </div>
+        <div class="ch-in">
+          <label for="c3">Sur 100 vues, combien lèvent la main <b><span id="v3">1,0</span> %</b></label>
+          <input type="range" id="c3" min="1" max="80" step="1" value="10">
+        </div>
+        <div class="ch-in">
+          <label for="c4">Parmi eux, combien acceptent un appel <b><span id="v4">15</span> %</b></label>
+          <input type="range" id="c4" min="1" max="80" step="1" value="15">
+        </div>
+        <div class="ch-in">
+          <label for="c5">Parmi les appels, combien signent <b><span id="v5">20</span> %</b></label>
+          <input type="range" id="c5" min="1" max="90" step="1" value="20">
+        </div>
+        <div class="ch-in">
+          <label for="c6">Ce que te rapporte un client <b><span id="v6">800</span> €</b></label>
+          <input type="range" id="c6" min="50" max="10000" step="50" value="800">
+        </div>
+      </div>
+
+      <div class="calc-out">
+        <div class="bl"><div class="k">Publications pour décrocher un client</div><div class="vv" id="r1">—</div></div>
+        <div class="bl"><div class="k">Ce que ça représente</div><div class="vv sm" id="r2">—</div></div>
+        <div class="bl or"><div class="k">Clients par mois à ce rythme</div><div class="vv" id="r3">—</div></div>
+        <div class="bl"><div class="k">Chiffre d'affaires mensuel correspondant</div><div class="vv" id="r4">—</div></div>
+        <p class="note-calc" id="r5"></p>
+      </div>
+    </div>
+
+    <div class="callout">
+      <span class="callout-label mono">Les valeurs de départ, et d'où elles viennent</span>
+      <p>Les 273 vues sont ma médiane mesurée. Le 1 % qui lève la main est <em>généreux</em> par rapport à mes chiffres : sur seize posts, quinze étaient à zéro, et le seul qui a marché était à 5 %. Les trois autres taux sont des ordres de grandeur courants en prestation de services, pas des mesures — remplace-les par les tiens dès que tu en as.</p>
+    </div>
+
+    <h3>Ce que le calcul apprend en trois minutes</h3>
+
+    <ul>
+      <li><strong>La dernière étape pèse plus que la première.</strong> Doubler tes vues double le résultat. Doubler ton taux de signature aussi — sauf que passer de 20 % à 40 % en travaillant ton appel est bien plus rapide que de doubler une audience.</li>
+      <li><strong>Le prix change tout, et personne n'y touche.</strong> Un client à 2 000 € au lieu de 800 € rend rentable un volume trois fois plus faible. C'est le seul levier qui agit sans produire une publication de plus.</li>
+      <li><strong>Un taux à zéro annule tout le reste.</strong> Si personne ne commente, tu peux multiplier les vues à l'infini : le résultat reste nul. C'est mathématiquement ce qui m'arrivait sur quinze posts sur seize.</li>
+      <li><strong>Le nombre de publications nécessaires fait peur, et c'est normal.</strong> S'il te sort un chiffre décourageant, c'est que l'entonnoir est trop plat — la réponse n'est pas de publier davantage, c'est de réparer l'étape la plus faible.</li>
+    </ul>
+
+    <div class="callout rouge">
+      <span class="callout-label mono">Ce que ce calculateur n'est pas</span>
+      <p>Ce n'est pas une prévision, et ce n'est pas une promesse de revenu. C'est ton propre entonnoir mis en équation. Il te dit ce qu'impliquent <em>tes</em> hypothèses — si elles sont fausses, le résultat l'est aussi. Sa vraie utilité n'est pas le chiffre final : c'est de voir quelle étape coûte le plus cher à laisser en l'état.</p>
+    </div>
+
+
     <h2>La mesure qui compte</h2>
 
     <p>Les vues mesurent l'activité. Ce qui mesure le résultat, c'est ce qui suit : visites de profil, abonnements, <strong>commentaires du mot-clé</strong>, messages privés, appels.</p>
@@ -235,5 +349,80 @@ li strong{color:#fff}
   </div>
 
 </div>
+
+<script>
+/* ---------------------------------------------------------------------------
+   Le calculateur d'entonnoir.
+   L'arithmétique est certaine ; ce sont les taux qui ne le sont pas. La sortie
+   nomme donc toujours l'étape la plus faible — c'est elle qui décide, pas le
+   nombre de publications.
+   --------------------------------------------------------------------------- */
+(function () {
+  var ids = ['c1', 'c2', 'c3', 'c4', 'c5', 'c6'];
+  var el = {};
+  ids.forEach(function (i) { el[i] = document.getElementById(i); });
+  if (!el.c1) return;
+
+  var nb = new Intl.NumberFormat('fr-FR');
+  var nb1 = new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+
+  function calcule() {
+    var vues = +el.c1.value;
+    var parSem = +el.c2.value;
+    var tMain = +el.c3.value / 10;   // pas de 0,1 % : sous 1 %, le réglage doit rester fin
+    var tAppel = +el.c4.value;
+    var tSigne = +el.c5.value;
+    var panier = +el.c6.value;
+
+    document.getElementById('v1').textContent = nb.format(vues);
+    document.getElementById('v2').textContent = parSem;
+    document.getElementById('v3').textContent = nb1.format(tMain);
+    document.getElementById('v4').textContent = tAppel;
+    document.getElementById('v5').textContent = tSigne;
+    document.getElementById('v6').textContent = nb.format(panier);
+
+    // Clients produits par UNE publication, puis on inverse.
+    var parPub = vues * (tMain / 100) * (tAppel / 100) * (tSigne / 100);
+    var pubs = parPub > 0 ? Math.ceil(1 / parPub) : Infinity;
+    var parMois = parPub * parSem * 4.33;
+
+    document.getElementById('r1').textContent = isFinite(pubs) ? nb.format(pubs) : '∞';
+
+    var sem = parSem > 0 && isFinite(pubs) ? pubs / parSem : Infinity;
+    document.getElementById('r2').textContent = !isFinite(sem) ? '—'
+      : sem < 1 ? 'moins d’une semaine à ton rythme'
+      : sem < 8 ? Math.round(sem) + ' semaine' + (Math.round(sem) > 1 ? 's' : '') + ' à ton rythme'
+      : nb1.format(sem / 4.33) + ' mois à ton rythme';
+
+    document.getElementById('r3').textContent = parMois >= 1 ? nb1.format(parMois)
+      : parMois > 0 ? nb1.format(parMois) : '0';
+    document.getElementById('r4').textContent = nb.format(Math.round(parMois * panier)) + ' €';
+
+    // Nommer l'étape la plus faible : c'est le seul conseil qui vaille ici.
+    var etapes = [
+      { n: 'le passage de la vue au commentaire', v: tMain / 100 },
+      { n: 'le passage du commentaire à l’appel', v: tAppel / 100 },
+      { n: 'le passage de l’appel à la signature', v: tSigne / 100 },
+    ];
+    etapes.sort(function (a, b) { return a.v - b.v; });
+    var faible = etapes[0];
+    var gain = Math.round((1 / faible.v) * 10) / 10;
+
+    var txt;
+    if (parMois < 0.25) {
+      txt = 'À ce rythme, il faut plus de quatre mois pour un seul client. Le volume n’est pas le problème : <b>' +
+            faible.n + '</b> l’est. Tant qu’il reste à ce niveau, publier davantage ne changera presque rien.';
+    } else {
+      txt = 'Ton étape la plus faible est <b>' + faible.n + '</b> : elle divise ton résultat par ' +
+            nb1.format(gain) + '. La doubler te coûterait moins d’efforts que de doubler ton audience.';
+    }
+    document.getElementById('r5').innerHTML = txt;
+  }
+
+  ids.forEach(function (i) { el[i].addEventListener('input', calcule); });
+  calcule();
+})();
+</script>
+
 </body>
 </html>
