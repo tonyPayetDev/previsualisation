@@ -375,9 +375,15 @@ ${items.map(i => `  <article class="carte" data-dir="${esc(i.dir)}" data-etat="$
 
   function cache(){ try { localStorage.setItem(CLE, JSON.stringify(etat)); } catch (_) {} }
 
-  var enAttente = null, enVol = false;
+  // « sale » et pas « enAttente » pour savoir qu'il reste quelque chose à
+  // envoyer. La première version testait la minuterie : si un envoi était
+  // déjà en vol quand la suivante se déclenchait, elle s'annulait elle-même
+  // et la modification était perdue. Constaté au test — l'état passait,
+  // la note écrite juste après ne partait jamais.
+  var enAttente = null, enVol = false, sale = false;
   function envoyer(){
-    enVol = true; dire('enregistrement…', 'encours');
+    if (enVol) { sale = true; return; }
+    enVol = true; sale = false; dire('enregistrement…', 'encours');
     // text/plain volontairement : avec application/json le navigateur envoie
     // d'abord une requête OPTIONS de contrôle, que le webhook ne traite pas —
     // et l'enregistrement échoue avant même de partir.
@@ -387,7 +393,9 @@ ${items.map(i => `  <article class="carte" data-dir="${esc(i.dir)}" data-etat="$
       .catch(function(e){ dire('hors ligne — gardé sur cet appareil', 'ko'); })
       .then(function(){
         enVol = false;
-        if (enAttente){ clearTimeout(enAttente); enAttente = null; envoyer(); }
+        // On renvoie tant qu'il reste du neuf. Le corps envoyé est l'état
+        // complet, donc un seul renvoi suffit à rattraper tout le retard.
+        if (sale) envoyer();
       });
   }
   function sauver(){
@@ -395,7 +403,7 @@ ${items.map(i => `  <article class="carte" data-dir="${esc(i.dir)}" data-etat="$
     // Groupé : à la frappe dans une note, un envoi par caractère saturerait
     // le webhook pour rien.
     if (enAttente) clearTimeout(enAttente);
-    enAttente = setTimeout(function(){ enAttente = null; if (!enVol) envoyer(); }, 900);
+    enAttente = setTimeout(function(){ enAttente = null; envoyer(); }, 900);
     dire('modifié…', 'encours');
   }
 
