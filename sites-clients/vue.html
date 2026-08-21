@@ -52,6 +52,15 @@ a.retour:hover{color:var(--or)}
 .vue .avant .neant.mort span{color:var(--rouge)}
 .vue .avant .neant em{font-style:normal;font-size:.6rem;color:var(--mut);margin-top:.15rem;
   overflow-wrap:anywhere;padding:0 .4rem}
+/* La loupe est posée DANS le comparateur, donc dans la zone qui capture le
+   pointeur pour le glissement. Elle est au-dessus (z-index) et le gestionnaire
+   de glissement l'ignore explicitement — sans quoi le preventDefault()
+   avalerait le clic et le lien ne s'ouvrirait jamais. */
+.vue .loupe{position:absolute;right:7px;bottom:7px;z-index:4;
+  width:27px;height:27px;border-radius:50%;display:grid;place-items:center;
+  background:rgba(12,12,18,.82);border:1px solid rgba(255,255,255,.22);
+  color:#cfd6e2;text-decoration:none;backdrop-filter:blur(2px)}
+.vue .loupe:hover{background:#1b2534;border-color:#4d7fd6;color:#8fb6ff}
 .vue .avant .neant b{font-size:.7rem;color:var(--mut);font-weight:600}
 .vue .avant .neant span{font-size:.78rem;color:var(--rouge);font-weight:700}
 .vue .poignee{position:absolute;top:0;bottom:0;left:var(--left);width:2px;
@@ -62,10 +71,15 @@ a.retour:hover{color:var(--or)}
 .vue .poignee i::before{content:'';position:absolute;inset:0;
   background:linear-gradient(90deg,transparent 34%,#141000 34%,#141000 42%,transparent 42%,
     transparent 58%,#141000 58%,#141000 66%,transparent 66%)}
+/* pointer-events:none : ces étiquettes sont purement décoratives. Sans ça,
+   « Après » occupe le coin bas-droit et intercepte le clic sur la loupe. */
 .vue .etiq{position:absolute;bottom:8px;font-size:.6rem;font-weight:700;z-index:4;
-  padding:.14rem .4rem;border-radius:999px;background:rgba(10,10,15,.8);letter-spacing:.06em}
+  padding:.14rem .4rem;border-radius:999px;background:rgba(10,10,15,.8);letter-spacing:.06em;
+  pointer-events:none}
 .vue .etiq.g{left:8px;color:var(--rouge)}
+/* Décalée vers la gauche là où la loupe est présente, pour ne pas se superposer. */
 .vue .etiq.d{right:8px;color:var(--vert)}
+.vue:has(a.loupe) .etiq.d{right:41px}
 
 /* Choix d'état, y compris « abandonner » */
 .etats{display:flex;gap:.25rem;flex-wrap:wrap}
@@ -121,7 +135,7 @@ a.retour:hover{color:var(--or)}
     <h1>Sites clients — <i>vue en vignettes</i></h1>
     <a class="retour" href="/sites-clients/">← revenir à l'inventaire détaillé</a>
   </div>
-  <span class="cpt"><b id="n">106</b> / 106 sites · 97 capturés</span>
+  <span class="cpt"><b id="n">106</b> / 106 sites · 97 capturés · 40 à vérifier <span class="lp" aria-hidden="true">🔍</span></span>
 </header>
 
 <div class="barre">
@@ -148,6 +162,10 @@ a.retour:hover{color:var(--or)}
       <div class="avant">
         <img src="avant/arts-de-sante-formation.jpg" alt="Site actuel de Arts de Santé" loading="lazy">
       </div>
+      <!-- La loupe vit au niveau du cadre, pas dans la couche « avant » :
+           celle-ci est rognée par le curseur, la loupe disparaîtrait dès que
+           Tony tire la poignée à fond vers « Après ». -->
+      
       <div class="poignee"><i></i></div>
       <span class="etiq g">Avant</span>
       <span class="etiq d">Après</span>
@@ -179,6 +197,14 @@ a.retour:hover{color:var(--or)}
       <div class="avant" data-vide="1">
         <div class="neant"><b>Aujourd'hui</b><span>aucun site</span></div>
       </div>
+      <!-- La loupe vit au niveau du cadre, pas dans la couche « avant » :
+           celle-ci est rognée par le curseur, la loupe disparaîtrait dès que
+           Tony tire la poignée à fond vers « Après ». -->
+      <a class="loupe" href="https://www.google.com/search?q=%22Au%20Comptoir%20du%20Potager%22%20Restauration%20La%20R%C3%A9union" target="_blank" rel="noopener"
+  title="Chercher Au Comptoir du Potager sur Google" aria-label="Chercher Au Comptoir du Potager sur Google">
+  <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"
+    fill="none" stroke="currentColor" stroke-width="2.1"/><path d="M15.5 15.5 L21 21" stroke="currentColor"
+    stroke-width="2.1" stroke-linecap="round"/></svg></a>
       <div class="poignee"><i></i></div>
       <span class="etiq g">Avant</span>
       <span class="etiq d">Après</span>
@@ -210,6 +236,14 @@ a.retour:hover{color:var(--or)}
       <div class="avant">
         <img src="avant/beausejour-sportclub.jpg" alt="Site actuel de Beauséjour SportClub" loading="lazy"><span class="doute">à vérifier</span>
       </div>
+      <!-- La loupe vit au niveau du cadre, pas dans la couche « avant » :
+           celle-ci est rognée par le curseur, la loupe disparaîtrait dès que
+           Tony tire la poignée à fond vers « Après ». -->
+      <a class="loupe" href="https://www.google.com/search?q=%22Beaus%C3%A9jour%20SportClub%22%20Sport%20La%20R%C3%A9union" target="_blank" rel="noopener"
+  title="Chercher Beauséjour SportClub sur Google" aria-label="Chercher Beauséjour SportClub sur Google">
+  <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"
+    fill="none" stroke="currentColor" stroke-width="2.1"/><path d="M15.5 15.5 L21 21" stroke="currentColor"
+    stroke-width="2.1" stroke-linecap="round"/></svg></a>
       <div class="poignee"><i></i></div>
       <span class="etiq g">Avant</span>
       <span class="etiq d">Après</span>
@@ -241,6 +275,14 @@ a.retour:hover{color:var(--or)}
       <div class="avant" data-vide="1">
         <div class="neant"><b>Aujourd'hui</b><span>aucun site</span></div>
       </div>
+      <!-- La loupe vit au niveau du cadre, pas dans la couche « avant » :
+           celle-ci est rognée par le curseur, la loupe disparaîtrait dès que
+           Tony tire la poignée à fond vers « Après ». -->
+      <a class="loupe" href="https://www.google.com/search?q=%22BIGMAT%20Brico%20400%22%20Quincaillerie%20La%20R%C3%A9union" target="_blank" rel="noopener"
+  title="Chercher BIGMAT Brico 400 sur Google" aria-label="Chercher BIGMAT Brico 400 sur Google">
+  <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"
+    fill="none" stroke="currentColor" stroke-width="2.1"/><path d="M15.5 15.5 L21 21" stroke="currentColor"
+    stroke-width="2.1" stroke-linecap="round"/></svg></a>
       <div class="poignee"><i></i></div>
       <span class="etiq g">Avant</span>
       <span class="etiq d">Après</span>
@@ -272,6 +314,10 @@ a.retour:hover{color:var(--or)}
       <div class="avant">
         <img src="avant/blue-peche-au-gros.jpg" alt="Site actuel de BLUE — Pêche au gros" loading="lazy">
       </div>
+      <!-- La loupe vit au niveau du cadre, pas dans la couche « avant » :
+           celle-ci est rognée par le curseur, la loupe disparaîtrait dès que
+           Tony tire la poignée à fond vers « Après ». -->
+      
       <div class="poignee"><i></i></div>
       <span class="etiq g">Avant</span>
       <span class="etiq d">Après</span>
@@ -303,6 +349,10 @@ a.retour:hover{color:var(--or)}
       <div class="avant">
         <img src="avant/bygladcafe-optimisation-seo.jpg" alt="Site actuel de By Glad CAFÉ" loading="lazy">
       </div>
+      <!-- La loupe vit au niveau du cadre, pas dans la couche « avant » :
+           celle-ci est rognée par le curseur, la loupe disparaîtrait dès que
+           Tony tire la poignée à fond vers « Après ». -->
+      
       <div class="poignee"><i></i></div>
       <span class="etiq g">Avant</span>
       <span class="etiq d">Après</span>
@@ -334,6 +384,14 @@ a.retour:hover{color:var(--or)}
       <div class="avant">
         <img src="avant/chemises-homme.jpg" alt="Site actuel de Café Coton Réunion" loading="lazy"><span class="doute">à vérifier</span>
       </div>
+      <!-- La loupe vit au niveau du cadre, pas dans la couche « avant » :
+           celle-ci est rognée par le curseur, la loupe disparaîtrait dès que
+           Tony tire la poignée à fond vers « Après ». -->
+      <a class="loupe" href="https://www.google.com/search?q=%22Caf%C3%A9%20Coton%20R%C3%A9union%22%20Caf%C3%A9%20La%20R%C3%A9union" target="_blank" rel="noopener"
+  title="Chercher Café Coton Réunion sur Google" aria-label="Chercher Café Coton Réunion sur Google">
+  <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"
+    fill="none" stroke="currentColor" stroke-width="2.1"/><path d="M15.5 15.5 L21 21" stroke="currentColor"
+    stroke-width="2.1" stroke-linecap="round"/></svg></a>
       <div class="poignee"><i></i></div>
       <span class="etiq g">Avant</span>
       <span class="etiq d">Après</span>
@@ -365,6 +423,14 @@ a.retour:hover{color:var(--or)}
       <div class="avant" data-vide="1">
         <div class="neant"><b>Aujourd'hui</b><span>aucun site</span></div>
       </div>
+      <!-- La loupe vit au niveau du cadre, pas dans la couche « avant » :
+           celle-ci est rognée par le curseur, la loupe disparaîtrait dès que
+           Tony tire la poignée à fond vers « Après ». -->
+      <a class="loupe" href="https://www.google.com/search?q=%22Centre%20Hospitalier%20Ouest%20R%C3%A9union%22%20Sant%C3%A9%20La%20R%C3%A9union" target="_blank" rel="noopener"
+  title="Chercher Centre Hospitalier Ouest Réunion sur Google" aria-label="Chercher Centre Hospitalier Ouest Réunion sur Google">
+  <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"
+    fill="none" stroke="currentColor" stroke-width="2.1"/><path d="M15.5 15.5 L21 21" stroke="currentColor"
+    stroke-width="2.1" stroke-linecap="round"/></svg></a>
       <div class="poignee"><i></i></div>
       <span class="etiq g">Avant</span>
       <span class="etiq d">Après</span>
@@ -396,6 +462,14 @@ a.retour:hover{color:var(--or)}
       <div class="avant" data-vide="1">
         <div class="neant"><b>Aujourd'hui</b><span>aucun site</span></div>
       </div>
+      <!-- La loupe vit au niveau du cadre, pas dans la couche « avant » :
+           celle-ci est rognée par le curseur, la loupe disparaîtrait dès que
+           Tony tire la poignée à fond vers « Après ». -->
+      <a class="loupe" href="https://www.google.com/search?q=%22Centre%20Sant%C3%A9%20Sport%20%26amp%3B%20Performance%22%20Sant%C3%A9%20La%20R%C3%A9union" target="_blank" rel="noopener"
+  title="Chercher Centre Santé Sport &amp;amp; Performance sur Google" aria-label="Chercher Centre Santé Sport &amp;amp; Performance sur Google">
+  <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"
+    fill="none" stroke="currentColor" stroke-width="2.1"/><path d="M15.5 15.5 L21 21" stroke="currentColor"
+    stroke-width="2.1" stroke-linecap="round"/></svg></a>
       <div class="poignee"><i></i></div>
       <span class="etiq g">Avant</span>
       <span class="etiq d">Après</span>
@@ -427,6 +501,10 @@ a.retour:hover{color:var(--or)}
       <div class="avant">
         <img src="avant/clicknvan-location-vans-campingcars-pro.jpg" alt="Site actuel de CLICKnVAN" loading="lazy">
       </div>
+      <!-- La loupe vit au niveau du cadre, pas dans la couche « avant » :
+           celle-ci est rognée par le curseur, la loupe disparaîtrait dès que
+           Tony tire la poignée à fond vers « Après ». -->
+      
       <div class="poignee"><i></i></div>
       <span class="etiq g">Avant</span>
       <span class="etiq d">Après</span>
@@ -458,6 +536,10 @@ a.retour:hover{color:var(--or)}
       <div class="avant">
         <img src="avant/clicknvan-location-vans-campingcars.jpg" alt="Site actuel de CLICKnVAN (ancienne version)" loading="lazy">
       </div>
+      <!-- La loupe vit au niveau du cadre, pas dans la couche « avant » :
+           celle-ci est rognée par le curseur, la loupe disparaîtrait dès que
+           Tony tire la poignée à fond vers « Après ». -->
+      
       <div class="poignee"><i></i></div>
       <span class="etiq g">Avant</span>
       <span class="etiq d">Après</span>
@@ -489,6 +571,10 @@ a.retour:hover{color:var(--or)}
       <div class="avant">
         <img src="avant/club-cafe-la-reunion.jpg" alt="Site actuel de Club Café" loading="lazy">
       </div>
+      <!-- La loupe vit au niveau du cadre, pas dans la couche « avant » :
+           celle-ci est rognée par le curseur, la loupe disparaîtrait dès que
+           Tony tire la poignée à fond vers « Après ». -->
+      
       <div class="poignee"><i></i></div>
       <span class="etiq g">Avant</span>
       <span class="etiq d">Après</span>
@@ -520,6 +606,10 @@ a.retour:hover{color:var(--or)}
       <div class="avant">
         <img src="avant/dan-cake-patisserie.jpg" alt="Site actuel de Dan CaKe" loading="lazy">
       </div>
+      <!-- La loupe vit au niveau du cadre, pas dans la couche « avant » :
+           celle-ci est rognée par le curseur, la loupe disparaîtrait dès que
+           Tony tire la poignée à fond vers « Après ». -->
+      
       <div class="poignee"><i></i></div>
       <span class="etiq g">Avant</span>
       <span class="etiq d">Après</span>
@@ -551,6 +641,10 @@ a.retour:hover{color:var(--or)}
       <div class="avant">
         <img src="avant/engen-reunion-optimisation-seo.jpg" alt="Site actuel de Engen Réunion" loading="lazy">
       </div>
+      <!-- La loupe vit au niveau du cadre, pas dans la couche « avant » :
+           celle-ci est rognée par le curseur, la loupe disparaîtrait dès que
+           Tony tire la poignée à fond vers « Après ». -->
+      
       <div class="poignee"><i></i></div>
       <span class="etiq g">Avant</span>
       <span class="etiq d">Après</span>
@@ -582,6 +676,10 @@ a.retour:hover{color:var(--or)}
       <div class="avant">
         <img src="avant/freedom-la-reunion-actualites.jpg" alt="Site actuel de Free Dom" loading="lazy">
       </div>
+      <!-- La loupe vit au niveau du cadre, pas dans la couche « avant » :
+           celle-ci est rognée par le curseur, la loupe disparaîtrait dès que
+           Tony tire la poignée à fond vers « Après ». -->
+      
       <div class="poignee"><i></i></div>
       <span class="etiq g">Avant</span>
       <span class="etiq d">Après</span>
@@ -613,6 +711,14 @@ a.retour:hover{color:var(--or)}
       <div class="avant" data-vide="1">
         <div class="neant"><b>Aujourd'hui</b><span>aucun site</span></div>
       </div>
+      <!-- La loupe vit au niveau du cadre, pas dans la couche « avant » :
+           celle-ci est rognée par le curseur, la loupe disparaîtrait dès que
+           Tony tire la poignée à fond vers « Après ». -->
+      <a class="loupe" href="https://www.google.com/search?q=%22Gabarit%20SEO%20%C2%AB%20SEO%20Expert%20%C2%BB%22%20%E2%80%94%20La%20R%C3%A9union" target="_blank" rel="noopener"
+  title="Chercher Gabarit SEO « SEO Expert » sur Google" aria-label="Chercher Gabarit SEO « SEO Expert » sur Google">
+  <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"
+    fill="none" stroke="currentColor" stroke-width="2.1"/><path d="M15.5 15.5 L21 21" stroke="currentColor"
+    stroke-width="2.1" stroke-linecap="round"/></svg></a>
       <div class="poignee"><i></i></div>
       <span class="etiq g">Avant</span>
       <span class="etiq d">Après</span>
@@ -644,6 +750,14 @@ a.retour:hover{color:var(--or)}
       <div class="avant" data-vide="1">
         <div class="neant mort"><b>Aujourd'hui</b><span>domaine injoignable</span><em>www.monsite.fr</em></div>
       </div>
+      <!-- La loupe vit au niveau du cadre, pas dans la couche « avant » :
+           celle-ci est rognée par le curseur, la loupe disparaîtrait dès que
+           Tony tire la poignée à fond vers « Après ». -->
+      <a class="loupe" href="https://www.google.com/search?q=%22Gabarit%20SEO%20%C2%AB%20SEO%20Pro%20%C2%BB%22%20%E2%80%94%20La%20R%C3%A9union" target="_blank" rel="noopener"
+  title="Chercher Gabarit SEO « SEO Pro » sur Google" aria-label="Chercher Gabarit SEO « SEO Pro » sur Google">
+  <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"
+    fill="none" stroke="currentColor" stroke-width="2.1"/><path d="M15.5 15.5 L21 21" stroke="currentColor"
+    stroke-width="2.1" stroke-linecap="round"/></svg></a>
       <div class="poignee"><i></i></div>
       <span class="etiq g">Avant</span>
       <span class="etiq d">Après</span>
@@ -675,6 +789,14 @@ a.retour:hover{color:var(--or)}
       <div class="avant" data-vide="1">
         <div class="neant"><b>Aujourd'hui</b><span>aucun site</span></div>
       </div>
+      <!-- La loupe vit au niveau du cadre, pas dans la couche « avant » :
+           celle-ci est rognée par le curseur, la loupe disparaîtrait dès que
+           Tony tire la poignée à fond vers « Après ». -->
+      <a class="loupe" href="https://www.google.com/search?q=%22Gabarit%20SEO%20%C2%AB%20SEOPro%20%C2%BB%22%20%E2%80%94%20La%20R%C3%A9union" target="_blank" rel="noopener"
+  title="Chercher Gabarit SEO « SEOPro » sur Google" aria-label="Chercher Gabarit SEO « SEOPro » sur Google">
+  <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"
+    fill="none" stroke="currentColor" stroke-width="2.1"/><path d="M15.5 15.5 L21 21" stroke="currentColor"
+    stroke-width="2.1" stroke-linecap="round"/></svg></a>
       <div class="poignee"><i></i></div>
       <span class="etiq g">Avant</span>
       <span class="etiq d">Après</span>
@@ -706,6 +828,14 @@ a.retour:hover{color:var(--or)}
       <div class="avant" data-vide="1">
         <div class="neant"><b>Aujourd'hui</b><span>aucun site</span></div>
       </div>
+      <!-- La loupe vit au niveau du cadre, pas dans la couche « avant » :
+           celle-ci est rognée par le curseur, la loupe disparaîtrait dès que
+           Tony tire la poignée à fond vers « Après ». -->
+      <a class="loupe" href="https://www.google.com/search?q=%22GEP%20Sant%C3%A9%20R%C3%A9union%22%20Sant%C3%A9%20La%20R%C3%A9union" target="_blank" rel="noopener"
+  title="Chercher GEP Santé Réunion sur Google" aria-label="Chercher GEP Santé Réunion sur Google">
+  <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"
+    fill="none" stroke="currentColor" stroke-width="2.1"/><path d="M15.5 15.5 L21 21" stroke="currentColor"
+    stroke-width="2.1" stroke-linecap="round"/></svg></a>
       <div class="poignee"><i></i></div>
       <span class="etiq g">Avant</span>
       <span class="etiq d">Après</span>
@@ -737,6 +867,10 @@ a.retour:hover{color:var(--or)}
       <div class="avant">
         <img src="avant/gite-matilona-sainte-rose.jpg" alt="Site actuel de Gîte Matilona" loading="lazy">
       </div>
+      <!-- La loupe vit au niveau du cadre, pas dans la couche « avant » :
+           celle-ci est rognée par le curseur, la loupe disparaîtrait dès que
+           Tony tire la poignée à fond vers « Après ». -->
+      
       <div class="poignee"><i></i></div>
       <span class="etiq g">Avant</span>
       <span class="etiq d">Après</span>
@@ -768,6 +902,10 @@ a.retour:hover{color:var(--or)}
       <div class="avant">
         <img src="avant/giulietta-pizzeria-saint-pierre.jpg" alt="Site actuel de Giulietta" loading="lazy">
       </div>
+      <!-- La loupe vit au niveau du cadre, pas dans la couche « avant » :
+           celle-ci est rognée par le curseur, la loupe disparaîtrait dès que
+           Tony tire la poignée à fond vers « Après ». -->
+      
       <div class="poignee"><i></i></div>
       <span class="etiq g">Avant</span>
       <span class="etiq d">Après</span>
@@ -799,6 +937,10 @@ a.retour:hover{color:var(--or)}
       <div class="avant">
         <img src="avant/hotel-austral-saint-denis.jpg" alt="Site actuel de Hôtel Austral Saint-Denis" loading="lazy">
       </div>
+      <!-- La loupe vit au niveau du cadre, pas dans la couche « avant » :
+           celle-ci est rognée par le curseur, la loupe disparaîtrait dès que
+           Tony tire la poignée à fond vers « Après ». -->
+      
       <div class="poignee"><i></i></div>
       <span class="etiq g">Avant</span>
       <span class="etiq d">Après</span>
@@ -830,6 +972,14 @@ a.retour:hover{color:var(--or)}
       <div class="avant" data-vide="1">
         <div class="neant"><b>Aujourd'hui</b><span>aucun site</span></div>
       </div>
+      <!-- La loupe vit au niveau du cadre, pas dans la couche « avant » :
+           celle-ci est rognée par le curseur, la loupe disparaîtrait dès que
+           Tony tire la poignée à fond vers « Après ». -->
+      <a class="loupe" href="https://www.google.com/search?q=%22K'Mila%20Pizza%22%20Pizzeria%20La%20R%C3%A9union" target="_blank" rel="noopener"
+  title="Chercher K'Mila Pizza sur Google" aria-label="Chercher K'Mila Pizza sur Google">
+  <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"
+    fill="none" stroke="currentColor" stroke-width="2.1"/><path d="M15.5 15.5 L21 21" stroke="currentColor"
+    stroke-width="2.1" stroke-linecap="round"/></svg></a>
       <div class="poignee"><i></i></div>
       <span class="etiq g">Avant</span>
       <span class="etiq d">Après</span>
@@ -861,6 +1011,14 @@ a.retour:hover{color:var(--or)}
       <div class="avant" data-vide="1">
         <div class="neant mort"><b>Aujourd'hui</b><span>domaine injoignable</span><em>l-andalouse-saint-joseph.fr</em></div>
       </div>
+      <!-- La loupe vit au niveau du cadre, pas dans la couche « avant » :
+           celle-ci est rognée par le curseur, la loupe disparaîtrait dès que
+           Tony tire la poignée à fond vers « Après ». -->
+      <a class="loupe" href="https://www.google.com/search?q=%22L'andalouse%20%C3%A0%20Saint%20Joseph%22%20Pizzeria%20La%20R%C3%A9union" target="_blank" rel="noopener"
+  title="Chercher L'andalouse à Saint Joseph sur Google" aria-label="Chercher L'andalouse à Saint Joseph sur Google">
+  <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"
+    fill="none" stroke="currentColor" stroke-width="2.1"/><path d="M15.5 15.5 L21 21" stroke="currentColor"
+    stroke-width="2.1" stroke-linecap="round"/></svg></a>
       <div class="poignee"><i></i></div>
       <span class="etiq g">Avant</span>
       <span class="etiq d">Après</span>
@@ -892,6 +1050,10 @@ a.retour:hover{color:var(--or)}
       <div class="avant">
         <img src="avant/latelier-de-ben-optimisation-seo.jpg" alt="Site actuel de L'Atelier de Ben (doublon)" loading="lazy">
       </div>
+      <!-- La loupe vit au niveau du cadre, pas dans la couche « avant » :
+           celle-ci est rognée par le curseur, la loupe disparaîtrait dès que
+           Tony tire la poignée à fond vers « Après ». -->
+      
       <div class="poignee"><i></i></div>
       <span class="etiq g">Avant</span>
       <span class="etiq d">Après</span>
@@ -923,6 +1085,10 @@ a.retour:hover{color:var(--or)}
       <div class="avant">
         <img src="avant/latelier-traiteur-reunion.jpg" alt="Site actuel de L'Atelier Traiteur" loading="lazy">
       </div>
+      <!-- La loupe vit au niveau du cadre, pas dans la couche « avant » :
+           celle-ci est rognée par le curseur, la loupe disparaîtrait dès que
+           Tony tire la poignée à fond vers « Après ». -->
+      
       <div class="poignee"><i></i></div>
       <span class="etiq g">Avant</span>
       <span class="etiq d">Après</span>
@@ -954,6 +1120,14 @@ a.retour:hover{color:var(--or)}
       <div class="avant" data-vide="1">
         <div class="neant"><b>Aujourd'hui</b><span>aucun site</span></div>
       </div>
+      <!-- La loupe vit au niveau du cadre, pas dans la couche « avant » :
+           celle-ci est rognée par le curseur, la loupe disparaîtrait dès que
+           Tony tire la poignée à fond vers « Après ». -->
+      <a class="loupe" href="https://www.google.com/search?q=%22L'Atelier%20Traiteur%20(doublon)%22%20Traiteur%20La%20R%C3%A9union" target="_blank" rel="noopener"
+  title="Chercher L'Atelier Traiteur (doublon) sur Google" aria-label="Chercher L'Atelier Traiteur (doublon) sur Google">
+  <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"
+    fill="none" stroke="currentColor" stroke-width="2.1"/><path d="M15.5 15.5 L21 21" stroke="currentColor"
+    stroke-width="2.1" stroke-linecap="round"/></svg></a>
       <div class="poignee"><i></i></div>
       <span class="etiq g">Avant</span>
       <span class="etiq d">Après</span>
@@ -985,6 +1159,14 @@ a.retour:hover{color:var(--or)}
       <div class="avant" data-vide="1">
         <div class="neant"><b>Aujourd'hui</b><span>aucun site</span></div>
       </div>
+      <!-- La loupe vit au niveau du cadre, pas dans la couche « avant » :
+           celle-ci est rognée par le curseur, la loupe disparaîtrait dès que
+           Tony tire la poignée à fond vers « Après ». -->
+      <a class="loupe" href="https://www.google.com/search?q=%22L'Imp%C3%A9riale%20Kazumi%22%20Pizzeria%20La%20R%C3%A9union" target="_blank" rel="noopener"
+  title="Chercher L'Impériale Kazumi sur Google" aria-label="Chercher L'Impériale Kazumi sur Google">
+  <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"
+    fill="none" stroke="currentColor" stroke-width="2.1"/><path d="M15.5 15.5 L21 21" stroke="currentColor"
+    stroke-width="2.1" stroke-linecap="round"/></svg></a>
       <div class="poignee"><i></i></div>
       <span class="etiq g">Avant</span>
       <span class="etiq d">Après</span>
@@ -1016,6 +1198,14 @@ a.retour:hover{color:var(--or)}
       <div class="avant">
         <img src="avant/educateur-canin-la-reunion.jpg" alt="Site actuel de La bande à Clem" loading="lazy"><span class="doute">à vérifier</span>
       </div>
+      <!-- La loupe vit au niveau du cadre, pas dans la couche « avant » :
+           celle-ci est rognée par le curseur, la loupe disparaîtrait dès que
+           Tony tire la poignée à fond vers « Après ». -->
+      <a class="loupe" href="https://www.google.com/search?q=%22La%20bande%20%C3%A0%20Clem%22%20Services%20animaliers%20La%20R%C3%A9union" target="_blank" rel="noopener"
+  title="Chercher La bande à Clem sur Google" aria-label="Chercher La bande à Clem sur Google">
+  <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"
+    fill="none" stroke="currentColor" stroke-width="2.1"/><path d="M15.5 15.5 L21 21" stroke="currentColor"
+    stroke-width="2.1" stroke-linecap="round"/></svg></a>
       <div class="poignee"><i></i></div>
       <span class="etiq g">Avant</span>
       <span class="etiq d">Après</span>
@@ -1047,6 +1237,10 @@ a.retour:hover{color:var(--or)}
       <div class="avant">
         <img src="avant/la-casa-blanca.jpg" alt="Site actuel de La Casa Blanca" loading="lazy">
       </div>
+      <!-- La loupe vit au niveau du cadre, pas dans la couche « avant » :
+           celle-ci est rognée par le curseur, la loupe disparaîtrait dès que
+           Tony tire la poignée à fond vers « Après ». -->
+      
       <div class="poignee"><i></i></div>
       <span class="etiq g">Avant</span>
       <span class="etiq d">Après</span>
@@ -1078,6 +1272,10 @@ a.retour:hover{color:var(--or)}
       <div class="avant">
         <img src="avant/lagare-brasserie-optimisation-seo.jpg" alt="Site actuel de La Gare Brasserie" loading="lazy">
       </div>
+      <!-- La loupe vit au niveau du cadre, pas dans la couche « avant » :
+           celle-ci est rognée par le curseur, la loupe disparaîtrait dès que
+           Tony tire la poignée à fond vers « Après ». -->
+      
       <div class="poignee"><i></i></div>
       <span class="etiq g">Avant</span>
       <span class="etiq d">Après</span>
@@ -1109,6 +1307,10 @@ a.retour:hover{color:var(--or)}
       <div class="avant">
         <img src="avant/la-kantine-traiteur-oriental.jpg" alt="Site actuel de LA KANTINE — traiteur oriental" loading="lazy">
       </div>
+      <!-- La loupe vit au niveau du cadre, pas dans la couche « avant » :
+           celle-ci est rognée par le curseur, la loupe disparaîtrait dès que
+           Tony tire la poignée à fond vers « Après ». -->
+      
       <div class="poignee"><i></i></div>
       <span class="etiq g">Avant</span>
       <span class="etiq d">Après</span>
@@ -1140,6 +1342,10 @@ a.retour:hover{color:var(--or)}
       <div class="avant">
         <img src="avant/la-kantine-optimisation-seo.jpg" alt="Site actuel de LA KANTINE (doublon SEO)" loading="lazy">
       </div>
+      <!-- La loupe vit au niveau du cadre, pas dans la couche « avant » :
+           celle-ci est rognée par le curseur, la loupe disparaîtrait dès que
+           Tony tire la poignée à fond vers « Après ». -->
+      
       <div class="poignee"><i></i></div>
       <span class="etiq g">Avant</span>
       <span class="etiq d">Après</span>
@@ -1171,6 +1377,14 @@ a.retour:hover{color:var(--or)}
       <div class="avant" data-vide="1">
         <div class="neant"><b>Aujourd'hui</b><span>aucun site</span></div>
       </div>
+      <!-- La loupe vit au niveau du cadre, pas dans la couche « avant » :
+           celle-ci est rognée par le curseur, la loupe disparaîtrait dès que
+           Tony tire la poignée à fond vers « Après ». -->
+      <a class="loupe" href="https://www.google.com/search?q=%22LA%20KANTINE%20(doublon)%22%20Traiteur%20La%20R%C3%A9union" target="_blank" rel="noopener"
+  title="Chercher LA KANTINE (doublon) sur Google" aria-label="Chercher LA KANTINE (doublon) sur Google">
+  <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"
+    fill="none" stroke="currentColor" stroke-width="2.1"/><path d="M15.5 15.5 L21 21" stroke="currentColor"
+    stroke-width="2.1" stroke-linecap="round"/></svg></a>
       <div class="poignee"><i></i></div>
       <span class="etiq g">Avant</span>
       <span class="etiq d">Après</span>
@@ -1202,6 +1416,14 @@ a.retour:hover{color:var(--or)}
       <div class="avant" data-vide="1">
         <div class="neant"><b>Aujourd'hui</b><span>aucun site</span></div>
       </div>
+      <!-- La loupe vit au niveau du cadre, pas dans la couche « avant » :
+           celle-ci est rognée par le curseur, la loupe disparaîtrait dès que
+           Tony tire la poignée à fond vers « Après ». -->
+      <a class="loupe" href="https://www.google.com/search?q=%22Laplace%20%2F%20Koytcha%20Conseil%22%20Immobilier%20%C2%B7%20Conseil%20La%20R%C3%A9union" target="_blank" rel="noopener"
+  title="Chercher Laplace / Koytcha Conseil sur Google" aria-label="Chercher Laplace / Koytcha Conseil sur Google">
+  <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"
+    fill="none" stroke="currentColor" stroke-width="2.1"/><path d="M15.5 15.5 L21 21" stroke="currentColor"
+    stroke-width="2.1" stroke-linecap="round"/></svg></a>
       <div class="poignee"><i></i></div>
       <span class="etiq g">Avant</span>
       <span class="etiq d">Après</span>
@@ -1233,6 +1455,14 @@ a.retour:hover{color:var(--or)}
       <div class="avant" data-vide="1">
         <div class="neant mort"><b>Aujourd'hui</b><span>domaine injoignable</span><em>le-bao-saint-pierre.re</em></div>
       </div>
+      <!-- La loupe vit au niveau du cadre, pas dans la couche « avant » :
+           celle-ci est rognée par le curseur, la loupe disparaîtrait dès que
+           Tony tire la poignée à fond vers « Après ». -->
+      <a class="loupe" href="https://www.google.com/search?q=%22Le%20B%C3%A0O%22%20Restauration%20La%20R%C3%A9union" target="_blank" rel="noopener"
+  title="Chercher Le BàO sur Google" aria-label="Chercher Le BàO sur Google">
+  <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"
+    fill="none" stroke="currentColor" stroke-width="2.1"/><path d="M15.5 15.5 L21 21" stroke="currentColor"
+    stroke-width="2.1" stroke-linecap="round"/></svg></a>
       <div class="poignee"><i></i></div>
       <span class="etiq g">Avant</span>
       <span class="etiq d">Après</span>
@@ -1264,6 +1494,10 @@ a.retour:hover{color:var(--or)}
       <div class="avant">
         <img src="avant/le-bonbon-de-pain.jpg" alt="Site actuel de Le Bonbon de Pain" loading="lazy">
       </div>
+      <!-- La loupe vit au niveau du cadre, pas dans la couche « avant » :
+           celle-ci est rognée par le curseur, la loupe disparaîtrait dès que
+           Tony tire la poignée à fond vers « Après ». -->
+      
       <div class="poignee"><i></i></div>
       <span class="etiq g">Avant</span>
       <span class="etiq d">Après</span>
@@ -1295,6 +1529,10 @@ a.retour:hover{color:var(--or)}
       <div class="avant">
         <img src="avant/restaurant-creole-lecaritologue.jpg" alt="Site actuel de LE CARITOLOGUE" loading="lazy">
       </div>
+      <!-- La loupe vit au niveau du cadre, pas dans la couche « avant » :
+           celle-ci est rognée par le curseur, la loupe disparaîtrait dès que
+           Tony tire la poignée à fond vers « Après ». -->
+      
       <div class="poignee"><i></i></div>
       <span class="etiq g">Avant</span>
       <span class="etiq d">Après</span>
@@ -1326,6 +1564,10 @@ a.retour:hover{color:var(--or)}
       <div class="avant">
         <img src="avant/le-comptoir-saint-michel-nancy.jpg" alt="Site actuel de Le Comptoir Saint Michel" loading="lazy">
       </div>
+      <!-- La loupe vit au niveau du cadre, pas dans la couche « avant » :
+           celle-ci est rognée par le curseur, la loupe disparaîtrait dès que
+           Tony tire la poignée à fond vers « Après ». -->
+      
       <div class="poignee"><i></i></div>
       <span class="etiq g">Avant</span>
       <span class="etiq d">Après</span>
@@ -1357,6 +1599,14 @@ a.retour:hover{color:var(--or)}
       <div class="avant" data-vide="1">
         <div class="neant"><b>Aujourd'hui</b><span>aucun site</span></div>
       </div>
+      <!-- La loupe vit au niveau du cadre, pas dans la couche « avant » :
+           celle-ci est rognée par le curseur, la loupe disparaîtrait dès que
+           Tony tire la poignée à fond vers « Après ». -->
+      <a class="loupe" href="https://www.google.com/search?q=%22Le%20Glacier%20de%20Marie%20B%22%20Boulangerie%20%C2%B7%20P%C3%A2tisserie%20La%20R%C3%A9union" target="_blank" rel="noopener"
+  title="Chercher Le Glacier de Marie B sur Google" aria-label="Chercher Le Glacier de Marie B sur Google">
+  <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"
+    fill="none" stroke="currentColor" stroke-width="2.1"/><path d="M15.5 15.5 L21 21" stroke="currentColor"
+    stroke-width="2.1" stroke-linecap="round"/></svg></a>
       <div class="poignee"><i></i></div>
       <span class="etiq g">Avant</span>
       <span class="etiq d">Après</span>
@@ -1388,6 +1638,10 @@ a.retour:hover{color:var(--or)}
       <div class="avant">
         <img src="avant/contact-le-gourmand.jpg" alt="Site actuel de Le Gourmand" loading="lazy">
       </div>
+      <!-- La loupe vit au niveau du cadre, pas dans la couche « avant » :
+           celle-ci est rognée par le curseur, la loupe disparaîtrait dès que
+           Tony tire la poignée à fond vers « Après ». -->
+      
       <div class="poignee"><i></i></div>
       <span class="etiq g">Avant</span>
       <span class="etiq d">Après</span>
@@ -1419,6 +1673,10 @@ a.retour:hover{color:var(--or)}
       <div class="avant">
         <img src="avant/le-majeur-nancy.jpg" alt="Site actuel de Le Majeur 2.0" loading="lazy">
       </div>
+      <!-- La loupe vit au niveau du cadre, pas dans la couche « avant » :
+           celle-ci est rognée par le curseur, la loupe disparaîtrait dès que
+           Tony tire la poignée à fond vers « Après ». -->
+      
       <div class="poignee"><i></i></div>
       <span class="etiq g">Avant</span>
       <span class="etiq d">Après</span>
@@ -1450,6 +1708,10 @@ a.retour:hover{color:var(--or)}
       <div class="avant">
         <img src="avant/boulangerie-le-mamita.jpg" alt="Site actuel de Le Mamita" loading="lazy">
       </div>
+      <!-- La loupe vit au niveau du cadre, pas dans la couche « avant » :
+           celle-ci est rognée par le curseur, la loupe disparaîtrait dès que
+           Tony tire la poignée à fond vers « Après ». -->
+      
       <div class="poignee"><i></i></div>
       <span class="etiq g">Avant</span>
       <span class="etiq d">Après</span>
@@ -1481,6 +1743,10 @@ a.retour:hover{color:var(--or)}
       <div class="avant">
         <img src="avant/relais-des-cimes.jpg" alt="Site actuel de Le Relais des Cimes" loading="lazy">
       </div>
+      <!-- La loupe vit au niveau du cadre, pas dans la couche « avant » :
+           celle-ci est rognée par le curseur, la loupe disparaîtrait dès que
+           Tony tire la poignée à fond vers « Après ». -->
+      
       <div class="poignee"><i></i></div>
       <span class="etiq g">Avant</span>
       <span class="etiq d">Après</span>
@@ -1512,6 +1778,14 @@ a.retour:hover{color:var(--or)}
       <div class="avant" data-vide="1">
         <div class="neant"><b>Aujourd'hui</b><span>aucun site</span></div>
       </div>
+      <!-- La loupe vit au niveau du cadre, pas dans la couche « avant » :
+           celle-ci est rognée par le curseur, la loupe disparaîtrait dès que
+           Tony tire la poignée à fond vers « Après ». -->
+      <a class="loupe" href="https://www.google.com/search?q=%22Le%20Saint-Pierre%20%E2%80%94%20Coulommiers%22%20Restauration%20La%20R%C3%A9union" target="_blank" rel="noopener"
+  title="Chercher Le Saint-Pierre — Coulommiers sur Google" aria-label="Chercher Le Saint-Pierre — Coulommiers sur Google">
+  <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"
+    fill="none" stroke="currentColor" stroke-width="2.1"/><path d="M15.5 15.5 L21 21" stroke="currentColor"
+    stroke-width="2.1" stroke-linecap="round"/></svg></a>
       <div class="poignee"><i></i></div>
       <span class="etiq g">Avant</span>
       <span class="etiq d">Après</span>
@@ -1543,6 +1817,14 @@ a.retour:hover{color:var(--or)}
       <div class="avant" data-vide="1">
         <div class="neant mort"><b>Aujourd'hui</b><span>domaine injoignable</span><em>lesometbynono.re</em></div>
       </div>
+      <!-- La loupe vit au niveau du cadre, pas dans la couche « avant » :
+           celle-ci est rognée par le curseur, la loupe disparaîtrait dès que
+           Tony tire la poignée à fond vers « Après ». -->
+      <a class="loupe" href="https://www.google.com/search?q=%22Le%20So'Met%20By%20Nono%22%20Restauration%20La%20R%C3%A9union" target="_blank" rel="noopener"
+  title="Chercher Le So'Met By Nono sur Google" aria-label="Chercher Le So'Met By Nono sur Google">
+  <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"
+    fill="none" stroke="currentColor" stroke-width="2.1"/><path d="M15.5 15.5 L21 21" stroke="currentColor"
+    stroke-width="2.1" stroke-linecap="round"/></svg></a>
       <div class="poignee"><i></i></div>
       <span class="etiq g">Avant</span>
       <span class="etiq d">Après</span>
@@ -1574,6 +1856,14 @@ a.retour:hover{color:var(--or)}
       <div class="avant">
         <img src="avant/vieux-pressoir.jpg" alt="Site actuel de Le Vieux Pressoir" loading="lazy"><span class="doute">à vérifier</span>
       </div>
+      <!-- La loupe vit au niveau du cadre, pas dans la couche « avant » :
+           celle-ci est rognée par le curseur, la loupe disparaîtrait dès que
+           Tony tire la poignée à fond vers « Après ». -->
+      <a class="loupe" href="https://www.google.com/search?q=%22Le%20Vieux%20Pressoir%22%20Restauration%20La%20R%C3%A9union" target="_blank" rel="noopener"
+  title="Chercher Le Vieux Pressoir sur Google" aria-label="Chercher Le Vieux Pressoir sur Google">
+  <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"
+    fill="none" stroke="currentColor" stroke-width="2.1"/><path d="M15.5 15.5 L21 21" stroke="currentColor"
+    stroke-width="2.1" stroke-linecap="round"/></svg></a>
       <div class="poignee"><i></i></div>
       <span class="etiq g">Avant</span>
       <span class="etiq d">Après</span>
@@ -1605,6 +1895,14 @@ a.retour:hover{color:var(--or)}
       <div class="avant">
         <img src="avant/le786-halal-commande-en-ligne.jpg" alt="Site actuel de Le786" loading="lazy"><span class="doute">à vérifier</span>
       </div>
+      <!-- La loupe vit au niveau du cadre, pas dans la couche « avant » :
+           celle-ci est rognée par le curseur, la loupe disparaîtrait dès que
+           Tony tire la poignée à fond vers « Après ». -->
+      <a class="loupe" href="https://www.google.com/search?q=%22Le786%22%20%E2%80%94%20La%20R%C3%A9union" target="_blank" rel="noopener"
+  title="Chercher Le786 sur Google" aria-label="Chercher Le786 sur Google">
+  <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"
+    fill="none" stroke="currentColor" stroke-width="2.1"/><path d="M15.5 15.5 L21 21" stroke="currentColor"
+    stroke-width="2.1" stroke-linecap="round"/></svg></a>
       <div class="poignee"><i></i></div>
       <span class="etiq g">Avant</span>
       <span class="etiq d">Après</span>
@@ -1636,6 +1934,14 @@ a.retour:hover{color:var(--or)}
       <div class="avant" data-vide="1">
         <div class="neant"><b>Aujourd'hui</b><span>aucun site</span></div>
       </div>
+      <!-- La loupe vit au niveau du cadre, pas dans la couche « avant » :
+           celle-ci est rognée par le curseur, la loupe disparaîtrait dès que
+           Tony tire la poignée à fond vers « Après ». -->
+      <a class="loupe" href="https://www.google.com/search?q=%22Les%20Petites%20Mains%20de%20Lisa%22%20%E2%80%94%20La%20R%C3%A9union" target="_blank" rel="noopener"
+  title="Chercher Les Petites Mains de Lisa sur Google" aria-label="Chercher Les Petites Mains de Lisa sur Google">
+  <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"
+    fill="none" stroke="currentColor" stroke-width="2.1"/><path d="M15.5 15.5 L21 21" stroke="currentColor"
+    stroke-width="2.1" stroke-linecap="round"/></svg></a>
       <div class="poignee"><i></i></div>
       <span class="etiq g">Avant</span>
       <span class="etiq d">Après</span>
@@ -1667,6 +1973,14 @@ a.retour:hover{color:var(--or)}
       <div class="avant">
         <img src="avant/guide-peche-mouche-reunion-verdon-alpes.jpg" alt="Site actuel de Les Sens de la Rivière" loading="lazy"><span class="doute">à vérifier</span>
       </div>
+      <!-- La loupe vit au niveau du cadre, pas dans la couche « avant » :
+           celle-ci est rognée par le curseur, la loupe disparaîtrait dès que
+           Tony tire la poignée à fond vers « Après ». -->
+      <a class="loupe" href="https://www.google.com/search?q=%22Les%20Sens%20de%20la%20Rivi%C3%A8re%22%20P%C3%AAche%20%C2%B7%20Loisirs%20La%20R%C3%A9union" target="_blank" rel="noopener"
+  title="Chercher Les Sens de la Rivière sur Google" aria-label="Chercher Les Sens de la Rivière sur Google">
+  <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"
+    fill="none" stroke="currentColor" stroke-width="2.1"/><path d="M15.5 15.5 L21 21" stroke="currentColor"
+    stroke-width="2.1" stroke-linecap="round"/></svg></a>
       <div class="poignee"><i></i></div>
       <span class="etiq g">Avant</span>
       <span class="etiq d">Après</span>
@@ -1698,6 +2012,14 @@ a.retour:hover{color:var(--or)}
       <div class="avant">
         <img src="avant/photographe-immobilier-reunion.jpg" alt="Site actuel de Ludovic RIVIERE" loading="lazy"><span class="doute">à vérifier</span>
       </div>
+      <!-- La loupe vit au niveau du cadre, pas dans la couche « avant » :
+           celle-ci est rognée par le curseur, la loupe disparaîtrait dès que
+           Tony tire la poignée à fond vers « Après ». -->
+      <a class="loupe" href="https://www.google.com/search?q=%22Ludovic%20RIVIERE%22%20Immobilier%20%C2%B7%20Conseil%20La%20R%C3%A9union" target="_blank" rel="noopener"
+  title="Chercher Ludovic RIVIERE sur Google" aria-label="Chercher Ludovic RIVIERE sur Google">
+  <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"
+    fill="none" stroke="currentColor" stroke-width="2.1"/><path d="M15.5 15.5 L21 21" stroke="currentColor"
+    stroke-width="2.1" stroke-linecap="round"/></svg></a>
       <div class="poignee"><i></i></div>
       <span class="etiq g">Avant</span>
       <span class="etiq d">Après</span>
@@ -1729,6 +2051,10 @@ a.retour:hover{color:var(--or)}
       <div class="avant">
         <img src="avant/mamzelle-pizza-ile-de-la-reunion.jpg" alt="Site actuel de Mam'Zelle Pizza" loading="lazy">
       </div>
+      <!-- La loupe vit au niveau du cadre, pas dans la couche « avant » :
+           celle-ci est rognée par le curseur, la loupe disparaîtrait dès que
+           Tony tire la poignée à fond vers « Après ». -->
+      
       <div class="poignee"><i></i></div>
       <span class="etiq g">Avant</span>
       <span class="etiq d">Après</span>
@@ -1760,6 +2086,14 @@ a.retour:hover{color:var(--or)}
       <div class="avant" data-vide="1">
         <div class="neant"><b>Aujourd'hui</b><span>aucun site</span></div>
       </div>
+      <!-- La loupe vit au niveau du cadre, pas dans la couche « avant » :
+           celle-ci est rognée par le curseur, la loupe disparaîtrait dès que
+           Tony tire la poignée à fond vers « Après ». -->
+      <a class="loupe" href="https://www.google.com/search?q=%22Mam'Zelle%20Pizza%20(doublon)%22%20Pizzeria%20La%20R%C3%A9union" target="_blank" rel="noopener"
+  title="Chercher Mam'Zelle Pizza (doublon) sur Google" aria-label="Chercher Mam'Zelle Pizza (doublon) sur Google">
+  <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"
+    fill="none" stroke="currentColor" stroke-width="2.1"/><path d="M15.5 15.5 L21 21" stroke="currentColor"
+    stroke-width="2.1" stroke-linecap="round"/></svg></a>
       <div class="poignee"><i></i></div>
       <span class="etiq g">Avant</span>
       <span class="etiq d">Après</span>
@@ -1791,6 +2125,10 @@ a.retour:hover{color:var(--or)}
       <div class="avant">
         <img src="avant/mamzelle-pizza-optimisation.jpg" alt="Site actuel de Mam'Zelle Pizza (doublon)" loading="lazy">
       </div>
+      <!-- La loupe vit au niveau du cadre, pas dans la couche « avant » :
+           celle-ci est rognée par le curseur, la loupe disparaîtrait dès que
+           Tony tire la poignée à fond vers « Après ». -->
+      
       <div class="poignee"><i></i></div>
       <span class="etiq g">Avant</span>
       <span class="etiq d">Après</span>
@@ -1822,6 +2160,10 @@ a.retour:hover{color:var(--or)}
       <div class="avant">
         <img src="avant/marie-blachere-possession.jpg" alt="Site actuel de Marie Blachère — La Possession" loading="lazy">
       </div>
+      <!-- La loupe vit au niveau du cadre, pas dans la couche « avant » :
+           celle-ci est rognée par le curseur, la loupe disparaîtrait dès que
+           Tony tire la poignée à fond vers « Après ». -->
+      
       <div class="poignee"><i></i></div>
       <span class="etiq g">Avant</span>
       <span class="etiq d">Après</span>
@@ -1853,6 +2195,10 @@ a.retour:hover{color:var(--or)}
       <div class="avant">
         <img src="avant/mediterraneo-restaurant-italien-saint-denis.jpg" alt="Site actuel de Mediterraneo" loading="lazy">
       </div>
+      <!-- La loupe vit au niveau du cadre, pas dans la couche « avant » :
+           celle-ci est rognée par le curseur, la loupe disparaîtrait dès que
+           Tony tire la poignée à fond vers « Après ». -->
+      
       <div class="poignee"><i></i></div>
       <span class="etiq g">Avant</span>
       <span class="etiq d">Après</span>
@@ -1884,6 +2230,14 @@ a.retour:hover{color:var(--or)}
       <div class="avant" data-vide="1">
         <div class="neant"><b>Aujourd'hui</b><span>aucun site</span></div>
       </div>
+      <!-- La loupe vit au niveau du cadre, pas dans la couche « avant » :
+           celle-ci est rognée par le curseur, la loupe disparaîtrait dès que
+           Tony tire la poignée à fond vers « Après ». -->
+      <a class="loupe" href="https://www.google.com/search?q=%22MenuAuto%20(produit%20interne)%22%20Restauration%20La%20R%C3%A9union" target="_blank" rel="noopener"
+  title="Chercher MenuAuto (produit interne) sur Google" aria-label="Chercher MenuAuto (produit interne) sur Google">
+  <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"
+    fill="none" stroke="currentColor" stroke-width="2.1"/><path d="M15.5 15.5 L21 21" stroke="currentColor"
+    stroke-width="2.1" stroke-linecap="round"/></svg></a>
       <div class="poignee"><i></i></div>
       <span class="etiq g">Avant</span>
       <span class="etiq d">Après</span>
@@ -1915,6 +2269,10 @@ a.retour:hover{color:var(--or)}
       <div class="avant">
         <img src="avant/metisse-reception-saint-pierre.jpg" alt="Site actuel de Métisse Réception" loading="lazy">
       </div>
+      <!-- La loupe vit au niveau du cadre, pas dans la couche « avant » :
+           celle-ci est rognée par le curseur, la loupe disparaîtrait dès que
+           Tony tire la poignée à fond vers « Après ». -->
+      
       <div class="poignee"><i></i></div>
       <span class="etiq g">Avant</span>
       <span class="etiq d">Après</span>
@@ -1946,6 +2304,10 @@ a.retour:hover{color:var(--or)}
       <div class="avant">
         <img src="avant/mio-pizza-la-reunion.jpg" alt="Site actuel de MIO Pizza" loading="lazy">
       </div>
+      <!-- La loupe vit au niveau du cadre, pas dans la couche « avant » :
+           celle-ci est rognée par le curseur, la loupe disparaîtrait dès que
+           Tony tire la poignée à fond vers « Après ». -->
+      
       <div class="poignee"><i></i></div>
       <span class="etiq g">Avant</span>
       <span class="etiq d">Après</span>
@@ -1977,6 +2339,14 @@ a.retour:hover{color:var(--or)}
       <div class="avant" data-vide="1">
         <div class="neant"><b>Aujourd'hui</b><span>aucun site</span></div>
       </div>
+      <!-- La loupe vit au niveau du cadre, pas dans la couche « avant » :
+           celle-ci est rognée par le curseur, la loupe disparaîtrait dès que
+           Tony tire la poignée à fond vers « Après ». -->
+      <a class="loupe" href="https://www.google.com/search?q=%22Mr%20Services%22%20%E2%80%94%20La%20R%C3%A9union" target="_blank" rel="noopener"
+  title="Chercher Mr Services sur Google" aria-label="Chercher Mr Services sur Google">
+  <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"
+    fill="none" stroke="currentColor" stroke-width="2.1"/><path d="M15.5 15.5 L21 21" stroke="currentColor"
+    stroke-width="2.1" stroke-linecap="round"/></svg></a>
       <div class="poignee"><i></i></div>
       <span class="etiq g">Avant</span>
       <span class="etiq d">Après</span>
@@ -2008,6 +2378,14 @@ a.retour:hover{color:var(--or)}
       <div class="avant" data-vide="1">
         <div class="neant"><b>Aujourd'hui</b><span>aucun site</span></div>
       </div>
+      <!-- La loupe vit au niveau du cadre, pas dans la couche « avant » :
+           celle-ci est rognée par le curseur, la loupe disparaîtrait dès que
+           Tony tire la poignée à fond vers « Après ». -->
+      <a class="loupe" href="https://www.google.com/search?q=%22OFIM%20R%C3%A9union%22%20Immobilier%20%C2%B7%20Conseil%20La%20R%C3%A9union" target="_blank" rel="noopener"
+  title="Chercher OFIM Réunion sur Google" aria-label="Chercher OFIM Réunion sur Google">
+  <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"
+    fill="none" stroke="currentColor" stroke-width="2.1"/><path d="M15.5 15.5 L21 21" stroke="currentColor"
+    stroke-width="2.1" stroke-linecap="round"/></svg></a>
       <div class="poignee"><i></i></div>
       <span class="etiq g">Avant</span>
       <span class="etiq d">Après</span>
@@ -2039,6 +2417,10 @@ a.retour:hover{color:var(--or)}
       <div class="avant">
         <img src="avant/osmose-saint-pierre.jpg" alt="Site actuel de Osmose Bistro" loading="lazy">
       </div>
+      <!-- La loupe vit au niveau du cadre, pas dans la couche « avant » :
+           celle-ci est rognée par le curseur, la loupe disparaîtrait dès que
+           Tony tire la poignée à fond vers « Après ». -->
+      
       <div class="poignee"><i></i></div>
       <span class="etiq g">Avant</span>
       <span class="etiq d">Après</span>
@@ -2070,6 +2452,14 @@ a.retour:hover{color:var(--or)}
       <div class="avant">
         <img src="avant/peche-au-gros-reunion.jpg" alt="Site actuel de Pêche au Gros Réunion" loading="lazy"><span class="doute">à vérifier</span>
       </div>
+      <!-- La loupe vit au niveau du cadre, pas dans la couche « avant » :
+           celle-ci est rognée par le curseur, la loupe disparaîtrait dès que
+           Tony tire la poignée à fond vers « Après ». -->
+      <a class="loupe" href="https://www.google.com/search?q=%22P%C3%AAche%20au%20Gros%20R%C3%A9union%22%20P%C3%AAche%20%C2%B7%20Loisirs%20La%20R%C3%A9union" target="_blank" rel="noopener"
+  title="Chercher Pêche au Gros Réunion sur Google" aria-label="Chercher Pêche au Gros Réunion sur Google">
+  <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"
+    fill="none" stroke="currentColor" stroke-width="2.1"/><path d="M15.5 15.5 L21 21" stroke="currentColor"
+    stroke-width="2.1" stroke-linecap="round"/></svg></a>
       <div class="poignee"><i></i></div>
       <span class="etiq g">Avant</span>
       <span class="etiq d">Après</span>
@@ -2101,6 +2491,10 @@ a.retour:hover{color:var(--or)}
       <div class="avant">
         <img src="avant/picard-moulin-la-possession.jpg" alt="Site actuel de Picard Moulin Joli — La Possession" loading="lazy">
       </div>
+      <!-- La loupe vit au niveau du cadre, pas dans la couche « avant » :
+           celle-ci est rognée par le curseur, la loupe disparaîtrait dès que
+           Tony tire la poignée à fond vers « Après ». -->
+      
       <div class="poignee"><i></i></div>
       <span class="etiq g">Avant</span>
       <span class="etiq d">Après</span>
@@ -2132,6 +2526,14 @@ a.retour:hover{color:var(--or)}
       <div class="avant" data-vide="1">
         <div class="neant"><b>Aujourd'hui</b><span>aucun site</span></div>
       </div>
+      <!-- La loupe vit au niveau du cadre, pas dans la couche « avant » :
+           celle-ci est rognée par le curseur, la loupe disparaîtrait dès que
+           Tony tire la poignée à fond vers « Après ». -->
+      <a class="loupe" href="https://www.google.com/search?q=%22Pizza%20Club%20Saint-Pierre%22%20Pizzeria%20La%20R%C3%A9union" target="_blank" rel="noopener"
+  title="Chercher Pizza Club Saint-Pierre sur Google" aria-label="Chercher Pizza Club Saint-Pierre sur Google">
+  <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"
+    fill="none" stroke="currentColor" stroke-width="2.1"/><path d="M15.5 15.5 L21 21" stroke="currentColor"
+    stroke-width="2.1" stroke-linecap="round"/></svg></a>
       <div class="poignee"><i></i></div>
       <span class="etiq g">Avant</span>
       <span class="etiq d">Après</span>
@@ -2163,6 +2565,10 @@ a.retour:hover{color:var(--or)}
       <div class="avant">
         <img src="avant/pizza-di-muro-optimisation-seo.jpg" alt="Site actuel de Pizza Di Muro" loading="lazy">
       </div>
+      <!-- La loupe vit au niveau du cadre, pas dans la couche « avant » :
+           celle-ci est rognée par le curseur, la loupe disparaîtrait dès que
+           Tony tire la poignée à fond vers « Après ». -->
+      
       <div class="poignee"><i></i></div>
       <span class="etiq g">Avant</span>
       <span class="etiq d">Après</span>
@@ -2194,6 +2600,10 @@ a.retour:hover{color:var(--or)}
       <div class="avant">
         <img src="avant/pizza-di-muro-optimisation.jpg" alt="Site actuel de Pizza Di Muro (doublon)" loading="lazy">
       </div>
+      <!-- La loupe vit au niveau du cadre, pas dans la couche « avant » :
+           celle-ci est rognée par le curseur, la loupe disparaîtrait dès que
+           Tony tire la poignée à fond vers « Après ». -->
+      
       <div class="poignee"><i></i></div>
       <span class="etiq g">Avant</span>
       <span class="etiq d">Après</span>
@@ -2225,6 +2635,10 @@ a.retour:hover{color:var(--or)}
       <div class="avant">
         <img src="avant/pizza-di-muro-seo-optimisation.jpg" alt="Site actuel de Pizza Di Muro (doublon)" loading="lazy">
       </div>
+      <!-- La loupe vit au niveau du cadre, pas dans la couche « avant » :
+           celle-ci est rognée par le curseur, la loupe disparaîtrait dès que
+           Tony tire la poignée à fond vers « Après ». -->
+      
       <div class="poignee"><i></i></div>
       <span class="etiq g">Avant</span>
       <span class="etiq d">Après</span>
@@ -2256,6 +2670,10 @@ a.retour:hover{color:var(--or)}
       <div class="avant">
         <img src="avant/planb-restaurant-burgers-saint-denis.jpg" alt="Site actuel de Plan B" loading="lazy">
       </div>
+      <!-- La loupe vit au niveau du cadre, pas dans la couche « avant » :
+           celle-ci est rognée par le curseur, la loupe disparaîtrait dès que
+           Tony tire la poignée à fond vers « Après ». -->
+      
       <div class="poignee"><i></i></div>
       <span class="etiq g">Avant</span>
       <span class="etiq d">Après</span>
@@ -2287,6 +2705,14 @@ a.retour:hover{color:var(--or)}
       <div class="avant">
         <img src="avant/planet-pizza.jpg" alt="Site actuel de Planet Pizza" loading="lazy"><span class="doute">à vérifier</span>
       </div>
+      <!-- La loupe vit au niveau du cadre, pas dans la couche « avant » :
+           celle-ci est rognée par le curseur, la loupe disparaîtrait dès que
+           Tony tire la poignée à fond vers « Après ». -->
+      <a class="loupe" href="https://www.google.com/search?q=%22Planet%20Pizza%22%20Pizzeria%20La%20R%C3%A9union" target="_blank" rel="noopener"
+  title="Chercher Planet Pizza sur Google" aria-label="Chercher Planet Pizza sur Google">
+  <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"
+    fill="none" stroke="currentColor" stroke-width="2.1"/><path d="M15.5 15.5 L21 21" stroke="currentColor"
+    stroke-width="2.1" stroke-linecap="round"/></svg></a>
       <div class="poignee"><i></i></div>
       <span class="etiq g">Avant</span>
       <span class="etiq d">Après</span>
@@ -2318,6 +2744,10 @@ a.retour:hover{color:var(--or)}
       <div class="avant">
         <img src="avant/qualitropic-bioeconomie-tropicale.jpg" alt="Site actuel de Qualitropic" loading="lazy">
       </div>
+      <!-- La loupe vit au niveau du cadre, pas dans la couche « avant » :
+           celle-ci est rognée par le curseur, la loupe disparaîtrait dès que
+           Tony tire la poignée à fond vers « Après ». -->
+      
       <div class="poignee"><i></i></div>
       <span class="etiq g">Avant</span>
       <span class="etiq d">Après</span>
@@ -2349,6 +2779,10 @@ a.retour:hover{color:var(--or)}
       <div class="avant">
         <img src="avant/reatchy-snack-bar.jpg" alt="Site actuel de R'eat'Chy" loading="lazy">
       </div>
+      <!-- La loupe vit au niveau du cadre, pas dans la couche « avant » :
+           celle-ci est rognée par le curseur, la loupe disparaîtrait dès que
+           Tony tire la poignée à fond vers « Après ». -->
+      
       <div class="poignee"><i></i></div>
       <span class="etiq g">Avant</span>
       <span class="etiq d">Après</span>
@@ -2380,6 +2814,10 @@ a.retour:hover{color:var(--or)}
       <div class="avant">
         <img src="avant/reatchy-snackbar-optimisation.jpg" alt="Site actuel de R'eat'Chy (doublon)" loading="lazy">
       </div>
+      <!-- La loupe vit au niveau du cadre, pas dans la couche « avant » :
+           celle-ci est rognée par le curseur, la loupe disparaîtrait dès que
+           Tony tire la poignée à fond vers « Après ». -->
+      
       <div class="poignee"><i></i></div>
       <span class="etiq g">Avant</span>
       <span class="etiq d">Après</span>
@@ -2411,6 +2849,10 @@ a.retour:hover{color:var(--or)}
       <div class="avant">
         <img src="avant/sunlight-fm-optimisation-seo.jpg" alt="Site actuel de Radio SunLight FM" loading="lazy">
       </div>
+      <!-- La loupe vit au niveau du cadre, pas dans la couche « avant » :
+           celle-ci est rognée par le curseur, la loupe disparaîtrait dès que
+           Tony tire la poignée à fond vers « Après ». -->
+      
       <div class="poignee"><i></i></div>
       <span class="etiq g">Avant</span>
       <span class="etiq d">Après</span>
@@ -2442,6 +2884,10 @@ a.retour:hover{color:var(--or)}
       <div class="avant">
         <img src="avant/bateau-pirate-restaurant.jpg" alt="Site actuel de Restaurant Bateau Pirate" loading="lazy">
       </div>
+      <!-- La loupe vit au niveau du cadre, pas dans la couche « avant » :
+           celle-ci est rognée par le curseur, la loupe disparaîtrait dès que
+           Tony tire la poignée à fond vers « Après ». -->
+      
       <div class="poignee"><i></i></div>
       <span class="etiq g">Avant</span>
       <span class="etiq d">Après</span>
@@ -2473,6 +2919,10 @@ a.retour:hover{color:var(--or)}
       <div class="avant">
         <img src="avant/restaurant-bateau-pirate.jpg" alt="Site actuel de Restaurant Bateau Pirate (doublon)" loading="lazy">
       </div>
+      <!-- La loupe vit au niveau du cadre, pas dans la couche « avant » :
+           celle-ci est rognée par le curseur, la loupe disparaîtrait dès que
+           Tony tire la poignée à fond vers « Après ». -->
+      
       <div class="poignee"><i></i></div>
       <span class="etiq g">Avant</span>
       <span class="etiq d">Après</span>
@@ -2504,6 +2954,10 @@ a.retour:hover{color:var(--or)}
       <div class="avant">
         <img src="avant/lartabiata-restaurant-fr.jpg" alt="Site actuel de Restaurant L'Art Abiata" loading="lazy">
       </div>
+      <!-- La loupe vit au niveau du cadre, pas dans la couche « avant » :
+           celle-ci est rognée par le curseur, la loupe disparaîtrait dès que
+           Tony tire la poignée à fond vers « Après ». -->
+      
       <div class="poignee"><i></i></div>
       <span class="etiq g">Avant</span>
       <span class="etiq d">Après</span>
@@ -2535,6 +2989,10 @@ a.retour:hover{color:var(--or)}
       <div class="avant">
         <img src="avant/restaurant-la-fabrique-saint-denis.jpg" alt="Site actuel de Restaurant La Fabrique" loading="lazy">
       </div>
+      <!-- La loupe vit au niveau du cadre, pas dans la couche « avant » :
+           celle-ci est rognée par le curseur, la loupe disparaîtrait dès que
+           Tony tire la poignée à fond vers « Après ». -->
+      
       <div class="poignee"><i></i></div>
       <span class="etiq g">Avant</span>
       <span class="etiq d">Après</span>
@@ -2566,6 +3024,10 @@ a.retour:hover{color:var(--or)}
       <div class="avant">
         <img src="avant/restaurant-la-parenthese-latitude21.jpg" alt="Site actuel de Restaurant La Parenthèse" loading="lazy">
       </div>
+      <!-- La loupe vit au niveau du cadre, pas dans la couche « avant » :
+           celle-ci est rognée par le curseur, la loupe disparaîtrait dès que
+           Tony tire la poignée à fond vers « Après ». -->
+      
       <div class="poignee"><i></i></div>
       <span class="etiq g">Avant</span>
       <span class="etiq d">Après</span>
@@ -2597,6 +3059,10 @@ a.retour:hover{color:var(--or)}
       <div class="avant">
         <img src="avant/restaurant-la-piscine-melun.jpg" alt="Site actuel de Restaurant La Piscine" loading="lazy">
       </div>
+      <!-- La loupe vit au niveau du cadre, pas dans la couche « avant » :
+           celle-ci est rognée par le curseur, la loupe disparaîtrait dès que
+           Tony tire la poignée à fond vers « Après ». -->
+      
       <div class="poignee"><i></i></div>
       <span class="etiq g">Avant</span>
       <span class="etiq d">Après</span>
@@ -2628,6 +3094,10 @@ a.retour:hover{color:var(--or)}
       <div class="avant">
         <img src="avant/restaurant-le-bourg-murat.jpg" alt="Site actuel de Restaurant Le Bourg Murat" loading="lazy">
       </div>
+      <!-- La loupe vit au niveau du cadre, pas dans la couche « avant » :
+           celle-ci est rognée par le curseur, la loupe disparaîtrait dès que
+           Tony tire la poignée à fond vers « Après ». -->
+      
       <div class="poignee"><i></i></div>
       <span class="etiq g">Avant</span>
       <span class="etiq d">Après</span>
@@ -2659,6 +3129,14 @@ a.retour:hover{color:var(--or)}
       <div class="avant" data-vide="1">
         <div class="neant"><b>Aujourd'hui</b><span>aucun site</span></div>
       </div>
+      <!-- La loupe vit au niveau du cadre, pas dans la couche « avant » :
+           celle-ci est rognée par le curseur, la loupe disparaîtrait dès que
+           Tony tire la poignée à fond vers « Après ». -->
+      <a class="loupe" href="https://www.google.com/search?q=%22Salaisons%20de%20Bourbon%22%20Agroalimentaire%20La%20R%C3%A9union" target="_blank" rel="noopener"
+  title="Chercher Salaisons de Bourbon sur Google" aria-label="Chercher Salaisons de Bourbon sur Google">
+  <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"
+    fill="none" stroke="currentColor" stroke-width="2.1"/><path d="M15.5 15.5 L21 21" stroke="currentColor"
+    stroke-width="2.1" stroke-linecap="round"/></svg></a>
       <div class="poignee"><i></i></div>
       <span class="etiq g">Avant</span>
       <span class="etiq d">Après</span>
@@ -2690,6 +3168,10 @@ a.retour:hover{color:var(--or)}
       <div class="avant">
         <img src="avant/sistbi-optimisation-seo.jpg" alt="Site actuel de SISTBI" loading="lazy">
       </div>
+      <!-- La loupe vit au niveau du cadre, pas dans la couche « avant » :
+           celle-ci est rognée par le curseur, la loupe disparaîtrait dès que
+           Tony tire la poignée à fond vers « Après ». -->
+      
       <div class="poignee"><i></i></div>
       <span class="etiq g">Avant</span>
       <span class="etiq d">Après</span>
@@ -2721,6 +3203,14 @@ a.retour:hover{color:var(--or)}
       <div class="avant">
         <img src="avant/smokehouse-reunion.jpg" alt="Site actuel de SMOK'EAT" loading="lazy"><span class="doute">à vérifier</span>
       </div>
+      <!-- La loupe vit au niveau du cadre, pas dans la couche « avant » :
+           celle-ci est rognée par le curseur, la loupe disparaîtrait dès que
+           Tony tire la poignée à fond vers « Après ». -->
+      <a class="loupe" href="https://www.google.com/search?q=%22SMOK'EAT%22%20Restauration%20La%20R%C3%A9union" target="_blank" rel="noopener"
+  title="Chercher SMOK'EAT sur Google" aria-label="Chercher SMOK'EAT sur Google">
+  <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"
+    fill="none" stroke="currentColor" stroke-width="2.1"/><path d="M15.5 15.5 L21 21" stroke="currentColor"
+    stroke-width="2.1" stroke-linecap="round"/></svg></a>
       <div class="poignee"><i></i></div>
       <span class="etiq g">Avant</span>
       <span class="etiq d">Après</span>
@@ -2752,6 +3242,10 @@ a.retour:hover{color:var(--or)}
       <div class="avant">
         <img src="avant/sphb-optimisation-seo.jpg" alt="Site actuel de SPHB" loading="lazy">
       </div>
+      <!-- La loupe vit au niveau du cadre, pas dans la couche « avant » :
+           celle-ci est rognée par le curseur, la loupe disparaîtrait dès que
+           Tony tire la poignée à fond vers « Après ». -->
+      
       <div class="poignee"><i></i></div>
       <span class="etiq g">Avant</span>
       <span class="etiq d">Après</span>
@@ -2783,6 +3277,10 @@ a.retour:hover{color:var(--or)}
       <div class="avant">
         <img src="avant/sphb-production-huiles-bourbon.jpg" alt="Site actuel de SPHB (doublon)" loading="lazy">
       </div>
+      <!-- La loupe vit au niveau du cadre, pas dans la couche « avant » :
+           celle-ci est rognée par le curseur, la loupe disparaîtrait dès que
+           Tony tire la poignée à fond vers « Après ». -->
+      
       <div class="poignee"><i></i></div>
       <span class="etiq g">Avant</span>
       <span class="etiq d">Après</span>
@@ -2814,6 +3312,10 @@ a.retour:hover{color:var(--or)}
       <div class="avant">
         <img src="avant/sphb-production-huiles-optimisation.jpg" alt="Site actuel de SPHB (doublon)" loading="lazy">
       </div>
+      <!-- La loupe vit au niveau du cadre, pas dans la couche « avant » :
+           celle-ci est rognée par le curseur, la loupe disparaîtrait dès que
+           Tony tire la poignée à fond vers « Après ». -->
+      
       <div class="poignee"><i></i></div>
       <span class="etiq g">Avant</span>
       <span class="etiq d">Après</span>
@@ -2845,6 +3347,10 @@ a.retour:hover{color:var(--or)}
       <div class="avant">
         <img src="avant/sphb-production-huiles-optimise.jpg" alt="Site actuel de SPHB (doublon)" loading="lazy">
       </div>
+      <!-- La loupe vit au niveau du cadre, pas dans la couche « avant » :
+           celle-ci est rognée par le curseur, la loupe disparaîtrait dès que
+           Tony tire la poignée à fond vers « Après ». -->
+      
       <div class="poignee"><i></i></div>
       <span class="etiq g">Avant</span>
       <span class="etiq d">Après</span>
@@ -2876,6 +3382,10 @@ a.retour:hover{color:var(--or)}
       <div class="avant">
         <img src="avant/sud-hotel-reunion.jpg" alt="Site actuel de Sud Hôtel Le Tampon" loading="lazy">
       </div>
+      <!-- La loupe vit au niveau du cadre, pas dans la couche « avant » :
+           celle-ci est rognée par le curseur, la loupe disparaîtrait dès que
+           Tony tire la poignée à fond vers « Après ». -->
+      
       <div class="poignee"><i></i></div>
       <span class="etiq g">Avant</span>
       <span class="etiq d">Après</span>
@@ -2907,6 +3417,14 @@ a.retour:hover{color:var(--or)}
       <div class="avant" data-vide="1">
         <div class="neant"><b>Aujourd'hui</b><span>aucun site</span></div>
       </div>
+      <!-- La loupe vit au niveau du cadre, pas dans la couche « avant » :
+           celle-ci est rognée par le curseur, la loupe disparaîtrait dès que
+           Tony tire la poignée à fond vers « Après ». -->
+      <a class="loupe" href="https://www.google.com/search?q=%22Sud%20Service%20Traiteur%22%20Traiteur%20La%20R%C3%A9union" target="_blank" rel="noopener"
+  title="Chercher Sud Service Traiteur sur Google" aria-label="Chercher Sud Service Traiteur sur Google">
+  <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"
+    fill="none" stroke="currentColor" stroke-width="2.1"/><path d="M15.5 15.5 L21 21" stroke="currentColor"
+    stroke-width="2.1" stroke-linecap="round"/></svg></a>
       <div class="poignee"><i></i></div>
       <span class="etiq g">Avant</span>
       <span class="etiq d">Après</span>
@@ -2938,6 +3456,14 @@ a.retour:hover{color:var(--or)}
       <div class="avant" data-vide="1">
         <div class="neant"><b>Aujourd'hui</b><span>aucun site</span></div>
       </div>
+      <!-- La loupe vit au niveau du cadre, pas dans la couche « avant » :
+           celle-ci est rognée par le curseur, la loupe disparaîtrait dès que
+           Tony tire la poignée à fond vers « Après ». -->
+      <a class="loupe" href="https://www.google.com/search?q=%22Sud%20Service%20Traiteur%20(doublon)%22%20Traiteur%20La%20R%C3%A9union" target="_blank" rel="noopener"
+  title="Chercher Sud Service Traiteur (doublon) sur Google" aria-label="Chercher Sud Service Traiteur (doublon) sur Google">
+  <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"
+    fill="none" stroke="currentColor" stroke-width="2.1"/><path d="M15.5 15.5 L21 21" stroke="currentColor"
+    stroke-width="2.1" stroke-linecap="round"/></svg></a>
       <div class="poignee"><i></i></div>
       <span class="etiq g">Avant</span>
       <span class="etiq d">Après</span>
@@ -2969,6 +3495,14 @@ a.retour:hover{color:var(--or)}
       <div class="avant" data-vide="1">
         <div class="neant"><b>Aujourd'hui</b><span>aucun site</span></div>
       </div>
+      <!-- La loupe vit au niveau du cadre, pas dans la couche « avant » :
+           celle-ci est rognée par le curseur, la loupe disparaîtrait dès que
+           Tony tire la poignée à fond vers « Après ». -->
+      <a class="loupe" href="https://www.google.com/search?q=%22Ti'%20Terre%20Sainte%22%20Pizzeria%20La%20R%C3%A9union" target="_blank" rel="noopener"
+  title="Chercher Ti' Terre Sainte sur Google" aria-label="Chercher Ti' Terre Sainte sur Google">
+  <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"
+    fill="none" stroke="currentColor" stroke-width="2.1"/><path d="M15.5 15.5 L21 21" stroke="currentColor"
+    stroke-width="2.1" stroke-linecap="round"/></svg></a>
       <div class="poignee"><i></i></div>
       <span class="etiq g">Avant</span>
       <span class="etiq d">Après</span>
@@ -3000,6 +3534,10 @@ a.retour:hover{color:var(--or)}
       <div class="avant">
         <img src="avant/transcontinents-voyages-ile-maurice.jpg" alt="Site actuel de Transcontinents Voyages" loading="lazy">
       </div>
+      <!-- La loupe vit au niveau du cadre, pas dans la couche « avant » :
+           celle-ci est rognée par le curseur, la loupe disparaîtrait dès que
+           Tony tire la poignée à fond vers « Après ». -->
+      
       <div class="poignee"><i></i></div>
       <span class="etiq g">Avant</span>
       <span class="etiq d">Après</span>
@@ -3031,6 +3569,14 @@ a.retour:hover{color:var(--or)}
       <div class="avant" data-vide="1">
         <div class="neant mort"><b>Aujourd'hui</b><span>domaine injoignable</span><em>ttfishing.re</em></div>
       </div>
+      <!-- La loupe vit au niveau du cadre, pas dans la couche « avant » :
+           celle-ci est rognée par le curseur, la loupe disparaîtrait dès que
+           Tony tire la poignée à fond vers « Après ». -->
+      <a class="loupe" href="https://www.google.com/search?q=%22TTFishing%22%20P%C3%AAche%20%C2%B7%20Loisirs%20La%20R%C3%A9union" target="_blank" rel="noopener"
+  title="Chercher TTFishing sur Google" aria-label="Chercher TTFishing sur Google">
+  <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"
+    fill="none" stroke="currentColor" stroke-width="2.1"/><path d="M15.5 15.5 L21 21" stroke="currentColor"
+    stroke-width="2.1" stroke-linecap="round"/></svg></a>
       <div class="poignee"><i></i></div>
       <span class="etiq g">Avant</span>
       <span class="etiq d">Après</span>
@@ -3062,6 +3608,14 @@ a.retour:hover{color:var(--or)}
       <div class="avant" data-vide="1">
         <div class="neant"><b>Aujourd'hui</b><span>aucun site</span></div>
       </div>
+      <!-- La loupe vit au niveau du cadre, pas dans la couche « avant » :
+           celle-ci est rognée par le curseur, la loupe disparaîtrait dès que
+           Tony tire la poignée à fond vers « Après ». -->
+      <a class="loupe" href="https://www.google.com/search?q=%22Villa%20Fleuri%C3%A9%22%20Restauration%20La%20R%C3%A9union" target="_blank" rel="noopener"
+  title="Chercher Villa Fleurié sur Google" aria-label="Chercher Villa Fleurié sur Google">
+  <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"
+    fill="none" stroke="currentColor" stroke-width="2.1"/><path d="M15.5 15.5 L21 21" stroke="currentColor"
+    stroke-width="2.1" stroke-linecap="round"/></svg></a>
       <div class="poignee"><i></i></div>
       <span class="etiq g">Avant</span>
       <span class="etiq d">Après</span>
@@ -3093,6 +3647,14 @@ a.retour:hover{color:var(--or)}
       <div class="avant">
         <img src="avant/vtc-reunion-optimisation.jpg" alt="Site actuel de VTC Réunion" loading="lazy"><span class="doute">à vérifier</span>
       </div>
+      <!-- La loupe vit au niveau du cadre, pas dans la couche « avant » :
+           celle-ci est rognée par le curseur, la loupe disparaîtrait dès que
+           Tony tire la poignée à fond vers « Après ». -->
+      <a class="loupe" href="https://www.google.com/search?q=%22VTC%20R%C3%A9union%22%20Transport%20%C2%B7%20Voyage%20La%20R%C3%A9union" target="_blank" rel="noopener"
+  title="Chercher VTC Réunion sur Google" aria-label="Chercher VTC Réunion sur Google">
+  <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"
+    fill="none" stroke="currentColor" stroke-width="2.1"/><path d="M15.5 15.5 L21 21" stroke="currentColor"
+    stroke-width="2.1" stroke-linecap="round"/></svg></a>
       <div class="poignee"><i></i></div>
       <span class="etiq g">Avant</span>
       <span class="etiq d">Après</span>
@@ -3124,6 +3686,14 @@ a.retour:hover{color:var(--or)}
       <div class="avant" data-vide="1">
         <div class="neant"><b>Aujourd'hui</b><span>aucun site</span></div>
       </div>
+      <!-- La loupe vit au niveau du cadre, pas dans la couche « avant » :
+           celle-ci est rognée par le curseur, la loupe disparaîtrait dès que
+           Tony tire la poignée à fond vers « Après ». -->
+      <a class="loupe" href="https://www.google.com/search?q=%22VTC%20R%C3%A9union%20%E2%80%94%20Felix%20Transports%22%20Transport%20%C2%B7%20Voyage%20La%20R%C3%A9union" target="_blank" rel="noopener"
+  title="Chercher VTC Réunion — Felix Transports sur Google" aria-label="Chercher VTC Réunion — Felix Transports sur Google">
+  <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"
+    fill="none" stroke="currentColor" stroke-width="2.1"/><path d="M15.5 15.5 L21 21" stroke="currentColor"
+    stroke-width="2.1" stroke-linecap="round"/></svg></a>
       <div class="poignee"><i></i></div>
       <span class="etiq g">Avant</span>
       <span class="etiq d">Après</span>
@@ -3155,6 +3725,14 @@ a.retour:hover{color:var(--or)}
       <div class="avant" data-vide="1">
         <div class="neant"><b>Aujourd'hui</b><span>aucun site</span></div>
       </div>
+      <!-- La loupe vit au niveau du cadre, pas dans la couche « avant » :
+           celle-ci est rognée par le curseur, la loupe disparaîtrait dès que
+           Tony tire la poignée à fond vers « Après ». -->
+      <a class="loupe" href="https://www.google.com/search?q=%22Gabarit%20SEO%20%C2%AB%20SEO%20Expert%20%C2%BB%20(bis)%22%20%E2%80%94%20La%20R%C3%A9union" target="_blank" rel="noopener"
+  title="Chercher Gabarit SEO « SEO Expert » (bis) sur Google" aria-label="Chercher Gabarit SEO « SEO Expert » (bis) sur Google">
+  <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"
+    fill="none" stroke="currentColor" stroke-width="2.1"/><path d="M15.5 15.5 L21 21" stroke="currentColor"
+    stroke-width="2.1" stroke-linecap="round"/></svg></a>
       <div class="poignee"><i></i></div>
       <span class="etiq g">Avant</span>
       <span class="etiq d">Après</span>
@@ -3186,6 +3764,14 @@ a.retour:hover{color:var(--or)}
       <div class="avant" data-vide="1">
         <div class="neant"><b>Aujourd'hui</b><span>aucun site</span></div>
       </div>
+      <!-- La loupe vit au niveau du cadre, pas dans la couche « avant » :
+           celle-ci est rognée par le curseur, la loupe disparaîtrait dès que
+           Tony tire la poignée à fond vers « Après ». -->
+      <a class="loupe" href="https://www.google.com/search?q=%22L'Atelier%20de%20Ben%22%20Restauration%20La%20R%C3%A9union" target="_blank" rel="noopener"
+  title="Chercher L'Atelier de Ben sur Google" aria-label="Chercher L'Atelier de Ben sur Google">
+  <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"
+    fill="none" stroke="currentColor" stroke-width="2.1"/><path d="M15.5 15.5 L21 21" stroke="currentColor"
+    stroke-width="2.1" stroke-linecap="round"/></svg></a>
       <div class="poignee"><i></i></div>
       <span class="etiq g">Avant</span>
       <span class="etiq d">Après</span>
@@ -3217,6 +3803,14 @@ a.retour:hover{color:var(--or)}
       <div class="avant" data-vide="1">
         <div class="neant"><b>Aujourd'hui</b><span>aucun site</span></div>
       </div>
+      <!-- La loupe vit au niveau du cadre, pas dans la couche « avant » :
+           celle-ci est rognée par le curseur, la loupe disparaîtrait dès que
+           Tony tire la poignée à fond vers « Après ». -->
+      <a class="loupe" href="https://www.google.com/search?q=%22La%20Guinguette%20du%20Grand%20Morin%22%20Restauration%20La%20R%C3%A9union" target="_blank" rel="noopener"
+  title="Chercher La Guinguette du Grand Morin sur Google" aria-label="Chercher La Guinguette du Grand Morin sur Google">
+  <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"
+    fill="none" stroke="currentColor" stroke-width="2.1"/><path d="M15.5 15.5 L21 21" stroke="currentColor"
+    stroke-width="2.1" stroke-linecap="round"/></svg></a>
       <div class="poignee"><i></i></div>
       <span class="etiq g">Avant</span>
       <span class="etiq d">Après</span>
@@ -3248,6 +3842,14 @@ a.retour:hover{color:var(--or)}
       <div class="avant" data-vide="1">
         <div class="neant"><b>Aujourd'hui</b><span>aucun site</span></div>
       </div>
+      <!-- La loupe vit au niveau du cadre, pas dans la couche « avant » :
+           celle-ci est rognée par le curseur, la loupe disparaîtrait dès que
+           Tony tire la poignée à fond vers « Après ». -->
+      <a class="loupe" href="https://www.google.com/search?q=%22Le%20Clos%20de%20la%20Rivi%C3%A8re%22%20H%C3%A9bergement%20La%20R%C3%A9union" target="_blank" rel="noopener"
+  title="Chercher Le Clos de la Rivière sur Google" aria-label="Chercher Le Clos de la Rivière sur Google">
+  <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"
+    fill="none" stroke="currentColor" stroke-width="2.1"/><path d="M15.5 15.5 L21 21" stroke="currentColor"
+    stroke-width="2.1" stroke-linecap="round"/></svg></a>
       <div class="poignee"><i></i></div>
       <span class="etiq g">Avant</span>
       <span class="etiq d">Après</span>
@@ -3279,6 +3881,14 @@ a.retour:hover{color:var(--or)}
       <div class="avant" data-vide="1">
         <div class="neant"><b>Aujourd'hui</b><span>aucun site</span></div>
       </div>
+      <!-- La loupe vit au niveau du cadre, pas dans la couche « avant » :
+           celle-ci est rognée par le curseur, la loupe disparaîtrait dès que
+           Tony tire la poignée à fond vers « Après ». -->
+      <a class="loupe" href="https://www.google.com/search?q=%22Mama%20Betty%22%20Restauration%20La%20R%C3%A9union" target="_blank" rel="noopener"
+  title="Chercher Mama Betty sur Google" aria-label="Chercher Mama Betty sur Google">
+  <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"
+    fill="none" stroke="currentColor" stroke-width="2.1"/><path d="M15.5 15.5 L21 21" stroke="currentColor"
+    stroke-width="2.1" stroke-linecap="round"/></svg></a>
       <div class="poignee"><i></i></div>
       <span class="etiq g">Avant</span>
       <span class="etiq d">Après</span>
@@ -3310,6 +3920,14 @@ a.retour:hover{color:var(--or)}
       <div class="avant" data-vide="1">
         <div class="neant"><b>Aujourd'hui</b><span>aucun site</span></div>
       </div>
+      <!-- La loupe vit au niveau du cadre, pas dans la couche « avant » :
+           celle-ci est rognée par le curseur, la loupe disparaîtrait dès que
+           Tony tire la poignée à fond vers « Après ». -->
+      <a class="loupe" href="https://www.google.com/search?q=%22Radio%20SunLight%20FM%20(doublon)%22%20M%C3%A9dia%20%C2%B7%20Radio%20La%20R%C3%A9union" target="_blank" rel="noopener"
+  title="Chercher Radio SunLight FM (doublon) sur Google" aria-label="Chercher Radio SunLight FM (doublon) sur Google">
+  <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"
+    fill="none" stroke="currentColor" stroke-width="2.1"/><path d="M15.5 15.5 L21 21" stroke="currentColor"
+    stroke-width="2.1" stroke-linecap="round"/></svg></a>
       <div class="poignee"><i></i></div>
       <span class="etiq g">Avant</span>
       <span class="etiq d">Après</span>
@@ -3341,6 +3959,14 @@ a.retour:hover{color:var(--or)}
       <div class="avant" data-vide="1">
         <div class="neant"><b>Aujourd'hui</b><span>aucun site</span></div>
       </div>
+      <!-- La loupe vit au niveau du cadre, pas dans la couche « avant » :
+           celle-ci est rognée par le curseur, la loupe disparaîtrait dès que
+           Tony tire la poignée à fond vers « Après ». -->
+      <a class="loupe" href="https://www.google.com/search?q=%22Radio%20SunLight%20FM%20(doublon)%22%20M%C3%A9dia%20%C2%B7%20Radio%20La%20R%C3%A9union" target="_blank" rel="noopener"
+  title="Chercher Radio SunLight FM (doublon) sur Google" aria-label="Chercher Radio SunLight FM (doublon) sur Google">
+  <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"
+    fill="none" stroke="currentColor" stroke-width="2.1"/><path d="M15.5 15.5 L21 21" stroke="currentColor"
+    stroke-width="2.1" stroke-linecap="round"/></svg></a>
       <div class="poignee"><i></i></div>
       <span class="etiq g">Avant</span>
       <span class="etiq d">Après</span>
@@ -3372,6 +3998,14 @@ a.retour:hover{color:var(--or)}
       <div class="avant" data-vide="1">
         <div class="neant"><b>Aujourd'hui</b><span>aucun site</span></div>
       </div>
+      <!-- La loupe vit au niveau du cadre, pas dans la couche « avant » :
+           celle-ci est rognée par le curseur, la loupe disparaîtrait dès que
+           Tony tire la poignée à fond vers « Après ». -->
+      <a class="loupe" href="https://www.google.com/search?q=%22Restaurant%20Coul%C3%A9e%2077%22%20Restauration%20La%20R%C3%A9union" target="_blank" rel="noopener"
+  title="Chercher Restaurant Coulée 77 sur Google" aria-label="Chercher Restaurant Coulée 77 sur Google">
+  <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"
+    fill="none" stroke="currentColor" stroke-width="2.1"/><path d="M15.5 15.5 L21 21" stroke="currentColor"
+    stroke-width="2.1" stroke-linecap="round"/></svg></a>
       <div class="poignee"><i></i></div>
       <span class="etiq g">Avant</span>
       <span class="etiq d">Après</span>
@@ -3403,6 +4037,14 @@ a.retour:hover{color:var(--or)}
       <div class="avant" data-vide="1">
         <div class="neant"><b>Aujourd'hui</b><span>aucun site</span></div>
       </div>
+      <!-- La loupe vit au niveau du cadre, pas dans la couche « avant » :
+           celle-ci est rognée par le curseur, la loupe disparaîtrait dès que
+           Tony tire la poignée à fond vers « Après ». -->
+      <a class="loupe" href="https://www.google.com/search?q=%22TiCoeur%22%20Commerce%20%C2%B7%20Boutique%20La%20R%C3%A9union" target="_blank" rel="noopener"
+  title="Chercher TiCoeur sur Google" aria-label="Chercher TiCoeur sur Google">
+  <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"
+    fill="none" stroke="currentColor" stroke-width="2.1"/><path d="M15.5 15.5 L21 21" stroke="currentColor"
+    stroke-width="2.1" stroke-linecap="round"/></svg></a>
       <div class="poignee"><i></i></div>
       <span class="etiq g">Avant</span>
       <span class="etiq d">Après</span>
@@ -3519,6 +4161,9 @@ a.retour:hover{color:var(--or)}
         vue.style.setProperty('--left', (x / r.width * 100).toFixed(2) + '%');
       }
       vue.addEventListener('pointerdown', function(ev){
+        // La loupe est un vrai lien posé dans la zone de glissement : sans
+        // cette sortie, le preventDefault() ci-dessous mange le clic.
+        if (ev.target.closest && ev.target.closest('a.loupe')) return;
         glisse = true; vue.setPointerCapture(ev.pointerId); place(ev); ev.preventDefault();
       });
       vue.addEventListener('pointermove', function(ev){ if (glisse) place(ev); });
@@ -3526,7 +4171,8 @@ a.retour:hover{color:var(--or)}
         vue.addEventListener(t, function(){ glisse = false; });
       });
       // Un double-tap ouvre le site : le glissement a pris la place du clic.
-      vue.addEventListener('dblclick', function(){
+      vue.addEventListener('dblclick', function(ev){
+        if (ev.target.closest && ev.target.closest('a.loupe')) return;
         window.open('/' + c.dataset.dir + '/', '_blank', 'noopener');
       });
     }

@@ -37,6 +37,26 @@ const items = sites.map(s => {
 const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 const nVig = items.filter(i => i.vig).length;
 
+// Loupe « vérifier moi-même ».
+// « Aucun site » est une conclusion de machine : la capture automatique n'a
+// trouvé aucun domaine plausible. Ça ne prouve pas qu'il n'existe pas — une
+// page Facebook, un domaine sans rapport avec le nom, un site trop récent
+// passent tous à travers. La loupe rend la vérification à Tony en un clic
+// au lieu de le laisser croire une machine sur parole.
+//
+// Le nom est mis entre guillemets pour que Google ne parte pas sur un
+// homonyme, et « La Réunion » cadre géographiquement — sans ça, une
+// pizzeria « Giulietta » renvoie l'Italie entière.
+const rechercheUrl = i => 'https://www.google.com/search?q=' + encodeURIComponent(
+  `"${i.nom}" ${i.act || ''} La Réunion`.replace(/\s+/g, ' ').trim());
+
+const loupe = i => `<a class="loupe" href="${esc(rechercheUrl(i))}" target="_blank" rel="noopener"
+  title="Chercher ${esc(i.nom)} sur Google" aria-label="Chercher ${esc(i.nom)} sur Google">
+  <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"
+    fill="none" stroke="currentColor" stroke-width="2.1"/><path d="M15.5 15.5 L21 21" stroke="currentColor"
+    stroke-width="2.1" stroke-linecap="round"/></svg></a>`;
+const nSansSite = items.filter(i => !i.avant).length;
+
 const html = `<!doctype html>
 <html lang="fr">
 <head>
@@ -91,6 +111,15 @@ a.retour:hover{color:var(--or)}
 .vue .avant .neant.mort span{color:var(--rouge)}
 .vue .avant .neant em{font-style:normal;font-size:.6rem;color:var(--mut);margin-top:.15rem;
   overflow-wrap:anywhere;padding:0 .4rem}
+/* La loupe est posée DANS le comparateur, donc dans la zone qui capture le
+   pointeur pour le glissement. Elle est au-dessus (z-index) et le gestionnaire
+   de glissement l'ignore explicitement — sans quoi le preventDefault()
+   avalerait le clic et le lien ne s'ouvrirait jamais. */
+.vue .loupe{position:absolute;right:7px;bottom:7px;z-index:4;
+  width:27px;height:27px;border-radius:50%;display:grid;place-items:center;
+  background:rgba(12,12,18,.82);border:1px solid rgba(255,255,255,.22);
+  color:#cfd6e2;text-decoration:none;backdrop-filter:blur(2px)}
+.vue .loupe:hover{background:#1b2534;border-color:#4d7fd6;color:#8fb6ff}
 .vue .avant .neant b{font-size:.7rem;color:var(--mut);font-weight:600}
 .vue .avant .neant span{font-size:.78rem;color:var(--rouge);font-weight:700}
 .vue .poignee{position:absolute;top:0;bottom:0;left:var(--left);width:2px;
@@ -101,10 +130,15 @@ a.retour:hover{color:var(--or)}
 .vue .poignee i::before{content:'';position:absolute;inset:0;
   background:linear-gradient(90deg,transparent 34%,#141000 34%,#141000 42%,transparent 42%,
     transparent 58%,#141000 58%,#141000 66%,transparent 66%)}
+/* pointer-events:none : ces étiquettes sont purement décoratives. Sans ça,
+   « Après » occupe le coin bas-droit et intercepte le clic sur la loupe. */
 .vue .etiq{position:absolute;bottom:8px;font-size:.6rem;font-weight:700;z-index:4;
-  padding:.14rem .4rem;border-radius:999px;background:rgba(10,10,15,.8);letter-spacing:.06em}
+  padding:.14rem .4rem;border-radius:999px;background:rgba(10,10,15,.8);letter-spacing:.06em;
+  pointer-events:none}
 .vue .etiq.g{left:8px;color:var(--rouge)}
+/* Décalée vers la gauche là où la loupe est présente, pour ne pas se superposer. */
 .vue .etiq.d{right:8px;color:var(--vert)}
+.vue:has(a.loupe) .etiq.d{right:41px}
 
 /* Choix d'état, y compris « abandonner » */
 .etats{display:flex;gap:.25rem;flex-wrap:wrap}
@@ -160,7 +194,7 @@ a.retour:hover{color:var(--or)}
     <h1>Sites clients — <i>vue en vignettes</i></h1>
     <a class="retour" href="/sites-clients/">← revenir à l'inventaire détaillé</a>
   </div>
-  <span class="cpt"><b id="n">${items.length}</b> / ${items.length} sites · ${nVig} capturés</span>
+  <span class="cpt"><b id="n">${items.length}</b> / ${items.length} sites · ${nVig} capturés · ${nSansSite} à vérifier <span class="lp" aria-hidden="true">🔍</span></span>
 </header>
 
 <div class="barre">
@@ -194,6 +228,10 @@ ${items.map(i => `  <article class="carte" data-dir="${esc(i.dir)}" data-etat="$
                   esc(i.mort.url.replace(/^https?:\/\//, ''))}</em></div>`
               : `<div class="neant"><b>Aujourd'hui</b><span>aucun site</span></div>`}
       </div>
+      <!-- La loupe vit au niveau du cadre, pas dans la couche « avant » :
+           celle-ci est rognée par le curseur, la loupe disparaîtrait dès que
+           Tony tire la poignée à fond vers « Après ». -->
+      ${(!i.avant || i.doute) ? loupe(i) : ''}
       <div class="poignee"><i></i></div>
       <span class="etiq g">Avant</span>
       <span class="etiq d">Après</span>
@@ -310,6 +348,9 @@ ${items.map(i => `  <article class="carte" data-dir="${esc(i.dir)}" data-etat="$
         vue.style.setProperty('--left', (x / r.width * 100).toFixed(2) + '%');
       }
       vue.addEventListener('pointerdown', function(ev){
+        // La loupe est un vrai lien posé dans la zone de glissement : sans
+        // cette sortie, le preventDefault() ci-dessous mange le clic.
+        if (ev.target.closest && ev.target.closest('a.loupe')) return;
         glisse = true; vue.setPointerCapture(ev.pointerId); place(ev); ev.preventDefault();
       });
       vue.addEventListener('pointermove', function(ev){ if (glisse) place(ev); });
@@ -317,7 +358,8 @@ ${items.map(i => `  <article class="carte" data-dir="${esc(i.dir)}" data-etat="$
         vue.addEventListener(t, function(){ glisse = false; });
       });
       // Un double-tap ouvre le site : le glissement a pris la place du clic.
-      vue.addEventListener('dblclick', function(){
+      vue.addEventListener('dblclick', function(ev){
+        if (ev.target.closest && ev.target.closest('a.loupe')) return;
         window.open('/' + c.dataset.dir + '/', '_blank', 'noopener');
       });
     }
