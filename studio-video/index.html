@@ -1,0 +1,303 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Studio vidéo — choisir un modèle</title>
+<style>
+:root{
+  --fond:#0b0d10; --carte:#14181d; --bord:#242a32; --bord2:#39424e;
+  --texte:#e9ecf0; --gris:#98a2ae; --gris2:#6c7683;
+  --or:#e0ae3a; --vert:#3ecf8e; --rouge:#e5544b; --bleu:#5b9dff;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--fond);color:var(--texte);
+  font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased}
+.page{max-width:860px;margin:0 auto;padding:26px 16px 90px}
+h1{font-size:25px;margin:0 0 6px;letter-spacing:-.02em}
+.sous{color:var(--gris);font-size:14px;margin:0 0 8px}
+.nav{display:flex;flex-wrap:wrap;gap:7px;margin:12px 0 26px}
+.nav a{font-size:12.5px;color:var(--gris);text-decoration:none;border:1px solid var(--bord);
+  border-radius:99px;padding:4px 11px}
+.nav a:hover{color:var(--texte);border-color:var(--bord2)}
+
+h2{font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:var(--gris);
+  margin:28px 0 10px;font-weight:600;display:flex;align-items:baseline;gap:8px}
+h2 i{font-style:normal;color:var(--gris2);text-transform:none;letter-spacing:0;font-size:12px;font-weight:400}
+
+.grille{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:9px}
+.opt{background:var(--carte);border:1px solid var(--bord);border-radius:11px;padding:12px 13px;
+  cursor:pointer;text-align:left;color:inherit;font:inherit;transition:border-color .14s,background .14s}
+.opt:hover{border-color:var(--bord2)}
+.opt[aria-pressed="true"]{border-color:var(--or);background:#1d1c15}
+.opt b{display:block;font-size:14.5px;margin-bottom:3px}
+.opt span{display:block;font-size:12.5px;color:var(--gris);line-height:1.4}
+.opt em{display:block;font-style:normal;font-size:11.5px;color:var(--gris2);margin-top:5px}
+.opt[disabled]{opacity:.34;cursor:not-allowed}
+.opt[disabled] .pourquoi{color:var(--rouge)}
+
+.champ{display:block;margin:0 0 11px}
+.champ span{display:block;font-size:12.5px;color:var(--gris);margin-bottom:4px}
+input[type=text],textarea,select{width:100%;background:#101419;border:1px solid var(--bord);
+  border-radius:9px;color:var(--texte);font:inherit;font-size:14.5px;padding:9px 11px}
+textarea{min-height:64px;resize:vertical}
+input:focus,textarea:focus,select:focus{outline:none;border-color:var(--bleu)}
+.deux{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+
+.alerte{border-left:3px solid var(--or);background:#1a1710;border-radius:6px;
+  padding:10px 12px;font-size:13px;color:#e0cd9e;margin:10px 0 0;line-height:1.5}
+.alerte.dur{border-color:var(--rouge);background:#1c1312;color:#f0aca7}
+
+.sortie{background:#0e1216;border:1px solid var(--bord);border-radius:12px;padding:14px;margin-top:12px}
+pre{margin:0;white-space:pre-wrap;word-break:break-word;font:13px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;color:#cfd8e3}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:11px}
+.bt{background:#1a2230;border:1px solid #2c3b52;color:var(--bleu);border-radius:9px;
+  padding:8px 14px;font:inherit;font-size:14px;cursor:pointer}
+.bt:hover{background:#22304a}
+.bt.pri{background:#2a2410;border-color:#5a4a1c;color:var(--or)}
+.bt.pri:hover{background:#392f14}
+footer{margin-top:34px;font-size:12px;color:var(--gris2);line-height:1.6}
+@media(max-width:520px){.deux{grid-template-columns:1fr}h1{font-size:21px}}
+</style>
+</head>
+<body>
+<div class="page">
+
+<h1>Studio vidéo</h1>
+<p class="sous">Choisis le modèle et l'avatar, remplis les paramètres. La page produit une commande
+que tu me colles telle quelle — elle ne lance rien toute seule.</p>
+<nav class="nav">
+  <a href="/taches/">Mes demandes</a>
+  <a href="/carte/">La carte</a>
+  <a href="/">Prévisualisation</a>
+</nav>
+
+<h2>1 · Le modèle <i>ce que la vidéo raconte</i></h2>
+<div class="grille" id="modeles"></div>
+
+<h2>2 · La garde-robe <i>un seul look par vidéo</i></h2>
+<div class="grille" id="garderobes"></div>
+<p class="alerte" id="regle-gr">La banque a été tournée en trois fois, avec des vêtements différents.
+Piocher deux looks au milieu d'une même vidéo donne l'impression que tu te changes entre deux phrases.
+Deux looks ne sont tolérés que si le second est <b>uniquement</b> à l'ouverture ou à la fermeture,
+où la coupure franche se lit comme un effet voulu.</p>
+
+<h2>3 · Les plans <i>filtrés par la garde-robe choisie</i></h2>
+<div class="grille" id="clips"></div>
+<p class="alerte dur" id="alerte-clips" hidden></p>
+
+<h2>4 · Tes paramètres</h2>
+<label class="champ"><span>Le sujet — de quoi parle la vidéo</span>
+  <input type="text" id="sujet" placeholder="ex. le nouveau modèle vidéo de Google, et ce qu'on peut vendre avec"></label>
+<label class="champ"><span>Le hook — la première phrase, celle qui retient</span>
+  <input type="text" id="hook" placeholder="ex. Ce truc coûte 12 centimes et remplace un tournage à 800 €."></label>
+<div class="deux">
+  <label class="champ"><span>Le CTA</span>
+    <input type="text" id="cta" placeholder="ex. Dis-moi en commentaire ce que tu ferais avec"></label>
+  <label class="champ"><span>Mot-clé de l'auto-DM <i></i></span>
+    <input type="text" id="motcle" placeholder="ex. SEEDANCE"></label>
+</div>
+<div class="deux">
+  <label class="champ"><span>Durée visée</span>
+    <select id="duree">
+      <option value="18-20 s">18–20 s — format social court</option>
+      <option value="30-45 s">30–45 s — tuto ou démonstration</option>
+      <option value="45-60 s">45–60 s — journal / analyse</option>
+    </select></label>
+  <label class="champ"><span>Musique</span>
+    <select id="musique">
+      <option value="beat-sync sur la grille mesurée">Beat-sync — coupes sur le tempo</option>
+      <option value="lit discret, sous la voix">Lit discret sous la voix</option>
+      <option value="aucune, voix seule">Aucune — voix seule</option>
+    </select></label>
+</div>
+<label class="champ"><span>Autre chose à savoir <i>(facultatif)</i></span>
+  <textarea id="notes" placeholder="Une contrainte, un lien, une référence visuelle, ce qu'il ne faut surtout pas faire…"></textarea></label>
+
+<h2>5 · La commande à me coller</h2>
+<div class="sortie"><pre id="sortie">Choisis un modèle pour commencer.</pre></div>
+<div class="actions">
+  <button class="bt pri" id="copier" type="button">Copier la commande</button>
+  <button class="bt" id="raz" type="button">Tout remettre à zéro</button>
+</div>
+
+<footer>
+  Les 9 plans listés sont ceux qui existent réellement sur le disque, avec leur durée mesurée —
+  pas les 24 du brief de tournage. Les 15 manquants n'ont jamais été tournés.<br>
+  Cette page ne produit pas la vidéo : elle produit la commande. C'est voulu — le rendu passe par
+  la chaîne qui vérifie l'accord mot/image, et une page web ne peut pas faire cette vérification.
+</footer>
+
+</div>
+
+<script>
+// Les données viennent de bank.json et des fichiers réellement présents.
+// Durées mesurées à l'ffprobe, pas déclarées.
+var GARDEROBES = [
+  { id:'chemise-noir-jaune', nom:'Chemise noire, détail jaune', note:'Le tournage le plus récent, et le plus fourni : 4 plans de 10 s.', reco:true },
+  { id:'chemise-noire-studio', nom:'Chemise noire studio', note:'Premier tournage. 3 plans de 5 s — court pour porter une vidéo entière.' },
+  { id:'spider-suit', nom:'Combinaison Spider', note:"Accroche visuelle forte, mais un seul plan parlant de 2 s." }
+];
+var CLIPS = [
+  { id:'D1', gr:'chemise-noir-jaune',    role:'hook',        nom:'Hook frontal',            dur:10.08, parle:true },
+  { id:'D2', gr:'chemise-noir-jaune',    role:'explain',     nom:'Insistance aux doigts',   dur:10.08, parle:true, note:'zone morte de lèvres 4,63→4,96 s' },
+  { id:'D4', gr:'chemise-noir-jaune',    role:'explain',     nom:'Relance, main à la barbe',dur:10.08, parle:true, note:'zone morte de lèvres 4,63→4,96 s' },
+  { id:'D3', gr:'chemise-noir-jaune',    role:'cta',         nom:'CTA aux lunettes',        dur:10.08, parle:true },
+  { id:'A1', gr:'chemise-noire-studio',  role:'hook',        nom:'Hook frontal',            dur:5.06,  parle:true },
+  { id:'B1', gr:'chemise-noire-studio',  role:'explain',     nom:'Explication du principe', dur:5.06,  parle:true },
+  { id:'C2', gr:'chemise-noire-studio',  role:'cta',         nom:'« commente le mot-clé »', dur:5.06,  parle:true },
+  { id:'HOOK_spider_entree', gr:'spider-suit', role:'hook-visuel', nom:'Entrée Spider',     dur:8.00,  parle:false, note:'ne parle pas — ouverture uniquement' },
+  { id:'SPIDER_talking',     gr:'spider-suit', role:'cta',         nom:'Spider qui parle',  dur:2.04,  parle:true,  note:'2 s seulement' }
+];
+var MODELES = [
+  { id:'veille-to-video-v3', nom:'VideoBoost v3', desc:'Assemble les plans de la banque avec ta voix clonée. Le modèle par défaut pour une vidéo Autoboost.', av:true, reco:true },
+  { id:'prompt-reveal-branded', nom:'Prompt Reveal', desc:'Un rendu IA bluffant, puis le prompt exact qui défile. Pas d’avatar.', av:false },
+  { id:'horror-beatsync-video', nom:'Horror Beat-Sync', desc:'Calé sur la trend « YOU CAN ASK THE… ». Coupes sur le kick.', av:false },
+  { id:'veille-journal-ia', nom:'Journal IA', desc:'L’édition quotidienne : actu du jour, angle clivant, coup à jouer. 45 s à 1 min.', av:true },
+  { id:'essai-contemplatif-branded', nom:'Essai contemplatif', desc:'Format lent, voix off, image qui respire. Pour un propos, pas une promo.', av:false },
+  { id:'foodboost-vitrine-video', nom:'FoodBoost vitrine', desc:'100 % généré, pour un restaurateur. Pas ton visage.', av:false },
+  { id:'video-to-resource', nom:'Vidéo → ressource', desc:'Reprend une vidéo déjà produite et en fait une page ressource.', av:false },
+  { id:'website-to-video', nom:'Site → vidéo', desc:'Capture un site et en fait une visite filmée.', av:false }
+];
+
+var etat = { modele:null, gr:null, clips:[] };
+var $ = function(s){ return document.querySelector(s); };
+
+function carte(o){
+  var b = document.createElement('button');
+  b.className = 'opt'; b.type = 'button'; b.setAttribute('aria-pressed','false');
+  b.innerHTML = '<b>' + o.titre + '</b><span>' + o.desc + '</span>' + (o.pied ? '<em class="pourquoi">' + o.pied + '</em>' : '');
+  return b;
+}
+
+function peindreModeles(){
+  var c = $('#modeles'); c.innerHTML = '';
+  MODELES.forEach(function(m){
+    var b = carte({ titre:m.nom + (m.reco ? ' · conseillé' : ''), desc:m.desc,
+      pied:(m.av ? 'utilise la banque avatar' : 'sans avatar') });
+    b.addEventListener('click', function(){
+      etat.modele = m; etat.gr = null; etat.clips = [];
+      peindreModeles(); peindreGarderobes(); peindreClips(); ecrire();
+    });
+    if (etat.modele && etat.modele.id === m.id) b.setAttribute('aria-pressed','true');
+    c.appendChild(b);
+  });
+}
+
+function peindreGarderobes(){
+  var c = $('#garderobes'); c.innerHTML = '';
+  var utile = etat.modele && etat.modele.av;
+  $('#regle-gr').hidden = !utile;
+  if (!utile){
+    c.innerHTML = '<p style="grid-column:1/-1;color:var(--gris2);font-size:13px;margin:0">' +
+      (etat.modele ? 'Ce modèle n’utilise pas ton visage — rien à choisir ici.' : 'Choisis d’abord un modèle.') + '</p>';
+    return;
+  }
+  GARDEROBES.forEach(function(g){
+    var n = CLIPS.filter(function(x){ return x.gr === g.id; }).length;
+    var b = carte({ titre:g.nom + (g.reco ? ' · conseillé' : ''), desc:g.note, pied:n + ' plan' + (n>1?'s':'') + ' disponible' + (n>1?'s':'') });
+    b.addEventListener('click', function(){
+      etat.gr = g; etat.clips = []; peindreGarderobes(); peindreClips(); ecrire();
+    });
+    if (etat.gr && etat.gr.id === g.id) b.setAttribute('aria-pressed','true');
+    c.appendChild(b);
+  });
+}
+
+function peindreClips(){
+  var c = $('#clips'); c.innerHTML = '';
+  if (!etat.gr){
+    c.innerHTML = '<p style="grid-column:1/-1;color:var(--gris2);font-size:13px;margin:0">Choisis une garde-robe.</p>';
+    $('#alerte-clips').hidden = true; return;
+  }
+  var ROLE = { hook:'Accroche', explain:'Explication', cta:'Appel à l’action', 'hook-visuel':'Accroche visuelle' };
+  CLIPS.filter(function(x){ return x.gr === etat.gr.id; }).forEach(function(k){
+    var b = carte({ titre:k.nom, desc:ROLE[k.role] + ' · ' + k.dur.toFixed(2).replace('.',',') + ' s' + (k.parle ? '' : ' · ne parle pas'),
+      pied:k.note || '' });
+    b.addEventListener('click', function(){
+      var i = etat.clips.indexOf(k.id);
+      if (i > -1) etat.clips.splice(i,1); else etat.clips.push(k.id);
+      peindreClips(); ecrire();
+    });
+    if (etat.clips.indexOf(k.id) > -1) b.setAttribute('aria-pressed','true');
+    c.appendChild(b);
+  });
+  verifier();
+}
+
+// La vérification qui justifie l'existence de cette page : la durée totale des
+// plans PARLANTS choisis doit couvrir la voix. C'est l'erreur qui revient —
+// choisir trois clips de 5 s pour une vidéo de 45 s, et découvrir au montage
+// qu'il manque 30 s d'image.
+function verifier(){
+  var a = $('#alerte-clips');
+  var pris = CLIPS.filter(function(k){ return etat.clips.indexOf(k.id) > -1; });
+  var parle = pris.filter(function(k){ return k.parle; });
+  var total = parle.reduce(function(s,k){ return s + k.dur; }, 0);
+  var vise = ($('#duree').value || '').split('-')[0];
+  var cible = Number(vise) || 18;
+  var msgs = [];
+  if (pris.length && !parle.length) msgs.push('Aucun plan choisi ne parle : il n’y a rien sur quoi poser la voix.');
+  if (parle.length && total < cible) {
+    msgs.push('Les plans parlants totalisent ' + total.toFixed(1).replace('.',',') + ' s pour une vidéo de ' +
+      cible + ' s minimum. Il manque ' + (cible - total).toFixed(1).replace('.',',') +
+      ' s — soit on rejoue un plan, soit on couvre la différence avec du b-roll.');
+  }
+  var roles = {}; pris.forEach(function(k){ roles[k.role] = 1; });
+  if (pris.length >= 2 && !roles.cta && !roles['hook-visuel']) msgs.push('Aucun plan d’appel à l’action dans la sélection.');
+  a.hidden = !msgs.length;
+  a.innerHTML = msgs.join('<br>');
+}
+
+function ecrire(){
+  var s = $('#sortie');
+  if (!etat.modele){ s.textContent = 'Choisis un modèle pour commencer.'; return; }
+  var L = [];
+  L.push('Fais-moi une vidéo avec /' + etat.modele.id + '.');
+  L.push('');
+  if (etat.gr) L.push('Garde-robe : ' + etat.gr.nom + ' (' + etat.gr.id + ') — ne pas mélanger avec une autre.');
+  if (etat.clips.length) L.push('Plans : ' + etat.clips.join(', '));
+  var v = function(id){ return ($('#' + id).value || '').trim(); };
+  if (v('sujet'))  L.push('Sujet : ' + v('sujet'));
+  if (v('hook'))   L.push('Hook : ' + v('hook'));
+  if (v('cta'))    L.push('CTA : ' + v('cta'));
+  if (v('motcle')) L.push('Mot-clé auto-DM : ' + v('motcle').toUpperCase() + ' (vérifie que la ressource existe avant de l’annoncer)');
+  L.push('Durée : ' + $('#duree').value);
+  L.push('Musique : ' + $('#musique').value);
+  if (v('notes')) { L.push(''); L.push('À savoir : ' + v('notes')); }
+  L.push('');
+  L.push('Publie sur prévisualisation et donne-moi le lien. Ne programme rien sans mon accord.');
+  s.textContent = L.join('\n');
+}
+
+['sujet','hook','cta','motcle','notes'].forEach(function(id){
+  document.getElementById(id).addEventListener('input', ecrire);
+});
+['duree','musique'].forEach(function(id){
+  document.getElementById(id).addEventListener('change', function(){ verifier(); ecrire(); });
+});
+$('#copier').addEventListener('click', function(){
+  var t = $('#sortie').textContent;
+  // navigator.clipboard échoue hors HTTPS et dans certaines vues intégrées :
+  // on garde la sélection manuelle comme filet, sinon le bouton ment.
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(t).then(function(){
+      $('#copier').textContent = 'Copié'; setTimeout(function(){ $('#copier').textContent = 'Copier la commande'; }, 1600);
+    });
+  } else {
+    var r = document.createRange(); r.selectNodeContents($('#sortie'));
+    var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(r);
+    $('#copier').textContent = 'Sélectionné — fais « copier »';
+  }
+});
+$('#raz').addEventListener('click', function(){
+  etat = { modele:null, gr:null, clips:[] };
+  ['sujet','hook','cta','motcle','notes'].forEach(function(id){ document.getElementById(id).value = ''; });
+  peindreModeles(); peindreGarderobes(); peindreClips(); ecrire();
+});
+
+peindreModeles(); peindreGarderobes(); peindreClips(); ecrire();
+</script>
+</body>
+</html>
