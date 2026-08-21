@@ -14,7 +14,8 @@ body{margin:0;background:var(--bg);color:var(--txt);font-size:15px;line-height:1
 header{display:flex;align-items:baseline;justify-content:space-between;gap:.8rem;flex-wrap:wrap;margin-bottom:.9rem}
 h1{font-size:1rem;margin:0;font-weight:700}
 h1 i{font-style:normal;color:var(--or)}
-.cpt{font-size:.75rem;color:var(--mut);font-variant-numeric:tabular-nums}
+.cpt{font-size:.75rem;color:var(--mut);font-variant-numeric:tabular-nums;text-align:right}
+.cpt2{font-size:.7rem;color:#8d99a8}
 a.retour{color:var(--mut);font-size:.78rem;text-decoration:none}
 a.retour:hover{color:var(--or)}
 
@@ -124,6 +125,18 @@ a.retour:hover{color:var(--or)}
 .boite textarea:focus{outline:none}
 .pied{display:flex;gap:.5rem;padding:.8rem 1.1rem;border-top:1px solid var(--bord);align-items:center}
 .pied .info{color:var(--mut);font-size:.73rem;margin-right:auto}
+/* Résultat d'audit responsive. Le liseré à gauche porte la gravité : on la
+   lit en balayant la grille, sans avoir à parcourir le texte de chaque fiche. */
+.resp{margin:.4rem 0 .1rem;font-size:.68rem;line-height:1.35;padding:.3rem .45rem;
+  border-radius:5px;border-left:3px solid;background:rgba(255,255,255,.028)}
+.resp b{font-weight:600;display:block}
+.resp.sain{border-color:var(--vert);color:#9fdcb5}
+.resp.moyen{border-color:#eab308;color:#e2cd8f}
+.resp.mauvais{border-color:var(--rouge);color:#f0a9a4}
+.resp .cmp{display:block;margin-top:.15rem;font-size:.63rem;letter-spacing:.02em;opacity:.9}
+.resp .cmp.mieux{color:var(--vert)}
+.resp .cmp.egal{color:var(--mut)}
+.resp .cmp.moinsbien{color:var(--rouge);font-weight:700}
 #vide{display:none;text-align:center;color:var(--mut);padding:3rem 1rem;font-size:.88rem}
 </style>
 </head>
@@ -146,6 +159,8 @@ a.retour:hover{color:var(--or)}
     <button class="ch" data-f="fix" aria-pressed="false">À corriger <b>37</b></button>
     <button class="ch" data-f="abandon" aria-pressed="false">À abandonner <b>16</b></button>
     <button class="ch" data-f="__flag" aria-pressed="false">★ Marqués <b id="n-flag">0</b></button>
+    
+    
     <button class="ch fin" id="b-reset" type="button">Tout démarquer</button>
     <button class="ch pri" id="b-brief" type="button">Générer l'ordre de correction</button>
   </div>
@@ -153,6 +168,8 @@ a.retour:hover{color:var(--or)}
 
 <div class="grille" id="grille">
   <article class="carte" data-dir="arts-de-sante-formation" data-etat="abandon" data-flag="0"
+    data-resp="0"
+    data-verdict=""
     data-k="arts de santé santé arts-de-sante-formation">
     <div class="vue">
       <img class="apres" src="vignettes/arts-de-sante-formation.jpg" alt="Aperçu de Arts de Santé" loading="lazy">
@@ -174,6 +191,7 @@ a.retour:hover{color:var(--or)}
     <div class="corps">
       <div class="nom">Arts de Santé</div>
       <div class="meta">Santé</div>
+      
       <div class="etats">
         <button class="et" data-e="ok" type="button">Envoyable</button>
         <button class="et" data-e="fix" type="button">À corriger</button>
@@ -188,6 +206,8 @@ a.retour:hover{color:var(--or)}
     </div>
   </article>
   <article class="carte" data-dir="au-comptoir-du-potager" data-etat="ok" data-flag="0"
+    data-resp="0"
+    data-verdict=""
     data-k="au comptoir du potager restauration au-comptoir-du-potager">
     <div class="vue">
       <img class="apres" src="vignettes/au-comptoir-du-potager.jpg" alt="Aperçu de Au Comptoir du Potager" loading="lazy">
@@ -213,6 +233,7 @@ a.retour:hover{color:var(--or)}
     <div class="corps">
       <div class="nom">Au Comptoir du Potager</div>
       <div class="meta">Restauration · +262262567437</div>
+      
       <div class="etats">
         <button class="et" data-e="ok" type="button">Envoyable</button>
         <button class="et" data-e="fix" type="button">À corriger</button>
@@ -227,6 +248,8 @@ a.retour:hover{color:var(--or)}
     </div>
   </article>
   <article class="carte" data-dir="beausejour-sportclub" data-etat="ok" data-flag="0"
+    data-resp="0"
+    data-verdict=""
     data-k="beauséjour sportclub sport beausejour-sportclub">
     <div class="vue">
       <img class="apres" src="vignettes/beausejour-sportclub.jpg" alt="Aperçu de Beauséjour SportClub" loading="lazy">
@@ -252,6 +275,7 @@ a.retour:hover{color:var(--or)}
     <div class="corps">
       <div class="nom">Beauséjour SportClub</div>
       <div class="meta">Sport · +262262671081</div>
+      
       <div class="etats">
         <button class="et" data-e="ok" type="button">Envoyable</button>
         <button class="et" data-e="fix" type="button">À corriger</button>
@@ -266,6 +290,8 @@ a.retour:hover{color:var(--or)}
     </div>
   </article>
   <article class="carte" data-dir="bigmat-brico400-quincaillerie-tampon" data-etat="ok" data-flag="0"
+    data-resp="0"
+    data-verdict=""
     data-k="bigmat brico 400 quincaillerie bigmat-brico400-quincaillerie-tampon">
     <div class="vue">
       <img class="apres" src="vignettes/bigmat-brico400-quincaillerie-tampon.jpg" alt="Aperçu de BIGMAT Brico 400" loading="lazy">
@@ -291,6 +317,7 @@ a.retour:hover{color:var(--or)}
     <div class="corps">
       <div class="nom">BIGMAT Brico 400</div>
       <div class="meta">Quincaillerie · +33974560144</div>
+      
       <div class="etats">
         <button class="et" data-e="ok" type="button">Envoyable</button>
         <button class="et" data-e="fix" type="button">À corriger</button>
@@ -305,6 +332,8 @@ a.retour:hover{color:var(--or)}
     </div>
   </article>
   <article class="carte" data-dir="blue-peche-au-gros" data-etat="ok" data-flag="0"
+    data-resp="0"
+    data-verdict=""
     data-k="blue — pêche au gros pêche · loisirs blue-peche-au-gros">
     <div class="vue">
       <img class="apres" src="vignettes/blue-peche-au-gros.jpg" alt="Aperçu de BLUE — Pêche au gros" loading="lazy">
@@ -326,6 +355,7 @@ a.retour:hover{color:var(--or)}
     <div class="corps">
       <div class="nom">BLUE — Pêche au gros</div>
       <div class="meta">Pêche · Loisirs · +262692609010</div>
+      
       <div class="etats">
         <button class="et" data-e="ok" type="button">Envoyable</button>
         <button class="et" data-e="fix" type="button">À corriger</button>
@@ -340,6 +370,8 @@ a.retour:hover{color:var(--or)}
     </div>
   </article>
   <article class="carte" data-dir="bygladcafe-optimisation-seo" data-etat="ok" data-flag="0"
+    data-resp="0"
+    data-verdict=""
     data-k="by glad café boulangerie · pâtisserie bygladcafe-optimisation-seo">
     <div class="vue">
       <img class="apres" src="vignettes/bygladcafe-optimisation-seo.jpg" alt="Aperçu de By Glad CAFÉ" loading="lazy">
@@ -361,6 +393,7 @@ a.retour:hover{color:var(--or)}
     <div class="corps">
       <div class="nom">By Glad CAFÉ</div>
       <div class="meta">Boulangerie · Pâtisserie · +262262417403</div>
+      
       <div class="etats">
         <button class="et" data-e="ok" type="button">Envoyable</button>
         <button class="et" data-e="fix" type="button">À corriger</button>
@@ -375,6 +408,8 @@ a.retour:hover{color:var(--or)}
     </div>
   </article>
   <article class="carte" data-dir="chemises-homme" data-etat="ok" data-flag="0"
+    data-resp="0"
+    data-verdict=""
     data-k="café coton réunion café chemises-homme">
     <div class="vue">
       <img class="apres" src="vignettes/chemises-homme.jpg" alt="Aperçu de Café Coton Réunion" loading="lazy">
@@ -400,6 +435,7 @@ a.retour:hover{color:var(--or)}
     <div class="corps">
       <div class="nom">Café Coton Réunion</div>
       <div class="meta">Café · +262262082942</div>
+      
       <div class="etats">
         <button class="et" data-e="ok" type="button">Envoyable</button>
         <button class="et" data-e="fix" type="button">À corriger</button>
@@ -414,6 +450,8 @@ a.retour:hover{color:var(--or)}
     </div>
   </article>
   <article class="carte" data-dir="centre-hospitalier-ouest-reunion" data-etat="fix" data-flag="0"
+    data-resp="0"
+    data-verdict=""
     data-k="centre hospitalier ouest réunion santé centre-hospitalier-ouest-reunion">
     <div class="vue">
       <img class="apres" src="vignettes/centre-hospitalier-ouest-reunion.jpg" alt="Aperçu de Centre Hospitalier Ouest Réunion" loading="lazy">
@@ -439,6 +477,7 @@ a.retour:hover{color:var(--or)}
     <div class="corps">
       <div class="nom">Centre Hospitalier Ouest Réunion</div>
       <div class="meta">Santé · 0262453030</div>
+      
       <div class="etats">
         <button class="et" data-e="ok" type="button">Envoyable</button>
         <button class="et" data-e="fix" type="button">À corriger</button>
@@ -453,6 +492,8 @@ a.retour:hover{color:var(--or)}
     </div>
   </article>
   <article class="carte" data-dir="centre-sante-sport-performance-la-reunion" data-etat="ok" data-flag="0"
+    data-resp="0"
+    data-verdict=""
     data-k="centre santé sport &amp;amp; performance santé centre-sante-sport-performance-la-reunion">
     <div class="vue">
       <img class="apres" src="vignettes/centre-sante-sport-performance-la-reunion.jpg" alt="Aperçu de Centre Santé Sport &amp;amp; Performance" loading="lazy">
@@ -478,6 +519,7 @@ a.retour:hover{color:var(--or)}
     <div class="corps">
       <div class="nom">Centre Santé Sport &amp;amp; Performance</div>
       <div class="meta">Santé · 0262781487</div>
+      
       <div class="etats">
         <button class="et" data-e="ok" type="button">Envoyable</button>
         <button class="et" data-e="fix" type="button">À corriger</button>
@@ -492,6 +534,8 @@ a.retour:hover{color:var(--or)}
     </div>
   </article>
   <article class="carte" data-dir="clicknvan-location-vans-campingcars-pro" data-etat="fix" data-flag="0"
+    data-resp="0"
+    data-verdict=""
     data-k="clicknvan location de véhicules clicknvan-location-vans-campingcars-pro">
     <div class="vue">
       <img class="apres" src="vignettes/clicknvan-location-vans-campingcars-pro.jpg" alt="Aperçu de CLICKnVAN" loading="lazy">
@@ -513,6 +557,7 @@ a.retour:hover{color:var(--or)}
     <div class="corps">
       <div class="nom">CLICKnVAN</div>
       <div class="meta">Location de véhicules</div>
+      
       <div class="etats">
         <button class="et" data-e="ok" type="button">Envoyable</button>
         <button class="et" data-e="fix" type="button">À corriger</button>
@@ -527,6 +572,8 @@ a.retour:hover{color:var(--or)}
     </div>
   </article>
   <article class="carte" data-dir="clicknvan-location-vans-campingcars" data-etat="abandon" data-flag="0"
+    data-resp="0"
+    data-verdict=""
     data-k="clicknvan (ancienne version) location de véhicules clicknvan-location-vans-campingcars">
     <div class="vue">
       <img class="apres" src="vignettes/clicknvan-location-vans-campingcars.jpg" alt="Aperçu de CLICKnVAN (ancienne version)" loading="lazy">
@@ -548,6 +595,7 @@ a.retour:hover{color:var(--or)}
     <div class="corps">
       <div class="nom">CLICKnVAN (ancienne version)</div>
       <div class="meta">Location de véhicules</div>
+      
       <div class="etats">
         <button class="et" data-e="ok" type="button">Envoyable</button>
         <button class="et" data-e="fix" type="button">À corriger</button>
@@ -562,6 +610,8 @@ a.retour:hover{color:var(--or)}
     </div>
   </article>
   <article class="carte" data-dir="club-cafe-la-reunion" data-etat="ok" data-flag="0"
+    data-resp="0"
+    data-verdict=""
     data-k="club café restauration club-cafe-la-reunion">
     <div class="vue">
       <img class="apres" src="vignettes/club-cafe-la-reunion.jpg" alt="Aperçu de Club Café" loading="lazy">
@@ -583,6 +633,7 @@ a.retour:hover{color:var(--or)}
     <div class="corps">
       <div class="nom">Club Café</div>
       <div class="meta">Restauration · +262692109181</div>
+      
       <div class="etats">
         <button class="et" data-e="ok" type="button">Envoyable</button>
         <button class="et" data-e="fix" type="button">À corriger</button>
@@ -597,6 +648,8 @@ a.retour:hover{color:var(--or)}
     </div>
   </article>
   <article class="carte" data-dir="dan-cake-patisserie" data-etat="ok" data-flag="0"
+    data-resp="0"
+    data-verdict=""
     data-k="dan cake boulangerie · pâtisserie dan-cake-patisserie">
     <div class="vue">
       <img class="apres" src="vignettes/dan-cake-patisserie.jpg" alt="Aperçu de Dan CaKe" loading="lazy">
@@ -618,6 +671,7 @@ a.retour:hover{color:var(--or)}
     <div class="corps">
       <div class="nom">Dan CaKe</div>
       <div class="meta">Boulangerie · Pâtisserie · +262692850959</div>
+      
       <div class="etats">
         <button class="et" data-e="ok" type="button">Envoyable</button>
         <button class="et" data-e="fix" type="button">À corriger</button>
@@ -632,6 +686,8 @@ a.retour:hover{color:var(--or)}
     </div>
   </article>
   <article class="carte" data-dir="engen-reunion-optimisation-seo" data-etat="ok" data-flag="0"
+    data-resp="0"
+    data-verdict=""
     data-k="engen réunion énergie engen-reunion-optimisation-seo">
     <div class="vue">
       <img class="apres" src="vignettes/engen-reunion-optimisation-seo.jpg" alt="Aperçu de Engen Réunion" loading="lazy">
@@ -653,6 +709,7 @@ a.retour:hover{color:var(--or)}
     <div class="corps">
       <div class="nom">Engen Réunion</div>
       <div class="meta">Énergie · +262262427676</div>
+      
       <div class="etats">
         <button class="et" data-e="ok" type="button">Envoyable</button>
         <button class="et" data-e="fix" type="button">À corriger</button>
@@ -667,6 +724,8 @@ a.retour:hover{color:var(--or)}
     </div>
   </article>
   <article class="carte" data-dir="freedom-la-reunion-actualites" data-etat="fix" data-flag="0"
+    data-resp="0"
+    data-verdict=""
     data-k="free dom média · presse freedom-la-reunion-actualites">
     <div class="vue">
       <img class="apres" src="vignettes/freedom-la-reunion-actualites.jpg" alt="Aperçu de Free Dom" loading="lazy">
@@ -688,6 +747,7 @@ a.retour:hover{color:var(--or)}
     <div class="corps">
       <div class="nom">Free Dom</div>
       <div class="meta">Média · Presse</div>
+      
       <div class="etats">
         <button class="et" data-e="ok" type="button">Envoyable</button>
         <button class="et" data-e="fix" type="button">À corriger</button>
@@ -702,6 +762,8 @@ a.retour:hover{color:var(--or)}
     </div>
   </article>
   <article class="carte" data-dir="optimisation-site-seo" data-etat="abandon" data-flag="0"
+    data-resp="0"
+    data-verdict=""
     data-k="gabarit seo « seo expert » — optimisation-site-seo">
     <div class="vue">
       <img class="apres" src="vignettes/optimisation-site-seo.jpg" alt="Aperçu de Gabarit SEO « SEO Expert »" loading="lazy">
@@ -727,6 +789,7 @@ a.retour:hover{color:var(--or)}
     <div class="corps">
       <div class="nom">Gabarit SEO « SEO Expert »</div>
       <div class="meta">—</div>
+      
       <div class="etats">
         <button class="et" data-e="ok" type="button">Envoyable</button>
         <button class="et" data-e="fix" type="button">À corriger</button>
@@ -741,6 +804,8 @@ a.retour:hover{color:var(--or)}
     </div>
   </article>
   <article class="carte" data-dir="optimisation-seo-site" data-etat="abandon" data-flag="0"
+    data-resp="0"
+    data-verdict=""
     data-k="gabarit seo « seo pro » — optimisation-seo-site">
     <div class="vue">
       <img class="apres" src="vignettes/optimisation-seo-site.jpg" alt="Aperçu de Gabarit SEO « SEO Pro »" loading="lazy">
@@ -766,6 +831,7 @@ a.retour:hover{color:var(--or)}
     <div class="corps">
       <div class="nom">Gabarit SEO « SEO Pro »</div>
       <div class="meta">—</div>
+      
       <div class="etats">
         <button class="et" data-e="ok" type="button">Envoyable</button>
         <button class="et" data-e="fix" type="button">À corriger</button>
@@ -780,6 +846,8 @@ a.retour:hover{color:var(--or)}
     </div>
   </article>
   <article class="carte" data-dir="seo-optimisation-site" data-etat="abandon" data-flag="0"
+    data-resp="0"
+    data-verdict=""
     data-k="gabarit seo « seopro » — seo-optimisation-site">
     <div class="vue">
       <img class="apres" src="vignettes/seo-optimisation-site.jpg" alt="Aperçu de Gabarit SEO « SEOPro »" loading="lazy">
@@ -805,6 +873,7 @@ a.retour:hover{color:var(--or)}
     <div class="corps">
       <div class="nom">Gabarit SEO « SEOPro »</div>
       <div class="meta">—</div>
+      
       <div class="etats">
         <button class="et" data-e="ok" type="button">Envoyable</button>
         <button class="et" data-e="fix" type="button">À corriger</button>
@@ -819,6 +888,8 @@ a.retour:hover{color:var(--or)}
     </div>
   </article>
   <article class="carte" data-dir="gep-sante-reunion" data-etat="ok" data-flag="0"
+    data-resp="0"
+    data-verdict=""
     data-k="gep santé réunion santé gep-sante-reunion">
     <div class="vue">
       <img class="apres" src="vignettes/gep-sante-reunion.jpg" alt="Aperçu de GEP Santé Réunion" loading="lazy">
@@ -844,6 +915,7 @@ a.retour:hover{color:var(--or)}
     <div class="corps">
       <div class="nom">GEP Santé Réunion</div>
       <div class="meta">Santé · 0262233826</div>
+      
       <div class="etats">
         <button class="et" data-e="ok" type="button">Envoyable</button>
         <button class="et" data-e="fix" type="button">À corriger</button>
@@ -858,6 +930,8 @@ a.retour:hover{color:var(--or)}
     </div>
   </article>
   <article class="carte" data-dir="gite-matilona-sainte-rose" data-etat="ok" data-flag="0"
+    data-resp="0"
+    data-verdict=""
     data-k="gîte matilona hébergement gite-matilona-sainte-rose">
     <div class="vue">
       <img class="apres" src="vignettes/gite-matilona-sainte-rose.jpg" alt="Aperçu de Gîte Matilona" loading="lazy">
@@ -879,6 +953,7 @@ a.retour:hover{color:var(--or)}
     <div class="corps">
       <div class="nom">Gîte Matilona</div>
       <div class="meta">Hébergement · +262692858686</div>
+      
       <div class="etats">
         <button class="et" data-e="ok" type="button">Envoyable</button>
         <button class="et" data-e="fix" type="button">À corriger</button>
@@ -893,6 +968,8 @@ a.retour:hover{color:var(--or)}
     </div>
   </article>
   <article class="carte" data-dir="giulietta-pizzeria-saint-pierre" data-etat="ok" data-flag="0"
+    data-resp="0"
+    data-verdict=""
     data-k="giulietta pizzeria giulietta-pizzeria-saint-pierre">
     <div class="vue">
       <img class="apres" src="vignettes/giulietta-pizzeria-saint-pierre.jpg" alt="Aperçu de Giulietta" loading="lazy">
@@ -914,6 +991,7 @@ a.retour:hover{color:var(--or)}
     <div class="corps">
       <div class="nom">Giulietta</div>
       <div class="meta">Pizzeria · 0262122019</div>
+      
       <div class="etats">
         <button class="et" data-e="ok" type="button">Envoyable</button>
         <button class="et" data-e="fix" type="button">À corriger</button>
@@ -928,6 +1006,8 @@ a.retour:hover{color:var(--or)}
     </div>
   </article>
   <article class="carte" data-dir="hotel-austral-saint-denis" data-etat="ok" data-flag="0"
+    data-resp="0"
+    data-verdict=""
     data-k="hôtel austral saint-denis hébergement hotel-austral-saint-denis">
     <div class="vue">
       <img class="apres" src="vignettes/hotel-austral-saint-denis.jpg" alt="Aperçu de Hôtel Austral Saint-Denis" loading="lazy">
@@ -949,6 +1029,7 @@ a.retour:hover{color:var(--or)}
     <div class="corps">
       <div class="nom">Hôtel Austral Saint-Denis</div>
       <div class="meta">Hébergement · +262262948000</div>
+      
       <div class="etats">
         <button class="et" data-e="ok" type="button">Envoyable</button>
         <button class="et" data-e="fix" type="button">À corriger</button>
@@ -963,6 +1044,8 @@ a.retour:hover{color:var(--or)}
     </div>
   </article>
   <article class="carte" data-dir="kmila-pizza-reunion" data-etat="ok" data-flag="0"
+    data-resp="0"
+    data-verdict=""
     data-k="k'mila pizza pizzeria kmila-pizza-reunion">
     <div class="vue">
       <img class="apres" src="vignettes/kmila-pizza-reunion.jpg" alt="Aperçu de K'Mila Pizza" loading="lazy">
@@ -988,6 +1071,7 @@ a.retour:hover{color:var(--or)}
     <div class="corps">
       <div class="nom">K'Mila Pizza</div>
       <div class="meta">Pizzeria · 0262718879</div>
+      
       <div class="etats">
         <button class="et" data-e="ok" type="button">Envoyable</button>
         <button class="et" data-e="fix" type="button">À corriger</button>
@@ -1002,6 +1086,8 @@ a.retour:hover{color:var(--or)}
     </div>
   </article>
   <article class="carte" data-dir="l-andalouse-saint-joseph" data-etat="ok" data-flag="0"
+    data-resp="0"
+    data-verdict=""
     data-k="l'andalouse à saint joseph pizzeria l-andalouse-saint-joseph">
     <div class="vue">
       <img class="apres" src="vignettes/l-andalouse-saint-joseph.jpg" alt="Aperçu de L'andalouse à Saint Joseph" loading="lazy">
@@ -1027,6 +1113,7 @@ a.retour:hover{color:var(--or)}
     <div class="corps">
       <div class="nom">L'andalouse à Saint Joseph</div>
       <div class="meta">Pizzeria · 0262982312</div>
+      
       <div class="etats">
         <button class="et" data-e="ok" type="button">Envoyable</button>
         <button class="et" data-e="fix" type="button">À corriger</button>
@@ -1041,6 +1128,8 @@ a.retour:hover{color:var(--or)}
     </div>
   </article>
   <article class="carte" data-dir="latelier-de-ben-optimisation-seo" data-etat="abandon" data-flag="0"
+    data-resp="0"
+    data-verdict=""
     data-k="l'atelier de ben (doublon) — latelier-de-ben-optimisation-seo">
     <div class="vue">
       <img class="apres" src="vignettes/latelier-de-ben-optimisation-seo.jpg" alt="Aperçu de L'Atelier de Ben (doublon)" loading="lazy">
@@ -1062,6 +1151,7 @@ a.retour:hover{color:var(--or)}
     <div class="corps">
       <div class="nom">L'Atelier de Ben (doublon)</div>
       <div class="meta">—</div>
+      
       <div class="etats">
         <button class="et" data-e="ok" type="button">Envoyable</button>
         <button class="et" data-e="fix" type="button">À corriger</button>
@@ -1076,6 +1166,8 @@ a.retour:hover{color:var(--or)}
     </div>
   </article>
   <article class="carte" data-dir="latelier-traiteur-reunion" data-etat="fix" data-flag="0"
+    data-resp="0"
+    data-verdict=""
     data-k="l'atelier traiteur traiteur latelier-traiteur-reunion">
     <div class="vue">
       <img class="apres" src="vignettes/latelier-traiteur-reunion.jpg" alt="Aperçu de L'Atelier Traiteur" loading="lazy">
@@ -1097,6 +1189,7 @@ a.retour:hover{color:var(--or)}
     <div class="corps">
       <div class="nom">L'Atelier Traiteur</div>
       <div class="meta">Traiteur · +262692979730</div>
+      
       <div class="etats">
         <button class="et" data-e="ok" type="button">Envoyable</button>
         <button class="et" data-e="fix" type="button">À corriger</button>
@@ -1111,6 +1204,8 @@ a.retour:hover{color:var(--or)}
     </div>
   </article>
   <article class="carte" data-dir="latelier-traiteur-la-reunion" data-etat="fix" data-flag="0"
+    data-resp="0"
+    data-verdict=""
     data-k="l'atelier traiteur (doublon) traiteur latelier-traiteur-la-reunion">
     <div class="vue">
       <img class="apres" src="vignettes/latelier-traiteur-la-reunion.jpg" alt="Aperçu de L'Atelier Traiteur (doublon)" loading="lazy">
@@ -1136,6 +1231,7 @@ a.retour:hover{color:var(--or)}
     <div class="corps">
       <div class="nom">L'Atelier Traiteur (doublon)</div>
       <div class="meta">Traiteur · +262692979730</div>
+      
       <div class="etats">
         <button class="et" data-e="ok" type="button">Envoyable</button>
         <button class="et" data-e="fix" type="button">À corriger</button>
@@ -1150,6 +1246,8 @@ a.retour:hover{color:var(--or)}
     </div>
   </article>
   <article class="carte" data-dir="limperiale-kazumi-re" data-etat="fix" data-flag="0"
+    data-resp="0"
+    data-verdict=""
     data-k="l'impériale kazumi pizzeria limperiale-kazumi-re">
     <div class="vue">
       <img class="apres" src="vignettes/limperiale-kazumi-re.jpg" alt="Aperçu de L'Impériale Kazumi" loading="lazy">
@@ -1175,6 +1273,7 @@ a.retour:hover{color:var(--or)}
     <div class="corps">
       <div class="nom">L'Impériale Kazumi</div>
       <div class="meta">Pizzeria · 0693940380</div>
+      
       <div class="etats">
         <button class="et" data-e="ok" type="button">Envoyable</button>
         <button class="et" data-e="fix" type="button">À corriger</button>
@@ -1189,6 +1288,8 @@ a.retour:hover{color:var(--or)}
     </div>
   </article>
   <article class="carte" data-dir="educateur-canin-la-reunion" data-etat="ok" data-flag="0"
+    data-resp="0"
+    data-verdict=""
     data-k="la bande à clem services animaliers educateur-canin-la-reunion">
     <div class="vue">
       <img class="apres" src="vignettes/educateur-canin-la-reunion.jpg" alt="Aperçu de La bande à Clem" loading="lazy">
@@ -1214,6 +1315,7 @@ a.retour:hover{color:var(--or)}
     <div class="corps">
       <div class="nom">La bande à Clem</div>
       <div class="meta">Services animaliers · +33787249794</div>
+      
       <div class="etats">
         <button class="et" data-e="ok" type="button">Envoyable</button>
         <button class="et" data-e="fix" type="button">À corriger</button>
@@ -1228,6 +1330,8 @@ a.retour:hover{color:var(--or)}
     </div>
   </article>
   <article class="carte" data-dir="la-casa-blanca" data-etat="ok" data-flag="0"
+    data-resp="0"
+    data-verdict=""
     data-k="la casa blanca — la-casa-blanca">
     <div class="vue">
       <img class="apres" src="vignettes/la-casa-blanca.jpg" alt="Aperçu de La Casa Blanca" loading="lazy">
@@ -1249,6 +1353,7 @@ a.retour:hover{color:var(--or)}
     <div class="corps">
       <div class="nom">La Casa Blanca</div>
       <div class="meta">— · +262262735090</div>
+      
       <div class="etats">
         <button class="et" data-e="ok" type="button">Envoyable</button>
         <button class="et" data-e="fix" type="button">À corriger</button>
@@ -1263,6 +1368,8 @@ a.retour:hover{color:var(--or)}
     </div>
   </article>
   <article class="carte" data-dir="lagare-brasserie-optimisation-seo" data-etat="ok" data-flag="0"
+    data-resp="0"
+    data-verdict=""
     data-k="la gare brasserie restauration lagare-brasserie-optimisation-seo">
     <div class="vue">
       <img class="apres" src="vignettes/lagare-brasserie-optimisation-seo.jpg" alt="Aperçu de La Gare Brasserie" loading="lazy">
@@ -1284,6 +1391,7 @@ a.retour:hover{color:var(--or)}
     <div class="corps">
       <div class="nom">La Gare Brasserie</div>
       <div class="meta">Restauration · +262262744973</div>
+      
       <div class="etats">
         <button class="et" data-e="ok" type="button">Envoyable</button>
         <button class="et" data-e="fix" type="button">À corriger</button>
@@ -1298,6 +1406,8 @@ a.retour:hover{color:var(--or)}
     </div>
   </article>
   <article class="carte" data-dir="la-kantine-traiteur-oriental" data-etat="fix" data-flag="0"
+    data-resp="0"
+    data-verdict=""
     data-k="la kantine — traiteur oriental traiteur la-kantine-traiteur-oriental">
     <div class="vue">
       <img class="apres" src="vignettes/la-kantine-traiteur-oriental.jpg" alt="Aperçu de LA KANTINE — traiteur oriental" loading="lazy">
@@ -1319,6 +1429,7 @@ a.retour:hover{color:var(--or)}
     <div class="corps">
       <div class="nom">LA KANTINE — traiteur oriental</div>
       <div class="meta">Traiteur</div>
+      
       <div class="etats">
         <button class="et" data-e="ok" type="button">Envoyable</button>
         <button class="et" data-e="fix" type="button">À corriger</button>
@@ -1333,6 +1444,8 @@ a.retour:hover{color:var(--or)}
     </div>
   </article>
   <article class="carte" data-dir="la-kantine-optimisation-seo" data-etat="fix" data-flag="0"
+    data-resp="0"
+    data-verdict=""
     data-k="la kantine (doublon seo) traiteur la-kantine-optimisation-seo">
     <div class="vue">
       <img class="apres" src="vignettes/la-kantine-optimisation-seo.jpg" alt="Aperçu de LA KANTINE (doublon SEO)" loading="lazy">
@@ -1354,6 +1467,7 @@ a.retour:hover{color:var(--or)}
     <div class="corps">
       <div class="nom">LA KANTINE (doublon SEO)</div>
       <div class="meta">Traiteur</div>
+      
       <div class="etats">
         <button class="et" data-e="ok" type="button">Envoyable</button>
         <button class="et" data-e="fix" type="button">À corriger</button>
@@ -1368,6 +1482,8 @@ a.retour:hover{color:var(--or)}
     </div>
   </article>
   <article class="carte" data-dir="la-kantine-traiteur" data-etat="fix" data-flag="0"
+    data-resp="0"
+    data-verdict=""
     data-k="la kantine (doublon) traiteur la-kantine-traiteur">
     <div class="vue">
       <img class="apres" src="vignettes/la-kantine-traiteur.jpg" alt="Aperçu de LA KANTINE (doublon)" loading="lazy">
@@ -1393,6 +1509,7 @@ a.retour:hover{color:var(--or)}
     <div class="corps">
       <div class="nom">LA KANTINE (doublon)</div>
       <div class="meta">Traiteur</div>
+      
       <div class="etats">
         <button class="et" data-e="ok" type="button">Envoyable</button>
         <button class="et" data-e="fix" type="button">À corriger</button>
@@ -1407,6 +1524,8 @@ a.retour:hover{color:var(--or)}
     </div>
   </article>
   <article class="carte" data-dir="koytcha-conseil-landing-premium" data-etat="fix" data-flag="0"
+    data-resp="0"
+    data-verdict=""
     data-k="laplace / koytcha conseil immobilier · conseil koytcha-conseil-landing-premium">
     <div class="vue">
       <img class="apres" src="vignettes/koytcha-conseil-landing-premium.jpg" alt="Aperçu de Laplace / Koytcha Conseil" loading="lazy">
@@ -1432,6 +1551,7 @@ a.retour:hover{color:var(--or)}
     <div class="corps">
       <div class="nom">Laplace / Koytcha Conseil</div>
       <div class="meta">Immobilier · Conseil · +262262979607</div>
+      
       <div class="etats">
         <button class="et" data-e="ok" type="button">Envoyable</button>
         <button class="et" data-e="fix" type="button">À corriger</button>
@@ -1446,6 +1566,8 @@ a.retour:hover{color:var(--or)}
     </div>
   </article>
   <article class="carte" data-dir="le-bao-restaurant-saint-pierre-974" data-etat="ok" data-flag="0"
+    data-resp="0"
+    data-verdict=""
     data-k="le bào restauration le-bao-restaurant-saint-pierre-974">
     <div class="vue">
       <img class="apres" src="vignettes/le-bao-restaurant-saint-pierre-974.jpg" alt="Aperçu de Le BàO" loading="lazy">
@@ -1471,6 +1593,7 @@ a.retour:hover{color:var(--or)}
     <div class="corps">
       <div class="nom">Le BàO</div>
       <div class="meta">Restauration · +262262248201</div>
+      
       <div class="etats">
         <button class="et" data-e="ok" type="button">Envoyable</button>
         <button class="et" data-e="fix" type="button">À corriger</button>
@@ -1485,6 +1608,8 @@ a.retour:hover{color:var(--or)}
     </div>
   </article>
   <article class="carte" data-dir="le-bonbon-de-pain" data-etat="ok" data-flag="0"
+    data-resp="0"
+    data-verdict=""
     data-k="le bonbon de pain boulangerie · pâtisserie le-bonbon-de-pain">
     <div class="vue">
       <img class="apres" src="vignettes/le-bonbon-de-pain.jpg" alt="Aperçu de Le Bonbon de Pain" loading="lazy">
@@ -1506,6 +1631,7 @@ a.retour:hover{color:var(--or)}
     <div class="corps">
       <div class="nom">Le Bonbon de Pain</div>
       <div class="meta">Boulangerie · Pâtisserie</div>
+      
       <div class="etats">
         <button class="et" data-e="ok" type="button">Envoyable</button>
         <button class="et" data-e="fix" type="button">À corriger</button>
@@ -1520,6 +1646,8 @@ a.retour:hover{color:var(--or)}
     </div>
   </article>
   <article class="carte" data-dir="restaurant-creole-lecaritologue" data-etat="fix" data-flag="0"
+    data-resp="0"
+    data-verdict=""
     data-k="le caritologue restauration restaurant-creole-lecaritologue">
     <div class="vue">
       <img class="apres" src="vignettes/restaurant-creole-lecaritologue.jpg" alt="Aperçu de LE CARITOLOGUE" loading="lazy">
@@ -1541,6 +1669,7 @@ a.retour:hover{color:var(--or)}
     <div class="corps">
       <div class="nom">LE CARITOLOGUE</div>
       <div class="meta">Restauration · +262692799992</div>
+      
       <div class="etats">
         <button class="et" data-e="ok" type="button">Envoyable</button>
         <button class="et" data-e="fix" type="button">À corriger</button>
@@ -1555,6 +1684,8 @@ a.retour:hover{color:var(--or)}
     </div>
   </article>
   <article class="carte" data-dir="le-comptoir-saint-michel-nancy" data-etat="ok" data-flag="0"
+    data-resp="0"
+    data-verdict=""
     data-k="le comptoir saint michel restauration le-comptoir-saint-michel-nancy">
     <div class="vue">
       <img class="apres" src="vignettes/le-comptoir-saint-michel-nancy.jpg" alt="Aperçu de Le Comptoir Saint Michel" loading="lazy">
@@ -1576,6 +1707,7 @@ a.retour:hover{color:var(--or)}
     <div class="corps">
       <div class="nom">Le Comptoir Saint Michel</div>
       <div class="meta">Restauration · +33355400399</div>
+      
       <div class="etats">
         <button class="et" data-e="ok" type="button">Envoyable</button>
         <button class="et" data-e="fix" type="button">À corriger</button>
@@ -1590,6 +1722,8 @@ a.retour:hover{color:var(--or)}
     </div>
   </article>
   <article class="carte" data-dir="le-glacier-de-marie-b" data-etat="ok" data-flag="0"
+    data-resp="0"
+    data-verdict=""
     data-k="le glacier de marie b boulangerie · pâtisserie le-glacier-de-marie-b">
     <div class="vue">
       <img class="apres" src="vignettes/le-glacier-de-marie-b.jpg" alt="Aperçu de Le Glacier de Marie B" loading="lazy">
@@ -1615,6 +1749,7 @@ a.retour:hover{color:var(--or)}
     <div class="corps">
       <div class="nom">Le Glacier de Marie B</div>
       <div class="meta">Boulangerie · Pâtisserie · 0262245306</div>
+      
       <div class="etats">
         <button class="et" data-e="ok" type="button">Envoyable</button>
         <button class="et" data-e="fix" type="button">À corriger</button>
@@ -1629,6 +1764,8 @@ a.retour:hover{color:var(--or)}
     </div>
   </article>
   <article class="carte" data-dir="contact-le-gourmand" data-etat="ok" data-flag="0"
+    data-resp="0"
+    data-verdict=""
     data-k="le gourmand formation contact-le-gourmand">
     <div class="vue">
       <img class="apres" src="vignettes/contact-le-gourmand.jpg" alt="Aperçu de Le Gourmand" loading="lazy">
@@ -1650,6 +1787,7 @@ a.retour:hover{color:var(--or)}
     <div class="corps">
       <div class="nom">Le Gourmand</div>
       <div class="meta">Formation · +262262599853</div>
+      
       <div class="etats">
         <button class="et" data-e="ok" type="button">Envoyable</button>
         <button class="et" data-e="fix" type="button">À corriger</button>
@@ -1664,6 +1802,8 @@ a.retour:hover{color:var(--or)}
     </div>
   </article>
   <article class="carte" data-dir="le-majeur-nancy" data-etat="ok" data-flag="0"
+    data-resp="0"
+    data-verdict=""
     data-k="le majeur 2.0 restauration le-majeur-nancy">
     <div class="vue">
       <img class="apres" src="vignettes/le-majeur-nancy.jpg" alt="Aperçu de Le Majeur 2.0" loading="lazy">
@@ -1685,6 +1825,7 @@ a.retour:hover{color:var(--or)}
     <div class="corps">
       <div class="nom">Le Majeur 2.0</div>
       <div class="meta">Restauration · +33951135394</div>
+      
       <div class="etats">
         <button class="et" data-e="ok" type="button">Envoyable</button>
         <button class="et" data-e="fix" type="button">À corriger</button>
@@ -1699,6 +1840,8 @@ a.retour:hover{color:var(--or)}
     </div>
   </article>
   <article class="carte" data-dir="boulangerie-le-mamita" data-etat="ok" data-flag="0"
+    data-resp="0"
+    data-verdict=""
     data-k="le mamita boulangerie · pâtisserie boulangerie-le-mamita">
     <div class="vue">
       <img class="apres" src="vignettes/boulangerie-le-mamita.jpg" alt="Aperçu de Le Mamita" loading="lazy">
@@ -1720,6 +1863,7 @@ a.retour:hover{color:var(--or)}
     <div class="corps">
       <div class="nom">Le Mamita</div>
       <div class="meta">Boulangerie · Pâtisserie · +262262212107</div>
+      
       <div class="etats">
         <button class="et" data-e="ok" type="button">Envoyable</button>
         <button class="et" data-e="fix" type="button">À corriger</button>
@@ -1734,6 +1878,8 @@ a.retour:hover{color:var(--or)}
     </div>
   </article>
   <article class="carte" data-dir="relais-des-cimes" data-etat="ok" data-flag="0"
+    data-resp="0"
+    data-verdict=""
     data-k="le relais des cimes hébergement relais-des-cimes">
     <div class="vue">
       <img class="apres" src="vignettes/relais-des-cimes.jpg" alt="Aperçu de Le Relais des Cimes" loading="lazy">
@@ -1755,6 +1901,7 @@ a.retour:hover{color:var(--or)}
     <div class="corps">
       <div class="nom">Le Relais des Cimes</div>
       <div class="meta">Hébergement · +262262478158</div>
+      
       <div class="etats">
         <button class="et" data-e="ok" type="button">Envoyable</button>
         <button class="et" data-e="fix" type="button">À corriger</button>
@@ -1769,6 +1916,8 @@ a.retour:hover{color:var(--or)}
     </div>
   </article>
   <article class="carte" data-dir="restaurant-franco-portugais-coulommiers" data-etat="ok" data-flag="0"
+    data-resp="0"
+    data-verdict=""
     data-k="le saint-pierre — coulommiers restauration restaurant-franco-portugais-coulommiers">
     <div class="vue">
       <img class="apres" src="vignettes/restaurant-franco-portugais-coulommiers.jpg" alt="Aperçu de Le Saint-Pierre — Coulommiers" loading="lazy">
@@ -1794,6 +1943,7 @@ a.retour:hover{color:var(--or)}
     <div class="corps">
       <div class="nom">Le Saint-Pierre — Coulommiers</div>
       <div class="meta">Restauration · +33974562539</div>
+      
       <div class="etats">
         <button class="et" data-e="ok" type="button">Envoyable</button>
         <button class="et" data-e="fix" type="button">À corriger</button>
@@ -1808,6 +1958,8 @@ a.retour:hover{color:var(--or)}
     </div>
   </article>
   <article class="carte" data-dir="le-somet-by-nono" data-etat="ok" data-flag="0"
+    data-resp="0"
+    data-verdict=""
     data-k="le so'met by nono restauration le-somet-by-nono">
     <div class="vue">
       <img class="apres" src="vignettes/le-somet-by-nono.jpg" alt="Aperçu de Le So'Met By Nono" loading="lazy">
@@ -1833,6 +1985,7 @@ a.retour:hover{color:var(--or)}
     <div class="corps">
       <div class="nom">Le So'Met By Nono</div>
       <div class="meta">Restauration · +262692765119</div>
+      
       <div class="etats">
         <button class="et" data-e="ok" type="button">Envoyable</button>
         <button class="et" data-e="fix" type="button">À corriger</button>
@@ -1847,6 +2000,8 @@ a.retour:hover{color:var(--or)}
     </div>
   </article>
   <article class="carte" data-dir="vieux-pressoir" data-etat="abandon" data-flag="0"
+    data-resp="0"
+    data-verdict=""
     data-k="le vieux pressoir restauration vieux-pressoir">
     <div class="vue">
       <img class="apres" src="vignettes/vieux-pressoir.jpg" alt="Aperçu de Le Vieux Pressoir" loading="lazy">
@@ -1872,6 +2027,7 @@ a.retour:hover{color:var(--or)}
     <div class="corps">
       <div class="nom">Le Vieux Pressoir</div>
       <div class="meta">Restauration</div>
+      
       <div class="etats">
         <button class="et" data-e="ok" type="button">Envoyable</button>
         <button class="et" data-e="fix" type="button">À corriger</button>
@@ -1886,6 +2042,8 @@ a.retour:hover{color:var(--or)}
     </div>
   </article>
   <article class="carte" data-dir="le786-halal-commande-en-ligne" data-etat="fix" data-flag="0"
+    data-resp="0"
+    data-verdict=""
     data-k="le786 — le786-halal-commande-en-ligne">
     <div class="vue">
       <img class="apres" src="vignettes/le786-halal-commande-en-ligne.jpg" alt="Aperçu de Le786" loading="lazy">
@@ -1911,6 +2069,7 @@ a.retour:hover{color:var(--or)}
     <div class="corps">
       <div class="nom">Le786</div>
       <div class="meta">—</div>
+      
       <div class="etats">
         <button class="et" data-e="ok" type="button">Envoyable</button>
         <button class="et" data-e="fix" type="button">À corriger</button>
@@ -1925,6 +2084,8 @@ a.retour:hover{color:var(--or)}
     </div>
   </article>
   <article class="carte" data-dir="lespetitesmainsdelisa-optimized" data-etat="abandon" data-flag="0"
+    data-resp="0"
+    data-verdict=""
     data-k="les petites mains de lisa — lespetitesmainsdelisa-optimized">
     <div class="vue">
       <img class="apres" src="vignettes/lespetitesmainsdelisa-optimized.jpg" alt="Aperçu de Les Petites Mains de Lisa" loading="lazy">
@@ -1950,6 +2111,7 @@ a.retour:hover{color:var(--or)}
     <div class="corps">
       <div class="nom">Les Petites Mains de Lisa</div>
       <div class="meta">—</div>
+      
       <div class="etats">
         <button class="et" data-e="ok" type="button">Envoyable</button>
         <button class="et" data-e="fix" type="button">À corriger</button>
@@ -1964,6 +2126,8 @@ a.retour:hover{color:var(--or)}
     </div>
   </article>
   <article class="carte" data-dir="guide-peche-mouche-reunion-verdon-alpes" data-etat="ok" data-flag="0"
+    data-resp="0"
+    data-verdict=""
     data-k="les sens de la rivière pêche · loisirs guide-peche-mouche-reunion-verdon-alpes">
     <div class="vue">
       <img class="apres" src="vignettes/guide-peche-mouche-reunion-verdon-alpes.jpg" alt="Aperçu de Les Sens de la Rivière" loading="lazy">
@@ -1989,6 +2153,7 @@ a.retour:hover{color:var(--or)}
     <div class="corps">
       <div class="nom">Les Sens de la Rivière</div>
       <div class="meta">Pêche · Loisirs</div>
+      
       <div class="etats">
         <button class="et" data-e="ok" type="button">Envoyable</button>
         <button class="et" data-e="fix" type="button">À corriger</button>
@@ -2003,6 +2168,8 @@ a.retour:hover{color:var(--or)}
     </div>
   </article>
   <article class="carte" data-dir="photographe-immobilier-reunion" data-etat="abandon" data-flag="0"
+    data-resp="0"
+    data-verdict=""
     data-k="ludovic riviere immobilier · conseil photographe-immobilier-reunion">
     <div class="vue">
       <img class="apres" src="vignettes/photographe-immobilier-reunion.jpg" alt="Aperçu de Ludovic RIVIERE" loading="lazy">
@@ -2028,6 +2195,7 @@ a.retour:hover{color:var(--or)}
     <div class="corps">
       <div class="nom">Ludovic RIVIERE</div>
       <div class="meta">Immobilier · Conseil</div>
+      
       <div class="etats">
         <button class="et" data-e="ok" type="button">Envoyable</button>
         <button class="et" data-e="fix" type="button">À corriger</button>
@@ -2042,6 +2210,8 @@ a.retour:hover{color:var(--or)}
     </div>
   </article>
   <article class="carte" data-dir="mamzelle-pizza-ile-de-la-reunion" data-etat="fix" data-flag="0"
+    data-resp="0"
+    data-verdict=""
     data-k="mam'zelle pizza pizzeria mamzelle-pizza-ile-de-la-reunion">
     <div class="vue">
       <img class="apres" src="vignettes/mamzelle-pizza-ile-de-la-reunion.jpg" alt="Aperçu de Mam'Zelle Pizza" loading="lazy">
@@ -2063,6 +2233,7 @@ a.retour:hover{color:var(--or)}
     <div class="corps">
       <div class="nom">Mam'Zelle Pizza</div>
       <div class="meta">Pizzeria · 0262028442</div>
+      
       <div class="etats">
         <button class="et" data-e="ok" type="button">Envoyable</button>
         <button class="et" data-e="fix" type="button">À corriger</button>
@@ -2077,6 +2248,8 @@ a.retour:hover{color:var(--or)}
     </div>
   </article>
   <article class="carte" data-dir="mamzelle-pizza-ile-reunion" data-etat="fix" data-flag="0"
+    data-resp="0"
+    data-verdict=""
     data-k="mam'zelle pizza (doublon) pizzeria mamzelle-pizza-ile-reunion">
     <div class="vue">
       <img class="apres" src="vignettes/mamzelle-pizza-ile-reunion.jpg" alt="Aperçu de Mam'Zelle Pizza (doublon)" loading="lazy">
@@ -2102,6 +2275,7 @@ a.retour:hover{color:var(--or)}
     <div class="corps">
       <div class="nom">Mam'Zelle Pizza (doublon)</div>
       <div class="meta">Pizzeria · +262262028442</div>
+      
       <div class="etats">
         <button class="et" data-e="ok" type="button">Envoyable</button>
         <button class="et" data-e="fix" type="button">À corriger</button>
@@ -2116,6 +2290,8 @@ a.retour:hover{color:var(--or)}
     </div>
   </article>
   <article class="carte" data-dir="mamzelle-pizza-optimisation" data-etat="fix" data-flag="0"
+    data-resp="0"
+    data-verdict=""
     data-k="mam'zelle pizza (doublon) pizzeria mamzelle-pizza-optimisation">
     <div class="vue">
       <img class="apres" src="vignettes/mamzelle-pizza-optimisation.jpg" alt="Aperçu de Mam'Zelle Pizza (doublon)" loading="lazy">
@@ -2137,6 +2313,7 @@ a.retour:hover{color:var(--or)}
     <div class="corps">
       <div class="nom">Mam'Zelle Pizza (doublon)</div>
       <div class="meta">Pizzeria · 0262028442</div>
+      
       <div class="etats">
         <button class="et" data-e="ok" type="button">Envoyable</button>
         <button class="et" data-e="fix" type="button">À corriger</button>
@@ -2151,6 +2328,8 @@ a.retour:hover{color:var(--or)}
     </div>
   </article>
   <article class="carte" data-dir="marie-blachere-possession" data-etat="ok" data-flag="0"
+    data-resp="0"
+    data-verdict=""
     data-k="marie blachère — la possession boulangerie · pâtisserie marie-blachere-possession">
     <div class="vue">
       <img class="apres" src="vignettes/marie-blachere-possession.jpg" alt="Aperçu de Marie Blachère — La Possession" loading="lazy">
@@ -2172,6 +2351,7 @@ a.retour:hover{color:var(--or)}
     <div class="corps">
       <div class="nom">Marie Blachère — La Possession</div>
       <div class="meta">Boulangerie · Pâtisserie</div>
+      
       <div class="etats">
         <button class="et" data-e="ok" type="button">Envoyable</button>
         <button class="et" data-e="fix" type="button">À corriger</button>
@@ -2186,6 +2366,8 @@ a.retour:hover{color:var(--or)}
     </div>
   </article>
   <article class="carte" data-dir="mediterraneo-restaurant-italien-saint-denis" data-etat="ok" data-flag="0"
+    data-resp="0"
+    data-verdict=""
     data-k="mediterraneo restauration mediterraneo-restaurant-italien-saint-denis">
     <div class="vue">
       <img class="apres" src="vignettes/mediterraneo-restaurant-italien-saint-denis.jpg" alt="Aperçu de Mediterraneo" loading="lazy">
@@ -2207,6 +2389,7 @@ a.retour:hover{color:var(--or)}
     <div class="corps">
       <div class="nom">Mediterraneo</div>
       <div class="meta">Restauration · +262262134702</div>
+      
       <div class="etats">
         <button class="et" data-e="ok" type="button">Envoyable</button>
         <button class="et" data-e="fix" type="button">À corriger</button>
@@ -2221,6 +2404,8 @@ a.retour:hover{color:var(--or)}
     </div>
   </article>
   <article class="carte" data-dir="resto-automatisationboost" data-etat="abandon" data-flag="0"
+    data-resp="0"
+    data-verdict=""
     data-k="menuauto (produit interne) restauration resto-automatisationboost">
     <div class="vue">
       <img class="apres" src="vignettes/resto-automatisationboost.jpg" alt="Aperçu de MenuAuto (produit interne)" loading="lazy">
@@ -2246,6 +2431,7 @@ a.retour:hover{color:var(--or)}
     <div class="corps">
       <div class="nom">MenuAuto (produit interne)</div>
       <div class="meta">Restauration</div>
+      
       <div class="etats">
         <button class="et" data-e="ok" type="button">Envoyable</button>
         <button class="et" data-e="fix" type="button">À corriger</button>
@@ -2260,6 +2446,8 @@ a.retour:hover{color:var(--or)}
     </div>
   </article>
   <article class="carte" data-dir="metisse-reception-saint-pierre" data-etat="ok" data-flag="0"
+    data-resp="0"
+    data-verdict=""
     data-k="métisse réception événementiel metisse-reception-saint-pierre">
     <div class="vue">
       <img class="apres" src="vignettes/metisse-reception-saint-pierre.jpg" alt="Aperçu de Métisse Réception" loading="lazy">
@@ -2281,6 +2469,7 @@ a.retour:hover{color:var(--or)}
     <div class="corps">
       <div class="nom">Métisse Réception</div>
       <div class="meta">Événementiel · +262692727736</div>
+      
       <div class="etats">
         <button class="et" data-e="ok" type="button">Envoyable</button>
         <button class="et" data-e="fix" type="button">À corriger</button>
@@ -2295,6 +2484,8 @@ a.retour:hover{color:var(--or)}
     </div>
   </article>
   <article class="carte" data-dir="mio-pizza-la-reunion" data-etat="ok" data-flag="0"
+    data-resp="0"
+    data-verdict=""
     data-k="mio pizza pizzeria mio-pizza-la-reunion">
     <div class="vue">
       <img class="apres" src="vignettes/mio-pizza-la-reunion.jpg" alt="Aperçu de MIO Pizza" loading="lazy">
@@ -2316,6 +2507,7 @@ a.retour:hover{color:var(--or)}
     <div class="corps">
       <div class="nom">MIO Pizza</div>
       <div class="meta">Pizzeria · +262262240011</div>
+      
       <div class="etats">
         <button class="et" data-e="ok" type="button">Envoyable</button>
         <button class="et" data-e="fix" type="button">À corriger</button>
@@ -2330,6 +2522,8 @@ a.retour:hover{color:var(--or)}
     </div>
   </article>
   <article class="carte" data-dir="mrservices-optimized" data-etat="abandon" data-flag="0"
+    data-resp="0"
+    data-verdict=""
     data-k="mr services — mrservices-optimized">
     <div class="vue">
       <img class="apres" src="vignettes/mrservices-optimized.jpg" alt="Aperçu de Mr Services" loading="lazy">
@@ -2355,6 +2549,7 @@ a.retour:hover{color:var(--or)}
     <div class="corps">
       <div class="nom">Mr Services</div>
       <div class="meta">—</div>
+      
       <div class="etats">
         <button class="et" data-e="ok" type="button">Envoyable</button>
         <button class="et" data-e="fix" type="button">À corriger</button>
@@ -2369,6 +2564,8 @@ a.retour:hover{color:var(--or)}
     </div>
   </article>
   <article class="carte" data-dir="ofim-reunion" data-etat="fix" data-flag="0"
+    data-resp="0"
+    data-verdict=""
     data-k="ofim réunion immobilier · conseil ofim-reunion">
     <div class="vue">
       <img class="apres" src="vignettes/ofim-reunion.jpg" alt="Aperçu de OFIM Réunion" loading="lazy">
@@ -2394,6 +2591,7 @@ a.retour:hover{color:var(--or)}
     <div class="corps">
       <div class="nom">OFIM Réunion</div>
       <div class="meta">Immobilier · Conseil</div>
+      
       <div class="etats">
         <button class="et" data-e="ok" type="button">Envoyable</button>
         <button class="et" data-e="fix" type="button">À corriger</button>
@@ -2408,6 +2606,8 @@ a.retour:hover{color:var(--or)}
     </div>
   </article>
   <article class="carte" data-dir="osmose-saint-pierre" data-etat="ok" data-flag="0"
+    data-resp="0"
+    data-verdict=""
     data-k="osmose bistro restauration osmose-saint-pierre">
     <div class="vue">
       <img class="apres" src="vignettes/osmose-saint-pierre.jpg" alt="Aperçu de Osmose Bistro" loading="lazy">
@@ -2429,6 +2629,7 @@ a.retour:hover{color:var(--or)}
     <div class="corps">
       <div class="nom">Osmose Bistro</div>
       <div class="meta">Restauration · +262693628829</div>
+      
       <div class="etats">
         <button class="et" data-e="ok" type="button">Envoyable</button>
         <button class="et" data-e="fix" type="button">À corriger</button>
@@ -2443,6 +2644,8 @@ a.retour:hover{color:var(--or)}
     </div>
   </article>
   <article class="carte" data-dir="peche-au-gros-reunion" data-etat="abandon" data-flag="0"
+    data-resp="0"
+    data-verdict=""
     data-k="pêche au gros réunion pêche · loisirs peche-au-gros-reunion">
     <div class="vue">
       <img class="apres" src="vignettes/peche-au-gros-reunion.jpg" alt="Aperçu de Pêche au Gros Réunion" loading="lazy">
@@ -2468,6 +2671,7 @@ a.retour:hover{color:var(--or)}
     <div class="corps">
       <div class="nom">Pêche au Gros Réunion</div>
       <div class="meta">Pêche · Loisirs</div>
+      
       <div class="etats">
         <button class="et" data-e="ok" type="button">Envoyable</button>
         <button class="et" data-e="fix" type="button">À corriger</button>
@@ -2482,6 +2686,8 @@ a.retour:hover{color:var(--or)}
     </div>
   </article>
   <article class="carte" data-dir="picard-moulin-la-possession" data-etat="fix" data-flag="0"
+    data-resp="0"
+    data-verdict=""
     data-k="picard moulin joli — la possession plats préparés picard-moulin-la-possession">
     <div class="vue">
       <img class="apres" src="vignettes/picard-moulin-la-possession.jpg" alt="Aperçu de Picard Moulin Joli — La Possession" loading="lazy">
@@ -2503,6 +2709,7 @@ a.retour:hover{color:var(--or)}
     <div class="corps">
       <div class="nom">Picard Moulin Joli — La Possession</div>
       <div class="meta">Plats préparés · +262262493202</div>
+      
       <div class="etats">
         <button class="et" data-e="ok" type="button">Envoyable</button>
         <button class="et" data-e="fix" type="button">À corriger</button>
@@ -2517,6 +2724,8 @@ a.retour:hover{color:var(--or)}
     </div>
   </article>
   <article class="carte" data-dir="pizza-club-saint-pierre" data-etat="ok" data-flag="0"
+    data-resp="0"
+    data-verdict=""
     data-k="pizza club saint-pierre pizzeria pizza-club-saint-pierre">
     <div class="vue">
       <img class="apres" src="vignettes/pizza-club-saint-pierre.jpg" alt="Aperçu de Pizza Club Saint-Pierre" loading="lazy">
@@ -2542,6 +2751,7 @@ a.retour:hover{color:var(--or)}
     <div class="corps">
       <div class="nom">Pizza Club Saint-Pierre</div>
       <div class="meta">Pizzeria · 0262668230</div>
+      
       <div class="etats">
         <button class="et" data-e="ok" type="button">Envoyable</button>
         <button class="et" data-e="fix" type="button">À corriger</button>
@@ -2556,6 +2766,8 @@ a.retour:hover{color:var(--or)}
     </div>
   </article>
   <article class="carte" data-dir="pizza-di-muro-optimisation-seo" data-etat="fix" data-flag="0"
+    data-resp="0"
+    data-verdict=""
     data-k="pizza di muro pizzeria pizza-di-muro-optimisation-seo">
     <div class="vue">
       <img class="apres" src="vignettes/pizza-di-muro-optimisation-seo.jpg" alt="Aperçu de Pizza Di Muro" loading="lazy">
@@ -2577,6 +2789,7 @@ a.retour:hover{color:var(--or)}
     <div class="corps">
       <div class="nom">Pizza Di Muro</div>
       <div class="meta">Pizzeria</div>
+      
       <div class="etats">
         <button class="et" data-e="ok" type="button">Envoyable</button>
         <button class="et" data-e="fix" type="button">À corriger</button>
@@ -2591,6 +2804,8 @@ a.retour:hover{color:var(--or)}
     </div>
   </article>
   <article class="carte" data-dir="pizza-di-muro-optimisation" data-etat="fix" data-flag="0"
+    data-resp="0"
+    data-verdict=""
     data-k="pizza di muro (doublon) pizzeria pizza-di-muro-optimisation">
     <div class="vue">
       <img class="apres" src="vignettes/pizza-di-muro-optimisation.jpg" alt="Aperçu de Pizza Di Muro (doublon)" loading="lazy">
@@ -2612,6 +2827,7 @@ a.retour:hover{color:var(--or)}
     <div class="corps">
       <div class="nom">Pizza Di Muro (doublon)</div>
       <div class="meta">Pizzeria</div>
+      
       <div class="etats">
         <button class="et" data-e="ok" type="button">Envoyable</button>
         <button class="et" data-e="fix" type="button">À corriger</button>
@@ -2626,6 +2842,8 @@ a.retour:hover{color:var(--or)}
     </div>
   </article>
   <article class="carte" data-dir="pizza-di-muro-seo-optimisation" data-etat="fix" data-flag="0"
+    data-resp="0"
+    data-verdict=""
     data-k="pizza di muro (doublon) pizzeria pizza-di-muro-seo-optimisation">
     <div class="vue">
       <img class="apres" src="vignettes/pizza-di-muro-seo-optimisation.jpg" alt="Aperçu de Pizza Di Muro (doublon)" loading="lazy">
@@ -2647,6 +2865,7 @@ a.retour:hover{color:var(--or)}
     <div class="corps">
       <div class="nom">Pizza Di Muro (doublon)</div>
       <div class="meta">Pizzeria</div>
+      
       <div class="etats">
         <button class="et" data-e="ok" type="button">Envoyable</button>
         <button class="et" data-e="fix" type="button">À corriger</button>
@@ -2661,6 +2880,8 @@ a.retour:hover{color:var(--or)}
     </div>
   </article>
   <article class="carte" data-dir="planb-restaurant-burgers-saint-denis" data-etat="ok" data-flag="0"
+    data-resp="0"
+    data-verdict=""
     data-k="plan b restauration planb-restaurant-burgers-saint-denis">
     <div class="vue">
       <img class="apres" src="vignettes/planb-restaurant-burgers-saint-denis.jpg" alt="Aperçu de Plan B" loading="lazy">
@@ -2682,6 +2903,7 @@ a.retour:hover{color:var(--or)}
     <div class="corps">
       <div class="nom">Plan B</div>
       <div class="meta">Restauration · 0693771169</div>
+      
       <div class="etats">
         <button class="et" data-e="ok" type="button">Envoyable</button>
         <button class="et" data-e="fix" type="button">À corriger</button>
@@ -2696,6 +2918,8 @@ a.retour:hover{color:var(--or)}
     </div>
   </article>
   <article class="carte" data-dir="planet-pizza" data-etat="abandon" data-flag="0"
+    data-resp="0"
+    data-verdict=""
     data-k="planet pizza pizzeria planet-pizza">
     <div class="vue">
       <img class="apres" src="vignettes/planet-pizza.jpg" alt="Aperçu de Planet Pizza" loading="lazy">
@@ -2721,6 +2945,7 @@ a.retour:hover{color:var(--or)}
     <div class="corps">
       <div class="nom">Planet Pizza</div>
       <div class="meta">Pizzeria</div>
+      
       <div class="etats">
         <button class="et" data-e="ok" type="button">Envoyable</button>
         <button class="et" data-e="fix" type="button">À corriger</button>
@@ -2735,6 +2960,8 @@ a.retour:hover{color:var(--or)}
     </div>
   </article>
   <article class="carte" data-dir="qualitropic-bioeconomie-tropicale" data-etat="fix" data-flag="0"
+    data-resp="0"
+    data-verdict=""
     data-k="qualitropic agroalimentaire qualitropic-bioeconomie-tropicale">
     <div class="vue">
       <img class="apres" src="vignettes/qualitropic-bioeconomie-tropicale.jpg" alt="Aperçu de Qualitropic" loading="lazy">
@@ -2756,6 +2983,7 @@ a.retour:hover{color:var(--or)}
     <div class="corps">
       <div class="nom">Qualitropic</div>
       <div class="meta">Agroalimentaire · +262262971088</div>
+      
       <div class="etats">
         <button class="et" data-e="ok" type="button">Envoyable</button>
         <button class="et" data-e="fix" type="button">À corriger</button>
@@ -2770,6 +2998,8 @@ a.retour:hover{color:var(--or)}
     </div>
   </article>
   <article class="carte" data-dir="reatchy-snack-bar" data-etat="ok" data-flag="0"
+    data-resp="0"
+    data-verdict=""
     data-k="r'eat'chy restauration reatchy-snack-bar">
     <div class="vue">
       <img class="apres" src="vignettes/reatchy-snack-bar.jpg" alt="Aperçu de R'eat'Chy" loading="lazy">
@@ -2791,6 +3021,7 @@ a.retour:hover{color:var(--or)}
     <div class="corps">
       <div class="nom">R'eat'Chy</div>
       <div class="meta">Restauration · +262692117273</div>
+      
       <div class="etats">
         <button class="et" data-e="ok" type="button">Envoyable</button>
         <button class="et" data-e="fix" type="button">À corriger</button>
@@ -2805,6 +3036,8 @@ a.retour:hover{color:var(--or)}
     </div>
   </article>
   <article class="carte" data-dir="reatchy-snackbar-optimisation" data-etat="fix" data-flag="0"
+    data-resp="0"
+    data-verdict=""
     data-k="r'eat'chy (doublon) restauration reatchy-snackbar-optimisation">
     <div class="vue">
       <img class="apres" src="vignettes/reatchy-snackbar-optimisation.jpg" alt="Aperçu de R'eat'Chy (doublon)" loading="lazy">
@@ -2826,6 +3059,7 @@ a.retour:hover{color:var(--or)}
     <div class="corps">
       <div class="nom">R'eat'Chy (doublon)</div>
       <div class="meta">Restauration · +262692117273</div>
+      
       <div class="etats">
         <button class="et" data-e="ok" type="button">Envoyable</button>
         <button class="et" data-e="fix" type="button">À corriger</button>
@@ -2840,6 +3074,8 @@ a.retour:hover{color:var(--or)}
     </div>
   </article>
   <article class="carte" data-dir="sunlight-fm-optimisation-seo" data-etat="ok" data-flag="0"
+    data-resp="0"
+    data-verdict=""
     data-k="radio sunlight fm média · radio sunlight-fm-optimisation-seo">
     <div class="vue">
       <img class="apres" src="vignettes/sunlight-fm-optimisation-seo.jpg" alt="Aperçu de Radio SunLight FM" loading="lazy">
@@ -2861,6 +3097,7 @@ a.retour:hover{color:var(--or)}
     <div class="corps">
       <div class="nom">Radio SunLight FM</div>
       <div class="meta">Média · Radio</div>
+      
       <div class="etats">
         <button class="et" data-e="ok" type="button">Envoyable</button>
         <button class="et" data-e="fix" type="button">À corriger</button>
@@ -2875,6 +3112,8 @@ a.retour:hover{color:var(--or)}
     </div>
   </article>
   <article class="carte" data-dir="bateau-pirate-restaurant" data-etat="ok" data-flag="0"
+    data-resp="0"
+    data-verdict=""
     data-k="restaurant bateau pirate restauration bateau-pirate-restaurant">
     <div class="vue">
       <img class="apres" src="vignettes/bateau-pirate-restaurant.jpg" alt="Aperçu de Restaurant Bateau Pirate" loading="lazy">
@@ -2896,6 +3135,7 @@ a.retour:hover{color:var(--or)}
     <div class="corps">
       <div class="nom">Restaurant Bateau Pirate</div>
       <div class="meta">Restauration · +262262125273</div>
+      
       <div class="etats">
         <button class="et" data-e="ok" type="button">Envoyable</button>
         <button class="et" data-e="fix" type="button">À corriger</button>
@@ -2910,6 +3150,8 @@ a.retour:hover{color:var(--or)}
     </div>
   </article>
   <article class="carte" data-dir="restaurant-bateau-pirate" data-etat="fix" data-flag="0"
+    data-resp="0"
+    data-verdict=""
     data-k="restaurant bateau pirate (doublon) restauration restaurant-bateau-pirate">
     <div class="vue">
       <img class="apres" src="vignettes/restaurant-bateau-pirate.jpg" alt="Aperçu de Restaurant Bateau Pirate (doublon)" loading="lazy">
@@ -2931,6 +3173,7 @@ a.retour:hover{color:var(--or)}
     <div class="corps">
       <div class="nom">Restaurant Bateau Pirate (doublon)</div>
       <div class="meta">Restauration · +262262125273</div>
+      
       <div class="etats">
         <button class="et" data-e="ok" type="button">Envoyable</button>
         <button class="et" data-e="fix" type="button">À corriger</button>
@@ -2945,6 +3188,8 @@ a.retour:hover{color:var(--or)}
     </div>
   </article>
   <article class="carte" data-dir="lartabiata-restaurant-fr" data-etat="ok" data-flag="0"
+    data-resp="0"
+    data-verdict=""
     data-k="restaurant l'art abiata restauration lartabiata-restaurant-fr">
     <div class="vue">
       <img class="apres" src="vignettes/lartabiata-restaurant-fr.jpg" alt="Aperçu de Restaurant L'Art Abiata" loading="lazy">
@@ -2966,6 +3211,7 @@ a.retour:hover{color:var(--or)}
     <div class="corps">
       <div class="nom">Restaurant L'Art Abiata</div>
       <div class="meta">Restauration · +262693536363</div>
+      
       <div class="etats">
         <button class="et" data-e="ok" type="button">Envoyable</button>
         <button class="et" data-e="fix" type="button">À corriger</button>
@@ -2980,6 +3226,8 @@ a.retour:hover{color:var(--or)}
     </div>
   </article>
   <article class="carte" data-dir="restaurant-la-fabrique-saint-denis" data-etat="ok" data-flag="0"
+    data-resp="0"
+    data-verdict=""
     data-k="restaurant la fabrique restauration restaurant-la-fabrique-saint-denis">
     <div class="vue">
       <img class="apres" src="vignettes/restaurant-la-fabrique-saint-denis.jpg" alt="Aperçu de Restaurant La Fabrique" loading="lazy">
@@ -3001,6 +3249,7 @@ a.retour:hover{color:var(--or)}
     <div class="corps">
       <div class="nom">Restaurant La Fabrique</div>
       <div class="meta">Restauration · +262262198060</div>
+      
       <div class="etats">
         <button class="et" data-e="ok" type="button">Envoyable</button>
         <button class="et" data-e="fix" type="button">À corriger</button>
@@ -3015,6 +3264,8 @@ a.retour:hover{color:var(--or)}
     </div>
   </article>
   <article class="carte" data-dir="restaurant-la-parenthese-latitude21" data-etat="fix" data-flag="0"
+    data-resp="0"
+    data-verdict=""
     data-k="restaurant la parenthèse restauration restaurant-la-parenthese-latitude21">
     <div class="vue">
       <img class="apres" src="vignettes/restaurant-la-parenthese-latitude21.jpg" alt="Aperçu de Restaurant La Parenthèse" loading="lazy">
@@ -3036,6 +3287,7 @@ a.retour:hover{color:var(--or)}
     <div class="corps">
       <div class="nom">Restaurant La Parenthèse</div>
       <div class="meta">Restauration · +262262331333</div>
+      
       <div class="etats">
         <button class="et" data-e="ok" type="button">Envoyable</button>
         <button class="et" data-e="fix" type="button">À corriger</button>
@@ -3050,6 +3302,8 @@ a.retour:hover{color:var(--or)}
     </div>
   </article>
   <article class="carte" data-dir="restaurant-la-piscine-melun" data-etat="ok" data-flag="0"
+    data-resp="0"
+    data-verdict=""
     data-k="restaurant la piscine restauration restaurant-la-piscine-melun">
     <div class="vue">
       <img class="apres" src="vignettes/restaurant-la-piscine-melun.jpg" alt="Aperçu de Restaurant La Piscine" loading="lazy">
@@ -3071,6 +3325,7 @@ a.retour:hover{color:var(--or)}
     <div class="corps">
       <div class="nom">Restaurant La Piscine</div>
       <div class="meta">Restauration · +33160990079</div>
+      
       <div class="etats">
         <button class="et" data-e="ok" type="button">Envoyable</button>
         <button class="et" data-e="fix" type="button">À corriger</button>
@@ -3085,6 +3340,8 @@ a.retour:hover{color:var(--or)}
     </div>
   </article>
   <article class="carte" data-dir="restaurant-le-bourg-murat" data-etat="fix" data-flag="0"
+    data-resp="0"
+    data-verdict=""
     data-k="restaurant le bourg murat restauration restaurant-le-bourg-murat">
     <div class="vue">
       <img class="apres" src="vignettes/restaurant-le-bourg-murat.jpg" alt="Aperçu de Restaurant Le Bourg Murat" loading="lazy">
@@ -3106,6 +3363,7 @@ a.retour:hover{color:var(--or)}
     <div class="corps">
       <div class="nom">Restaurant Le Bourg Murat</div>
       <div class="meta">Restauration · +262262593612</div>
+      
       <div class="etats">
         <button class="et" data-e="ok" type="button">Envoyable</button>
         <button class="et" data-e="fix" type="button">À corriger</button>
@@ -3120,6 +3378,8 @@ a.retour:hover{color:var(--or)}
     </div>
   </article>
   <article class="carte" data-dir="salaisons-de-bourbon" data-etat="ok" data-flag="0"
+    data-resp="0"
+    data-verdict=""
     data-k="salaisons de bourbon agroalimentaire salaisons-de-bourbon">
     <div class="vue">
       <img class="apres" src="vignettes/salaisons-de-bourbon.jpg" alt="Aperçu de Salaisons de Bourbon" loading="lazy">
@@ -3145,6 +3405,7 @@ a.retour:hover{color:var(--or)}
     <div class="corps">
       <div class="nom">Salaisons de Bourbon</div>
       <div class="meta">Agroalimentaire · +262262250176</div>
+      
       <div class="etats">
         <button class="et" data-e="ok" type="button">Envoyable</button>
         <button class="et" data-e="fix" type="button">À corriger</button>
@@ -3159,6 +3420,8 @@ a.retour:hover{color:var(--or)}
     </div>
   </article>
   <article class="carte" data-dir="sistbi-optimisation-seo" data-etat="ok" data-flag="0"
+    data-resp="0"
+    data-verdict=""
     data-k="sistbi santé sistbi-optimisation-seo">
     <div class="vue">
       <img class="apres" src="vignettes/sistbi-optimisation-seo.jpg" alt="Aperçu de SISTBI" loading="lazy">
@@ -3180,6 +3443,7 @@ a.retour:hover{color:var(--or)}
     <div class="corps">
       <div class="nom">SISTBI</div>
       <div class="meta">Santé · +262262572572</div>
+      
       <div class="etats">
         <button class="et" data-e="ok" type="button">Envoyable</button>
         <button class="et" data-e="fix" type="button">À corriger</button>
@@ -3194,6 +3458,8 @@ a.retour:hover{color:var(--or)}
     </div>
   </article>
   <article class="carte" data-dir="smokehouse-reunion" data-etat="fix" data-flag="0"
+    data-resp="0"
+    data-verdict=""
     data-k="smok'eat restauration smokehouse-reunion">
     <div class="vue">
       <img class="apres" src="vignettes/smokehouse-reunion.jpg" alt="Aperçu de SMOK'EAT" loading="lazy">
@@ -3219,6 +3485,7 @@ a.retour:hover{color:var(--or)}
     <div class="corps">
       <div class="nom">SMOK'EAT</div>
       <div class="meta">Restauration · +262693879840</div>
+      
       <div class="etats">
         <button class="et" data-e="ok" type="button">Envoyable</button>
         <button class="et" data-e="fix" type="button">À corriger</button>
@@ -3233,6 +3500,8 @@ a.retour:hover{color:var(--or)}
     </div>
   </article>
   <article class="carte" data-dir="sphb-optimisation-seo" data-etat="ok" data-flag="0"
+    data-resp="0"
+    data-verdict=""
     data-k="sphb agroalimentaire sphb-optimisation-seo">
     <div class="vue">
       <img class="apres" src="vignettes/sphb-optimisation-seo.jpg" alt="Aperçu de SPHB" loading="lazy">
@@ -3254,6 +3523,7 @@ a.retour:hover{color:var(--or)}
     <div class="corps">
       <div class="nom">SPHB</div>
       <div class="meta">Agroalimentaire · +262262357696</div>
+      
       <div class="etats">
         <button class="et" data-e="ok" type="button">Envoyable</button>
         <button class="et" data-e="fix" type="button">À corriger</button>
@@ -3268,6 +3538,8 @@ a.retour:hover{color:var(--or)}
     </div>
   </article>
   <article class="carte" data-dir="sphb-production-huiles-bourbon" data-etat="fix" data-flag="0"
+    data-resp="0"
+    data-verdict=""
     data-k="sphb (doublon) agroalimentaire sphb-production-huiles-bourbon">
     <div class="vue">
       <img class="apres" src="vignettes/sphb-production-huiles-bourbon.jpg" alt="Aperçu de SPHB (doublon)" loading="lazy">
@@ -3289,6 +3561,7 @@ a.retour:hover{color:var(--or)}
     <div class="corps">
       <div class="nom">SPHB (doublon)</div>
       <div class="meta">Agroalimentaire · +262262357696</div>
+      
       <div class="etats">
         <button class="et" data-e="ok" type="button">Envoyable</button>
         <button class="et" data-e="fix" type="button">À corriger</button>
@@ -3303,6 +3576,8 @@ a.retour:hover{color:var(--or)}
     </div>
   </article>
   <article class="carte" data-dir="sphb-production-huiles-optimisation" data-etat="fix" data-flag="0"
+    data-resp="0"
+    data-verdict=""
     data-k="sphb (doublon) agroalimentaire sphb-production-huiles-optimisation">
     <div class="vue">
       <img class="apres" src="vignettes/sphb-production-huiles-optimisation.jpg" alt="Aperçu de SPHB (doublon)" loading="lazy">
@@ -3324,6 +3599,7 @@ a.retour:hover{color:var(--or)}
     <div class="corps">
       <div class="nom">SPHB (doublon)</div>
       <div class="meta">Agroalimentaire · +262262357696</div>
+      
       <div class="etats">
         <button class="et" data-e="ok" type="button">Envoyable</button>
         <button class="et" data-e="fix" type="button">À corriger</button>
@@ -3338,6 +3614,8 @@ a.retour:hover{color:var(--or)}
     </div>
   </article>
   <article class="carte" data-dir="sphb-production-huiles-optimise" data-etat="fix" data-flag="0"
+    data-resp="0"
+    data-verdict=""
     data-k="sphb (doublon) agroalimentaire sphb-production-huiles-optimise">
     <div class="vue">
       <img class="apres" src="vignettes/sphb-production-huiles-optimise.jpg" alt="Aperçu de SPHB (doublon)" loading="lazy">
@@ -3359,6 +3637,7 @@ a.retour:hover{color:var(--or)}
     <div class="corps">
       <div class="nom">SPHB (doublon)</div>
       <div class="meta">Agroalimentaire · +262262357696</div>
+      
       <div class="etats">
         <button class="et" data-e="ok" type="button">Envoyable</button>
         <button class="et" data-e="fix" type="button">À corriger</button>
@@ -3373,6 +3652,8 @@ a.retour:hover{color:var(--or)}
     </div>
   </article>
   <article class="carte" data-dir="sud-hotel-reunion" data-etat="ok" data-flag="0"
+    data-resp="0"
+    data-verdict=""
     data-k="sud hôtel le tampon hébergement sud-hotel-reunion">
     <div class="vue">
       <img class="apres" src="vignettes/sud-hotel-reunion.jpg" alt="Aperçu de Sud Hôtel Le Tampon" loading="lazy">
@@ -3394,6 +3675,7 @@ a.retour:hover{color:var(--or)}
     <div class="corps">
       <div class="nom">Sud Hôtel Le Tampon</div>
       <div class="meta">Hébergement · +262262270790</div>
+      
       <div class="etats">
         <button class="et" data-e="ok" type="button">Envoyable</button>
         <button class="et" data-e="fix" type="button">À corriger</button>
@@ -3408,6 +3690,8 @@ a.retour:hover{color:var(--or)}
     </div>
   </article>
   <article class="carte" data-dir="plats-frais-surgeles-saint-pierre" data-etat="fix" data-flag="0"
+    data-resp="0"
+    data-verdict=""
     data-k="sud service traiteur traiteur plats-frais-surgeles-saint-pierre">
     <div class="vue">
       <img class="apres" src="vignettes/plats-frais-surgeles-saint-pierre.jpg" alt="Aperçu de Sud Service Traiteur" loading="lazy">
@@ -3433,6 +3717,7 @@ a.retour:hover{color:var(--or)}
     <div class="corps">
       <div class="nom">Sud Service Traiteur</div>
       <div class="meta">Traiteur · +262974563547</div>
+      
       <div class="etats">
         <button class="et" data-e="ok" type="button">Envoyable</button>
         <button class="et" data-e="fix" type="button">À corriger</button>
@@ -3447,6 +3732,8 @@ a.retour:hover{color:var(--or)}
     </div>
   </article>
   <article class="carte" data-dir="plat-frais-surgeles-saint-pierre" data-etat="fix" data-flag="0"
+    data-resp="0"
+    data-verdict=""
     data-k="sud service traiteur (doublon) traiteur plat-frais-surgeles-saint-pierre">
     <div class="vue">
       <img class="apres" src="vignettes/plat-frais-surgeles-saint-pierre.jpg" alt="Aperçu de Sud Service Traiteur (doublon)" loading="lazy">
@@ -3472,6 +3759,7 @@ a.retour:hover{color:var(--or)}
     <div class="corps">
       <div class="nom">Sud Service Traiteur (doublon)</div>
       <div class="meta">Traiteur · 0974563547</div>
+      
       <div class="etats">
         <button class="et" data-e="ok" type="button">Envoyable</button>
         <button class="et" data-e="fix" type="button">À corriger</button>
@@ -3486,6 +3774,8 @@ a.retour:hover{color:var(--or)}
     </div>
   </article>
   <article class="carte" data-dir="ti-terre-sainte-pizzeria" data-etat="ok" data-flag="0"
+    data-resp="0"
+    data-verdict=""
     data-k="ti' terre sainte pizzeria ti-terre-sainte-pizzeria">
     <div class="vue">
       <img class="apres" src="vignettes/ti-terre-sainte-pizzeria.jpg" alt="Aperçu de Ti' Terre Sainte" loading="lazy">
@@ -3511,6 +3801,7 @@ a.retour:hover{color:var(--or)}
     <div class="corps">
       <div class="nom">Ti' Terre Sainte</div>
       <div class="meta">Pizzeria · 0692068688</div>
+      
       <div class="etats">
         <button class="et" data-e="ok" type="button">Envoyable</button>
         <button class="et" data-e="fix" type="button">À corriger</button>
@@ -3525,6 +3816,8 @@ a.retour:hover{color:var(--or)}
     </div>
   </article>
   <article class="carte" data-dir="transcontinents-voyages-ile-maurice" data-etat="abandon" data-flag="0"
+    data-resp="0"
+    data-verdict=""
     data-k="transcontinents voyages transport · voyage transcontinents-voyages-ile-maurice">
     <div class="vue">
       <img class="apres" src="vignettes/transcontinents-voyages-ile-maurice.jpg" alt="Aperçu de Transcontinents Voyages" loading="lazy">
@@ -3546,6 +3839,7 @@ a.retour:hover{color:var(--or)}
     <div class="corps">
       <div class="nom">Transcontinents Voyages</div>
       <div class="meta">Transport · Voyage</div>
+      
       <div class="etats">
         <button class="et" data-e="ok" type="button">Envoyable</button>
         <button class="et" data-e="fix" type="button">À corriger</button>
@@ -3560,6 +3854,8 @@ a.retour:hover{color:var(--or)}
     </div>
   </article>
   <article class="carte" data-dir="guide-peche-reunion-ttfishing" data-etat="ok" data-flag="0"
+    data-resp="0"
+    data-verdict=""
     data-k="ttfishing pêche · loisirs guide-peche-reunion-ttfishing">
     <div class="vue">
       <img class="apres" src="vignettes/guide-peche-reunion-ttfishing.jpg" alt="Aperçu de TTFishing" loading="lazy">
@@ -3585,6 +3881,7 @@ a.retour:hover{color:var(--or)}
     <div class="corps">
       <div class="nom">TTFishing</div>
       <div class="meta">Pêche · Loisirs · +262692638741</div>
+      
       <div class="etats">
         <button class="et" data-e="ok" type="button">Envoyable</button>
         <button class="et" data-e="fix" type="button">À corriger</button>
@@ -3599,6 +3896,8 @@ a.retour:hover{color:var(--or)}
     </div>
   </article>
   <article class="carte" data-dir="villa-fleurie-restaurant-seminaires" data-etat="ok" data-flag="0"
+    data-resp="0"
+    data-verdict=""
     data-k="villa fleurié restauration villa-fleurie-restaurant-seminaires">
     <div class="vue">
       <img class="apres" src="vignettes/villa-fleurie-restaurant-seminaires.jpg" alt="Aperçu de Villa Fleurié" loading="lazy">
@@ -3624,6 +3923,7 @@ a.retour:hover{color:var(--or)}
     <div class="corps">
       <div class="nom">Villa Fleurié</div>
       <div class="meta">Restauration · 0262803803</div>
+      
       <div class="etats">
         <button class="et" data-e="ok" type="button">Envoyable</button>
         <button class="et" data-e="fix" type="button">À corriger</button>
@@ -3638,6 +3938,8 @@ a.retour:hover{color:var(--or)}
     </div>
   </article>
   <article class="carte" data-dir="vtc-reunion-optimisation" data-etat="fix" data-flag="0"
+    data-resp="0"
+    data-verdict=""
     data-k="vtc réunion transport · voyage vtc-reunion-optimisation">
     <div class="vue">
       <img class="apres" src="vignettes/vtc-reunion-optimisation.jpg" alt="Aperçu de VTC Réunion" loading="lazy">
@@ -3663,6 +3965,7 @@ a.retour:hover{color:var(--or)}
     <div class="corps">
       <div class="nom">VTC Réunion</div>
       <div class="meta">Transport · Voyage · +262692549074</div>
+      
       <div class="etats">
         <button class="et" data-e="ok" type="button">Envoyable</button>
         <button class="et" data-e="fix" type="button">À corriger</button>
@@ -3677,6 +3980,8 @@ a.retour:hover{color:var(--or)}
     </div>
   </article>
   <article class="carte" data-dir="vtc-reunion-felixtransports" data-etat="abandon" data-flag="0"
+    data-resp="0"
+    data-verdict=""
     data-k="vtc réunion — felix transports transport · voyage vtc-reunion-felixtransports">
     <div class="vue">
       <img class="apres" src="vignettes/vtc-reunion-felixtransports.jpg" alt="Aperçu de VTC Réunion — Felix Transports" loading="lazy">
@@ -3702,6 +4007,7 @@ a.retour:hover{color:var(--or)}
     <div class="corps">
       <div class="nom">VTC Réunion — Felix Transports</div>
       <div class="meta">Transport · Voyage</div>
+      
       <div class="etats">
         <button class="et" data-e="ok" type="button">Envoyable</button>
         <button class="et" data-e="fix" type="button">À corriger</button>
@@ -3716,6 +4022,8 @@ a.retour:hover{color:var(--or)}
     </div>
   </article>
   <article class="carte" data-dir="optimisation_site_seo" data-etat="abandon" data-flag="0"
+    data-resp="0"
+    data-verdict=""
     data-k="gabarit seo « seo expert » (bis) — optimisation_site_seo">
     <div class="vue">
       <span class="rien">pas de capture<br>— site non rendu</span>
@@ -3741,6 +4049,7 @@ a.retour:hover{color:var(--or)}
     <div class="corps">
       <div class="nom">Gabarit SEO « SEO Expert » (bis)</div>
       <div class="meta">—</div>
+      
       <div class="etats">
         <button class="et" data-e="ok" type="button">Envoyable</button>
         <button class="et" data-e="fix" type="button">À corriger</button>
@@ -3755,6 +4064,8 @@ a.retour:hover{color:var(--or)}
     </div>
   </article>
   <article class="carte" data-dir="latelierdeben_optimisation_seo" data-etat="fix" data-flag="0"
+    data-resp="0"
+    data-verdict=""
     data-k="l'atelier de ben restauration latelierdeben_optimisation_seo">
     <div class="vue">
       <span class="rien">pas de capture<br>— site non rendu</span>
@@ -3780,6 +4091,7 @@ a.retour:hover{color:var(--or)}
     <div class="corps">
       <div class="nom">L'Atelier de Ben</div>
       <div class="meta">Restauration</div>
+      
       <div class="etats">
         <button class="et" data-e="ok" type="button">Envoyable</button>
         <button class="et" data-e="fix" type="button">À corriger</button>
@@ -3794,6 +4106,8 @@ a.retour:hover{color:var(--or)}
     </div>
   </article>
   <article class="carte" data-dir="guinguette-du-grand-morin-eatbu-com-" data-etat="fix" data-flag="0"
+    data-resp="0"
+    data-verdict=""
     data-k="la guinguette du grand morin restauration guinguette-du-grand-morin-eatbu-com-">
     <div class="vue">
       <span class="rien">pas de capture<br>— site non rendu</span>
@@ -3819,6 +4133,7 @@ a.retour:hover{color:var(--or)}
     <div class="corps">
       <div class="nom">La Guinguette du Grand Morin</div>
       <div class="meta">Restauration · +33612320918</div>
+      
       <div class="etats">
         <button class="et" data-e="ok" type="button">Envoyable</button>
         <button class="et" data-e="fix" type="button">À corriger</button>
@@ -3833,6 +4148,8 @@ a.retour:hover{color:var(--or)}
     </div>
   </article>
   <article class="carte" data-dir="clos_de_la_riviere_seo_optimisation" data-etat="ok" data-flag="0"
+    data-resp="0"
+    data-verdict=""
     data-k="le clos de la rivière hébergement clos_de_la_riviere_seo_optimisation">
     <div class="vue">
       <span class="rien">pas de capture<br>— site non rendu</span>
@@ -3858,6 +4175,7 @@ a.retour:hover{color:var(--or)}
     <div class="corps">
       <div class="nom">Le Clos de la Rivière</div>
       <div class="meta">Hébergement · +262693007648</div>
+      
       <div class="etats">
         <button class="et" data-e="ok" type="button">Envoyable</button>
         <button class="et" data-e="fix" type="button">À corriger</button>
@@ -3872,6 +4190,8 @@ a.retour:hover{color:var(--or)}
     </div>
   </article>
   <article class="carte" data-dir="mamabetty-fr-" data-etat="fix" data-flag="0"
+    data-resp="0"
+    data-verdict=""
     data-k="mama betty restauration mamabetty-fr-">
     <div class="vue">
       <span class="rien">pas de capture<br>— site non rendu</span>
@@ -3897,6 +4217,7 @@ a.retour:hover{color:var(--or)}
     <div class="corps">
       <div class="nom">Mama Betty</div>
       <div class="meta">Restauration · +33383973617</div>
+      
       <div class="etats">
         <button class="et" data-e="ok" type="button">Envoyable</button>
         <button class="et" data-e="fix" type="button">À corriger</button>
@@ -3911,6 +4232,8 @@ a.retour:hover{color:var(--or)}
     </div>
   </article>
   <article class="carte" data-dir="sunlightfm_optimisation_seo" data-etat="fix" data-flag="0"
+    data-resp="0"
+    data-verdict=""
     data-k="radio sunlight fm (doublon) média · radio sunlightfm_optimisation_seo">
     <div class="vue">
       <span class="rien">pas de capture<br>— site non rendu</span>
@@ -3936,6 +4259,7 @@ a.retour:hover{color:var(--or)}
     <div class="corps">
       <div class="nom">Radio SunLight FM (doublon)</div>
       <div class="meta">Média · Radio</div>
+      
       <div class="etats">
         <button class="et" data-e="ok" type="button">Envoyable</button>
         <button class="et" data-e="fix" type="button">À corriger</button>
@@ -3950,6 +4274,8 @@ a.retour:hover{color:var(--or)}
     </div>
   </article>
   <article class="carte" data-dir="sunlightfm_website" data-etat="fix" data-flag="0"
+    data-resp="0"
+    data-verdict=""
     data-k="radio sunlight fm (doublon) média · radio sunlightfm_website">
     <div class="vue">
       <span class="rien">pas de capture<br>— site non rendu</span>
@@ -3975,6 +4301,7 @@ a.retour:hover{color:var(--or)}
     <div class="corps">
       <div class="nom">Radio SunLight FM (doublon)</div>
       <div class="meta">Média · Radio</div>
+      
       <div class="etats">
         <button class="et" data-e="ok" type="button">Envoyable</button>
         <button class="et" data-e="fix" type="button">À corriger</button>
@@ -3989,6 +4316,8 @@ a.retour:hover{color:var(--or)}
     </div>
   </article>
   <article class="carte" data-dir="boutique-restaurant-coulee77-com-" data-etat="ok" data-flag="0"
+    data-resp="0"
+    data-verdict=""
     data-k="restaurant coulée 77 restauration boutique-restaurant-coulee77-com-">
     <div class="vue">
       <span class="rien">pas de capture<br>— site non rendu</span>
@@ -4014,6 +4343,7 @@ a.retour:hover{color:var(--or)}
     <div class="corps">
       <div class="nom">Restaurant Coulée 77</div>
       <div class="meta">Restauration · 0262515241</div>
+      
       <div class="etats">
         <button class="et" data-e="ok" type="button">Envoyable</button>
         <button class="et" data-e="fix" type="button">À corriger</button>
@@ -4028,6 +4358,8 @@ a.retour:hover{color:var(--or)}
     </div>
   </article>
   <article class="carte" data-dir="ticoeur.store" data-etat="ok" data-flag="0"
+    data-resp="0"
+    data-verdict=""
     data-k="ticoeur commerce · boutique ticoeur.store">
     <div class="vue">
       <span class="rien">pas de capture<br>— site non rendu</span>
@@ -4053,6 +4385,7 @@ a.retour:hover{color:var(--or)}
     <div class="corps">
       <div class="nom">TiCoeur</div>
       <div class="meta">Commerce · Boutique · 0692417749</div>
+      
       <div class="etats">
         <button class="et" data-e="ok" type="button">Envoyable</button>
         <button class="et" data-e="fix" type="button">À corriger</button>
@@ -4196,7 +4529,11 @@ a.retour:hover{color:var(--or)}
     var mots = t ? t.split(/\s+/) : [];
     var vus = 0;
     cartes.forEach(function(c){
-      var okF = !filtre || (filtre === '__flag' ? c.dataset.flag === '1' : c.dataset.etat === filtre);
+    var okF = !filtre
+      || (filtre === '__flag' ? c.dataset.flag === '1'
+      :  filtre === '__resp' ? Number(c.dataset.resp || 0) > 0
+      :  filtre === '__pire' ? c.dataset.verdict === 'moins bien'
+      :  c.dataset.etat === filtre);
       var okT = mots.every(function(w){ return c.dataset.k.indexOf(w) !== -1; });
       var ok = okF && okT;
       c.style.display = ok ? '' : 'none';
@@ -4250,6 +4587,15 @@ a.retour:hover{color:var(--or)}
       lignes.push('   état : ' + (LIB[e] || e) + (s.etat ? '  (décidé à la revue)' : '  (issu de l’inventaire)'));
       lignes.push('   ' + (e === 'abandon' ? 'motif d’abandon' : 'correction') + ' : '
         + ((s.note || '').trim() || '(à préciser)'));
+      // Les défauts mesurés partent AVEC la demande. Sans ça, Tony devrait
+      // les retaper à la main pour chaque site, et il ne le ferait pas.
+      var r = c.querySelector('.resp b');
+      if (r && Number(c.dataset.resp || 0) > 0) {
+        lignes.push('   mesuré au téléphone (390 px) : ' + r.textContent.trim());
+      }
+      if (c.dataset.verdict === 'moins bien') {
+        lignes.push('   ATTENTION : mesuré MOINS BON que le site actuel du client.');
+      }
       lignes.push('');
     });
     return lignes.join('\n');

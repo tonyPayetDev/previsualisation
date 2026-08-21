@@ -57,6 +57,38 @@ const loupe = i => `<a class="loupe" href="${esc(rechercheUrl(i))}" target="_bla
     stroke-width="2.1" stroke-linecap="round"/></svg></a>`;
 const nSansSite = items.filter(i => !i.avant).length;
 
+// --- Audit responsive ---------------------------------------------------------
+// Produit par audit-responsive.mjs puis analyse-responsive.mjs. Absent tant
+// que l'audit n'a pas tourné : la galerie doit rester générable sans lui.
+const AUDIT = fs.existsSync(path.join(DOSSIER, 'audit-resume.json'))
+  ? JSON.parse(fs.readFileSync(path.join(DOSSIER, 'audit-resume.json'), 'utf8')) : {};
+
+// Un résumé en une ligne, lisible sans réfléchir. « 0 défaut » est une
+// information aussi utile que « 3 défauts » : sans elle, Tony ne sait pas
+// distinguer un site sain d'un site jamais audité.
+function badgeResp(dir) {
+  const a = AUDIT[dir];
+  if (!a || !a.mien) return '';
+  const d = a.mien, bouts = [];
+  if (d.debordement) bouts.push(`déborde de ${d.debordement} px`);
+  if (d.pasDeViewport) bouts.push('pas de balise viewport');
+  if (d.zoomBloque) bouts.push('zoom bloqué');
+  if (d.boutonsEnormes) bouts.push(`${d.boutonsEnormes} bouton${d.boutonsEnormes > 1 ? 's' : ''} trop gros`);
+  if (d.ciblesPetites) bouts.push(`${d.ciblesPetites} cible${d.ciblesPetites > 1 ? 's' : ''} < 40 px`);
+  if (d.petitTexte) bouts.push(`texte ${d.texteMin} px`);
+  const niveau = d.note === 0 ? 'sain' : d.note <= 2 ? 'moyen' : 'mauvais';
+  const cmp = a.verdict
+    ? `<span class="cmp ${a.verdict.replace(' ', '')}">${
+        a.verdict === 'mieux' ? 'mieux que leur site' :
+        a.verdict === 'egal' ? 'à égalité avec leur site' : 'MOINS BIEN que leur site'}</span>`
+    : '';
+  return `<div class="resp ${niveau}">
+    <b>${d.note === 0 ? 'Responsive : rien à signaler' : bouts.join(' · ')}</b>${cmp}
+  </div>`;
+}
+const nAudit = Object.values(AUDIT).filter(a => a.mien).length;
+const nSains = Object.values(AUDIT).filter(a => a.mien && a.mien.note === 0).length;
+
 const html = `<!doctype html>
 <html lang="fr">
 <head>
@@ -73,7 +105,8 @@ body{margin:0;background:var(--bg);color:var(--txt);font-size:15px;line-height:1
 header{display:flex;align-items:baseline;justify-content:space-between;gap:.8rem;flex-wrap:wrap;margin-bottom:.9rem}
 h1{font-size:1rem;margin:0;font-weight:700}
 h1 i{font-style:normal;color:var(--or)}
-.cpt{font-size:.75rem;color:var(--mut);font-variant-numeric:tabular-nums}
+.cpt{font-size:.75rem;color:var(--mut);font-variant-numeric:tabular-nums;text-align:right}
+.cpt2{font-size:.7rem;color:#8d99a8}
 a.retour{color:var(--mut);font-size:.78rem;text-decoration:none}
 a.retour:hover{color:var(--or)}
 
@@ -183,6 +216,18 @@ a.retour:hover{color:var(--or)}
 .boite textarea:focus{outline:none}
 .pied{display:flex;gap:.5rem;padding:.8rem 1.1rem;border-top:1px solid var(--bord);align-items:center}
 .pied .info{color:var(--mut);font-size:.73rem;margin-right:auto}
+/* Résultat d'audit responsive. Le liseré à gauche porte la gravité : on la
+   lit en balayant la grille, sans avoir à parcourir le texte de chaque fiche. */
+.resp{margin:.4rem 0 .1rem;font-size:.68rem;line-height:1.35;padding:.3rem .45rem;
+  border-radius:5px;border-left:3px solid;background:rgba(255,255,255,.028)}
+.resp b{font-weight:600;display:block}
+.resp.sain{border-color:var(--vert);color:#9fdcb5}
+.resp.moyen{border-color:#eab308;color:#e2cd8f}
+.resp.mauvais{border-color:var(--rouge);color:#f0a9a4}
+.resp .cmp{display:block;margin-top:.15rem;font-size:.63rem;letter-spacing:.02em;opacity:.9}
+.resp .cmp.mieux{color:var(--vert)}
+.resp .cmp.egal{color:var(--mut)}
+.resp .cmp.moinsbien{color:var(--rouge);font-weight:700}
 #vide{display:none;text-align:center;color:var(--mut);padding:3rem 1rem;font-size:.88rem}
 </style>
 </head>
@@ -194,7 +239,8 @@ a.retour:hover{color:var(--or)}
     <h1>Sites clients — <i>vue en vignettes</i></h1>
     <a class="retour" href="/sites-clients/">← revenir à l'inventaire détaillé</a>
   </div>
-  <span class="cpt"><b id="n">${items.length}</b> / ${items.length} sites · ${nVig} capturés · ${nSansSite} à vérifier <span class="lp" aria-hidden="true">🔍</span></span>
+  <span class="cpt"><b id="n">${items.length}</b> / ${items.length} sites · ${nVig} capturés · ${nSansSite} à vérifier <span class="lp" aria-hidden="true">🔍</span>${
+    nAudit ? `<br><span class="cpt2">audit responsive : ${nSains}/${nAudit} sans défaut</span>` : ''}</span>
 </header>
 
 <div class="barre">
@@ -205,6 +251,11 @@ a.retour:hover{color:var(--or)}
     <button class="ch" data-f="fix" aria-pressed="false">À corriger <b>${items.filter(i => i.etat === 'fix').length}</b></button>
     <button class="ch" data-f="abandon" aria-pressed="false">À abandonner <b>${items.filter(i => i.etat === 'abandon').length}</b></button>
     <button class="ch" data-f="__flag" aria-pressed="false">★ Marqués <b id="n-flag">0</b></button>
+    ${nAudit ? `<button class="ch" data-f="__resp" aria-pressed="false">Responsive à revoir <b>${
+      Object.values(AUDIT).filter(a => a.mien && a.mien.note > 0).length}</b></button>` : ''}
+    ${Object.values(AUDIT).some(a => a.verdict === 'moins bien')
+      ? `<button class="ch" data-f="__pire" aria-pressed="false">Moins bien qu'avant <b>${
+          Object.values(AUDIT).filter(a => a.verdict === 'moins bien').length}</b></button>` : ''}
     <button class="ch fin" id="b-reset" type="button">Tout démarquer</button>
     <button class="ch pri" id="b-brief" type="button">Générer l'ordre de correction</button>
   </div>
@@ -212,6 +263,8 @@ a.retour:hover{color:var(--or)}
 
 <div class="grille" id="grille">
 ${items.map(i => `  <article class="carte" data-dir="${esc(i.dir)}" data-etat="${esc(i.etat)}" data-flag="0"
+    data-resp="${AUDIT[i.dir] && AUDIT[i.dir].mien ? AUDIT[i.dir].mien.note : 0}"
+    data-verdict="${esc((AUDIT[i.dir] && AUDIT[i.dir].verdict) || '')}"
     data-k="${esc((i.nom + ' ' + i.act + ' ' + i.dir).toLowerCase())}">
     <div class="vue">
       ${i.vig ? `<img class="apres" src="${esc(i.vig)}" alt="Aperçu de ${esc(i.nom)}" loading="lazy">`
@@ -240,6 +293,7 @@ ${items.map(i => `  <article class="carte" data-dir="${esc(i.dir)}" data-etat="$
     <div class="corps">
       <div class="nom">${esc(i.nom)}</div>
       <div class="meta">${esc(i.act || '—')}${i.tel ? ' · ' + esc(i.tel) : ''}</div>
+      ${badgeResp(i.dir)}
       <div class="etats">
         <button class="et" data-e="ok" type="button">Envoyable</button>
         <button class="et" data-e="fix" type="button">À corriger</button>
@@ -383,7 +437,11 @@ ${items.map(i => `  <article class="carte" data-dir="${esc(i.dir)}" data-etat="$
     var mots = t ? t.split(/\\s+/) : [];
     var vus = 0;
     cartes.forEach(function(c){
-      var okF = !filtre || (filtre === '__flag' ? c.dataset.flag === '1' : c.dataset.etat === filtre);
+    var okF = !filtre
+      || (filtre === '__flag' ? c.dataset.flag === '1'
+      :  filtre === '__resp' ? Number(c.dataset.resp || 0) > 0
+      :  filtre === '__pire' ? c.dataset.verdict === 'moins bien'
+      :  c.dataset.etat === filtre);
       var okT = mots.every(function(w){ return c.dataset.k.indexOf(w) !== -1; });
       var ok = okF && okT;
       c.style.display = ok ? '' : 'none';
@@ -437,6 +495,15 @@ ${items.map(i => `  <article class="carte" data-dir="${esc(i.dir)}" data-etat="$
       lignes.push('   état : ' + (LIB[e] || e) + (s.etat ? '  (décidé à la revue)' : '  (issu de l’inventaire)'));
       lignes.push('   ' + (e === 'abandon' ? 'motif d’abandon' : 'correction') + ' : '
         + ((s.note || '').trim() || '(à préciser)'));
+      // Les défauts mesurés partent AVEC la demande. Sans ça, Tony devrait
+      // les retaper à la main pour chaque site, et il ne le ferait pas.
+      var r = c.querySelector('.resp b');
+      if (r && Number(c.dataset.resp || 0) > 0) {
+        lignes.push('   mesuré au téléphone (390 px) : ' + r.textContent.trim());
+      }
+      if (c.dataset.verdict === 'moins bien') {
+        lignes.push('   ATTENTION : mesuré MOINS BON que le site actuel du client.');
+      }
       lignes.push('');
     });
     return lignes.join('\\n');
