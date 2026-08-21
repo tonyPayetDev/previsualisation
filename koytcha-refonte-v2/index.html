@@ -42,7 +42,27 @@ img{max-width:100%;display:block}
 .nav.pose{background:rgba(255,255,255,.96);padding:11px 0;box-shadow:0 1px 0 var(--ligne);backdrop-filter:blur(8px)}
 .nav .wrap{display:flex;align-items:center;justify-content:space-between;gap:24px}
 .logo{display:flex;align-items:center;gap:11px;text-decoration:none;flex:0 0 auto}
-.logo b{font-family:var(--sans);font-weight:600;font-size:21px;letter-spacing:-.01em;line-height:1}
+.logo img{height:34px;width:auto;display:block;transition:height .4s var(--ease)}
+.nav.pose .logo img{height:29px}
+/* Deux versions du logo : claire sur la photo, d origine une fois la barre
+   posee sur blanc. On les permute, on ne teinte pas — un filtre CSS qui
+   blanchit tout ferait disparaitre le magenta de la marque. */
+.logo .l-sombre{display:none}
+.nav.pose .logo .l-clair{display:none}
+.nav.pose .logo .l-sombre{display:block}
+
+/* Reseaux : vraies couleurs de marque, pas un gris uniforme. Elles ne sont
+   visibles qu au survol — en permanence, quatre pastilles colorees sur une
+   photo tireraient l oeil avant le titre. */
+.reseaux-hero{display:flex;gap:11px;margin-top:34px}
+.rs{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;
+  color:#fff;background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.24);
+  text-decoration:none;transition:all .28s var(--ease)}
+.rs:hover{transform:translateY(-3px);border-color:transparent}
+.rs.fb:hover{background:#1877F2}
+.rs.ig:hover{background:linear-gradient(45deg,#F58529,#DD2A7B 55%,#8134AF)}
+.rs.li:hover{background:#0A66C2}
+.rs.wa:hover{background:#25D366}
 .logo .im{color:var(--magenta)}
 .pastille{width:34px;height:34px;border-radius:50%;background:var(--magenta);display:grid;place-items:center;
   color:#fff;font-family:var(--sans);font-weight:600;font-size:17px;line-height:1}
@@ -70,14 +90,28 @@ img{max-width:100%;display:block}
    boîte de recherche qui dépasse volontairement sous l'en-tête — défaut
    constaté à la capture pleine page, invisible sur un écran seul. */
 .cadre{position:absolute;inset:0;overflow:hidden}
-.bati{position:absolute;inset:-6% -6%;transform-style:preserve-3d;will-change:transform}
+.bati{position:absolute;inset:-9% -9%;will-change:transform;
+  animation:kenburns 38s ease-in-out infinite alternate}
+/* 38 s aller, 38 s retour : assez lent pour qu on ne voie jamais le mouvement
+   commencer ni finir. En dessous de ~25 s ca devient un effet, au-dessus de
+   ~50 s ca ne se percoit plus du tout. */
+@keyframes kenburns{
+  0%  {transform:scale(1.00) translate3d(0,0,0)}
+  100%{transform:scale(1.11) translate3d(-2.2%,-1.6%,0)}
+}
+@media(prefers-reduced-motion:reduce){ .bati{animation:none} }
 .bati img{width:100%;height:100%;object-fit:cover}
 /* Voile de lisibilité : sans lui le texte blanc sur photo claire disparaît.
    Dégradé et pas aplat — un aplat éteindrait la photo, qui est l'argument. */
 .voile{position:absolute;inset:0;
-  background:linear-gradient(100deg,rgba(10,10,10,.86) 0%,rgba(10,10,10,.62) 34%,rgba(10,10,10,.12) 66%,rgba(10,10,10,.35) 100%)}
+  background:linear-gradient(100deg,rgba(10,10,10,.88) 0%,rgba(10,10,10,.66) 30%,rgba(10,10,10,.34) 58%,rgba(10,10,10,.62) 100%)}
 .hero{position:absolute;inset:0;display:flex;align-items:center;z-index:3}
 .hero .wrap{width:100%}
+.grille-hero{display:grid;grid-template-columns:1.15fr .85fr;gap:clamp(30px,5vw,80px);align-items:start;padding-top:6vh}
+@media(max-width:980px){
+  .grille-hero{grid-template-columns:1fr;gap:26px;padding-top:0}
+  .boite{margin-top:8px}
+}
 .sur{font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:rgba(255,255,255,.72);margin:0 0 22px;font-weight:500}
 .hero h1{font-family:var(--serif);font-weight:300;color:#fff;margin:0;
   font-size:clamp(40px,6.6vw,86px);line-height:1.02;letter-spacing:-.02em;max-width:15ch}
@@ -92,20 +126,28 @@ img{max-width:100%;display:block}
 /* 16 % et pas 24 : mesure sur 4 hauteurs d ecran (1080/900/800/720), la
    marge sous le bouton reste de 24 px partout. A 24 % il tombait a 2 px du
    bord — coupe des qu un navigateur ajoute une barre d outils. */
-.recherche{position:absolute;left:0;right:0;bottom:0;z-index:4;transform:translateY(16%)}
-.boite{background:#fff;border-radius:3px;box-shadow:0 26px 60px -18px rgba(0,0,0,.34);
-  padding:clamp(22px,3vw,34px);max-width:720px;margin:0 auto}
-.boite h2{font-family:var(--sans);font-weight:400;font-size:19px;margin:0 0 18px;text-align:center;color:var(--gris)}
+/* Le module vit desormais DANS la grille de l en-tete, colonne de droite,
+   aligne haut. Il ne flotte plus sous la photo : il fait partie du premier
+   ecran, a hauteur du titre. */
+.boite{background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.30);
+  border-radius:4px;box-shadow:0 26px 70px -22px rgba(0,0,0,.55);
+  padding:clamp(24px,2.4vw,32px);
+  /* Le flou blanc demande : verre depoli. Le fond translucide seul donnerait
+     une boite sale ; c est le backdrop-filter qui fait le verre. */
+  backdrop-filter:blur(18px) saturate(115%);
+  -webkit-backdrop-filter:blur(18px) saturate(115%)}
+.boite h2{font-family:var(--sans);font-weight:400;font-size:18px;margin:0 0 18px;color:#fff}
+.boite h2 b{color:#fff;font-weight:600}
 .boite h2 b{color:var(--magenta);font-weight:600}
 .onglets{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
-.onglet{background:#fff;border:1px solid var(--ligne);border-radius:2px;padding:15px;
-  font:inherit;font-size:13px;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;
-  color:var(--gris);transition:all .22s var(--ease)}
-.onglet:hover{border-color:var(--magenta);color:var(--magenta)}
-.onglet[aria-pressed="true"]{border-color:var(--magenta);color:var(--magenta);box-shadow:inset 0 0 0 1px var(--magenta)}
+.onglet{background:rgba(0,0,0,.18);border:1px solid rgba(255,255,255,.28);border-radius:2px;padding:14px;
+  font:inherit;font-size:12.5px;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;
+  color:#fff;transition:all .22s var(--ease)}
+.onglet:hover{border-color:#fff;color:#fff;background:rgba(255,255,255,.18)}
+.onglet[aria-pressed="true"]{background:#fff;border-color:#fff;color:var(--magenta);font-weight:600}
 .boite .bt{width:100%;justify-content:center;padding:16px;letter-spacing:.12em;text-transform:uppercase;font-size:13px}
-.ref{display:block;text-align:center;margin-top:13px;font-size:12.5px;color:var(--gris-clair);text-decoration:none}
-.ref:hover{color:var(--magenta)}
+.ref{display:block;text-align:center;margin-top:13px;font-size:12.5px;color:rgba(255,255,255,.62);text-decoration:none}
+.ref:hover{color:#fff}
 
 /* ── 2. Programmes ───────────────────────────────────────────────────── */
 .sect{padding:clamp(90px,11vw,150px) 0}
@@ -147,6 +189,27 @@ h2.tt i{font-style:italic}
 .chiffre b{display:block;font-family:var(--serif);font-weight:300;font-size:clamp(28px,3.6vw,44px);line-height:1}
 .chiffre span{display:block;font-size:13px;color:var(--gris);margin-top:8px}
 
+/* ── Sections de texte (contenu fourni par l'agence) ─────────────────── */
+.chapo{font-family:var(--serif);font-weight:300;font-size:clamp(20px,2.2vw,27px);
+  line-height:1.35;color:var(--noir);margin:0 0 26px;max-width:26ch}
+.corps{max-width:62ch}
+.corps p{color:var(--gris);font-size:15.5px;margin:0 0 17px}
+.puces{list-style:none;margin:26px 0 0;padding:0;display:grid;gap:13px}
+.puces li{position:relative;padding-left:30px;font-size:15.5px;color:var(--noir)}
+/* Un tiret plutot qu une puce ronde : dans une charte quasi-monochrome, le
+   point colore attire plus que le mot qu il annonce. */
+.puces li::before{content:'';position:absolute;left:0;top:.72em;width:16px;height:1.5px;background:var(--magenta)}
+.piliers{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(22px,3vw,40px);margin-top:clamp(40px,5vw,60px)}
+.pilier{border-top:1px solid var(--ligne);padding-top:22px}
+.pilier h4{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--magenta);margin:0 0 12px;font-weight:500}
+.pilier p{margin:0;font-size:15px;color:var(--gris)}
+.fin-txt{margin-top:clamp(38px,5vw,56px);padding-top:clamp(28px,3.4vw,40px);border-top:1px solid var(--ligne);
+  font-size:15.5px;color:var(--gris);max-width:78ch}
+.trois-chiffres{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:clamp(36px,4.6vw,54px)}
+.tc b{display:block;font-family:var(--serif);font-weight:300;font-size:clamp(22px,2.6vw,32px);line-height:1.1}
+.tc span{display:block;font-size:13px;color:var(--gris);margin-top:7px}
+@media(max-width:900px){ .piliers,.trois-chiffres{grid-template-columns:1fr} }
+
 /* ── 4. Dernière section — l'image qui se révèle au scroll ───────────── */
 /* Deux effets combinés : la photo remonte plus lentement que la page
    (parallaxe) et le cadre s'ouvre en hauteur. L'un sans l'autre paraît soit
@@ -169,6 +232,7 @@ footer{background:var(--noir);color:#fff;padding:clamp(56px,7vw,84px) 0 30px}
 .pied{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:clamp(30px,5vw,64px)}
 footer .logo b{color:#fff}
 footer .logo .im{color:var(--magenta)}
+.bas-logo .logo img{height:38px}
 .bas-logo p{color:rgba(255,255,255,.5);font-size:13.5px;margin:18px 0 0;max-width:32ch}
 footer h4{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:rgba(255,255,255,.45);margin:0 0 18px;font-weight:500}
 footer ul{list-style:none;margin:0;padding:0;font-size:14px}
@@ -178,7 +242,11 @@ footer a:hover{color:var(--magenta)}
 .reseaux{display:flex;gap:10px;margin-top:24px}
 .reseaux a{width:36px;height:36px;border:1px solid rgba(255,255,255,.18);border-radius:50%;
   display:grid;place-items:center;transition:all .25s var(--ease)}
-.reseaux a:hover{background:var(--magenta);border-color:var(--magenta);color:#fff}
+.reseaux a:hover{border-color:transparent;color:#fff;transform:translateY(-3px)}
+.reseaux a:nth-child(1):hover{background:#1877F2}
+.reseaux a:nth-child(2):hover{background:linear-gradient(45deg,#F58529,#DD2A7B 55%,#8134AF)}
+.reseaux a:nth-child(3):hover{background:#0A66C2}
+.reseaux a{transition:all .28s var(--ease)}
 .tout-en-bas{margin-top:clamp(44px,6vw,64px);padding-top:26px;border-top:1px solid rgba(255,255,255,.1);
   display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;
   font-size:12.5px;color:rgba(255,255,255,.42)}
@@ -218,12 +286,16 @@ footer a:hover{color:var(--magenta)}
 
 <nav class="nav" id="nav">
   <div class="wrap">
-    <a class="logo" href="#"><span class="pastille">k</span><b>Koytcha<span class="im">immo</span></b></a>
+    <a class="logo" href="#">
+      <img class="l-clair" src="assets/logo-blanc.png" alt="Koytcha Immo">
+      <img class="l-sombre" src="assets/logo.png" alt="Koytcha Immo">
+    </a>
     <ul class="liens">
       <li><a href="#programmes">Acheter</a></li>
       <li><a href="#programmes">Louer</a></li>
       <li><a href="#apropos">Vendre</a></li>
-      <li><a href="#apropos">À propos</a></li>
+      <li><a href="#accompagne">Notre métier</a></li>
+      <li><a href="#philosophie">Philosophie</a></li>
       <li><a href="#contact">Contact</a></li>
     </ul>
     <a class="bt" href="#contact">Estimation gratuite</a>
@@ -242,22 +314,28 @@ footer a:hover{color:var(--magenta)}
     </div>
     <div class="hero">
       <div class="wrap">
-        <p class="sur">Immobilier d'exception · La Réunion</p>
-        <h1>L'exigence<span class="pt">.</span><i>Notre signature<span class="pt">.</span></i></h1>
-        <p>30 ans d'expertise locale. Biens rares, accompagnement sur mesure,
-           résultats durables.</p>
-      </div>
-    </div>
-    <div class="recherche">
-      <div class="wrap">
-        <div class="boite">
-          <h2>Vous recherchez <b>un bien</b> ?</h2>
-          <div class="onglets">
-            <button class="onglet" type="button" aria-pressed="true">Résidentiel</button>
-            <button class="onglet" type="button" aria-pressed="false">Professionnel</button>
+        <div class="grille-hero">
+          <div>
+            <p class="sur">Immobilier d'exception · La Réunion</p>
+            <h1>L'exigence<span class="pt">.</span><i>Notre signature<span class="pt">.</span></i></h1>
+            <p>30 ans d'expertise locale. Biens rares, accompagnement sur mesure,
+               résultats durables.</p>
+            <div class="reseaux-hero">
+              <a href="https://www.facebook.com/koytchaimmo" target="_blank" rel="noopener" aria-label="Facebook" class="rs fb"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M14 9h3V6h-3c-2.2 0-4 1.8-4 4v2H8v3h2v7h3v-7h3l1-3h-4v-2c0-.6.4-1 1-1z"/></svg></a>
+              <a href="https://www.instagram.com/koytchaimmo" target="_blank" rel="noopener" aria-label="Instagram" class="rs ig"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.4" cy="6.6" r=".7" fill="currentColor"/></svg></a>
+              <a href="https://www.linkedin.com/company/koytcha-immo" target="_blank" rel="noopener" aria-label="LinkedIn" class="rs li"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M5 4a2 2 0 100 4 2 2 0 000-4zM3.5 9.5h3V21h-3zM10 9.5h2.9v1.6c.5-.9 1.6-1.8 3.3-1.8 3 0 3.8 1.8 3.8 4.6V21h-3v-6c0-1.5-.5-2.5-1.9-2.5-1 0-1.7.7-2 1.4-.1.2-.1.6-.1.9V21h-3z"/></svg></a>
+              <a href="https://wa.me/262262979607" target="_blank" rel="noopener" aria-label="WhatsApp" class="rs wa"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 00-8.6 15L2 22l5.2-1.4A10 10 0 1012 2zm0 18a8 8 0 01-4.1-1.1l-.3-.2-3 .8.8-2.9-.2-.3A8 8 0 1112 20zm4.4-5.9c-.2-.1-1.4-.7-1.6-.8s-.4-.1-.6.1-.6.8-.8 1-.3.2-.6 0a6.6 6.6 0 01-3.2-2.8c-.2-.4.2-.4.6-1.2a.5.5 0 000-.5c0-.1-.6-1.4-.8-1.9s-.4-.4-.6-.4h-.5a1 1 0 00-.7.3 2.9 2.9 0 00-.9 2.2 5.1 5.1 0 001 2.7 11.5 11.5 0 004.4 3.9c1.6.6 2.2.7 3 .6a2.6 2.6 0 001.7-1.2 2.1 2.1 0 00.1-1.2c0-.1-.2-.2-.5-.3z"/></svg></a>
+            </div>
           </div>
-          <a class="bt" href="#programmes">Voir les annonces</a>
-          <a class="ref" href="#programmes">Rechercher par référence</a>
+          <div class="boite">
+            <h2>Vous recherchez <b>un bien</b> ?</h2>
+            <div class="onglets">
+              <button class="onglet" type="button" aria-pressed="true">Résidentiel</button>
+              <button class="onglet" type="button" aria-pressed="false">Professionnel</button>
+            </div>
+            <a class="bt" href="#programmes">Voir les annonces</a>
+            <a class="ref" href="#programmes">Rechercher par référence</a>
+          </div>
         </div>
       </div>
     </div>
@@ -332,6 +410,65 @@ footer a:hover{color:var(--magenta)}
   </div>
 </section>
 
+
+<!-- Sections de texte — contenu de l'agence, decoupe en trois temps -->
+<section class="sect" id="accompagne">
+  <div class="wrap">
+    <div class="monte">
+      <p class="eyebrow">Notre métier</p>
+      <h2 class="tt">Koytcha Immo vous accompagne <i>depuis 2004.</i></h2>
+    </div>
+    <div class="corps monte">
+      <p>Koytcha Immo accompagne depuis 2004 avec le même niveau d'exigence les entreprises, propriétaires et investisseurs sur l'ensemble de leurs enjeux immobiliers.</p>
+      <p>Que vous cherchiez à investir, à vendre, ou que vous soyez tout simplement à la recherche d'un achat ou d'une location, Koytcha Immo vous apporte toute son expertise et son savoir-faire afin de vous faciliter la vie tout en optimisant votre projet.</p>
+      <p>Grâce à notre équipe, nous sommes en mesure de répondre à tous vos besoins tant en résidentiel qu'en professionnel :</p>
+      <ul class="puces">
+        <li>Valorisation du patrimoine</li>
+        <li>Transactions dans des délais mesurés et conditions optimales</li>
+        <li>Recherche de locaux adaptés à l'activité, aux employés et à l'image de l'entreprise</li>
+        <li>Accompagnement du client par un conseil global</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="sect apropos" id="promoteur">
+  <div class="wrap">
+    <div class="monte">
+      <p class="eyebrow">Également promoteur</p>
+      <h2 class="tt">Des projets pensés <i>pour La Réunion.</i></h2>
+    </div>
+    <div class="corps monte">
+      <p>Agissant également en tant que promoteur immobilier, Koytcha Immo commercialise de nombreux projets innovants et adaptés aux spécificités locales : immeubles résidentiels, bureaux, locaux d'activités, centres d'affaires.</p>
+      <p>Parmi les projets phares, Ze Bure@u 1 et 2 — plus de 3 000 m² chacun — situés à l'Éperon.</p>
+    </div>
+    <div class="trois-chiffres monte">
+      <div class="tc"><b>Ze Bure@u 1 & 2</b><span>à l'Éperon</span></div>
+      <div class="tc"><b>3 000 m²</b><span>par bâtiment</span></div>
+      <div class="tc"><b>Résidentiel</b><span>et professionnel</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="sect" id="philosophie">
+  <div class="wrap">
+    <div class="monte">
+      <p class="eyebrow">Notre philosophie</p>
+      <h2 class="tt">Une approche globale <i>axée sur le conseil.</i></h2>
+      <p class="chapo">Le client au cœur de nos engagements.</p>
+    </div>
+    <div class="corps monte">
+      <p>Que vous soyez investisseurs, utilisateurs, particuliers à la recherche d'un bien à acheter ou particuliers investisseurs, vos problématiques sont variées. Nous y apportons des expertises spécifiques.</p>
+    </div>
+    <div class="piliers monte">
+      <div class="pilier"><h4>Notre objectif</h4><p>Créer de la valeur à chaque étape de la vie d'un bien immobilier.</p></div>
+      <div class="pilier"><h4>Notre engagement</h4><p>Accompagner durablement nos clients tout au long du cycle de vie immobilier.</p></div>
+      <div class="pilier"><h4>Nos ambitions</h4><p>Proposer des solutions pertinentes et originales dans une optique de long terme.</p></div>
+    </div>
+    <p class="fin-txt monte">Grâce à une offre diversifiée de produits immobiliers implantés sur des emplacements de choix, Koytcha Immo vous aide à optimiser vos investissements professionnels à La Réunion. Particuliers comme investisseurs, nos équipes sont à vos côtés pour comprendre vos enjeux, vous conseiller et vous aider à concrétiser votre stratégie immobilière.</p>
+  </div>
+</section>
+
 <!-- 4 · DERNIÈRE SECTION — la photo se révèle au scroll -->
 <section class="final" id="contact">
   <div class="fond" id="fondFinal">
@@ -351,7 +488,7 @@ footer a:hover{color:var(--magenta)}
   <div class="wrap">
     <div class="pied">
       <div class="bas-logo">
-        <a class="logo" href="#"><span class="pastille">k</span><b>Koytcha<span class="im">immo</span></b></a>
+        <a class="logo" href="#"><img class="l-clair" src="assets/logo-blanc.png" alt="Koytcha Immo"></a>
         <p>Conseil &amp; expertise en immobilier à La Réunion depuis 2004.</p>
         <div class="reseaux">
           <a href="#" aria-label="Facebook"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M14 9h3V6h-3c-2.2 0-4 1.8-4 4v2H8v3h2v7h3v-7h3l1-3h-4v-2c0-.6.4-1 1-1z"/></svg></a>
@@ -405,7 +542,6 @@ footer a:hover{color:var(--magenta)}
   if (reduit) { window.addEventListener('scroll', poser, { passive:true }); return; }
 
   var piste = document.getElementById('piste');
-  var bati  = document.getElementById('bati');
   var fond  = document.getElementById('fondFinal');
   var cercle= document.getElementById('cercle');
   var img3  = cercle ? cercle.querySelector('img') : null;
@@ -419,20 +555,10 @@ footer a:hover{color:var(--magenta)}
     enVol = false;
     poser();
 
-    /* En-tête : le bâtiment pivote sur son axe vertical pendant la course.
-       Trois transformations liées à la même progression — rotation, léger
-       éloignement et remontée — sinon la rotation seule fait « pancarte ». */
-    if (bati && piste){
-      var r = piste.getBoundingClientRect();
-      var course = piste.offsetHeight - window.innerHeight;
-      var p = Math.min(1, Math.max(0, -r.top / (course || 1)));
-      var ang = p * 17;                    /* degrés : au-delà de ~20 la photo se déforme */
-      bati.style.transform =
-        'perspective(1500px) rotateY(' + (-ang).toFixed(2) + 'deg) ' +
-        'translateZ(' + (-p * 130).toFixed(1) + 'px) ' +
-        'translateY(' + (-p * 26).toFixed(1) + 'px) ' +
-        'scale(' + (1 + p * 0.06).toFixed(4) + ')';
-    }
+    /* Le pivot au scroll a ete retire : il ecrivait un transform en ligne sur
+       .bati, qui l emporte sur l animation CSS du Ken Burns. Les deux effets
+       visaient la meme propriete — garder les deux revenait a n en avoir aucun.
+       Le mouvement de l en-tete est desormais le Ken Burns seul, continu. */
 
     /* Dernière section : la photo remonte moins vite que la page. Le facteur
        reste faible (0,18) — au-delà, le bord de l'image entre dans le cadre
