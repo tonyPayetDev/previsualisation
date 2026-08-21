@@ -1,0 +1,368 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Le Système — Cartographie</title>
+<meta name="description" content="Cartographie vivante du système d'automatisation de Tony PAYET.">
+<style>
+:root{
+  --bg:#050506;
+  --ink:#F4F3F0;
+  --dim:#8A8790;
+  --yellow:#FFE81A;
+  --violet:#A855F7;
+  --orange:#FF7A1A;
+  --cyan:#3DE0D0;
+  --line:rgba(255,255,255,.10);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{
+  background:var(--bg);
+  color:var(--ink);
+  font-family:"Sora","Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  font-feature-settings:"tnum" 1;
+  line-height:1.5;
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+body::before{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:
+    radial-gradient(1100px 700px at 50% 18%, rgba(168,85,247,.16), transparent 62%),
+    radial-gradient(900px 600px at 82% 74%, rgba(255,122,26,.10), transparent 62%),
+    radial-gradient(800px 520px at 12% 66%, rgba(61,224,208,.08), transparent 62%);
+}
+.wrap{position:relative;z-index:1;max-width:1140px;margin:0 auto;padding:clamp(28px,7vw,72px) clamp(16px,5vw,40px) 80px}
+
+/* ---------- header ---------- */
+.eyebrow{
+  font-size:clamp(10px,2.7vw,12px);letter-spacing:.34em;text-transform:uppercase;
+  color:var(--yellow);font-weight:700;margin-bottom:14px;
+}
+h1{
+  font-size:clamp(38px,12vw,86px);line-height:.92;letter-spacing:-.035em;font-weight:800;
+  margin-bottom:16px;
+}
+h1 .accent{
+  background:linear-gradient(96deg,var(--yellow),var(--orange) 46%,var(--violet));
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.lede{
+  font-size:clamp(15px,4vw,20px);color:var(--dim);max-width:44ch;
+}
+.lede b{color:var(--ink);font-weight:600}
+
+/* ---------- graph ---------- */
+.graph{
+  margin:clamp(20px,6vw,44px) calc(clamp(16px,5vw,40px) * -1) clamp(8px,3vw,20px);
+  padding:0 4px;
+}
+svg.map{display:block;width:100%;height:auto;overflow:visible}
+
+.edge-base{fill:none;stroke:var(--line);stroke-width:2}
+.edge-pulse{fill:none;stroke-width:3.4;stroke-linecap:round;
+  stroke-dasharray:5 95;stroke-dashoffset:100;
+  animation:flow 3.4s linear infinite;filter:url(#soft)}
+@keyframes flow{to{stroke-dashoffset:0}}
+
+.hub{opacity:0;transform-box:fill-box;transform-origin:center;animation:pop .7s cubic-bezier(.2,.9,.25,1) forwards}
+@keyframes pop{from{opacity:0;transform:scale(.55)}to{opacity:1;transform:scale(1)}}
+
+.hub-ring{fill:rgba(255,255,255,.035);stroke-width:2.5}
+.hub-dot{filter:url(#soft)}
+.sat{opacity:.55;animation:breathe 4.6s ease-in-out infinite}
+@keyframes breathe{0%,100%{opacity:.28;transform:scale(.86)}50%{opacity:.95;transform:scale(1.12)}}
+
+text{font-family:inherit;font-weight:700}
+.t-hub{font-size:34px;fill:var(--ink);letter-spacing:-.01em}
+.t-num{font-size:29px;font-weight:800;letter-spacing:-.02em}
+.t-sub{font-size:22px;fill:var(--dim);font-weight:600}
+.t-core{font-size:58px;fill:var(--ink);font-weight:800;letter-spacing:-.03em}
+.t-corelabel{font-size:21px;fill:var(--yellow);letter-spacing:.28em;font-weight:700}
+
+.core-halo{animation:halo 6s ease-in-out infinite}
+@keyframes halo{0%,100%{opacity:.32}50%{opacity:.72}}
+.core-spin{transform-box:fill-box;transform-origin:center;animation:spin 26s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ---------- stat strip ---------- */
+.strip{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:1px;
+  background:var(--line);border:1px solid var(--line);border-radius:16px;overflow:hidden;
+  margin-top:clamp(16px,5vw,28px);
+}
+.strip div{background:#0A0A0C;padding:clamp(13px,3.6vw,20px) clamp(9px,2.6vw,16px)}
+.strip .n{font-size:clamp(22px,7vw,38px);font-weight:800;letter-spacing:-.03em;line-height:1}
+.strip .l{font-size:clamp(9.5px,2.7vw,12px);color:var(--dim);text-transform:uppercase;letter-spacing:.13em;margin-top:7px;font-weight:600}
+.c1{color:var(--violet)}.c2{color:var(--yellow)}.c3{color:var(--orange)}.c4{color:var(--cyan)}
+
+/* ---------- layers ---------- */
+.h2{
+  font-size:clamp(11px,3vw,13px);letter-spacing:.3em;text-transform:uppercase;color:var(--dim);
+  margin:clamp(44px,10vw,76px) 0 18px;font-weight:700;
+}
+.cards{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+.card{
+  background:linear-gradient(180deg,#0B0B0E,#08080A);
+  border:1px solid var(--line);border-radius:18px;
+  padding:clamp(16px,4.4vw,22px);
+  position:relative;overflow:hidden;
+}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--k,var(--yellow))}
+.card h3{
+  font-size:clamp(15px,4.2vw,18px);font-weight:700;letter-spacing:-.01em;
+  display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:4px;
+}
+.card h3 span{font-size:clamp(11px,3vw,13px);font-weight:800;color:var(--k,var(--yellow));letter-spacing:.04em}
+.card p{font-size:clamp(12.5px,3.4vw,14px);color:var(--dim);margin-bottom:12px}
+.card ul{list-style:none;display:flex;flex-wrap:wrap;gap:6px}
+.card li{
+  font-size:clamp(11px,3vw,12.5px);color:#C9C6CE;
+  border:1px solid var(--line);border-radius:999px;padding:4px 10px;
+  background:rgba(255,255,255,.02);white-space:nowrap;
+}
+
+/* ---------- flow ---------- */
+.flow{
+  margin-top:clamp(40px,9vw,68px);border:1px solid var(--line);border-radius:20px;
+  padding:clamp(18px,5vw,30px);background:linear-gradient(180deg,#0A0A0D,#070709);
+}
+.flow ol{list-style:none;display:flex;flex-direction:column;gap:0}
+.flow li{display:flex;gap:14px;align-items:flex-start;padding:11px 0;position:relative}
+.flow li:not(:last-child)::after{
+  content:"";position:absolute;left:12px;top:34px;bottom:-4px;width:1px;
+  background:linear-gradient(180deg,var(--line),transparent);
+}
+.flow .b{
+  flex:0 0 25px;height:25px;border-radius:50%;display:grid;place-items:center;
+  font-size:11px;font-weight:800;color:#050506;background:var(--k,var(--yellow));
+}
+.flow .txt{font-size:clamp(13px,3.6vw,15.5px);padding-top:2px}
+.flow .txt em{display:block;font-style:normal;color:var(--dim);font-size:clamp(11.5px,3.1vw,13px);margin-top:2px}
+
+.foot{margin-top:44px;font-size:clamp(11px,3vw,12.5px);color:#5C5A62;line-height:1.7}
+.foot b{color:var(--dim);font-weight:600}
+
+@media (max-width:600px){
+  .t-hub{font-size:39px}
+  .t-num{font-size:31px}
+  .t-sub{font-size:0px}
+  .t-core{font-size:66px}
+  .t-corelabel{font-size:24px}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+  .hub{opacity:1}
+  .edge-pulse{stroke-dasharray:none;stroke-opacity:.5}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="eyebrow">Automation Boost — cartographie</div>
+  <h1>Ce n'est pas la Matrice.<br><span class="accent">C'est mon système.</span></h1>
+  <p class="lede">Un seul dépôt. <b>529 workflows</b>, <b>87 skills</b>, <b>5 agents</b> et <b>120 vidéos</b> qui tournent ensemble, tous les jours, sans moi.</p>
+
+  <div class="graph">
+  <svg class="map" viewBox="-150 -70 1300 1250" role="img" aria-label="Graphe du système : un noyau central relié à sept pôles — n8n, skills, agents, vidéos, prévisualisation, sites clients et services externes.">
+    <defs>
+      <filter id="soft" x="-70%" y="-70%" width="240%" height="240%">
+        <feGaussianBlur stdDeviation="5" result="b"/>
+        <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+      <filter id="bigsoft" x="-90%" y="-90%" width="280%" height="280%">
+        <feGaussianBlur stdDeviation="26"/>
+      </filter>
+      <radialGradient id="coreg">
+        <stop offset="0%" stop-color="#FFE81A" stop-opacity=".30"/>
+        <stop offset="55%" stop-color="#A855F7" stop-opacity=".16"/>
+        <stop offset="100%" stop-color="#A855F7" stop-opacity="0"/>
+      </radialGradient>
+    </defs>
+
+    <!-- core glow -->
+    <circle class="core-halo" cx="500" cy="500" r="250" fill="url(#coreg)"/>
+    <g class="core-spin">
+      <circle cx="500" cy="500" r="150" fill="none" stroke="rgba(255,255,255,.09)" stroke-width="1.5" stroke-dasharray="3 13"/>
+      <circle cx="500" cy="500" r="196" fill="none" stroke="rgba(255,255,255,.055)" stroke-width="1" stroke-dasharray="2 22"/>
+    </g>
+
+    <!-- ============ EDGES ============ -->
+    <g id="edges"></g>
+
+    <!-- ============ HUBS ============ -->
+    <g id="hubs"></g>
+
+    <!-- ============ CORE ============ -->
+    <circle cx="500" cy="500" r="112" fill="#0A0A0D" stroke="rgba(255,232,26,.55)" stroke-width="2.5"/>
+    <circle cx="500" cy="500" r="112" fill="none" stroke="#FFE81A" stroke-width="2.5" filter="url(#soft)" opacity=".55"/>
+    <text class="t-core" x="500" y="492" text-anchor="middle">TONY</text>
+    <text class="t-corelabel" x="500" y="536" text-anchor="middle">LE SYSTÈME</text>
+  </svg>
+  </div>
+
+  <div class="strip">
+    <div><div class="n c1" data-count="529">0</div><div class="l">workflows n8n</div></div>
+    <div><div class="n c2" data-count="118">0</div><div class="l">actifs 24/7</div></div>
+    <div><div class="n c3" data-count="87">0</div><div class="l">skills</div></div>
+    <div><div class="n c4" data-count="120">0</div><div class="l">projets vidéo</div></div>
+    <div><div class="n c1" data-count="180">0</div><div class="l">rendus en ligne</div></div>
+    <div><div class="n c3" data-count="150">0</div><div class="l">sites clients</div></div>
+  </div>
+
+  <div class="h2">Les sept pôles</div>
+  <div class="cards">
+
+    <div class="card" style="--k:var(--violet)">
+      <h3>n8n <span>529 · 118 actifs</span></h3>
+      <p>Le moteur. Webhooks, crons et sous-workflows qui tournent en continu sur l'instance privée.</p>
+      <ul><li>voix &amp; rendu</li><li>publication</li><li>leads</li><li>scraping</li><li>images</li><li>sites</li></ul>
+    </div>
+
+    <div class="card" style="--k:var(--yellow)">
+      <h3>Skills <span>87</span></h3>
+      <p>Les savoir-faire réutilisables : chaque format vidéo, chaque routine marketing, chaque pattern n8n.</p>
+      <ul><li>HyperFrames</li><li>formats Autoboost</li><li>n8n</li><li>design</li><li>marketing</li><li>ops</li></ul>
+    </div>
+
+    <div class="card" style="--k:var(--orange)">
+      <h3>Agents <span>5</span></h3>
+      <p>Ils décident. Analyse des perfs, écriture des scripts, orchestration business, surveillance des crons.</p>
+      <ul><li>social-analytics</li><li>script-writer</li><li>business-orchestrator</li><li>cron-watchdog</li><li>befresh-content</li></ul>
+    </div>
+
+    <div class="card" style="--k:var(--yellow)">
+      <h3>Vidéos <span>120 projets</span></h3>
+      <p>Compositions HTML rendues en 9:16, voix clonée, banque de 24 clips avatar, palette sonore figée.</p>
+      <ul><li>série Autoboost</li><li>Journal IA quotidien</li><li>FoodBoost</li><li>BeFresh</li></ul>
+    </div>
+
+    <div class="card" style="--k:var(--cyan)">
+      <h3>Prévisualisation <span>180 routes</span></h3>
+      <p>Chaque rendu obtient sa page. Validation au téléphone avant toute publication — jamais d'écrasement.</p>
+      <ul><li>une route par variante</li><li>comparatif avant/après</li><li>publication auto</li></ul>
+    </div>
+
+    <div class="card" style="--k:var(--orange)">
+      <h3>Sites clients <span>~150</span></h3>
+      <p>Restauration, santé, tourisme, commerce — majoritairement à La Réunion. 88 en sous-modules git.</p>
+      <ul><li>déploiement Coolify</li><li>optimisation SEO</li><li>refontes</li></ul>
+    </div>
+
+    <div class="card" style="--k:var(--violet)">
+      <h3>Services <span>15+</span></h3>
+      <p>Les briques externes que le système pilote par API — aucune saisie manuelle dans les interfaces.</p>
+      <ul><li>Blotato</li><li>Google Sheets</li><li>WaveSpeed</li><li>Kie.ai</li><li>Cloudflare R2</li><li>Supabase</li><li>Apify</li><li>Coolify</li></ul>
+    </div>
+
+  </div>
+
+  <div class="h2">La boucle complète</div>
+  <div class="flow">
+    <ol>
+      <li style="--k:var(--cyan)"><div class="b">1</div><div class="txt">Veille &amp; analyse<em>Scraping concurrents, RSS, performances réelles des comptes</em></div></li>
+      <li style="--k:var(--yellow)"><div class="b">2</div><div class="txt">Scripts<em>Les learnings deviennent des scripts, écrits directement dans la file de production</em></div></li>
+      <li style="--k:var(--orange)"><div class="b">3</div><div class="txt">Rendu vidéo<em>Composition HTML, voix clonée, avatar, sous-titres, musique — en local</em></div></li>
+      <li style="--k:var(--violet)"><div class="b">4</div><div class="txt">Prévisualisation<em>Une page par rendu. Validation au téléphone.</em></div></li>
+      <li style="--k:var(--yellow)"><div class="b">5</div><div class="txt">Publication<em>Cinq réseaux programmés automatiquement</em></div></li>
+      <li style="--k:var(--cyan)"><div class="b">6</div><div class="txt">Leads<em>Commentaires et formulaires captés, DM automatiques, relances par email</em></div></li>
+      <li style="--k:var(--orange)"><div class="b">7</div><div class="txt">Livraison client<em>Sites déployés, contenu produit — puis retour à l'étape 1</em></div></li>
+    </ol>
+  </div>
+
+  <p class="foot">
+    <b>Vue d'ensemble, pas un inventaire.</b> Les identifiants, clés d'API et credentials ne figurent nulle part sur cette page.<br>
+    État au 20 août 2026 — automatisationboost.com
+  </p>
+
+</div>
+
+<script>
+(function(){
+  var HUBS = [
+    {k:'#A855F7', label:'n8n',              num:'529',  sub:'118 actifs',  sats:9},
+    {k:'#FFE81A', label:'Skills',           num:'87',   sub:'savoir-faire',sats:7},
+    {k:'#FF7A1A', label:'Agents',           num:'5',    sub:'décideurs',   sats:5},
+    {k:'#FFE81A', label:'Vidéos',           num:'120',  sub:'projets',     sats:8},
+    {k:'#3DE0D0', label:'Prévisualisation', num:'180',  sub:'rendus',      sats:8},
+    {k:'#FF7A1A', label:'Sites clients',    num:'150',  sub:'livrés',      sats:9},
+    {k:'#A855F7', label:'Services',         num:'15',   sub:'API pilotées',sats:6}
+  ];
+
+  var CX=500, CY=500, R=332, CORE=112, HUB=54;
+  var NS='http://www.w3.org/2000/svg';
+  var edges=document.getElementById('edges');
+  var hubs=document.getElementById('hubs');
+
+  function el(n,a){var e=document.createElementNS(NS,n);for(var k in a)e.setAttribute(k,a[k]);return e;}
+
+  HUBS.forEach(function(h,i){
+    var ang = (-90 + i*(360/HUBS.length)) * Math.PI/180;
+    var ux=Math.cos(ang), uy=Math.sin(ang);
+    var x=CX+R*ux, y=CY+R*uy;
+    var x1=CX+(CORE+6)*ux, y1=CY+(CORE+6)*uy;
+    var x2=CX+(R-HUB-6)*ux, y2=CY+(R-HUB-6)*uy;
+    var d='M'+x1.toFixed(1)+' '+y1.toFixed(1)+' L'+x2.toFixed(1)+' '+y2.toFixed(1);
+
+    edges.appendChild(el('path',{class:'edge-base',d:d}));
+    var p=el('path',{class:'edge-pulse',d:d,stroke:h.k,pathLength:'100'});
+    p.style.animationDelay = (i*0.42).toFixed(2)+'s';
+    edges.appendChild(p);
+
+    var g=el('g',{class:'hub'});
+    g.style.animationDelay = (0.25 + i*0.11).toFixed(2)+'s';
+
+    // satellites
+    for(var s=0;s<h.sats;s++){
+      var sa=(s/h.sats)*Math.PI*2 + i;
+      var sr=HUB+26+((s%3)*11);
+      var c=el('circle',{class:'sat',cx:(x+sr*Math.cos(sa)).toFixed(1),cy:(y+sr*Math.sin(sa)).toFixed(1),r:(s%3===0?5.5:4),fill:h.k});
+      c.style.transformBox='fill-box';c.style.transformOrigin='center';
+      c.style.animationDelay=((i*0.3)+(s*0.23)).toFixed(2)+'s';
+      g.appendChild(c);
+    }
+
+    g.appendChild(el('circle',{class:'hub-ring',cx:x.toFixed(1),cy:y.toFixed(1),r:HUB,stroke:h.k}));
+    // anneau lumineux (le centre reste libre pour le chiffre)
+    g.appendChild(el('circle',{class:'hub-dot',cx:x.toFixed(1),cy:y.toFixed(1),r:HUB,fill:'none',stroke:h.k,'stroke-width':2.5,opacity:.5}));
+
+    // number inside ring
+    var n=el('text',{class:'t-num',x:x.toFixed(1),y:(y+10).toFixed(1),'text-anchor':'middle',fill:h.k});
+    n.textContent=h.num; g.appendChild(n);
+
+    // label centre sous l'anneau : jamais rogne par les bords, quelle que soit la longueur.
+    // Les deux poles du bas sont decales verticalement pour ne pas se chevaucher.
+    var stagger = (uy>0.35 && ux<0) ? 46 : 0;
+    var ly = y + HUB + 56 + stagger;
+    var t=el('text',{class:'t-hub',x:x.toFixed(1),y:ly.toFixed(1),'text-anchor':'middle'});
+    t.textContent=h.label; g.appendChild(t);
+
+    var t2=el('text',{class:'t-sub',x:x.toFixed(1),y:(ly+30).toFixed(1),'text-anchor':'middle'});
+    t2.textContent=h.sub; g.appendChild(t2);
+
+    hubs.appendChild(g);
+  });
+
+  // count-up
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  document.querySelectorAll('[data-count]').forEach(function(node,idx){
+    var target=parseInt(node.getAttribute('data-count'),10);
+    if(reduce){node.textContent=target;return;}
+    var start=null, dur=1150, delay=260+idx*90;
+    setTimeout(function(){
+      requestAnimationFrame(function step(ts){
+        if(!start)start=ts;
+        var p=Math.min((ts-start)/dur,1);
+        var e=1-Math.pow(1-p,3);
+        node.textContent=Math.round(target*e);
+        if(p<1)requestAnimationFrame(step);
+      });
+    },delay);
+  });
+})();
+</script>
+</body>
+</html>

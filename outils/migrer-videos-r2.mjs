@@ -75,20 +75,36 @@ function referencesDe(cible) {
 }
 
 // ------------------------------------------------------------------ R2
+// Le paramètre anti-cache n'est pas de la superstition : sans lui, la première
+// vérification (celle qui demande « est-ce déjà là ? ») reçoit un 404, et ce
+// 404 peut être resservi juste après l'upload. Dix-huit fichiers ont ainsi été
+// déclarés en échec alors qu'ils étaient bien écrits — le workflow avait
+// pourtant répondu {"status":"ok"} pour chacun.
 function dejaLa(f, taille) {
   try {
-    const h = execFileSync('curl', ['-sI', '--max-time', '30', url(f)], { encoding: 'utf8' });
+    const h = execFileSync('curl', ['-sI', '--max-time', '30',
+      `${url(f)}?v=${Date.now()}${Math.random().toString(36).slice(2)}`], { encoding: 'utf8' });
     if (!/^HTTP\/[\d.]+ 200/m.test(h)) return false;
     const m = h.match(/content-length:\s*(\d+)/i);
     return m && +m[1] === taille;
   } catch { return false; }
 }
 
+// R2 met parfois une poignée de secondes à servir un objet tout juste écrit.
+const souffler = (s) => { try { execFileSync('sleep', [String(s)]); } catch {} };
+
+// Le type MIME doit être posé À L'ENVOI. curl étiquette une pièce multipart
+// en `application/octet-stream` par défaut, n8n propage cette valeur jusqu'à
+// R2, et Safari iOS refuse alors de lire la vidéo — donc précisément le
+// navigateur sur lequel Tony valide. Mesuré : sans `;type=`, l'objet ressort
+// en `application/octet-stream` ; avec, en `video/webm`.
+const MIME = { mp4: 'video/mp4', webm: 'video/webm', mov: 'video/quicktime' };
+
 function televerser(f) {
-  const r = execFileSync('curl', ['-s', '--max-time', '900', '-X', 'POST',
-    '-F', `data=@${path.join(RACINE, f)}`,
+  const ext = f.split('.').pop().toLowerCase();
+  return execFileSync('curl', ['-s', '--max-time', '900', '-X', 'POST',
+    '-F', `data=@${path.join(RACINE, f)};type=${MIME[ext] || 'application/octet-stream'}`,
     `${WEBHOOK}?cle=${encodeURIComponent(`${PREFIXE}/${f}`)}`], { encoding: 'utf8' });
-  return r;
 }
 
 // ------------------------------------------------------------------ marche
@@ -98,11 +114,17 @@ console.log(AGIR ? 'MODE RÉEL — téléversement, réécriture et suppression\
 
 const journal = [];
 let migrees = 0, octets = 0, sansRef = 0;
+const vides = [], echecs = [];
 
 for (const [i, v] of videos.entries()) {
   const refs = referencesDe(v.f);
   const etiq = `[${String(i + 1).padStart(3)}/${videos.length}] ${(v.taille / 1e6).toFixed(1).padStart(6)} Mo  ${v.f}`;
   if (!refs.length) sansRef++;
+
+  // Un fichier vide fait échouer le workflow (constaté : le nœud S3 rend
+  // « There was a problem executing the workflow »). On le laisse en place
+  // et on le signale — c'est un fichier cassé, pas un fichier à migrer.
+  if (v.taille === 0) { console.log(`${etiq}  ⚠ 0 octet — ignoré, fichier cassé`); vides.push(v.f); continue; }
 
   if (!AGIR) {
     console.log(`${etiq}\n        ${refs.length} référence(s)${refs.length ? ' → ' + [...new Set(refs.map((r) => r.fichier))].join(', ') : '  ⚠ aucune'}`);
@@ -112,10 +134,22 @@ for (const [i, v] of videos.entries()) {
 
   if (!dejaLa(v.f, v.taille)) {
     process.stdout.write(`${etiq}  téléversement…`);
-    let rep;
-    try { rep = televerser(v.f); } catch (e) { console.log(`  ✗ ${e.message.slice(0, 80)}`); continue; }
-    if (!dejaLa(v.f, v.taille)) {
-      console.log(`  ✗ objet absent ou tronqué après upload — ${String(rep).slice(0, 120)}`);
+    // Cloudflare coupe une requête à 100 s : au-delà d'environ 75 Mo, l'envoi
+    // rend « error code: 524 » alors que l'objet est parfois déjà écrit. On
+    // réessaie, et surtout on RE-VÉRIFIE entre deux tentatives — un 524 ne
+    // veut pas dire que l'upload a échoué, seulement que la réponse n'est pas
+    // revenue à temps.
+    let rep, ok = false;
+    for (let essai = 1; essai <= 3 && !ok; essai++) {
+      try { rep = televerser(v.f); } catch (e) { rep = e.message; }
+      souffler(4);                   // laisser R2 servir l'objet avant de le juger
+      ok = dejaLa(v.f, v.taille);
+      if (!ok) { souffler(8); ok = dejaLa(v.f, v.taille); }
+      if (!ok && essai < 3) process.stdout.write(` (essai ${essai + 1})`);
+    }
+    if (!ok) {
+      console.log(`  ✗ objet absent ou tronqué après 3 essais — ${String(rep).slice(0, 90)}`);
+      echecs.push(v.f);
       continue;                      // on ne supprime RIEN si la vérif échoue
     }
     process.stdout.write('  ✓ vérifié');
@@ -136,5 +170,7 @@ for (const [i, v] of videos.entries()) {
 
 writeFileSync(path.join(RACINE, 'outils/migration-r2.json'), JSON.stringify(journal, null, 1));
 console.log(`\n${AGIR ? migrees + ' vidéos migrées · ' + (octets / 1e9).toFixed(2) + ' Go sortis du dépôt' : 'analyse terminée'}`);
+if (vides.length) console.log(`\u26a0 ${vides.length} fichier(s) a 0 octet laisses en place : ${vides.join(", ")}`);
+if (echecs.length) console.log(`\u2717 ${echecs.length} echec(s) : ${echecs.join(", ")}`);
 if (sansRef) console.log(`⚠ ${sansRef} vidéo(s) sans référence trouvée — migrées quand même, mais à vérifier`);
 console.log('→ outils/migration-r2.json');
