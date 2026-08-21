@@ -50,6 +50,19 @@ const nVig = items.filter(i => i.vig).length;
 const rechercheUrl = i => 'https://www.google.com/search?q=' + encodeURIComponent(
   `"${i.nom}" ${i.act || ''} La Réunion`.replace(/\s+/g, ' ').trim());
 
+// Icônes en SVG inline plutôt qu'en emoji : un emoji change de dessin d'un
+// téléphone à l'autre, et certains rendent en couleur fixe — impossible de
+// les accorder à la couleur du bouton. `currentColor` suit le bouton.
+const svg = (d, extra = '') => `<svg viewBox="0 0 24 24" width="13" height="13" fill="none"
+  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+  aria-hidden="true">${extra}${d}</svg>`;
+const ICO = {
+  etoile: svg('<path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8L3.5 9.7l5.9-.9z"/>'),
+  maquette: svg('<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M7 6.5h.01M10 6.5h.01"/>'),
+  lien: svg('<path d="M14 4h6v6M20 4l-8.5 8.5"/><path d="M18 13.5V19a1.5 1.5 0 0 1-1.5 1.5h-11A1.5 1.5 0 0 1 4 19V8a1.5 1.5 0 0 1 1.5-1.5H11"/>'),
+  tel: svg('<path d="M6.5 3.5h3l1.5 4-2 1.5a12 12 0 0 0 6 6l1.5-2 4 1.5v3a1.5 1.5 0 0 1-1.6 1.5C11.4 19.4 4.6 12.6 4 5.1A1.5 1.5 0 0 1 5.5 3.5z"/>'),
+};
+
 const loupe = i => `<a class="loupe" href="${esc(rechercheUrl(i))}" target="_blank" rel="noopener"
   title="Chercher ${esc(i.nom)} sur Google" aria-label="Chercher ${esc(i.nom)} sur Google">
   <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"
@@ -196,6 +209,12 @@ a.retour:hover{color:var(--or)}
   border-radius:6px;padding:.24rem .3rem;font-size:.68rem;cursor:pointer;font-family:inherit;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:border-color .15s,color .15s}
 .etats .et:hover{color:var(--txt)}
+/* Même au repos, chaque état porte déjà sa teinte. Tous gris, il fallait lire
+   les trois libellés pour viser le bon ; teintés, la position et la couleur
+   suffisent après quelques fiches. */
+.etats .et[data-e=ok]{color:#6f9d80;border-color:#2a3d33}
+.etats .et[data-e=fix]{color:#9b8b52;border-color:#3c3826}
+.etats .et[data-e=abandon]{color:#9a6a67;border-color:#3c2b2a}
 .etats .et[aria-pressed=true][data-e=ok]{border-color:var(--vert);color:var(--vert);background:rgba(74,222,128,.1)}
 .etats .et[aria-pressed=true][data-e=fix]{border-color:var(--or);color:var(--or);background:rgba(234,179,8,.1)}
 .etats .et[aria-pressed=true][data-e=abandon]{border-color:var(--rouge);color:var(--rouge);background:rgba(239,100,97,.1)}
@@ -212,9 +231,37 @@ a.retour:hover{color:var(--or)}
 .actions{display:flex;gap:.3rem;flex-wrap:wrap;margin-top:auto;padding-top:.35rem}
 .bt{background:none;border:1px solid var(--bord);color:var(--mut);border-radius:6px;
   padding:.24rem .52rem;font-size:.71rem;cursor:pointer;font-family:inherit;text-decoration:none;
-  display:inline-flex;align-items:center;gap:.25rem}
+  display:inline-flex;align-items:center;gap:.28rem}
 .bt:hover{color:var(--txt);border-color:#3a3a4a}
-.bt.on{border-color:var(--or);color:var(--or);background:rgba(234,179,8,.1)}
+.bt svg{flex:0 0 auto;display:block}
+
+/* Une couleur par FONCTION, pas par goût — c'est ce qui permet de viser le
+   bon bouton sans lire, une fois qu'on a fait le geste trois fois :
+     or     ce que je marque pour l'ordre de correction
+     violet ma maquette, mon travail
+     bleu   leur site à eux
+     vert   l'appel — la seule action qui rapporte de l'argent */
+.bt.f{border-color:#5a4a1c;color:#d7ab35}
+.bt.f:hover{background:rgba(234,179,8,.09)}
+.bt.on{border-color:var(--or);color:var(--or);background:rgba(234,179,8,.14)}
+.bt.mienne{border-color:#453a63;color:#b3a0e8}
+.bt.mienne:hover{background:rgba(167,139,250,.1);color:#c9baf5}
+.bt.leur{border-color:#3b5372;color:#8fb6ff}
+.bt.leur:hover{background:#182338;color:#b0cbff}
+.bt.tel{border-color:#2c5540;color:#6cd39b}
+.bt.tel:hover{background:rgba(74,222,128,.1);color:#8fe0b3}
+
+/* Sur téléphone les libellés sautent : quatre boutons texte passaient sur
+   deux lignes et écrasaient la fiche. L'icône reste, le libellé part dans
+   aria-label pour que le bouton garde un nom. */
+@media (max-width:560px){
+  .actions{gap:.35rem}
+  /* 40 px minimum : c'est le seuil sous lequel on rate la cible au doigt,
+     et celui que l'audit responsive de cette même page signale en défaut. */
+  .bt{padding:.4rem;min-width:40px;min-height:40px;justify-content:center}
+  .bt .lb{display:none}
+  .bt svg{width:15px;height:15px}
+}
 .note{width:100%;background:var(--pan2);border:1px solid var(--bord);color:var(--txt);
   border-radius:7px;padding:.45rem .55rem;font-size:.76rem;font-family:inherit;resize:vertical;
   min-height:2.2rem;display:none}
@@ -319,12 +366,17 @@ ${items.map(i => `  <article class="carte" data-dir="${esc(i.dir)}" data-etat="$
         <button class="et" data-e="abandon" type="button">Abandonner</button>
       </div>
       <div class="actions">
-        <button class="bt f" type="button" title="Marquer pour l'ordre de correction">★ marquer</button>
-        <a class="bt" href="/${esc(i.route)}/" target="_blank" rel="noopener">ma maquette</a>
+        <button class="bt f" type="button" title="Marquer pour l'ordre de correction"
+          aria-label="Marquer ${esc(i.nom)} pour l'ordre de correction">${ICO.etoile}<span class="lb">marquer</span></button>
+        <a class="bt mienne" href="/${esc(i.route)}/" target="_blank" rel="noopener"
+          title="Ouvrir la maquette que j'ai faite" aria-label="Ouvrir ma maquette pour ${esc(i.nom)}">${ICO.maquette}<span class="lb">ma maquette</span></a>
         ${urlDe[i.dir]
-            ? `<a class="bt leur" href="${esc(urlDe[i.dir])}" target="_blank" rel="noopener">leur site ↗</a>`
+            ? `<a class="bt leur" href="${esc(urlDe[i.dir])}" target="_blank" rel="noopener"
+                 title="Ouvrir leur site actuel : ${esc(urlDe[i.dir].replace(/^https?:\/\//, ''))}"
+                 aria-label="Ouvrir le site actuel de ${esc(i.nom)}">${ICO.lien}<span class="lb">leur site</span></a>`
             : ''}
-        ${i.tel ? `<a class="bt" href="tel:${esc(i.tel)}">appeler</a>` : ''}
+        ${i.tel ? `<a class="bt tel" href="tel:${esc(i.tel)}" title="Appeler ${esc(i.tel)}"
+          aria-label="Appeler ${esc(i.nom)}">${ICO.tel}<span class="lb">appeler</span></a>` : ''}
       </div>
       <textarea class="note" rows="2" placeholder="Ce qu'il faut corriger — ou pourquoi abandonner…"></textarea>
     </div>
