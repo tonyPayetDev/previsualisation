@@ -11,10 +11,10 @@ const bornes = (v, a, b) => Math.max(a, Math.min(b, v));
 // Le site pèse 180 images. Cette attente existe qu'on la dessine ou non ;
 // autant en faire la première chose que le visiteur retient. Le compteur suit
 // les images RÉELLEMENT chargées, il ne simule pas une progression.
-// 200 et non 180 : les vingt dernières sont un fondu de la dernière image du
-// vol vers la première, pour que la boucle se referme sans saut. Mesuré, le
+// 224 : 200 images pour le vol entier (lagon, remparts, cirque, volcan) et 24 sont un fondu de la dernière image du
+// de fondu du cratère vers l’eau du départ. Mesuré, le
 // raccord tombe à 2 points sur 255 — invisible.
-const N = 200;
+const N = 224;
 const images = new Array(N);
 const ecranChg = $('#chargement');
 const pctChg = $('#pct'), barreChg = $('#barreChg'), quoiChg = $('#quoiChg');
