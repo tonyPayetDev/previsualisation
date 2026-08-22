@@ -7,14 +7,26 @@
 <meta name="description" content="Proposition de refonte. Survolez La Réunion en trois dimensions, guidé par un paille-en-queue, et composez votre itinéraire sur le relief réel de l'île.">
 <style>
   :root{
-    /* Palette prise sur l'île elle-même : l'indigo de l'océan Indien au large,
-       le basalte du volcan, le vert des Hauts, et la lumière rasante du matin
-       qui vient de l'est. Pas de dark-mode générique — cette île a ses
-       couleurs, et elles ne ressemblent à aucune autre. */
-    --abysse:#050a14; --ocean:#0d2137; --lagon:#1e7f8c;
+    /* LES TROIS COULEURS DU DRAPEAU RÉUNIONNAIS — bleu, jaune, rouge — mais
+       jamais les trois en même temps.
+       Étalées d'un coup elles donneraient un site de kermesse. Ici chaque
+       chapitre en porte UNE SEULE, et le passage de l'une à l'autre suit la
+       montée : on part du bleu de l'océan, on traverse le jaune du soleil au
+       sommet, on finit sur le rouge du volcan encore vivant.
+       La couleur n'est donc pas un décor, elle dit l'altitude. Le seul endroit
+       où les trois se retrouvent est la jauge de défilement, qui montre le
+       trajet entier — et le petit repère de la dernière section. */
+    --bleu:#2E7FD4;    /* l'océan, le rivage, l'arrivée */
+    --jaune:#F2B705;   /* le soleil, le sommet, au-dessus des nuages */
+    --rouge:#D8402F;   /* le feu, la Fournaise, ce qui est vivant */
+
+    /* Teinte courante, interpolée au défilement par ile.js. Tout ce qui est
+       accentué lit CETTE variable et rien d'autre — un seul point de vérité. */
+    --accent:#2E7FD4;
+
+    --abysse:#050a14; --ocean:#0d2137;
     --basalte:#1a1614; --hauts:#2f4a35; --sable:#e8dfd2;
-    --soleil:#ffb547; --braise:#e8590c; --ecume:#f7f9fb;
-    --gris:#8d97a5;
+    --ecume:#f7f9fb; --gris:#8d97a5;
   }
   *{margin:0;padding:0;box-sizing:border-box}
   html{scroll-behavior:auto}
@@ -49,11 +61,11 @@
   section:nth-child(even) .bloc{margin-left:auto}
 
   .altitude{font-size:11px;letter-spacing:.24em;text-transform:uppercase;
-    color:var(--soleil);font-weight:600;display:flex;gap:10px;align-items:center}
-  .altitude::before{content:'';width:26px;height:1px;background:var(--soleil)}
+    color:var(--accent);font-weight:600;display:flex;gap:10px;align-items:center}
+  .altitude::before{content:'';width:26px;height:1px;background:var(--accent)}
   h1{font-size:clamp(42px,8vw,86px);line-height:.94;font-weight:800;
     letter-spacing:-.035em;margin:18px 0 0}
-  h1 em{font-style:normal;display:block;color:var(--soleil)}
+  h1 em{font-style:normal;display:block;color:var(--accent)}
   h2{font-size:clamp(28px,4.4vw,46px);line-height:1.06;font-weight:700;
     letter-spacing:-.028em;margin:16px 0 0}
   p{color:#c4ccd8;margin-top:16px;font-size:15.5px}
@@ -65,17 +77,26 @@
 
   /* ── L'outil : composer son itinéraire ─────────────────────────────── */
   .outil{max-width:760px;width:100%;margin:0 auto}
+  /* Le seul endroit du contenu où les trois couleurs se retrouvent. On a
+     traversé l'île chapitre par chapitre, une couleur à la fois ; ici on
+     compose le trajet entier, donc le repère les réunit. Trois traits, pas un
+     drapeau dessiné — le minimum qui se lise comme une citation. */
+  .marque{display:flex;gap:5px;margin-bottom:20px}
+  .marque i{display:block;width:26px;height:3px;border-radius:2px}
+  .marque i:nth-child(1){background:var(--bleu)}
+  .marque i:nth-child(2){background:var(--jaune)}
+  .marque i:nth-child(3){background:var(--rouge)}
   .envies{display:flex;flex-wrap:wrap;gap:10px;margin-top:24px}
   .envie{border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.04);
     color:var(--ecume);border-radius:999px;padding:11px 19px;font-size:14px;
     cursor:pointer;transition:all .22s cubic-bezier(.22,1,.36,1);font-family:inherit}
-  .envie:hover{border-color:var(--soleil)}
-  .envie[aria-pressed="true"]{background:var(--soleil);border-color:var(--soleil);
+  .envie:hover{border-color:var(--accent)}
+  .envie[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);
     color:var(--abysse);font-weight:600}
   .resultat{margin-top:28px;border-top:1px solid rgba(255,255,255,.1);padding-top:24px}
   .etape{display:grid;grid-template-columns:auto 1fr auto;gap:16px;align-items:baseline;
     padding:13px 0;border-bottom:1px solid rgba(255,255,255,.06)}
-  .etape i{font-style:normal;color:var(--soleil);font-variant-numeric:tabular-nums;
+  .etape i{font-style:normal;color:var(--accent);font-variant-numeric:tabular-nums;
     font-weight:600;font-size:13px}
   .etape b{font-weight:600}
   .etape em{font-style:normal;color:var(--gris);font-size:13px;display:block;margin-top:2px}
@@ -92,8 +113,35 @@
     text-align:center;pointer-events:none}
   .note b{color:#b9c2cf;font-weight:600}
 
-  .jauge{position:fixed;top:0;left:0;height:2px;z-index:4;
-    background:linear-gradient(90deg,var(--lagon),var(--soleil));width:0}
+  /* La jauge est le SEUL endroit où les trois couleurs coexistent : elle
+     représente le trajet entier, de la mer au feu. Le dégradé est posé sur une
+     largeur fixe de viewport et la barre le révèle — sinon le dégradé se
+     comprimerait dans la barre et on verrait les trois couleurs dès le premier
+     pixel, ce qui tuerait justement l'idée de progression. */
+  .jauge{position:fixed;top:0;left:0;height:2px;z-index:5;width:0;overflow:hidden}
+  .jauge::after{content:'';position:absolute;inset:0;width:100vw;
+    background:linear-gradient(90deg,var(--bleu) 0%,var(--bleu) 22%,
+      var(--jaune) 58%,var(--rouge) 88%,var(--rouge) 100%)}
+
+  /* ── L'écran de chargement ─────────────────────────────────────────────
+     Le relief pèse 263 000 sommets à décoder puis à colorer. Cette attente
+     existe qu'on la dessine ou non ; autant en faire la première chose que le
+     visiteur retient. Le compteur monte pour de vrai, étape par étape — il ne
+     simule pas une progression. */
+  .chargement{position:fixed;inset:0;z-index:9;background:var(--abysse);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    gap:18px;transition:opacity .7s ease}
+  .chargement.parti{opacity:0;pointer-events:none}
+  .pct{font-size:clamp(64px,13vw,150px);font-weight:800;line-height:.9;
+    letter-spacing:-.05em;font-variant-numeric:tabular-nums;color:var(--ecume)}
+  .pct sup{font-size:.28em;font-weight:600;vertical-align:super;
+    margin-left:.12em;color:var(--gris)}
+  .etape-chg{font-size:11px;letter-spacing:.28em;text-transform:uppercase;
+    color:var(--gris)}
+  .trait{width:min(280px,58vw);height:2px;background:rgba(255,255,255,.10);
+    overflow:hidden}
+  .trait i{display:block;height:100%;width:0;
+    background:linear-gradient(90deg,var(--bleu),var(--jaune),var(--rouge))}
 
   /* Écrans peu HAUTS (portables 13-14", fenêtres réduites). Le bloc d'accueil
      — titre géant + paragraphe + trois chiffres — dépasse alors la hauteur
@@ -117,13 +165,19 @@
 </head>
 <body>
 
+<div class="chargement" id="chargement">
+  <div class="pct"><span id="pct">0</span><sup>%</sup></div>
+  <div class="trait"><i id="traitChg"></i></div>
+  <p class="etape-chg" id="etapeChg">lecture du relief</p>
+</div>
+
 <div class="jauge" id="jauge"></div>
 <div id="scene"></div>
 <div class="voile"></div>
 
 <main class="fil">
 
-  <section>
+  <section data-teinte="bleu">
     <div class="bloc">
       <p class="altitude">Océan Indien · 21° sud</p>
       <h1>La Réunion<em>vue d'en haut</em></h1>
@@ -139,7 +193,7 @@
     </div>
   </section>
 
-  <section>
+  <section data-teinte="bleu">
     <div class="bloc">
       <p class="altitude">Saint-Denis · niveau de la mer</p>
       <h2>On arrive toujours par le nord</h2>
@@ -150,7 +204,7 @@
     </div>
   </section>
 
-  <section>
+  <section data-teinte="jaune">
     <div class="bloc">
       <p class="altitude">Les cirques · 800 à 2 000 m</p>
       <h2>Trois amphithéâtres<br>dans un volcan mort</h2>
@@ -162,7 +216,7 @@
     </div>
   </section>
 
-  <section>
+  <section data-teinte="jaune">
     <div class="bloc">
       <p class="altitude">Piton des Neiges · 3 070 m</p>
       <h2>Le sommet<br>de l'océan Indien</h2>
@@ -176,7 +230,7 @@
     </div>
   </section>
 
-  <section>
+  <section data-teinte="rouge">
     <div class="bloc">
       <p class="altitude">Piton de la Fournaise · 2 632 m</p>
       <h2>Celui qui est<br>toujours vivant</h2>
@@ -187,8 +241,9 @@
     </div>
   </section>
 
-  <section>
+  <section data-teinte="jaune">
     <div class="bloc outil">
+      <span class="marque" aria-hidden="true"><i></i><i></i><i></i></span>
       <p class="altitude">Composer</p>
       <h2>Votre traversée</h2>
       <p>Choisissez ce que vous voulez voir. L'itinéraire se trace sur le relief,
@@ -217,6 +272,6 @@
      statiques 4 heures (`cache-control: max-age=14400`). Sans lui, un correctif
      poussé dans ile.js reste invisible pendant tout ce temps — et on croit
      l'avoir raté alors qu'il est bien déployé. À incrémenter à chaque correctif. -->
-<script type="module" src="ile.js?v=4"></script>
+<script type="module" src="ile.js?v=9"></script>
 </body>
 </html>

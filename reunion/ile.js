@@ -7,6 +7,31 @@
 // île et une forme.
 import * as THREE from 'three';
 
+// ── Le chargement, montré au lieu d'être subi ──────────────────────────────
+// Décoder la carte d'altitudes puis colorer 263 000 sommets prend un temps réel.
+// Le compteur suit les étapes effectivement franchies ; il ne simule rien.
+const ecranChg = document.getElementById('chargement');
+const pctChg = document.getElementById('pct');
+const traitChg = document.getElementById('traitChg');
+const texteChg = document.getElementById('etapeChg');
+
+// DEUX images d'attente, pas une seule.
+//
+// Le navigateur ne repeint pas pendant un calcul synchrone. Avec un simple
+// `await` de micro-tâche, le compteur reste à 0 pendant toute la construction
+// puis saute à 100 : on aurait dessiné un écran de chargement qui n'affiche
+// jamais de progression. Deux `requestAnimationFrame` garantissent qu'une
+// image a bien été peinte avant qu'on reparte sur du travail bloquant.
+const souffler = () => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+
+async function avancer(p, texte) {
+  if (pctChg) pctChg.textContent = String(Math.round(p));
+  if (traitChg) traitChg.style.width = p + '%';
+  if (texteChg && texte) texteChg.textContent = texte;
+  await souffler();
+}
+
+await avancer(4, 'lecture du relief');
 const T = await (await fetch('assets/terrain.json')).json();
 
 // ── Repères géographiques réels ────────────────────────────────────────────
@@ -47,6 +72,11 @@ const RELIEF = 26;                        // exagération verticale
 
 const scene = new THREE.Scene();
 scene.fog = new THREE.FogExp2(0x050a14, 0.0045);
+// Le fond prend la MÊME couleur que la brume. Sans lui, le ciel reste au noir
+// de la surface d'effacement et l'horizon se découpe en une arête franche : le
+// relief lointain s'estompe dans la brume, puis bute sur du noir pur. Raccordés,
+// la terre se fond dans le ciel et l'île paraît posée dans de l'air.
+scene.background = new THREE.Color(0x050a14);
 
 const cam = new THREE.PerspectiveCamera(50, innerWidth / innerHeight, 0.5, 900);
 const rendu = new THREE.WebGLRenderer({ antialias: true, alpha: false });
@@ -72,6 +102,7 @@ const altitudeA = (u, v) => {
   return (hauteurs[(y * hW + x) * 4] / 255) * T.altitudeMax;
 };
 
+await avancer(16, 'carte d’altitudes');
 const img = new Image();
 img.src = 'assets/hauteurs.png';
 await img.decode();
@@ -87,6 +118,7 @@ hW = img.width; hH = img.height;
 // Maillage : une résolution par axe proportionnelle à l'image, plafonnée.
 // 512 segments = 263 000 sommets, c'est le point où le détail des ravines
 // apparaît sans que le mobile ne décroche.
+await avancer(34, 'maillage du terrain');
 const SEG = 512;
 const geo = new THREE.PlaneGeometry(TAILLE, TAILLE * RATIO, SEG, Math.round(SEG * RATIO));
 geo.rotateX(-Math.PI / 2);
@@ -117,6 +149,7 @@ for (let i = 0; i < pos.count; i++) {
   else c.copy(HAUT).lerp(ROCHE, Math.min(1, (a - 2100) / 900));
   couleurs[i * 3] = c.r; couleurs[i * 3 + 1] = c.g; couleurs[i * 3 + 2] = c.b;
 }
+await avancer(72, 'remparts et cirques');
 geo.setAttribute('color', new THREE.BufferAttribute(couleurs, 3));
 geo.computeVertexNormals();
 
@@ -247,6 +280,7 @@ function faireOiseau() {
   return g;
 }
 
+await avancer(88, 'le paille-en-queue');
 const oiseau = faireOiseau();
 // Reduit : a l echelle 1 il occupait un tiers du cadre et volait la vedette
 // au paysage, qui est le sujet.
@@ -393,8 +427,92 @@ function animer() {
   // trajet dès qu'on arrête de défiler — l'oiseau resterait à mi-chemin entre
   // deux postes, c'est-à-dire pile sur le panneau qu'il doit éviter.
   placer(tCourant);
+  teinter();
   rendu.render(scene, cam);
   requestAnimationFrame(animer);
+}
+// ── La teinte suit la montée ───────────────────────────────────────────────
+// Chaque chapitre porte une des trois couleurs du drapeau, et la page glisse de
+// l'une à l'autre au défilement. Ce n'est pas un habillage : le bleu est le
+// niveau de la mer, le jaune le sommet, le rouge le volcan encore actif. La
+// couleur dit donc l'altitude, et le visiteur l'apprend sans qu'on l'écrive.
+const TEINTES = { bleu: 0x2E7FD4, jaune: 0xF2B705, rouge: 0xD8402F };
+const sections = [...document.querySelectorAll('section[data-teinte]')];
+const chapitres = sections.map((s) => new THREE.Color(TEINTES[s.dataset.teinte] ?? TEINTES.bleu));
+
+const teinteVue = new THREE.Color(chapitres[0] ?? 0x2E7FD4);
+const teinteBut = new THREE.Color(teinteVue);
+const BLANC_CHAUD = new THREE.Color(0xffd9a8);   // la lumière rasante d'origine
+const FOND = new THREE.Color(0x050a14);
+let accentPose = '';   // dernier accent écrit, pour ne pas toucher au DOM à chaque image
+
+// L'INTERFACE NE MONTRE JAMAIS UNE COULEUR INTERMÉDIAIRE. Deux tentatives ont
+// été mesurées avant d'arriver là, et toutes deux fabriquaient une couleur qui
+// n'est pas au drapeau :
+//
+//   · mélange RGB   → bleu et jaune se croisent sur #b19d9f, un gris rosé ;
+//   · mélange HSL   → ils se croisent sur #22e44c, un vert fluo.
+//
+// La seconde est plus jolie mais ajoute une quatrième couleur au tableau, ce
+// qui contredit exactement la consigne : trois couleurs, minimalistes.
+//
+// Donc l'accent SAUTE d'un chapitre à l'autre, sans transition. Le saut est
+// invisible parce qu'il tombe pile dans le creux où le texte du chapitre
+// sortant est déjà effacé et où le suivant n'est pas encore arrivé — le
+// croisement des blocs cache le changement. On ne voit jamais que du bleu, du
+// jaune ou du rouge.
+//
+// Le relief, lui, garde une transition continue : une lumière qui claque d'une
+// image à l'autre se lit comme un défaut de rendu. Elle n'en prend qu'une part,
+// trop diluée pour que la couleur de passage se remarque.
+function teinter() {
+  if (!chapitres.length) return;
+  // LA SECTION RÉELLEMENT À L'ÉCRAN, pas une division du document.
+  //
+  // Découper la progression du défilement en parts égales suppose des sections
+  // de même hauteur. Elles ne le sont pas : celle de l'itinéraire grandit avec
+  // le nombre d'étapes. La teinte dérivait donc — sur un écran de bureau, le
+  // chapitre du volcan restait jaune alors qu'il est rouge, et il l'était bien
+  // sur mobile. Mesuré, pas supposé : on prend la section qui contient le
+  // milieu du cadre.
+  const milieu = innerHeight / 2;
+  let choix = 0, mieux = Infinity;
+  for (let k = 0; k < sections.length; k++) {
+    const r = sections[k].getBoundingClientRect();
+    const d = (milieu < r.top) ? r.top - milieu
+            : (milieu > r.bottom) ? milieu - r.bottom : 0;
+    if (d < mieux) { mieux = d; choix = k; }
+    if (d === 0) break;
+  }
+  teinteBut.copy(chapitres[choix]);
+
+  const hex = '#' + teinteBut.getHexString();
+  if (hex !== accentPose) {
+    document.documentElement.style.setProperty('--accent', hex);
+    accentPose = hex;
+  }
+
+  // La lumière et la brume ne prennent qu'une PART de la teinte.
+  // À pleine dose le relief vire au bleu pétrole puis au rouge sang : on perd
+  // le sable, le vert des Hauts et la roche, c'est-à-dire l'île elle-même.
+  // La couleur doit teinter l'air, pas repeindre le sol.
+  teinteVue.lerp(teinteBut, 0.045);
+  soleil.color.copy(BLANC_CHAUD).lerp(teinteVue, 0.30);
+  scene.fog.color.copy(FOND).lerp(teinteVue, 0.16);
+  scene.background.copy(scene.fog.color);
+}
+
+await avancer(100, 'prêt');
+
+// On n'efface l'écran qu'APRÈS la toute première image rendue. Le faire avant
+// découvrirait un canvas encore noir : le visiteur verrait « 100 % » puis un
+// écran vide, ce qui est pire que l'attente qu'on vient de lui montrer.
+placer(0);
+rendu.render(scene, cam);
+await souffler();
+if (ecranChg) {
+  ecranChg.classList.add('parti');
+  setTimeout(() => ecranChg.remove(), 900);
 }
 animer();
 
@@ -414,10 +532,23 @@ if (window.gsap && window.ScrollTrigger) {
     },
     onUpdate: () => placer(survol.t),
   });
-  gsap.utils.toArray('.bloc').forEach((b) => {
-    gsap.from(b, {
-      opacity: 0, y: 34, duration: 0.9, ease: 'power2.out',
-      scrollTrigger: { trigger: b, start: 'top 82%' },
+  // Les chapitres se fondent l'un DANS l'autre, au rythme du défilement.
+  //
+  // Une simple apparition au seuil laisse le texte planté à l'écran jusqu'à ce
+  // qu'il sorte par le haut : on lit une page qui défile. Accroché à la
+  // progression (`scrub`), le texte monte et s'efface pendant que le suivant
+  // arrive — c'est ce croisement qui fait le mouvement, pas l'apparition.
+  gsap.utils.toArray('section .bloc').forEach((b, k, tous) => {
+    gsap.fromTo(b, { opacity: 0, y: 46 }, {
+      opacity: 1, y: 0, ease: 'none',
+      scrollTrigger: { trigger: b, start: 'top 90%', end: 'top 46%', scrub: 0.6 },
+    });
+    // Le DERNIER bloc ne s'efface jamais : c'est l'outil d'itinéraire, on doit
+    // pouvoir le lire et cliquer dedans une fois arrivé en bas.
+    if (k === tous.length - 1) return;
+    gsap.to(b, {
+      opacity: 0, y: -34, ease: 'none',
+      scrollTrigger: { trigger: b, start: 'bottom 62%', end: 'bottom 14%', scrub: 0.6 },
     });
   });
 } else {
