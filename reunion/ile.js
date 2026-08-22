@@ -517,3 +517,14 @@ function dessiner() {
 }
 dessiner();
 
+// ── La réserve de bas de page ──────────────────────────────────────────────
+// La mention légale est en position fixe : elle recouvre le contenu si les
+// sections ne lui gardent pas de place. Sa hauteur dépend de la largeur (le
+// texte passe sur une à trois lignes), donc on la mesure au lieu de la fixer.
+function mesurerBarre() {
+  const n = document.querySelector('.note');
+  if (n) document.documentElement.style.setProperty('--barre', n.offsetHeight + 'px');
+}
+mesurerBarre();
+addEventListener('resize', mesurerBarre);
+
