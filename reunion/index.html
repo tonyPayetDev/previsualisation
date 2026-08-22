@@ -95,6 +95,19 @@
   .jauge{position:fixed;top:0;left:0;height:2px;z-index:4;
     background:linear-gradient(90deg,var(--lagon),var(--soleil));width:0}
 
+  /* Écrans peu HAUTS (portables 13-14", fenêtres réduites). Le bloc d'accueil
+     — titre géant + paragraphe + trois chiffres — dépasse alors la hauteur
+     disponible, et comme il est centré verticalement il déborde des DEUX
+     côtés : il repasse sous la mention légale quoi qu'on ajoute comme marge.
+     Ce n'est pas une question de réserve mais de taille du contenu. */
+  @media(max-height:900px){
+    section{padding-top:clamp(20px,3vh,44px)}
+    h1{font-size:clamp(38px,6.2vw,62px)}
+    .bloc{padding:clamp(20px,2.6vw,30px)}
+    .chiffre{margin-top:18px;gap:clamp(16px,3vw,32px)}
+    p{margin-top:12px}
+  }
+
   @media(max-width:760px){
     .bloc,section:nth-child(even) .bloc{margin:0;max-width:100%}
     section{padding:20px 16px 90px}
@@ -204,6 +217,6 @@
      statiques 4 heures (`cache-control: max-age=14400`). Sans lui, un correctif
      poussé dans ile.js reste invisible pendant tout ce temps — et on croit
      l'avoir raté alors qu'il est bien déployé. À incrémenter à chaque correctif. -->
-<script type="module" src="ile.js?v=3"></script>
+<script type="module" src="ile.js?v=4"></script>
 </body>
 </html>

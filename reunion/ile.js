@@ -453,6 +453,10 @@ function distanceKm(a, b) {
     + Math.cos(r(a.lat)) * Math.cos(r(b.lat)) * Math.sin(dLon / 2) ** 2;
   return 2 * R * Math.asin(Math.sqrt(h));
 }
+// Milliers séparés par une espace insécable, comme partout ailleurs sur la
+// page : l'en-tête annonce « 3 070 m », l'itinéraire écrivait « 3070 m ».
+const nb = (n) => Math.round(n).toLocaleString('fr-FR').replace(/ |\s/g, ' ');
+
 // L'altitude publiée l'emporte sur la lecture du relief quand elle existe.
 const altitudeDe = (l) => {
   if (l.alt != null) return l.alt;
@@ -498,17 +502,17 @@ function dessiner() {
       km += d;
       const dh = a - altitudeDe(p);
       if (dh > 0) montee += dh;
-      ecart = `${d.toFixed(0)} km · ${dh >= 0 ? '+' : ''}${dh} m`;
+      ecart = `${nb(d)} km · ${dh >= 0 ? '+' : ''}${nb(dh)} m`;
     }
     return `<div class="etape"><i>${String(i + 1).padStart(2, '0')}</i>`
-      + `<div><b>${l.nom}</b><em>${l.alt != null ? '' : '≈ '}${a} m d'altitude</em></div>`
+      + `<div><b>${l.nom}</b><em>${l.alt != null ? '' : '≈ '}${nb(a)} m d'altitude</em></div>`
       + `<span>${ecart}</span></div>`;
   }).join('');
 
   zoneResultat.innerHTML = lignes
     + `<div class="bilan">
-         <div><b>${km.toFixed(0)} km</b><span>à vol d'oiseau</span></div>
-         <div><b>+${montee} m</b><span>de dénivelé cumulé</span></div>
+         <div><b>${nb(km)} km</b><span>à vol d'oiseau</span></div>
+         <div><b>+${nb(montee)} m</b><span>de dénivelé cumulé</span></div>
          <div><b>${suite.length}</b><span>étapes</span></div>
        </div>
        <p class="vide">Distances à vol d'oiseau. Altitudes publiées pour les sommets,
