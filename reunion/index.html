@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>La Réunion — l'île en relief</title>
+<meta name="description" content="Proposition de refonte. Survolez La Réunion en trois dimensions, guidé par un paille-en-queue, et composez votre itinéraire sur le relief réel de l'île.">
+<style>
+  :root{
+    /* Palette prise sur l'île elle-même : l'indigo de l'océan Indien au large,
+       le basalte du volcan, le vert des Hauts, et la lumière rasante du matin
+       qui vient de l'est. Pas de dark-mode générique — cette île a ses
+       couleurs, et elles ne ressemblent à aucune autre. */
+    --abysse:#050a14; --ocean:#0d2137; --lagon:#1e7f8c;
+    --basalte:#1a1614; --hauts:#2f4a35; --sable:#e8dfd2;
+    --soleil:#ffb547; --braise:#e8590c; --ecume:#f7f9fb;
+    --gris:#8d97a5;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:auto}
+  body{background:var(--abysse);color:var(--ecume);
+    font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;
+    overflow-x:hidden}
+
+  /* La scène 3D est fixe : c'est le contenu qui défile par-dessus, et la
+     caméra qui se déplace. Un canvas qui défilerait aussi donnerait le mal
+     de mer et masquerait le survol. */
+  #scene{position:fixed;inset:0;z-index:0}
+  #scene canvas{display:block;width:100%;height:100%}
+
+  .voile{position:fixed;inset:0;z-index:1;pointer-events:none;
+    background:radial-gradient(120% 90% at 50% 45%,transparent 40%,rgba(5,10,20,.55) 100%)}
+
+  .fil{position:relative;z-index:2}
+  section{min-height:100vh;display:flex;align-items:center;
+    padding:clamp(28px,6vw,90px)}
+  .bloc{max-width:520px;
+    background:linear-gradient(135deg,rgba(5,10,20,.82),rgba(5,10,20,.55));
+    backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+    border:1px solid rgba(255,255,255,.09);border-radius:18px;
+    padding:clamp(24px,3.6vw,40px)}
+  section:nth-child(even) .bloc{margin-left:auto}
+
+  .altitude{font-size:11px;letter-spacing:.24em;text-transform:uppercase;
+    color:var(--soleil);font-weight:600;display:flex;gap:10px;align-items:center}
+  .altitude::before{content:'';width:26px;height:1px;background:var(--soleil)}
+  h1{font-size:clamp(42px,8vw,86px);line-height:.94;font-weight:800;
+    letter-spacing:-.035em;margin:18px 0 0}
+  h1 em{font-style:normal;display:block;color:var(--soleil)}
+  h2{font-size:clamp(28px,4.4vw,46px);line-height:1.06;font-weight:700;
+    letter-spacing:-.028em;margin:16px 0 0}
+  p{color:#c4ccd8;margin-top:16px;font-size:15.5px}
+  p b{color:var(--ecume);font-weight:600}
+  .chiffre{display:flex;gap:clamp(20px,4vw,44px);margin-top:26px;flex-wrap:wrap}
+  .chiffre div b{display:block;font-size:clamp(24px,3.4vw,34px);font-weight:700;
+    letter-spacing:-.02em;line-height:1}
+  .chiffre div span{display:block;font-size:12px;color:var(--gris);margin-top:6px}
+
+  /* ── L'outil : composer son itinéraire ─────────────────────────────── */
+  .outil{max-width:760px;width:100%;margin:0 auto}
+  .envies{display:flex;flex-wrap:wrap;gap:10px;margin-top:24px}
+  .envie{border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.04);
+    color:var(--ecume);border-radius:999px;padding:11px 19px;font-size:14px;
+    cursor:pointer;transition:all .22s cubic-bezier(.22,1,.36,1);font-family:inherit}
+  .envie:hover{border-color:var(--soleil)}
+  .envie[aria-pressed="true"]{background:var(--soleil);border-color:var(--soleil);
+    color:var(--abysse);font-weight:600}
+  .resultat{margin-top:28px;border-top:1px solid rgba(255,255,255,.1);padding-top:24px}
+  .etape{display:grid;grid-template-columns:auto 1fr auto;gap:16px;align-items:baseline;
+    padding:13px 0;border-bottom:1px solid rgba(255,255,255,.06)}
+  .etape i{font-style:normal;color:var(--soleil);font-variant-numeric:tabular-nums;
+    font-weight:600;font-size:13px}
+  .etape b{font-weight:600}
+  .etape em{font-style:normal;color:var(--gris);font-size:13px;display:block;margin-top:2px}
+  .etape span{color:var(--gris);font-size:13px;font-variant-numeric:tabular-nums;
+    white-space:nowrap}
+  .bilan{display:flex;gap:28px;margin-top:20px;flex-wrap:wrap}
+  .bilan div b{display:block;font-size:22px;font-weight:700}
+  .bilan div span{font-size:12px;color:var(--gris)}
+  .vide{color:var(--gris);font-size:14px;padding:18px 0}
+
+  .note{position:fixed;left:0;right:0;bottom:0;z-index:3;
+    background:linear-gradient(transparent,rgba(5,10,20,.92));
+    padding:26px clamp(16px,4vw,40px) 14px;font-size:11.5px;color:var(--gris);
+    text-align:center;pointer-events:none}
+  .note b{color:#b9c2cf;font-weight:600}
+
+  .jauge{position:fixed;top:0;left:0;height:2px;z-index:4;
+    background:linear-gradient(90deg,var(--lagon),var(--soleil));width:0}
+
+  @media(max-width:760px){
+    .bloc,section:nth-child(even) .bloc{margin:0;max-width:100%}
+    section{padding:20px 16px 90px}
+  }
+  @media(prefers-reduced-motion:reduce){ #scene{opacity:.5} }
+</style>
+</head>
+<body>
+
+<div class="jauge" id="jauge"></div>
+<div id="scene"></div>
+<div class="voile"></div>
+
+<main class="fil">
+
+  <section>
+    <div class="bloc">
+      <p class="altitude">Océan Indien · 21° sud</p>
+      <h1>La Réunion<em>vue d'en haut</em></h1>
+      <p>Une île volcanique de <b>2 512 km²</b> posée à 700 km de Madagascar. Ce que
+         vous survolez ici n'est pas une illustration : c'est le <b>relief réel</b> de
+         l'île, reconstruit à partir de données d'altitude publiques.</p>
+      <p>Suivez le paille-en-queue. Il connaît le chemin.</p>
+      <div class="chiffre">
+        <div><b>3 070 m</b><span>Piton des Neiges</span></div>
+        <div><b>3</b><span>cirques</span></div>
+        <div><b>42 %</b><span>classés à l'UNESCO</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="bloc">
+      <p class="altitude">Saint-Denis · niveau de la mer</p>
+      <h2>On arrive toujours par le nord</h2>
+      <p>La côte nord concentre l'arrivée et la ville. Derrière elle, le terrain se
+         cabre : en moins de vingt kilomètres à vol d'oiseau, on passe du rivage à
+         plus de <b>trois mille mètres</b>.</p>
+      <p>C'est cette pente, unique à cette échelle, qui a creusé tout le reste.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="bloc">
+      <p class="altitude">Les cirques · 800 à 2 000 m</p>
+      <h2>Trois amphithéâtres<br>dans un volcan mort</h2>
+      <p>Salazie, Cilaos et Mafate ne sont pas des vallées : ce sont des
+         <b>effondrements</b>, creusés dans le massif du Piton des Neiges par
+         l'érosion et l'écroulement. Les parois qui les enserrent s'appellent
+         des <b>remparts</b>, et elles tombent parfois de mille mètres d'un seul tenant.</p>
+      <p>Mafate n'a aucune route. On y entre à pied, ou pas du tout.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="bloc">
+      <p class="altitude">Piton des Neiges · 3 070 m</p>
+      <h2>Le sommet<br>de l'océan Indien</h2>
+      <p>Éteint depuis environ douze mille ans, il reste le point culminant de tout
+         l'océan Indien. Depuis le fond marin, l'édifice mesure plus de <b>7 000 mètres</b> —
+         l'île n'en est que le sommet émergé.</p>
+      <div class="chiffre">
+        <div><b>2010</b><span>inscription UNESCO</span></div>
+        <div><b>100 000 ha</b><span>de bien classé</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="bloc">
+      <p class="altitude">Piton de la Fournaise · 2 632 m</p>
+      <h2>Celui qui est<br>toujours vivant</h2>
+      <p>À l'autre bout de l'île, le second volcan est l'un des <b>plus actifs du
+         monde</b>. Ses éruptions restent le plus souvent contenues dans l'Enclos
+         Fouqué, la vaste caldeira ouverte vers l'océan — cette dépression circulaire
+         que vous voyez se creuser au sud-est.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="bloc outil">
+      <p class="altitude">Composer</p>
+      <h2>Votre traversée</h2>
+      <p>Choisissez ce que vous voulez voir. L'itinéraire se trace sur le relief,
+         avec les <b>distances et les dénivelés réels</b> — calculés sur les mêmes
+         données d'altitude que le terrain que vous venez de survoler.</p>
+
+      <div class="envies" id="envies"></div>
+      <div class="resultat" id="resultat"></div>
+    </div>
+  </section>
+
+</main>
+
+<p class="note">
+  <b>Proposition de refonte</b> — projet de démonstration, sans lien avec Île de La Réunion
+  Tourisme. Relief reconstruit depuis des données d'altitude publiques ; altitudes et
+  distances calculées, non éditorialisées.
+</p>
+
+<script type="importmap">
+{ "imports": { "three": "https://unpkg.com/three@0.160.0/build/three.module.js" } }
+</script>
+<script src="https://unpkg.com/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://unpkg.com/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+<script type="module" src="ile.js"></script>
+</body>
+</html>
