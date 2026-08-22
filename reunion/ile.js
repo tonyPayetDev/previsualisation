@@ -13,13 +13,26 @@ const T = await (await fetch('assets/terrain.json')).json();
 // Coordonnées publiques. Elles servent à poser la caméra ET à calculer les
 // distances de l'itinéraire : le même jeu de données pour l'image et pour
 // le calcul, sinon les deux divergent.
+//
+// `alt` = altitude PUBLIÉE, quand elle existe et qu'elle est vérifiable.
+//
+// La carte d'altitudes est excellente pour la forme du relief, mais elle lit un
+// pixel : sur une pointe étroite comme un sommet, ce pixel moyenne les pentes
+// voisines et sous-estime. Elle donnait 2 954 m au Piton des Neiges — pendant
+// que l'en-tête du site affichait 3 070 m. Deux chiffres contradictoires pour
+// le même sommet sur la même page.
+//
+// Les cirques n'ont volontairement PAS d'`alt` : un cirque n'a pas une altitude
+// unique, et les valeurs publiées appartiennent à leurs villages (Hell-Bourg
+// 930 m, Cilaos 1 214 m) qui ne sont pas au point de passage. Pour eux la
+// lecture du relief est honnête — elle est affichée avec « ≈ ».
 const LIEUX = {
   stDenis:   { nom: 'Saint-Denis',            lat: -20.8789, lon: 55.4481 },
   salazie:   { nom: 'Cirque de Salazie',      lat: -21.0653, lon: 55.5203 },
-  neiges:    { nom: 'Piton des Neiges',       lat: -21.0958, lon: 55.4783 },
+  neiges:    { nom: 'Piton des Neiges',       lat: -21.0958, lon: 55.4783, alt: 3070 },
   mafate:    { nom: 'Cirque de Mafate',       lat: -21.0292, lon: 55.4136 },
   cilaos:    { nom: 'Cirque de Cilaos',       lat: -21.1350, lon: 55.4714 },
-  fournaise: { nom: 'Piton de la Fournaise',  lat: -21.2444, lon: 55.7089 },
+  fournaise: { nom: 'Piton de la Fournaise',  lat: -21.2444, lon: 55.7089, alt: 2632 },
   lagon:     { nom: "Lagon de l'Ermitage",    lat: -21.0783, lon: 55.2222 },
   stPierre:  { nom: 'Saint-Pierre',           lat: -21.3393, lon: 55.4781 },
 };
@@ -261,9 +274,47 @@ const points = ETAPES.map((e) => {
 });
 const route = new THREE.CatmullRomCurve3(points, false, 'catmullrom', 0.35);
 
+// ── Où poser l'oiseau dans le cadre ────────────────────────────────────────
+// Renvoie une position en fraction d'écran depuis le centre : fx = 1 au bord
+// droit, fy = 1 en haut. On la déduit du panneau visible, parce qu'un décalage
+// fixe finit toujours par tomber sur un panneau qu'on n'avait pas prévu.
+const DIST_OISEAU = 17;
+
+function posteVoulu() {
+  const W = innerWidth, H = innerHeight;
+  let bord = 0, haut = H;
+  document.querySelectorAll('.bloc, .outil').forEach((el) => {
+    const r = el.getBoundingClientRect();
+    if (r.bottom < H * 0.12 || r.top > H * 0.88) return;   // hors du champ
+    bord = Math.max(bord, r.right);
+    haut = Math.min(haut, r.top);
+  });
+  if (!bord) return { fx: 0.44, fy: 0.24 };
+
+  // S'il reste une vraie marge à droite du panneau, l'oiseau y vole.
+  if ((W - bord) / W > 0.17) {
+    const f = (bord - W / 2) / (W / 2);
+    return { fx: Math.min(0.80, f + 0.22), fy: 0.24 };
+  }
+  // Sinon — panneau pleine largeur, cas du mobile — il passe AU-DESSUS.
+  return { fx: 0.14, fy: Math.min(0.72, (H / 2 - haut) / (H / 2) + 0.14) };
+}
+
+// Lissage : la place disponible change d'un coup au passage d'une section à
+// l'autre. Sans interpolation l'oiseau se téléporterait d'un bord à l'autre.
+let poste = { fx: 0.44, fy: 0.24 };
+function posteLisse() {
+  const v = posteVoulu();
+  poste.fx += (v.fx - poste.fx) * 0.06;
+  poste.fy += (v.fy - poste.fy) * 0.06;
+  return poste;
+}
+
 // La caméra suit l'oiseau de biais et légèrement au-dessus, jamais dans son
 // axe : de face on ne verrait pas les rectrices, qui sont tout le sujet.
+let tCourant = 0;
 function placer(t) {
+  tCourant = t;
   const p = route.getPointAt(Math.max(0, Math.min(1, t)));
   const suivant = route.getPointAt(Math.max(0, Math.min(1, t + 0.008)));
 
@@ -297,15 +348,24 @@ function placer(t) {
   const vise = new THREE.Vector3().copy(p).addScaledVector(avantV, 10);
   cam.lookAt(vise);
 
-  // 2. L oiseau se pose ENSUITE dans le champ de la camera, a poste fixe :
-  //    en avant, a DROITE et legerement haut : les blocs de texte alternent
-  //    gauche/droite mais ne montent jamais au-dessus du milieu, donc c est
-  //    la seule zone ou il n est jamais masque. Il est donc toujours au meme
-  //    endroit de l image, et le paysage occupe le reste.
+  // 2. L oiseau se pose ENSUITE dans le champ de la camera, a la place que lui
+  //    laisse le panneau REELLEMENT affiche — mesuree, pas supposee.
+  //
+  //    La version precedente le posait a un decalage fixe, en partant du
+  //    principe que les blocs alternent gauche/droite sans jamais occuper le
+  //    centre. Vrai pour les blocs narratifs (520 px, alignes sur un bord),
+  //    faux pour le panneau d itineraire : centre et large, il recevait
+  //    l oiseau en plein sur son titre.
   const dir = new THREE.Vector3(); cam.getWorldDirection(dir);
   const droite = new THREE.Vector3().crossVectors(dir, HAUT_V).normalize();
+  const { fx, fy } = posteLisse();
+  // Conversion fraction d ecran → unites de scene, a la distance de vol.
+  const demiH = DIST_OISEAU * Math.tan((cam.fov * Math.PI / 180) / 2);
+  const demiL = demiH * cam.aspect;
   oiseau.position.copy(cam.position)
-    .addScaledVector(dir, 17).addScaledVector(droite, 5.6).addScaledVector(HAUT_V, 1.9);
+    .addScaledVector(dir, DIST_OISEAU)
+    .addScaledVector(droite, fx * demiL)
+    .addScaledVector(HAUT_V, fy * demiH);
   oiseau.lookAt(new THREE.Vector3().copy(oiseau.position).add(avantV));
 }
 placer(0);
@@ -328,6 +388,11 @@ function animer() {
     q.rotation.y = Math.sin(t * 1.7 - 0.9) * 0.10 * (i === 0 ? 1 : -1);
     q.rotation.x = Math.sin(t * 1.3 - 0.5) * 0.05;
   });
+  // Replacer à chaque image, et non au seul défilement : c'est le lissage de
+  // `posteLisse` qui l'exige. Rattaché au scroll, il se figerait en cours de
+  // trajet dès qu'on arrête de défiler — l'oiseau resterait à mi-chemin entre
+  // deux postes, c'est-à-dire pile sur le panneau qu'il doit éviter.
+  placer(tCourant);
   rendu.render(scene, cam);
   requestAnimationFrame(animer);
 }
@@ -388,7 +453,9 @@ function distanceKm(a, b) {
     + Math.cos(r(a.lat)) * Math.cos(r(b.lat)) * Math.sin(dLon / 2) ** 2;
   return 2 * R * Math.asin(Math.sqrt(h));
 }
+// L'altitude publiée l'emporte sur la lecture du relief quand elle existe.
 const altitudeDe = (l) => {
+  if (l.alt != null) return l.alt;
   const p = versScene(l.lat, l.lon);
   return Math.round(altitudeA(p.u, p.v));
 };
@@ -434,7 +501,7 @@ function dessiner() {
       ecart = `${d.toFixed(0)} km · ${dh >= 0 ? '+' : ''}${dh} m`;
     }
     return `<div class="etape"><i>${String(i + 1).padStart(2, '0')}</i>`
-      + `<div><b>${l.nom}</b><em>${a} m d'altitude</em></div>`
+      + `<div><b>${l.nom}</b><em>${l.alt != null ? '' : '≈ '}${a} m d'altitude</em></div>`
       + `<span>${ecart}</span></div>`;
   }).join('');
 
@@ -444,8 +511,9 @@ function dessiner() {
          <div><b>+${montee} m</b><span>de dénivelé cumulé</span></div>
          <div><b>${suite.length}</b><span>étapes</span></div>
        </div>
-       <p class="vide">Distances à vol d'oiseau et altitudes lues sur le relief.
-       Par la route, comptez nettement plus : ici, rien ne va jamais tout droit.</p>`;
+       <p class="vide">Distances à vol d'oiseau. Altitudes publiées pour les sommets,
+       lues sur le relief (≈) ailleurs. Par la route, comptez nettement plus :
+       ici, rien ne va jamais tout droit.</p>`;
 }
 dessiner();
 

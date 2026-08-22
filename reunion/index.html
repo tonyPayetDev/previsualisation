@@ -32,8 +32,14 @@
     background:radial-gradient(120% 90% at 50% 45%,transparent 40%,rgba(5,10,20,.55) 100%)}
 
   .fil{position:relative;z-index:2}
+  /* Le bas est plus creux que le reste : la mention légale est en position
+     fixe au ras du cadre, et sans cette réserve elle passe PAR-DESSUS le
+     contenu de la section — les trois chiffres de l'accueil disparaissaient
+     derrière elle. La réserve est exprimée avec la même échelle que la barre
+     pour qu'elles bougent ensemble. */
   section{min-height:100vh;display:flex;align-items:center;
-    padding:clamp(28px,6vw,90px)}
+    padding:clamp(28px,6vw,90px);
+    padding-bottom:calc(clamp(28px,6vw,90px) + 62px)}
   .bloc{max-width:520px;
     background:linear-gradient(135deg,rgba(5,10,20,.82),rgba(5,10,20,.55));
     backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
