@@ -51,6 +51,26 @@
       var(--jaune) 55%,var(--rouge) 86%,var(--rouge) 100%);
     background-size:100% 100vh;background-position:bottom}
 
+  /* ── Le fait courant ─────────────────────────────────────────────────
+     En bas à droite, dans la zone que le voile laisse claire mais que le
+     texte de chapitre n'occupe pas. Petit, mono pour le titre : il se lit
+     quand on veut, il ne réclame pas l'attention. */
+  .fait{position:fixed;right:clamp(14px,3vw,34px);bottom:clamp(18px,4vw,40px);
+    z-index:5;max-width:min(340px,42vw);text-align:right;pointer-events:none;
+    transition:opacity .26s ease}
+  .fait b{display:block;font-size:9.5px;letter-spacing:.26em;text-transform:uppercase;
+    color:var(--accent);font-weight:600;
+    font-family:ui-monospace,Menlo,Consolas,monospace}
+  .fait p{margin-top:8px;font-size:12.5px;line-height:1.5;color:#C6BFB2;
+    text-shadow:0 1px 10px rgba(0,0,0,.95)}
+
+  /* Le noir de bouclage : il couvre le saut de la barre de défilement quand
+     on repart du lagon. Sans lui, la boucle se voit — pas par l'image, qui
+     raccorde, mais par l'ascenseur qui remonte d'un coup. */
+  .noir{position:fixed;inset:0;z-index:8;background:#000;opacity:0;
+    pointer-events:none;transition:opacity .46s ease}
+  .noir.on{opacity:1}
+
   /* ── L'altimètre ─────────────────────────────────────────────────────── */
   /* Le voile s'éclaircit vers la droite pour laisser voir le paysage — donc
      l'altimètre, posé dans ce coin, se retrouvait sur de l'eau turquoise.
@@ -245,6 +265,9 @@
     .curseur input::-webkit-slider-thumb{margin-left:0;margin-top:-10px}
     .curseur .val{white-space:nowrap}
     .sentier{grid-template-columns:1fr auto;row-gap:4px}
+    .fait{left:clamp(14px,4vw,20px);right:clamp(14px,4vw,20px);max-width:none;
+      text-align:left;bottom:14px}
+    .fait p{font-size:12px}
     .voile{background:linear-gradient(180deg,rgba(5,5,5,.5) 0%,
       rgba(5,5,5,.15) 34%,rgba(5,5,5,.88) 100%)}
   }
@@ -269,6 +292,9 @@
   <b class="mono" id="alt">0</b>
   <span>mètres</span>
 </div>
+
+<aside class="fait" id="fait" aria-live="polite"></aside>
+<div class="noir" id="noir"></div>
 
 <nav class="chapitres" id="chapitres" aria-hidden="true">
   <i data-c="0">Lagon</i><i data-c="1">Remparts</i><i data-c="2">Cirque</i><i data-c="3">Volcan</i>
@@ -444,6 +470,6 @@
 
 </main>
 
-<script src="site.js?v=5"></script>
+<script src="site.js?v=7"></script>
 </body>
 </html>

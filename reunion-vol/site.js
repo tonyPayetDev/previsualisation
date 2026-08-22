@@ -11,7 +11,10 @@ const bornes = (v, a, b) => Math.max(a, Math.min(b, v));
 // Le site pèse 180 images. Cette attente existe qu'on la dessine ou non ;
 // autant en faire la première chose que le visiteur retient. Le compteur suit
 // les images RÉELLEMENT chargées, il ne simule pas une progression.
-const N = 180;
+// 200 et non 180 : les vingt dernières sont un fondu de la dernière image du
+// vol vers la première, pour que la boucle se referme sans saut. Mesuré, le
+// raccord tombe à 2 points sur 255 — invisible.
+const N = 200;
 const images = new Array(N);
 const ecranChg = $('#chargement');
 const pctChg = $('#pct'), barreChg = $('#barreChg'), quoiChg = $('#quoiChg');
@@ -112,7 +115,7 @@ const scrub = $('#scrub');
 const chaps = [...scrub.querySelectorAll('.chap')];
 const marques = [...document.querySelectorAll('.chapitres i')];
 const altEl = $('#alt'), monteeEl = $('#montee'), barreChap = $('#chapitres');
-const ALT_MAX = 2632;
+const ALTS = chaps.map((c) => +c.dataset.alt || 0);
 
 let demande = false;
 function auDefilement() {
@@ -126,8 +129,16 @@ function auDefilement() {
 
     peindre(Math.round(p * (N - 1)));
 
-    // L'altitude monte en continu avec le défilement, pas par paliers.
-    const alt = Math.round(p * ALT_MAX);
+    // L'ALTITUDE SUIT LES CHAPITRES, pas une droite.
+    //
+    // Répartie linéairement sur le défilement, elle affichait 790 m pendant
+    // que le chapitre à l'écran annonçait « 0 mètre » — les deux se
+    // contredisaient sur la même image. Chaque chapitre porte son altitude
+    // (`data-alt`) ; on interpole entre elles. La montée reste continue, mais
+    // elle est désormais d'accord avec ce qui est écrit.
+    const x = p * (ALTS.length - 1);
+    const i = Math.min(ALTS.length - 2, Math.floor(x));
+    const alt = Math.round(ALTS[i] + (ALTS[i + 1] - ALTS[i]) * doux(x - i));
     altEl.textContent = alt.toLocaleString('fr-FR').replace(/ | /g, ' ');
     poserAccent(alt);
 
@@ -151,9 +162,89 @@ function auDefilement() {
       if (k > 0 && o > 0.5) actif = k - 1;
     });
     marques.forEach((m, k) => m.classList.toggle('on', k === actif));
+    poserFait(p);
+    peutBoucler();
     // Rangée dès qu'on a quitté le vol : elle ne repère plus rien en dessous.
     barreChap.classList.toggle('rangee', scrollY > haut + course + innerHeight * 0.4);
   });
+}
+
+// ── 4bis. Le flux de faits ────────────────────────────────────────────────
+// Ces textes sont ÉCRITS À L'AVANCE, pas récupérés en direct : le site est un
+// dossier de fichiers statiques, il n'interroge aucun service. Chacun a été
+// vérifié avant d'être posé là — les records de pluie viennent de Météo-France,
+// les altitudes des relevés publics. Un fait inventé dans un site qui parle
+// d'un territoire réel serait pire qu'un fait absent.
+const FAITS = [
+  ["Record du monde · pluie en 24 h",
+   "1 825 mm à Foc-Foc, 2 290 m, les 7 et 8 janvier 1966, pendant le cyclone Denise. C'est le record mondial reconnu."],
+  ["Record du monde · pluie en 72 h",
+   "3 930 mm au cratère Commerson, 2 310 m, en février 2007, pendant le cyclone Gamède."],
+  ["Record du monde · pluie en 15 jours",
+   "6 083 mm au même endroit, à partir du 14 janvier 1980. Six mètres d'eau en deux semaines."],
+  ["Le sommet immergé",
+   "Le Piton des Neiges culmine à 3 070 m. Mesuré depuis le fond de l'océan, l'édifice dépasse 7 000 m : l'île n'en est que la partie émergée."],
+  ["Un volcan qui ne dort pas",
+   "Le Piton de la Fournaise, 2 632 m, compte parmi les volcans les plus actifs de la planète. Ses éruptions restent le plus souvent contenues dans l'Enclos Fouqué."],
+  ["Un cirque sans route",
+   "Mafate n'est desservi par aucune route. On y entre à pied par un col ; le ravitaillement se fait par hélicoptère."],
+  ["Quatre cents virages",
+   "La route de Cilaos compte plus de quatre cents virages pour monter à 1 214 mètres."],
+  ["Patrimoine mondial",
+   "Les Pitons, cirques et remparts sont inscrits au patrimoine mondial de l'UNESCO depuis le 1er août 2010."],
+  ["Ce que les cirques ne sont pas",
+   "Ni cratères ni vallées : ce sont des effondrements, creusés par l'érosion dans le massif du Piton des Neiges. Aucun fleuve ne les a formés."],
+  ["Une ancienne station thermale",
+   "Hell-Bourg, au fond du cirque de Salazie, s'est construit autour d'un établissement thermal, à 930 mètres d'altitude."],
+  ["Neuf à douze jours",
+   "Le sentier de grande randonnée R2 traverse l'île du nord au sud. Comptez neuf à douze jours de marche et près de 9 000 mètres de dénivelé cumulé."],
+  ["Sept cents kilomètres",
+   "L'île est posée à environ 700 km à l'est de Madagascar, dans l'archipel des Mascareignes."],
+  ["Vingt kilomètres de lagon",
+   "Une barrière de corail ferme une vingtaine de kilomètres de côte à l'ouest. Partout ailleurs, le basalte tombe directement dans la houle."],
+  ["Six degrés par millier",
+   "La température perd environ six degrés à chaque millier de mètres. Il gèle certaines nuits d'hiver austral au-dessus de 2 000 m, à la même latitude que le lagon."],
+];
+
+const FENTES = 5;            // faits montrés par tour de vol
+let tour = 0, faitPose = -1;
+const faitEl = $('#fait');
+
+function poserFait(p) {
+  // Un fait par cinquième de montée. Le tour suivant en sert cinq autres :
+  // reboucler sur le même vol sans changer les textes n'apprendrait rien.
+  const fente = Math.min(FENTES - 1, Math.floor(p * FENTES));
+  const idx = (tour * FENTES + fente) % FAITS.length;
+  if (idx === faitPose) return;
+  faitPose = idx;
+  const [t, c] = FAITS[idx];
+  faitEl.style.opacity = 0;
+  setTimeout(() => {
+    faitEl.innerHTML = `<b>${t}</b><p>${c}</p>`;
+    faitEl.style.opacity = 1;
+  }, 260);
+}
+
+// ── 4ter. La boucle ────────────────────────────────────────────────────────
+// Arrivé en bas, on repart du lagon. Le raccord d'image est déjà invisible ;
+// ce qui trahirait la boucle, c'est le saut de la barre de défilement. On le
+// couvre par un noir court — assumé comme une respiration, pas caché.
+let boucleEnCours = false;
+function peutBoucler() {
+  if (boucleEnCours) return;
+  const bas = document.documentElement.scrollHeight - innerHeight;
+  if (scrollY < bas - 2) return;
+  boucleEnCours = true;
+  const noir = $('#noir');
+  noir.classList.add('on');
+  setTimeout(() => {
+    tour++;
+    faitPose = -1;
+    scrollTo({ top: 0, behavior: 'instant' });
+    posee = -1;
+    auDefilement();
+    setTimeout(() => { noir.classList.remove('on'); boucleEnCours = false; }, 240);
+  }, 460);
 }
 
 // ── 5. Les chiffres qui s'incrémentent ─────────────────────────────────────
