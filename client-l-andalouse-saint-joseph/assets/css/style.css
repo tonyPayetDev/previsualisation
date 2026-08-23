@@ -1235,3 +1235,31 @@ footer {
   .gallery-item { height: 220px; }
   .size-grid { grid-template-columns: 1fr; }
 }
+
+/* ── Correctif 23/08 : la photo du header etait delavee ──────────────────
+   Elle etait posee a 35 % d opacite sur un aplat sombre — la meilleure photo
+   du restaurant se lisait comme une texture. On la remonte a 58 % et on
+   protege le texte par un degrade DIRECTIONNEL plutot qu en aplatissant
+   toute l image : le voile s epaissit la ou le texte se pose, et laisse la
+   photo respirer partout ailleurs. */
+.hero-bg::after { opacity: 0.58; }
+.hero-bg::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background:
+    linear-gradient(100deg, rgba(15,10,6,.88) 0%, rgba(15,10,6,.55) 42%, rgba(15,10,6,.12) 72%),
+    linear-gradient(to top, rgba(15,10,6,.72) 0%, transparent 38%);
+}
+.hero .container { position: relative; z-index: 2; }
+
+/* Les vignettes de la galerie meritent mieux qu un simple recadrage :
+   une legere montee au survol dit qu elles sont cliquables. */
+.galerie img, .gallery img, .grid-photos img {
+  transition: transform .5s cubic-bezier(.22,1,.36,1), filter .5s;
+}
+.galerie img:hover, .gallery img:hover, .grid-photos img:hover {
+  transform: scale(1.04);
+  filter: saturate(1.08) contrast(1.03);
+}

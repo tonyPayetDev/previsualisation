@@ -1071,3 +1071,30 @@ footer {
 @media (max-width: 600px) {
   .galerie-grid { grid-template-columns: repeat(2, 1fr); gap: 0.5rem; }
 }
+
+/* ── Correctif 23/08 : les huit pizzerias dans le header ─────────────────
+   Elles n apparaissaient qu apres 2 500 px de defilement. Or « ou est la
+   plus proche de chez moi » est la premiere question d un visiteur local :
+   la reponse doit tenir dans le premier ecran.
+   Les noms sont repris de la section plus bas, ils ne sont pas ressaisis. */
+.hero-lieux {
+  display: flex; flex-wrap: wrap; justify-content: center;
+  gap: 8px 10px; margin: 22px auto 26px; max-width: 720px;
+}
+.hero-lieux a {
+  font-size: 13px; letter-spacing: .04em; text-decoration: none;
+  color: rgba(255,255,255,.92);
+  border: 1px solid rgba(255,255,255,.28);
+  border-radius: 999px; padding: 7px 15px;
+  backdrop-filter: blur(6px); background: rgba(255,255,255,.07);
+  transition: background .25s, border-color .25s, transform .25s;
+}
+.hero-lieux a:hover {
+  background: rgba(255,255,255,.18);
+  border-color: rgba(255,255,255,.55);
+  transform: translateY(-2px);
+}
+@media (max-width: 600px) {
+  .hero-lieux { gap: 6px 7px; margin: 16px auto 20px; }
+  .hero-lieux a { font-size: 11.5px; padding: 6px 11px; }
+}
