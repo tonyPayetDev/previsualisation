@@ -1267,3 +1267,13 @@ ul {
 .animate-delay-4 { transition-delay: 0.4s; }
 .animate-delay-5 { transition-delay: 0.5s; }
 .animate-delay-6 { transition-delay: 0.6s; }
+
+/* ── Correctif 23/08 : le hamburger sortait de 9 px du cadre sur mobile ───
+   Mesure a 363→399 px pour un cadre de 390. Le bouton fait 36 px (24 de
+   barres + 2 x 6 de remplissage) et son conteneur ne lui gardait aucune
+   marge a droite. On la pose, et on borne le document par securite. */
+html, body { overflow-x: clip; }
+@media (max-width: 768px) {
+  .hamburger { margin-right: 4px; padding: 6px 4px; }
+  .nav-container, .topbar, header .container { padding-right: 14px; }
+}

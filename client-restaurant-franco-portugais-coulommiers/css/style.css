@@ -744,3 +744,11 @@ ul { list-style: none; }
 .terrace-strip__img[src="images/terrasse.svg"] {
   background: var(--clr-border);
 }
+
+/* ── Correctif 23/08 : 4 px de debordement horizontal sur mobile ──────────
+   Cause mesuree : `.nav__links` ferme est pose en `position:fixed` a
+   `translateX(100%)`. Hors du cadre a l ecran, mais Chrome l inclut dans la
+   largeur du document — le doigt fait glisser la page de 4 px lateralement.
+   `clip` plutot que `hidden` : `hidden` cree un conteneur de defilement qui
+   casserait les elements `sticky` du site. */
+html, body { overflow-x: clip; }
