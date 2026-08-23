@@ -215,3 +215,24 @@ body {
   .hero-ctas { flex-direction: column; align-items: center; }
   .contact-map iframe { height: 220px; }
 }
+
+/* ── Correctif 23/08 : le bleu du site d origine ─────────────────────────
+   `--sushi` valait #2C6E6A, un vert-canard. Le site d origine est bleu, et
+   c est ce bleu qui separe visuellement les deux moities de la carte —
+   la pizza au rouge, le sushi au bleu. Sans lui, les deux univers se
+   confondent dans les memes tons chauds.
+   La variable garde son nom : la renommer casserait les 40 usages en aval. */
+:root {
+  --sushi: #1E5F8C;
+  --sushi-clair: #2E7FB8;
+  --sushi-sombre: #164566;
+}
+/* Un fond qui donne du relief sans photo. Les vraies images du restaurant
+   doivent venir du client — on n en invente pas sur le site d une adresse
+   qui existe. */
+.hero, header.hero, .header-visuel {
+  background-image:
+    radial-gradient(80% 60% at 18% 12%, rgba(30,95,140,0.30) 0%, transparent 62%),
+    radial-gradient(70% 55% at 84% 78%, rgba(192,57,43,0.26) 0%, transparent 60%),
+    linear-gradient(160deg, #1A1208 0%, #241a10 55%, #1A1208 100%);
+}

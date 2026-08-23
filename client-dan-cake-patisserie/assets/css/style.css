@@ -1340,3 +1340,16 @@ h3 { font-size: clamp(1.2rem, 2.5vw, 1.6rem); }
   .cta-banner-actions { flex-direction: column; align-items: center; }
   .float-cta { bottom: 20px; right: 20px; }
 }
+
+/* ── Correctif 23/08 : le logo sur mobile ────────────────────────────────
+   Aucune regle ne le reduisait sous 768 px : il gardait ses 50 px de haut et
+   serrait la barre de navigation. On le descend a 38, on lui garde de l air
+   a droite, et on empeche l ecrasement si le nom du site est long. */
+@media (max-width: 768px) {
+  .logo img { height: 38px; }
+  .logo { flex: 0 0 auto; margin-right: 10px; }
+  .header .container, .nav-wrap { gap: 10px; }
+}
+@media (max-width: 400px) {
+  .logo img { height: 34px; }
+}
