@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Split-screen · 30 000 prompts</title>
+<style>
+:root{--noir:#07080c;--carte:#12141c;--ligne:#262a36;--blanc:#eef1f6;--gris:#8b93a3;--bleu:#57A8FF}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--noir);color:var(--blanc);font:15px/1.65 system-ui,-apple-system,sans-serif;
+  padding:clamp(20px,5vw,54px) clamp(16px,4vw,36px) 80px}
+.wrap{max-width:900px;margin:0 auto}
+.sur{font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:var(--gris)}
+h1{font-size:clamp(34px,7vw,58px);line-height:1;font-weight:800;letter-spacing:-.03em;margin:12px 0 0}
+h1 span{color:var(--bleu)}
+.tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}
+.tag{border:1px solid var(--ligne);border-radius:999px;padding:6px 13px;font-size:12.5px;color:var(--gris)}
+.tag b{color:var(--blanc);font-weight:600}
+h2{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--gris);font-weight:600;
+  margin:clamp(32px,5vw,50px) 0 14px}
+figure{margin:0;background:#000;border:1px solid var(--ligne);border-radius:14px;overflow:hidden;max-width:380px}
+video{display:block;width:100%;height:auto;background:#000}
+.grille{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:13px}
+.bloc{background:var(--carte);border:1px solid var(--ligne);border-radius:13px;padding:18px}
+.bloc h3{font-size:13.5px;margin-bottom:9px;font-weight:600;color:var(--bleu)}
+.bloc p{font-size:13.5px;color:var(--gris)}.bloc p+p{margin-top:8px}
+.bloc b{color:var(--blanc);font-weight:600}
+.note{margin-top:26px;font-size:13px;color:var(--gris);border-left:2px solid var(--bleu);padding-left:15px}
+.note b{color:var(--blanc)}
+</style></head><body><div class="wrap">
+<p class="sur">Reproduction de format</p>
+<h1>Split-screen<br><span>30 000 prompts</span></h1>
+<div class="tags">
+  <span class="tag"><b>27 s</b></span>
+  <span class="tag">720 × 1280 · 30 i/s</span>
+  <span class="tag"><b>19</b> sous-titres</span>
+  <span class="tag">avatar studio</span>
+  <span class="tag"><b>814</b> images générées</span>
+</div>
+
+<h2>La vidéo</h2>
+<figure><video src="https://assets.automatisationboost.com/previsualisation/split-prompts/video.mp4"
+  controls playsinline preload="metadata"></video></figure>
+
+<h2>Comment elle est faite</h2>
+<div class="grille">
+  <div class="bloc">
+    <h3>La cadence vient de l'image, pas d'une transcription</h3>
+    <p>Les sous-titres de la référence sont incrustés. On lit donc les
+       <b>instants d'affichage réels</b> — 18 changements relevés sur 27,1 s —
+       au lieu d'approximer au son.</p>
+    <p>Une phrase toutes les 1,5 seconde en moyenne.</p>
+  </div>
+  <div class="bloc">
+    <h3>La moitié haute est du HTML, pas de la vidéo</h3>
+    <p>814 images peintes une par une par Chromium. Les compteurs, les cartes et
+       les onglets se décrivent bien en CSS et très mal en filtre vidéo.</p>
+  </div>
+  <div class="bloc">
+    <h3>Le deuxième avatar</h3>
+    <p>Studio, lunettes, fond sombre. Ni la voiture (18 août), ni le fond vert
+       (juin, 28,5 % de vert mesuré).</p>
+    <p>Trois clips de 5,06 s rebouclés pour couvrir 27 s.</p>
+  </div>
+</div>
+
+<p class="note"><b>La bande son est celle de la référence.</b> C'est ce qui a été
+  demandé et ça convient pour une maquette. Pour une publication, il faut un son
+  sous licence ou un son tendance de la plateforme — la musique d'une autre
+  marque n'est pas réutilisable telle quelle.
+  <br><br><b>La voix n'est pas encore la tienne.</b> Le montage porte le script
+  et la cadence ; il reste à poser ta voix clonée dessus, ce qui remplacera
+  l'audio de la référence et réglera le point ci-dessus du même coup.</p>
+</div></body></html>
