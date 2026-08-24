@@ -58,8 +58,13 @@ body{background:var(--nuit);color:var(--txt);font-family:var(--bdy);font-size:17
   justify-content:space-between;padding:15px 28px;
   background:rgba(8,13,28,.86);backdrop-filter:blur(8px);
   border-bottom:1px solid var(--ligne)}
-.nav .marque{font-family:var(--dsp);font-variation-settings:'wdth' 72,'wght' 800;
+/* Leur logo porte deja le pictogramme famille — deux parents, deux enfants.
+   C'est le signal le plus direct de tout le site : il passe devant le mot. */
+.nav .marque{display:flex;align-items:center;gap:11px;
+  font-family:var(--dsp);font-variation-settings:'wdth' 72,'wght' 800;
   text-transform:uppercase;font-size:19px;letter-spacing:.03em;color:var(--txt);text-decoration:none}
+.nav .marque img{width:42px;height:42px;display:block;flex:none}
+@media(max-width:520px){.nav .marque span{display:none}}
 .nav .marque i{font-style:normal;color:var(--vif)}
 .nav-liens{display:flex;gap:24px;align-items:center}
 .nav-liens a{color:var(--mut);text-decoration:none;font-size:14px;transition:color .2s}
@@ -112,13 +117,47 @@ section{position:relative;z-index:2;background:var(--nuit)}
 @media(max-width:980px){.grille{grid-template-columns:1fr 1fr}}
 @media(max-width:660px){.grille{grid-template-columns:1fr}}
 .act{border:1px solid var(--ligne);background:var(--nuit-2);border-radius:5px;
-  padding:30px 26px;transition:border-color .25s,transform .25s}
+  overflow:hidden;display:flex;flex-direction:column;
+  transition:border-color .25s,transform .25s}
 .act:hover{border-color:var(--vif);transform:translateY(-3px)}
+/* La photo est en 3:2 et `cover` : les originaux vont du 2000×1333 au portrait,
+   sans cadrage impose la grille se decalerait carte par carte. */
+.act .vue{display:block;width:100%;height:auto;aspect-ratio:3/2;object-fit:cover;
+  background:var(--nuit-3);border-bottom:1px solid var(--ligne)}
+.act-txt{padding:26px 26px 30px;display:flex;flex-direction:column;flex:1}
+/* Karaoke et i-Quiz n'ont aucune photo utilisable sur familyarena.re : le seul
+   visuel karaoke est une affiche promotionnelle portant prix et creneaux.
+   Le bloc image devient donc un chiffre — vrai, source, et de meme emprise. */
+.vue-vide{aspect-ratio:3/2;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;gap:7px;border-bottom:1px solid var(--ligne);
+  background:radial-gradient(120% 120% at 50% 0%,var(--nuit-3),var(--nuit-2))}
+.vue-vide b{font-family:var(--dsp);font-variation-settings:'wdth' 68,'wght' 800;
+  font-size:clamp(40px,4.6vw,58px);line-height:1;color:var(--vif);
+  font-variant-numeric:tabular-nums}
+.vue-vide span{font-family:var(--mno);font-size:11px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--mut)}
+.badge-neuf{align-self:flex-start;font-family:var(--mno);font-size:10px;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--sur-vif);background:var(--vif);
+  padding:5px 10px;border-radius:3px;margin-bottom:16px}
 .act h3{font-family:var(--dsp);font-variation-settings:'wdth' 74,'wght' 800;
   text-transform:uppercase;font-size:23px;margin-bottom:10px}
 .act .age{font-family:var(--mno);font-size:11px;letter-spacing:.12em;text-transform:uppercase;
   color:var(--bleu-clair);display:block;margin-bottom:14px}
 .act p{font-size:14.5px;color:#b3bed9}
+
+/* Le mur de photos.
+   Grille de 4 colonnes ou deux images occupent 2 colonnes : sans ces deux
+   respirations, huit vignettes identiques se lisent comme un catalogue.
+   `grid-auto-flow: dense` evite les trous quand une large ne rentre pas. */
+.mur{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+@media(max-width:900px){.mur{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){.mur{grid-template-columns:1fr}}
+.ph{margin:0;border-radius:5px;overflow:hidden;background:var(--nuit-2);
+  border:1px solid var(--ligne)}
+.ph img{display:block;width:100%;height:auto;aspect-ratio:3/2;object-fit:cover;
+  transition:transform .5s ease}
+.ph:hover img{transform:scale(1.04)}
+.note-ph{margin-top:26px;font-size:14.5px;color:var(--mut);max-width:60ch}
 
 /* Tarifs */
 .tarifs{display:grid;grid-template-columns:repeat(5,1fr);gap:14px}
@@ -176,9 +215,13 @@ footer{border-top:1px solid var(--ligne);padding:38px 0;color:var(--mut);font-si
 <div class="bandeau">Proposition de refonte — page de démonstration, non publiée</div>
 
 <nav class="nav">
-  <a href="#" class="marque">Family<i>Arena</i></a>
+  <a href="#" class="marque">
+    <img src="photos/logo.png" alt="Family Arena" width="304" height="300">
+    <span>Family<i>Arena</i></span>
+  </a>
   <div class="nav-liens">
     <a href="#activites">Activités</a>
+    <a href="#eux">Photos</a>
     <a href="#tarifs">Tarifs</a>
     <a href="#venir">Venir</a>
     <a href="#venir" class="btn">Réserver</a>
@@ -195,41 +238,44 @@ footer{border-top:1px solid var(--ligne);padding:38px 0;color:var(--mut);font-si
     <div class="chapitres">
       <div class="chap" data-chap="0">
         <span class="mono">Saint-Pierre · La Réunion</span>
-        <h1 class="dsp">400 m².<br>Et rien<br>de réel.</h1>
-        <p>Un centre multi-activité où tu entres les mains vides. Ce que tu fais ensuite ne se raconte pas — ça se met sur la tête.</p>
+        <!-- Le titre est LEUR phrase, mot pour mot depuis familyarena.re :
+             « Chez nous venez seul, à deux, entre amis, en famille ». Elle dit
+             la cible mieux que n'importe quelle accroche écrite pour eux. -->
+        <h1 class="dsp">Seul, à deux,<br>entre amis,<br>en famille.</h1>
+        <p>400 m² à Saint-Pierre. Réalité virtuelle, HADO, simulateurs, escape games et karaoké en box privée. Vous arrivez les mains vides : tout est sur place.</p>
         <a href="#venir" class="cta">Réserver un créneau →</a>
       </div>
 
       <div class="chap" data-chap="1">
         <span class="mono">Le passage</span>
-        <h2 class="dsp">Tu poses<br>le casque.</h2>
-        <p>HTC Vive Pro, un pod de 9 m² rien qu'à toi. À partir de là, la salle n'existe plus.</p>
+        <h2 class="dsp">Vous posez<br>les casques.</h2>
+        <p>Un pod de 9 m² par joueur, casque HTC Vive Pro. Chacun le sien — et tout le monde dans la même partie.</p>
       </div>
 
       <div class="chap" data-chap="2">
         <span class="mono">Monde 1 · Pods VR</span>
         <h2 class="dsp">Le mur<br>s'ouvre.</h2>
-        <p>Jeux de tir, zombies, escape games. Seul, ou jusqu'à 9 dans la même partie. À partir de 6 joueurs, on passe en tournoi par équipes.</p>
+        <p>Jeux de tir, zombies, escape games. Jusqu'à 9 personnes en même temps — et à partir de 6 joueurs, ça devient un tournoi par équipes.</p>
         <span class="prix">à partir de 9 €</span>
       </div>
 
       <div class="chap" data-chap="3">
         <span class="mono">Monde 2 · HADO</span>
-        <h2 class="dsp">Tu lances<br>des boules<br>d'énergie.</h2>
-        <p>Capteurs de mouvement, réalité augmentée et vrai sport. Tu tires, tu montes ton bouclier, tu esquives. Tu es littéralement dans le jeu vidéo.</p>
+        <h2 class="dsp">Vous lancez<br>des boules<br>d'énergie.</h2>
+        <p>Capteurs de mouvement, réalité augmentée et vrai sport. On tire, on remonte son bouclier, on esquive. L’expérience d’être dans un jeu vidéo réel.</p>
       </div>
 
       <div class="chap" data-chap="4">
         <span class="mono">Monde 3 · Simulateurs</span>
-        <h2 class="dsp">Tu prends<br>le volant.</h2>
-        <p>Deux baquets de course pour prendre la place d'un vrai pilote. Et le X-MOTION, près de 10 aventures en 9D — avec un effet vent qui coupe le dernier lien avec le réel.</p>
+        <h2 class="dsp">À vous<br>le volant.</h2>
+        <p>Deux baquets de course pour prendre la place d'un vrai pilote. Et le X-MOTION, près de 10 aventures en 9D, avec un effet vent.</p>
         <span class="prix">10 € et 18 €</span>
       </div>
 
       <div class="chap" data-chap="5">
         <span class="mono">Monde 4 · Escape Game</span>
         <h2 class="dsp">La porte<br>se referme.</h2>
-        <p>Maison hantée, vaisseau spatial, chambre d'enfant : tablette tactile en main, rassemble les indices. Ou traverse la pièce sans couper un seul laser. Unique à La Réunion.</p>
+        <p>Maison hantée, vaisseau spatial, chambre d'enfant : tablette en main, vous rassemblez les indices ensemble, dès 7-8 ans. Ou la version laser, à traverser sans couper un fil. Unique à La Réunion.</p>
         <a href="#tarifs" class="cta">Voir tous les tarifs →</a>
       </div>
     </div>
@@ -242,41 +288,92 @@ footer{border-top:1px solid var(--ligne);padding:38px 0;color:var(--mut);font-si
 <section class="sec" id="activites">
   <div class="wrap">
     <span class="mono eyebrow ap">Ce qu'il y a dans les 400 m²</span>
-    <h2 class="dsp sec-t ap">Six façons<br>de ne plus être là.</h2>
+    <h2 class="dsp sec-t ap">Six façons<br>d'être ensemble.</h2>
     <p class="sec-i ap">Venez seul, à deux, entre amis ou en famille. Tout est sur place, y compris de quoi manger.</p>
 
+    <!-- Toutes les photos viennent de familyarena.re — galerie photo et pages
+         activités. Aucune image générée, aucune banque d'images.
+         i-Quiz n'a AUCUNE photo sur leur site : sa carte reste typographique
+         plutôt que d'emprunter une image d'une autre activité. -->
     <div class="grille">
       <div class="act ap">
-        <h3>Pods VR</h3>
-        <span class="age">Casque HTC Vive Pro</span>
-        <p>Des espaces de jeu de 9 m² chacun. En solo ou en multijoueur jusqu'à 9 personnes dans la même partie — et à partir de 6, un tournoi par équipes.</p>
+        <img class="vue" src="photos/carte-vr.jpg" alt="Une famille joue ensemble dans les pods VR de Family Arena" width="900" height="600" loading="lazy">
+        <div class="act-txt">
+          <h3>Pods VR</h3>
+          <span class="age">Casque HTC Vive Pro</span>
+          <p>Des espaces de jeu de 9 m² chacun. En solo ou en multijoueur jusqu'à 9 personnes dans la même partie — et à partir de 6, un tournoi par équipes.</p>
+        </div>
       </div>
       <div class="act ap">
-        <h3>HADO</h3>
-        <span class="age">Réalité augmentée · sport</span>
-        <p>Capteur de mouvement, AR et sport réunis. Tirer des boules d'énergie, remonter les boucliers, combattre des monstres. L'expérience d'être dans un jeu vidéo réel.</p>
+        <img class="vue" src="photos/carte-hado.jpg" alt="Un joueur en pleine partie de HADO devant le mur HADO" width="900" height="600" loading="lazy">
+        <div class="act-txt">
+          <h3>HADO</h3>
+          <span class="age">Réalité augmentée · sport</span>
+          <p>Capteur de mouvement, AR et sport réunis. Tirer des boules d'énergie, remonter les boucliers, combattre des monstres. L'expérience d'être dans un jeu vidéo réel.</p>
+        </div>
       </div>
       <div class="act ap">
-        <h3>Simulateurs</h3>
-        <span class="age">Course auto · X-MOTION 9D</span>
-        <p>Deux baquets pour les amateurs de course automobile. Et le X-MOTION, près de 10 aventures en 9D avec un effet vent.</p>
+        <img class="vue" src="photos/carte-simu.jpg" alt="Un baquet de course avec volant devant les écrans du simulateur" width="900" height="600" loading="lazy">
+        <div class="act-txt">
+          <h3>Simulateurs</h3>
+          <span class="age">Course auto · X-MOTION 9D</span>
+          <p>Deux baquets pour les amateurs de course automobile. Et le X-MOTION, près de 10 aventures en 9D avec un effet vent.</p>
+        </div>
       </div>
       <div class="act ap">
-        <h3>Escape Game</h3>
-        <span class="age">Dès 5-6 ans · 30 à 50 min</span>
-        <p>Deux escape games d'un nouveau genre, uniques à La Réunion. En réalité augmentée sur tablette dès 7-8 ans, ou en version laser à traverser dès 5-6 ans.</p>
+        <img class="vue" src="photos/carte-escape.jpg" alt="La salle laser de l'escape game, traversée de faisceaux verts" width="900" height="600" loading="lazy">
+        <div class="act-txt">
+          <h3>Escape Game</h3>
+          <span class="age">Dès 5-6 ans · 30 à 50 min</span>
+          <p>Deux escape games d'un nouveau genre, uniques à La Réunion. En réalité augmentée sur tablette dès 7-8 ans, ou en version laser à traverser dès 5-6 ans.</p>
+        </div>
       </div>
-      <div class="act ap">
-        <h3>Karaoké en box</h3>
-        <span class="age">Small 2-8 · Big 9-16</span>
-        <p>Plus de 44 000 titres, micro, écran TV et jeux de lumière. En privé, sans embêter personne.</p>
+      <div class="act act-sans-vue ap">
+        <div class="vue-vide"><b>44 000</b><span>titres au catalogue</span></div>
+        <div class="act-txt">
+          <h3>Karaoké en box</h3>
+          <span class="age">Small 2-8 · Big 9-16</span>
+          <p>Plus de 44 000 titres, micro, écran TV et jeux de lumière. En privé, sans embêter personne.</p>
+        </div>
       </div>
-      <div class="act ap">
-        <h3>i-Quiz</h3>
-        <span class="age">Dès 5 ans</span>
-        <p>Le premier quiz game de La Réunion. Questions-réponses sur écran géant, et de vrais buzzers pour affronter vos amis, votre famille ou vos collègues.</p>
+      <div class="act act-sans-vue ap">
+        <div class="vue-vide"><b>5 ans</b><span>l'âge minimum</span></div>
+        <div class="act-txt">
+          <span class="badge-neuf">Nouveau</span>
+          <h3>i-Quiz</h3>
+          <span class="age">Dès 5 ans</span>
+          <p>Le premier quiz game de La Réunion. Questions-réponses sur écran géant, et de vrais buzzers pour affronter vos amis, votre famille ou vos collègues.</p>
+        </div>
       </div>
     </div>
+  </div>
+</section>
+
+<!-- ============ LEURS PHOTOS ============
+     La section qui manquait. Tout le reste de la page decrit des machines ;
+     celle-ci montre QUI s'en sert. Les huit images viennent de leur galerie
+     photo — ce sont leurs clients, chez eux, pas des mannequins.
+     C'est ce qui fait passer « centre de loisirs techno » a « sortie en famille ». -->
+<section class="sec familles" id="eux" style="border-top:1px solid var(--ligne)">
+  <div class="wrap">
+    <span class="mono eyebrow ap">Leurs photos, pas les nôtres</span>
+    <h2 class="dsp sec-t ap">Le plus jeune<br>a cinq ans.</h2>
+    <p class="sec-i ap">Un enfant en tee-shirt Spider-Man, ses parents à côté, quatre pods allumés en même temps. C'est à ça que ressemble un samedi ici.</p>
+
+    <!-- Six tuiles, toutes au même format. Une première version faisait varier
+         la taille des vignettes ; une tuile double occupait deux colonnes mais
+         gardait la hauteur d'une seule ligne, ce qui creusait un trou sous ses
+         voisines. La hiérarchie est portée par le titre, pas par la grille. -->
+    <div class="mur">
+      <figure class="ph"><img src="photos/gal-1.jpg" alt="Un enfant en tee-shirt Spider-Man joue en réalité virtuelle, casque et manettes en main" width="900" height="600" loading="lazy"></figure>
+      <figure class="ph"><img src="photos/gal-2.jpg" alt="Une famille — parents et enfants — dans les pods VR côte à côte" width="900" height="600" loading="lazy"></figure>
+      <figure class="ph"><img src="photos/gal-4.jpg" alt="Un enfant casque sur la tête devant le mur VR Family" width="900" height="600" loading="lazy"></figure>
+      <figure class="ph"><img src="photos/gal-3.jpg" alt="Plusieurs joueurs dans la même partie, chacun dans son pod" width="900" height="600" loading="lazy"></figure>
+      <figure class="ph"><img src="photos/gal-7.jpg" alt="L'espace arcade : baby-foot, air hockey et bornes de course" width="900" height="600" loading="lazy"></figure>
+      <figure class="ph"><img src="photos/gal-8.jpg" alt="L'espace détente, avec tables et chaises pour souffler entre deux parties" width="900" height="600" loading="lazy"></figure>
+    </div>
+
+    <p class="note-ph">Entre deux parties, il y a un baby-foot, un air hockey et de quoi s'asseoir. Personne n'attend debout.</p>
   </div>
 </section>
 
