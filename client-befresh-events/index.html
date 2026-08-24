@@ -40,6 +40,49 @@ body{
 img{max-width:100%}
 a{color:inherit}
 
+/* ── Trame hexagonale animée ─────────────────────────────────────────
+   Même construction que sur K'Mila : un SVG en data-URI répété, pas une
+   image. Deux différences ici, dictées par la charte BeFresh :
+   · elle est posée sur le FOND DE PAGE, jamais sur un pseudo-élément
+     partagé avec une photo — la règle « rien par-dessus une photo »
+     tient donc toujours ;
+   · elle dérive lentement au lieu d'être fixe. C'est ce mouvement de
+     fond, presque imperceptible, qui fait respirer la page entre deux
+     sections.
+   Le masque radial l'éteint au centre : la trame ne doit se lire que
+   dans les marges, sinon elle devient un grillage devant le texte.
+
+   ⚠️ Réglage payé une fois : à opacité .22 / trait .5, la maille passait
+   devant TOUT le contenu et la page virait au rose. Sur un fond noir, du
+   magenta se voit à des valeurs où on le croit éteint. Les valeurs ci-
+   dessous donnent une texture qu'on remarque en cherchant, pas en lisant —
+   c'est la bonne cible pour un décor. Ne pas les remonter « pour voir ». */
+body::before{
+  content:"";position:fixed;inset:-60px;z-index:0;pointer-events:none;
+  background:
+    url("data:image/svg+xml;utf8,\
+<svg xmlns='http://www.w3.org/2000/svg' width='60' height='34.64' viewBox='0 0 60 34.64'>\
+<g fill='none' stroke='%23E9268C' stroke-width='1' stroke-opacity='.34'>\
+<path d='M15 0 L5 8.66 L5 25.98 L15 34.64 L25 25.98 L25 8.66 Z'/>\
+<path d='M45 0 L35 8.66 L35 25.98 L45 34.64 L55 25.98 L55 8.66 Z'/>\
+<path d='M25 8.66 L35 8.66 M25 25.98 L35 25.98 M5 8.66 L0 8.66 M5 25.98 L0 25.98'/>\
+</g></svg>");
+  /* 128 px : à 60 px la maille se lit comme une texture sale, à 128 elle
+     se lit comme une structure. Constat déjà fait sur K'Mila. */
+  background-size:128px 73.9px;
+  opacity:.085;
+  /* Le masque ne s'ouvre qu'à partir de 58 % du rayon : la colonne de
+     lecture, qui tient dans les 1180 px centraux, reste vierge. */
+  -webkit-mask-image:radial-gradient(ellipse 70% 60% at 50% 46%,transparent 58%,#000 100%);
+  mask-image:radial-gradient(ellipse 70% 60% at 50% 46%,transparent 58%,#000 100%);
+  animation:derive 44s linear infinite;
+}
+/* La dérive fait exactement UNE tuile : le raccord est invisible et le
+   cycle ne saute pas. Toute autre valeur produit un à-coup à la boucle. */
+@keyframes derive{ to{ background-position:128px 73.9px } }
+/* Le contenu passe devant la trame */
+header,main,footer{position:relative;z-index:1}
+
 /* ── Traitement d'image maison : angles vifs, ombre douce, cover,
       aucun filtre, et jamais rien par-dessus une photo ───────────── */
 .photo{
@@ -180,6 +223,55 @@ footer{border-top:1px solid var(--trait);margin-top:20px}
   transition:opacity .9s cubic-bezier(.22,1,.36,1),transform .9s cubic-bezier(.22,1,.36,1)}
 .rev.vu{opacity:1;transform:none}
 
+/* ── Défilement : trois effets, tous pilotés par la position réelle ──
+   Le `.rev` ci-dessus est un simple déclencheur tout-ou-rien. Ce qui
+   suit lit vraiment l'avancée du défilement. */
+
+/* 1 · Jauge de progression, dans le filet du bandeau de navigation.
+      Elle occupe la bordure existante — pas une barre ajoutée. */
+header::after{
+  content:"";position:absolute;left:0;bottom:-1px;height:1px;
+  width:calc(var(--avance,0) * 100%);
+  background:linear-gradient(90deg,var(--magenta),var(--or));
+  transform-origin:left;
+}
+
+/* 2 · Parallaxe sur les photos. L'image est plus haute que son cadre et
+      se déplace à l'intérieur : le cadre ne bouge pas, la photo si.
+      `scale` sans translation donnerait un zoom, pas de la profondeur. */
+.cadre[data-par]{overflow:hidden}
+.cadre[data-par] .photo{
+  height:118%;
+  transform:translate3d(0,calc(var(--par,0) * -14%),0);
+  will-change:transform;
+}
+
+/* 3 · Cascade : les enfants d'un bloc révélé entrent l'un après l'autre.
+      Le décalage est porté par une variable posée en JS, sinon il
+      faudrait une règle par rang. */
+.casc > *{opacity:0;transform:translateY(18px);
+  transition:opacity .7s cubic-bezier(.22,1,.36,1) var(--d,0s),
+             transform .7s cubic-bezier(.22,1,.36,1) var(--d,0s)}
+.casc.vu > *{opacity:1;transform:none}
+
+/* ── Boucle vidéo « même image en début et en fin » ──────────────────
+   Générée depuis la photo du hero : la dernière image EST l'image de
+   départ, donc le raccord est exact et la lecture peut tourner sans
+   fin sans qu'on voie le point de bouclage. Même recette que FoodBoost.
+   La photo reste en poster : si la vidéo ne charge pas, on retrouve
+   exactement le hero d'origine, jamais un rectangle noir. */
+.boucle{display:block;width:100%;height:100%;object-fit:cover;
+  box-shadow:0 8px 40px rgba(0,0,0,.12)}
+.vivant{position:relative}
+/* Repère discret : dit que l'image est vivante sans rien poser sur le
+   sujet — il se tient dans le coin bas, sur le fond noir du fichier. */
+.vivant::after{
+  content:"EN DIRECT DU BAR";position:absolute;left:14px;bottom:14px;
+  font-size:9.5px;letter-spacing:.22em;color:var(--creme);
+  padding:6px 10px;background:rgba(0,0,0,.55);backdrop-filter:blur(4px);
+  border-left:2px solid var(--magenta);pointer-events:none;
+}
+
 /* ── Adaptations ─────────────────────────────────────────────────── */
 @media (max-width:900px){
   .hero{grid-template-columns:1fr;gap:38px;padding-top:44px}
@@ -214,9 +306,19 @@ footer{border-top:1px solid var(--trait);margin-top:20px}
 @media (max-width:360px){
   .marque b{display:none} /* à 320px, le nom cède la place au bouton */
 }
+/* La parallaxe s'arrête à 900px, et ce n'est pas un choix de confort.
+   En dessous, les cadres passent en `height:auto` + `aspect-ratio` : une
+   hauteur en pourcentage n'a alors plus de référence, l'image reprendrait
+   sa hauteur naturelle et déborderait. On rend la photo à son cadre. */
+@media (max-width:900px){
+  .cadre[data-par] .photo{height:100%;transform:none}
+}
 @media (prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}
   .rev{opacity:1;transform:none;transition:none}
+  .casc > *{opacity:1;transform:none;transition:none}
+  .cadre[data-par] .photo{height:100%;transform:none}
+  body::before{animation:none}
 }
 </style>
 </head>
@@ -250,16 +352,21 @@ footer{border-top:1px solid var(--trait);margin-top:20px}
       <p class="phrase">Un bar sain pour des événements <span class="or">inoubliables</span>.</p>
       <p class="lieu">Saint-Paul, Île de La Réunion</p>
     </div>
-    <div class="cadre hero-photo rev">
-      <img class="photo" src="assets/splash-citron-vert.jpg"
-           alt="Verre de mojito avec citron vert, menthe et glaçons, éclaboussure figée sur fond noir"
-           width="864" height="1184">
+    <!-- La photo du hero est devenue vivante : boucle générée à partir de
+         CETTE image, dont la dernière image est aussi l'image de départ.
+         `poster` = la photo d'origine, donc rien ne clignote au chargement
+         et le rendu sans vidéo reste celui d'avant. -->
+    <div class="cadre hero-photo vivant rev">
+      <video class="boucle" src="assets/hero-boucle.mp4"
+             poster="assets/hero-boucle-poster.jpg"
+             autoplay loop muted playsinline preload="metadata"
+             aria-label="Éclaboussure de citron vert et de menthe dans un mojito, en boucle"></video>
     </div>
   </section>
 
   <!-- ══ Bande de signature — les trois mots du lookbook ══ -->
   <div class="bande">
-    <div class="bande-in rev">
+    <div class="bande-in rev casc">
       <span class="sig">Frais.</span>
       <span class="sig">Naturel.</span>
       <span class="sig">Détox.</span>
@@ -269,7 +376,7 @@ footer{border-top:1px solid var(--trait);margin-top:20px}
 
   <!-- ══ Les quatre piliers ══ -->
   <section class="section">
-    <div class="piliers rev">
+    <div class="piliers rev casc">
       <div class="pilier"><span class="n">01</span><b>Frais<br>&amp; sain</b></div>
       <div class="pilier"><span class="n">02</span><b>Naturel<br>&amp; local</b></div>
       <div class="pilier"><span class="n">03</span><b>Sur-mesure<br>&amp; pro</b></div>
@@ -284,7 +391,7 @@ footer{border-top:1px solid var(--trait);margin-top:20px}
     <div class="duo">
       <div class="col-photo">
         <div class="colle">
-          <div class="cadre rev">
+          <div class="cadre rev" data-par>
             <img class="photo" src="assets/bar-evenement.jpg"
                  alt="Mojitos alignés sur un comptoir en bois devant la banderole Bar à cocktails de Be Fresh"
                  width="1080" height="1920" loading="lazy">
@@ -311,7 +418,7 @@ footer{border-top:1px solid var(--trait);margin-top:20px}
   </section>
 
   <!-- Respiration : plan large sur fond noir, aucun texte par-dessus. -->
-  <div class="cadre bandeau rev">
+  <div class="cadre bandeau rev" data-par>
     <img class="photo" src="assets/trio-couleurs.jpg"
          style="object-position:center 65%"
          alt="Trois cocktails de fruits, vert, rouge et orange, alignés sur fond noir"
@@ -325,7 +432,7 @@ footer{border-top:1px solid var(--trait);margin-top:20px}
     <div class="duo inverse">
       <div class="col-photo">
         <div class="colle">
-          <div class="cadre rev">
+          <div class="cadre rev" data-par>
             <img class="photo" src="assets/jus-signature.jpg"
                  alt="Quatre jus de fruits frais servis dans des verres à liseré doré"
                  width="1080" height="1920" loading="lazy">
@@ -378,7 +485,7 @@ footer{border-top:1px solid var(--trait);margin-top:20px}
     <div class="duo">
       <div class="col-photo">
         <div class="colle">
-          <div class="cadre rev">
+          <div class="cadre rev" data-par>
             <img class="photo" src="assets/fait-main.jpg"
                  alt="Jus de fruits frais servi au robinet de la fontaine dans un verre, gant de service"
                  width="1080" height="1920" loading="lazy">
@@ -399,7 +506,7 @@ footer{border-top:1px solid var(--trait);margin-top:20px}
 
   </section>
 
-  <div class="cadre bandeau rev">
+  <div class="cadre bandeau rev" data-par>
     <img class="photo" src="assets/mojito-macro.jpg"
          alt="Gros plan sur un mojito : glace pilée, feuilles de menthe et citron vert"
          width="864" height="1184" loading="lazy">
@@ -412,7 +519,7 @@ footer{border-top:1px solid var(--trait);margin-top:20px}
     <div class="duo inverse">
       <div class="col-photo">
         <div class="colle">
-          <div class="cadre rev">
+          <div class="cadre rev" data-par>
             <img class="photo" src="assets/bar-mobile.jpg"
                  alt="Le bar mobile Be Fresh, panneau Mojito, Matcha et Alouda, une cliente au comptoir"
                  width="1080" height="1920" loading="lazy">
@@ -465,16 +572,66 @@ footer{border-top:1px solid var(--trait);margin-top:20px}
 (function(){
   var cibles = document.querySelectorAll('.rev');
   var reduit = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* Secours : si l'animation est refusée ou l'API absente, tout est
+     montré d'office. Aucun effet ne peut cacher un contenu. */
   if (reduit || !('IntersectionObserver' in window)) {
     cibles.forEach(function(e){ e.classList.add('vu'); });
+    document.querySelectorAll('.boucle').forEach(function(v){ v.pause(); });
     return;
   }
+
   var obs = new IntersectionObserver(function(entrees){
     entrees.forEach(function(e){
       if (e.isIntersecting) { e.target.classList.add('vu'); obs.unobserve(e.target); }
     });
   }, { rootMargin: '0px 0px -8% 0px', threshold: 0.06 });
   cibles.forEach(function(e){ obs.observe(e); });
+
+  /* ── Cascade : le rang de l'enfant devient son retard ────────────── */
+  document.querySelectorAll('.casc').forEach(function(bloc){
+    Array.prototype.forEach.call(bloc.children, function(enfant, i){
+      enfant.style.setProperty('--d', (i * 0.09) + 's');
+    });
+  });
+
+  /* ── Parallaxe + jauge de progression ────────────────────────────
+     Un seul écouteur pour les deux, et le calcul est repoussé dans un
+     requestAnimationFrame : `scroll` peut se déclencher plusieurs fois
+     par image, lire la géométrie à chaque fois forcerait autant de
+     recalculs de mise en page. */
+  var cadres = [].slice.call(document.querySelectorAll('.cadre[data-par]'));
+  var enAttente = false;
+
+  function placer(){
+    enAttente = false;
+    var h = window.innerHeight;
+
+    /* Avancée dans la page, bornée : sur une page plus courte que la
+       fenêtre, le dénominateur serait nul ou négatif. */
+    var course = document.documentElement.scrollHeight - h;
+    var avance = course > 0 ? window.scrollY / course : 0;
+    document.documentElement.style.setProperty(
+      '--avance', Math.min(1, Math.max(0, avance)).toFixed(4));
+
+    cadres.forEach(function(c){
+      var r = c.getBoundingClientRect();
+      if (r.bottom < -80 || r.top > h + 80) return;   /* hors écran : rien à faire */
+      /* −1 quand le cadre entre par le bas, +1 quand il sort par le haut.
+         Le centre de l'écran vaut 0 : la photo y est à sa place neutre. */
+      var centre = r.top + r.height / 2;
+      var p = (centre - h / 2) / (h / 2 + r.height / 2);
+      c.style.setProperty('--par', Math.max(-1, Math.min(1, p)).toFixed(4));
+    });
+  }
+
+  function demander(){
+    if (!enAttente) { enAttente = true; requestAnimationFrame(placer); }
+  }
+
+  addEventListener('scroll', demander, { passive: true });
+  addEventListener('resize', demander);
+  placer();
 })();
 </script>
 
