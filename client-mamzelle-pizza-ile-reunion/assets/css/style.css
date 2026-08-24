@@ -1138,3 +1138,39 @@ img[src*="icon"], img[src*="favicon"] {
   background: var(--brun-clair); border-color: var(--brun-clair);
 }
 img { border-radius: 0 !important; }
+
+/* ── Correctif 24/08 · une vraie photo de pizza dans le header ────────────
+   Le hero affichait `mamzelle-pizza.jpeg` — qui n'est PAS une pizza : c'est
+   leur logotype à plat sur fond taupe. Posé à 45 % d'opacité derrière le
+   titre, il donnait un fond brun flou où l'on ne distinguait rien, et le mot
+   « PIZZA » du logo se lisait en filigrane derrière le vrai titre.
+
+   Or leur photothèque contient ONZE photos professionnelles de pizzas
+   (galerie-01 à 11) : napolitaines à la figue, à la burrata, au jambon cru,
+   toutes sur fond sombre. `galerie-01` est retenue — fond noir, donc le titre
+   blanc tient dessus sans qu'on ait à écraser la photo sous un voile.
+
+   L'opacité passe de 0,45 à 0,72 : à 45 % une bonne photo devient une tache.
+   C'est le dégradé du calque supérieur qui protège le texte, pas l'effacement
+   de l'image. */
+.hero-bg {
+  background-image: url('../images/galerie-01.jpeg') !important;
+  background-position: center 42% !important;
+  opacity: .72 !important;
+}
+/* Le dégradé qui protège le texte est posé À L INTÉRIEUR du fond, pas sur le
+   hero. Première tentative : un ::before sur .hero, plus
+   `.hero > *:not(.hero-bg){position:relative;z-index:2}` pour repasser le
+   contenu devant. Ça a CASSÉ la mise en page — donner `position:relative` aux
+   enfants directs a changé leur contexte et la colonne de texte s est
+   rétrécie à 150 px. Aucune erreur émise, seulement une page ratée.
+   Ici le dégradé vit dans .hero-bg::after : il couvre l image, et le contenu,
+   qui vient après dans le DOM, reste devant sans qu on touche à son
+   positionnement. */
+.hero-bg::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(28,20,16,.55) 0%, rgba(28,20,16,.20) 34%, rgba(28,20,16,.66) 100%);
+}

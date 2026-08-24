@@ -1140,3 +1140,65 @@ img[src*="icon"], img[src*="favicon"] {
   object-fit: contain;
 }
 
+
+
+/* ── Correctif 24/08 · logo, boutons, trame du header ────────────────────
+
+   1. LE LOGO. Il rendait 64 px de haut sur un fichier carré : ~64 px de large
+      face à un titre de 34 px. Trop petit pour une enseigne. */
+.nav-logo img { height: 86px !important; }
+.header.scrolled .nav-logo img { height: 62px !important; }
+@media (max-width: 768px) {
+  .nav-logo img { height: 84px !important; }
+  .header.scrolled .nav-logo img { height: 58px !important; }
+}
+
+/* 2. LES BOUTONS. Le bouton plein est déjà sur l'orange de la charte
+      (--secondary #ff6900) ; c'est le secondaire qui était en blanc pur, hors
+      charte. Il passe sur le même orange, en contour, ce qui donne au passage
+      la hiérarchie qui manquait. Aucune couleur inventée. */
+.hero .btn-outline, .hero-actions .btn-outline, .btn-outline {
+  border-color: var(--secondary) !important;
+  color: var(--secondary) !important;
+  background: rgba(255,105,0,.10) !important;
+}
+.hero .btn-outline:hover, .hero-actions .btn-outline:hover, .btn-outline:hover {
+  background: var(--secondary) !important;
+  color: #fff !important;
+}
+
+/* 3. LA TRAME HEXAGONALE — l'« effet kubernetes ».
+
+      ⚠️ PIÈGE PAYÉ : j'avais d'abord posé la trame sur `.hero-bg::before`.
+      Or ce pseudo-élément portait DÉJÀ la photo de la pizzeria, en Ken Burns,
+      depuis le correctif du 23/08 — la photo a disparu sans qu'aucune erreur
+      ne soit émise. Les deux pseudo-éléments du `.hero-bg` sont pris : le
+      `::before` a la photo, le `::after` les dégradés.
+
+      La trame est donc ajoutée comme couche de fond SUPPLÉMENTAIRE sur le
+      `::after`, en première position, donc au-dessus des deux dégradés. Une
+      seule déclaration, aucun élément en plus dans le HTML.
+
+      Et les dégradés sont allégés : ils couvraient la photo à 85-90 %, on ne
+      voyait plus la pizza. Une trame posée sur un aplat rouge ne veut rien
+      dire ; posée sur une vraie photo de pizzeria, elle donne l'idée d'un
+      réseau de trois adresses. C'est ce que dit le texte juste à côté. */
+.hero-bg::after {
+  background:
+    url("data:image/svg+xml;utf8,\
+<svg xmlns='http://www.w3.org/2000/svg' width='60' height='34.64' viewBox='0 0 60 34.64'>\
+<g fill='none' stroke='%23ff8a3d' stroke-width='1' stroke-opacity='.26'>\
+<path d='M15 0 L5 8.66 L5 25.98 L15 34.64 L25 25.98 L25 8.66 Z'/>\
+<path d='M45 0 L35 8.66 L35 25.98 L45 34.64 L55 25.98 L55 8.66 Z'/>\
+<path d='M25 8.66 L35 8.66 M25 25.98 L35 25.98 M5 8.66 L0 8.66 M5 25.98 L0 25.98'/>\
+</g></svg>"),
+    linear-gradient(135deg, rgba(207,46,46,0.62) 0%, rgba(26,26,26,0.52) 60%, rgba(26,26,26,0.72) 100%),
+    linear-gradient(to bottom, transparent 55%, rgba(26,26,26,0.86) 100%) !important;
+  /* Maille agrandie : à 60 px la trame devenait un grillage devant le texte.
+     À 108 px elle se lit comme une structure, pas comme une texture.
+     Pas de masque : la trame et les dégradés partagent ce pseudo-élément, un
+     masque éteindrait aussi les dégradés et le texte blanc perdrait son fond.
+     C'est l'opacité qui fait le travail, pas un masque. */
+  background-size: 108px 62.35px, cover, cover !important;
+  background-repeat: repeat, no-repeat, no-repeat !important;
+}

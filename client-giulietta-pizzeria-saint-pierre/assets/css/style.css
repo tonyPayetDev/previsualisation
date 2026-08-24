@@ -1424,3 +1424,102 @@ img { border-radius: 0 !important; }
   .galerie-google { grid-template-columns: repeat(2, 1fr); grid-auto-rows: 220px; }
   .galerie-google figure:nth-child(1) { grid-column: span 2; grid-row: span 1; }
 }
+
+/* ── Correctif 24/08 · les deux boutons du hero étaient identiques ────────
+   Le second est un `.btn-white` — il devait être clair, en second rang.
+   Mais la règle verte posée le 23/08 s'écrivait
+   `.btn:not(.btn-outline):not(.btn-secondary)` : la chaîne n'excluait pas
+   `.btn-white`, qui s'est donc retrouvé peint du même olive plein que le
+   premier. Deux pavés identiques pleine largeur, aucune hiérarchie — et le
+   défaut ne se voyait pas dans le code, seulement à l'écran.
+
+   L'olive lui-même n'est PAS en cause et ne change pas : il est échantillonné
+   sur le bandeau de leur devanture. Ce qui change, c'est qu'un seul bouton
+   le porte. */
+.btn-white,
+.btn.btn-white,
+a.btn-white {
+  background: rgba(255,255,255,.10) !important;
+  border: 1.5px solid rgba(255,255,255,.75) !important;
+  color: #fff !important;
+  backdrop-filter: blur(3px);
+}
+.btn-white:hover,
+.btn.btn-white:hover,
+a.btn-white:hover {
+  background: #fff !important;
+  border-color: #fff !important;
+  color: var(--vert-sombre) !important;
+}
+
+/* Le bandeau orange sous le hero portait trois informations utiles
+   (livraison, à emporter, délai) sur un aplat orange plein. Avec l'olive
+   juste au-dessus, trois couleurs saturées se disputaient le regard.
+   Le bandeau passe en sombre, l'orange ne garde que les icônes : la même
+   information, une seule couleur forte à la fois. */
+.delivery-banner {
+  background: rgba(18,22,12,.96) !important;
+  border-top: 1px solid rgba(255,255,255,.10);
+  border-bottom: 1px solid rgba(255,255,255,.08);
+}
+.delivery-banner i, .delivery-banner .fas { color: var(--orange) !important; }
+.delivery-banner span { color: rgba(255,255,255,.90) !important; }
+.delivery-sep { background: rgba(255,255,255,.18) !important; }
+
+/* ── Correctif 24/08 · le responsive en dessous de 400 px ─────────────────
+   Mesuré à 320 px (iPhone SE, et beaucoup d'Android d'entrée de gamme) :
+   le burger se trouvait à 363→391 px sur un écran de 320. Il était donc
+   ENTIÈREMENT hors écran, et le menu inatteignable. Ce n'est pas un défaut
+   d'apparence, c'est une page dont on ne peut plus sortir de l'accueil.
+
+   La cause : `.nav-actions` contient le numéro écrit en toutes lettres et le
+   mot « Panier ». À 320 px ces deux libellés poussent le burger dehors.
+   On garde les deux boutons — ils sont utiles — mais on les réduit à leurs
+   icônes, qui disent la même chose sans occuper la ligne. */
+@media (max-width: 420px) {
+  .nav-actions .nav-tel span,
+  .nav-actions .cart-btn > span:not(.cart-count) { display: none; }
+  .nav-actions { gap: 6px; }
+  .nav-actions .nav-tel,
+  .nav-actions .cart-btn { padding: 9px 11px; min-width: 42px; justify-content: center; }
+  .hamburger { flex: 0 0 auto; margin-left: 2px; }
+  .navbar .container, .nav .container { padding-left: 14px; padding-right: 14px; gap: 8px; }
+  /* Le compteur du panier reste visible : c'est la seule information
+     que l'icône ne porte pas. */
+  .cart-count { display: inline-flex !important; }
+}
+
+/* Deux blocs de la section « Informations pratiques » dépassaient de 16 px à
+   320 px : leur largeur était fixée en dur au lieu de suivre le conteneur. */
+@media (max-width: 420px) {
+  .info-text, .info-text > * { max-width: 100%; box-sizing: border-box; }
+  .infos-grid, .info-grid { grid-template-columns: 1fr; }
+}
+
+/* ── Correctif 24/08 (suite) · les deux vraies causes à 320 px ────────────
+   Mesuré, pas supposé :
+
+   1. `.info-grid` était en `grid-template-columns: 316px` — une colonne de
+      largeur FIXE dans un parent qui n'en fait que 280. Une colonne fixe ne
+      rétrécit jamais : elle déborde, et aucun `max-width` sur l'enfant n'y
+      change quoi que ce soit. `minmax(0,1fr)` est la forme qui rétrécit
+      vraiment — `1fr` seul garde un plancher à la taille du contenu.
+
+   2. `.nav-inner` fait 286 px de large et distribue en `space-between`, mais
+      la somme logo + actions + burger dépassait : le burger sortait de 8 px.
+      Le logo est le seul des trois qui peut céder de la place. */
+@media (max-width: 420px) {
+  .info-grid, .infos-grid, .section .info-grid, .info-section .info-grid {
+    grid-template-columns: minmax(0, 1fr) !important;
+    gap: 20px;
+  }
+  .info-text { width: auto !important; max-width: 100% !important; }
+
+  .nav-inner { gap: 8px; }
+  .nav-inner .logo, .nav-inner .navbar-brand, .nav-inner > a:first-child {
+    min-width: 0;
+    flex: 0 1 auto;
+    overflow: hidden;
+  }
+  .nav-inner .logo img { max-width: 100%; height: auto; }
+}

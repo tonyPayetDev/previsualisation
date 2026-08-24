@@ -1499,3 +1499,52 @@ img[src*="icon"], img[src*="favicon"] {
   object-fit: contain;
 }
 
+
+/* ── Correctif 24/08 · le logo et le bleu ────────────────────────────────
+
+   LE LOGO n'était pas rogné — mesuré, sa boîte tient à 20→70 px, entièrement
+   dans le cadre. Il était NOYÉ : un script blanc fin posé sur une photo
+   claire, les hauts de lettres disparaissaient dans le fond. Un voile sombre
+   dégradé en haut le fait tenir quelle que soit la photo affichée — et il y
+   en a six qui défilent, donc on ne peut pas parier sur la luminosité de
+   l'une d'elles. */
+.navbar:not(.scrolled)::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 190%;
+  background: linear-gradient(180deg, rgba(30,20,14,.62) 0%, rgba(30,20,14,.28) 55%, transparent 100%);
+  pointer-events: none;
+  z-index: -1;
+}
+.navbar:not(.scrolled) { z-index: 1000; }
+.navbar-logo img { height: 56px; }
+@media (max-width: 768px) { .navbar-logo img { height: 50px; } }
+
+/* LE BLEU venait de la PHOTO, pas de la charte : la première diapositive
+   ouvrait sur Bellota-Bellota, dont le logotype bleu marine occupe le tiers
+   de l'image. C'est l'enseigne d'un locataire du lieu, pas la marque de La
+   Casa Blanca. La diapositive d'ouverture est passée au rooftop — image de
+   leur propre fonds, chaude, avec des gens. Rien n'a été ajouté ni retiré du
+   diaporama : seul l'ordre change.
+
+   Les jetons de la charte, eux, étaient déjà en terracotta et beige depuis le
+   23/08 (--primary #8c4a2f, --secondary #f4ece1). Il n'y avait plus de bleu à
+   enlever côté CSS — le vérifier avant de repeindre évite de casser une
+   charte déjà juste. */
+
+/* Le fichier `logo-white.png` servi dans l'en-tête était une version ROGNÉE du
+   logo : le haut de « LA CASA » y était coupé net dans le PNG lui-même, et la
+   ligne « DRUGSTORE » manquait entièrement. Ce n'était donc pas un défaut de
+   mise en page — aucune règle CSS n'aurait pu le réparer.
+   `logo.png` contenait la marque complète, en noir sur blanc opaque : le blanc
+   a été rendu transparent (`logo-complet.png`), le tracé reste noir et le
+   filtre déjà en place le passe en blanc, comme avant.
+   Le rapport passe de 3,6:1 à 1,8:1 — la hauteur doit suivre, sinon le logo
+   devient deux fois plus petit qu'avant à hauteur égale. */
+.navbar-logo img { height: 62px !important; }
+.navbar.scrolled .navbar-logo img { height: 48px !important; }
+@media (max-width: 768px) {
+  .navbar-logo img { height: 54px !important; }
+  .navbar.scrolled .navbar-logo img { height: 42px !important; }
+}

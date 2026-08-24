@@ -97,7 +97,12 @@ if (form) {
   lightbox.innerHTML = `
     <button class="lightbox-close" aria-label="Fermer">&times;</button>
     <button class="lightbox-nav lightbox-prev" aria-label="Précédent">&#8249;</button>
-    <img src="" alt="" />
+    <!-- Ni src="" ni src absent : le premier fait recharger la page courante en
+         tâche de fond, le second laisse une image sans source que tout contrôle
+         automatique compte comme cassée. Un pixel transparent en data: ne
+         déclenche aucune requête et rend l'emplacement valide tant que la
+         visionneuse n'a pas été ouverte. La vraie source est posée au clic. -->
+    <img alt="" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" />
     <button class="lightbox-nav lightbox-next" aria-label="Suivant">&#8250;</button>
   `;
   document.body.appendChild(lightbox);
