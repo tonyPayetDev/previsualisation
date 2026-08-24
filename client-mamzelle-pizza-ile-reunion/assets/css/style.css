@@ -1098,3 +1098,43 @@ footer {
   .hero-lieux { gap: 6px 7px; margin: 16px auto 20px; }
   .hero-lieux a { font-size: 11.5px; padding: 6px 11px; }
 }
+
+/* ── Traitement des images, aligne sur Villa Fleurie (24/08) ─────────────
+   Releve sur le site de reference : coins droits, ombre tres diffuse
+   (0 8px 40px a 12 %), `object-fit: cover`, aucun filtre. C est l ombre
+   large qui fait la finition : elle detache la photo du fond sans la cerner.
+   Une bordure ou un coin arrondi transforment une photo en vignette ; ici
+   elle reste une image. */
+.hero img, section img, article img, figure img, .galerie img, .card img,
+.pizzeria-card img, .programme img, .grid img {
+  border-radius: 0;
+  object-fit: cover;
+  box-shadow: 0 8px 40px rgba(0,0,0,.12);
+  transition: transform .5s cubic-bezier(.25,.46,.45,.94), box-shadow .5s;
+}
+.hero img:hover, section img:hover, article img:hover, figure img:hover,
+.galerie img:hover, .card img:hover, .pizzeria-card img:hover {
+  box-shadow: 0 16px 56px rgba(0,0,0,.18);
+}
+/* Le logo et les icones ne sont pas des photos : ni ombre ni recadrage. */
+.logo img, .nav-logo img, header .logo img, .footer-logo, img[src*="logo"],
+img[src*="icon"], img[src*="favicon"] {
+  box-shadow: none !important;
+  object-fit: contain;
+}
+
+
+/* ── Une couleur d action, prise sur le logo (24/08) ─────────────────────
+   La charte etait noir, blanc et gris : aucun bouton ne se distinguait d un
+   encadre. La couleur retenue n est pas inventee — c est le brun du logo
+   `logo-brun.png`, releve a l echantillonnage : #584242. */
+:root { --brun: #584242; --brun-clair: #6E5858; }
+.btn:not(.btn-ghost), a.btn:not(.btn-ghost), .hero-actions .btn:first-child {
+  background: var(--brun);
+  border-color: var(--brun);
+  color: #fff;
+}
+.btn:not(.btn-ghost):hover, .hero-actions .btn:first-child:hover {
+  background: var(--brun-clair); border-color: var(--brun-clair);
+}
+img { border-radius: 0 !important; }

@@ -1277,3 +1277,54 @@ html, body { overflow-x: clip; }
   .hamburger { margin-right: 12px; padding: 6px 2px; }
   .nav-container, .topbar, header .container { padding-right: 14px; }
 }
+
+/* ── Traitement des images, aligne sur Villa Fleurie (24/08) ─────────────
+   Releve sur le site de reference : coins droits, ombre tres diffuse
+   (0 8px 40px a 12 %), `object-fit: cover`, aucun filtre. C est l ombre
+   large qui fait la finition : elle detache la photo du fond sans la cerner.
+   Une bordure ou un coin arrondi transforment une photo en vignette ; ici
+   elle reste une image. */
+.hero img, section img, article img, figure img, .galerie img, .card img,
+.pizzeria-card img, .programme img, .grid img {
+  border-radius: 0;
+  object-fit: cover;
+  box-shadow: 0 8px 40px rgba(0,0,0,.12);
+  transition: transform .5s cubic-bezier(.25,.46,.45,.94), box-shadow .5s;
+}
+.hero img:hover, section img:hover, article img:hover, figure img:hover,
+.galerie img:hover, .card img:hover, .pizzeria-card img:hover {
+  box-shadow: 0 16px 56px rgba(0,0,0,.18);
+}
+/* Le logo et les icones ne sont pas des photos : ni ombre ni recadrage. */
+.logo img, .nav-logo img, header .logo img, .footer-logo, img[src*="logo"],
+img[src*="icon"], img[src*="favicon"] {
+  box-shadow: none !important;
+  object-fit: contain;
+}
+
+
+/* ── Le vert demande (24/08) ─────────────────────────────────────────────
+   La charte ne contenait AUCUN vert : --primary, --primary-dark et
+   --primary-light etaient trois oranges. Le vert basilic prend la fonction
+   d action ; l orange reste pour les details et les survols. Sur une
+   pizzeria, vert et rouge disent l Italie sans qu on l ecrive. */
+:root {
+  --vert: #2F6B3A;
+  --vert-clair: #3D8A4B;
+  --vert-sombre: #24522C;
+  --orange: #f27c00;
+}
+.btn-primary, .btn.btn-primary, a.btn-primary, button.btn-primary,
+.btn:not(.btn-outline):not(.btn-secondary) {
+  background: var(--vert);
+  border-color: var(--vert);
+  color: #fff;
+}
+.btn-primary:hover, .btn:not(.btn-outline):not(.btn-secondary):hover {
+  background: var(--vert-sombre);
+  border-color: var(--vert-sombre);
+}
+.btn-outline { border-color: var(--vert); color: var(--vert); }
+.btn-outline:hover { background: var(--vert); color: #fff; }
+/* Une seule image gardait un coin arrondi de 20 px au milieu d angles droits. */
+img { border-radius: 0 !important; }
