@@ -20,6 +20,7 @@ const j = JSON.parse(readFileSync(F, 'utf8'));
 // Motifs → niveau. Le premier motif qui matche gagne, l'ordre compte donc.
 const REGLES = [
   // ── DIRECT : un prospect ou un client nommé, joignable ────────────────────
+  [/quota apify/i,                'direct', 'Zéro nouveau prospect restaurant depuis 14 jours. C’est le robinet de leads qui est fermé.'],
   [/koytcha/i,                    'direct', 'Prospect immobilier nommé. C’est la v4 qui s’envoie — la v2 avait été refusée, ne jamais repointer dessus.'],
   [/the grill/i,                  'direct', 'Prospect resto. La vidéo est prête, la relance n’est jamais partie.'],
   [/family arena/i,               'direct', 'Dossier complet, concurrents VR fermés. Site + vidéo prêts à montrer.'],
