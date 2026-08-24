@@ -311,7 +311,17 @@ h2.tt i{font-style:italic}
 @media(prefers-reduced-motion:reduce){
   .pinceau .fenetre{clip-path:inset(0);transition:none}
 }
+/* ── Correctif v3.1 · le brush mangeait le dernier paragraphe ─────────────
+   La marque en fenêtre est posée en absolu au bas de la section, à z-index 0 ;
+   le texte passe au-dessus (`.revele>*{z-index:1}`) mais reste écrit en sombre
+   sur une photo claire : là où les deux se croisent, plus rien n'est lisible.
+   On réserve donc la hauteur du brush en bas de la section. Elle se calcule :
+   largeur min(860px,72vw), rapport 300/72 → hauteur ≈ 24 % de la largeur,
+   plus l'écart au bord. Aucune valeur inventée. */
 .revele{position:relative;overflow:hidden;background:transparent}
+/* `.sect` est déclaré PLUS BAS avec la même spécificité et son padding l'emportait :
+   la réserve calculée ici était écrasée par les 7vw génériques. D'où `.sect.revele`. */
+.sect.revele{padding-bottom:calc(min(860px,72vw) * 0.24 + clamp(30px,7vw,90px) + 40px)}
 .revele .derriere{position:absolute;inset:0;z-index:0;clip-path:inset(0)}
 .revele .derriere img{position:fixed;top:0;left:0;width:100%;height:100vh;
   object-fit:cover}
@@ -433,8 +443,18 @@ h2.tt i{font-style:italic}
 .final{position:relative;height:clamp(340px,46vh,470px);overflow:hidden;background:var(--noir)}
 .final .fond{position:absolute;inset:-14% 0;will-change:transform}
 .final .fond img{width:100%;height:100%;object-fit:cover}
+/* ── Correctif v3.1 · le rose redevient un accent ─────────────────────────
+   Le correctif v3 avait retiré le grand dégradé de la section « À propos »,
+   mais celle-ci gardait un voile magenta sur TOUTE sa largeur — à 80 % d'opacité
+   au bord gauche. C'est exactement ce qu'on voulait supprimer : un magenta
+   étalé perd son autorité et la photo disparaît dessous.
+   Désormais deux couches distinctes : un voile SOMBRE et neutre qui rend le
+   texte lisible sur la photo, et une bande magenta franche, saturée et étroite,
+   calée derrière le seul bloc de texte. */
 .final .teinte{position:absolute;inset:0;
-  background:linear-gradient(75deg,rgba(184,0,101,.80) 0%,rgba(230,0,126,.52) 45%,rgba(20,20,20,.30) 100%)}
+  background:linear-gradient(90deg,rgba(12,12,14,.78) 0%,rgba(12,12,14,.62) 34%,rgba(12,12,14,.18) 62%,rgba(12,12,14,.05) 100%)}
+.final .teinte::before{content:'';position:absolute;left:0;top:0;bottom:0;width:6px;
+  background:var(--magenta);box-shadow:0 0 34px rgba(230,0,126,.55)}
 /* Un effet simple sur le rose : une seule bande de lumière qui traverse
    lentement le dégradé. Pas d'animation sur le dégradé lui-même — animer
    `background` force un repaint de toute la surface à chaque image ; une
@@ -667,12 +687,16 @@ footer a:hover{color:var(--magenta)}
 .rose{background:var(--sourd)}
 .rose::before{content:none}
 
-/* Dernière section : le rose ne s'étale plus en voile sur toute la largeur.
-   Il devient une bande franche et saturée sous le texte, et le reste passe
-   en neutre sombre — la photo réapparaît au lieu d'être teintée en rose. */
-.final .teinte{background:linear-gradient(75deg,
-  rgba(184,0,101,.94) 0%,rgba(184,0,101,.62) 20%,
-  rgba(12,12,14,.74) 46%,rgba(12,12,14,.50) 100%)}
+/* Dernière section — correctif v3.1.
+   La v3 avait déjà réduit le voile, mais son dégradé restait magenta à 94 %
+   puis 62 % jusqu'à 46 % de la largeur : à l'écran, ça se lit encore comme un
+   fond rose sur un tiers de la section, et la photo disparaît dessous.
+   Ici le voile est ENTIÈREMENT neutre — il ne sert qu'à rendre le texte
+   lisible — et le magenta se réduit à un filet vertical saturé au bord gauche
+   (`.teinte::before`). C'est ça, « saturé et rare ». */
+.final .teinte{background:linear-gradient(90deg,
+  rgba(12,12,14,.80) 0%,rgba(12,12,14,.66) 30%,
+  rgba(12,12,14,.28) 58%,rgba(12,12,14,.08) 100%)}
 </style>
 </head>
 <body>
