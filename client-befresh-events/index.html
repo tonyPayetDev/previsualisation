@@ -1,0 +1,482 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>BE FRESH — Cocktails de fruits frais &amp; détoxifiants · Saint-Paul, La Réunion</title>
+<meta name="description" content="Bar à jus détox, jus frais maison et mojitos pour vos événements à La Réunion. Prestation clé en main, préparé à la minute sous vos yeux.">
+<link rel="icon" href="assets/badge-befresh.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600;700;800&family=Kaushan+Script&display=swap" rel="stylesheet">
+<style>
+/* ════════════════════════════════════════════════════════════════
+   BE FRESH EVENTS — style « scroll-cinema » adapté.
+   Palette échantillonnée sur le lookbook client : noir profond,
+   magenta et or en ACCENTS (ils soulignent, ils ne remplissent
+   jamais une surface).
+   ════════════════════════════════════════════════════════════════ */
+:root{
+  --noir:#0A0A0A;        /* fond de page */
+  --noir-pur:#000;       /* fond des blocs photo : les photos studio
+                            ont un fond noir pur, le bloc doit l'égaler
+                            sinon on voit le bord du fichier */
+  --magenta:#E9268C;     /* intertitres de menu, comme sur le lookbook */
+  --or:#E0AE3A;          /* mots mis en avant : événements, inoubliables */
+  --creme:#F4EFE6;       /* texte courant */
+  --beige:#C9BFB2;       /* texte secondaire */
+  --gris:#9C9184;        /* mentions, légendes */
+  --trait:#1E1C1A;       /* filets de séparation */
+  --max:1180px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--noir);color:var(--creme);
+  font:400 16px/1.65 'Outfit',system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  -webkit-font-smoothing:antialiased;
+}
+img{max-width:100%}
+a{color:inherit}
+
+/* ── Traitement d'image maison : angles vifs, ombre douce, cover,
+      aucun filtre, et jamais rien par-dessus une photo ───────────── */
+.photo{
+  display:block;width:100%;height:100%;
+  border-radius:0;
+  box-shadow:0 8px 40px rgba(0,0,0,.12);
+  object-fit:cover;
+}
+.cadre{background:var(--noir-pur);overflow:hidden}
+
+.section{max-width:var(--max);margin:0 auto;padding:96px 24px}
+.filet{max-width:var(--max);margin:0 auto;height:1px;background:var(--trait)}
+
+/* ── Typographie ─────────────────────────────────────────────────── */
+.script{font-family:'Kaushan Script',cursive;font-weight:400;color:var(--or);
+  font-size:clamp(20px,3.4vw,30px);line-height:1.3}
+.sur{font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--gris);
+  font-weight:500;margin:0 0 18px}
+h1{font-weight:800;font-size:clamp(33px,5vw,58px);line-height:1.04;
+  letter-spacing:-.03em;margin:14px 0 0;text-transform:uppercase}
+h2{font-weight:700;font-size:clamp(28px,4.6vw,46px);line-height:1.08;
+  letter-spacing:-.025em;margin:0 0 22px;text-transform:uppercase}
+h3{font-weight:600;font-size:clamp(19px,2.4vw,24px);line-height:1.2;
+  letter-spacing:-.01em;margin:0 0 10px}
+p{margin:0 0 18px;color:var(--beige);max-width:58ch}
+.or{color:var(--or)}
+.mag{color:var(--magenta)}
+
+/* ── Barre de navigation ─────────────────────────────────────────── */
+header{position:sticky;top:0;z-index:50;background:rgba(10,10,10,.86);
+  backdrop-filter:blur(10px);border-bottom:1px solid var(--trait)}
+.nav{max-width:var(--max);margin:0 auto;padding:12px 20px;
+  display:flex;align-items:center;gap:14px}
+.marque{display:flex;align-items:center;gap:10px;text-decoration:none;flex:0 0 auto}
+.marque img{width:38px;height:38px;display:block}
+.marque b{font-weight:800;font-size:14px;letter-spacing:.14em;line-height:1}
+.liens{display:flex;gap:26px;margin-left:auto}
+.liens a{text-decoration:none;font-size:13px;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--beige);padding:4px 0;
+  border-bottom:1px solid transparent;transition:color .25s,border-color .25s}
+.liens a:hover{color:var(--creme);border-bottom-color:var(--or)}
+.cta-nav{margin-left:26px;flex:0 0 auto;text-decoration:none;font-size:12px;
+  letter-spacing:.14em;text-transform:uppercase;font-weight:600;
+  color:var(--or);border:1px solid var(--or);padding:9px 16px;
+  white-space:nowrap;transition:background .25s,color .25s}
+.cta-nav:hover{background:var(--or);color:var(--noir)}
+
+/* ── Hero ────────────────────────────────────────────────────────── */
+.hero{max-width:var(--max);margin:0 auto;padding:64px 24px 84px;
+  display:grid;grid-template-columns:1fr .8fr;gap:56px;align-items:center}
+.hero-photo{aspect-ratio:3/4}
+.lieu{font-size:12px;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--gris);margin:30px 0 0;display:flex;align-items:center;gap:10px}
+.lieu::before{content:"";width:26px;height:1px;background:var(--or);flex:0 0 auto}
+.phrase{font-size:clamp(17px,2.1vw,21px);color:var(--creme);font-weight:300;
+  margin-top:26px;max-width:32ch;line-height:1.45}
+
+/* ── Bande de signature ──────────────────────────────────────────── */
+.bande{border-top:1px solid var(--trait);border-bottom:1px solid var(--trait);
+  background:var(--noir-pur)}
+.bande-in{max-width:var(--max);margin:0 auto;padding:34px 24px;
+  display:flex;flex-wrap:wrap;align-items:baseline;justify-content:center;
+  gap:14px 34px;text-align:center}
+.bande-in .sig{font-family:'Kaushan Script',cursive;font-size:clamp(24px,3.6vw,34px);
+  color:var(--creme)}
+.bande-in .plaisir{font-size:12px;letter-spacing:.28em;text-transform:uppercase;
+  color:var(--gris);font-weight:500}
+
+/* ── Les quatre piliers ──────────────────────────────────────────── */
+.piliers{display:grid;grid-template-columns:repeat(auto-fit,minmax(132px,1fr));gap:1px;
+  background:var(--trait);border:1px solid var(--trait)}
+.pilier{background:var(--noir);padding:26px 20px}
+.pilier .n{font-size:11px;color:var(--or);letter-spacing:.2em;font-weight:600}
+.pilier b{display:block;margin-top:12px;font-weight:600;font-size:16px;
+  letter-spacing:-.01em;line-height:1.25}
+
+/* ── Sections cinéma : la photo tient pendant qu'on lit le texte,
+      mais dans SA colonne — jamais de texte posé par-dessus ────── */
+.duo{display:grid;grid-template-columns:.9fr 1fr;gap:56px;align-items:start}
+.duo.inverse{grid-template-columns:1fr .9fr}
+.duo.inverse .col-photo{order:2}
+.colle{position:sticky;top:96px}
+/* hauteur calée sur l'écran, pas sur un ratio : la photo tient pendant
+   la lecture sans laisser un grand vide quand le texte est court */
+.colle .cadre{height:min(74vh,620px)}
+
+/* ── Listes de contenu ───────────────────────────────────────────── */
+.items{list-style:none;margin:0;padding:0}
+.items li{border-top:1px solid var(--trait);padding:16px 0}
+.items li:last-child{border-bottom:1px solid var(--trait)}
+.items b{display:block;font-weight:600;font-size:17px;letter-spacing:.01em}
+.items span{display:block;color:var(--gris);font-size:14px;margin-top:3px}
+
+.groupe{margin-bottom:44px}
+.groupe:last-child{margin-bottom:0}
+.inter{font-size:12px;font-weight:700;letter-spacing:.24em;text-transform:uppercase;
+  color:var(--magenta);margin:0 0 14px}
+
+.puces{display:flex;flex-wrap:wrap;gap:8px;margin:0;padding:0;list-style:none}
+.puces li{border:1px solid var(--trait);padding:8px 14px;font-size:14px;
+  color:var(--beige)}
+
+.occasions{display:flex;flex-wrap:wrap;gap:8px 10px;margin:0 0 26px;padding:0;list-style:none}
+.occasions li{font-size:13px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--beige);border-bottom:1px solid var(--or);padding-bottom:3px}
+
+/* ── Bandeau photo pleine largeur ────────────────────────────────
+   Réservé aux photos studio : sujet centré sur fond noir, donc un
+   recadrage large les sert au lieu de les amputer. Les photos prises
+   en événement sont verticales — elles restent en colonne. */
+.bandeau{width:100%;height:clamp(240px,42vw,600px)}
+
+/* ── Contact ─────────────────────────────────────────────────────── */
+.contact{text-align:center}
+/* p a une max-width par défaut : sans marges auto, un bloc étroit
+   reste collé à gauche même dans un conteneur centré */
+.contact p{margin-left:auto;margin-right:auto;max-width:44ch}
+.contact .lieu{justify-content:center}
+.devis{display:inline-block;border:1px solid var(--trait);padding:22px 30px;margin:0 0 34px}
+.devis b{display:block;font-size:13px;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--or);font-weight:600}
+.devis span{display:block;font-size:13px;color:var(--gris);margin-top:6px;
+  letter-spacing:.08em}
+.mail{display:inline-block;font-size:clamp(15px,2.6vw,22px);font-weight:500;
+  color:var(--creme);text-decoration:none;border-bottom:1px solid var(--or);
+  padding-bottom:6px;word-break:break-word;transition:color .25s}
+.mail:hover{color:var(--or)}
+
+footer{border-top:1px solid var(--trait);margin-top:20px}
+.pied{max-width:var(--max);margin:0 auto;padding:44px 24px 60px;
+  display:flex;flex-wrap:wrap;gap:20px 30px;align-items:center;
+  justify-content:space-between}
+.pied img{width:44px;height:44px;display:block}
+.pied p{margin:0;font-size:12.5px;color:var(--gris);letter-spacing:.06em}
+
+/* ── Apparition au défilement ────────────────────────────────────── */
+.rev{opacity:0;transform:translateY(26px);
+  transition:opacity .9s cubic-bezier(.22,1,.36,1),transform .9s cubic-bezier(.22,1,.36,1)}
+.rev.vu{opacity:1;transform:none}
+
+/* ── Adaptations ─────────────────────────────────────────────────── */
+@media (max-width:900px){
+  .hero{grid-template-columns:1fr;gap:38px;padding-top:44px}
+  .hero-photo{aspect-ratio:4/3}
+  .duo,.duo.inverse{grid-template-columns:1fr;gap:30px}
+  .duo.inverse .col-photo{order:0}
+  .colle{position:static}
+  /* les photos d'événement sont prises à la verticale : les basculer
+     en paysage ici les amputerait de moitié. Elles restent portrait. */
+  .colle .cadre{height:auto;aspect-ratio:4/5}
+  .liens{display:none}
+  /* les liens disparus, c'est le bouton qui prend la place à droite */
+  .cta-nav{margin-left:auto}
+}
+@media (max-width:640px){
+  /* sur mobile, une bande large amputerait les verres : on rend le
+     bandeau presque au ratio du fichier, le sujet reste entier */
+  .bandeau{height:auto;aspect-ratio:4/5}
+}
+@media (max-width:560px){
+  .section{padding:64px 18px}
+  .hero{padding:36px 18px 60px}
+  .bande-in{padding:26px 18px;gap:10px 20px}
+  .pied{padding:34px 18px 48px}
+  .nav{padding:10px 14px;gap:10px}
+  .marque img{width:32px;height:32px}
+  .marque b{font-size:12px;letter-spacing:.1em}
+  .cta-nav{padding:8px 12px;font-size:11px;letter-spacing:.1em}
+  .piliers{grid-template-columns:1fr 1fr}
+  .lieu{font-size:11px;letter-spacing:.14em}
+}
+@media (max-width:360px){
+  .marque b{display:none} /* à 320px, le nom cède la place au bouton */
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .rev{opacity:1;transform:none;transition:none}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <nav class="nav">
+    <a class="marque" href="#haut">
+      <img src="assets/badge-befresh.png" alt="BE FRESH" width="38" height="38">
+      <b>BE FRESH</b>
+    </a>
+    <div class="liens">
+      <a href="#evenements">Événements</a>
+      <a href="#carte">La carte</a>
+      <a href="#fait-main">Fait-main</a>
+      <a href="#bar-mobile">Le bar mobile</a>
+    </div>
+    <a class="cta-nav" href="#contact">Réservez votre date</a>
+  </nav>
+</header>
+
+<main id="haut">
+
+  <!-- ══ Hero ══ Texte à gauche, photo à droite. Aucun texte posé
+       sur la photo : le fond noir du fichier rejoint celui de la page. -->
+  <section class="hero">
+    <div class="rev">
+      <p class="sur">Bar à jus · La Réunion</p>
+      <p class="script" style="margin:0">Pour vos événements</p>
+      <h1>Cocktails de fruits<br>frais &amp; détoxifiants</h1>
+      <p class="phrase">Un bar sain pour des événements <span class="or">inoubliables</span>.</p>
+      <p class="lieu">Saint-Paul, Île de La Réunion</p>
+    </div>
+    <div class="cadre hero-photo rev">
+      <img class="photo" src="assets/splash-citron-vert.jpg"
+           alt="Verre de mojito avec citron vert, menthe et glaçons, éclaboussure figée sur fond noir"
+           width="864" height="1184">
+    </div>
+  </section>
+
+  <!-- ══ Bande de signature — les trois mots du lookbook ══ -->
+  <div class="bande">
+    <div class="bande-in rev">
+      <span class="sig">Frais.</span>
+      <span class="sig">Naturel.</span>
+      <span class="sig">Détox.</span>
+      <span class="plaisir">100 % <span class="or">plaisir</span></span>
+    </div>
+  </div>
+
+  <!-- ══ Les quatre piliers ══ -->
+  <section class="section">
+    <div class="piliers rev">
+      <div class="pilier"><span class="n">01</span><b>Frais<br>&amp; sain</b></div>
+      <div class="pilier"><span class="n">02</span><b>Naturel<br>&amp; local</b></div>
+      <div class="pilier"><span class="n">03</span><b>Sur-mesure<br>&amp; pro</b></div>
+      <div class="pilier"><span class="n">04</span><b>Festif<br>&amp; élégant</b></div>
+    </div>
+  </section>
+
+  <div class="filet"></div>
+
+  <!-- ══ Événements ══ La photo reste en place pendant la lecture. -->
+  <section class="section" id="evenements">
+    <div class="duo">
+      <div class="col-photo">
+        <div class="colle">
+          <div class="cadre rev">
+            <img class="photo" src="assets/bar-evenement.jpg"
+                 alt="Mojitos alignés sur un comptoir en bois devant la banderole Bar à cocktails de Be Fresh"
+                 width="1080" height="1920" loading="lazy">
+          </div>
+        </div>
+      </div>
+      <div class="rev">
+        <p class="sur">Événements</p>
+        <h2>Un bar sain<br>pour des événements<br><span class="or">inoubliables</span></h2>
+        <ul class="occasions">
+          <li>Mariage</li><li>Anniversaire</li><li>Séminaire</li>
+          <li>Salon</li><li>Festival</li>
+        </ul>
+        <p class="script" style="margin:0 0 6px">Prestation « clé en main »</p>
+        <p>Au Parc des Palmiers.</p>
+        <ul class="items">
+          <li><b>Préparé à la minute, sous vos yeux</b></li>
+          <li><b>Sur-mesure &amp; pro</b></li>
+          <li><b>Festif &amp; élégant</b></li>
+        </ul>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- Respiration : plan large sur fond noir, aucun texte par-dessus. -->
+  <div class="cadre bandeau rev">
+    <img class="photo" src="assets/trio-couleurs.jpg"
+         style="object-position:center 65%"
+         alt="Trois cocktails de fruits, vert, rouge et orange, alignés sur fond noir"
+         width="864" height="1184" loading="lazy">
+  </div>
+
+  <div class="filet"></div>
+
+  <!-- ══ La carte ══ -->
+  <section class="section" id="carte">
+    <div class="duo inverse">
+      <div class="col-photo">
+        <div class="colle">
+          <div class="cadre rev">
+            <img class="photo" src="assets/jus-signature.jpg"
+                 alt="Quatre jus de fruits frais servis dans des verres à liseré doré"
+                 width="1080" height="1920" loading="lazy">
+          </div>
+        </div>
+      </div>
+      <div class="rev">
+        <p class="sur">La carte</p>
+        <h2>Menu<br>100 % fraîcheur</h2>
+
+        <div class="groupe">
+          <p class="inter">Jus signature</p>
+          <ul class="items">
+            <li><b>Tropical</b><span>Ananas · Mangue · Orange</span></li>
+            <li><b>Green Detox</b><span>Pomme · Concombre · Menthe</span></li>
+            <li><b>Red Energy</b><span>Pastèque · Fraise · Citron</span></li>
+            <li><b>Passion Fresh</b><span>Fruit de la passion · Orange</span></li>
+          </ul>
+        </div>
+
+        <div class="groupe">
+          <p class="inter">Smoothies</p>
+          <ul class="puces">
+            <li>Mango Dream</li><li>Berry Mix</li><li>Banana Boost</li>
+          </ul>
+        </div>
+
+        <div class="groupe">
+          <p class="inter">Mocktails</p>
+          <ul class="puces">
+            <li>Mojito fraise</li><li>Virgin piña colada</li><li>Tropical sunset</li>
+          </ul>
+        </div>
+
+        <div class="groupe">
+          <p class="inter">Extras</p>
+          <ul class="puces">
+            <li>Gingembre frais</li><li>Menthe fraîche</li>
+            <li>Citron vert</li><li>Glace pilée</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="filet"></div>
+
+  <!-- ══ Fait-main ══ -->
+  <section class="section" id="fait-main">
+    <div class="duo">
+      <div class="col-photo">
+        <div class="colle">
+          <div class="cadre rev">
+            <img class="photo" src="assets/fait-main.jpg"
+                 alt="Jus de fruits frais servi au robinet de la fontaine dans un verre, gant de service"
+                 width="1080" height="1920" loading="lazy">
+          </div>
+        </div>
+      </div>
+      <div class="rev">
+        <p class="sur">Fait-main</p>
+        <h2>Préparé à la minute,<br>sous vos yeux</h2>
+        <p class="script" style="margin:0 0 22px">Frais · Fait · Délicieux</p>
+        <ul class="items">
+          <li><b>Ingrédients locaux &amp; de qualité</b></li>
+          <li><b>Vitamines. Énergie. Bien-être.</b></li>
+          <li><b>Naturel &amp; local</b></li>
+        </ul>
+      </div>
+    </div>
+
+  </section>
+
+  <div class="cadre bandeau rev">
+    <img class="photo" src="assets/mojito-macro.jpg"
+         alt="Gros plan sur un mojito : glace pilée, feuilles de menthe et citron vert"
+         width="864" height="1184" loading="lazy">
+  </div>
+
+  <div class="filet"></div>
+
+  <!-- ══ Le bar mobile ══ -->
+  <section class="section" id="bar-mobile">
+    <div class="duo inverse">
+      <div class="col-photo">
+        <div class="colle">
+          <div class="cadre rev">
+            <img class="photo" src="assets/bar-mobile.jpg"
+                 alt="Le bar mobile Be Fresh, panneau Mojito, Matcha et Alouda, une cliente au comptoir"
+                 width="1080" height="1920" loading="lazy">
+          </div>
+        </div>
+      </div>
+      <div class="rev">
+        <p class="sur">Le bar mobile</p>
+        <h2>Le bar<br>vient à vous</h2>
+        <ul class="items">
+          <li><b>Mojito</b></li>
+          <li><b>Matcha</b></li>
+          <li><b>Alouda</b></li>
+        </ul>
+        <p class="lieu" style="margin-top:26px">Parking Chaussée Royale, Saint-Paul</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="filet"></div>
+
+  <!-- ══ Contact ══ Pas de formulaire : le seul canal vérifié est l'e-mail. -->
+  <section class="section contact" id="contact">
+    <div class="rev">
+      <p class="sur">Contact</p>
+      <h2>Réservez votre date</h2>
+      <div class="devis">
+        <b>Tarifs sur devis</b>
+        <span>Adaptés à votre budget</span>
+      </div>
+      <p style="margin:0 auto 26px;color:var(--beige)">Écrivez-nous pour votre événement.</p>
+      <a class="mail" href="mailto:befresh.eventsstc@gmail.com">befresh.eventsstc@gmail.com</a>
+      <p class="lieu" style="justify-content:center;margin-top:34px">Saint-Paul, Île de La Réunion</p>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="pied">
+    <img src="assets/badge-befresh.png" alt="BE FRESH" width="44" height="44">
+    <p>Cocktails de fruits frais &amp; détoxifiants · Saint-Paul, Île de La Réunion</p>
+  </div>
+</footer>
+
+<script>
+/* Apparition au défilement — désactivée si l'utilisateur a demandé
+   moins d'animation. Aucun effet ne masque un contenu si JS échoue :
+   la classe .vu est posée d'office en secours. */
+(function(){
+  var cibles = document.querySelectorAll('.rev');
+  var reduit = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reduit || !('IntersectionObserver' in window)) {
+    cibles.forEach(function(e){ e.classList.add('vu'); });
+    return;
+  }
+  var obs = new IntersectionObserver(function(entrees){
+    entrees.forEach(function(e){
+      if (e.isIntersecting) { e.target.classList.add('vu'); obs.unobserve(e.target); }
+    });
+  }, { rootMargin: '0px 0px -8% 0px', threshold: 0.06 });
+  cibles.forEach(function(e){ obs.observe(e); });
+})();
+</script>
+
+</body>
+</html>
