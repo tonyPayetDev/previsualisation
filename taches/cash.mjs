@@ -20,13 +20,13 @@ const j = JSON.parse(readFileSync(F, 'utf8'));
 // Motifs → niveau. Le premier motif qui matche gagne, l'ordre compte donc.
 const REGLES = [
   // ── DIRECT : un prospect ou un client nommé, joignable ────────────────────
-  [/koytcha/i,                    'direct', 'Prospect immobilier nommé. La maquette est en ligne, elle s’envoie telle quelle.'],
+  [/koytcha/i,                    'direct', 'Prospect immobilier nommé. C’est la v4 qui s’envoie — la v2 avait été refusée, ne jamais repointer dessus.'],
   [/the grill/i,                  'direct', 'Prospect resto. La vidéo est prête, la relance n’est jamais partie.'],
   [/family arena/i,               'direct', 'Dossier complet, concurrents VR fermés. Site + vidéo prêts à montrer.'],
   [/8 sites clients|villa fleurie|boutons remis/i, 'direct', 'Huit commerces déjà destinataires d’un site. Chacun a maintenant une raison concrète d’être rappelé.'],
   [/sites clients — galerie|suivi d.appels/i, 'direct', 'C’est l’outil de relance lui-même : qui a été appelé, qui ne l’a pas été.'],
   [/kripia/i,                     'direct', 'Tu as écrit toi-même « vendre le clip ou la méthode ». C’est une offre, pas un rendu.'],
-  [/gite-matilona/i,              'direct', 'Un site client répond 503. Un client hors ligne, c’est un client qui part.'],
+  [/gite-matilona/i,              'direct', 'Site remis en ligne le 25/08. Le rappeler maintenant a une raison concrète.'],
   [/landing automatisationboost|landing avec ton visage/i, 'direct', 'Ta vitrine de vente. C’est la page où atterrissent les prospects.'],
 
   // ── PROCHE : ça sert la vente, sans facture au bout ───────────────────────
