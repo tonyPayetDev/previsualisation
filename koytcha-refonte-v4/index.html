@@ -208,6 +208,27 @@ img{max-width:100%;display:block}
   .gal figure:first-child{grid-column:1/3;grid-row:span 2;aspect-ratio:auto}
   .gal figure:nth-child(4){grid-column:span 2}
 }
+/* ── Correctif v4.2 · la galerie passe aussi en carrousel sur mobile ──────
+   En grille à deux colonnes sur un écran de 390 px, chaque photo tombait à
+   ~178 px de large. Sur des vues d'intérieur, on ne distingue plus rien.
+   Même mécanique que la planche : scroll-snap natif, cartes à 86 %, le bord
+   de la suivante qui dépasse pour dire qu'on peut faire glisser.
+   La première image garde son cadrage 16:10 en grille ; en carrousel toutes
+   passent en 4:3, sinon les hauteurs sautent d'une vue à l'autre. */
+@media(max-width:620px){
+  .gal{
+    display:flex; gap:10px;
+    overflow-x:auto; overscroll-behavior-x:contain;
+    scroll-snap-type:x mandatory; -webkit-overflow-scrolling:touch;
+    margin-inline:calc(var(--gouttiere) * -1);
+    padding-inline:var(--gouttiere);
+    scroll-padding-inline:var(--gouttiere);
+    scrollbar-width:none;
+  }
+  .gal::-webkit-scrollbar{display:none}
+  .gal figure{flex:0 0 86%; scroll-snap-align:start; aspect-ratio:4/3}
+  .gal figure:first-child{grid-column:auto; aspect-ratio:4/3}
+}
 
 /* ── 2. Programmes ───────────────────────────────────────────────────── */
 .sect{padding:clamp(90px,11vw,150px) 0}
@@ -394,15 +415,44 @@ h2.tt i{font-style:italic}
 /* Sur téléphone, deux vignettes côte à côte retombent à ~110 px de haut : le
    bâtiment redevient un timbre-poste. Les trois vues passent donc en pleine
    largeur, empilées. C'est le format où l'architecture se lit. */
+/* ── Correctif v4.2 · carrousel sur mobile ────────────────────────────────
+   Empilées, les trois vues coûtaient 616 px de hauteur sur téléphone. En
+   carrousel elles n'en coûtent qu'une, et la photo garde sa pleine largeur —
+   on ne revient donc PAS aux vignettes illisibles qu'on vient de supprimer.
+
+   Fait en `scroll-snap` natif, sans une ligne de JavaScript : le défilement
+   tactile reste celui du système, il ne rame pas et il marche au clavier.
+
+   Les cartes font 86 % de la largeur, pas 100 % : le bord de la suivante
+   dépasse, et c'est CE dépassement qui dit qu'on peut faire glisser. Des
+   points sous le carrousel demanderaient du JS pour rester justes ; un bord
+   qui dépasse ne peut pas mentir. */
 @media(max-width:620px){
-  .planche{grid-template-columns:1fr;gap:12px}
+  .planche{
+    display:flex; grid-template-columns:none; gap:10px;
+    overflow-x:auto; overscroll-behavior-x:contain;
+    scroll-snap-type:x mandatory; -webkit-overflow-scrolling:touch;
+    /* Les marges négatives font sortir la piste des gouttières de la page :
+       la première image commence au bord de l'écran, comme dans une galerie
+       d'application. Le padding remet l'alignement du texte sur la première. */
+    margin-inline:calc(var(--gouttiere) * -1);
+    padding-inline:var(--gouttiere);
+    scroll-padding-inline:var(--gouttiere);
+    scrollbar-width:none;
+  }
+  .planche::-webkit-scrollbar{display:none}
+  .planche figure{flex:0 0 86%; scroll-snap-align:start}
   .planche .p1{grid-column:auto}
   .planche .p3{margin-top:0}
+  /* En carrousel, l'entrée en cascade décalerait des images hors écran, qui
+     resteraient invisibles une fois qu'on fait glisser jusqu'à elles. */
+  .planche figure{opacity:1;transform:none;transition:none;transition-delay:0s !important}
 }
 @media(prefers-reduced-motion:reduce){
   .planche figure{opacity:1;transform:none;transition:none}
   .planche.vu figure:hover{transform:none}
   .planche figure:hover img{transform:none}
+  .planche{scroll-behavior:auto}
 }
 .chiffres{display:grid;grid-template-columns:repeat(4,1fr);gap:24px;
   margin-top:clamp(60px,8vw,100px);padding-top:clamp(40px,5vw,60px);border-top:1px solid var(--ligne)}
