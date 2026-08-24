@@ -1410,3 +1410,17 @@ img { border-radius: 0 !important; }
 .cart-btn:hover { background: var(--vert-sombre); border-color: var(--vert-sombre); }
 .nav-menu a.active, .nav-menu a:hover { color: var(--vert); }
 .nav-menu a.active { background: rgba(85,112,44,.10); }
+
+/* ── La grille en TROIS colonnes, pas quatre (24/08) ─────────────────────
+   Avec quatre colonnes et une première photo sur 2×2, les six photos
+   remplissent 4+4 cases sur deux rangées et la sixième se retrouve seule sur
+   une troisième rangée — trois cases vides.
+   En trois colonnes : la grande occupe 2×2, deux photos comblent la colonne
+   de droite, et les trois dernières font la rangée du bas. Neuf cases, neuf
+   occupées. Le calcul tombe juste, le bloc n'a plus de trou. */
+.galerie-google { grid-template-columns: repeat(3, 1fr); grid-auto-rows: 250px; }
+.galerie-google figure:nth-child(1) { grid-column: span 2; grid-row: span 2; }
+@media (max-width: 1000px) {
+  .galerie-google { grid-template-columns: repeat(2, 1fr); grid-auto-rows: 220px; }
+  .galerie-google figure:nth-child(1) { grid-column: span 2; grid-row: span 1; }
+}
