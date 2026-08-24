@@ -1328,3 +1328,57 @@ img[src*="icon"], img[src*="favicon"] {
 .btn-outline:hover { background: var(--vert); color: #fff; }
 /* Une seule image gardait un coin arrondi de 20 px au milieu d angles droits. */
 img { border-radius: 0 !important; }
+
+/* ── Le vert RÉEL de la marque (24/08) ───────────────────────────────────
+   Le premier vert que j'avais posé était choisi au jugé. Celui-ci est
+   échantillonné sur le bandeau de la devanture, photo Google de
+   l'établissement : #486024, un olive chaud. Il est légèrement remonté pour
+   l'écran — un vert relevé sur une photo est toujours plus sombre que
+   l'aplat de la charte, à cause de l'ombre et de l'exposition. */
+:root {
+  --vert: #55702C;
+  --vert-clair: #6B8A3A;
+  --vert-sombre: #3E5420;
+}
+
+/* ── Les vraies photos de l'établissement ────────────────────────────────
+   Récupérées depuis sa fiche Google. Ce ne sont pas des images de banque :
+   c'est sa devanture, ses pizzas, ses mains. Le hero les montre en grand
+   parce que c'est ce qu'un visiteur veut voir avant le texte. */
+.hero-bg, .hero .hero-bg {
+  background-image:
+    linear-gradient(105deg, rgba(20,26,12,.86) 0%, rgba(20,26,12,.55) 46%, rgba(20,26,12,.15) 78%),
+    url('../images/google/trois-pizzas.jpg') !important;
+  background-size: cover !important;
+  background-position: center 58% !important;
+}
+
+.galerie-google {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 2px;
+  background: #e6e6e6;
+  margin: 0;
+}
+.galerie-google figure { margin: 0; position: relative; overflow: hidden; background: #000; }
+.galerie-google img {
+  width: 100%; height: 100%; min-height: 260px;
+  object-fit: cover; display: block;
+  transition: transform .6s cubic-bezier(.22,1,.36,1);
+}
+.galerie-google figure:hover img { transform: scale(1.05); }
+/* La légende n'apparaît qu'au survol : une photo se regarde d'abord. */
+.galerie-google figcaption {
+  position: absolute; left: 0; right: 0; bottom: 0;
+  padding: 34px 18px 14px;
+  background: linear-gradient(transparent, rgba(20,26,12,.88));
+  color: #fff; font-size: 13.5px; letter-spacing: .04em;
+  opacity: 0; transform: translateY(8px);
+  transition: opacity .4s, transform .4s;
+}
+.galerie-google figure:hover figcaption { opacity: 1; transform: none; }
+.galerie-google figure:nth-child(1) { grid-column: span 2; }
+@media (max-width: 700px) {
+  .galerie-google figure:nth-child(1) { grid-column: span 1; }
+  .galerie-google img { min-height: 210px; }
+}
