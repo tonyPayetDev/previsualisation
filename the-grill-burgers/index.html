@@ -37,7 +37,14 @@
       <h2>Rendu final</h2>
       <span class="badge">⏳ À valider</span>
     </div>
-    <video src="https://assets.automatisationboost.com/previsualisation/the-grill-burgers/video.mp4" controls playsinline loop></video>
+    <!-- Le type est déclaré explicitement : R2 sert ce fichier en
+         application/octet-stream, et un iPhone à qui on n'a pas dit que
+         c'est de la vidéo peut refuser de le lire en ligne et proposer un
+         téléchargement à la place. Cette page part à un restaurateur qui
+         l'ouvrira sur son téléphone. -->
+    <video controls playsinline loop>
+      <source src="https://assets.automatisationboost.com/previsualisation/the-grill-burgers/video.mp4" type="video/mp4">
+    </video>
     <div class="meta">
       Durée <b>11,2 s</b> · 720×1280 · 25 fps · Poids <b>2,0 Mo</b> · Rendu le <b>24/08/2026</b>
     </div>
