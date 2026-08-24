@@ -1382,3 +1382,31 @@ img { border-radius: 0 !important; }
   .galerie-google figure:nth-child(1) { grid-column: span 1; }
   .galerie-google img { min-height: 210px; }
 }
+
+/* ── Corrections de la galerie et du dernier orange (24/08) ──────────────
+   1. La grille en `auto-fit` laissait un vide de trois cases en fin de ligne :
+      six photos dont une sur deux colonnes font sept cases, et la grille en
+      calculait cinq par ligne. Un nombre FIXE de colonnes, avec la première
+      photo sur deux colonnes et deux rangées, remplit le bloc sans trou.
+   2. `.cart-btn` et l'onglet actif de la navigation étaient les deux derniers
+      endroits encore orange. Deux accents sur une même page, c'est un accent
+      de trop. */
+.galerie-google {
+  grid-template-columns: repeat(4, 1fr);
+  grid-auto-rows: 220px;
+}
+.galerie-google figure:nth-child(1) { grid-column: span 2; grid-row: span 2; }
+.galerie-google img { min-height: 0; height: 100%; }
+@media (max-width: 1000px) {
+  .galerie-google { grid-template-columns: repeat(2, 1fr); }
+  .galerie-google figure:nth-child(1) { grid-column: span 2; grid-row: span 1; }
+}
+@media (max-width: 560px) {
+  .galerie-google { grid-template-columns: 1fr; grid-auto-rows: 230px; }
+  .galerie-google figure:nth-child(1) { grid-column: span 1; }
+}
+
+.cart-btn { background: var(--vert); border-color: var(--vert); }
+.cart-btn:hover { background: var(--vert-sombre); border-color: var(--vert-sombre); }
+.nav-menu a.active, .nav-menu a:hover { color: var(--vert); }
+.nav-menu a.active { background: rgba(85,112,44,.10); }
