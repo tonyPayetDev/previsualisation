@@ -42,6 +42,44 @@ header p{margin:0; color:var(--gris); font-size:14px}
 .c.livre b{color:var(--vert)} .c.bloque b{color:var(--rouge)} .c.attente b{color:var(--ambre)}
 .aide{font-size:12px; color:var(--gris2); margin:0 0 20px; min-height:16px}
 
+/* ── L'axe « proximité du cash » ──────────────────────────────────────────
+   Il se lit AVEC l'état, pas à sa place : le marqueur € est posé devant le
+   titre, la pastille d'état reste à gauche. Deux informations, deux endroits. */
+.eur{
+  display:inline-block; font-weight:700; font-size:11px; letter-spacing:.04em;
+  padding:2px 6px; border-radius:5px; margin-right:8px; vertical-align:2px;
+  font-variant-numeric:tabular-nums; white-space:nowrap;
+}
+.eur.direct{color:#ffd9d6; background:rgba(229,84,75,.20); border:1px solid rgba(229,84,75,.55)}
+.eur.proche{color:#ffe6bd; background:rgba(240,180,41,.16); border:1px solid rgba(240,180,41,.48)}
+.eur.loin  {color:#c9f2df; background:rgba(62,207,142,.13); border:1px solid rgba(62,207,142,.40)}
+
+.cash-f{display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin:0 0 8px}
+.cf{
+  background:var(--carte); border:1px solid var(--bord); border-radius:12px;
+  padding:11px 10px; text-align:left; cursor:pointer; color:inherit; font:inherit;
+  transition:border-color .15s, background .15s;
+}
+.cf:hover{border-color:#39414b}
+.cf[aria-pressed="true"]{background:#1d2229; border-color:#454f5b}
+.cf b{display:block; font-size:22px; line-height:1; font-variant-numeric:tabular-nums; margin-bottom:4px}
+.cf span{font-size:11.5px; color:var(--gris); display:block; line-height:1.3}
+.cf.direct b{color:var(--rouge)} .cf.proche b{color:var(--ambre)} .cf.loin b{color:var(--vert)}
+
+/* Le bloc d'envoi : la liste la plus courte et la plus rentable de la page. */
+.envoi{
+  border:1px solid rgba(229,84,75,.45); background:linear-gradient(180deg,#1d1416,#16191e);
+  border-radius:13px; padding:16px 16px 14px; margin:22px 0 0;
+}
+.envoi h3{margin:0 0 4px; font-size:15px; letter-spacing:-.01em}
+.envoi>p{margin:0 0 12px; font-size:13px; color:var(--gris); line-height:1.5}
+.envoi ol{margin:0; padding:0 0 0 0; list-style:none; display:flex; flex-direction:column; gap:7px}
+.envoi li{display:flex; gap:10px; align-items:center; font-size:14px; line-height:1.4}
+.envoi li a{color:var(--bleu); text-decoration:none; border:1px solid #2c3b52;
+  border-radius:7px; padding:3px 9px; font-size:12.5px; flex:0 0 auto; margin-left:auto}
+.envoi li a:hover{background:#182338}
+.envoi .pt{width:6px; height:6px; border-radius:50%; background:var(--rouge); flex:0 0 6px}
+
 h2{font-size:13px; text-transform:uppercase; letter-spacing:.09em; color:var(--gris);
    margin:30px 0 10px; font-weight:600}
 ul{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:8px}
@@ -89,387 +127,429 @@ footer{margin-top:34px; font-size:12px; color:var(--gris2); line-height:1.6}
 </header>
 
 <div class="compteurs">
-  <button class="c livre"   data-f="livre"   aria-pressed="false"><b>25</b><span>Livré</span></button>
+  <button class="c livre"   data-f="livre"   aria-pressed="false"><b>26</b><span>Livré</span></button>
   <button class="c bloque"  data-f="bloque"  aria-pressed="false"><b>5</b><span>Bloqué</span></button>
-  <button class="c attente" data-f="attente" aria-pressed="false"><b>17</b><span>Attend toi</span></button>
+  <button class="c attente" data-f="attente" aria-pressed="false"><b>18</b><span>Attend toi</span></button>
 </div>
 <p class="aide" id="aide">Touche un chiffre pour ne voir que celles-là.</p>
 
+<h2>Proximité du cash</h2>
+<div class="cash-f">
+  <button class="cf direct" data-c="direct" aria-pressed="false"><b>13</b><span>€€€ Cash direct</span></button>
+  <button class="cf proche" data-c="proche" aria-pressed="false"><b>20</b><span>€€ Amène du cash</span></button>
+  <button class="cf loin"   data-c="loin"   aria-pressed="false"><b>16</b><span>€ Convertible</span></button>
+</div>
+<p class="aide" id="aideCash">Rouge : un prospect nommé est au bout. Vert : utile, mais personne ne paie pour ça aujourd'hui.</p>
+
+<div class="envoi">
+  <h3>À envoyer maintenant</h3>
+  <p>10 tâches sont à la fois <strong>cash direct</strong> et <strong>déjà livrées</strong>.
+  Le travail est fait, il n'est simplement jamais parti. C'est là qu'est ton argent — pas dans ce qui reste à construire.</p>
+  <ol>
+    <li><span class="pt"></span><span>Vidéo The Grill — burgers, tacos, wraps, assiettes</span><a href="https://previsualisation.automatisationboost.com/the-grill-burgers/">Ouvrir</a></li>
+    <li><span class="pt"></span><span>Koytcha — image révélée à travers le logo, bords de pinceau</span><a href="/koytcha-refonte-v2/">Ouvrir</a></li>
+    <li><span class="pt"></span><span>Boutons remis à la charte : Giulietta en vert, Coulommiers sur son accent, Mam'Zelle sur le brun de son logo</span><a href="/client-giulietta-pizzeria-saint-pierre/">Ouvrir</a></li>
+    <li><span class="pt"></span><span>Traitement d'image aligné sur Villa Fleurie sur les 8 sites</span><a href="/client-mamzelle-pizza-ile-reunion/">Ouvrir</a></li>
+    <li><span class="pt"></span><span>Les 8 sites clients corrigés — zéro débordement, zéro erreur, zéro image manquante</span><a href="/client-kmila-pizza-reunion/">Ouvrir</a></li>
+    <li><span class="pt"></span><span>Landing AutomatisationBoost cinématique (salle de contrôle)</span><a href="/automatisationboost-cinematique/">Ouvrir</a></li>
+    <li><span class="pt"></span><span>Landing avec ton visage, boule d'énergie, casque VR, matrice</span><a href="/automatisationboost-matrix/">Ouvrir</a></li>
+    <li><span class="pt"></span><span>Site Family Arena, style cinématique au scroll</span><a href="/family-arena-portail/">Ouvrir</a></li>
+    <li><span class="pt"></span><span>Sites clients — galerie, avant/après, suivi d'appels</span><a href="/sites-clients/vue.html">Ouvrir</a></li>
+    <li><span class="pt"></span><span>Souvenir HADO pour Family Arena</span></li>
+  </ol>
+</div>
+
 <h2>De mon côté</h2>
 <ul id="liste">
-<li class="t" data-etat="bloque">
+<li class="t" data-etat="livre" data-cash="direct">
+  <span class="pastille livre" aria-hidden="true"></span>
+  <div class="corps">
+    <p class="titre"><span class="eur direct" title="Cash direct — Prospect resto. La vidéo est prête, la relance n’est jamais partie.">€€€</span>Vidéo The Grill — burgers, tacos, wraps, assiettes</p>
+    <p class="note">11,2 s, 9:16. Six de leurs vraies photos (site thegrill.re + fiche Google), filés latéraux façon Crousty, bande son de la référence sans la voix. Aucun prix ni horaire inventé.</p>
+  </div>
+  <a class="voir" href="https://previsualisation.automatisationboost.com/the-grill-burgers/">Voir</a>
+</li>
+<li class="t" data-etat="bloque" data-cash="loin">
   <span class="pastille bloque" aria-hidden="true"></span>
   <div class="corps">
-    <p class="titre">Un échantillon vocal propre — 30 à 45 s, au calme, sans musique</p>
+    <p class="titre"><span class="eur loin" title="Convertible — Prérequis technique. Ça débloque de la production, pas une vente.">€</span>Un échantillon vocal propre — 30 à 45 s, au calme, sans musique</p>
     <p class="note">Le clone parlé grésille. Son échantillon source n'a jamais été contrôlé : un échantillon bruité donne un clone bruité.</p>
   </div>
   <span class="voir vide" aria-hidden="true"></span>
 </li>
-<li class="t" data-etat="bloque">
+<li class="t" data-etat="bloque" data-cash="loin">
   <span class="pastille bloque" aria-hidden="true"></span>
   <div class="corps">
-    <p class="titre">Recharger WaveSpeed</p>
+    <p class="titre"><span class="eur loin" title="Convertible — Prérequis technique. Ça débloque de la production, pas une vente.">€</span>Recharger WaveSpeed</p>
     <p class="note">1,54 $. La facturation est à la SECONDE, pas à l'appel — mesuré, le prix affiché est par seconde.</p>
   </div>
   <span class="voir vide" aria-hidden="true"></span>
 </li>
-<li class="t" data-etat="bloque">
+<li class="t" data-etat="bloque" data-cash="proche">
   <span class="pastille bloque" aria-hidden="true"></span>
   <div class="corps">
-    <p class="titre">Reconnecter LinkedIn dans Blotato</p>
+    <p class="titre"><span class="eur proche" title="Amene du cash — Canal d’acquisition. LinkedIn est le seul des cinq où rien ne part.">€€</span>Reconnecter LinkedIn dans Blotato</p>
     <p class="note">Token expiré. LinkedIn est le seul des 5 réseaux qui ne reçoit rien.</p>
   </div>
   <span class="voir vide" aria-hidden="true"></span>
 </li>
-<li class="t" data-etat="attente">
+<li class="t" data-etat="attente" data-cash="proche">
   <span class="pastille attente" aria-hidden="true"></span>
   <div class="corps">
-    <p class="titre">5 vidéos prompt-reveal jamais programmées</p>
+    <p class="titre"><span class="eur proche" title="Amene du cash — Contenu social : ça construit l’audience qui fournit les prospects.">€€</span>5 vidéos prompt-reveal jamais programmées</p>
     <p class="note">Prêtes depuis le 17/08, absentes des 34 posts en file. Un mot de toi et je les planifie.</p>
   </div>
   <span class="voir vide" aria-hidden="true"></span>
 </li>
-<li class="t" data-etat="attente">
+<li class="t" data-etat="attente" data-cash="proche">
   <span class="pastille attente" aria-hidden="true"></span>
   <div class="corps">
-    <p class="titre">Vidéo BeFresh façon Crousty</p>
+    <p class="titre"><span class="eur proche" title="Amene du cash — Client test — c’est ta vitrine pour vendre aux autres restaurants.">€€</span>Vidéo BeFresh façon Crousty</p>
     <p class="note">Référence analysée (12,4 s, transitions en filé, intérieur néon). Manque les assets BeFresh : logo vectoriel et photos du mois.</p>
   </div>
   <span class="voir vide" aria-hidden="true"></span>
 </li>
-<li class="t" data-etat="attente">
+<li class="t" data-etat="attente" data-cash="loin">
   <span class="pastille attente" aria-hidden="true"></span>
   <div class="corps">
-    <p class="titre">Lip-sync du clip — 18 extraits chantés, 41,4 s</p>
+    <p class="titre"><span class="eur loin" title="Convertible — Prérequis technique. Ça débloque de la production, pas une vente.">€</span>Lip-sync du clip — 18 extraits chantés, 41,4 s</p>
     <p class="note">2,07 $ avec sync/lipsync-2. Solde WaveSpeed : 1,54 $. Un essai sur un extrait coûte 0,25 $.</p>
   </div>
   <span class="voir vide" aria-hidden="true"></span>
 </li>
-<li class="t" data-etat="attente">
+<li class="t" data-etat="attente" data-cash="proche">
   <span class="pastille attente" aria-hidden="true"></span>
   <div class="corps">
-    <p class="titre">Carrousel LinkedIn 6 cartes — récap de la semaine</p>
+    <p class="titre"><span class="eur proche" title="Amene du cash — Canal d’acquisition. LinkedIn est le seul des cinq où rien ne part.">€€</span>Carrousel LinkedIn 6 cartes — récap de la semaine</p>
     <p class="note">Images prêtes en 1200×1500. LinkedIn ne peut pas recevoir : le token Blotato est expiré.</p>
   </div>
   <span class="voir vide" aria-hidden="true"></span>
 </li>
-<li class="t" data-etat="livre">
+<li class="t" data-etat="livre" data-cash="direct">
   <span class="pastille livre" aria-hidden="true"></span>
   <div class="corps">
-    <p class="titre">Koytcha — image révélée à travers le logo, bords de pinceau</p>
+    <p class="titre"><span class="eur direct" title="Cash direct — Prospect immobilier nommé. La maquette est en ligne, elle s’envoie telle quelle.">€€€</span>Koytcha — image révélée à travers le logo, bords de pinceau</p>
     <p class="note">Section « Nos biens » ramenée de 1 158 à 980 px.</p>
   </div>
   <a class="voir" href="/koytcha-refonte-v2/">Voir</a>
 </li>
-<li class="t" data-etat="livre">
+<li class="t" data-etat="livre" data-cash="proche">
   <span class="pastille livre" aria-hidden="true"></span>
   <div class="corps">
-    <p class="titre">Chanson « lé chaud » chantée par ta voix clonée</p>
+    <p class="titre"><span class="eur proche" title="Amene du cash — Contenu social : ça construit l’audience qui fournit les prospects.">€€</span>Chanson « lé chaud » chantée par ta voix clonée</p>
     <p class="note">voiceId 8b46633ba738f0ad1535c3c4c70d5491, obtenu au 5e essai. Les 4 échecs venaient d'un grep qui tuait le script.</p>
   </div>
   <a class="voir" href="/chanson-le-chaud/">Voir</a>
 </li>
-<li class="t" data-etat="livre">
+<li class="t" data-etat="livre" data-cash="loin">
   <span class="pastille livre" aria-hidden="true"></span>
   <div class="corps">
-    <p class="titre">Site La Réunion cinématique — le volcan intégré, boucle fermée</p>
+    <p class="titre"><span class="eur loin" title="Convertible — Non rattaché à un prospect ni à un canal d’acquisition.">€</span>Site La Réunion cinématique — le volcan intégré, boucle fermée</p>
     <p class="note">224 images. Le clip « retour » est en extension backward : il monte au lieu de descendre, donc inutilisable comme retour.</p>
   </div>
   <a class="voir" href="/reunion-vol/">Voir</a>
 </li>
-<li class="t" data-etat="livre">
+<li class="t" data-etat="livre" data-cash="proche">
   <span class="pastille livre" aria-hidden="true"></span>
   <div class="corps">
-    <p class="titre">Split-screen « 30 000 prompts » avec ta voix clonée</p>
+    <p class="titre"><span class="eur proche" title="Amene du cash — Contenu social : ça construit l’audience qui fournit les prospects.">€€</span>Split-screen « 30 000 prompts » avec ta voix clonée</p>
     <p class="note">Cadence relevée à l'image (18 changements sur 27,1 s). Le grésillement venait de la pente spectrale du TTS, pas du mixage.</p>
   </div>
   <a class="voir" href="/split-prompts/">Voir</a>
 </li>
-<li class="t" data-etat="livre">
+<li class="t" data-etat="livre" data-cash="proche">
   <span class="pastille livre" aria-hidden="true"></span>
   <div class="corps">
-    <p class="titre">Clip roule kiki v3 — 16 clips, fin qui ne coupe plus à sec</p>
+    <p class="titre"><span class="eur proche" title="Amene du cash — Contenu social : ça construit l’audience qui fournit les prospects.">€€</span>Clip roule kiki v3 — 16 clips, fin qui ne coupe plus à sec</p>
     <p class="note">Carton « à bientôt » en fondu, musique en descente sur 4,3 s. Le premier rendu avait recyclé les segments de la v2 : 3 s au lieu de 236.</p>
   </div>
   <a class="voir" href="/clip-roule-kiki-v2/">Voir</a>
 </li>
-<li class="t" data-etat="livre">
+<li class="t" data-etat="livre" data-cash="direct">
   <span class="pastille livre" aria-hidden="true"></span>
   <div class="corps">
-    <p class="titre">Boutons remis à la charte : Giulietta en vert, Coulommiers sur son accent, Mam'Zelle sur le brun de son logo</p>
+    <p class="titre"><span class="eur direct" title="Cash direct — Huit commerces déjà destinataires d’un site. Chacun a maintenant une raison concrète d’être rappelé.">€€€</span>Boutons remis à la charte : Giulietta en vert, Coulommiers sur son accent, Mam'Zelle sur le brun de son logo</p>
     <p class="note">Giulietta n'avait aucun vert dans sa charte. Le brun de Mam'Zelle (#584242) est échantillonné sur logo-brun.png, pas inventé.</p>
   </div>
   <a class="voir" href="/client-giulietta-pizzeria-saint-pierre/">Voir</a>
 </li>
-<li class="t" data-etat="livre">
+<li class="t" data-etat="livre" data-cash="direct">
   <span class="pastille livre" aria-hidden="true"></span>
   <div class="corps">
-    <p class="titre">Traitement d'image aligné sur Villa Fleurie sur les 8 sites</p>
+    <p class="titre"><span class="eur direct" title="Cash direct — Huit commerces déjà destinataires d’un site. Chacun a maintenant une raison concrète d’être rappelé.">€€€</span>Traitement d'image aligné sur Villa Fleurie sur les 8 sites</p>
     <p class="note">Coins droits, ombre 0 8px 40px à 12 %, object-fit cover. Relevé sur le site de référence, pas supposé. Aucun des 8 ne l'avait.</p>
   </div>
   <a class="voir" href="/client-mamzelle-pizza-ile-reunion/">Voir</a>
 </li>
-<li class="t" data-etat="livre">
+<li class="t" data-etat="livre" data-cash="direct">
   <span class="pastille livre" aria-hidden="true"></span>
   <div class="corps">
-    <p class="titre">Les 8 sites clients corrigés — zéro débordement, zéro erreur, zéro image manquante</p>
+    <p class="titre"><span class="eur direct" title="Cash direct — Huit commerces déjà destinataires d’un site. Chacun a maintenant une raison concrète d’être rappelé.">€€€</span>Les 8 sites clients corrigés — zéro débordement, zéro erreur, zéro image manquante</p>
     <p class="note">Le brief donnait des chemins périmés : les dossiers ont un préfixe `client-`, sans quoi les 8 renvoyaient 404.</p>
   </div>
   <a class="voir" href="/client-kmila-pizza-reunion/">Voir</a>
 </li>
-<li class="t" data-etat="livre">
+<li class="t" data-etat="livre" data-cash="proche">
   <span class="pastille livre" aria-hidden="true"></span>
   <div class="corps">
-    <p class="titre">Top 3 en écran scindé, avatar qui pointe vers les logos</p>
+    <p class="titre"><span class="eur proche" title="Amene du cash — Contenu social : ça construit l’audience qui fournit les prospects.">€€</span>Top 3 en écran scindé, avatar qui pointe vers les logos</p>
     <p class="note">Le geste ne durait que 3 s dans le clip source : portion isolée et bouclée.</p>
   </div>
   <a class="voir" href="/autoboost-top3-split/">Voir</a>
 </li>
-<li class="t" data-etat="livre">
+<li class="t" data-etat="livre" data-cash="direct">
   <span class="pastille livre" aria-hidden="true"></span>
   <div class="corps">
-    <p class="titre">Landing AutomatisationBoost cinématique (salle de contrôle)</p>
+    <p class="titre"><span class="eur direct" title="Cash direct — Ta vitrine de vente. C’est la page où atterrissent les prospects.">€€€</span>Landing AutomatisationBoost cinématique (salle de contrôle)</p>
     
   </div>
   <a class="voir" href="/automatisationboost-cinematique/">Voir</a>
 </li>
-<li class="t" data-etat="livre">
+<li class="t" data-etat="livre" data-cash="direct">
   <span class="pastille livre" aria-hidden="true"></span>
   <div class="corps">
-    <p class="titre">Landing avec ton visage, boule d'énergie, casque VR, matrice</p>
+    <p class="titre"><span class="eur direct" title="Cash direct — Ta vitrine de vente. C’est la page où atterrissent les prospects.">€€€</span>Landing avec ton visage, boule d'énergie, casque VR, matrice</p>
     <p class="note">Boule dessinée en canvas : incrustée dans la photo, elle n'aurait pas pu grossir.</p>
   </div>
   <a class="voir" href="/automatisationboost-matrix/">Voir</a>
 </li>
-<li class="t" data-etat="livre">
+<li class="t" data-etat="livre" data-cash="proche">
   <span class="pastille livre" aria-hidden="true"></span>
   <div class="corps">
-    <p class="titre">3 vidéos BeFresh — accès événementiel, 2 montages + beat-sync</p>
+    <p class="titre"><span class="eur proche" title="Amene du cash — Client test — c’est ta vitrine pour vendre aux autres restaurants.">€€</span>3 vidéos BeFresh — accès événementiel, 2 montages + beat-sync</p>
     <p class="note">BPM mesuré à 130,00 — le manifeste annonçait 128.</p>
   </div>
   <a class="voir" href="/befresh-evenementiel/">Voir</a>
 </li>
-<li class="t" data-etat="livre">
+<li class="t" data-etat="livre" data-cash="direct">
   <span class="pastille livre" aria-hidden="true"></span>
   <div class="corps">
-    <p class="titre">Site Family Arena, style cinématique au scroll</p>
+    <p class="titre"><span class="eur direct" title="Cash direct — Dossier complet, concurrents VR fermés. Site + vidéo prêts à montrer.">€€€</span>Site Family Arena, style cinématique au scroll</p>
     <p class="note">Portail qui s'ouvre depuis la tête de la joueuse.</p>
   </div>
   <a class="voir" href="/family-arena-portail/">Voir</a>
 </li>
-<li class="t" data-etat="livre">
+<li class="t" data-etat="livre" data-cash="proche">
   <span class="pastille livre" aria-hidden="true"></span>
   <div class="corps">
-    <p class="titre">Essai ego refait sans or ni néon</p>
+    <p class="titre"><span class="eur proche" title="Amene du cash — Contenu social : ça construit l’audience qui fournit les prospects.">€€</span>Essai ego refait sans or ni néon</p>
     <p class="note">0 pixel doré mesuré sur toute la durée. Musique « Au bord des étoiles ».</p>
   </div>
   <a class="voir" href="/essai-ego-tom-odell-v2/">Voir</a>
 </li>
-<li class="t" data-etat="livre">
+<li class="t" data-etat="livre" data-cash="proche">
   <span class="pastille livre" aria-hidden="true"></span>
   <div class="corps">
-    <p class="titre">Vidéo du contenu de la formation</p>
+    <p class="titre"><span class="eur proche" title="Amene du cash — Produit à vendre. Il lui manque encore son chemin d’achat.">€€</span>Vidéo du contenu de la formation</p>
     <p class="note">Les 6 titres de modules sont les vrais, lus dans le cours.</p>
   </div>
   <a class="voir" href="/autoboost-formation-contenu/">Voir</a>
 </li>
-<li class="t" data-etat="livre">
+<li class="t" data-etat="livre" data-cash="proche">
   <span class="pastille livre" aria-hidden="true"></span>
   <div class="corps">
-    <p class="titre">Journal IA du 21/08 réparé (il était vide)</p>
+    <p class="titre"><span class="eur proche" title="Amene du cash — Contenu social : ça construit l’audience qui fournit les prospects.">€€</span>Journal IA du 21/08 réparé (il était vide)</p>
     <p class="note">64,3 s au lieu de 18,9. Garde-fou posé : sous 3 brèves, le rendu refuse.</p>
   </div>
   <a class="voir" href="/journal-ia-2026-08-21/">Voir</a>
 </li>
-<li class="t" data-etat="livre">
+<li class="t" data-etat="livre" data-cash="loin">
   <span class="pastille livre" aria-hidden="true"></span>
   <div class="corps">
-    <p class="titre">Carte des projets — bulles, objectifs, pourquoi</p>
+    <p class="titre"><span class="eur loin" title="Convertible — Non rattaché à un prospect ni à un canal d’acquisition.">€</span>Carte des projets — bulles, objectifs, pourquoi</p>
     <p class="note">Avec pomodoro et accès Notion.</p>
   </div>
   <a class="voir" href="/carte/">Voir</a>
 </li>
-<li class="t" data-etat="livre">
+<li class="t" data-etat="livre" data-cash="direct">
   <span class="pastille livre" aria-hidden="true"></span>
   <div class="corps">
-    <p class="titre">Sites clients — galerie, avant/après, suivi d'appels</p>
+    <p class="titre"><span class="eur direct" title="Cash direct — C’est l’outil de relance lui-même : qui a été appelé, qui ne l’a pas été.">€€€</span>Sites clients — galerie, avant/après, suivi d'appels</p>
     <p class="note">66 captures du vrai site actuel. 5 domaines ne résolvent plus.</p>
   </div>
   <a class="voir" href="/sites-clients/vue.html">Voir</a>
 </li>
-<li class="t" data-etat="livre">
+<li class="t" data-etat="livre" data-cash="proche">
   <span class="pastille livre" aria-hidden="true"></span>
   <div class="corps">
-    <p class="titre">Ressource sur le volume en acquisition + calculateur</p>
+    <p class="titre"><span class="eur proche" title="Amene du cash — Capture de leads. Ça alimente la liste, ça ne facture pas.">€€</span>Ressource sur le volume en acquisition + calculateur</p>
     <p class="note">MOFU. Écrite sur tes chiffres : 15 posts sur 16 sans commentaire.</p>
   </div>
   <a class="voir" href="/ressource-volume-acquisition/">Voir</a>
 </li>
-<li class="t" data-etat="livre">
+<li class="t" data-etat="livre" data-cash="loin">
   <span class="pastille livre" aria-hidden="true"></span>
   <div class="corps">
-    <p class="titre">Index de prévisualisation filtrable, titres raccourcis</p>
+    <p class="titre"><span class="eur loin" title="Convertible — Non rattaché à un prospect ni à un canal d’acquisition.">€</span>Index de prévisualisation filtrable, titres raccourcis</p>
     <p class="note">560 caractères max → 79. 297 routes listées au lieu de 150.</p>
   </div>
   <a class="voir" href="/">Voir</a>
 </li>
-<li class="t" data-etat="livre">
+<li class="t" data-etat="livre" data-cash="loin">
   <span class="pastille livre" aria-hidden="true"></span>
   <div class="corps">
-    <p class="titre">Loupe « chercher sur Google » sur les fiches sans site</p>
+    <p class="titre"><span class="eur loin" title="Convertible — Non rattaché à un prospect ni à un canal d’acquisition.">€</span>Loupe « chercher sur Google » sur les fiches sans site</p>
     <p class="note">51 fiches. « Aucun site » est une conclusion de machine — la loupe te rend la vérification.</p>
   </div>
   <a class="voir" href="/sites-clients/vue.html">Voir</a>
 </li>
-<li class="t" data-etat="livre">
+<li class="t" data-etat="livre" data-cash="direct">
   <span class="pastille livre" aria-hidden="true"></span>
   <div class="corps">
-    <p class="titre">Souvenir HADO pour Family Arena</p>
+    <p class="titre"><span class="eur direct" title="Cash direct — Dossier complet, concurrents VR fermés. Site + vidéo prêts à montrer.">€€€</span>Souvenir HADO pour Family Arena</p>
     <p class="note">Clip de 5 s généré par Seedance, 0,90 $. Envoyé en fichier.</p>
   </div>
   <span class="voir vide" aria-hidden="true"></span>
 </li>
-<li class="t" data-etat="livre">
+<li class="t" data-etat="livre" data-cash="proche">
   <span class="pastille livre" aria-hidden="true"></span>
   <div class="corps">
-    <p class="titre">Time-lapse « je suis réel » à partir de tes 3 vidéos</p>
+    <p class="titre"><span class="eur proche" title="Amene du cash — Contenu social : ça construit l’audience qui fournit les prospects.">€€</span>Time-lapse « je suis réel » à partir de tes 3 vidéos</p>
     <p class="note">18,9 s → 4,4 s, en 9:16 et 16:9, sans musique pour s'insérer partout.</p>
   </div>
   <span class="voir vide" aria-hidden="true"></span>
 </li>
-<li class="t" data-etat="livre">
+<li class="t" data-etat="livre" data-cash="loin">
   <span class="pastille livre" aria-hidden="true"></span>
   <div class="corps">
-    <p class="titre">Production vidéo basculée sur v3, fond vert en pause</p>
+    <p class="titre"><span class="eur loin" title="Convertible — Non rattaché à un prospect ni à un canal d’acquisition.">€</span>Production vidéo basculée sur v3, fond vert en pause</p>
     <p class="note">Skills + 2 agents + 1 routine cloud. Le cercle néon jaune est conservé.</p>
   </div>
   <span class="voir vide" aria-hidden="true"></span>
 </li>
-<li class="t" data-etat="livre">
+<li class="t" data-etat="livre" data-cash="proche">
   <span class="pastille livre" aria-hidden="true"></span>
   <div class="corps">
-    <p class="titre">Journal IA élargi — GitHub, clivant, coup à jouer</p>
+    <p class="titre"><span class="eur proche" title="Amene du cash — Contenu social : ça construit l’audience qui fournit les prospects.">€€</span>Journal IA élargi — GitHub, clivant, coup à jouer</p>
     <p class="note">Effectif à la prochaine édition, 00h05 UTC.</p>
   </div>
   <span class="voir vide" aria-hidden="true"></span>
 </li>
-<li class="t" data-etat="bloque">
+<li class="t" data-etat="bloque" data-cash="proche">
   <span class="pastille bloque" aria-hidden="true"></span>
   <div class="corps">
-    <p class="titre">Publier le Journal IA corrigé sur les 5 réseaux</p>
+    <p class="titre"><span class="eur proche" title="Amene du cash — Contenu social : ça construit l’audience qui fournit les prospects.">€€</span>Publier le Journal IA corrigé sur les 5 réseaux</p>
     <p class="note">Média déjà uploadé chez Blotato. Seul le create_post est refusé par les permissions.</p>
   </div>
   <span class="voir vide" aria-hidden="true"></span>
 </li>
-<li class="t" data-etat="bloque">
+<li class="t" data-etat="bloque" data-cash="proche">
   <span class="pastille bloque" aria-hidden="true"></span>
   <div class="corps">
-    <p class="titre">Programmer les 4 prompt-reveal (sauf REGARD)</p>
+    <p class="titre"><span class="eur proche" title="Amene du cash — Contenu social : ça construit l’audience qui fournit les prospects.">€€</span>Programmer les 4 prompt-reveal (sauf REGARD)</p>
     <p class="note">Même blocage de permission — et BURGER, SHONEN, NEON, COMBAT n'ont aucune porte.</p>
   </div>
   <span class="voir vide" aria-hidden="true"></span>
 </li>
-<li class="t" data-etat="attente">
+<li class="t" data-etat="attente" data-cash="proche">
   <span class="pastille attente" aria-hidden="true"></span>
   <div class="corps">
-    <p class="titre">Choisir la voix BeFresh</p>
+    <p class="titre"><span class="eur proche" title="Amene du cash — Client test — c’est ta vitrine pour vendre aux autres restaurants.">€€</span>Choisir la voix BeFresh</p>
     <p class="note">9 voix ElevenLabs envoyées. Dès que tu choisis, je refais les 3 montages pour 12 centimes.</p>
   </div>
   <span class="voir vide" aria-hidden="true"></span>
 </li>
-<li class="t" data-etat="attente">
+<li class="t" data-etat="attente" data-cash="direct">
   <span class="pastille attente" aria-hidden="true"></span>
   <div class="corps">
-    <p class="titre">Family Arena — vraie séquence HADO filmée</p>
+    <p class="titre"><span class="eur direct" title="Cash direct — Dossier complet, concurrents VR fermés. Site + vidéo prêts à montrer.">€€€</span>Family Arena — vraie séquence HADO filmée</p>
     <p class="note">Le clip actuel part d'une image générée. Avec 10-20 s filmées chez eux, le rendez-vous se conclut seul.</p>
   </div>
   <span class="voir vide" aria-hidden="true"></span>
 </li>
-<li class="t" data-etat="attente">
+<li class="t" data-etat="attente" data-cash="direct">
   <span class="pastille attente" aria-hidden="true"></span>
   <div class="corps">
-    <p class="titre">Projet Kripia — orthographe, style, et vendre le clip ou la méthode</p>
+    <p class="titre"><span class="eur direct" title="Cash direct — Tu as écrit toi-même « vendre le clip ou la méthode ». C’est une offre, pas un rendu.">€€€</span>Projet Kripia — orthographe, style, et vendre le clip ou la méthode</p>
     <p class="note">La fourche décide de tout : prestation ou produit.</p>
   </div>
   <span class="voir vide" aria-hidden="true"></span>
 </li>
-<li class="t" data-etat="attente">
+<li class="t" data-etat="attente" data-cash="loin">
   <span class="pastille attente" aria-hidden="true"></span>
   <div class="corps">
-    <p class="titre">Clip de 3 minutes beat-sync</p>
+    <p class="titre"><span class="eur loin" title="Convertible — Non rattaché à un prospect ni à un canal d’acquisition.">€</span>Clip de 3 minutes beat-sync</p>
     <p class="note">Ta banque avatar n'a que 38,8 s exploitables. Il faut tourner davantage, ou inverser le rapport image/avatar.</p>
   </div>
   <span class="voir vide" aria-hidden="true"></span>
 </li>
-<li class="t" data-etat="attente">
+<li class="t" data-etat="attente" data-cash="proche">
   <span class="pastille attente" aria-hidden="true"></span>
   <div class="corps">
-    <p class="titre">Mot-clé et porte pour les 2 ressources écrites aujourd'hui</p>
+    <p class="titre"><span class="eur proche" title="Amene du cash — Capture de leads. Ça alimente la liste, ça ne facture pas.">€€</span>Mot-clé et porte pour les 2 ressources écrites aujourd'hui</p>
     <p class="note">Tu as déjà 15 mots annoncés sans porte. Je n'en ajoute pas un 16e sans ton accord.</p>
   </div>
   <span class="voir vide" aria-hidden="true"></span>
 </li>
-<li class="t" data-etat="attente">
+<li class="t" data-etat="attente" data-cash="loin">
   <span class="pastille attente" aria-hidden="true"></span>
   <div class="corps">
-    <p class="titre">Planifier cron-watchdog en routine quotidienne</p>
+    <p class="titre"><span class="eur loin" title="Convertible — Outillage interne. Convertible en offre, mais rien à facturer en l’état.">€</span>Planifier cron-watchdog en routine quotidienne</p>
     <p class="note">Il n'a jamais tourné : rien ne l'invoque. C'est lui qui aurait vu le journal vide.</p>
   </div>
   <span class="voir vide" aria-hidden="true"></span>
 </li>
-<li class="t" data-etat="attente">
+<li class="t" data-etat="attente" data-cash="direct">
   <span class="pastille attente" aria-hidden="true"></span>
   <div class="corps">
-    <p class="titre">Relancer gite-matilona-sainte-rose (503)</p>
+    <p class="titre"><span class="eur direct" title="Cash direct — Un site client répond 503. Un client hors ligne, c’est un client qui part.">€€€</span>Relancer gite-matilona-sainte-rose (503)</p>
     <p class="note">Site client hors ligne.</p>
   </div>
   <span class="voir vide" aria-hidden="true"></span>
 </li>
-<li class="t" data-etat="attente">
+<li class="t" data-etat="attente" data-cash="loin">
   <span class="pastille attente" aria-hidden="true"></span>
   <div class="corps">
-    <p class="titre">Repointer les 2 autres routines cloud en v3</p>
+    <p class="titre"><span class="eur loin" title="Convertible — Outillage interne. Convertible en offre, mais rien à facturer en l’état.">€</span>Repointer les 2 autres routines cloud en v3</p>
     <p class="note">Dont le doublon quotidien de 22h, qui produit une 2e vidéo depuis la même file.</p>
   </div>
   <span class="voir vide" aria-hidden="true"></span>
 </li>
-<li class="t" data-etat="attente">
+<li class="t" data-etat="attente" data-cash="proche">
   <span class="pastille attente" aria-hidden="true"></span>
   <div class="corps">
-    <p class="titre">Feed Instagram BeFresh</p>
+    <p class="titre"><span class="eur proche" title="Amene du cash — Client test — c’est ta vitrine pour vendre aux autres restaurants.">€€</span>Feed Instagram BeFresh</p>
     <p class="note">Mentionné en passant, jamais traité. Dis-moi si c'est toujours d'actualité.</p>
   </div>
   <span class="voir vide" aria-hidden="true"></span>
 </li>
-<li class="t" data-etat="attente">
+<li class="t" data-etat="attente" data-cash="loin">
   <span class="pastille attente" aria-hidden="true"></span>
   <div class="corps">
-    <p class="titre">Skill reel-tempo-match (mesurer le BPM d'un Reel de référence)</p>
+    <p class="titre"><span class="eur loin" title="Convertible — Outillage interne. Convertible en offre, mais rien à facturer en l’état.">€</span>Skill reel-tempo-match (mesurer le BPM d'un Reel de référence)</p>
     <p class="note">Proposé, pas construit. Il me faut un Reel de calibrage.</p>
   </div>
   <span class="voir vide" aria-hidden="true"></span>
 </li>
-<li class="t" data-etat="attente">
+<li class="t" data-etat="attente" data-cash="loin">
   <span class="pastille attente" aria-hidden="true"></span>
   <div class="corps">
-    <p class="titre">3 autres clips Higgsfield + musique tendance</p>
+    <p class="titre"><span class="eur loin" title="Convertible — Non rattaché à un prospect ni à un canal d’acquisition.">€</span>3 autres clips Higgsfield + musique tendance</p>
     <p class="note">Le blocage vidéo est levé — Seedance marche via WaveSpeed. Il me manque le choix des clips.</p>
   </div>
   <span class="voir vide" aria-hidden="true"></span>
 </li>
-<li class="t" data-etat="attente">
+<li class="t" data-etat="attente" data-cash="loin">
   <span class="pastille attente" aria-hidden="true"></span>
   <div class="corps">
-    <p class="titre">VideoBoost 100 % hors ligne</p>
+    <p class="titre"><span class="eur loin" title="Convertible — Outillage interne. Convertible en offre, mais rien à facturer en l’état.">€</span>VideoBoost 100 % hors ligne</p>
     <p class="note">Faisable : il ne reste que TTS et Whisper à remplacer en local. Dis-moi ta machine.</p>
   </div>
   <span class="voir vide" aria-hidden="true"></span>
 </li>
-<li class="t" data-etat="attente">
+<li class="t" data-etat="attente" data-cash="loin">
   <span class="pastille attente" aria-hidden="true"></span>
   <div class="corps">
-    <p class="titre">Décider du sort du dépôt public (106 noms, 73 numéros dans l'historique)</p>
+    <p class="titre"><span class="eur loin" title="Convertible — Outillage interne. Convertible en offre, mais rien à facturer en l’état.">€</span>Décider du sort du dépôt public (106 noms, 73 numéros dans l'historique)</p>
     <p class="note">Le mot de passe protège le serveur, pas GitHub.</p>
+  </div>
+  <span class="voir vide" aria-hidden="true"></span>
+</li>
+<li class="t" data-etat="attente" data-cash="loin">
+  <span class="pastille attente" aria-hidden="true"></span>
+  <div class="corps">
+    <p class="titre"><span class="eur loin" title="Convertible — Outillage interne. Convertible en offre, mais rien à facturer en l’état.">€</span>Agent YouTube auto-hébergé (AgentTube) — décider quoi en faire</p>
+    <p class="note">Installé et vérifié ici : 495 paquets, 45 tests sur 45, tableau de bord opérationnel sur le port 3456. Il tourne en mode setup — il ne génère ni ne publie rien tant que le walkthrough n’est pas passé. Trois décisions t’appartiennent : quelle chaîne YouTube il alimente, quel fournisseur vidéo (il sait parler à Seedance via Replicate), et où il tourne en permanence — ici il s’éteint avec la session.</p>
   </div>
   <span class="voir vide" aria-hidden="true"></span>
 </li>
@@ -531,23 +611,38 @@ var items = [].slice.call(document.querySelectorAll('#liste .t'));
 var aide = document.getElementById('aide');
 var rien = document.getElementById('rien');
 var AIDES = {"livre":"Livré — testé en ligne, pas seulement poussé","bloque":"Bloqué — une permission me refuse l'action","attente":"En attente de toi — il me manque une décision ou une info"};
+// Les deux axes se combinent : on peut demander « bloqué ET cash direct ».
+// Les garder indépendants évite d'avoir à inventer six boutons croisés.
+var bCash = [].slice.call(document.querySelectorAll('.cf'));
+var aideCash = document.getElementById('aideCash');
+var AIDES_CASH = {"direct":"€€€ Cash direct — un prospect nomme est au bout, agir dessus peut facturer cette semaine","proche":"€€ Amene du cash — sert la vente sans etre facturable tel quel","loin":"€ Convertible — outillage interne — personne ne paie pour ca aujourd hui"};
 var actif = null;
+var actifCash = null;
 
 function appliquer(){
   var vus = 0;
   items.forEach(function(li){
-    var ok = !actif || li.dataset.etat === actif;
+    var ok = (!actif || li.dataset.etat === actif) && (!actifCash || li.dataset.cash === actifCash);
     li.hidden = !ok;
     if (ok) vus++;
   });
   rien.hidden = vus > 0;
   boutons.forEach(function(b){ b.setAttribute('aria-pressed', String(b.dataset.f === actif)); });
+  bCash.forEach(function(b){ b.setAttribute('aria-pressed', String(b.dataset.c === actifCash)); });
   aide.textContent = actif ? AIDES[actif] : 'Touche un chiffre pour ne voir que celles-là.';
+  aideCash.textContent = actifCash ? AIDES_CASH[actifCash]
+    : "Rouge : un prospect nommé est au bout. Vert : utile, mais personne ne paie pour ça aujourd'hui.";
 }
 
 boutons.forEach(function(b){
   b.addEventListener('click', function(){
     actif = (actif === b.dataset.f) ? null : b.dataset.f;
+    appliquer();
+  });
+});
+bCash.forEach(function(b){
+  b.addEventListener('click', function(){
+    actifCash = (actifCash === b.dataset.c) ? null : b.dataset.c;
     appliquer();
   });
 });

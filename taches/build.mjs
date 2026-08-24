@@ -21,10 +21,24 @@ const ETATS = {
 
 const n = e => data.taches.filter(t => t.etat === e).length;
 
-const ligne = t => `<li class="t" data-etat="${t.etat}">
+// L axe « proximite du cash », demande par Tony. Il est ORTHOGONAL a l etat :
+// une tache peut etre livree ET rouge — c est meme le cas le plus frequent ici,
+// et c est tout le probleme : le travail proche de l argent est fait, il n est
+// jamais parti.
+const CASH = {
+  direct: { pic: "€€€", nom: "Cash direct",  aide: "un prospect nomme est au bout, agir dessus peut facturer cette semaine" },
+  proche: { pic: "€€",  nom: "Amene du cash", aide: "sert la vente sans etre facturable tel quel" },
+  loin:   { pic: "€",   nom: "Convertible",  aide: "outillage interne — personne ne paie pour ca aujourd hui" },
+};
+const c = k => data.taches.filter(t => t.cash === k).length;
+// Ce qui est PRET A ENVOYER : cash direct et deja livre. C est la liste la plus
+// courte et la plus rentable de la page.
+const aEnvoyer = data.taches.filter(t => t.cash === "direct" && t.etat === "livre");
+
+const ligne = t => `<li class="t" data-etat="${t.etat}" data-cash="${t.cash}">
   <span class="pastille ${t.etat}" aria-hidden="true"></span>
   <div class="corps">
-    <p class="titre">${esc(t.t)}</p>
+    <p class="titre"><span class="eur ${t.cash}" title="${esc(CASH[t.cash].nom)} — ${esc(t.cashNote || '')}">${CASH[t.cash].pic}</span>${esc(t.t)}</p>
     ${t.note ? `<p class="note">${esc(t.note)}</p>` : ''}
   </div>
   ${t.lien ? `<a class="voir" href="${esc(t.lien)}">Voir</a>` : '<span class="voir vide" aria-hidden="true"></span>'}
@@ -82,6 +96,44 @@ header p{margin:0; color:var(--gris); font-size:14px}
 .c.livre b{color:var(--vert)} .c.bloque b{color:var(--rouge)} .c.attente b{color:var(--ambre)}
 .aide{font-size:12px; color:var(--gris2); margin:0 0 20px; min-height:16px}
 
+/* ── L'axe « proximité du cash » ──────────────────────────────────────────
+   Il se lit AVEC l'état, pas à sa place : le marqueur € est posé devant le
+   titre, la pastille d'état reste à gauche. Deux informations, deux endroits. */
+.eur{
+  display:inline-block; font-weight:700; font-size:11px; letter-spacing:.04em;
+  padding:2px 6px; border-radius:5px; margin-right:8px; vertical-align:2px;
+  font-variant-numeric:tabular-nums; white-space:nowrap;
+}
+.eur.direct{color:#ffd9d6; background:rgba(229,84,75,.20); border:1px solid rgba(229,84,75,.55)}
+.eur.proche{color:#ffe6bd; background:rgba(240,180,41,.16); border:1px solid rgba(240,180,41,.48)}
+.eur.loin  {color:#c9f2df; background:rgba(62,207,142,.13); border:1px solid rgba(62,207,142,.40)}
+
+.cash-f{display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin:0 0 8px}
+.cf{
+  background:var(--carte); border:1px solid var(--bord); border-radius:12px;
+  padding:11px 10px; text-align:left; cursor:pointer; color:inherit; font:inherit;
+  transition:border-color .15s, background .15s;
+}
+.cf:hover{border-color:#39414b}
+.cf[aria-pressed="true"]{background:#1d2229; border-color:#454f5b}
+.cf b{display:block; font-size:22px; line-height:1; font-variant-numeric:tabular-nums; margin-bottom:4px}
+.cf span{font-size:11.5px; color:var(--gris); display:block; line-height:1.3}
+.cf.direct b{color:var(--rouge)} .cf.proche b{color:var(--ambre)} .cf.loin b{color:var(--vert)}
+
+/* Le bloc d'envoi : la liste la plus courte et la plus rentable de la page. */
+.envoi{
+  border:1px solid rgba(229,84,75,.45); background:linear-gradient(180deg,#1d1416,#16191e);
+  border-radius:13px; padding:16px 16px 14px; margin:22px 0 0;
+}
+.envoi h3{margin:0 0 4px; font-size:15px; letter-spacing:-.01em}
+.envoi>p{margin:0 0 12px; font-size:13px; color:var(--gris); line-height:1.5}
+.envoi ol{margin:0; padding:0 0 0 0; list-style:none; display:flex; flex-direction:column; gap:7px}
+.envoi li{display:flex; gap:10px; align-items:center; font-size:14px; line-height:1.4}
+.envoi li a{color:var(--bleu); text-decoration:none; border:1px solid #2c3b52;
+  border-radius:7px; padding:3px 9px; font-size:12.5px; flex:0 0 auto; margin-left:auto}
+.envoi li a:hover{background:#182338}
+.envoi .pt{width:6px; height:6px; border-radius:50%; background:var(--rouge); flex:0 0 6px}
+
 h2{font-size:13px; text-transform:uppercase; letter-spacing:.09em; color:var(--gris);
    margin:30px 0 10px; font-weight:600}
 ul{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:8px}
@@ -135,6 +187,23 @@ footer{margin-top:34px; font-size:12px; color:var(--gris2); line-height:1.6}
 </div>
 <p class="aide" id="aide">Touche un chiffre pour ne voir que celles-là.</p>
 
+<h2>Proximité du cash</h2>
+<div class="cash-f">
+  <button class="cf direct" data-c="direct" aria-pressed="false"><b>${c('direct')}</b><span>€€€ Cash direct</span></button>
+  <button class="cf proche" data-c="proche" aria-pressed="false"><b>${c('proche')}</b><span>€€ Amène du cash</span></button>
+  <button class="cf loin"   data-c="loin"   aria-pressed="false"><b>${c('loin')}</b><span>€ Convertible</span></button>
+</div>
+<p class="aide" id="aideCash">Rouge : un prospect nommé est au bout. Vert : utile, mais personne ne paie pour ça aujourd'hui.</p>
+
+<div class="envoi">
+  <h3>À envoyer maintenant</h3>
+  <p>${aEnvoyer.length} tâches sont à la fois <strong>cash direct</strong> et <strong>déjà livrées</strong>.
+  Le travail est fait, il n'est simplement jamais parti. C'est là qu'est ton argent — pas dans ce qui reste à construire.</p>
+  <ol>
+${aEnvoyer.map(t => `    <li><span class="pt"></span><span>${esc(t.t)}</span>${t.lien ? `<a href="${esc(t.lien)}">Ouvrir</a>` : ''}</li>`).join('\n')}
+  </ol>
+</div>
+
 <h2>De mon côté</h2>
 <ul id="liste">
 ${data.taches.map(ligne).join('\n')}
@@ -162,23 +231,38 @@ var items = [].slice.call(document.querySelectorAll('#liste .t'));
 var aide = document.getElementById('aide');
 var rien = document.getElementById('rien');
 var AIDES = ${JSON.stringify(Object.fromEntries(Object.entries(ETATS).map(([k, v]) => [k, v.nom + ' — ' + v.aide])))};
+// Les deux axes se combinent : on peut demander « bloqué ET cash direct ».
+// Les garder indépendants évite d'avoir à inventer six boutons croisés.
+var bCash = [].slice.call(document.querySelectorAll('.cf'));
+var aideCash = document.getElementById('aideCash');
+var AIDES_CASH = ${JSON.stringify(Object.fromEntries(Object.entries(CASH).map(([k, v]) => [k, v.pic + ' ' + v.nom + ' — ' + v.aide])))};
 var actif = null;
+var actifCash = null;
 
 function appliquer(){
   var vus = 0;
   items.forEach(function(li){
-    var ok = !actif || li.dataset.etat === actif;
+    var ok = (!actif || li.dataset.etat === actif) && (!actifCash || li.dataset.cash === actifCash);
     li.hidden = !ok;
     if (ok) vus++;
   });
   rien.hidden = vus > 0;
   boutons.forEach(function(b){ b.setAttribute('aria-pressed', String(b.dataset.f === actif)); });
+  bCash.forEach(function(b){ b.setAttribute('aria-pressed', String(b.dataset.c === actifCash)); });
   aide.textContent = actif ? AIDES[actif] : 'Touche un chiffre pour ne voir que celles-là.';
+  aideCash.textContent = actifCash ? AIDES_CASH[actifCash]
+    : "Rouge : un prospect nommé est au bout. Vert : utile, mais personne ne paie pour ça aujourd'hui.";
 }
 
 boutons.forEach(function(b){
   b.addEventListener('click', function(){
     actif = (actif === b.dataset.f) ? null : b.dataset.f;
+    appliquer();
+  });
+});
+bCash.forEach(function(b){
+  b.addEventListener('click', function(){
+    actifCash = (actifCash === b.dataset.c) ? null : b.dataset.c;
     appliquer();
   });
 });
