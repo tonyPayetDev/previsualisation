@@ -361,7 +361,10 @@ h2.tt i{font-style:italic}
 .planche{display:grid;grid-template-columns:1.28fr 1fr;gap:clamp(10px,1.1vw,15px);
   align-items:start}
 .planche figure{margin:0;position:relative;overflow:hidden;border-radius:0;
-  background:var(--ligne);aspect-ratio:3/2;
+  /* Correctif v4.1 : les images recadrées font 1024×578, soit 1,772 — 16:9 à
+     0,3 % près. Rester en 3:2 aurait fait rogner 15 % des côtés par `cover`,
+     c'est-à-dire remettre un recadrage là où on venait de l'enlever. */
+  background:var(--ligne);aspect-ratio:16/9;
   box-shadow:0 8px 40px rgba(0,0,0,.12)}
 .planche img{width:100%;height:100%;object-fit:cover;display:block;
   transition:transform .8s var(--ease)}
@@ -914,9 +917,16 @@ footer a:hover{color:var(--magenta)}
         <p style="margin-top:30px"><a class="bt" href="#contact">En savoir plus sur nous</a></p>
       </div>
       <div class="planche monte" id="planche">
-        <figure class="p1"><img src="../koytchaimmo-refonte/assets/drone.webp" alt="L'agence Koytcha Immo, vue de face"></figure>
-        <figure class="p2"><img src="../koytchaimmo-refonte/assets/alpha1.webp" alt="Le patio intérieur de l'agence" loading="lazy"></figure>
-        <figure class="p3"><img src="../koytchaimmo-refonte/assets/photo1.webp" alt="L'agence vue de l'arrière" loading="lazy"></figure>
+        <!-- Correctif v4.1 : montrer ces photos en grand a révélé un filigrane
+             « Koytcha immo · Conseil & expertise » INCRUSTÉ dans les fichiers
+             drone et photo1. Invisible quand c'étaient des vignettes rondes,
+             bien lisible une fois les photos pleine largeur.
+             Les trois sont donc servies recadrées sous la bande du bas (15 %),
+             y compris alpha1 qui était propre — sinon les trois n'auraient plus
+             eu le même rapport et la planche se serait décalée. -->
+        <figure class="p1"><img src="assets/drone-net.webp" alt="L'agence Koytcha Immo, vue de face"></figure>
+        <figure class="p2"><img src="assets/alpha1-net.webp" alt="Le patio intérieur de l'agence" loading="lazy"></figure>
+        <figure class="p3"><img src="assets/photo1-net.webp" alt="L'agence vue de l'arrière" loading="lazy"></figure>
       </div>
     </div>
     <div class="chiffres monte">
