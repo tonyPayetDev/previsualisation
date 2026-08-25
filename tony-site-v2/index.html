@@ -65,7 +65,7 @@
       }
     </style>
 
-<link rel="stylesheet" href="index.css">
+<link rel="stylesheet" href="/index.css">
   <script type="importmap">
 {
   "imports": {
@@ -78,39 +78,9 @@
   }
 }
 </script>
-  <script type="module" crossorigin src="./assets/index-r2fix1.js"></script>
+  <script type="module" crossorigin src="/assets/index-l4ABE5PT.js"></script>
 </head>
   <body>
     <div id="root"></div>
-
-<script id="son-preview">
-/* Le lecteur du site rend ses <video> avec muted codé en dur : le son
-   nexiste pas, il ne se coupe pas au scroll. Un navigateur refuse de toute
-   façon de démarrer du son sans geste de lutilisateur — do  un bouton.
-   Correctif de PREVISUALISATION : le vrai correctif est dans le composant. */
-(function(){
-  function poser(v){
-    if(v.dataset.son) return; v.dataset.son="1";
-    var p=v.parentElement; if(getComputedStyle(p).position==="static") p.style.position="relative";
-    var b=document.createElement("button");
-    b.type="button"; b.textContent="Activer le son";
-    b.setAttribute("style","position:absolute;left:10px;bottom:10px;z-index:4;"+
-      "background:rgba(8,12,10,.78);color:#fff;border:1px solid rgba(255,255,255,.25);"+
-      "border-radius:8px;padding:8px 12px;font:600 12px/1 system-ui,sans-serif;"+
-      "letter-spacing:.04em;cursor:pointer;backdrop-filter:blur(6px)");
-    b.addEventListener("click",function(e){
-      e.stopPropagation(); e.preventDefault();
-      document.querySelectorAll("video").forEach(function(o){ if(o!==v){o.muted=true;} });
-      v.muted=!v.muted;
-      b.textContent=v.muted?"Activer le son":"Couper le son";
-      if(!v.muted){ v.volume=1; var j=v.play(); if(j&&j.catch) j.catch(function(){}); }
-    });
-    p.appendChild(b);
-  }
-  function passer(){ document.querySelectorAll("video").forEach(poser); }
-  passer();
-  new MutationObserver(passer).observe(document.body,{childList:true,subtree:true});
-})();
-</script>
 </body>
 </html>
