@@ -20,7 +20,7 @@ HTPASSWD="/etc/nginx/.htpasswd"
 
 # Le sommaire liste toutes les maquettes : sans mot de passe il ne doit pas
 # exister. Les autres dossiers portent des noms, des numéros et des chiffres.
-PROTEGES="$RACINE/sites-clients $RACINE/taches $RACINE/appels $RACINE/carte $RACINE/partage $RACINE/a-envoyer"
+PROTEGES="$RACINE/sites-clients $RACINE/taches $RACINE/appels $RACINE/carte $RACINE/partage $RACINE/a-envoyer $RACINE/cta"
 SOMMAIRE="$RACINE/index.html"
 
 fermer() {
