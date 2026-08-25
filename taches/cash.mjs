@@ -21,6 +21,7 @@ const j = JSON.parse(readFileSync(F, 'utf8'));
 const REGLES = [
   // ── DIRECT : un prospect ou un client nommé, joignable ────────────────────
   [/quota apify/i,                'direct', 'Zéro nouveau prospect restaurant depuis 14 jours. C’est le robinet de leads qui est fermé.'],
+  [/crédits openai|credits openai/i, 'direct', 'La démo que tu réclames ne peut pas aboutir tant que le compte est à zéro.'],
   [/koytcha/i,                    'direct', 'Prospect immobilier nommé. C’est la v4 qui s’envoie — la v2 avait été refusée, ne jamais repointer dessus.'],
   [/the grill/i,                  'direct', 'Prospect resto. La vidéo est prête, la relance n’est jamais partie.'],
   [/family arena/i,               'direct', 'Dossier complet, concurrents VR fermés. Site + vidéo prêts à montrer.'],
