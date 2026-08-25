@@ -20,7 +20,7 @@ HTPASSWD="/etc/nginx/.htpasswd"
 
 # Le sommaire liste toutes les maquettes : sans mot de passe il ne doit pas
 # exister. Les autres dossiers portent des noms, des numéros et des chiffres.
-PROTEGES="$RACINE/sites-clients $RACINE/taches $RACINE/appels $RACINE/carte $RACINE/partage"
+PROTEGES="$RACINE/sites-clients $RACINE/taches $RACINE/appels $RACINE/carte $RACINE/partage $RACINE/a-envoyer"
 SOMMAIRE="$RACINE/index.html"
 
 fermer() {
@@ -32,7 +32,7 @@ fermer() {
 if [ -n "$INVENTAIRE_USER" ] && [ -n "$INVENTAIRE_PASSWORD" ]; then
     if htpasswd -bcB "$HTPASSWD" "$INVENTAIRE_USER" "$INVENTAIRE_PASSWORD" 2>/dev/null; then
         chmod 644 "$HTPASSWD" 2>/dev/null
-        echo "[40-htpasswd] authentification active sur / /taches/ /appels/ /carte/ /partage/ /sites-clients/"
+        echo "[40-htpasswd] authentification active sur / /taches/ /appels/ /carte/ /partage/ /a-envoyer/ /sites-clients/"
         echo "[40-htpasswd] les maquettes clientes restent publiques (liens de demonstration)"
     else
         fermer "echec de generation du htpasswd"
