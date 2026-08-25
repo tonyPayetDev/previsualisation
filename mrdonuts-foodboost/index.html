@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MR DONUTS — sous-titres FoodBoost</title>
+<style>
+:root{--noir:#070503;--orange:#FFB020;--ligne:#241d16;--blanc:#f6f1ea;--gris:#a0958a}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--noir);color:var(--blanc);
+  font:15px/1.65 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  padding:clamp(20px,5vw,54px) clamp(16px,4vw,32px) 80px}
+.wrap{max-width:880px;margin:0 auto}
+.sur{font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:var(--gris)}
+h1{font-size:clamp(32px,7vw,54px);line-height:1;font-weight:800;letter-spacing:-.03em;margin:12px 0 0}
+h1 span{color:var(--orange)}
+.tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}
+.tag{border:1px solid var(--ligne);border-radius:999px;padding:6px 13px;font-size:12.5px;color:var(--gris)}
+.tag b{color:var(--blanc);font-weight:600}
+figure{margin:26px 0 0;background:#000;border:1px solid var(--ligne);border-radius:14px;
+  overflow:hidden;max-width:330px}
+video{display:block;width:100%;height:auto;background:#000}
+h2{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--gris);
+  font-weight:600;margin:38px 0 12px}
+p{color:#cdc3b7;max-width:64ch}p+p{margin-top:10px}
+b{color:var(--blanc)}
+.note{margin-top:16px;border-left:2px solid var(--orange);padding-left:15px;color:#cdc3b7}
+</style></head><body><div class="wrap">
+<p class="sur">Démo prospect · FoodBoost</p>
+<h1>MR <span>DONUTS</span></h1>
+<div class="tags">
+  <span class="tag"><b>12,7 s</b></span>
+  <span class="tag">720 × 1280 · 24 i/s</span>
+  <span class="tag"><b>15</b> états de sous-titre</span>
+  <span class="tag">orange <b>#FFB020</b> · charte FoodBoost</span>
+</div>
+
+<figure><video controls playsinline loop preload="metadata">
+  <source src="video.mp4" type="video/mp4"></video></figure>
+
+<h2>Ce qui a été ajouté</h2>
+<p><b>Des sous-titres mot à mot.</b> La ligne entière reste en blanc, seul le mot
+prononcé passe en orange et grossit légèrement. C'est ça qui rend la lecture
+« dynamique » : l'œil suit le mot pendant que la voix le dit, au lieu de lire
+un bloc figé.</p>
+<p>Le minutage ne sort pas d'une estimation : la bande a été transcrite, et les
+quinze états sont calés sur les quatre segments réellement mesurés.</p>
+<p><b>Un carton final</b> — MR DONUTS, filet orange, signature FoodBoost — posé
+sur le dernier plan figé, avec le son qui redescend en fondu.</p>
+
+<h2>Deux choses à savoir</h2>
+<p class="note"><b>Le clip source montre surtout des burgers.</b> Sur les dix
+secondes, deux plans sur trois sont des sandwichs ; un seul montre une pâtisserie
+enrobée de chocolat. Pour une enseigne qui s'appelle Mr Donuts, ça mérite d'être
+regardé avant publication — le texte dit « donuts », l'image dit autre chose.</p>
+<p class="note"><b>Cette compilation de ffmpeg n'a pas <code>drawtext</code>.</b>
+Le texte est donc peint en HTML par Chromium puis composité en une seule passe.
+Empiler les incrustations dans un même filtre finit en SIGKILL, sans message.</p>
+</div></body></html>
