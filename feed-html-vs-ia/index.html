@@ -27,7 +27,10 @@ h1{font-size:clamp(25px,6vw,36px);line-height:1.08;font-weight:800;letter-spacin
 .notes{padding:14px 16px;font-size:13.5px;line-height:1.65;color:var(--gris)}
 .notes li{margin:0 0 7px;list-style:none;padding-left:22px;position:relative}
 .notes li::before{position:absolute;left:0;top:0}
-.oui::before{content:"✅"} .non::before{content:"❌"}
+/* ✓ et ✕ plutôt que des emoji : la police emoji manque à certains rendus
+   et les puces sortaient en carrés vides. Ces glyphes-là existent partout. */
+.oui::before{content:"✓";color:var(--vert);font-weight:800}
+.non::before{content:"✕";color:var(--rouge);font-weight:800}
 .notes b{color:var(--blanc)}
 h2{font-size:12px;letter-spacing:.2em;text-transform:uppercase;font-weight:700;margin:34px 0 8px;color:var(--chaud)}
 .bloc{background:var(--carte);border:1px solid var(--ligne);border-radius:11px;padding:15px 17px;
