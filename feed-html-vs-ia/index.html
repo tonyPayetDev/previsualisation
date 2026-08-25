@@ -36,7 +36,12 @@ h2{font-size:12px;letter-spacing:.2em;text-transform:uppercase;font-weight:700;m
 .bloc{background:var(--carte);border:1px solid var(--ligne);border-radius:11px;padding:15px 17px;
   font-size:14.5px;line-height:1.7;color:var(--gris)}
 .bloc b{color:var(--blanc)}
-table{width:100%;border-collapse:collapse;margin-top:10px;font-size:14px}
+/* Le tableau à trois colonnes ne tient pas sur un téléphone : il poussait la
+   page à 445 px de large pour 393 disponibles, et TOUTE la page défilait de
+   côté. Le tableau doit glisser DANS son conteneur, pas emmener le document
+   avec lui. */
+.tw{overflow-x:auto;-webkit-overflow-scrolling:touch;margin-top:10px}
+table{width:100%;border-collapse:collapse;margin-top:0;font-size:14px;min-width:440px}
 th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--ligne);vertical-align:top}
 th{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--gris);font-weight:700}
 td:first-child{color:var(--blanc);font-weight:600;white-space:nowrap}
@@ -88,14 +93,14 @@ L'écart ne porte pas sur le goût : il porte sur <b>ce qui est vrai</b>.</p>
 </div>
 
 <h2>Ce que ça change concrètement</h2>
-<table>
+<div class="tw"><table>
   <tr><th></th><th>Générateur</th><th>HTML</th></tr>
   <tr><td>Contenu inventé</td><td>4 fois sur 6</td><td>impossible par construction</td></tr>
   <tr><td>Photos montrées</td><td>photos de banque</td><td>les leurs</td></tr>
   <tr><td>Nom du commerce</td><td>parfois remplacé</td><td>celui du compte</td></tr>
   <tr><td>Coût par prospect</td><td>~6 crédits</td><td>0</td></tr>
   <tr><td>Deux passages de suite</td><td>résultats différents</td><td>identiques</td></tr>
-</table>
+</table></div>
 
 <h2>L'argument de vente change aussi</h2>
 <div class="bloc">
