@@ -13,6 +13,50 @@ const data = JSON.parse(fs.readFileSync(path.join(D, 'taches.json'), 'utf8'));
 
 const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
+/* ── Les outils, déclarés ici et VÉRIFIÉS avant d'être affichés ───────────
+ *
+ * Cette page est le point d'entrée : c'est elle que Tony ouvre. Or plusieurs
+ * outils construits ces derniers jours n'y figuraient pas du tout — la liste
+ * des leads, l'audit des promesses CTA, les livrables prêts à envoyer. Des
+ * pages en ligne, utiles, et introuvables autrement qu'en connaissant l'URL.
+ * C'est la même erreur que la ressource DEVIS publiée sans sa carte d'index.
+ *
+ * Deux règles pour que ça ne se reproduise pas :
+ *  · un outil ajouté = une ligne ici, pas une balise <a> perdue dans le HTML ;
+ *  · chaque lien est APPELÉ à la génération. Une route qui ne répond pas
+ *    n'apparaît pas — mieux vaut un outil manquant qu'un lien mort dans un
+ *    tableau de bord, parce qu'un lien mort fait douter de toute la page.
+ */
+const OUTILS = [
+  { h: '/taches/',                 n: 'Mes demandes',      q: 'où en est chaque chose' },
+  { h: '/a-envoyer/',              n: 'À envoyer',         q: 'fini, jamais parti' },
+  { h: '/leads-qualifies/',        n: 'Leads qualifiés',   q: 'qui appeler, et pourquoi' },
+  { h: '/leads-restaurants/',      n: 'Tous les leads',    q: 'la liste complète' },
+  { h: '/appels/',                 n: 'Appels',            q: 'ce qui a été dit' },
+  { h: '/cta/',                    n: 'Promesses vidéo',   q: 'les mots-clés sans porte' },
+  { h: '/carte/',                  n: 'La carte',          q: 'vue d\'ensemble' },
+  { h: '/sites-clients/vue.html',  n: 'Sites clients',     q: 'galerie et avant/après' },
+  { h: '/partage/',                n: 'À partager',        q: 'prêt à montrer' },
+  { h: '/feed-html-vs-ia/',        n: 'Maquette feed',     q: 'HTML contre générateur' },
+  { h: '/',                        n: 'Prévisualisation',  q: 'tous les rendus' },
+];
+
+const BASE = 'https://previsualisation.automatisationboost.com';
+const AUTH = 'Basic ' + Buffer.from('tony:mGjmvScSTzjUySVBEcTJ').toString('base64');
+
+const outilsVivants = [];
+for (const o of OUTILS) {
+  try {
+    const r = await fetch(`${BASE}${o.h}?cb=${Math.random()}`, {
+      headers: { Authorization: AUTH }, signal: AbortSignal.timeout(15000),
+    });
+    /* 401 est un succès sur les routes protégées : la page existe, elle est
+       simplement verrouillée pour qui n'a pas le mot de passe. */
+    if (r.status === 200 || r.status === 401) outilsVivants.push(o);
+    else console.log(`  ⚠️  ${o.h} rend ${r.status} — retiré de la barre`);
+  } catch (e) { console.log(`  ⚠️  ${o.h} injoignable (${e.name}) — retiré de la barre`); }
+}
+
 const ETATS = {
   livre:   { nom: 'Livré',            aide: 'testé en ligne, pas seulement poussé' },
   bloque:  { nom: 'Bloqué',           aide: 'une permission me refuse l\'action' },
@@ -84,6 +128,9 @@ header p{margin:0; color:var(--gris); font-size:14px}
   border:1px solid var(--bord); border-radius:99px; padding:4px 11px;
 }
 .nav a:hover{color:var(--texte); border-color:#39414b}
+/* La page courante est marquée, sinon on ne sait plus où on est une fois
+   qu'il y a onze entrées. */
+.nav a.ici{color:var(--texte); border-color:#4a5462; background:#1b1f26}
 
 /* Compteurs — cliquables, ils FILTRENT. Un chiffre qui ne fait rien
    quand on le touche, sur téléphone, passe pour un bug. */
@@ -178,9 +225,7 @@ footer{margin-top:34px; font-size:12px; color:var(--gris2); line-height:1.6}
   <h1>Où en sont mes demandes</h1>
   <p>Tout ce que tu m'as demandé, et où ça en est. Mis à jour le ${esc(data.maj)}.</p>
   <nav class="nav">
-    <a href="/carte/">La carte</a>
-    <a href="/sites-clients/vue.html">Sites clients</a>
-    <a href="/">Prévisualisation</a>
+${outilsVivants.map(o => `    <a href="${esc(o.h)}"${o.h === '/taches/' ? ' class="ici"' : ''} title="${esc(o.q)}">${esc(o.n)}</a>`).join('\n')}
   </nav>
 </header>
 
