@@ -193,13 +193,29 @@ function court(txt, max = 78) {
   return { court: t.slice(0, i).replace(/[·,—–\s]+$/, '') + ' …', complet: t, coupe: true };
 }
 
+/* ── Les dates, écrites à la main ─────────────────────────────────────────
+   toLocaleDateString('fr-FR', …) a été essayé et rendait « Aug 25 » sur le
+   serveur : le paquet nodejs d'Alpine est compilé en small-icu, il ne connaît
+   que l'anglais et retombe dessus SANS prévenir. Le bug ne se voit pas ici,
+   où Node a l'ICU complet — seulement en production.
+   La Réunion est à UTC+4 toute l'année, sans heure d'été : un décalage fixe
+   suffit, et le résultat ne dépend plus d'aucune bibliothèque. */
+const MOIS = ['janv', 'févr', 'mars', 'avr', 'mai', 'juin',
+              'juil', 'août', 'sept', 'oct', 'nov', 'déc'];
+const REUNION = 4 * 60 * 60 * 1000;
+const partsReunion = (ms) => {
+  const d = new Date(ms + REUNION);
+  return {
+    jour: d.getUTCDate(), mois: d.getUTCMonth(), annee: d.getUTCFullYear(),
+    h: d.getUTCHours(), min: d.getUTCMinutes(),
+  };
+};
+
 const MAINTENANT = new Date();
-const ANNEE = MAINTENANT.getFullYear();
+const ANNEE = partsReunion(MAINTENANT.getTime()).annee;
 function jolieDate(ms) {
-  const d = new Date(ms);
-  const opts = { day: 'numeric', month: 'short', timeZone: 'Indian/Reunion' };
-  if (d.getFullYear() !== ANNEE) opts.year = 'numeric';
-  return d.toLocaleDateString('fr-FR', opts).replace('.', '');
+  const p = partsReunion(ms);
+  return `${p.jour} ${MOIS[p.mois]}` + (p.annee !== ANNEE ? ` ${p.annee}` : '');
 }
 
 const items = routes.map((nom) => {
@@ -258,9 +274,8 @@ ${dedans.map(ligne).join('\n')}
 </section>`;
 }).filter(Boolean).join('\n\n');
 
-const genere = MAINTENANT.toLocaleString('fr-FR', {
-  dateStyle: 'long', timeStyle: 'short', timeZone: 'Indian/Reunion',
-});
+const g = partsReunion(MAINTENANT.getTime());
+const genere = `${g.jour} ${MOIS[g.mois]} ${g.annee} à ${g.h}h${String(g.min).padStart(2, '0')}`;
 
 const html = `<!doctype html>
 <html lang="fr">
