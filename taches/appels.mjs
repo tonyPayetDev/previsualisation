@@ -127,6 +127,14 @@ const carte = (r, i, chaud) => `
           return e.ok ? `<a class="vign" href="${esc(r.site)}" target="_blank" rel="noopener"><img loading="lazy" src="vignettes/${k}.jpg" alt="Aperçu du site de ${esc(r.nom)}"></a>` : '';
         })()}
         <a class="tel" href="tel:${telBrut(r.telephone)}">📞 ${esc(r.telephone)}</a>
+        <div class="suivi" data-id="${esc(cle(r.nom))}">
+          <div class="etats">
+            <button type="button" data-e="appele">Appelé</button>
+            <button type="button" data-e="repondu">Pas de réponse</button>
+            <button type="button" data-e="rappeler">À rappeler</button>
+          </div>
+          <textarea rows="2" placeholder="Ce qu’il a dit…"></textarea>
+        </div>
         <details class="scr">
           <summary>Le script pour cet appel</summary>
           ${script(r, chaud).map(([t, l]) => `<div class="et"><span>${esc(t)}</span><p>${esc(l)}</p></div>`).join('')}
@@ -185,10 +193,37 @@ ul{list-style:none}
   color:var(--vrai);font-weight:700;margin-bottom:3px}
 .lead.chaud .et span{color:var(--chaud)}
 .et p{font-size:14.5px;line-height:1.5;color:#c9cfda}
+/* Suivi d'appel — trois états et un commentaire, gardés sur l'appareil. */
+.suivi{margin-top:10px;border-top:1px solid var(--ligne);padding-top:10px}
+.etats{display:flex;gap:6px}
+.etats button{flex:1;background:var(--creux,#0f1115);border:1px solid var(--ligne);
+  color:var(--gris);border-radius:8px;padding:9px 4px;font-size:12.5px;
+  font-weight:600;cursor:pointer;line-height:1.15}
+.etats button[aria-pressed=true][data-e=appele]{background:var(--vrai);border-color:var(--vrai);color:#08130c}
+.etats button[aria-pressed=true][data-e=repondu]{background:#8b93a3;border-color:#8b93a3;color:#111}
+.etats button[aria-pressed=true][data-e=rappeler]{background:var(--chaud);border-color:var(--chaud);color:#1a1200}
+.suivi textarea{width:100%;margin-top:7px;background:#0f1115;border:1px solid var(--ligne);
+  color:var(--blanc);border-radius:8px;padding:9px 10px;font:14px/1.4 inherit;resize:vertical}
+.suivi textarea:focus{outline:2px solid var(--vrai);outline-offset:1px}
+.lead.chaud .suivi textarea:focus{outline-color:var(--chaud)}
+.compteur{position:sticky;top:0;z-index:5;background:rgba(15,17,21,.94);
+  backdrop-filter:blur(8px);margin:0 -16px 6px;padding:11px 16px;
+  border-bottom:1px solid var(--ligne);display:flex;gap:14px;align-items:center;
+  font-size:13px;color:var(--gris);flex-wrap:wrap}
+.compteur b{color:var(--blanc);font-variant-numeric:tabular-nums}
+.compteur button{margin-left:auto;background:transparent;border:1px solid var(--ligne);
+  color:var(--gris);border-radius:7px;padding:6px 11px;font-size:11.5px;
+  letter-spacing:.08em;text-transform:uppercase;cursor:pointer}
 .note{margin-top:30px;border-left:2px solid var(--ligne);padding-left:15px;
   color:var(--gris);font-size:13.5px}
 .note b{color:var(--blanc)}
 </style></head><body><div class="wrap">
+<div class="compteur" id="compteur">
+  <span><b id="c-fait">0</b> appelés</span>
+  <span><b id="c-rep">0</b> sans réponse</span>
+  <span><b id="c-reste">15</b> restants</span>
+  <button type="button" id="copier">Copier le bilan</button>
+</div>
 <p class="sur">Prospection restaurants · La Réunion</p>
 <h1>Feuille d'appel</h1>
 
@@ -203,6 +238,12 @@ sans site web. Si ça se passe mal, tu n'as rien perdu — c'est le but.</p>
 dans leur image. Et ils sont dans une commune où tu peux passer.</p>
 <ul>${vrais.map((r, i) => carte(r, i + 1, false)).join('')}
 </ul>
+
+<p class="note"><b>Ton suivi reste sur cet appareil.</b> Les trois boutons et tes
+notes sont enregistrés dans le navigateur du téléphone, sans aller-retour serveur —
+tu peux appeler sans réseau correct. La contrepartie : ouverte sur un autre
+appareil, la page repart vierge. D'où le bouton <b>Copier le bilan</b> en haut, qui
+sort tout en texte. Reclique sur un bouton actif pour l'annuler.</p>
 
 <p class="note"><b>Ce que la vignette montre, et ce qu'elle ne montre pas.</b>
 C'est leur page d'accueil, visitée en anonyme le 25/08. Ça suffit pour juger si
@@ -219,6 +260,80 @@ sonne — deux secondes, et tu sais s'ils publient.</p>
 ${tous.length} établissements réunionnais avec un téléphone publié. C'est une base
 communautaire : <b>un numéro peut être périmé</b>. Si ça ne répond pas, ce n'est pas
 toi, c'est la donnée. Passe au suivant.</p>
+
+<script>
+/* Le suivi reste sur CET appareil (localStorage). C'est voulu : Tony appelle
+   depuis son téléphone, et une note d'appel n'a pas à faire un aller-retour
+   serveur pour être écrite. La contrepartie est réelle et affichée sur la page :
+   ouvert sur un autre appareil, le suivi repart vide. D'où le bouton « Copier
+   le bilan » — il sort tout en texte, à coller où il veut. */
+(function () {
+  var CLE = 'appels-suivi-v1';
+  var etat = {};
+  try { etat = JSON.parse(localStorage.getItem(CLE) || '{}'); } catch (e) { etat = {}; }
+
+  function ranger() {
+    try { localStorage.setItem(CLE, JSON.stringify(etat)); } catch (e) {}
+    compter();
+  }
+
+  function compter() {
+    var fait = 0, rep = 0;
+    Object.keys(etat).forEach(function (k) {
+      if (etat[k].e === 'appele') fait++;
+      if (etat[k].e === 'repondu') rep++;
+    });
+    var tot = document.querySelectorAll('.suivi').length;
+    document.getElementById('c-fait').textContent = fait;
+    document.getElementById('c-rep').textContent = rep;
+    document.getElementById('c-reste').textContent = tot - fait - rep;
+  }
+
+  document.querySelectorAll('.suivi').forEach(function (bloc) {
+    var id = bloc.dataset.id;
+    var e = etat[id] || {};
+    var zone = bloc.querySelector('textarea');
+    if (e.note) zone.value = e.note;
+
+    bloc.querySelectorAll('.etats button').forEach(function (b) {
+      b.setAttribute('aria-pressed', String(e.e === b.dataset.e));
+      b.addEventListener('click', function () {
+        etat[id] = etat[id] || {};
+        /* Recliquer sur l'état actif l'annule : on se trompe de bouton en
+           marchant, il faut pouvoir revenir en arrière sans recharger. */
+        etat[id].e = (etat[id].e === b.dataset.e) ? null : b.dataset.e;
+        bloc.querySelectorAll('.etats button').forEach(function (x) {
+          x.setAttribute('aria-pressed', String(etat[id].e === x.dataset.e));
+        });
+        ranger();
+      });
+    });
+
+    zone.addEventListener('input', function () {
+      etat[id] = etat[id] || {};
+      etat[id].note = zone.value;
+      ranger();
+    });
+  });
+
+  document.getElementById('copier').addEventListener('click', function () {
+    var lignes = ['Appels — ' + new Date().toLocaleDateString('fr-FR'), ''];
+    document.querySelectorAll('.lead').forEach(function (li) {
+      var nom = li.querySelector('.corps b').textContent;
+      var s = etat[li.querySelector('.suivi').dataset.id] || {};
+      var mot = { appele: 'appelé', repondu: 'pas de réponse', rappeler: 'à rappeler' }[s.e] || 'pas encore';
+      lignes.push('- ' + nom + ' — ' + mot + (s.note ? ' : ' + s.note : ''));
+    });
+    var txt = lignes.join('\\n');
+    var bouton = this;
+    function fini() { bouton.textContent = 'Copié ✓'; setTimeout(function () { bouton.textContent = 'Copier le bilan'; }, 1600); }
+    if (navigator.clipboard) navigator.clipboard.writeText(txt).then(fini, fini);
+    else { window.prompt('Copie ce bilan :', txt); }
+  });
+
+  compter();
+})();
+</script>
 </div></body></html>`;
 
 fs.mkdirSync('/work/previsualisation/appels', { recursive: true });

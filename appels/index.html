@@ -50,10 +50,37 @@ ul{list-style:none}
   color:var(--vrai);font-weight:700;margin-bottom:3px}
 .lead.chaud .et span{color:var(--chaud)}
 .et p{font-size:14.5px;line-height:1.5;color:#c9cfda}
+/* Suivi d'appel — trois états et un commentaire, gardés sur l'appareil. */
+.suivi{margin-top:10px;border-top:1px solid var(--ligne);padding-top:10px}
+.etats{display:flex;gap:6px}
+.etats button{flex:1;background:var(--creux,#0f1115);border:1px solid var(--ligne);
+  color:var(--gris);border-radius:8px;padding:9px 4px;font-size:12.5px;
+  font-weight:600;cursor:pointer;line-height:1.15}
+.etats button[aria-pressed=true][data-e=appele]{background:var(--vrai);border-color:var(--vrai);color:#08130c}
+.etats button[aria-pressed=true][data-e=repondu]{background:#8b93a3;border-color:#8b93a3;color:#111}
+.etats button[aria-pressed=true][data-e=rappeler]{background:var(--chaud);border-color:var(--chaud);color:#1a1200}
+.suivi textarea{width:100%;margin-top:7px;background:#0f1115;border:1px solid var(--ligne);
+  color:var(--blanc);border-radius:8px;padding:9px 10px;font:14px/1.4 inherit;resize:vertical}
+.suivi textarea:focus{outline:2px solid var(--vrai);outline-offset:1px}
+.lead.chaud .suivi textarea:focus{outline-color:var(--chaud)}
+.compteur{position:sticky;top:0;z-index:5;background:rgba(15,17,21,.94);
+  backdrop-filter:blur(8px);margin:0 -16px 6px;padding:11px 16px;
+  border-bottom:1px solid var(--ligne);display:flex;gap:14px;align-items:center;
+  font-size:13px;color:var(--gris);flex-wrap:wrap}
+.compteur b{color:var(--blanc);font-variant-numeric:tabular-nums}
+.compteur button{margin-left:auto;background:transparent;border:1px solid var(--ligne);
+  color:var(--gris);border-radius:7px;padding:6px 11px;font-size:11.5px;
+  letter-spacing:.08em;text-transform:uppercase;cursor:pointer}
 .note{margin-top:30px;border-left:2px solid var(--ligne);padding-left:15px;
   color:var(--gris);font-size:13.5px}
 .note b{color:var(--blanc)}
 </style></head><body><div class="wrap">
+<div class="compteur" id="compteur">
+  <span><b id="c-fait">0</b> appelés</span>
+  <span><b id="c-rep">0</b> sans réponse</span>
+  <span><b id="c-reste">15</b> restants</span>
+  <button type="button" id="copier">Copier le bilan</button>
+</div>
 <p class="sur">Prospection restaurants · La Réunion</p>
 <h1>Feuille d'appel</h1>
 
@@ -72,6 +99,14 @@ sans site web. Si ça se passe mal, tu n'as rien perdu — c'est le but.</p>
         </div>
         
         <a class="tel" href="tel:+262693000293">📞 +262 693 00 02 93</a>
+        <div class="suivi" data-id="m-donuts">
+          <div class="etats">
+            <button type="button" data-e="appele">Appelé</button>
+            <button type="button" data-e="repondu">Pas de réponse</button>
+            <button type="button" data-e="rappeler">À rappeler</button>
+          </div>
+          <textarea rows="2" placeholder="Ce qu’il a dit…"></textarea>
+        </div>
         <details class="scr">
           <summary>Le script pour cet appel</summary>
           <div class="et"><span>Ouvrir</span><p>Bonjour, Tony PAYET, je suis à La Réunion. Je fais des petites vidéos pour les restaurants. Vous avez deux minutes ?</p></div><div class="et"><span>S’il dit non</span><p>Pas de souci, bonne journée — et tu raccroches. C’est un échauffement : le but est de parler, pas de vendre.</p></div><div class="et"><span>S’il écoute</span><p>Je monte des vidéos courtes à partir des photos que vous avez déjà, pour Instagram et TikTok. Vous publiez en ce moment ?</p></div><div class="et"><span>Fermer</span><p>Je peux vous en faire une pour voir, sans engagement. Je vous l’envoie et vous me dites.</p></div>
@@ -88,6 +123,14 @@ sans site web. Si ça se passe mal, tu n'as rien perdu — c'est le but.</p>
         </div>
         
         <a class="tel" href="tel:+262692706637">📞 +262 692 70 66 37</a>
+        <div class="suivi" data-id="marius">
+          <div class="etats">
+            <button type="button" data-e="appele">Appelé</button>
+            <button type="button" data-e="repondu">Pas de réponse</button>
+            <button type="button" data-e="rappeler">À rappeler</button>
+          </div>
+          <textarea rows="2" placeholder="Ce qu’il a dit…"></textarea>
+        </div>
         <details class="scr">
           <summary>Le script pour cet appel</summary>
           <div class="et"><span>Ouvrir</span><p>Bonjour, Tony PAYET, je suis à La Réunion. Je fais des petites vidéos pour les restaurants. Vous avez deux minutes ?</p></div><div class="et"><span>S’il dit non</span><p>Pas de souci, bonne journée — et tu raccroches. C’est un échauffement : le but est de parler, pas de vendre.</p></div><div class="et"><span>S’il écoute</span><p>Je monte des vidéos courtes à partir des photos que vous avez déjà, pour Instagram et TikTok. Vous publiez en ce moment ?</p></div><div class="et"><span>Fermer</span><p>Je peux vous en faire une pour voir, sans engagement. Je vous l’envoie et vous me dites.</p></div>
@@ -104,6 +147,14 @@ sans site web. Si ça se passe mal, tu n'as rien perdu — c'est le but.</p>
         </div>
         
         <a class="tel" href="tel:+262692800938">📞 +262 692 80 09 38</a>
+        <div class="suivi" data-id="le-p-ti-peche">
+          <div class="etats">
+            <button type="button" data-e="appele">Appelé</button>
+            <button type="button" data-e="repondu">Pas de réponse</button>
+            <button type="button" data-e="rappeler">À rappeler</button>
+          </div>
+          <textarea rows="2" placeholder="Ce qu’il a dit…"></textarea>
+        </div>
         <details class="scr">
           <summary>Le script pour cet appel</summary>
           <div class="et"><span>Ouvrir</span><p>Bonjour, Tony PAYET, je suis à La Réunion. Je fais des petites vidéos pour les restaurants. Vous avez deux minutes ?</p></div><div class="et"><span>S’il dit non</span><p>Pas de souci, bonne journée — et tu raccroches. C’est un échauffement : le but est de parler, pas de vendre.</p></div><div class="et"><span>S’il écoute</span><p>Je monte des vidéos courtes à partir des photos que vous avez déjà, pour Instagram et TikTok. Vous publiez en ce moment ?</p></div><div class="et"><span>Fermer</span><p>Je peux vous en faire une pour voir, sans engagement. Je vous l’envoie et vous me dites.</p></div>
@@ -126,6 +177,14 @@ dans leur image. Et ils sont dans une commune où tu peux passer.</p>
         </div>
         <a class="vign" href="https://snack-folies-burger-56.webself.net/menu" target="_blank" rel="noopener"><img loading="lazy" src="vignettes/folies-burger.jpg" alt="Aperçu du site de Folies burger"></a>
         <a class="tel" href="tel:+262692124124">📞 +262 6 92 12 41 24</a>
+        <div class="suivi" data-id="folies-burger">
+          <div class="etats">
+            <button type="button" data-e="appele">Appelé</button>
+            <button type="button" data-e="repondu">Pas de réponse</button>
+            <button type="button" data-e="rappeler">À rappeler</button>
+          </div>
+          <textarea rows="2" placeholder="Ce qu’il a dit…"></textarea>
+        </div>
         <details class="scr">
           <summary>Le script pour cet appel</summary>
           <div class="et"><span>Ouvrir</span><p>Bonjour, Tony PAYET, je suis basé à La Réunion. J’ai regardé votre site avant d’appeler. Je fais des vidéos courtes pour votre snack. Vous avez deux minutes ?</p></div><div class="et"><span>La question qui ouvre</span><p>Vos photos de cuisine malgache, aujourd’hui vous en faites quoi ? Elles restent sur le téléphone, ou vous publiez ?</p></div><div class="et"><span>Ce que tu proposes</span><p>Je pars de vos propres photos et j’en fais une vidéo verticale de dix secondes, prête à publier. Pas de tournage, pas de déplacement, rien à préparer de votre côté.</p></div><div class="et"><span>S’il demande le prix</span><p>Ça dépend du nombre de vidéos. Je préfère vous en montrer une d’abord : si elle ne vous plaît pas, la question du prix ne se pose pas.</p></div><div class="et"><span>Fermer</span><p>Je vous en monte une cette semaine et je vous envoie le lien. Vous regardez, et vous me dites oui ou non. Ça vous va ?</p></div><div class="et"><span>La sortie</span><p>Si ce n’est pas le moment, dites-le-moi franchement et je ne rappelle pas.</p></div>
@@ -142,6 +201,14 @@ dans leur image. Et ils sont dans une commune où tu peux passer.</p>
         </div>
         <a class="vign" href="https://www.creperie-saintgeorges.re" target="_blank" rel="noopener"><img loading="lazy" src="vignettes/la-saint-georges.jpg" alt="Aperçu du site de La Saint Georges"></a>
         <a class="tel" href="tel:+262262215909">📞 +262 2 62 21 59 09</a>
+        <div class="suivi" data-id="la-saint-georges">
+          <div class="etats">
+            <button type="button" data-e="appele">Appelé</button>
+            <button type="button" data-e="repondu">Pas de réponse</button>
+            <button type="button" data-e="rappeler">À rappeler</button>
+          </div>
+          <textarea rows="2" placeholder="Ce qu’il a dit…"></textarea>
+        </div>
         <details class="scr">
           <summary>Le script pour cet appel</summary>
           <div class="et"><span>Ouvrir</span><p>Bonjour, Tony PAYET, je suis basé à La Réunion. J’ai regardé votre site avant d’appeler. Je fais des vidéos courtes pour votre restaurant. Vous avez deux minutes ?</p></div><div class="et"><span>La question qui ouvre</span><p>Vos photos de cuisine française, aujourd’hui vous en faites quoi ? Elles restent sur le téléphone, ou vous publiez ?</p></div><div class="et"><span>Ce que tu proposes</span><p>Je pars de vos propres photos et j’en fais une vidéo verticale de dix secondes, prête à publier. Pas de tournage, pas de déplacement, rien à préparer de votre côté.</p></div><div class="et"><span>S’il demande le prix</span><p>Ça dépend du nombre de vidéos. Je préfère vous en montrer une d’abord : si elle ne vous plaît pas, la question du prix ne se pose pas.</p></div><div class="et"><span>Fermer</span><p>Je vous en monte une cette semaine et je vous envoie le lien. Vous regardez, et vous me dites oui ou non. Ça vous va ?</p></div><div class="et"><span>La sortie</span><p>Si ce n’est pas le moment, dites-le-moi franchement et je ne rappelle pas.</p></div>
@@ -158,6 +225,14 @@ dans leur image. Et ils sont dans une commune où tu peux passer.</p>
         </div>
         <a class="vign" href="https://vitaly.re/" target="_blank" rel="noopener"><img loading="lazy" src="vignettes/vitaly.jpg" alt="Aperçu du site de Vitaly"></a>
         <a class="tel" href="tel:+262693216944">📞 +262 6 93 21 69 44</a>
+        <div class="suivi" data-id="vitaly">
+          <div class="etats">
+            <button type="button" data-e="appele">Appelé</button>
+            <button type="button" data-e="repondu">Pas de réponse</button>
+            <button type="button" data-e="rappeler">À rappeler</button>
+          </div>
+          <textarea rows="2" placeholder="Ce qu’il a dit…"></textarea>
+        </div>
         <details class="scr">
           <summary>Le script pour cet appel</summary>
           <div class="et"><span>Ouvrir</span><p>Bonjour, Tony PAYET, je suis basé à La Réunion. J’ai regardé votre site avant d’appeler. Je fais des vidéos courtes pour votre restaurant. Vous avez deux minutes ?</p></div><div class="et"><span>La question qui ouvre</span><p>Vos photos de salades, aujourd’hui vous en faites quoi ? Elles restent sur le téléphone, ou vous publiez ?</p></div><div class="et"><span>Ce que tu proposes</span><p>Je pars de vos propres photos et j’en fais une vidéo verticale de dix secondes, prête à publier. Pas de tournage, pas de déplacement, rien à préparer de votre côté.</p></div><div class="et"><span>S’il demande le prix</span><p>Ça dépend du nombre de vidéos. Je préfère vous en montrer une d’abord : si elle ne vous plaît pas, la question du prix ne se pose pas.</p></div><div class="et"><span>Fermer</span><p>Je vous en monte une cette semaine et je vous envoie le lien. Vous regardez, et vous me dites oui ou non. Ça vous va ?</p></div><div class="et"><span>La sortie</span><p>Si ce n’est pas le moment, dites-le-moi franchement et je ne rappelle pas.</p></div>
@@ -174,6 +249,14 @@ dans leur image. Et ils sont dans une commune où tu peux passer.</p>
         </div>
         <a class="vign" href="https://arbradelis.com/" target="_blank" rel="noopener"><img loading="lazy" src="vignettes/l-arbradelis.jpg" alt="Aperçu du site de l'ArbraDelis'"></a>
         <a class="tel" href="tel:+262262569622">📞 +262 262 56 96 22</a>
+        <div class="suivi" data-id="l-arbradelis">
+          <div class="etats">
+            <button type="button" data-e="appele">Appelé</button>
+            <button type="button" data-e="repondu">Pas de réponse</button>
+            <button type="button" data-e="rappeler">À rappeler</button>
+          </div>
+          <textarea rows="2" placeholder="Ce qu’il a dit…"></textarea>
+        </div>
         <details class="scr">
           <summary>Le script pour cet appel</summary>
           <div class="et"><span>Ouvrir</span><p>Bonjour, Tony PAYET, je suis basé à La Réunion. J’ai regardé votre site avant d’appeler. Je fais des vidéos courtes pour votre restaurant. Vous avez deux minutes ?</p></div><div class="et"><span>La question qui ouvre</span><p>Vos photos de cuisine locale, aujourd’hui vous en faites quoi ? Elles restent sur le téléphone, ou vous publiez ?</p></div><div class="et"><span>Ce que tu proposes</span><p>Je pars de vos propres photos et j’en fais une vidéo verticale de dix secondes, prête à publier. Pas de tournage, pas de déplacement, rien à préparer de votre côté.</p></div><div class="et"><span>S’il demande le prix</span><p>Ça dépend du nombre de vidéos. Je préfère vous en montrer une d’abord : si elle ne vous plaît pas, la question du prix ne se pose pas.</p></div><div class="et"><span>Fermer</span><p>Je vous en monte une cette semaine et je vous envoie le lien. Vous regardez, et vous me dites oui ou non. Ça vous va ?</p></div><div class="et"><span>La sortie</span><p>Si ce n’est pas le moment, dites-le-moi franchement et je ne rappelle pas.</p></div>
@@ -190,6 +273,14 @@ dans leur image. Et ils sont dans une commune où tu peux passer.</p>
         </div>
         <a class="vign" href="https://chooseandeat.re/" target="_blank" rel="noopener"><img loading="lazy" src="vignettes/choose-eat.jpg" alt="Aperçu du site de Choose &amp; Eat"></a>
         <a class="tel" href="tel:+262262297297+262262297299">📞 +262 2 62 29 72 97;+262 2 62 29 72 99</a>
+        <div class="suivi" data-id="choose-eat">
+          <div class="etats">
+            <button type="button" data-e="appele">Appelé</button>
+            <button type="button" data-e="repondu">Pas de réponse</button>
+            <button type="button" data-e="rappeler">À rappeler</button>
+          </div>
+          <textarea rows="2" placeholder="Ce qu’il a dit…"></textarea>
+        </div>
         <details class="scr">
           <summary>Le script pour cet appel</summary>
           <div class="et"><span>Ouvrir</span><p>Bonjour, Tony PAYET, je suis basé à La Réunion. J’ai regardé votre site avant d’appeler. Je fais des vidéos courtes pour votre snack. Vous avez deux minutes ?</p></div><div class="et"><span>La question qui ouvre</span><p>Vos photos de pizzas, aujourd’hui vous en faites quoi ? Elles restent sur le téléphone, ou vous publiez ?</p></div><div class="et"><span>Ce que tu proposes</span><p>Je pars de vos propres photos et j’en fais une vidéo verticale de dix secondes, prête à publier. Pas de tournage, pas de déplacement, rien à préparer de votre côté.</p></div><div class="et"><span>S’il demande le prix</span><p>Ça dépend du nombre de vidéos. Je préfère vous en montrer une d’abord : si elle ne vous plaît pas, la question du prix ne se pose pas.</p></div><div class="et"><span>Fermer</span><p>Je vous en monte une cette semaine et je vous envoie le lien. Vous regardez, et vous me dites oui ou non. Ça vous va ?</p></div><div class="et"><span>La sortie</span><p>Si ce n’est pas le moment, dites-le-moi franchement et je ne rappelle pas.</p></div>
@@ -206,6 +297,14 @@ dans leur image. Et ils sont dans une commune où tu peux passer.</p>
         </div>
         <a class="vign" href="https://www.facebook.com/pages/Restaurant-Les-Bons-Enfants-Saint-Denis/187111804788768" target="_blank" rel="noopener"><img loading="lazy" src="vignettes/les-bons-enfants.jpg" alt="Aperçu du site de Les Bons Enfants"></a>
         <a class="tel" href="tel:+262262212000">📞 +262 262 21 20 00</a>
+        <div class="suivi" data-id="les-bons-enfants">
+          <div class="etats">
+            <button type="button" data-e="appele">Appelé</button>
+            <button type="button" data-e="repondu">Pas de réponse</button>
+            <button type="button" data-e="rappeler">À rappeler</button>
+          </div>
+          <textarea rows="2" placeholder="Ce qu’il a dit…"></textarea>
+        </div>
         <details class="scr">
           <summary>Le script pour cet appel</summary>
           <div class="et"><span>Ouvrir</span><p>Bonjour, Tony PAYET, je suis basé à La Réunion. J’ai regardé : votre seule vitrine en ligne, c’est votre page Facebook. Je fais des vidéos courtes pour votre restaurant. Vous avez deux minutes ?</p></div><div class="et"><span>La question qui ouvre</span><p>Vos photos de cuisine chinoise, aujourd’hui vous en faites quoi ? Elles restent sur le téléphone, ou vous publiez ?</p></div><div class="et"><span>Ce que tu proposes</span><p>Je pars de vos propres photos et j’en fais une vidéo verticale de dix secondes, prête à publier. Pas de tournage, pas de déplacement, rien à préparer de votre côté.</p></div><div class="et"><span>S’il demande le prix</span><p>Ça dépend du nombre de vidéos. Je préfère vous en montrer une d’abord : si elle ne vous plaît pas, la question du prix ne se pose pas.</p></div><div class="et"><span>Fermer</span><p>Je vous en monte une cette semaine et je vous envoie le lien. Vous regardez, et vous me dites oui ou non. Ça vous va ?</p></div><div class="et"><span>La sortie</span><p>Si ce n’est pas le moment, dites-le-moi franchement et je ne rappelle pas.</p></div>
@@ -222,6 +321,14 @@ dans leur image. Et ils sont dans une commune où tu peux passer.</p>
         </div>
         <a class="vign" href="https://www.facebook.com/profile.php?id=100086940634156" target="_blank" rel="noopener"><img loading="lazy" src="vignettes/that-s-eat.jpg" alt="Aperçu du site de That's Eat"></a>
         <a class="tel" href="tel:+262262095088">📞 +262 262 09 50 88</a>
+        <div class="suivi" data-id="that-s-eat">
+          <div class="etats">
+            <button type="button" data-e="appele">Appelé</button>
+            <button type="button" data-e="repondu">Pas de réponse</button>
+            <button type="button" data-e="rappeler">À rappeler</button>
+          </div>
+          <textarea rows="2" placeholder="Ce qu’il a dit…"></textarea>
+        </div>
         <details class="scr">
           <summary>Le script pour cet appel</summary>
           <div class="et"><span>Ouvrir</span><p>Bonjour, Tony PAYET, je suis basé à La Réunion. J’ai regardé : votre seule vitrine en ligne, c’est votre page Facebook. Je fais des vidéos courtes pour votre snack. Vous avez deux minutes ?</p></div><div class="et"><span>La question qui ouvre</span><p>Vos photos de kebabs, aujourd’hui vous en faites quoi ? Elles restent sur le téléphone, ou vous publiez ?</p></div><div class="et"><span>Ce que tu proposes</span><p>Je pars de vos propres photos et j’en fais une vidéo verticale de dix secondes, prête à publier. Pas de tournage, pas de déplacement, rien à préparer de votre côté.</p></div><div class="et"><span>S’il demande le prix</span><p>Ça dépend du nombre de vidéos. Je préfère vous en montrer une d’abord : si elle ne vous plaît pas, la question du prix ne se pose pas.</p></div><div class="et"><span>Fermer</span><p>Je vous en monte une cette semaine et je vous envoie le lien. Vous regardez, et vous me dites oui ou non. Ça vous va ?</p></div><div class="et"><span>La sortie</span><p>Si ce n’est pas le moment, dites-le-moi franchement et je ne rappelle pas.</p></div>
@@ -238,6 +345,14 @@ dans leur image. Et ils sont dans une commune où tu peux passer.</p>
         </div>
         <a class="vign" href="https://www.auvieuxquimper.com/?utm_medium=referral&amp;utm_source=gmb&amp;utm_campaign=lnk-gmb" target="_blank" rel="noopener"><img loading="lazy" src="vignettes/au-vieux-quimper.jpg" alt="Aperçu du site de Au vieux Quimper"></a>
         <a class="tel" href="tel:+262262245348">📞 +262 262 24 53 48</a>
+        <div class="suivi" data-id="au-vieux-quimper">
+          <div class="etats">
+            <button type="button" data-e="appele">Appelé</button>
+            <button type="button" data-e="repondu">Pas de réponse</button>
+            <button type="button" data-e="rappeler">À rappeler</button>
+          </div>
+          <textarea rows="2" placeholder="Ce qu’il a dit…"></textarea>
+        </div>
         <details class="scr">
           <summary>Le script pour cet appel</summary>
           <div class="et"><span>Ouvrir</span><p>Bonjour, Tony PAYET, je suis basé à La Réunion. J’ai regardé votre site avant d’appeler. Je fais des vidéos courtes pour votre restaurant. Vous avez deux minutes ?</p></div><div class="et"><span>La question qui ouvre</span><p>Vos photos de plats, aujourd’hui vous en faites quoi ? Elles restent sur le téléphone, ou vous publiez ?</p></div><div class="et"><span>Ce que tu proposes</span><p>Je pars de vos propres photos et j’en fais une vidéo verticale de dix secondes, prête à publier. Pas de tournage, pas de déplacement, rien à préparer de votre côté.</p></div><div class="et"><span>S’il demande le prix</span><p>Ça dépend du nombre de vidéos. Je préfère vous en montrer une d’abord : si elle ne vous plaît pas, la question du prix ne se pose pas.</p></div><div class="et"><span>Fermer</span><p>Je vous en monte une cette semaine et je vous envoie le lien. Vous regardez, et vous me dites oui ou non. Ça vous va ?</p></div><div class="et"><span>La sortie</span><p>Si ce n’est pas le moment, dites-le-moi franchement et je ne rappelle pas.</p></div>
@@ -254,6 +369,14 @@ dans leur image. Et ils sont dans une commune où tu peux passer.</p>
         </div>
         
         <a class="tel" href="tel:+262262405802">📞 +262 262 40 58 02</a>
+        <div class="suivi" data-id="la-page-gourmande">
+          <div class="etats">
+            <button type="button" data-e="appele">Appelé</button>
+            <button type="button" data-e="repondu">Pas de réponse</button>
+            <button type="button" data-e="rappeler">À rappeler</button>
+          </div>
+          <textarea rows="2" placeholder="Ce qu’il a dit…"></textarea>
+        </div>
         <details class="scr">
           <summary>Le script pour cet appel</summary>
           <div class="et"><span>Ouvrir</span><p>Bonjour, Tony PAYET, je suis basé à La Réunion. J’ai voulu regarder votre site avant d’appeler — il ne répond plus. Je fais des vidéos courtes pour votre restaurant. Vous avez deux minutes ?</p></div><div class="et"><span>La question qui ouvre</span><p>Vos photos de cuisine locale, aujourd’hui vous en faites quoi ? Elles restent sur le téléphone, ou vous publiez ?</p></div><div class="et"><span>Ce que tu proposes</span><p>Je pars de vos propres photos et j’en fais une vidéo verticale de dix secondes, prête à publier. Pas de tournage, pas de déplacement, rien à préparer de votre côté.</p></div><div class="et"><span>S’il demande le prix</span><p>Ça dépend du nombre de vidéos. Je préfère vous en montrer une d’abord : si elle ne vous plaît pas, la question du prix ne se pose pas.</p></div><div class="et"><span>Fermer</span><p>Je vous en monte une cette semaine et je vous envoie le lien. Vous regardez, et vous me dites oui ou non. Ça vous va ?</p></div><div class="et"><span>La sortie</span><p>Si ce n’est pas le moment, dites-le-moi franchement et je ne rappelle pas.</p></div>
@@ -270,6 +393,14 @@ dans leur image. Et ils sont dans une commune où tu peux passer.</p>
         </div>
         <a class="vign" href="https://www.restaurant-lunisson.re/" target="_blank" rel="noopener"><img loading="lazy" src="vignettes/l-unisson.jpg" alt="Aperçu du site de L'unisson"></a>
         <a class="tel" href="tel:+33970354141">📞 +33 970 35 41 41</a>
+        <div class="suivi" data-id="l-unisson">
+          <div class="etats">
+            <button type="button" data-e="appele">Appelé</button>
+            <button type="button" data-e="repondu">Pas de réponse</button>
+            <button type="button" data-e="rappeler">À rappeler</button>
+          </div>
+          <textarea rows="2" placeholder="Ce qu’il a dit…"></textarea>
+        </div>
         <details class="scr">
           <summary>Le script pour cet appel</summary>
           <div class="et"><span>Ouvrir</span><p>Bonjour, Tony PAYET, je suis basé à La Réunion. J’ai regardé votre site avant d’appeler. Je fais des vidéos courtes pour votre restaurant. Vous avez deux minutes ?</p></div><div class="et"><span>La question qui ouvre</span><p>Vos photos de cuisine locale, aujourd’hui vous en faites quoi ? Elles restent sur le téléphone, ou vous publiez ?</p></div><div class="et"><span>Ce que tu proposes</span><p>Je pars de vos propres photos et j’en fais une vidéo verticale de dix secondes, prête à publier. Pas de tournage, pas de déplacement, rien à préparer de votre côté.</p></div><div class="et"><span>S’il demande le prix</span><p>Ça dépend du nombre de vidéos. Je préfère vous en montrer une d’abord : si elle ne vous plaît pas, la question du prix ne se pose pas.</p></div><div class="et"><span>Fermer</span><p>Je vous en monte une cette semaine et je vous envoie le lien. Vous regardez, et vous me dites oui ou non. Ça vous va ?</p></div><div class="et"><span>La sortie</span><p>Si ce n’est pas le moment, dites-le-moi franchement et je ne rappelle pas.</p></div>
@@ -286,6 +417,14 @@ dans leur image. Et ils sont dans une commune où tu peux passer.</p>
         </div>
         <a class="vign" href="https://mediterraneo.re/" target="_blank" rel="noopener"><img loading="lazy" src="vignettes/mediterraneo.jpg" alt="Aperçu du site de Mediterraneo"></a>
         <a class="tel" href="tel:+262262134702">📞 +262 2 62 13 47 02</a>
+        <div class="suivi" data-id="mediterraneo">
+          <div class="etats">
+            <button type="button" data-e="appele">Appelé</button>
+            <button type="button" data-e="repondu">Pas de réponse</button>
+            <button type="button" data-e="rappeler">À rappeler</button>
+          </div>
+          <textarea rows="2" placeholder="Ce qu’il a dit…"></textarea>
+        </div>
         <details class="scr">
           <summary>Le script pour cet appel</summary>
           <div class="et"><span>Ouvrir</span><p>Bonjour, Tony PAYET, je suis basé à La Réunion. J’ai jeté un œil à votre site, il est encore très léger. Je fais des vidéos courtes pour votre restaurant. Vous avez deux minutes ?</p></div><div class="et"><span>La question qui ouvre</span><p>Vos photos de cuisine italienne, aujourd’hui vous en faites quoi ? Elles restent sur le téléphone, ou vous publiez ?</p></div><div class="et"><span>Ce que tu proposes</span><p>Je pars de vos propres photos et j’en fais une vidéo verticale de dix secondes, prête à publier. Pas de tournage, pas de déplacement, rien à préparer de votre côté.</p></div><div class="et"><span>S’il demande le prix</span><p>Ça dépend du nombre de vidéos. Je préfère vous en montrer une d’abord : si elle ne vous plaît pas, la question du prix ne se pose pas.</p></div><div class="et"><span>Fermer</span><p>Je vous en monte une cette semaine et je vous envoie le lien. Vous regardez, et vous me dites oui ou non. Ça vous va ?</p></div><div class="et"><span>La sortie</span><p>Si ce n’est pas le moment, dites-le-moi franchement et je ne rappelle pas.</p></div>
@@ -302,12 +441,26 @@ dans leur image. Et ils sont dans une commune où tu peux passer.</p>
         </div>
         <a class="vign" href="https://www.facebook.com/PizzaEtna97435/" target="_blank" rel="noopener"><img loading="lazy" src="vignettes/pizza-etna.jpg" alt="Aperçu du site de Pizza Etna"></a>
         <a class="tel" href="tel:+262692199974">📞 +262 6 92 199 974</a>
+        <div class="suivi" data-id="pizza-etna">
+          <div class="etats">
+            <button type="button" data-e="appele">Appelé</button>
+            <button type="button" data-e="repondu">Pas de réponse</button>
+            <button type="button" data-e="rappeler">À rappeler</button>
+          </div>
+          <textarea rows="2" placeholder="Ce qu’il a dit…"></textarea>
+        </div>
         <details class="scr">
           <summary>Le script pour cet appel</summary>
           <div class="et"><span>Ouvrir</span><p>Bonjour, Tony PAYET, je suis basé à La Réunion. J’ai regardé : votre seule vitrine en ligne, c’est votre page Facebook. Je fais des vidéos courtes pour votre snack. Vous avez deux minutes ?</p></div><div class="et"><span>La question qui ouvre</span><p>Vos photos de pizzas, aujourd’hui vous en faites quoi ? Elles restent sur le téléphone, ou vous publiez ?</p></div><div class="et"><span>Ce que tu proposes</span><p>Je pars de vos propres photos et j’en fais une vidéo verticale de dix secondes, prête à publier. Pas de tournage, pas de déplacement, rien à préparer de votre côté.</p></div><div class="et"><span>S’il demande le prix</span><p>Ça dépend du nombre de vidéos. Je préfère vous en montrer une d’abord : si elle ne vous plaît pas, la question du prix ne se pose pas.</p></div><div class="et"><span>Fermer</span><p>Je vous en monte une cette semaine et je vous envoie le lien. Vous regardez, et vous me dites oui ou non. Ça vous va ?</p></div><div class="et"><span>La sortie</span><p>Si ce n’est pas le moment, dites-le-moi franchement et je ne rappelle pas.</p></div>
         </details>
       </li>
 </ul>
+
+<p class="note"><b>Ton suivi reste sur cet appareil.</b> Les trois boutons et tes
+notes sont enregistrés dans le navigateur du téléphone, sans aller-retour serveur —
+tu peux appeler sans réseau correct. La contrepartie : ouverte sur un autre
+appareil, la page repart vierge. D'où le bouton <b>Copier le bilan</b> en haut, qui
+sort tout en texte. Reclique sur un bouton actif pour l'annuler.</p>
 
 <p class="note"><b>Ce que la vignette montre, et ce qu'elle ne montre pas.</b>
 C'est leur page d'accueil, visitée en anonyme le 25/08. Ça suffit pour juger si
@@ -324,4 +477,78 @@ sonne — deux secondes, et tu sais s'ils publient.</p>
 433 établissements réunionnais avec un téléphone publié. C'est une base
 communautaire : <b>un numéro peut être périmé</b>. Si ça ne répond pas, ce n'est pas
 toi, c'est la donnée. Passe au suivant.</p>
+
+<script>
+/* Le suivi reste sur CET appareil (localStorage). C'est voulu : Tony appelle
+   depuis son téléphone, et une note d'appel n'a pas à faire un aller-retour
+   serveur pour être écrite. La contrepartie est réelle et affichée sur la page :
+   ouvert sur un autre appareil, le suivi repart vide. D'où le bouton « Copier
+   le bilan » — il sort tout en texte, à coller où il veut. */
+(function () {
+  var CLE = 'appels-suivi-v1';
+  var etat = {};
+  try { etat = JSON.parse(localStorage.getItem(CLE) || '{}'); } catch (e) { etat = {}; }
+
+  function ranger() {
+    try { localStorage.setItem(CLE, JSON.stringify(etat)); } catch (e) {}
+    compter();
+  }
+
+  function compter() {
+    var fait = 0, rep = 0;
+    Object.keys(etat).forEach(function (k) {
+      if (etat[k].e === 'appele') fait++;
+      if (etat[k].e === 'repondu') rep++;
+    });
+    var tot = document.querySelectorAll('.suivi').length;
+    document.getElementById('c-fait').textContent = fait;
+    document.getElementById('c-rep').textContent = rep;
+    document.getElementById('c-reste').textContent = tot - fait - rep;
+  }
+
+  document.querySelectorAll('.suivi').forEach(function (bloc) {
+    var id = bloc.dataset.id;
+    var e = etat[id] || {};
+    var zone = bloc.querySelector('textarea');
+    if (e.note) zone.value = e.note;
+
+    bloc.querySelectorAll('.etats button').forEach(function (b) {
+      b.setAttribute('aria-pressed', String(e.e === b.dataset.e));
+      b.addEventListener('click', function () {
+        etat[id] = etat[id] || {};
+        /* Recliquer sur l'état actif l'annule : on se trompe de bouton en
+           marchant, il faut pouvoir revenir en arrière sans recharger. */
+        etat[id].e = (etat[id].e === b.dataset.e) ? null : b.dataset.e;
+        bloc.querySelectorAll('.etats button').forEach(function (x) {
+          x.setAttribute('aria-pressed', String(etat[id].e === x.dataset.e));
+        });
+        ranger();
+      });
+    });
+
+    zone.addEventListener('input', function () {
+      etat[id] = etat[id] || {};
+      etat[id].note = zone.value;
+      ranger();
+    });
+  });
+
+  document.getElementById('copier').addEventListener('click', function () {
+    var lignes = ['Appels — ' + new Date().toLocaleDateString('fr-FR'), ''];
+    document.querySelectorAll('.lead').forEach(function (li) {
+      var nom = li.querySelector('.corps b').textContent;
+      var s = etat[li.querySelector('.suivi').dataset.id] || {};
+      var mot = { appele: 'appelé', repondu: 'pas de réponse', rappeler: 'à rappeler' }[s.e] || 'pas encore';
+      lignes.push('- ' + nom + ' — ' + mot + (s.note ? ' : ' + s.note : ''));
+    });
+    var txt = lignes.join('\n');
+    var bouton = this;
+    function fini() { bouton.textContent = 'Copié ✓'; setTimeout(function () { bouton.textContent = 'Copier le bilan'; }, 1600); }
+    if (navigator.clipboard) navigator.clipboard.writeText(txt).then(fini, fini);
+    else { window.prompt('Copie ce bilan :', txt); }
+  });
+
+  compter();
+})();
+</script>
 </div></body></html>
