@@ -1,0 +1,467 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>L'Unisson — Restaurant à Saint-Denis</title>
+<meta name="description" content="L'Unisson, restaurant familial à Saint-Denis : cuisine créole et métropolitaine, soirée karaoké, repas d'affaires, privatisation de salle.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;700;800;900&family=Karla:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ─────────────────────────────────────────────────────────────────────────
+   L'UNISSON — maquette de refonte, effets au défilement.
+
+   Palette : PRÉLEVÉE sur leurs propres photos (échantillonnage des teintes
+   dominantes, hors quasi-noir et quasi-blanc). Les plats et la salle sortent
+   en bruns chauds et ambres — d'où un fond nocturne chaud et un unique accent
+   ambre. Aucune couleur inventée, et surtout pas le trio crème + serif +
+   terracotta qu'on retrouve sur un site de restaurant sur deux.
+
+   Contenu : UNIQUEMENT ce que le site actuel publie. Aucun prix, aucun nom de
+   plat, aucun horaire inventé.
+   ───────────────────────────────────────────────────────────────────────── */
+
+:root{
+  --nuit:#141110;          /* noir chaud, lignée #363331 / #352f2f */
+  --nuit-2:#1D1917;
+  --nuit-3:#262120;
+  --clair:#EDE7E0;
+  --clair-doux:#B9AFA6;
+  --ambre:#E3A33C;         /* lignée #928b73 / #524c32 (cocktails, friture) */
+  --braise:#A8341C;        /* lignée #b68a72 poussé (rougail) */
+  --bord:rgba(237,231,224,.13);
+  --pad:clamp(20px,5vw,72px);
+}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--nuit);color:var(--clair);
+  font-family:Karla,system-ui,sans-serif;font-size:17px;line-height:1.65;
+  -webkit-font-smoothing:antialiased;overflow-x:hidden;
+}
+img{display:block;max-width:100%}
+a{color:inherit}
+
+.dsp{
+  font-family:Archivo,system-ui,sans-serif;font-weight:900;
+  text-transform:uppercase;letter-spacing:-.03em;line-height:.92;
+  text-wrap:balance;margin:0;
+}
+.eyebrow{
+  font-family:Archivo,sans-serif;font-weight:700;font-size:12px;
+  letter-spacing:.24em;text-transform:uppercase;color:var(--ambre);margin:0 0 18px;
+}
+.lead{font-size:clamp(17px,1.9vw,21px);line-height:1.6;color:var(--clair-doux);max-width:62ch}
+
+/* ── Barre de navigation ─────────────────────────────────────────────── */
+.nav{
+  position:fixed;top:0;left:0;right:0;z-index:60;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:16px var(--pad);
+  background:linear-gradient(180deg,rgba(20,17,16,.92),rgba(20,17,16,0));
+  transition:background .4s ease,padding .4s ease;
+}
+.nav.dur{background:rgba(20,17,16,.96);padding-top:11px;padding-bottom:11px;
+  border-bottom:1px solid var(--bord);backdrop-filter:blur(10px)}
+.nav .marque{font-family:Archivo,sans-serif;font-weight:900;font-size:19px;
+  letter-spacing:.02em;text-decoration:none}
+.nav .marque i{color:var(--ambre);font-style:normal}
+.nav .liens{display:flex;gap:26px;align-items:center}
+.nav .liens a{font-size:14px;text-decoration:none;color:var(--clair-doux);
+  transition:color .25s}
+.nav .liens a:hover{color:var(--clair)}
+.tel{
+  display:inline-flex;align-items:center;gap:9px;text-decoration:none;
+  background:var(--ambre);color:#1A1409;font-weight:700;font-size:14px;
+  padding:10px 17px;border-radius:999px;white-space:nowrap;
+  transition:transform .25s ease,box-shadow .25s ease;
+}
+.tel:hover{transform:translateY(-2px);box-shadow:0 10px 26px rgba(227,163,60,.3)}
+@media(max-width:900px){.nav .liens{display:none}}
+
+/* ── Hero : la photo recule et s'assombrit au défilement ──────────────── */
+.hero{position:relative;height:100svh;min-height:600px;overflow:hidden;
+  display:flex;align-items:flex-end}
+.hero .fond{position:absolute;inset:0;z-index:0;will-change:transform}
+.hero .fond img{width:100%;height:100%;object-fit:cover}
+.hero .voile{position:absolute;inset:0;z-index:1;
+  background:
+    linear-gradient(180deg,rgba(20,17,16,.72) 0%,rgba(20,17,16,.28) 34%,rgba(20,17,16,.94) 100%),
+    radial-gradient(120% 70% at 50% 100%,rgba(20,17,16,.85),transparent 62%)}
+.hero .dedans{position:relative;z-index:2;width:100%;padding:0 var(--pad) clamp(48px,8vh,96px)}
+.hero h1{font-size:clamp(50px,11.5vw,168px)}
+.hero h1 .l{display:block;overflow:hidden}
+.hero h1 .l span{display:block;transform:translateY(105%);
+  animation:monte .95s cubic-bezier(.19,1,.22,1) forwards}
+.hero h1 .l:nth-child(2) span{animation-delay:.11s}
+.hero h1 .l em{font-style:normal;color:var(--ambre)}
+@keyframes monte{to{transform:translateY(0)}}
+.hero .sous{margin:26px 0 0;max-width:44ch;opacity:0;
+  animation:parait .9s ease .5s forwards}
+@keyframes parait{to{opacity:1}}
+.hero .fleche{position:absolute;right:var(--pad);bottom:clamp(48px,8vh,96px);z-index:2;
+  font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--clair-doux);
+  writing-mode:vertical-rl;opacity:0;animation:parait .9s ease .9s forwards}
+.hero .fleche::after{content:"";display:block;width:1px;height:52px;margin:12px auto 0;
+  background:linear-gradient(var(--ambre),transparent);animation:coule 1.9s ease-in-out infinite}
+@keyframes coule{0%,100%{opacity:.25;transform:scaleY(.5)}50%{opacity:1;transform:scaleY(1)}}
+@media(max-width:760px){.hero .fleche{display:none}}
+
+/* ── Bandeau défilant des cinq services (contenu réel du site) ────────── */
+.ruban{border-block:1px solid var(--bord);background:var(--nuit-2);
+  padding:17px 0;overflow:hidden;white-space:nowrap}
+.ruban .piste{display:inline-flex;gap:44px;animation:glisse 34s linear infinite;
+  padding-right:44px}
+.ruban span{font-family:Archivo,sans-serif;font-weight:700;font-size:14px;
+  letter-spacing:.19em;text-transform:uppercase;color:var(--clair-doux)}
+.ruban span::before{content:"◆";color:var(--ambre);margin-right:44px;font-size:9px;
+  vertical-align:middle}
+@keyframes glisse{to{transform:translateX(-50%)}}
+
+/* ── Bloc épinglé « gustative / festive » ─────────────────────────────── */
+.bascule{position:relative;height:280vh}
+.bascule .colle{position:sticky;top:0;height:100svh;overflow:hidden;
+  display:flex;align-items:center;justify-content:center}
+.bascule .face{position:absolute;inset:0}
+.bascule .face img{width:100%;height:100%;object-fit:cover}
+.bascule .face::after{content:"";position:absolute;inset:0}
+.bascule .jour::after{background:linear-gradient(180deg,rgba(20,17,16,.55),rgba(20,17,16,.8))}
+.bascule .nuit::after{background:linear-gradient(180deg,rgba(20,17,16,.5),rgba(20,17,16,.86))}
+.bascule .nuit{opacity:0}
+.bascule .mots{position:relative;z-index:3;text-align:center;padding:0 var(--pad)}
+.bascule .mots .p{font-size:clamp(13px,1.5vw,15px);letter-spacing:.26em;
+  text-transform:uppercase;color:var(--clair-doux);margin:0 0 20px;font-family:Archivo,sans-serif;
+  font-weight:700}
+.bascule .mots h2{font-size:clamp(52px,13vw,190px);position:relative}
+.bascule .mots .mot{display:block;transition:opacity .45s ease,transform .45s ease}
+.bascule .mots .m2{position:absolute;top:0;left:0;right:0;opacity:0;transform:translateY(24px);
+  color:var(--ambre)}
+.bascule .lg{position:absolute;left:50%;bottom:clamp(40px,7vh,80px);transform:translateX(-50%);
+  z-index:3;width:min(360px,64vw);height:2px;background:var(--bord);border-radius:2px}
+.bascule .lg i{display:block;height:100%;width:0;background:var(--ambre);border-radius:2px}
+
+/* ── Sections courantes ───────────────────────────────────────────────── */
+section{padding:clamp(76px,11vh,150px) var(--pad)}
+.duo{display:grid;grid-template-columns:1fr 1fr;gap:clamp(30px,5vw,86px);align-items:center}
+@media(max-width:880px){.duo{grid-template-columns:1fr;gap:34px}}
+.duo h2{font-size:clamp(32px,4.6vw,62px);margin-bottom:22px}
+.cadre{position:relative;overflow:hidden;border-radius:3px;aspect-ratio:4/5;background:var(--nuit-3)}
+.cadre img{width:100%;height:114%;object-fit:cover;will-change:transform}
+.cadre.large{aspect-ratio:16/10}
+
+/* ── Rail horizontal piloté par le défilement vertical ────────────────── */
+.rail{position:relative;height:300vh;padding:0}
+.rail .colle{position:sticky;top:0;height:100svh;display:flex;align-items:center;
+  overflow:hidden}
+.rail .piste{display:flex;align-items:center;gap:clamp(16px,2.4vw,34px);padding-inline:var(--pad);
+  will-change:transform}
+.rail .carte{flex:0 0 clamp(230px,27vw,390px)}
+.rail .carte .ph{aspect-ratio:3/4;overflow:hidden;border-radius:3px;background:var(--nuit-3)}
+.rail .carte img{width:100%;height:100%;object-fit:cover;transition:transform .7s cubic-bezier(.19,1,.22,1)}
+.rail .carte:hover img{transform:scale(1.05)}
+.rail .carte .lg{margin-top:14px;font-family:Archivo,sans-serif;font-weight:700;font-size:13px;
+  letter-spacing:.16em;text-transform:uppercase;color:var(--clair-doux)}
+.rail .titre{flex:0 0 clamp(240px,26vw,380px);align-self:center}
+.rail .titre h2{font-size:clamp(34px,5vw,72px)}
+
+/* ── Les quatre atouts (texte réel du site) ───────────────────────────── */
+.atouts{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--bord);
+  border:1px solid var(--bord)}
+@media(max-width:900px){.atouts{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:520px){.atouts{grid-template-columns:1fr}}
+.atouts div{background:var(--nuit);padding:clamp(26px,3.4vw,44px);transition:background .45s ease}
+.atouts div:hover{background:var(--nuit-2)}
+.atouts b{display:block;font-family:Archivo,sans-serif;font-weight:900;font-size:13px;
+  letter-spacing:.18em;text-transform:uppercase;color:var(--ambre);margin-bottom:12px}
+.atouts p{margin:0;font-size:15px;color:var(--clair-doux);line-height:1.6}
+
+/* ── Informations pratiques ───────────────────────────────────────────── */
+.infos{background:var(--nuit-2);border-top:1px solid var(--bord)}
+.grille-infos{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(26px,4vw,60px)}
+@media(max-width:880px){.grille-infos{grid-template-columns:1fr;gap:30px}}
+.grille-infos h3{font-family:Archivo,sans-serif;font-weight:900;font-size:12px;
+  letter-spacing:.22em;text-transform:uppercase;color:var(--ambre);margin:0 0 14px}
+.grille-infos p{margin:0;color:var(--clair-doux);font-size:15.5px;line-height:1.85}
+.grille-infos .fort{color:var(--clair);font-weight:600}
+.ferme{color:#8B7F76}
+
+/* ── Appel final ──────────────────────────────────────────────────────── */
+.final{position:relative;overflow:hidden;text-align:center}
+.final .fond{position:absolute;inset:0;z-index:0}
+.final .fond img{width:100%;height:100%;object-fit:cover;opacity:.34}
+.final .fond::after{content:"";position:absolute;inset:0;
+  background:radial-gradient(80% 70% at 50% 50%,rgba(20,17,16,.7),rgba(20,17,16,.97))}
+.final .dedans{position:relative;z-index:2}
+.final h2{font-size:clamp(38px,7vw,104px);margin-bottom:26px}
+
+footer{padding:34px var(--pad);border-top:1px solid var(--bord);
+  display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;
+  font-size:13px;color:#8B7F76}
+
+/* ── Apparitions au défilement ────────────────────────────────────────── */
+.rv{opacity:0;transform:translateY(30px);
+  transition:opacity .85s cubic-bezier(.19,1,.22,1),transform .85s cubic-bezier(.19,1,.22,1)}
+.rv.vu{opacity:1;transform:none}
+.rv[data-d="1"]{transition-delay:.09s}
+.rv[data-d="2"]{transition-delay:.18s}
+.rv[data-d="3"]{transition-delay:.27s}
+
+@media(prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;
+    transition-duration:.001ms!important}
+  .rv{opacity:1;transform:none}
+  .hero h1 .l span{transform:none}
+  .hero .sous,.hero .fleche{opacity:1}
+}
+</style>
+</head>
+<body>
+
+<nav class="nav" id="nav">
+  <a class="marque" href="#haut">L<i>'</i>UNISSON</a>
+  <div class="liens">
+    <a href="#maison">La maison</a>
+    <a href="#table">À table</a>
+    <a href="#soirs">Les soirs</a>
+    <a href="#infos">Infos</a>
+  </div>
+  <a class="tel" href="tel:+262970354141">09 70 35 41 41</a>
+</nav>
+
+<header class="hero" id="haut">
+  <div class="fond" id="heroFond"><img src="img/p01.webp" alt="Plat créole servi au restaurant L'Unisson" fetchpriority="high"></div>
+  <div class="voile"></div>
+  <div class="dedans">
+    <h1 class="dsp">
+      <span class="l"><span>Gustative</span></span>
+      <span class="l"><span><em>&amp; festive</em></span></span>
+    </h1>
+    <p class="sous lead">Restaurant familial à Saint-Denis. Cuisine créole et métropolitaine,
+      salle privatisable, et des soirées qui ne ressemblent pas au reste de la semaine.</p>
+  </div>
+  <div class="fleche">Défiler</div>
+</header>
+
+<div class="ruban" aria-hidden="true">
+  <div class="piste">
+    <span>Cuisine créole</span><span>Cuisine métropolitaine</span><span>Soirée karaoké</span>
+    <span>Repas d'affaires</span><span>Privatisation de salle</span>
+    <span>Cuisine créole</span><span>Cuisine métropolitaine</span><span>Soirée karaoké</span>
+    <span>Repas d'affaires</span><span>Privatisation de salle</span>
+  </div>
+</div>
+
+<!-- Le cœur du concept : la maison est deux choses selon l'heure. Le
+     défilement fait basculer littéralement de l'une à l'autre. -->
+<div class="bascule" id="bascule">
+  <div class="colle">
+    <div class="face jour" id="faceJour"><img src="img/p09.webp" alt="Cuisine créole réunionnaise"></div>
+    <div class="face nuit" id="faceNuit"><img src="img/p04.webp" alt="Soirée karaoké au restaurant L'Unisson"></div>
+    <div class="mots">
+      <p class="p">Une même maison</p>
+      <h2 class="dsp">
+        <span class="mot m1" id="mot1">La table</span>
+        <span class="mot m2" id="mot2">La fête</span>
+      </h2>
+    </div>
+    <div class="lg"><i id="jauge"></i></div>
+  </div>
+</div>
+
+<section id="maison">
+  <div class="duo">
+    <div>
+      <p class="eyebrow rv">La maison</p>
+      <h2 class="dsp rv" data-d="1">Un restaurant familial,<br>depuis sa création</h2>
+      <p class="lead rv" data-d="2">L'Unisson est un restaurant familial offrant une expérience
+        culinaire incomparable depuis sa création. L'accueil chaleureux et le cadre familial vous
+        feront vous sentir comme chez vous dès que vous franchirez notre porte.</p>
+      <p class="lead rv" data-d="3" style="margin-top:18px">L'ambiance conviviale qui règne ici
+        crée un environnement propice aux échanges et aux rencontres. Des produits frais et de
+        qualité, soigneusement sélectionnés, sont la base de notre cuisine.</p>
+    </div>
+    <div class="cadre rv" data-d="1" data-par>
+      <img src="img/p06.jpg" alt="La salle du restaurant L'Unisson à Saint-Denis">
+    </div>
+  </div>
+</section>
+
+<!-- Rail horizontal : le défilement vertical fait avancer la galerie. -->
+<div class="rail" id="rail">
+  <div class="colle">
+    <div class="piste" id="railPiste">
+      <div class="titre">
+        <p class="eyebrow">À table</p>
+        <h2 class="dsp" id="table">Créole<br>et métro</h2>
+        <p class="lead" style="margin-top:18px;font-size:16px">Les amateurs de cuisine créole et
+          métro trouveront leur bonheur grâce à notre carte variée.</p>
+      </div>
+      <div class="carte"><div class="ph"><img src="img/p02.webp" alt="Cuisine créole réunionnaise"></div><div class="lg">Cuisine créole</div></div>
+      <div class="carte"><div class="ph"><img src="img/p07.webp" alt="Cuisine créole réunionnaise"></div><div class="lg">Cuisine créole</div></div>
+      <div class="carte"><div class="ph"><img src="img/p03.webp" alt="Cuisine métropolitaine"></div><div class="lg">Cuisine métropolitaine</div></div>
+      <div class="carte"><div class="ph"><img src="img/p10.webp" alt="Cuisine métropolitaine"></div><div class="lg">Cuisine métropolitaine</div></div>
+      <div class="carte"><div class="ph"><img src="img/p05.webp" alt="Salle privatisable à Saint-Denis"></div><div class="lg">Privatisation de salle</div></div>
+    </div>
+  </div>
+</div>
+
+<section id="soirs">
+  <div class="duo">
+    <div class="cadre rv" data-par style="order:0">
+      <img src="img/p08.webp" alt="Boissons servies au restaurant L'Unisson">
+    </div>
+    <div>
+      <p class="eyebrow rv">Les soirs</p>
+      <h2 class="dsp rv" data-d="1">Karaoké,<br>affaires,<br>et salle à vous</h2>
+      <p class="lead rv" data-d="2">Les soirées sont l'occasion de voyager à travers les saveurs
+        du monde, et notre salle peut être privatisée pour vos événements. Pour les repas
+        d'affaires, notre menu élaboré saura impressionner vos partenaires et collaborateurs.</p>
+      <p class="lead rv" data-d="3" style="margin-top:18px">Quelle que soit l'occasion,
+        choisissez le restaurant L'Unisson.</p>
+    </div>
+  </div>
+</section>
+
+<section style="padding-top:0">
+  <p class="eyebrow rv">Nos atouts</p>
+  <h2 class="dsp rv" data-d="1" style="font-size:clamp(30px,4.4vw,58px);margin-bottom:38px">
+    D'autres bonnes raisons de venir</h2>
+  <div class="atouts rv" data-d="2">
+    <div><b>Un accueil chaleureux</b><p>Vous vous sentez comme chez vous dès la porte franchie.</p></div>
+    <div><b>Une ambiance conviviale</b><p>Un environnement propice aux échanges et aux rencontres.</p></div>
+    <div><b>Un service personnalisé</b><p>L'attention que nous portons à chaque client, à chaque visite.</p></div>
+    <div><b>Des produits de qualité</b><p>Frais et soigneusement sélectionnés, base de notre cuisine.</p></div>
+  </div>
+</section>
+
+<section class="infos" id="infos">
+  <div class="grille-infos">
+    <div class="rv">
+      <h3>Nous trouver</h3>
+      <p class="fort">14 Rue Charles Gounod<br>97400 Saint-Denis</p>
+    </div>
+    <div class="rv" data-d="1">
+      <h3>Nous appeler</h3>
+      <p><a class="fort" href="tel:+262970354141" style="text-decoration:none">09 70 35 41 41</a><br>
+      <span style="font-size:13px">Prix d'un appel local</span></p>
+    </div>
+    <div class="rv" data-d="2">
+      <h3>Horaires</h3>
+      <p>
+        <span class="fort">Mer · Jeu · Dim</span><br>12h00 – 15h00 · 19h00 – 00h30<br>
+        <span class="fort">Ven · Sam</span><br>12h00 – 15h00 · 19h00 – 02h00<br>
+        <span class="ferme">Lun · Mar — fermé</span>
+      </p>
+    </div>
+  </div>
+</section>
+
+<section class="final">
+  <div class="fond"><img src="img/p05.webp" alt=""></div>
+  <div class="dedans">
+    <p class="eyebrow rv">Réservation</p>
+    <h2 class="dsp rv" data-d="1">Réservez<br>votre table</h2>
+    <p class="lead rv" data-d="2" style="margin:0 auto 32px">Une table pour ce soir, un repas
+      d'affaires, ou la salle entière pour votre événement — un appel suffit.</p>
+    <a class="tel rv" data-d="3" href="tel:+262970354141"
+       style="font-size:16px;padding:15px 30px">09 70 35 41 41</a>
+  </div>
+</section>
+
+<footer>
+  <span>L'Unisson — Restaurant à Saint-Denis</span>
+  <span>Maquette de refonte · AutomatisationBoost</span>
+</footer>
+
+<script>
+/* ─── Effets au défilement ───────────────────────────────────────────────
+   Tout est piloté par une seule boucle rAF : plusieurs écouteurs `scroll`
+   concurrents produisent des saccades sur mobile. */
+(function(){
+  var doux = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* 1. Apparitions */
+  var io = new IntersectionObserver(function(es){
+    es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('vu'); io.unobserve(e.target);} });
+  }, {threshold:.16, rootMargin:'0px 0px -8% 0px'});
+  document.querySelectorAll('.rv').forEach(function(e){ io.observe(e); });
+
+  if (doux) return;
+
+  var nav     = document.getElementById('nav');
+  var heroF   = document.getElementById('heroFond');
+  var hero    = document.querySelector('.hero');
+  var bascule = document.getElementById('bascule');
+  var faceN   = document.getElementById('faceNuit');
+  var mot1    = document.getElementById('mot1');
+  var mot2    = document.getElementById('mot2');
+  var jauge   = document.getElementById('jauge');
+  var rail    = document.getElementById('rail');
+  var piste   = document.getElementById('railPiste');
+  var pars    = [].slice.call(document.querySelectorAll('[data-par] img'));
+
+  var borne = function(v){ return v < 0 ? 0 : v > 1 ? 1 : v; };
+  var tick = false;
+
+  function poser(){
+    tick = false;
+    var y = window.scrollY, vh = window.innerHeight;
+
+    nav.classList.toggle('dur', y > 90);
+
+    /* 2. Le hero recule pendant qu'on le quitte */
+    if (hero) {
+      var p = borne(y / hero.offsetHeight);
+      heroF.style.transform = 'scale(' + (1 + p * 0.14).toFixed(4) + ') translate3d(0,' +
+        (p * 6).toFixed(2) + '%,0)';
+    }
+
+    /* 3. Bascule jour → nuit.
+       On lit la progression sur la portion réellement épinglée : la section
+       fait 280vh dont 100vh de « colle », donc la course utile vaut
+       hauteur - vh. Utiliser la hauteur brute décale la bascule d'un écran. */
+    if (bascule) {
+      var haut = bascule.offsetTop, course = bascule.offsetHeight - vh;
+      var q = borne((y - haut) / course);
+      /* Fenêtre de transition centrée : avant 32 % il fait jour, après 62 %
+         il fait nuit. Entre les deux, on fond. */
+      var f = borne((q - 0.32) / 0.30);
+      faceN.style.opacity = f.toFixed(3);
+      mot1.style.opacity = (1 - f).toFixed(3);
+      mot1.style.transform = 'translateY(' + (-f * 22).toFixed(1) + 'px)';
+      mot2.style.opacity = f.toFixed(3);
+      mot2.style.transform = 'translateY(' + ((1 - f) * 24).toFixed(1) + 'px)';
+      jauge.style.width = (q * 100).toFixed(2) + '%';
+    }
+
+    /* 4. Rail horizontal piloté par le défilement vertical */
+    if (rail && piste) {
+      var rh = rail.offsetTop, rc = rail.offsetHeight - vh;
+      var r = borne((y - rh) / rc);
+      var trop = piste.scrollWidth - window.innerWidth;
+      if (trop > 0) piste.style.transform = 'translate3d(' + (-r * trop).toFixed(1) + 'px,0,0)';
+    }
+
+    /* 5. Parallaxe des photos encadrées.
+       Le cadre a un ratio fixe et l'image fait 114 % de sa hauteur : les 14 %
+       de marge sont exactement la course disponible. Sans ratio fixe, une
+       hauteur en pourcentage n'a aucune référence et l'effet disparaît. */
+    for (var i = 0; i < pars.length; i++) {
+      var el = pars[i], r2 = el.getBoundingClientRect();
+      if (r2.bottom < -100 || r2.top > vh + 100) continue;
+      var c = (r2.top + r2.height / 2 - vh / 2) / vh;      /* -1 … 1 */
+      el.style.transform = 'translate3d(0,' + (c * -6).toFixed(2) + '%,0)';
+    }
+  }
+
+  function surScroll(){ if (!tick) { tick = true; requestAnimationFrame(poser); } }
+  window.addEventListener('scroll', surScroll, {passive:true});
+  window.addEventListener('resize', surScroll, {passive:true});
+  poser();
+})();
+</script>
+</body>
+</html>

@@ -51,6 +51,30 @@ ul{list-style:none}
 .lead.chaud .et span{color:var(--chaud)}
 .et p{font-size:14.5px;line-height:1.5;color:#c9cfda}
 /* Suivi d'appel — trois états et un commentaire, gardés sur l'appareil. */
+.journal{margin-top:10px;padding:10px 12px;border-radius:8px;background:#10141b;
+  border:1px solid var(--ligne)}
+.journal .jt{display:flex;align-items:center;gap:7px;font-size:11px;font-weight:700;
+  letter-spacing:.13em;text-transform:uppercase;color:var(--gris)}
+.journal .pastille{width:7px;height:7px;border-radius:50%;background:var(--gris);flex:0 0 7px}
+.journal.e-appele{border-color:rgba(59,196,125,.42)}
+.journal.e-appele .pastille{background:var(--vrai)} .journal.e-appele .jt{color:var(--vrai)}
+.journal.e-rappeler{border-color:rgba(245,165,36,.45)}
+.journal.e-rappeler .pastille{background:var(--chaud)} .journal.e-rappeler .jt{color:var(--chaud)}
+.journal .jd{margin:6px 0 0;font-size:14px;line-height:1.5}
+.journal .js{margin:7px 0 0;font-size:13.5px;line-height:1.5;color:var(--gris)}
+.journal .js b{color:var(--blanc)}
+.tel.direct{background:#10141b;border:1px solid var(--vrai);color:var(--vrai);margin-top:6px}
+#c-relance{color:var(--chaud)}
+.bilan{background:#10141b;border:1px solid var(--ligne);border-radius:11px;
+  padding:16px 17px;margin:18px 0 6px}
+.bilan h3{font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--chaud);margin:0 0 4px}
+.bilan .d{font-size:13px;color:var(--gris);margin:0 0 12px}
+.bilan ol{margin:0;padding-left:19px}
+.bilan li{margin:0 0 9px;font-size:14.5px;line-height:1.5}
+.bilan li b{color:var(--blanc)}
+.bilan .chiffres{display:flex;gap:16px;margin-top:13px;padding-top:12px;
+  border-top:1px solid var(--ligne);font-size:13px;color:var(--gris)}
+.bilan .chiffres b{color:var(--blanc);font-size:19px;display:block;line-height:1.2}
 .suivi{margin-top:10px;border-top:1px solid var(--ligne);padding-top:10px}
 .etats{display:flex;gap:6px}
 .etats button{flex:1;background:var(--creux,#0f1115);border:1px solid var(--ligne);
@@ -78,11 +102,22 @@ ul{list-style:none}
 <div class="compteur" id="compteur">
   <span><b id="c-fait">0</b> appelés</span>
   <span><b id="c-rep">0</b> sans réponse</span>
+  <span class="relancer"><b id="c-relance">0</b> à relancer</span>
   <span><b id="c-reste">15</b> restants</span>
   <button type="button" id="copier">Copier le bilan</button>
 </div>
 <p class="sur">Prospection restaurants · La Réunion</p>
 <h1>Feuille d'appel</h1>
+<div class="bilan">
+    <h3>Tes appels du 25/08</h3>
+    <p class="d">Ce qui reste à faire, classé par ce qui rapporte le plus vite.</p>
+    <ol><li><b>La Saint Georges</b> — Rappeler pour savoir à qui ça a été transmis, et à qui parler.</li><li><b>Les Bons Enfants</b> — Trouver le numéro de l'établissement de Saint-Pierre et rappeler là-bas.</li><li><b>La Page Gourmande</b> — Rappeler à 14 h avec le lien de la vidéo déjà prête.</li><li><b>L'unisson</b> — Envoyer la maquette + la vidéo offerte. L'agence à 300 €/mois est le point de comparaison : se positionner dessus, pas à côté.</li></ol>
+    <div class="chiffres">
+      <span><b>12</b>appelés</span>
+      <span><b>4</b>à relancer</span>
+      <span><b>8</b>sans réponse</span>
+    </div>
+  </div>
 
 <h2 class="a">D'abord · s'échauffer</h2>
 <p class="pourquoi">Trois appels sans enjeu : petites structures, loin de ton secteur,
@@ -99,7 +134,13 @@ sans site web. Si ça se passe mal, tu n'as rien perdu — c'est le but.</p>
         </div>
         
         <a class="tel" href="tel:+262693000293">📞 +262 693 00 02 93</a>
-        <div class="suivi" data-id="m-donuts">
+        
+        <div class="journal e-repondu">
+            <div class="jt"><span class="pastille"></span>Pas de réponse · 2026-08-25</div>
+            <p class="jd">Pas de réponse. Vidéo envoyée par message Instagram.</p>
+            <p class="js"><b>Suite :</b> Vérifier la réponse au DM Instagram avant de rappeler.</p>
+          </div>
+        <div class="suivi" data-id="m-donuts" data-serveur="repondu" data-note="Pas de réponse. Vidéo envoyée par message Instagram.">
           <div class="etats">
             <button type="button" data-e="appele">Appelé</button>
             <button type="button" data-e="repondu">Pas de réponse</button>
@@ -123,7 +164,13 @@ sans site web. Si ça se passe mal, tu n'as rien perdu — c'est le but.</p>
         </div>
         
         <a class="tel" href="tel:+262692706637">📞 +262 692 70 66 37</a>
-        <div class="suivi" data-id="marius">
+        
+        <div class="journal e-repondu">
+            <div class="jt"><span class="pastille"></span>Pas de réponse · 2026-08-25</div>
+            <p class="jd">Pas de réponse au premier appel. À la retraite, mais il a demandé s'il y avait des gens intéressés.</p>
+            <p class="js"><b>Suite :</b> Piste de recommandation, pas de vente directe : lui demander à qui il pense.</p>
+          </div>
+        <div class="suivi" data-id="marius" data-serveur="repondu" data-note="Pas de réponse au premier appel. À la retraite, mais il a demandé s'il y avait des gens intéressés.">
           <div class="etats">
             <button type="button" data-e="appele">Appelé</button>
             <button type="button" data-e="repondu">Pas de réponse</button>
@@ -147,7 +194,13 @@ sans site web. Si ça se passe mal, tu n'as rien perdu — c'est le but.</p>
         </div>
         
         <a class="tel" href="tel:+262692800938">📞 +262 692 80 09 38</a>
-        <div class="suivi" data-id="le-p-ti-peche">
+        
+        <div class="journal e-repondu">
+            <div class="jt"><span class="pastille"></span>Pas de réponse · 2026-08-25</div>
+            <p class="jd">Pas de réponse.</p>
+            <p class="js"><b>Suite :</b> Rappeler à une autre heure.</p>
+          </div>
+        <div class="suivi" data-id="le-p-ti-peche" data-serveur="repondu" data-note="Pas de réponse.">
           <div class="etats">
             <button type="button" data-e="appele">Appelé</button>
             <button type="button" data-e="repondu">Pas de réponse</button>
@@ -177,7 +230,13 @@ dans leur image. Et ils sont dans une commune où tu peux passer.</p>
         </div>
         <a class="vign" href="https://snack-folies-burger-56.webself.net/menu" target="_blank" rel="noopener"><img loading="lazy" src="vignettes/folies-burger.jpg" alt="Aperçu du site de Folies burger"></a>
         <a class="tel" href="tel:+262692124124">📞 +262 6 92 12 41 24</a>
-        <div class="suivi" data-id="folies-burger">
+        
+        <div class="journal e-repondu">
+            <div class="jt"><span class="pastille"></span>Pas de réponse · 2026-08-25</div>
+            <p class="jd">Pas de réponse — problème de numéro.</p>
+            <p class="js"><b>Suite :</b> Le numéro de la base est douteux : retrouver le bon avant de rappeler.</p>
+          </div>
+        <div class="suivi" data-id="folies-burger" data-serveur="repondu" data-note="Pas de réponse — problème de numéro.">
           <div class="etats">
             <button type="button" data-e="appele">Appelé</button>
             <button type="button" data-e="repondu">Pas de réponse</button>
@@ -201,7 +260,13 @@ dans leur image. Et ils sont dans une commune où tu peux passer.</p>
         </div>
         <a class="vign" href="https://www.creperie-saintgeorges.re" target="_blank" rel="noopener"><img loading="lazy" src="vignettes/la-saint-georges.jpg" alt="Aperçu du site de La Saint Georges"></a>
         <a class="tel" href="tel:+262262215909">📞 +262 2 62 21 59 09</a>
-        <div class="suivi" data-id="la-saint-georges">
+        
+        <div class="journal e-rappeler">
+            <div class="jt"><span class="pastille"></span>À rappeler · 2026-08-25</div>
+            <p class="jd">Elle va transmettre en interne pour voir et regarder ça. Tony a dit que le site était à refaire et a présenté ce qu'il fait.</p>
+            <p class="js"><b>Suite :</b> Rappeler pour savoir à qui ça a été transmis, et à qui parler.</p>
+          </div>
+        <div class="suivi" data-id="la-saint-georges" data-serveur="rappeler" data-note="Elle va transmettre en interne pour voir et regarder ça. Tony a dit que le site était à refaire et a présenté ce qu'il fait.">
           <div class="etats">
             <button type="button" data-e="appele">Appelé</button>
             <button type="button" data-e="repondu">Pas de réponse</button>
@@ -225,7 +290,13 @@ dans leur image. Et ils sont dans une commune où tu peux passer.</p>
         </div>
         <a class="vign" href="https://vitaly.re/" target="_blank" rel="noopener"><img loading="lazy" src="vignettes/vitaly.jpg" alt="Aperçu du site de Vitaly"></a>
         <a class="tel" href="tel:+262693216944">📞 +262 6 93 21 69 44</a>
-        <div class="suivi" data-id="vitaly">
+        
+        <div class="journal e-repondu">
+            <div class="jt"><span class="pastille"></span>Pas de réponse · 2026-08-25</div>
+            <p class="jd">Pas de réponse.</p>
+            <p class="js"><b>Suite :</b> Rappeler à une autre heure.</p>
+          </div>
+        <div class="suivi" data-id="vitaly" data-serveur="repondu" data-note="Pas de réponse.">
           <div class="etats">
             <button type="button" data-e="appele">Appelé</button>
             <button type="button" data-e="repondu">Pas de réponse</button>
@@ -249,7 +320,13 @@ dans leur image. Et ils sont dans une commune où tu peux passer.</p>
         </div>
         <a class="vign" href="https://arbradelis.com/" target="_blank" rel="noopener"><img loading="lazy" src="vignettes/l-arbradelis.jpg" alt="Aperçu du site de l'ArbraDelis'"></a>
         <a class="tel" href="tel:+262262569622">📞 +262 262 56 96 22</a>
-        <div class="suivi" data-id="l-arbradelis">
+        
+        <div class="journal e-repondu">
+            <div class="jt"><span class="pastille"></span>Pas de réponse · 2026-08-25</div>
+            <p class="jd">Pas de réponse. Tony va faire un site de démonstration.</p>
+            <p class="js"><b>Suite :</b> Faire la démo, puis rappeler avec le lien — c'est le lien qui sert d'accroche.</p>
+          </div>
+        <div class="suivi" data-id="l-arbradelis" data-serveur="repondu" data-note="Pas de réponse. Tony va faire un site de démonstration.">
           <div class="etats">
             <button type="button" data-e="appele">Appelé</button>
             <button type="button" data-e="repondu">Pas de réponse</button>
@@ -273,7 +350,13 @@ dans leur image. Et ils sont dans une commune où tu peux passer.</p>
         </div>
         <a class="vign" href="https://chooseandeat.re/" target="_blank" rel="noopener"><img loading="lazy" src="vignettes/choose-eat.jpg" alt="Aperçu du site de Choose &amp; Eat"></a>
         <a class="tel" href="tel:+262262297297+262262297299">📞 +262 2 62 29 72 97;+262 2 62 29 72 99</a>
-        <div class="suivi" data-id="choose-eat">
+        
+        <div class="journal e-repondu">
+            <div class="jt"><span class="pastille"></span>Pas de réponse · 2026-08-25</div>
+            <p class="jd">Pas de réponse.</p>
+            <p class="js"><b>Suite :</b> Rappeler à une autre heure.</p>
+          </div>
+        <div class="suivi" data-id="choose-eat" data-serveur="repondu" data-note="Pas de réponse.">
           <div class="etats">
             <button type="button" data-e="appele">Appelé</button>
             <button type="button" data-e="repondu">Pas de réponse</button>
@@ -297,7 +380,13 @@ dans leur image. Et ils sont dans une commune où tu peux passer.</p>
         </div>
         <a class="vign" href="https://www.facebook.com/pages/Restaurant-Les-Bons-Enfants-Saint-Denis/187111804788768" target="_blank" rel="noopener"><img loading="lazy" src="vignettes/les-bons-enfants.jpg" alt="Aperçu du site de Les Bons Enfants"></a>
         <a class="tel" href="tel:+262262212000">📞 +262 262 21 20 00</a>
-        <div class="suivi" data-id="les-bons-enfants">
+        
+        <div class="journal e-rappeler">
+            <div class="jt"><span class="pastille"></span>À rappeler · 2026-08-25</div>
+            <p class="jd">Appelé — il faut rappeler sur Saint-Pierre.</p>
+            <p class="js"><b>Suite :</b> Trouver le numéro de l'établissement de Saint-Pierre et rappeler là-bas.</p>
+          </div>
+        <div class="suivi" data-id="les-bons-enfants" data-serveur="rappeler" data-note="Appelé — il faut rappeler sur Saint-Pierre.">
           <div class="etats">
             <button type="button" data-e="appele">Appelé</button>
             <button type="button" data-e="repondu">Pas de réponse</button>
@@ -321,7 +410,13 @@ dans leur image. Et ils sont dans une commune où tu peux passer.</p>
         </div>
         <a class="vign" href="https://www.facebook.com/profile.php?id=100086940634156" target="_blank" rel="noopener"><img loading="lazy" src="vignettes/that-s-eat.jpg" alt="Aperçu du site de That's Eat"></a>
         <a class="tel" href="tel:+262262095088">📞 +262 262 09 50 88</a>
-        <div class="suivi" data-id="that-s-eat">
+        
+        <div class="journal e-repondu">
+            <div class="jt"><span class="pastille"></span>Pas de réponse · 2026-08-25</div>
+            <p class="jd">Pas de réponse.</p>
+            <p class="js"><b>Suite :</b> Rappeler à une autre heure.</p>
+          </div>
+        <div class="suivi" data-id="that-s-eat" data-serveur="repondu" data-note="Pas de réponse.">
           <div class="etats">
             <button type="button" data-e="appele">Appelé</button>
             <button type="button" data-e="repondu">Pas de réponse</button>
@@ -345,6 +440,8 @@ dans leur image. Et ils sont dans une commune où tu peux passer.</p>
         </div>
         <a class="vign" href="https://www.auvieuxquimper.com/?utm_medium=referral&amp;utm_source=gmb&amp;utm_campaign=lnk-gmb" target="_blank" rel="noopener"><img loading="lazy" src="vignettes/au-vieux-quimper.jpg" alt="Aperçu du site de Au vieux Quimper"></a>
         <a class="tel" href="tel:+262262245348">📞 +262 262 24 53 48</a>
+        
+        
         <div class="suivi" data-id="au-vieux-quimper">
           <div class="etats">
             <button type="button" data-e="appele">Appelé</button>
@@ -369,7 +466,13 @@ dans leur image. Et ils sont dans une commune où tu peux passer.</p>
         </div>
         
         <a class="tel" href="tel:+262262405802">📞 +262 262 40 58 02</a>
-        <div class="suivi" data-id="la-page-gourmande">
+        
+        <div class="journal e-rappeler">
+            <div class="jt"><span class="pastille"></span>À rappeler · 2026-08-25</div>
+            <p class="jd">À rappeler à 14 h. Tony a fait une vidéo rapide pour eux.</p>
+            <p class="js"><b>Suite :</b> Rappeler à 14 h avec le lien de la vidéo déjà prête.</p>
+          </div>
+        <div class="suivi" data-id="la-page-gourmande" data-serveur="rappeler" data-note="À rappeler à 14 h. Tony a fait une vidéo rapide pour eux.">
           <div class="etats">
             <button type="button" data-e="appele">Appelé</button>
             <button type="button" data-e="repondu">Pas de réponse</button>
@@ -393,7 +496,13 @@ dans leur image. Et ils sont dans une commune où tu peux passer.</p>
         </div>
         <a class="vign" href="https://www.restaurant-lunisson.re/" target="_blank" rel="noopener"><img loading="lazy" src="vignettes/l-unisson.jpg" alt="Aperçu du site de L'unisson"></a>
         <a class="tel" href="tel:+33970354141">📞 +33 970 35 41 41</a>
-        <div class="suivi" data-id="l-unisson">
+        <a class="tel direct" href="tel:0692242140">📱 0692 24 21 40 — son direct</a>
+        <div class="journal e-appele">
+            <div class="jt"><span class="pastille"></span>Appel abouti · 2026-08-25</div>
+            <p class="jd">Appel abouti. A donné son numéro direct : 0692 24 21 40. Demande un site de démonstration et une vidéo. A déjà une agence à 300 € pour le marketing.</p>
+            <p class="js"><b>Suite :</b> Envoyer la maquette + la vidéo offerte. L'agence à 300 €/mois est le point de comparaison : se positionner dessus, pas à côté.</p>
+          </div>
+        <div class="suivi" data-id="l-unisson" data-serveur="appele" data-note="Appel abouti. A donné son numéro direct : 0692 24 21 40. Demande un site de démonstration et une vidéo. A déjà une agence à 300 € pour le marketing.">
           <div class="etats">
             <button type="button" data-e="appele">Appelé</button>
             <button type="button" data-e="repondu">Pas de réponse</button>
@@ -417,6 +526,8 @@ dans leur image. Et ils sont dans une commune où tu peux passer.</p>
         </div>
         <a class="vign" href="https://mediterraneo.re/" target="_blank" rel="noopener"><img loading="lazy" src="vignettes/mediterraneo.jpg" alt="Aperçu du site de Mediterraneo"></a>
         <a class="tel" href="tel:+262262134702">📞 +262 2 62 13 47 02</a>
+        
+        
         <div class="suivi" data-id="mediterraneo">
           <div class="etats">
             <button type="button" data-e="appele">Appelé</button>
@@ -441,6 +552,8 @@ dans leur image. Et ils sont dans une commune où tu peux passer.</p>
         </div>
         <a class="vign" href="https://www.facebook.com/PizzaEtna97435/" target="_blank" rel="noopener"><img loading="lazy" src="vignettes/pizza-etna.jpg" alt="Aperçu du site de Pizza Etna"></a>
         <a class="tel" href="tel:+262692199974">📞 +262 6 92 199 974</a>
+        
+        
         <div class="suivi" data-id="pizza-etna">
           <div class="etats">
             <button type="button" data-e="appele">Appelé</button>
@@ -489,21 +602,32 @@ toi, c'est la donnée. Passe au suivant.</p>
   var etat = {};
   try { etat = JSON.parse(localStorage.getItem(CLE) || '{}'); } catch (e) { etat = {}; }
 
+  /* Les résultats connus du serveur amorcent le suivi. On n'écrase jamais une
+     saisie déjà présente sur l'appareil : ce que Tony a tapé ici est plus
+     récent que ce qui a été dicté. */
+  document.querySelectorAll('.suivi[data-serveur]').forEach(function (b) {
+    var id = b.dataset.id;
+    if (etat[id] && etat[id].e) return;
+    etat[id] = { e: b.dataset.serveur, note: b.dataset.note || '' };
+  });
+
   function ranger() {
     try { localStorage.setItem(CLE, JSON.stringify(etat)); } catch (e) {}
     compter();
   }
 
   function compter() {
-    var fait = 0, rep = 0;
+    var fait = 0, rep = 0, rel = 0;
     Object.keys(etat).forEach(function (k) {
       if (etat[k].e === 'appele') fait++;
       if (etat[k].e === 'repondu') rep++;
+      if (etat[k].e === 'rappeler') rel++;
     });
     var tot = document.querySelectorAll('.suivi').length;
     document.getElementById('c-fait').textContent = fait;
     document.getElementById('c-rep').textContent = rep;
-    document.getElementById('c-reste').textContent = tot - fait - rep;
+    document.getElementById('c-relance').textContent = rel;
+    document.getElementById('c-reste').textContent = tot - fait - rep - rel;
   }
 
   document.querySelectorAll('.suivi').forEach(function (bloc) {

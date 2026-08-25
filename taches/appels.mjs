@@ -40,6 +40,12 @@ const cle = (n) => n.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '')
 
 /* État de la vitrine, relevé en visitant réellement chaque site (captures.mjs).
    Ce sont ces trois signaux qui changent ce qu'on dit au téléphone. */
+/* Résultats d'appels dictés par Tony. Le suivi localStorage ne vit que dans un
+   navigateur : invisible ailleurs, perdu au premier nettoyage. Ce fichier-là
+   survit, et c'est lui qui fait foi au chargement. */
+let RESU = {};
+try { RESU = (JSON.parse(fs.readFileSync('/work/previsualisation/appels/resultats.json', 'utf8')).appels) || {}; } catch {}
+
 let ETAT = {};
 try { ETAT = JSON.parse(fs.readFileSync('/work/previsualisation/appels/vignettes/etat.json', 'utf8')); } catch {}
 
@@ -127,7 +133,22 @@ const carte = (r, i, chaud) => `
           return e.ok ? `<a class="vign" href="${esc(r.site)}" target="_blank" rel="noopener"><img loading="lazy" src="vignettes/${k}.jpg" alt="Aperçu du site de ${esc(r.nom)}"></a>` : '';
         })()}
         <a class="tel" href="tel:${telBrut(r.telephone)}">📞 ${esc(r.telephone)}</a>
-        <div class="suivi" data-id="${esc(cle(r.nom))}">
+        ${(() => { const d = RESU[cle(r.nom)]; return d && d.telDirect
+          ? `<a class="tel direct" href="tel:${telBrut(d.telDirect)}">📱 ${esc(d.telDirect)} — son direct</a>` : ''; })()}
+        ${(() => {
+          const d = RESU[cle(r.nom)];
+          if (!d || !d.etat) return '';
+          const lib = { appele:'Appel abouti', repondu:'Pas de réponse', rappeler:'À rappeler' }[d.etat];
+          return `<div class="journal e-${d.etat}">
+            <div class="jt"><span class="pastille"></span>${esc(lib)} · ${esc(d.date)}</div>
+            <p class="jd">${esc(d.dit)}</p>
+            ${d.suite ? `<p class="js"><b>Suite :</b> ${esc(d.suite)}</p>` : ''}
+          </div>`;
+        })()}
+        <div class="suivi" data-id="${esc(cle(r.nom))}"${(() => {
+            const d = RESU[cle(r.nom)];
+            return d && d.etat ? ` data-serveur="${d.etat}" data-note="${esc(d.dit)}"` : '';
+          })()}>
           <div class="etats">
             <button type="button" data-e="appele">Appelé</button>
             <button type="button" data-e="repondu">Pas de réponse</button>
@@ -194,6 +215,30 @@ ul{list-style:none}
 .lead.chaud .et span{color:var(--chaud)}
 .et p{font-size:14.5px;line-height:1.5;color:#c9cfda}
 /* Suivi d'appel — trois états et un commentaire, gardés sur l'appareil. */
+.journal{margin-top:10px;padding:10px 12px;border-radius:8px;background:#10141b;
+  border:1px solid var(--ligne)}
+.journal .jt{display:flex;align-items:center;gap:7px;font-size:11px;font-weight:700;
+  letter-spacing:.13em;text-transform:uppercase;color:var(--gris)}
+.journal .pastille{width:7px;height:7px;border-radius:50%;background:var(--gris);flex:0 0 7px}
+.journal.e-appele{border-color:rgba(59,196,125,.42)}
+.journal.e-appele .pastille{background:var(--vrai)} .journal.e-appele .jt{color:var(--vrai)}
+.journal.e-rappeler{border-color:rgba(245,165,36,.45)}
+.journal.e-rappeler .pastille{background:var(--chaud)} .journal.e-rappeler .jt{color:var(--chaud)}
+.journal .jd{margin:6px 0 0;font-size:14px;line-height:1.5}
+.journal .js{margin:7px 0 0;font-size:13.5px;line-height:1.5;color:var(--gris)}
+.journal .js b{color:var(--blanc)}
+.tel.direct{background:#10141b;border:1px solid var(--vrai);color:var(--vrai);margin-top:6px}
+#c-relance{color:var(--chaud)}
+.bilan{background:#10141b;border:1px solid var(--ligne);border-radius:11px;
+  padding:16px 17px;margin:18px 0 6px}
+.bilan h3{font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--chaud);margin:0 0 4px}
+.bilan .d{font-size:13px;color:var(--gris);margin:0 0 12px}
+.bilan ol{margin:0;padding-left:19px}
+.bilan li{margin:0 0 9px;font-size:14.5px;line-height:1.5}
+.bilan li b{color:var(--blanc)}
+.bilan .chiffres{display:flex;gap:16px;margin-top:13px;padding-top:12px;
+  border-top:1px solid var(--ligne);font-size:13px;color:var(--gris)}
+.bilan .chiffres b{color:var(--blanc);font-size:19px;display:block;line-height:1.2}
 .suivi{margin-top:10px;border-top:1px solid var(--ligne);padding-top:10px}
 .etats{display:flex;gap:6px}
 .etats button{flex:1;background:var(--creux,#0f1115);border:1px solid var(--ligne);
@@ -221,11 +266,28 @@ ul{list-style:none}
 <div class="compteur" id="compteur">
   <span><b id="c-fait">0</b> appelés</span>
   <span><b id="c-rep">0</b> sans réponse</span>
+  <span class="relancer"><b id="c-relance">0</b> à relancer</span>
   <span><b id="c-reste">15</b> restants</span>
   <button type="button" id="copier">Copier le bilan</button>
 </div>
 <p class="sur">Prospection restaurants · La Réunion</p>
 <h1>Feuille d'appel</h1>
+${(() => {
+  const e = Object.entries(RESU).filter(([, d]) => d.etat);
+  if (!e.length) return '';
+  const relances = e.filter(([, d]) => d.etat === 'rappeler' || d.etat === 'appele');
+  const nomDe = (k) => { const r = tous.find((x) => cle(x.nom) === k); return r ? r.nom : k; };
+  return `<div class="bilan">
+    <h3>Tes appels du 25/08</h3>
+    <p class="d">Ce qui reste à faire, classé par ce qui rapporte le plus vite.</p>
+    <ol>${relances.map(([k, d]) => `<li><b>${esc(nomDe(k))}</b> — ${esc(d.suite || d.dit)}</li>`).join('')}</ol>
+    <div class="chiffres">
+      <span><b>${e.length}</b>appelés</span>
+      <span><b>${relances.length}</b>à relancer</span>
+      <span><b>${e.filter(([, d]) => d.etat === 'repondu').length}</b>sans réponse</span>
+    </div>
+  </div>`;
+})()}
 
 <h2 class="a">D'abord · s'échauffer</h2>
 <p class="pourquoi">Trois appels sans enjeu : petites structures, loin de ton secteur,
@@ -272,21 +334,32 @@ toi, c'est la donnée. Passe au suivant.</p>
   var etat = {};
   try { etat = JSON.parse(localStorage.getItem(CLE) || '{}'); } catch (e) { etat = {}; }
 
+  /* Les résultats connus du serveur amorcent le suivi. On n'écrase jamais une
+     saisie déjà présente sur l'appareil : ce que Tony a tapé ici est plus
+     récent que ce qui a été dicté. */
+  document.querySelectorAll('.suivi[data-serveur]').forEach(function (b) {
+    var id = b.dataset.id;
+    if (etat[id] && etat[id].e) return;
+    etat[id] = { e: b.dataset.serveur, note: b.dataset.note || '' };
+  });
+
   function ranger() {
     try { localStorage.setItem(CLE, JSON.stringify(etat)); } catch (e) {}
     compter();
   }
 
   function compter() {
-    var fait = 0, rep = 0;
+    var fait = 0, rep = 0, rel = 0;
     Object.keys(etat).forEach(function (k) {
       if (etat[k].e === 'appele') fait++;
       if (etat[k].e === 'repondu') rep++;
+      if (etat[k].e === 'rappeler') rel++;
     });
     var tot = document.querySelectorAll('.suivi').length;
     document.getElementById('c-fait').textContent = fait;
     document.getElementById('c-rep').textContent = rep;
-    document.getElementById('c-reste').textContent = tot - fait - rep;
+    document.getElementById('c-relance').textContent = rel;
+    document.getElementById('c-reste').textContent = tot - fait - rep - rel;
   }
 
   document.querySelectorAll('.suivi').forEach(function (bloc) {
