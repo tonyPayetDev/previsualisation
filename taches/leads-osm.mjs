@@ -43,17 +43,51 @@ const Q = `[out:json][timeout:120];
 );
 out center tags;`;
 
+/* ── Cache disque ─────────────────────────────────────────────────────────
+ *
+ * Overpass rend des 504 quand il est chargé, et les TROIS miroirs peuvent
+ * tomber en même temps — constaté le 25/08. Sans cache, la page ne peut plus
+ * être régénérée du tout, même pour un simple ajustement de mise en forme :
+ * une panne chez un tiers bloque une correction de CSS chez nous.
+ *
+ * Le fond de carte OSM ne bouge pas d'heure en heure. On garde donc la
+ * réponse brute 24 h. Le cache est un SECOURS, pas la source : on interroge
+ * toujours le réseau d'abord, et on ne se rabat dessus que si tout échoue —
+ * l'inverse figerait les données sans qu'on s'en aperçoive.
+ */
+const CACHE = '/work/previsualisation/leads-restaurants/osm-brut.json';
+const AGE_MAX = 24 * 3600 * 1000;
+
 let brut = null, miroir = null;
 for (const m of MIROIRS) {
   try {
     const r = await fetch(m, { method: 'POST', body: 'data=' + encodeURIComponent(Q), headers: UA, signal: AbortSignal.timeout(150000) });
     const t = await r.text();
-    if (t.trim().startsWith('{')) { brut = JSON.parse(t); miroir = m; break; }
+    if (t.trim().startsWith('{')) { brut = JSON.parse(t); miroir = m.split('/')[2]; break; }
     console.log(`  ~ ${m.split('/')[2]} : HTTP ${r.status}`);
   } catch (e) { console.log(`  ~ ${m.split('/')[2]} : ${e.name}`); }
 }
-if (!brut) { console.log('  ✗ aucun miroir Overpass ne répond'); process.exit(1); }
-console.log(`  ${brut.elements.length} établissements · miroir ${miroir.split('/')[2]} · 0 €`);
+
+if (brut) {
+  try {
+    fs.mkdirSync(path.dirname(CACHE), { recursive: true });
+    fs.writeFileSync(CACHE, JSON.stringify(brut));
+  } catch { /* le cache est un confort, son échec ne doit rien bloquer */ }
+} else {
+  try {
+    const st = fs.statSync(CACHE);
+    const h = Math.round((Date.now() - st.mtimeMs) / 3600000);
+    if (Date.now() - st.mtimeMs < AGE_MAX) {
+      brut = JSON.parse(fs.readFileSync(CACHE, 'utf8'));
+      miroir = `cache local (${h} h)`;
+      console.log(`  ⚠️  aucun miroir ne répond — données reprises du cache (${h} h)`);
+    } else {
+      console.log(`  ✗ aucun miroir ne répond, et le cache a ${h} h (limite ${AGE_MAX / 3600000} h)`);
+    }
+  } catch { console.log('  ✗ aucun miroir ne répond, et aucun cache'); }
+}
+if (!brut) process.exit(1);
+console.log(`  ${brut.elements.length} établissements · ${miroir} · 0 €`);
 
 /* Déjà clients : on ne prospecte pas quelqu'un qu'on a déjà livré. Les noms
    viennent des applications Coolify, pas d'une liste tenue à la main. */
