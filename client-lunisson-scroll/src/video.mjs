@@ -47,12 +47,12 @@ for (let i = 0; i < PLANS.length; i++) {
      background:linear-gradient(180deg,rgba(20,17,16,0),rgba(20,17,16,.78) 52%,rgba(20,17,16,.95))}
    .haut{position:absolute;left:0;right:0;top:0;height:420px;
      background:linear-gradient(180deg,rgba(20,17,16,.62),rgba(20,17,16,0))}
-   .txt{position:absolute;left:82px;right:82px;bottom:250px;
+   .txt{position:absolute;left:70px;right:70px;bottom:250px;
      font-family:Archivo,sans-serif;color:#EDE7E0}
    .sur{font-weight:900;font-size:${p.fin ? 104 : 96}px;line-height:.94;
      text-transform:uppercase;letter-spacing:-.03em;margin:0;
      text-shadow:0 6px 40px rgba(0,0,0,.75)}
-   .sous{font-weight:900;font-size:${p.fin ? 40 : 96}px;line-height:1.06;
+   .sous{font-weight:900;font-size:${p.fin ? 33 : 96}px;line-height:1.06;
      text-transform:uppercase;letter-spacing:${p.fin ? '.02em' : '-.03em'};margin:${p.fin ? '18px' : '0'} 0 0;
      color:${p.fin ? '#B9AFA6' : AMBRE};text-shadow:0 6px 40px rgba(0,0,0,.75)}
    .trait{width:78px;height:5px;background:${AMBRE};border-radius:3px;margin-bottom:30px}
@@ -81,7 +81,13 @@ for (let i = 0; i < PLANS.length; i++) {
   const z = p.zoom === 'in'
     ? `zoompan=z='min(1.0001+0.0016*on,1.14)':d=${n}:s=${W}x${H}:fps=${FPS}:x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)'`
     : `zoompan=z='max(1.14-0.0016*on,1.0001)':d=${n}:s=${W}x${H}:fps=${FPS}:x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)'`;
-  ff(['-loop', '1', '-t', String(DUR), '-i', `${R}/img/${p.img}`,
+  /* PIÈGE PAYÉ : `-loop 1` donne à zoompan DUR*FPS images d entrée, et
+     zoompan sort `d` images pour CHACUNE — soit 96×96 images, un segment de
+     256 s au lieu de 3,2 s. Le `-shortest` du mux final tronquait à la bonne
+     durée, donc le défaut ne se voyait NI dans la durée NI dans une erreur :
+     seulement à l image, en noir. Une image fixe sans `-loop` = 1 image
+     d entrée, donc exactement `d` images en sortie. */
+  ff(['-i', `${R}/img/${p.img}`,
       '-i', `${T}/t${i}.png`,
       '-filter_complex',
       `[0:v]scale=${Math.round(W*1.5)}:${Math.round(H*1.5)}:force_original_aspect_ratio=increase,` +

@@ -17,6 +17,9 @@ const OUT = '/work/previsualisation/appels/index.html';
    est décidée au siège. Les appeler, c'est brûler un appel pour rien. */
 const CHAINES = /\b(mc ?donald|burger king|kfc|subway|domino|pizza hut|quick|starbucks|del arte|brioche dor|paul\b|o'?tacos|five guys|buffalo grill|la mie c[aâ]line|columbus caf|speed burger|g[ée]ant|carrefour|leader ?price|super ?u|casino|vapiano)\b/i;
 
+const cleTot = (nom) => String(nom || '').toLowerCase().normalize('NFD')
+  .replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+
 const tous = JSON.parse(fs.readFileSync(SRC, 'utf8'))
   .filter((r) => r.telephone)
   .filter((r) => !CHAINES.test(r.nom));
@@ -33,6 +36,39 @@ const vrais = tous
   .filter((r) => r.site && dansCoeur(r) && !echauffement.includes(r))
   .slice(0, 12);
 
+/* Résultats d'appels dictés par Tony. Le suivi localStorage ne vit que dans un
+   navigateur : invisible ailleurs, perdu au premier nettoyage. Ce fichier-là
+   survit, et c'est lui qui fait foi au chargement. */
+let RESU = {};
+try { RESU = (JSON.parse(fs.readFileSync('/work/previsualisation/appels/resultats.json', 'utf8')).appels) || {}; } catch {}
+
+/* Déjà appelés : on ne rappelle pas quelqu'un le lendemain sous prétexte
+   qu'il n'a pas décroché — ça se remarque, et ça grille la fiche. */
+const dejaVus = new Set(Object.keys(RESU));
+
+/* Demain : un panachage assumé. On alterne les types (restaurant / snack /
+   café) et on ne reste pas sur une seule commune : appeler quinze pizzerias
+   de Saint-Denis d'affilée apprend moins que quinze établissements
+   différents. */
+const pourDemain = (() => {
+  const libres = tous.filter((r) => !dejaVus.has(cleTot(r.nom)));
+  const parType = { restaurant: [], fast_food: [], cafe: [] };
+  for (const r of libres) (parType[r.type] || parType.restaurant).push(r);
+  const ordre = ['restaurant', 'fast_food', 'cafe'];
+  const out = []; const vus = new Set();
+  let i = 0;
+  while (out.length < 15 && i < 400) {
+    const t = ordre[i % ordre.length];
+    const pile = parType[t] || [];
+    const r = pile.shift();
+    i++;
+    if (!r || vus.has(cleTot(r.nom))) continue;
+    vus.add(cleTot(r.nom));
+    out.push(r);
+  }
+  return out;
+})();
+
 const esc = (s) => String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 const telBrut = (t) => String(t).replace(/[^\d+]/g, '');
 const cle = (n) => n.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '')
@@ -40,12 +76,6 @@ const cle = (n) => n.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '')
 
 /* État de la vitrine, relevé en visitant réellement chaque site (captures.mjs).
    Ce sont ces trois signaux qui changent ce qu'on dit au téléphone. */
-/* Résultats d'appels dictés par Tony. Le suivi localStorage ne vit que dans un
-   navigateur : invisible ailleurs, perdu au premier nettoyage. Ce fichier-là
-   survit, et c'est lui qui fait foi au chargement. */
-let RESU = {};
-try { RESU = (JSON.parse(fs.readFileSync('/work/previsualisation/appels/resultats.json', 'utf8')).appels) || {}; } catch {}
-
 let ETAT = {};
 try { ETAT = JSON.parse(fs.readFileSync('/work/previsualisation/appels/vignettes/etat.json', 'utf8')); } catch {}
 
@@ -153,7 +183,17 @@ const carte = (r, i, chaud) => `
             <button type="button" data-e="appele">Appelé</button>
             <button type="button" data-e="repondu">Pas de réponse</button>
             <button type="button" data-e="rappeler">À rappeler</button>
+            <button type="button" data-e="refus">Pas intéressé</button>
           </div>
+          <select class="raison" hidden>
+            <option value="">Pourquoi ? (si tu as l'info)</option>
+            <option>A déjà une agence / un prestataire</option>
+            <option>Pas le budget</option>
+            <option>Pas le moment</option>
+            <option>Le fait en interne</option>
+            <option>Ne voit pas l'intérêt</option>
+            <option>N'a pas voulu dire</option>
+          </select>
           <textarea rows="2" placeholder="Ce qu’il a dit…"></textarea>
         </div>
         <details class="scr">
@@ -178,7 +218,7 @@ body{background:var(--noir);color:var(--blanc);
 h1{font-size:clamp(28px,7vw,40px);line-height:1.05;font-weight:800;letter-spacing:-.03em;margin:8px 0 0}
 h2{font-size:12px;letter-spacing:.2em;text-transform:uppercase;font-weight:700;
   margin:34px 0 4px}
-h2.a{color:var(--chaud)} h2.b{color:var(--vrai)}
+h2.a{color:var(--chaud)} h2.b{color:var(--vrai)} h2.c{color:#7FB2E8}
 .pourquoi{color:var(--gris);font-size:13.5px;margin-bottom:14px;max-width:56ch}
 ul{list-style:none}
 .lead{background:var(--carte);border:1px solid var(--ligne);
@@ -247,6 +287,12 @@ ul{list-style:none}
 .etats button[aria-pressed=true][data-e=appele]{background:var(--vrai);border-color:var(--vrai);color:#08130c}
 .etats button[aria-pressed=true][data-e=repondu]{background:#8b93a3;border-color:#8b93a3;color:#111}
 .etats button[aria-pressed=true][data-e=rappeler]{background:var(--chaud);border-color:var(--chaud);color:#1a1200}
+.etats button[aria-pressed=true][data-e=refus]{background:#C2444C;border-color:#C2444C;color:#fff}
+.suivi .raison{width:100%;margin-top:7px;background:#0f1115;border:1px solid #C2444C;
+  color:var(--blanc);border-radius:8px;padding:8px 10px;font:inherit;font-size:14px}
+.journal.e-refus{border-color:rgba(194,68,76,.45)}
+.journal.e-refus .pastille{background:#C2444C} .journal.e-refus .jt{color:#C2444C}
+#c-refus{color:#C2444C}
 .suivi textarea{width:100%;margin-top:7px;background:#0f1115;border:1px solid var(--ligne);
   color:var(--blanc);border-radius:8px;padding:9px 10px;font:14px/1.4 inherit;resize:vertical}
 .suivi textarea:focus{outline:2px solid var(--vrai);outline-offset:1px}
@@ -267,6 +313,7 @@ ul{list-style:none}
   <span><b id="c-fait">0</b> appelés</span>
   <span><b id="c-rep">0</b> sans réponse</span>
   <span class="relancer"><b id="c-relance">0</b> à relancer</span>
+  <span><b id="c-refus">0</b> non</span>
   <span><b id="c-reste">15</b> restants</span>
   <button type="button" id="copier">Copier le bilan</button>
 </div>
@@ -299,6 +346,13 @@ sans site web. Si ça se passe mal, tu n'as rien perdu — c'est le but.</p>
 <p class="pourquoi">Ceux-là ont un téléphone <b>et</b> un site : ils investissent déjà
 dans leur image. Et ils sont dans une commune où tu peux passer.</p>
 <ul>${vrais.map((r, i) => carte(r, i + 1, false)).join('')}
+</ul>
+
+<h2 class="c">Demain · nouvelle fournée</h2>
+<p class="pourquoi">Quinze fiches jamais appelées, panachées exprès : restaurant, snack,
+café, et pas toujours la même commune. C'est de l'entraînement — l'objectif est le nombre
+d'appels passés, pas le taux de conversion. Un « oui » serait un bonus.</p>
+<ul>${pourDemain.map((r, i) => carte(r, i + 1, false)).join('')}
 </ul>
 
 <p class="note"><b>Ton suivi reste sur cet appareil.</b> Les trois boutons et tes
@@ -349,17 +403,19 @@ toi, c'est la donnée. Passe au suivant.</p>
   }
 
   function compter() {
-    var fait = 0, rep = 0, rel = 0;
+    var fait = 0, rep = 0, rel = 0, ref = 0;
     Object.keys(etat).forEach(function (k) {
       if (etat[k].e === 'appele') fait++;
       if (etat[k].e === 'repondu') rep++;
       if (etat[k].e === 'rappeler') rel++;
+      if (etat[k].e === 'refus') ref++;
     });
     var tot = document.querySelectorAll('.suivi').length;
     document.getElementById('c-fait').textContent = fait;
     document.getElementById('c-rep').textContent = rep;
     document.getElementById('c-relance').textContent = rel;
-    document.getElementById('c-reste').textContent = tot - fait - rep - rel;
+    document.getElementById('c-refus').textContent = ref;
+    document.getElementById('c-reste').textContent = tot - fait - rep - rel - ref;
   }
 
   document.querySelectorAll('.suivi').forEach(function (bloc) {
@@ -367,6 +423,14 @@ toi, c'est la donnée. Passe au suivant.</p>
     var e = etat[id] || {};
     var zone = bloc.querySelector('textarea');
     if (e.note) zone.value = e.note;
+    var raison = bloc.querySelector('.raison');
+    if (raison) {
+      if (e.raison) raison.value = e.raison;
+      raison.hidden = e.e !== 'refus';
+      raison.addEventListener('change', function () {
+        etat[id] = etat[id] || {}; etat[id].raison = raison.value; ranger();
+      });
+    }
 
     bloc.querySelectorAll('.etats button').forEach(function (b) {
       b.setAttribute('aria-pressed', String(e.e === b.dataset.e));
@@ -378,6 +442,8 @@ toi, c'est la donnée. Passe au suivant.</p>
         bloc.querySelectorAll('.etats button').forEach(function (x) {
           x.setAttribute('aria-pressed', String(etat[id].e === x.dataset.e));
         });
+        var sel = bloc.querySelector('.raison');
+        if (sel) sel.hidden = etat[id].e !== 'refus';
         ranger();
       });
     });
