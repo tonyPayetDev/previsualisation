@@ -127,9 +127,9 @@ footer{margin-top:34px; font-size:12px; color:var(--gris2); line-height:1.6}
 </header>
 
 <div class="compteurs">
-  <button class="c livre"   data-f="livre"   aria-pressed="false"><b>27</b><span>Livré</span></button>
+  <button class="c livre"   data-f="livre"   aria-pressed="false"><b>28</b><span>Livré</span></button>
   <button class="c bloque"  data-f="bloque"  aria-pressed="false"><b>7</b><span>Bloqué</span></button>
-  <button class="c attente" data-f="attente" aria-pressed="false"><b>17</b><span>Attend toi</span></button>
+  <button class="c attente" data-f="attente" aria-pressed="false"><b>19</b><span>Attend toi</span></button>
 </div>
 <p class="aide" id="aide">Touche un chiffre pour ne voir que celles-là.</p>
 
@@ -137,7 +137,7 @@ footer{margin-top:34px; font-size:12px; color:var(--gris2); line-height:1.6}
 <div class="cash-f">
   <button class="cf direct" data-c="direct" aria-pressed="false"><b>14</b><span>€€€ Cash direct</span></button>
   <button class="cf proche" data-c="proche" aria-pressed="false"><b>20</b><span>€€ Amène du cash</span></button>
-  <button class="cf loin"   data-c="loin"   aria-pressed="false"><b>17</b><span>€ Convertible</span></button>
+  <button class="cf loin"   data-c="loin"   aria-pressed="false"><b>20</b><span>€ Convertible</span></button>
 </div>
 <p class="aide" id="aideCash">Rouge : un prospect nommé est au bout. Vert : utile, mais personne ne paie pour ça aujourd'hui.</p>
 
@@ -161,11 +161,35 @@ footer{margin-top:34px; font-size:12px; color:var(--gris2); line-height:1.6}
 
 <h2>De mon côté</h2>
 <ul id="liste">
-<li class="t" data-etat="bloque" data-cash="direct">
+<li class="t" data-etat="livre" data-cash="loin">
+  <span class="pastille livre" aria-hidden="true"></span>
+  <div class="corps">
+    <p class="titre"><span class="eur loin" title="Convertible — Non rattaché à un prospect ni à un canal d’acquisition.">€</span>Script d'appel adapté à chaque lead sur la feuille d'appel</p>
+    <p class="note">Livré et vérifié : script replié sous chaque lead, adapté à son type, sa cuisine et l état réel de sa vitrine. Plus les vignettes des 12 sites (11 capturés) et le suivi d appel (appelé / pas de réponse / à rappeler + commentaire), testé avec rechargement.</p>
+  </div>
+  <a class="voir" href="/appels/">Voir</a>
+</li>
+<li class="t" data-etat="attente" data-cash="direct">
+  <span class="pastille attente" aria-hidden="true"></span>
+  <div class="corps">
+    <p class="titre"><span class="eur direct" title="Cash direct — Prospect immobilier nommé. C’est la v4 qui s’envoie — la v2 avait été refusée, ne jamais repointer dessus.">€€€</span>Vidéo Koytcha v2 : sous-titres, textes animés HyperFrames (30 ans d'expérience + stats), un bien et un programme vers la fin, plus un b-roll de 3-4 s</p>
+    
+  </div>
+  <a class="voir" href="/koytcha-video/">Voir</a>
+</li>
+<li class="t" data-etat="attente" data-cash="loin">
+  <span class="pastille attente" aria-hidden="true"></span>
+  <div class="corps">
+    <p class="titre"><span class="eur loin" title="Convertible — Non rattaché à un prospect ni à un canal d’acquisition.">€</span>Landing matrix : recaler la boule d'énergie sur la main et le doigt, adapter au mobile, puis vidéo + planification</p>
+    <p class="note">Demande Tony 25/08 : la boule doit être décalée sur certains plans, grossir vers le doigt et vers le haut de la main. Puis réadapter le format mobile, produire une vidéo et la planifier.</p>
+  </div>
+  <a class="voir" href="/automatisationboost-matrix/">Voir</a>
+</li>
+<li class="t" data-etat="bloque" data-cash="loin">
   <span class="pastille bloque" aria-hidden="true"></span>
   <div class="corps">
-    <p class="titre"><span class="eur direct" title="Cash direct — La démo que tu réclames ne peut pas aboutir tant que le compte est à zéro.">€€€</span>Crédits OpenAI épuisés — la démo bout-en-bout ne peut pas aboutir</p>
-    <p class="note">Compte « OpenAi account TP » à zéro : HTTP 429 « no credits remaining ». 13 workflows actifs le partagent. « restaurant v5 demo + essai » (iIv2o7ADJl6wVKYT) meurt au 13e nœud sur 83 depuis le 13/08 ; « Prospection quotidienne IA » depuis le 12/08 — celui-là est déjà réparé, basculé sur OpenRouter gratuit. Réparation d ensemble : pointer la Base URL de la credential vers https://openrouter.ai/api/v1 avec la clé OpenRouter. PIÈGE : un nœud actif fait de la synthèse vocale (resource=audio), qu OpenRouter ne sert pas — lui donner sa propre credential avant. Détail complet dans prospection-formation/BLOCAGE-openai.md</p>
+    <p class="titre"><span class="eur loin" title="Convertible — Non rattaché à un prospect ni à un canal d’acquisition.">€</span>Crédits IA épuisés — 6 workflows actifs morts, dont la démo bout-en-bout</p>
+    <p class="note">Inventaire complet du 25/08 (543 workflows, 120 actifs, 54 branchés IA) : 6 en panne totale. Quatre à cause d OpenAI, un ajoute Anthropic à sec, un dépend de fal.ai/WaveSpeed. OpenAI porte 28 workflows actifs — pas 13, mon premier comptage ne lisait qu une page sur trois de l API. Réparation : Base URL de la credential vers OpenRouter. PIÈGE : sortir d abord le nœud de synthèse vocale (6InNNRjMJxiteEkV), OpenRouter ne sert pas d audio. Détail : prospection-formation/INVENTAIRE-IA.md</p>
   </div>
   <span class="voir vide" aria-hidden="true"></span>
 </li>
