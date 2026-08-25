@@ -44,13 +44,17 @@ const ligne = t => `<li class="t" data-etat="${t.etat}" data-cash="${t.cash}">
   ${t.lien ? `<a class="voir" href="${esc(t.lien)}">Voir</a>` : '<span class="voir vide" aria-hidden="true"></span>'}
 </li>`;
 
-const ligneToi = t => `<li class="t toi">
+const ligneToi = (x) => {
+  const t = (typeof x === 'string') ? { t: x } : (x || {});
+  if (!t.t) return '';
+  return `<li class="t toi">
   <span class="pastille toi" aria-hidden="true"></span>
   <div class="corps">
     <p class="titre">${esc(t.t)}</p>
     ${t.note ? `<p class="note">${esc(t.note)}</p>` : ''}
   </div>
 </li>`;
+};
 
 const html = `<!doctype html>
 <html lang="fr">
@@ -217,7 +221,7 @@ ${data.aToi.map(ligneToi).join('\n')}
 
 <footer>
   ${esc(data.note)}<br>
-  Les 7 lignes bleues ne sont pas des tâches que je peux prendre : ce sont des appels
+  Les ${data.aToi.length} lignes bleues ne sont pas des tâches que je peux prendre : ce sont des appels
   et des connexions de compte. C'est là que se trouve ton chiffre d'affaires, pas ici.
 </footer>
 

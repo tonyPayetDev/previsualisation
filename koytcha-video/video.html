@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Koytcha Immo — vidéo verticale — vidéo</title>
+<style>
+:root{color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;min-height:100svh;background:#0d0c0b;color:#EDE7E0;
+  font:400 15px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:22px;padding:28px 18px}
+h1{margin:0;font-size:clamp(19px,3.4vw,26px);font-weight:600;text-align:center;
+  letter-spacing:-.01em;max-width:22ch;text-wrap:balance}
+.cadre{position:relative;width:min(430px,92vw);border-radius:14px;overflow:hidden;
+  background:#000;box-shadow:0 24px 70px rgba(0,0,0,.6)}
+video{display:block;width:100%;height:auto;background:#000}
+.lien{font-size:13.5px;color:#9a938c;text-decoration:none;border-bottom:1px solid #34302c;
+  padding-bottom:2px}
+.lien:hover{color:#EDE7E0}
+</style></head>
+<body>
+  <h1>Koytcha Immo — vidéo verticale</h1>
+  <div class="cadre">
+    <video controls playsinline preload="metadata"
+           controlsList="nodownload noplaybackrate"
+           disablePictureInPicture
+           oncontextmenu="return false">
+      <source src="video.mp4" type="video/mp4">
+      Votre navigateur ne sait pas lire cette vidéo.
+    </video>
+  </div>
+  <a class="lien" href="./">Voir le site</a>
+<script>
+/* Le glisser-déposer d'une vidéo hors du navigateur est l'autre geste
+   ordinaire de récupération. On le bloque aussi. */
+document.querySelectorAll('video').forEach(function (v) {
+  v.addEventListener('dragstart', function (e) { e.preventDefault(); });
+});
+</script>
+</body></html>
