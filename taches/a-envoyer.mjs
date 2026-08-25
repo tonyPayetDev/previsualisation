@@ -22,12 +22,44 @@ const esc = (s) => String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;')
 
 const taches = JSON.parse(fs.readFileSync(path.join(R, 'taches/taches.json'), 'utf8')).taches || [];
 
-/* Contacts RELEVÉS, jamais devinés. Le jeu OSM et la feuille d'appel sont les
-   deux seules sources ; quand il n'y a rien, on écrit « à retrouver » plutôt
-   que d'inventer un numéro qui ferait sonner chez quelqu'un d'autre. */
+/* Contacts RELEVÉS, jamais devinés. Quand il n'y a rien, on écrit
+   « à retrouver » plutôt que d'inventer un numéro qui ferait sonner chez
+   quelqu'un d'autre.
+ *
+ * `source` dit d'où vient le numéro, et le champ `sur` dit s'il a été recoupé
+ * sur DEUX sources indépendantes. La distinction compte : un numéro vu à un
+ * seul endroit peut être un reste de gabarit, et Tony le découvrirait en
+ * appelant.
+ *
+ * OpenStreetMap ne connaît le téléphone d'aucun des quatre manquants — la base
+ * les répertorie (Mam'Zelle y a cinq fiches) mais sans tag `phone`. Les
+ * numéros ci-dessous viennent donc des sites des commerces eux-mêmes. */
 const CONTACTS = {
-  'the-grill': { nom: 'The Grill', tel: '+262 692 77 34 80', site: 'https://thegrill.re', source: 'OpenStreetMap' },
-  'giulietta': { nom: 'Pizzeria Giulietta', tel: '+262 262 12 20 19', site: 'https://www.giulietta.re/', source: 'OpenStreetMap' },
+  'the-grill': { nom: 'The Grill', tel: '+262 692 77 34 80', site: 'https://thegrill.re', source: 'OpenStreetMap', sur: true },
+  'giulietta': { nom: 'Pizzeria Giulietta', tel: '+262 262 12 20 19', site: 'https://www.giulietta.re/', source: 'OpenStreetMap', sur: true },
+
+  /* Recoupé sur les DEUX sites en ligne du groupe, le 25/08 : koytchaimmo.re
+     et koytchaconseil.com affichent le même numéro. */
+  'koytcha': {
+    nom: 'Koytcha', tel: '+262 262 97 96 07', site: 'https://koytchaimmo.re/',
+    source: 'koytchaimmo.re et koytchaconseil.com — même numéro sur les deux', sur: true,
+  },
+
+  /* Trois établissements, trois numéros. On affiche celui de Saint-Pierre,
+     donné en tête sur leur page « appelez la pizzeria la plus proche », et on
+     nomme les deux autres au lieu de les taire. */
+  'kmila': {
+    nom: "K'Mila Pizza — Saint-Pierre", tel: '+262 262 71 88 79', mobile: '+262 692 37 24 66', site: null,
+    source: "site K'Mila · St-Joseph 0262 02 02 26 · Vincendo 0262 31 11 67", sur: true,
+  },
+
+  /* Une seule source : le site Mam'Zelle repris dans la maquette. Le numéro y
+     figure trois fois, avec l'adresse du Tampon. Aucun domaine propre ne
+     répond, donc pas de second témoin — à confirmer au premier appel. */
+  'mamzelle': {
+    nom: "Mam'Zelle Pizza", tel: '+262 262 02 84 42', site: null,
+    source: 'site Mam\'Zelle (32 rue du docteur Henri Roussel, Le Tampon) — une seule source', sur: false,
+  },
 };
 
 /* Ce que chaque livrable dit de lui-même. Le message reprend UNIQUEMENT ce
@@ -109,6 +141,7 @@ const carte = (d) => {
           ${c
             ? `<span class="ok">${esc(c.nom)}</span>
                <a class="tel" href="tel:${esc(c.tel.replace(/[^\d+]/g, ''))}">${esc(c.tel)}</a>
+               <span class="fiab ${c.sur ? 'sur' : 'unique'}">${c.sur ? 'recoupé' : 'une seule source'}</span>
                <span class="src">relevé sur ${esc(c.source)}</span>`
             : `<span class="manque">contact à retrouver — je n'en invente pas</span>`}
         </div>
@@ -116,7 +149,16 @@ const carte = (d) => {
         <div class="act">
           <button type="button" class="cp" data-txt="${esc(msg)}">Copier le message</button>
           <a class="ouv" href="${esc(d.url)}" target="_blank" rel="noopener">Ouvrir la maquette</a>
-          ${c ? `<a class="wa" href="https://wa.me/${esc(c.tel.replace(/[^\d]/g, ''))}?text=${encodeURIComponent(msg)}" target="_blank" rel="noopener">WhatsApp</a>` : ''}
+          ${(() => {
+            /* WhatsApp ne fonctionne QUE sur un mobile. À La Réunion, un fixe
+               commence par 262 262 et un mobile par 262 69x. Poser le bouton
+               sur un fixe donne un lien mort — on ne l'affiche pas, et on dit
+               pourquoi plutôt que de laisser un manque inexpliqué. */
+            if (!c) return '';
+            const num = (c.mobile || c.tel).replace(/[^\d]/g, '');
+            if (!/^26269/.test(num)) return '<span class="nowa">pas de mobile connu — WhatsApp impossible</span>';
+            return `<a class="wa" href="https://wa.me/${esc(num)}?text=${encodeURIComponent(msg)}" target="_blank" rel="noopener">WhatsApp</a>`;
+          })()}
         </div>
       </li>`;
 };
@@ -149,7 +191,12 @@ ul{list-style:none}
 .qui .ok{color:var(--blanc);font-weight:600}
 .qui .tel{color:var(--vert);text-decoration:none;border-bottom:1px solid rgba(59,196,125,.4)}
 .qui .src{color:#6b7280;font-size:11.5px}
+.qui .fiab{font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;font-weight:700;
+  border-radius:99px;padding:2px 8px}
+.qui .fiab.sur{color:var(--vert);border:1px solid rgba(59,196,125,.35)}
+.qui .fiab.unique{color:var(--chaud);border:1px solid rgba(245,165,36,.4)}
 .qui .manque{color:var(--chaud);font-size:12.5px}
+.act .nowa{color:#6b7280;font-size:11.5px;align-self:center}
 .msg{margin-top:11px;padding:11px 13px;background:#0f1115;border:1px solid var(--ligne);
   border-radius:8px;font:13px/1.62 ui-monospace,Menlo,monospace;color:#cbd2dc;
   white-space:pre-wrap;word-break:break-word;max-height:190px;overflow-y:auto}
