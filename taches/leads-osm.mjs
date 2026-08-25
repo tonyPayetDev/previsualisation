@@ -263,7 +263,11 @@ ${l.sort((a, b) => a.nom.localeCompare(b.nom)).map((x) => `  <div class="l">
     </div>
   </div>`).join('\n')}`).join('\n')}
 
-<p class="pied">Source : OpenStreetMap via Overpass (${esc(miroir.split('/')[2])}), contributeurs
+${/* `miroir` porte désormais le nom d'hôte, ou « cache local (n h) ». Le
+     redécouper comme une URL rendait une chaîne VIDE : le pied de page
+     affichait « via Overpass () ». Régression introduite en ajoutant le
+     cache — et invisible tant qu'on ne relit pas la page produite. */ ''}
+<p class="pied">Source : OpenStreetMap via Overpass (${esc(miroir)}), contributeurs
 OSM, licence ODbL. <b>Aucun numéro n'est inventé</b> : si la base n'en donne pas, la fiche
 n'apparaît pas.<br>
 Régénérer : <code>node previsualisation/taches/leads-osm.mjs</code><br>
