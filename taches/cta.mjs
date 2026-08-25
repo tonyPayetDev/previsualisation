@@ -67,11 +67,70 @@ const URGENT = {
 
 const existe = (f) => f && fs.existsSync(path.join(RES, f));
 
+/* ── Les mots réellement promis, relevés dans les scripts ──────────────────
+ *
+ * Jusqu'ici la liste des mots « hors tableur » venait de URGENT, écrit à la
+ * main : deux entrées. Le balayage des 59 scripts en trouve dix-neuf.
+ *
+ * La distinction que cette page ne faisait pas, et qui est la seule qui
+ * compte pour la personne qui commente :
+ *   · mot ABSENT de l'onglet  → le workflow ignore le commentaire, RIEN ne part
+ *   · mot présent, lien vide  → un DM part quand même, vers la bibliothèque
+ * Les deux étaient comptés ensemble sous « sans ressource ». Le premier est
+ * un silence, le second une réponse imparfaite. */
+const norm = (s) => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toUpperCase().trim();
+const GENERIQUES = new Set(['UN', 'TON', 'LE', 'MACHIN', 'MOT', 'MOTCLE', 'CLE', 'CE', 'CES', 'TA', 'MA']);
+
+const scanScripts = (racine) => {
+  const trouve = new Map();
+  const fichiers = [];
+  (function marche(d, prof = 0) {
+    if (prof > 4) return;
+    let e; try { e = fs.readdirSync(d, { withFileTypes: true }); } catch { return; }
+    for (const x of e) {
+      if (x.name === 'node_modules' || x.name.startsWith('.')) continue;
+      const p = path.join(d, x.name);
+      if (x.isDirectory()) marche(p, prof + 1);
+      else if (/^(SCRIPT\.md|narration\.txt)$/.test(x.name)) fichiers.push(p);
+    }
+  })(racine);
+  for (const f of fichiers) {
+    /* « Commente le mot X », « Commente X, je t'envoie… ». On ne garde que le
+       premier mot qui suit, et on écarte les tournures d'exemple. */
+    const re = /commente\s+(?:le\s+mot\s+|le\s+)?([A-Za-zÀ-ÿ][A-Za-zÀ-ÿ0-9]{2,20})/gi;
+    const txt = fs.readFileSync(f, 'utf8');
+    let m;
+    while ((m = re.exec(txt))) {
+      const k = norm(m[1]);
+      if (GENERIQUES.has(k)) continue;
+      if (!trouve.has(k)) trouve.set(k, new Set());
+      trouve.get(k).add(path.basename(path.dirname(f)));
+    }
+  }
+  return { trouve, nbFichiers: fichiers.length };
+};
+
+const { trouve: promis, nbFichiers } = scanScripts('/work/autoboost-neon-videos');
+
+/* Une page dont le nom contient le mot-clé est une PISTE, jamais une preuve.
+   Elle est affichée « à confirmer » — sauf si PROPOSE la donne pour sûre. */
+const pages = fs.existsSync(RES) ? fs.readdirSync(RES).filter((x) => x.endsWith('.html')) : [];
+for (const [mot] of promis) {
+  if (PROPOSE[mot]) continue;
+  const p = pages.find((f) => f.includes(mot.toLowerCase()));
+  if (p) PROPOSE[mot] = { f: p, sur: false, pourquoi: `Le nom du fichier contient « ${mot.toLowerCase()} ». Rapprochement automatique, à vérifier avant de coller le lien.` };
+}
+
 const vivants = audit.filter((x) => x.code === 200);
 const morts = audit.filter((x) => x.lien && x.code !== 200);
 const orphelins = audit.filter((x) => !x.lien);
-/* OUTILS n'est même pas dans le tableur : il est promis sans ligne. */
-const horsTable = Object.keys(URGENT).filter((m) => !audit.some((x) => x.mot === m));
+
+/* Hors tableur = promis quelque part, absent de l'onglet. Deux sources :
+   le texte des scripts, et les légendes de posts relevées dans URGENT. */
+const horsTable = [...new Set([...promis.keys(), ...Object.keys(URGENT)])]
+  .filter((m) => !audit.some((x) => x.mot === m))
+  .sort();
+const ouPromis = (m) => [...(promis.get(m) || [])].slice(0, 2).join(', ');
 
 const ligneOrpheline = (mot) => {
   const p = PROPOSE[mot] || { f: null, sur: false, pourquoi: 'Pas encore examiné.' };
@@ -114,7 +173,7 @@ h1{font-size:clamp(26px,6vw,36px);line-height:1.06;font-weight:800;letter-spacin
 .compte b{display:block;color:var(--blanc);font-size:21px;line-height:1.2}
 .compte .v b{color:var(--vert)} .compte .o b{color:var(--chaud)} .compte .e b{color:var(--rouge)}
 h2{font-size:12px;letter-spacing:.2em;text-transform:uppercase;font-weight:700;margin:30px 0 6px}
-h2.a{color:var(--chaud)} h2.b{color:var(--vert)} h2.c{color:var(--gris)}
+h2.a{color:var(--chaud)} h2.b{color:var(--vert)} h2.c{color:var(--gris)} h2.e2{color:var(--rouge)}
 .pourquoi{color:var(--gris);font-size:13.5px;line-height:1.6;margin-bottom:12px}
 ul{list-style:none}
 .m{background:var(--carte);border:1px solid var(--ligne);border-left:3px solid var(--ligne);
@@ -124,6 +183,8 @@ ul{list-style:none}
 .hd{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 .hd b{font-size:16px;font-weight:700;letter-spacing:.04em}
 .urg{font-size:11.5px;color:var(--chaud);font-weight:600}
+.urg2{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--rouge);font-weight:700;
+  border:1px solid rgba(194,68,76,.4);border-radius:99px;padding:2px 8px}
 .prop{display:flex;align-items:center;gap:9px;margin-top:8px;flex-wrap:wrap;font-size:13px}
 .prop .et{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--gris)}
 .prop a{color:var(--vert);text-decoration:none;border-bottom:1px solid rgba(59,196,125,.35);
@@ -153,7 +214,8 @@ l'air</b> — c'est ce qui s'est passé sur TURBO.</p>
 <div class="compte">
   <span class="v"><b>${vivants.length}</b>liens vivants</span>
   <span class="e"><b>${morts.length}</b>liens morts</span>
-  <span class="o"><b>${orphelins.length + horsTable.length}</b>sans ressource</span>
+  <span class="e"><b>${horsTable.length}</b>n'envoient rien du tout</span>
+  <span class="o"><b>${orphelins.length}</b>envoient la bibliothèque</span>
   <span><b>${orphelins.filter((o) => existe((PROPOSE[o.mot] || {}).f)).length + horsTable.filter((m) => existe((PROPOSE[m] || {}).f)).length}</b>déjà écrites, à relier</span>
 </div>
 
@@ -161,12 +223,36 @@ l'air</b> — c'est ce qui s'est passé sur TURBO.</p>
 <p class="pourquoi">Ces mots-clés partent maintenant. Dans les deux cas la ressource
 <b>existe déjà</b> et répond 200 : il ne manque que la cellule.</p>
 <ul>
-${[...horsTable, ...orphelins.filter((o) => URGENT[o.mot]).map((o) => o.mot)]
+${[...horsTable.filter((m) => URGENT[m]), ...orphelins.filter((o) => URGENT[o.mot]).map((o) => o.mot)]
   .filter((m, i, a) => a.indexOf(m) === i).map(ligneOrpheline).join('\n')}
 </ul>
 <p class="pourquoi"><b>OUTILS n'a même pas de ligne dans le tableur</b> — il faut l'ajouter,
 pas seulement le remplir. Onglet <code>Ressources CTA</code>, colonnes
 <code>Mot-cle CTA</code> et <code>Lien Ressource</code>.</p>
+
+<h2 class="e2">Silence total — le commentaire est ignoré</h2>
+<p class="pourquoi">Ces mots sont prononcés dans une vidéo mais <b>n'ont aucune ligne dans
+l'onglet</b>. Ce n'est pas la même chose qu'une cellule vide : une cellule vide envoie quand
+même la bibliothèque, alors qu'un mot absent fait <b>ignorer le commentaire — rien ne part,
+et personne ne le voit passer</b>. Relevé en balayant les ${nbFichiers} scripts et narrations
+du dossier vidéo.<br>
+⚠️ Tous n'ont pas forcément été publiés : un script peut être resté en brouillon. À recouper
+avec le calendrier avant d'ajouter les lignes.</p>
+<ul>
+${horsTable.filter((m) => !URGENT[m]).map((m) => {
+  const p = PROPOSE[m] || {};
+  const dispo = existe(p.f);
+  return `      <li class="m${dispo ? ' pret' : ''}">
+        <div class="hd"><b>${esc(m)}</b><span class="urg2">aucun DM ne part</span></div>
+        <p class="pq">Promis dans : <b>${esc(ouPromis(m) || '—')}</b></p>
+        ${dispo
+          ? `<div class="prop"><span class="et">${p.sur ? 'Correspondance sûre' : 'À confirmer'}</span>
+               <a href="${BASE_RES}${esc(p.f)}" target="_blank" rel="noopener">${esc(p.f)}</a></div>
+             <div class="act"><button type="button" class="cp" data-txt="${BASE_RES}${esc(p.f)}">Copier l'URL</button></div>`
+          : `<p class="pq manque">Aucune page ne correspond — <b>il faut l'écrire.</b></p>`}
+      </li>`;
+}).join('\n')}
+</ul>
 
 <h2 class="b">Déjà écrites — il ne manque que le lien</h2>
 <p class="pourquoi">Le travail est fait. Ces pages sont en ligne, il suffit de coller leur URL
@@ -212,5 +298,11 @@ document.querySelectorAll('.cp').forEach(function(b){
 
 fs.mkdirSync(path.join(R, 'cta'), { recursive: true });
 fs.writeFileSync(path.join(R, 'cta', 'index.html'), html);
-console.log(`  cta/index.html · ${vivants.length} vivants · ${morts.length} morts · ${orphelins.length + horsTable.length} sans ressource`);
-console.log(`  urgents : ${[...horsTable, ...orphelins.filter((o) => URGENT[o.mot]).map((o) => o.mot)].filter((m, i, a) => a.indexOf(m) === i).join(', ')}`);
+/* Deux compteurs distincts : un silence n'est pas un repli. Les additionner,
+   comme le faisait la version précédente, masquait le cas grave. */
+console.log(`  cta/index.html · ${vivants.length} liens vivants · ${morts.length} morts`);
+console.log(`  🔇 ${horsTable.length} mots promis SANS ligne dans l'onglet — rien ne part :`);
+console.log(`     ${horsTable.join(', ')}`);
+console.log(`  📩 ${orphelins.length} mots avec une ligne mais sans lien — la bibliothèque part quand même`);
+console.log(`  ✍️  ${horsTable.filter((m) => existe((PROPOSE[m] || {}).f)).length} des silencieux ont déjà une page écrite`);
+console.log(`  urgents (calendrier) : ${Object.keys(URGENT).join(', ')}`);
