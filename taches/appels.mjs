@@ -36,6 +36,52 @@ const vrais = tous
 const esc = (s) => String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 const telBrut = (t) => String(t).replace(/[^\d+]/g, '');
 
+/* Le script est adapté à chaque lead — mais uniquement avec ce qu'on SAIT
+   vraiment de lui : son type, sa cuisine quand elle est renseignée, et surtout
+   s'il a un site ou non. Rien d'autre. Prétendre connaître son établissement au
+   téléphone, c'est se faire raccrocher au nez à la deuxième phrase. */
+function script(r, chaud) {
+  const quoi = r.type === 'fast_food' ? 'votre snack'
+    : r.type === 'cafe' ? 'votre établissement' : 'votre restaurant';
+  /* Les étiquettes OSM sont en anglais et brutes. Les lire telles quelles au
+     téléphone sonne faux — « vos photos de malagasy » ne veut rien dire pour un
+     restaurateur. On ne traduit que ce qu'on sait traduire ; le reste retombe
+     sur « vos plats », qui marche toujours. */
+  const CUISINE = {
+    regional: 'cuisine locale', creole: 'cuisine créole', local: 'cuisine locale',
+    pizza: 'pizzas', french: 'cuisine française', burger: 'burgers',
+    sandwich: 'sandwichs', chinese: 'cuisine chinoise', italian: 'cuisine italienne',
+    indian: 'cuisine indienne', asian: 'cuisine asiatique', japanese: 'cuisine japonaise',
+    malagasy: 'cuisine malgache', salad: 'salades', pasta: 'pâtes',
+    kebab: 'kebabs', crepe: 'crêpes', fine_dining: 'assiettes', snack: 'plats',
+    seafood: 'poissons', chicken: 'poulet', ice_cream: 'glaces',
+  };
+  const brut = r.cuisine ? r.cuisine.split(';')[0].toLowerCase() : null;
+  const plat = brut && CUISINE[brut] ? CUISINE[brut] : null;
+
+  if (chaud) {
+    return [
+      ['Ouvrir', "Bonjour, Tony PAYET, je suis à La Réunion. Je fais des petites vidéos pour les restaurants. Vous avez deux minutes ?"],
+      ['S’il dit non', "Pas de souci, bonne journée — et tu raccroches. C’est un échauffement : le but est de parler, pas de vendre."],
+      ['S’il écoute', "Je monte des vidéos courtes à partir des photos que vous avez déjà, pour Instagram et TikTok. Vous publiez en ce moment ?"],
+      ['Fermer', "Je peux vous en faire une pour voir, sans engagement. Je vous l’envoie et vous me dites."],
+    ];
+  }
+
+  const accroche = r.site
+    ? "J’ai regardé votre site avant d’appeler."
+    : "Je n’ai pas trouvé de site à votre nom, c’est pour ça que je vous appelle directement.";
+
+  return [
+    ['Ouvrir', `Bonjour, Tony PAYET, je suis basé à La Réunion. ${accroche} Je fais des vidéos courtes pour ${quoi}. Vous avez deux minutes ?`],
+    ['La question qui ouvre', `Vos photos ${plat ? 'de ' + plat : 'de plats'}, aujourd’hui vous en faites quoi ? Elles restent sur le téléphone, ou vous publiez ?`],
+    ['Ce que tu proposes', "Je pars de vos propres photos et j’en fais une vidéo verticale de dix secondes, prête à publier. Pas de tournage, pas de déplacement, rien à préparer de votre côté."],
+    ['S’il demande le prix', "Ça dépend du nombre de vidéos. Je préfère vous en montrer une d’abord : si elle ne vous plaît pas, la question du prix ne se pose pas."],
+    ['Fermer', "Je vous en monte une cette semaine et je vous envoie le lien. Vous regardez, et vous me dites oui ou non. Ça vous va ?"],
+    ['La sortie', "Si ce n’est pas le moment, dites-le-moi franchement et je ne rappelle pas."],
+  ];
+}
+
 /* Le bouton d'appel occupe sa propre ligne, pleine largeur. Côte à côte avec le
    nom, il écrasait celui-ci sur trois lignes et poussait la page à 421 px dans
    un écran de 390 — mesuré. Et c'est la cible qu'on vise au pouce : autant
@@ -51,6 +97,10 @@ const carte = (r, i, chaud) => `
           </div>
         </div>
         <a class="tel" href="tel:${telBrut(r.telephone)}">📞 ${esc(r.telephone)}</a>
+        <details class="scr">
+          <summary>Le script pour cet appel</summary>
+          ${script(r, chaud).map(([t, l]) => `<div class="et"><span>${esc(t)}</span><p>${esc(l)}</p></div>`).join('')}
+        </details>
       </li>`;
 
 const html = `<!doctype html>
@@ -87,6 +137,18 @@ ul{list-style:none}
   text-decoration:none;font-weight:700;font-size:16px;letter-spacing:.01em;
   padding:13px 10px;border-radius:9px;text-align:center}
 .lead.chaud .tel{background:var(--chaud);color:#1a1200}
+.scr{margin-top:10px;border-top:1px solid var(--ligne);padding-top:9px}
+.scr summary{cursor:pointer;list-style:none;font-size:12px;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--gris);font-weight:600}
+.scr summary::-webkit-details-marker{display:none}
+.scr summary::after{content:" ▾";color:var(--vrai)}
+.scr[open] summary::after{content:" ▴"}
+.lead.chaud .scr summary::after{color:var(--chaud)}
+.et{margin-top:12px}
+.et span{display:block;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--vrai);font-weight:700;margin-bottom:3px}
+.lead.chaud .et span{color:var(--chaud)}
+.et p{font-size:14.5px;line-height:1.5;color:#c9cfda}
 .note{margin-top:30px;border-left:2px solid var(--ligne);padding-left:15px;
   color:var(--gris);font-size:13.5px}
 .note b{color:var(--blanc)}
