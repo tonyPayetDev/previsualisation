@@ -1,0 +1,19 @@
+# Ce qui ne doit PAS entrer dans l'image servie par nginx.
+#
+# Rappel du modèle de sécurité (voir nginx.conf) : le sommaire est derrière mot
+# de passe parce qu'il liste TOUTES les maquettes clientes. Envoyer son adresse
+# à un prospect reviendrait à lui montrer le travail fait pour ses concurrents.
+
+# La sauvegarde de l'ancien sommaire écrit à la main. Elle contient la même
+# liste complète de clients — mais aucune règle d'authentification ne couvre
+# l'extension .bak, donc nginx la servirait publiquement. Elle reste versionnée
+# dans le dépôt ; elle ne part pas sur le serveur.
+index.manuel.html.bak
+
+# L'historique git pèse 3,6 Go et son remote contient un jeton GitHub.
+# Il n'a rien à faire dans un contexte de construction ni dans la racine web.
+.git
+.gitignore
+
+.claude
+node_modules
