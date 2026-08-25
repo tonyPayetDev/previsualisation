@@ -15,7 +15,7 @@ const OUT = '/work/previsualisation/appels/index.html';
 
 /* Les franchises n'achètent pas de vidéo à un indépendant : leur communication
    est décidée au siège. Les appeler, c'est brûler un appel pour rien. */
-const CHAINES = /\b(mc ?donald|burger king|kfc|subway|domino|pizza hut|quick|starbucks|del arte|brioche dor|paul\b|o'?tacos|five guys|buffalo grill|la mie c[aâ]line|columbus caf|speed burger|g[ée]ant|carrefour|leader ?price|super ?u|casino)\b/i;
+const CHAINES = /\b(mc ?donald|burger king|kfc|subway|domino|pizza hut|quick|starbucks|del arte|brioche dor|paul\b|o'?tacos|five guys|buffalo grill|la mie c[aâ]line|columbus caf|speed burger|g[ée]ant|carrefour|leader ?price|super ?u|casino|vapiano)\b/i;
 
 const tous = JSON.parse(fs.readFileSync(SRC, 'utf8'))
   .filter((r) => r.telephone)
@@ -35,6 +35,22 @@ const vrais = tous
 
 const esc = (s) => String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 const telBrut = (t) => String(t).replace(/[^\d+]/g, '');
+const cle = (n) => n.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '')
+  .replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+
+/* État de la vitrine, relevé en visitant réellement chaque site (captures.mjs).
+   Ce sont ces trois signaux qui changent ce qu'on dit au téléphone. */
+let ETAT = {};
+try { ETAT = JSON.parse(fs.readFileSync('/work/previsualisation/appels/vignettes/etat.json', 'utf8')); } catch {}
+
+function vitrine(r) {
+  const e = ETAT[cle(r.nom)] || {};
+  if (!r.site) return { sorte: 'aucun', dit: 'aucun site trouvé' };
+  if (e.ok === false) return { sorte: 'mort', dit: 'leur site ne répond plus' };
+  if (/facebook\.com/i.test(r.site)) return { sorte: 'facebook', dit: 'leur seule vitrine est une page Facebook' };
+  if (e.texte != null && e.texte < 600) return { sorte: 'maigre', dit: 'site très pauvre en contenu' };
+  return { sorte: 'ok', dit: 'site en ligne' };
+}
 
 /* Le script est adapté à chaque lead — mais uniquement avec ce qu'on SAIT
    vraiment de lui : son type, sa cuisine quand elle est renseignée, et surtout
@@ -68,9 +84,17 @@ function script(r, chaud) {
     ];
   }
 
-  const accroche = r.site
-    ? "J’ai regardé votre site avant d’appeler."
-    : "Je n’ai pas trouvé de site à votre nom, c’est pour ça que je vous appelle directement.";
+  /* L accroche part de ce qu on a VU sur leur vitrine. C est ce qui fait la
+     différence entre un appel de démarcheur et un appel de quelqu un qui a
+     regardé. */
+  const v = vitrine(r);
+  const accroche = {
+    mort:     "J’ai voulu regarder votre site avant d’appeler — il ne répond plus.",
+    facebook: "J’ai regardé : votre seule vitrine en ligne, c’est votre page Facebook.",
+    maigre:   "J’ai jeté un œil à votre site, il est encore très léger.",
+    aucun:    "Je n’ai pas trouvé de site à votre nom, c’est pour ça que je vous appelle directement.",
+    ok:       "J’ai regardé votre site avant d’appeler.",
+  }[v.sorte];
 
   return [
     ['Ouvrir', `Bonjour, Tony PAYET, je suis basé à La Réunion. ${accroche} Je fais des vidéos courtes pour ${quoi}. Vous avez deux minutes ?`],
@@ -93,9 +117,15 @@ const carte = (r, i, chaud) => `
           <div class="corps">
             <b>${esc(r.nom)}</b>
             <span class="meta">${esc(r.type === 'fast_food' ? 'Snack / fast-food' : r.type === 'cafe' ? 'Café' : 'Restaurant')}${r.commune ? ' · ' + esc(r.commune) : ''}${r.cuisine ? ' · ' + esc(r.cuisine.split(';')[0]) : ''}</span>
-            ${r.site ? `<a class="site" href="${esc(r.site)}" target="_blank" rel="noopener">site en ligne ↗</a>` : '<span class="meta">pas de site</span>'}
+            ${(() => { const v = vitrine(r); return r.site
+              ? `<a class="site v-${v.sorte}" href="${esc(r.site)}" target="_blank" rel="noopener">${esc(v.dit)} ↗</a>`
+              : `<span class="site v-aucun">${esc(v.dit)}</span>`; })()}
           </div>
         </div>
+        ${(() => {
+          const k = cle(r.nom); const e = ETAT[k] || {};
+          return e.ok ? `<a class="vign" href="${esc(r.site)}" target="_blank" rel="noopener"><img loading="lazy" src="vignettes/${k}.jpg" alt="Aperçu du site de ${esc(r.nom)}"></a>` : '';
+        })()}
         <a class="tel" href="tel:${telBrut(r.telephone)}">📞 ${esc(r.telephone)}</a>
         <details class="scr">
           <summary>Le script pour cet appel</summary>
@@ -132,7 +162,13 @@ ul{list-style:none}
 .corps{flex:1;min-width:0}
 .corps b{display:block;font-size:16px;font-weight:650;letter-spacing:-.01em;text-wrap:balance}
 .meta{display:block;color:var(--gris);font-size:12.5px;margin-top:2px}
-.site{display:inline-block;color:var(--vrai);font-size:12.5px;text-decoration:none;margin-top:3px}
+.site{display:inline-block;font-size:12.5px;text-decoration:none;margin-top:3px;color:var(--vrai)}
+/* L'état de la vitrine se lit à la couleur : rouge = argument de vente. */
+.site.v-mort,.site.v-aucun{color:#FF6B6B}
+.site.v-facebook,.site.v-maigre{color:var(--chaud)}
+.vign{display:block;margin-top:10px;border:1px solid var(--ligne);border-radius:8px;
+  overflow:hidden;background:#0b0d11}
+.vign img{display:block;width:100%;height:132px;object-fit:cover;object-position:top center}
 .tel{display:block;margin-top:11px;background:var(--vrai);color:#08130c;
   text-decoration:none;font-weight:700;font-size:16px;letter-spacing:.01em;
   padding:13px 10px;border-radius:9px;text-align:center}
@@ -167,6 +203,17 @@ sans site web. Si ça se passe mal, tu n'as rien perdu — c'est le but.</p>
 dans leur image. Et ils sont dans une commune où tu peux passer.</p>
 <ul>${vrais.map((r, i) => carte(r, i + 1, false)).join('')}
 </ul>
+
+<p class="note"><b>Ce que la vignette montre, et ce qu'elle ne montre pas.</b>
+C'est leur page d'accueil, visitée en anonyme le 25/08. Ça suffit pour juger si
+la vitrine est vivante — et c'est justement l'argument d'ouverture.
+<br><br>
+<b>Leur feed Instagram, en revanche, je ne peux pas te le montrer ici.</b>
+Instagram ne laisse plus consulter un profil sans être connecté : il faut soit
+des cookies de session, soit un service de scraping payant plafonné à quelques
+profils par jour. Je préfère te le dire plutôt que d'afficher une image vide.
+Le raccourci qui marche : ouvre leur Instagram sur ton téléphone pendant que ça
+sonne — deux secondes, et tu sais s'ils publient.</p>
 
 <p class="note">Les numéros viennent d'<b>OpenStreetMap</b>, relevés le 25/08 —
 ${tous.length} établissements réunionnais avec un téléphone publié. C'est une base
