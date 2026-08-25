@@ -49,11 +49,15 @@ const PROPOSE = {
   IDEAS:       { f: 'tester-idee-7-jours.html', sur: false, pourquoi: 'Tester une idée en 7 jours — à confirmer selon le propos de la vidéo.' },
   LIVRE:       { f: 'lire-livre-dense-memoriser.html', sur: false, pourquoi: 'Lire un livre dense — à confirmer.' },
   VIDEO:       { f: 'automation-boost-video-pack.html', sur: false, pourquoi: 'Le pack vidéo générique — attention, c\'est exactement ce qui a été envoyé à tort sur TURBO.' },
-  TERMINAL:    { f: null, sur: false, pourquoi: 'Aucune correspondance sérieuse : la recherche remonte des pages sans rapport.' },
-  FABLE:       { f: null, sur: false, pourquoi: 'Aucune correspondance sérieuse.' },
+  /* Écrites depuis, en réponse exacte à ce que la vidéo promet. */
+  TERMINAL:    { f: 'guide-terminal-claude-code-vps.html', sur: true,
+                 pourquoi: "La vidéo dit « un VPS, Coolify, et tu déploies Claude Code avec tes MCP… commente le mot TERMINAL et je t'envoie le guide ». Cette page est ce guide, écrite pour ce post." },
+  FABLE:       { f: 'regle-delegation-agents-legers.html', sur: true,
+                 pourquoi: "La vidéo dit « le cerveau premium garde les vraies décisions, le sale boulot part sur des agents plus légers… commente le mot FABLE et je t'envoie l'outil ». Cette page est la règle de délégation, chiffrée sur l'audit des 132 sessions." },
+  DEVIS:       { f: 'devis-proposition-automatique.html', sur: true,
+                 pourquoi: 'Le workflow formulaire → devis PDF → email, décrit nœud par nœud.' },
   PINTEREST:   { f: null, sur: false, pourquoi: 'Rien d\'écrit sur Pinterest.' },
   WHATSAPP:    { f: null, sur: false, pourquoi: 'Rien d\'écrit sur WhatsApp.' },
-  DEVIS:       { f: null, sur: false, pourquoi: 'Rien d\'écrit sur les devis.' },
   KILO:        { f: null, sur: false, pourquoi: 'Rien d\'écrit sur Kilo Code.' },
 };
 
@@ -132,6 +136,61 @@ const horsTable = [...new Set([...promis.keys(), ...Object.keys(URGENT)])]
   .sort();
 const ouPromis = (m) => [...(promis.get(m) || [])].slice(0, 2).join(', ');
 
+/* ── Deux blocs à coller, pour que la correction tienne en 30 secondes ─────
+ *
+ * Constater le trou ne suffit pas : tant que remplir le Sheet demande de
+ * chercher la bonne ligne parmi 43 puis de recopier une URL à la main, ça ne
+ * se fait pas. On produit donc deux blocs prêts à coller.
+ *
+ * Le numéro de ligne vient du mapping RÉEL, relevé dans une exécution du
+ * workflow Auto-DM (voir taches/mapping.mjs) — pas d'une note qui se périme
+ * dès que quelqu'un insère une ligne.
+ *
+ * ⚠️ Chaque URL proposée est APPELÉE avant d'entrer dans un bloc. Coller un
+ * lien mort dans un système qui envoie des DM à de vraies personnes est pire
+ * que la cellule vide : la cellule vide, elle, envoie la bibliothèque. */
+let mappingLive = null;
+try { mappingLive = JSON.parse(fs.readFileSync('/tmp/mapping-cta.json', 'utf8')); } catch {}
+const numLigne = {};
+for (const l of (mappingLive?.lignes || [])) numLigne[String(l['Mot-cle CTA'] || '').trim().toUpperCase()] = l.row_number;
+
+const verifie = async (url) => {
+  try {
+    const r = await fetch(`${url}${url.includes('?') ? '&' : '?'}cb=${Math.random()}`,
+      { method: 'GET', signal: AbortSignal.timeout(20000) });
+    return r.status;
+  } catch { return 0; }
+};
+
+/* À remplir : le mot a déjà sa ligne, il ne manque que le lien. */
+const aRemplir = [];
+for (const o of orphelins) {
+  const p = PROPOSE[o.mot];
+  if (!p || !p.f || !p.sur || !existe(p.f)) continue;      // proposition incertaine → on s'abstient
+  const url = BASE_RES + p.f;
+  const code = await verifie(url);
+  if (code !== 200) { console.log(`  ⚠️  ${o.mot} : ${p.f} rend ${code} — écarté du bloc`); continue; }
+  aRemplir.push({ mot: o.mot, ligne: numLigne[o.mot] ?? null, url });
+}
+aRemplir.sort((a, b) => (a.ligne ?? 999) - (b.ligne ?? 999));
+
+/* À ajouter : le mot n'a pas de ligne du tout, donc rien ne part. Une ligne
+   sans lien vaut déjà mieux que l'absence — elle déclenche la bibliothèque. */
+const aAjouter = [];
+for (const m of horsTable) {
+  const p = PROPOSE[m];
+  let url = '';
+  if (p && p.f && existe(p.f)) {
+    const u = BASE_RES + p.f;
+    if (await verifie(u) === 200) url = p.sur ? u : '';   // incertain → ligne sans lien, volontairement
+  }
+  aAjouter.push({ mot: m, url });
+}
+
+const tsvRemplir = aRemplir.map((x) => `${x.ligne ? 'ligne ' + x.ligne + '\t' : ''}${x.mot}\t${x.url}`).join('\n');
+const tsvAjouter = aAjouter.map((x) => `${x.mot}\t${x.url}`).join('\n');
+console.log(`  bloc « à remplir » : ${aRemplir.length} · bloc « à ajouter » : ${aAjouter.length}`);
+
 const ligneOrpheline = (mot) => {
   const p = PROPOSE[mot] || { f: null, sur: false, pourquoi: 'Pas encore examiné.' };
   const dispo = existe(p.f);
@@ -197,6 +256,14 @@ ul{list-style:none}
   padding:8px 13px;font:inherit;font-size:12.5px;cursor:pointer}
 .act button:hover{border-color:var(--vert)}
 .act button.ok{background:var(--vert);border-color:var(--vert);color:#08130c}
+.coller{background:var(--carte);border:1px solid var(--ligne);border-left:3px solid var(--chaud);
+  border-radius:10px;padding:14px 15px;margin-bottom:12px}
+.coller-hd{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.coller-hd b{font-size:15px}
+.coller-hd span{font-size:12.5px;color:var(--gris)}
+.tsv{background:#0b0d11;border:1px solid var(--ligne);border-radius:8px;padding:11px 13px;
+  overflow-x:auto;font-family:ui-monospace,Menlo,monospace;font-size:12.5px;line-height:1.75;
+  color:#cbd2dc;white-space:pre;tab-size:14}
 .vivants{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
 .vivants span{font-size:11.5px;color:var(--gris);border:1px solid var(--ligne);border-radius:99px;padding:3px 9px}
 .pied{margin-top:28px;color:var(--gris);font-size:13px;line-height:1.7}
@@ -253,6 +320,38 @@ ${horsTable.filter((m) => !URGENT[m]).map((m) => {
       </li>`;
 }).join('\n')}
 </ul>
+
+<h2 class="a">À coller dans le Sheet — 30 secondes</h2>
+<p class="pourquoi">Onglet <code>Ressources CTA</code>. Chaque URL ci-dessous a été
+<b>appelée à la génération de cette page</b> et répond 200 — aucune n'est proposée sur la foi
+d'un nom de fichier. Les correspondances incertaines sont volontairement absentes de ces blocs :
+elles sont plus bas, à trancher à la main.</p>
+
+${aRemplir.length ? `
+<div class="coller">
+  <div class="coller-hd">
+    <b>${aRemplir.length} cellules à remplir</b>
+    <span>la ligne existe déjà, seul le lien manque</span>
+  </div>
+  <pre class="tsv">${esc(tsvRemplir)}</pre>
+  <div class="act"><button type="button" class="cp" data-txt="${esc(aRemplir.map((x) => x.url).join('\n'))}">Copier les URL dans l'ordre</button></div>
+  <p class="pq">Le numéro de ligne est relevé dans le mapping réel du workflow, pas supposé.
+  Colle chaque URL dans la colonne <code>Lien Ressource</code> de la ligne indiquée.</p>
+</div>` : ''}
+
+${aAjouter.length ? `
+<div class="coller">
+  <div class="coller-hd">
+    <b>${aAjouter.length} lignes à ajouter</b>
+    <span>ces mots n'ont AUCUNE ligne — donc rien ne part</span>
+  </div>
+  <pre class="tsv">${esc(tsvAjouter)}</pre>
+  <div class="act"><button type="button" class="cp" data-txt="${esc(tsvAjouter)}">Copier le bloc entier</button></div>
+  <p class="pq">Deux colonnes séparées par une tabulation : clique la première cellule vide sous
+  la dernière ligne de l'onglet et colle — le tableur répartit les colonnes tout seul.
+  <b>Une ligne sans lien n'est pas inutile</b> : elle fait partir la bibliothèque au lieu du
+  silence.</p>
+</div>` : ''}
 
 <h2 class="b">Déjà écrites — il ne manque que le lien</h2>
 <p class="pourquoi">Le travail est fait. Ces pages sont en ligne, il suffit de coller leur URL
