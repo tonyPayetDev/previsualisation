@@ -36,15 +36,21 @@ const vrais = tous
 const esc = (s) => String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 const telBrut = (t) => String(t).replace(/[^\d+]/g, '');
 
+/* Le bouton d'appel occupe sa propre ligne, pleine largeur. Côte à côte avec le
+   nom, il écrasait celui-ci sur trois lignes et poussait la page à 421 px dans
+   un écran de 390 — mesuré. Et c'est la cible qu'on vise au pouce : autant
+   qu'elle soit large. */
 const carte = (r, i, chaud) => `
       <li class="lead${chaud ? ' chaud' : ''}">
-        <div class="rang">${i}</div>
-        <div class="corps">
-          <b>${esc(r.nom)}</b>
-          <span class="meta">${esc(r.type === 'fast_food' ? 'Snack / fast-food' : r.type === 'cafe' ? 'Café' : 'Restaurant')}${r.commune ? ' · ' + esc(r.commune) : ''}${r.cuisine ? ' · ' + esc(r.cuisine.split(';')[0]) : ''}</span>
-          ${r.site ? `<a class="site" href="${esc(r.site)}" target="_blank" rel="noopener">site en ligne ↗</a>` : '<span class="meta">pas de site</span>'}
+        <div class="tete">
+          <div class="rang">${i}</div>
+          <div class="corps">
+            <b>${esc(r.nom)}</b>
+            <span class="meta">${esc(r.type === 'fast_food' ? 'Snack / fast-food' : r.type === 'cafe' ? 'Café' : 'Restaurant')}${r.commune ? ' · ' + esc(r.commune) : ''}${r.cuisine ? ' · ' + esc(r.cuisine.split(';')[0]) : ''}</span>
+            ${r.site ? `<a class="site" href="${esc(r.site)}" target="_blank" rel="noopener">site en ligne ↗</a>` : '<span class="meta">pas de site</span>'}
+          </div>
         </div>
-        <a class="tel" href="tel:${telBrut(r.telephone)}">${esc(r.telephone)}</a>
+        <a class="tel" href="tel:${telBrut(r.telephone)}">📞 ${esc(r.telephone)}</a>
       </li>`;
 
 const html = `<!doctype html>
@@ -66,18 +72,20 @@ h2{font-size:12px;letter-spacing:.2em;text-transform:uppercase;font-weight:700;
 h2.a{color:var(--chaud)} h2.b{color:var(--vrai)}
 .pourquoi{color:var(--gris);font-size:13.5px;margin-bottom:14px;max-width:56ch}
 ul{list-style:none}
-.lead{display:flex;align-items:center;gap:12px;background:var(--carte);
-  border:1px solid var(--ligne);border-left:3px solid var(--vrai);
-  border-radius:11px;padding:13px 14px;margin-bottom:9px}
+.lead{background:var(--carte);border:1px solid var(--ligne);
+  border-left:3px solid var(--vrai);border-radius:11px;
+  padding:13px 14px 12px;margin-bottom:10px}
+.tete{display:flex;align-items:flex-start;gap:11px}
 .lead.chaud{border-left-color:var(--chaud)}
 .rang{flex:0 0 26px;height:26px;border-radius:50%;background:#222834;color:var(--gris);
   display:grid;place-items:center;font-size:12.5px;font-weight:700}
 .corps{flex:1;min-width:0}
-.corps b{display:block;font-size:15.5px;font-weight:650;letter-spacing:-.01em}
+.corps b{display:block;font-size:16px;font-weight:650;letter-spacing:-.01em;text-wrap:balance}
 .meta{display:block;color:var(--gris);font-size:12.5px;margin-top:2px}
 .site{display:inline-block;color:var(--vrai);font-size:12.5px;text-decoration:none;margin-top:3px}
-.tel{flex:0 0 auto;background:var(--vrai);color:#08130c;text-decoration:none;
-  font-weight:700;font-size:14px;padding:10px 13px;border-radius:9px;white-space:nowrap}
+.tel{display:block;margin-top:11px;background:var(--vrai);color:#08130c;
+  text-decoration:none;font-weight:700;font-size:16px;letter-spacing:.01em;
+  padding:13px 10px;border-radius:9px;text-align:center}
 .lead.chaud .tel{background:var(--chaud);color:#1a1200}
 .note{margin-top:30px;border-left:2px solid var(--ligne);padding-left:15px;
   color:var(--gris);font-size:13.5px}
