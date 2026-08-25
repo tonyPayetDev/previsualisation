@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Maquette de feed — deux méthodes</title>
+<style>
+:root{--noir:#0f1115;--carte:#171a21;--ligne:#262b36;--blanc:#eef1f6;--gris:#8b93a3;
+      --vert:#3BC47D;--rouge:#C2444C;--chaud:#F5A524}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--noir);color:var(--blanc);
+  font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding:22px 16px 70px}
+.wrap{max-width:1000px;margin:0 auto}
+.sur{font-size:11px;letter-spacing:.26em;text-transform:uppercase;color:var(--gris)}
+h1{font-size:clamp(25px,6vw,36px);line-height:1.08;font-weight:800;letter-spacing:-.03em;margin:8px 0 14px}
+.intro{color:var(--gris);font-size:15px;line-height:1.7;max-width:70ch}
+.intro b{color:var(--blanc)}
+.deux{display:grid;grid-template-columns:1fr;gap:18px;margin-top:26px}
+@media(min-width:760px){.deux{grid-template-columns:1fr 1fr}}
+.col{background:var(--carte);border:1px solid var(--ligne);border-radius:12px;overflow:hidden;
+  display:flex;flex-direction:column}
+.col.ok{border-color:rgba(59,196,125,.45)}
+.col.ko{border-color:rgba(194,68,76,.4)}
+.hd{padding:14px 16px;border-bottom:1px solid var(--ligne)}
+.hd b{display:block;font-size:16px}
+.hd span{font-size:12.5px;color:var(--gris)}
+.col img{width:100%;display:block;background:#000}
+.notes{padding:14px 16px;font-size:13.5px;line-height:1.65;color:var(--gris)}
+.notes li{margin:0 0 7px;list-style:none;padding-left:22px;position:relative}
+.notes li::before{position:absolute;left:0;top:0}
+.oui::before{content:"✅"} .non::before{content:"❌"}
+.notes b{color:var(--blanc)}
+h2{font-size:12px;letter-spacing:.2em;text-transform:uppercase;font-weight:700;margin:34px 0 8px;color:var(--chaud)}
+.bloc{background:var(--carte);border:1px solid var(--ligne);border-radius:11px;padding:15px 17px;
+  font-size:14.5px;line-height:1.7;color:var(--gris)}
+.bloc b{color:var(--blanc)}
+table{width:100%;border-collapse:collapse;margin-top:10px;font-size:14px}
+th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--ligne);vertical-align:top}
+th{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--gris);font-weight:700}
+td:first-child{color:var(--blanc);font-weight:600;white-space:nowrap}
+.pied{margin-top:26px;color:var(--gris);font-size:13px;line-height:1.7}
+</style></head>
+<body><div class="wrap">
+
+<p class="sur">Maquette du feed — démo prospect</p>
+<h1>Deux méthodes, le même prospect</h1>
+<p class="intro">Même établissement, <b>MetisSage traiteur</b>, à gauche l'image produite par le
+générateur, à droite la même maquette composée en HTML à partir des données réellement scrapées.
+L'écart ne porte pas sur le goût : il porte sur <b>ce qui est vrai</b>.</p>
+
+<div class="deux">
+  <div class="col ko">
+    <div class="hd"><b>Générateur d'images</b><span>ce qui part aujourd'hui · ~6 crédits par tirage</span></div>
+    <img src="https://assets.automatisationboost.com/feed-mockup-metissage-traiteur-20260825194025.png" alt="Maquette générée par IA">
+    <ul class="notes">
+      <li class="non">Prix inventés : <b>18 €, 35 €, 24 €, 19 €, 28 €</b>, remises −15 % et −20 %</li>
+      <li class="non">Horaires inventés : <b>lundi-vendredi 9h-18h</b></li>
+      <li class="non">Avis client fabriqué, <b>signé « Sophie &amp; Marc »</b></li>
+      <li class="non">Plats inventés de toutes pièces</li>
+      <li class="non">Un gros logo au lieu du profil, 12 tuiles au lieu de 9</li>
+    </ul>
+  </div>
+
+  <div class="col ok">
+    <div class="hd"><b>Composition HTML</b><span>proposition · 0 crédit, rendu identique à chaque fois</span></div>
+    <img src="html.png" alt="Maquette composée en HTML">
+    <ul class="notes">
+      <li class="oui">Vrai pseudo <b>@metissagetraiteur</b>, vrai nom, vraie bio</li>
+      <li class="oui">Vrais compteurs : <b>560 publications, 948 abonnés, 97 suivis</b></li>
+      <li class="oui">Leur vrai logo en photo de profil</li>
+      <li class="oui"><b>Leurs neuf vraies photos</b>, reprises telles quelles</li>
+      <li class="oui">Aucun prix, aucun horaire, aucun avis — <b>rien n'est généré</b></li>
+    </ul>
+  </div>
+</div>
+
+<h2>Pourquoi le générateur n'y arrive pas</h2>
+<div class="bloc">
+  Ce n'est pas un problème de consigne. Vérifié dans les données d'exécution : le prompt envoyé
+  contenait bien le profil, les pastilles, la grille 3×3, le nom exact et les sept interdictions,
+  et le modèle de texte a répondu <b>llm_ok: true</b>. C'est le <b>générateur d'images</b> qui
+  décroche : il suit le début d'une consigne et ignore les longues listes de « ne pas », puis
+  retombe sur son gabarit appris — une planche d'affiches de restaurant avec des prix.
+  Raccourcir le prompt de 2 522 à 674 caractères en formulation positive n'a rien changé.
+  <b>Bilan mesuré : 2 tirages conformes sur 6.</b>
+</div>
+
+<h2>Ce que ça change concrètement</h2>
+<table>
+  <tr><th></th><th>Générateur</th><th>HTML</th></tr>
+  <tr><td>Contenu inventé</td><td>4 fois sur 6</td><td>impossible par construction</td></tr>
+  <tr><td>Photos montrées</td><td>photos de banque</td><td>les leurs</td></tr>
+  <tr><td>Nom du commerce</td><td>parfois remplacé</td><td>celui du compte</td></tr>
+  <tr><td>Coût par prospect</td><td>~6 crédits</td><td>0</td></tr>
+  <tr><td>Deux passages de suite</td><td>résultats différents</td><td>identiques</td></tr>
+</table>
+
+<h2>L'argument de vente change aussi</h2>
+<div class="bloc">
+  L'image générée dit « voici un feed imaginaire ». La version HTML dit
+  <b>« voici VOS photos, mieux présentées »</b> — et le commerçant reconnaît ses propres
+  pâtisseries dans la grille. C'est plus difficile à balayer d'un revers de main.<br><br>
+  À noter, visible sur la maquette : trois de leurs photos portent des <b>bandes noires</b>
+  incrustées. Ce n'est pas un défaut du rendu, c'est leur contenu réel — et c'est précisément un
+  argument à leur montrer.
+</div>
+
+<p class="pied">Le rendu est produit par <code>previsualisation/taches/feed-html.mjs</code> à partir
+du profil Instagram scrapé par le workflow existant. Aucun appel payant.<br>
+Généré le 25/08/2026.</p>
+</div></body></html>
