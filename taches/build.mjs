@@ -33,6 +33,7 @@ const OUTILS = [
   { h: '/leads-qualifies/',        n: 'Leads qualifiés',   q: 'qui appeler, et pourquoi' },
   { h: '/leads-restaurants/',      n: 'Tous les leads',    q: 'la liste complète' },
   { h: '/appels/',                 n: 'Appels',            q: 'ce qui a été dit' },
+  { h: '/etude-concurrents/',      n: 'Étude concurrents', q: 'qui vend quoi, à quel prix' },
   { h: '/cta/',                    n: 'Promesses vidéo',   q: 'les mots-clés sans porte' },
   { h: '/carte/',                  n: 'La carte',          q: 'vue d\'ensemble' },
   { h: '/sites-clients/vue.html',  n: 'Sites clients',     q: 'galerie et avant/après' },
