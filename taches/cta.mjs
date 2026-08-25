@@ -56,6 +56,8 @@ const PROPOSE = {
                  pourquoi: "La vidéo dit « le cerveau premium garde les vraies décisions, le sale boulot part sur des agents plus légers… commente le mot FABLE et je t'envoie l'outil ». Cette page est la règle de délégation, chiffrée sur l'audit des 132 sessions." },
   DEVIS:       { f: 'devis-proposition-automatique.html', sur: true,
                  pourquoi: 'Le workflow formulaire → devis PDF → email, décrit nœud par nœud.' },
+  MOTEUR:      { f: 'moteur-n8n-vrai-exemple.html', sur: true,
+                 pourquoi: "autoboost-66 promet « commente le mot MOTEUR et je te montre un vrai exemple ». Cette page montre deux workflows réels nœud par nœud — dont celui qui enverra ce lien. Écrite avant la sortie de la vidéo." },
   PINTEREST:   { f: null, sur: false, pourquoi: 'Rien d\'écrit sur Pinterest.' },
   WHATSAPP:    { f: null, sur: false, pourquoi: 'Rien d\'écrit sur WhatsApp.' },
   KILO:        { f: null, sur: false, pourquoi: 'Rien d\'écrit sur Kilo Code.' },
@@ -83,7 +85,11 @@ const existe = (f) => f && fs.existsSync(path.join(RES, f));
  * Les deux étaient comptés ensemble sous « sans ressource ». Le premier est
  * un silence, le second une réponse imparfaite. */
 const norm = (s) => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toUpperCase().trim();
-const GENERIQUES = new Set(['UN', 'TON', 'LE', 'MACHIN', 'MOT', 'MOTCLE', 'CLE', 'CE', 'CES', 'TA', 'MA']);
+/* Tournures d'exemple et gabarits laissés dans les brouillons. « XXX » vient
+   d'`autoboost-formation-dechirure` : c'est un emplacement à remplir, pas une
+   promesse. L'afficher comme un mot silencieux ferait douter des 33 autres. */
+const GENERIQUES = new Set(['UN', 'TON', 'LE', 'MACHIN', 'MOT', 'MOTCLE', 'CLE', 'CE', 'CES', 'TA', 'MA',
+  'XXX', 'XX', 'MOTCLÉ', 'TONMOT', 'ICI']);
 
 const scanScripts = (racine) => {
   const trouve = new Map();
@@ -95,14 +101,24 @@ const scanScripts = (racine) => {
       if (x.name === 'node_modules' || x.name.startsWith('.')) continue;
       const p = path.join(d, x.name);
       if (x.isDirectory()) marche(p, prof + 1);
+      /* Les scripts ne vivent pas tous au même endroit. Les projets de
+         `autoboost-neon-videos` ont un SCRIPT.md ou un narration.txt ; les
+         vidéos publiées directement sur previsualisation portent leur script
+         DANS la page (`autoboost-66-…/index.html`). Ne balayer que les deux
+         premiers laissait passer les promesses les plus récentes : le mot
+         MOTEUR d'`autoboost-66` n'a été vu qu'à l'œil nu. */
       else if (/^(SCRIPT\.md|narration\.txt)$/.test(x.name)) fichiers.push(p);
+      else if (x.name === 'index.html' && /^autoboost-/.test(path.basename(d))) fichiers.push(p);
     }
   })(racine);
   for (const f of fichiers) {
     /* « Commente le mot X », « Commente X, je t'envoie… ». On ne garde que le
        premier mot qui suit, et on écarte les tournures d'exemple. */
-    const re = /commente\s+(?:le\s+mot\s+|le\s+)?([A-Za-zÀ-ÿ][A-Za-zÀ-ÿ0-9]{2,20})/gi;
-    const txt = fs.readFileSync(f, 'utf8');
+    const re = /commente\s+(?:le\s+mot\s+|le\s+)?(?:<[^>]+>\s*)?([A-Za-zÀ-ÿ][A-Za-zÀ-ÿ0-9]{2,20})/gi;
+    let txt = fs.readFileSync(f, 'utf8');
+    /* Dans une page HTML le mot-clé est souvent en gras : « commente le mot
+       <b>MOTEUR</b> ». Sans retirer les balises, la capture s'arrête sur « b ». */
+    if (f.endsWith('.html')) txt = txt.replace(/<[^>]+>/g, ' ');
     let m;
     while ((m = re.exec(txt))) {
       const k = norm(m[1]);
@@ -114,7 +130,17 @@ const scanScripts = (racine) => {
   return { trouve, nbFichiers: fichiers.length };
 };
 
-const { trouve: promis, nbFichiers } = scanScripts('/work/autoboost-neon-videos');
+/* Deux racines : les projets vidéo, ET les vidéos publiées directement sur
+   previsualisation. Fusionner les deux relevés, sinon une promesse récente
+   reste invisible jusqu à ce que quelqu un la voie passer à l œil nu. */
+const s1 = scanScripts("/work/autoboost-neon-videos");
+const s2 = scanScripts("/work/previsualisation");
+const promis = s1.trouve;
+for (const [k, v] of s2.trouve) {
+  if (!promis.has(k)) promis.set(k, new Set());
+  for (const d of v) promis.get(k).add(d);
+}
+const nbFichiers = s1.nbFichiers + s2.nbFichiers;
 
 /* Une page dont le nom contient le mot-clé est une PISTE, jamais une preuve.
    Elle est affichée « à confirmer » — sauf si PROPOSE la donne pour sûre. */
