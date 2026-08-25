@@ -27,6 +27,14 @@ tr:last-child td{border-bottom:none}
 td:first-child{color:var(--blanc);font-weight:600}
 td.n{font-variant-numeric:tabular-nums;white-space:nowrap}
 .bar{display:inline-block;height:9px;background:var(--bleu);border-radius:2px;vertical-align:middle;margin-right:7px}
+/* Sur un téléphone, la colonne des barres est écrasée à quelques pixels : la
+   barre devient un carré qui n'informe plus rien, et elle force un défilement
+   latéral dans le tableau pour rien. Les chiffres portent déjà l'information —
+   on retire la colonne plutôt que de la laisser mentir. */
+@media (max-width: 560px){
+  .tw table.freq{min-width:0}
+  .tw table.freq td:last-child, .tw table.freq th:last-child{display:none}
+}
 .enc{background:var(--carte);border:1px solid var(--ligne);border-left:3px solid var(--chaud);
   border-radius:10px;padding:14px 16px;margin:16px 0}
 .enc.v{border-left-color:var(--vert)}
@@ -60,7 +68,7 @@ de copier : c'est de voir <b>ce que presque tout le monde vend</b> (donc la dema
 <h2>1 · Combien de concurrents vendent quoi</h2>
 <p>Compté sur les 42 acteurs, d'après ce qu'ils affichent publiquement.</p>
 
-<div class="tw"><table>
+<div class="tw"><table class="freq">
   <tr><th>Offre</th><th>Concurrents</th><th></th></tr>
   <tr><td>Gestion des réseaux sociaux</td><td class="n">31</td><td><span class="bar" style="width:186px"></span></td></tr>
   <tr><td>Création de contenu photo / vidéo</td><td class="n">27</td><td><span class="bar" style="width:162px"></span></td></tr>
