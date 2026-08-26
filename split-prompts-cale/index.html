@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Split-prompts — recalé + bruitages</title>
+<style>
+  :root{ --bg:#0a0a0f; --panel:#111117; --bord:#242430; --jaune:#f5d90a; --bleu:#57A8FF;
+         --texte:#f2f2f5; --doux:#9a9aa8; }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--texte);line-height:1.6;
+       font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;padding:2rem 1rem 4rem}
+  .wrap{max-width:480px;margin:0 auto}
+  a.back{color:var(--doux);font-size:.8rem;text-decoration:none;display:inline-block;margin-bottom:1rem}
+  a.back:hover{color:var(--jaune)}
+  h1{font-size:1.35rem;margin:0 0 .35rem;letter-spacing:-.01em}
+  .chapeau{color:var(--doux);font-size:.9rem;margin:0 0 1.4rem}
+  video{width:100%;border-radius:14px;border:1px solid var(--bord);display:block;background:#000}
+  .bloc{margin-top:1.4rem;background:var(--panel);border:1px solid var(--bord);border-radius:14px;padding:1rem 1.1rem}
+  .bloc h2{font-size:.72rem;letter-spacing:.09em;text-transform:uppercase;color:var(--jaune);margin:0 0 .7rem}
+  .bloc p{margin:0 0 .7rem;font-size:.87rem;color:var(--doux)}
+  .bloc p:last-child{margin-bottom:0}
+  .bloc b{color:var(--texte)}
+  table{width:100%;border-collapse:collapse;font-size:.8rem;font-variant-numeric:tabular-nums}
+  th{text-align:left;color:var(--doux);font-weight:600;padding:.3rem .4rem;border-bottom:1px solid var(--bord)}
+  td{padding:.3rem .4rem;border-bottom:1px solid rgba(36,36,48,.6)}
+  td.n{color:var(--bleu)}
+  .att{border-left:3px solid var(--jaune);padding-left:.8rem}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="/">← toutes les prévisualisations</a>
+
+  <h1>Split-prompts — recalé, avec bruitages</h1>
+  <p class="chapeau">Les panneaux du haut suivent maintenant ce que la voix dit vraiment, et chaque
+  changement est ponctué d’un son.</p>
+
+  <video src="video.mp4" poster="cover.jpg" controls playsinline preload="metadata"></video>
+
+  <div class="bloc">
+    <h2>Ce qui était décalé, et pourquoi</h2>
+    <p>Les minutages venaient de la vidéo de référence, relevés à l’image — donc sur <b>une autre
+    voix</b>. La voix clonée dure 31,3 s pour 27,1 s de montage : elle était comprimée jusqu’à 1,32×
+    et ce qui dépassait débordait.</p>
+    <p>Mesuré en transcrivant le rendu précédent : à partir de 6,6 s, la voix arrivait
+    <b>0,26 à 0,40 s après</b> le changement de panneau, et « pour des miniatures » partait
+    <b>1,42 s trop tard</b>.</p>
+    <p>Correctif : la voix n’a pas été touchée — ce sont les visuels qui ont été déplacés sur les
+    instants réellement mesurés. Le calage est exact par construction, la durée ne bouge pas.</p>
+  </div>
+
+  <div class="bloc">
+    <h2>Les bruitages posés</h2>
+    <table>
+      <tr><th>Instant</th><th>Panneau</th><th>Son</th></tr>
+      <tr><td class="n">4,02 s</td><td>le compteur</td><td>whoosh</td></tr>
+      <tr><td class="n">6,94 s</td><td>la grille</td><td>whoosh long</td></tr>
+      <tr><td class="n">8,98 s</td><td>les cartes</td><td>pop</td></tr>
+      <tr><td class="n">17,98 s</td><td>« arrête de deviner »</td><td>glitch</td></tr>
+      <tr><td class="n">20,80 s</td><td>les étapes</td><td>clic</td></tr>
+      <tr><td class="n">23,50 s</td><td>le CTA</td><td>impact</td></tr>
+    </table>
+    <p style="margin-top:.8rem">Chaque son est calé sur son <b>pic</b>, pas sur le début du fichier :
+    le whoosh long n’attaque qu’à 0,558 s et culminait une demi-seconde après la coupe — il était
+    inaudible, mesuré à −35,7 dB.</p>
+  </div>
+
+  <div class="bloc att">
+    <h2>Ce qui reste à faire</h2>
+    <p>La moitié haute est toujours une <b>interface reconstituée</b>, pas une capture du vrai site.
+    Pour la remplacer par une vraie capture, il me faut l’adresse du site — il n’est nommé nulle part
+    dans le projet, « le Pinterest des prompts IA » étant une comparaison et non son nom.</p>
+  </div>
+</div>
+</body>
+</html>
