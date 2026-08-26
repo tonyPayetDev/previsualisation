@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Le site qui travaille — publier, capter, relancer sans y penser</title>
+<meta name="description" content="Les trois mécanismes qui transforment un site figé en site qui travaille, et les trois pannes silencieuses qui les cassent sans jamais lever d'erreur.">
+<style>
+  :root{
+    --bg:#0a0a0f; --panel:#111117; --border:#242430;
+    --or:#eab308; --text:#ececf1; --muted:#9a9aa8;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);
+       font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+       line-height:1.68;padding:2.2rem 1.1rem 4.5rem;-webkit-text-size-adjust:100%}
+  .wrap{max-width:680px;margin:0 auto}
+  .badge{display:inline-block;font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;
+         color:var(--or);border:1px solid rgba(234,179,8,.32);border-radius:4px;
+         padding:.25rem .6rem;margin-bottom:1.1rem}
+  h1{font-size:clamp(1.5rem,5.4vw,2.15rem);line-height:1.18;margin:0 0 .5rem;letter-spacing:-.02em}
+  h1 span{color:var(--or)}
+  .meta{color:var(--muted);font-size:.82rem;margin:0 0 2rem}
+  h2{font-size:clamp(1.08rem,3.4vw,1.32rem);margin:2.4rem 0 .7rem;letter-spacing:-.01em}
+  p{margin:0 0 1rem}
+  strong{color:#fff}
+  em{color:var(--or);font-style:normal}
+  .rule{height:1px;background:linear-gradient(90deg,rgba(234,179,8,.34),transparent);margin:2.2rem 0}
+  .card{background:var(--panel);border:1px solid var(--border);border-radius:12px;
+        padding:1rem 1.1rem;margin:1.4rem 0}
+  .card p:last-child{margin-bottom:0}
+  code{background:#1b1b24;padding:.12rem .38rem;border-radius:4px;font-size:.86em;color:var(--or)}
+  footer{margin-top:3rem;color:var(--muted);font-size:.76rem;letter-spacing:.05em}
+  a{color:var(--or)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="badge">◈ Système réel · mesuré sur ce site</div>
+  <h1>Un site figé ne coûte rien.<br><span>Un site qui travaille se construit</span></h1>
+  <p class="meta">3 mécanismes · les pannes qui les cassent · août 2026</p>
+
+  <p>Tu as commenté <strong>SITE</strong>. Voilà le système, tel qu'il tourne — pas une promesse
+  commerciale.</p>
+
+  <p><strong>La différence entre un site figé et un site qui travaille tient en une phrase :</strong>
+  le site figé attend qu'on le mette à jour, le second se met à jour parce qu'autre chose a bougé.
+  Rien de plus. Ce n'est pas une question de technologie, c'est une question de déclencheur.</p>
+
+  <div class="rule"></div>
+
+  <h2>1 — Publier cesse d'être un événement</h2>
+  <p>Sur un site classique, publier veut dire ouvrir un back-office, coller, mettre en forme,
+  vérifier, enregistrer. C'est pour ça que personne ne publie : <strong>le coût par page est trop
+  élevé.</strong></p>
+  <p>Ici, écrire un fichier <em>est</em> publier. Le site est un dépôt : un fichier ajouté, poussé,
+  et la page existe. C'est ce qui rend tenable d'avoir plus de deux cents pages — pas la
+  discipline, le coût unitaire.</p>
+  <div class="card">
+    <p><strong>Le piège le plus cher, et qu'on ne voit pas :</strong> pousser n'est pas déployer.
+    L'hébergement ne se met pas à jour parce que le dépôt a changé — il faut le lui demander. On
+    croit avoir publié, la page renvoie 404, et on cherche l'erreur dans le fichier. Pire : le CDN
+    garde les 404 en cache pendant des heures, donc même après correction la page semble toujours
+    absente.</p>
+    <p><strong>Deux réflexes suffisent :</strong> déclencher le déploiement explicitement, puis
+    vérifier l'adresse réelle en ajoutant un paramètre inutile (<code>?x=123</code>) pour
+    contourner le cache.</p>
+  </div>
+
+  <div class="rule"></div>
+
+  <h2>2 — La capture va quelque part</h2>
+  <p>Un formulaire qui envoie un email au propriétaire n'est pas un système : c'est une corvée
+  déplacée. Le mécanisme réel tient en trois pièces : la page poste vers un <strong>webhook</strong>,
+  le webhook écrit dans une <strong>table</strong>, la table dédoublonne sur l'email. Personne ne
+  lit une boîte de réception.</p>
+  <div class="card">
+    <p><strong>Le défaut qu'on ne détecte jamais seul :</strong> le code qui envoie enveloppe
+    souvent l'appel dans un « si ça échoue, tant pis ». Le visiteur voit « c'est envoyé », et si le
+    service derrière est tombé, <strong>l'inscription disparaît sans laisser de trace</strong> — ni
+    erreur, ni alerte, ni ligne dans la table. La seule preuve fiable est de compter les lignes
+    réellement écrites, jamais de faire confiance au message de confirmation.</p>
+    <p>Deuxième défaut, plus gênant : <strong>promettre un email qu'aucun mécanisme n'envoie.</strong>
+    Un écran qui dit « vérifie ta boîte mail » alors que la chaîne s'arrête à l'enregistrement, c'est
+    une promesse rompue au moment exact où la personne vient de faire ce qu'on lui demandait. Soit on
+    envoie, soit on ne le dit pas.</p>
+  </div>
+
+  <div class="rule"></div>
+
+  <h2>3 — La relance part sans que personne y pense</h2>
+  <p>C'est le mécanisme qui transforme le site en travail réel. Un formulaire rempli déclenche la
+  suite : le document est fabriqué, envoyé, et la relance est programmée d'avance. L'intérêt n'est
+  pas la vitesse — c'est que <strong>ça se produit même les jours où on n'y pense pas</strong>, ce
+  qui est précisément quand les affaires se perdent.</p>
+  <p>Même logique pour ce qui vient des réseaux : un mot-clé commenté sous une publication déclenche
+  l'envoi de la ressource correspondante. La correspondance entre le mot et la ressource <strong>ne
+  doit jamais être écrite dans le mécanisme lui-même</strong>, sinon chaque nouvelle publication
+  demande une modification technique. Elle vit dans un tableau à part, que n'importe qui peut
+  compléter.</p>
+  <div class="card">
+    <p><strong>Et c'est là qu'est la panne la plus fréquente, et la plus invisible :</strong> un mot
+    promis dans une vidéo mais absent du tableau. Le mécanisme ne tombe pas en erreur — il ne trouve
+    rien, donc il ne fait rien. Aucune alerte, et les gens qui ont commenté n'ont jamais de réponse.</p>
+    <p><strong>La seule parade est de vérifier dans l'autre sens :</strong> partir des mots promis
+    dans les publications, et contrôler que chacun a bien sa ligne — avant la sortie, pas après.</p>
+  </div>
+
+  <div class="rule"></div>
+
+  <h2>Ce que ça ne fait pas</h2>
+  <p>Ça ne remplace pas ce que tu as à dire. Un mécanisme bien construit sur un contenu qui
+  n'intéresse personne publie du vide plus vite qu'avant — et il n'y a plus personne devant l'écran
+  pour s'en apercevoir.</p>
+  <p>Ça ne dispense pas non plus de regarder. Les trois pannes décrites ici ont un point commun :
+  <strong>aucune ne produit d'erreur.</strong> Le déploiement non déclenché, la capture avalée en
+  silence, le mot-clé sans ligne — chacune laisse le système parfaitement calme. La question utile
+  n'est jamais « est-ce que ça a planté ? » mais <em>« est-ce que la chose est réellement arrivée
+  au bout ? »</em></p>
+
+  <p style="margin-top:2rem">Si tu veux qu'on regarde le tien :
+  <a href="https://automatisationboost.com/#contact">automatisationboost.com</a></p>
+
+  <footer>SITE | TONY PAYET / AUTOMATION BOOST | 2026</footer>
+</div>
+</body>
+</html>

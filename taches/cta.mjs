@@ -38,7 +38,17 @@ const PROPOSE = {
      `site-qui-travaille` a été écrite pour ce post — mais elle n'est pas encore
      en ligne (commit non poussé), donc le test HTTP la refusera tant qu'elle
      n'y est pas. C'est exactement le but : mieux vaut aucune porte qu'un 404. */
-  SITE:        { f: 'site-qui-travaille.html', sur: true,
+  /* PORTE DE REPLI, posée le 26/08 à 1 h 20 de la sortie des 5 posts.
+     La version destinée au site principal (`ressources/site-qui-travaille.html`)
+     est écrite mais bloquée derrière un push que je ne peux pas faire. Plutôt
+     que de laisser le mot sans porte au moment où il sort, la même page est
+     publiée sur previsualisation, dont les sous-routes sont publiques.
+     À basculer sur `f: 'site-qui-travaille.html'` (en retirant `url`) dès que
+     le push est passé : la version du site principal porte le pixel et la
+     capture d'email, pas celle-ci. */
+  SITE:        { f: 'site-qui-travaille.html',
+                 url: 'https://previsualisation.automatisationboost.com/ressource-site/',
+                 sur: true,
                  pourquoi: "Le post promet « d'un site figé à un site qui bosse pour toi » et « je t'envoie le système ». Cette page décrit les trois mécanismes — publier, capter, relancer — et les trois pannes qui les cassent sans lever d'erreur." },
   ETUDE:       { f: 'etude-42-concurrents-restaurateurs.html', sur: true,
                  pourquoi: "Les quatre vidéos de l'étude finissent sur « Commente ÉTUDE, je t'envoie les 42 ». Cette page publie le relevé — tableau de fréquence, prix des deux blocs, promesses affichées, les trois trous — sans la stratégie de Tony." },
