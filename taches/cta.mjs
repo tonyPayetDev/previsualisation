@@ -400,7 +400,15 @@ ${horsTable.filter((m) => !URGENT[m]).map((m) => {
           ? `<div class="prop"><span class="et">${p.sur ? 'Correspondance sûre' : 'À confirmer'}</span>
                <a href="${esc(urlDe(p))}" target="_blank" rel="noopener">${esc(p.f)}</a></div>
              <div class="act"><button type="button" class="cp" data-txt="${esc(urlDe(p))}">Copier l'URL</button></div>`
-          : `<p class="pq manque">Aucune page ne correspond — <b>il faut l'écrire.</b></p>`}
+          : p.pourquoi
+            /* Quand une raison précise est consignée, elle vaut mieux que
+               « il faut l'écrire » — qui est parfois FAUX. INSTINCT, par
+               exemple, ne peut pas être écrit de mon côté : la vidéo dit
+               elle-même qu'elle ne montre pas le prompt complet. Afficher
+               « il faut l'écrire » ferait recommencer l'analyse à chaque
+               passage, pour rien. */
+            ? `<p class="pq manque">${esc(p.pourquoi)}</p>`
+            : `<p class="pq manque">Aucune page ne correspond — <b>il faut l'écrire.</b></p>`}
       </li>`;
 }).join('\n')}
 </ul>
