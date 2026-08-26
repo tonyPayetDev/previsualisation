@@ -71,6 +71,22 @@ const PROPOSE = {
                  pourquoi: "autoboost-opencode promet « commente OPENCODE et je t'envoie le lien et la configuration ». La page donne les deux — et la configuration qui compte n'est pas l'installation mais le fichier-contrat entre l'agent bon marché et le superviseur." },
   MOTEUR:      { f: 'moteur-n8n-vrai-exemple.html', sur: true,
                  pourquoi: "autoboost-66 promet « commente le mot MOTEUR et je te montre un vrai exemple ». Cette page montre deux workflows réels nœud par nœud — dont celui qui enverra ce lien. Écrite avant la sortie de la vidéo." },
+  /* La page de formation existe DÉJÀ, à la racine du site — « Formation IA :
+     6 défis, 6 livrables », 10 300 caractères, prix affichés. Je l'avais
+     cherchée dans `ressources/` et conclu à tort qu'il fallait écrire le
+     programme. Deux promesses fermées sans rien écrire. */
+  NOIR:        { f: null, url: 'https://automatisationboost.com/formation.html', sur: true,
+                 pourquoi: "Le script d'autoboost-noir-formation indique noir sur blanc « Destination : formation.html », et la vidéo promet « je t'envoie le lien »." },
+  FORMATION:   { f: null, url: 'https://automatisationboost.com/formation.html', sur: true,
+                 pourquoi: "autoboost-formation-contenu promet « je t'envoie le programme » et décrit six livrables. La page porte exactement ce titre : « 6 défis, 6 livrables »." },
+  /* ⚠️ INSTINCT n'est PAS écrivable par moi. La narration dit explicitement
+     « le prompt complet, je te le donne pas comme ça… je t'envoie le prompt
+     entier en message privé ». Ce que la composition contient est la version
+     CONDENSÉE montrée à l'écran (287 caractères). L'envoyer reviendrait à
+     donner à quelqu'un ce qu'il vient de voir dans la vidéo. Seul Tony a le
+     prompt entier. */
+  INSTINCT:    { f: null, sur: false,
+                 pourquoi: "Seul Tony a le prompt entier : la vidéo ne montre qu'une version condensée, et dit elle-même qu'elle ne donne pas le complet. Rien à écrire de mon côté sans inventer." },
   PINTEREST:   { f: null, sur: false, pourquoi: 'Rien d\'écrit sur Pinterest.' },
   WHATSAPP:    { f: null, sur: false, pourquoi: 'Rien d\'écrit sur WhatsApp.' },
   KILO:        { f: null, sur: false, pourquoi: 'Rien d\'écrit sur Kilo Code.' },
@@ -84,7 +100,13 @@ const URGENT = {
   SITE: 'promis demain 26/08, sur 5 réseaux',
 };
 
-const existe = (f) => f && fs.existsSync(path.join(RES, f));
+/* Une ressource n'est pas forcément dans `ressources/`. La page de formation
+   vit à la RACINE du site (`formation.html`) — je l'avais cherchée au mauvais
+   endroit et conclu à tort qu'il fallait écrire le programme, alors qu'il
+   existait déjà. D'où le champ `url` : quand il est présent, il l'emporte et
+   la vérification se fait en HTTP, pas sur le disque. */
+const existe = (f, url) => Boolean(url) || Boolean(f && fs.existsSync(path.join(RES, f)));
+const urlDe = (p) => (p && p.url) || (p && p.f ? BASE_RES + p.f : '');
 
 /* ── Les mots réellement promis, relevés dans les scripts ──────────────────
  *
@@ -224,8 +246,8 @@ const verifie = async (url) => {
 const aRemplir = [];
 for (const o of orphelins) {
   const p = PROPOSE[o.mot];
-  if (!p || !p.f || !p.sur || !existe(p.f)) continue;      // proposition incertaine → on s'abstient
-  const url = BASE_RES + p.f;
+  if (!p || !p.sur || !existe(p.f, p.url)) continue;       // proposition incertaine → on s'abstient
+  const url = urlDe(p);
   const code = await verifie(url);
   if (code !== 200) { console.log(`  ⚠️  ${o.mot} : ${p.f} rend ${code} — écarté du bloc`); continue; }
   aRemplir.push({ mot: o.mot, ligne: numLigne[o.mot] ?? null, url });
@@ -238,8 +260,8 @@ const aAjouter = [];
 for (const m of horsTable) {
   const p = PROPOSE[m];
   let url = '';
-  if (p && p.f && existe(p.f)) {
-    const u = BASE_RES + p.f;
+  if (p && existe(p.f, p.url)) {
+    const u = urlDe(p);
     if (await verifie(u) === 200) url = p.sur ? u : '';   // incertain → ligne sans lien, volontairement
   }
   aAjouter.push({ mot: m, url });
@@ -255,7 +277,7 @@ console.log(`  bloc « à remplir » : ${aRemplir.length} · bloc « à ajouter 
 
 const ligneOrpheline = (mot) => {
   const p = PROPOSE[mot] || { f: null, sur: false, pourquoi: 'Pas encore examiné.' };
-  const dispo = existe(p.f);
+  const dispo = existe(p.f, p.url);
   const urg = URGENT[mot];
   return `      <li class="m${urg ? ' urgent' : ''}${p.f && dispo ? ' pret' : ''}">
         <div class="hd">
@@ -265,10 +287,10 @@ const ligneOrpheline = (mot) => {
         ${p.f && dispo
           ? `<div class="prop">
                <span class="et">${p.sur ? 'Correspondance sûre' : 'À confirmer'}</span>
-               <a href="${BASE_RES}${esc(p.f)}" target="_blank" rel="noopener">${esc(p.f)}</a>
+               <a href="${esc(urlDe(p))}" target="_blank" rel="noopener">${esc(p.f)}</a>
              </div>
              <p class="pq">${esc(p.pourquoi)}</p>
-             <div class="act"><button type="button" class="cp" data-txt="${BASE_RES}${esc(p.f)}">Copier l'URL</button></div>`
+             <div class="act"><button type="button" class="cp" data-txt="${esc(urlDe(p))}">Copier l'URL</button></div>`
           : `<p class="pq manque">${esc(p.pourquoi)} — <b>il faut l'écrire.</b></p>`}
       </li>`;
 };
@@ -345,7 +367,7 @@ l'air</b> — c'est ce qui s'est passé sur TURBO.</p>
   <span class="e"><b>${morts.length}</b>liens morts</span>
   <span class="e"><b>${horsTable.length}</b>n'envoient rien du tout</span>
   <span class="o"><b>${orphelins.length}</b>envoient la bibliothèque</span>
-  <span><b>${orphelins.filter((o) => existe((PROPOSE[o.mot] || {}).f)).length + horsTable.filter((m) => existe((PROPOSE[m] || {}).f)).length}</b>déjà écrites, à relier</span>
+  <span><b>${orphelins.filter((o) => existe((PROPOSE[o.mot] || {}).f, (PROPOSE[o.mot] || {}).url)).length + horsTable.filter((m) => existe((PROPOSE[m] || {}).f, (PROPOSE[m] || {}).url)).length}</b>déjà écrites, à relier</span>
 </div>
 
 <h2 class="a">Urgent — promis dans les jours qui viennent</h2>
@@ -370,14 +392,14 @@ avec le calendrier avant d'ajouter les lignes.</p>
 <ul>
 ${horsTable.filter((m) => !URGENT[m]).map((m) => {
   const p = PROPOSE[m] || {};
-  const dispo = existe(p.f);
+  const dispo = existe(p.f, p.url);
   return `      <li class="m${dispo ? ' pret' : ''}">
         <div class="hd"><b>${esc(m)}</b><span class="urg2">aucun DM ne part</span></div>
         <p class="pq">Promis dans : <b>${esc(ouPromis(m) || '—')}</b></p>
         ${dispo
           ? `<div class="prop"><span class="et">${p.sur ? 'Correspondance sûre' : 'À confirmer'}</span>
-               <a href="${BASE_RES}${esc(p.f)}" target="_blank" rel="noopener">${esc(p.f)}</a></div>
-             <div class="act"><button type="button" class="cp" data-txt="${BASE_RES}${esc(p.f)}">Copier l'URL</button></div>`
+               <a href="${esc(urlDe(p))}" target="_blank" rel="noopener">${esc(p.f)}</a></div>
+             <div class="act"><button type="button" class="cp" data-txt="${esc(urlDe(p))}">Copier l'URL</button></div>`
           : `<p class="pq manque">Aucune page ne correspond — <b>il faut l'écrire.</b></p>`}
       </li>`;
 }).join('\n')}
@@ -423,14 +445,14 @@ ${aAjouter.length ? `
 <p class="pourquoi">Le travail est fait. Ces pages sont en ligne, il suffit de coller leur URL
 dans la cellule du mot-clé.</p>
 <ul>
-${orphelins.filter((o) => !URGENT[o.mot] && existe((PROPOSE[o.mot] || {}).f)).map((o) => ligneOrpheline(o.mot)).join('\n')}
+${orphelins.filter((o) => !URGENT[o.mot] && existe((PROPOSE[o.mot] || {}).f, (PROPOSE[o.mot] || {}).url)).map((o) => ligneOrpheline(o.mot)).join('\n')}
 </ul>
 
 <h2 class="c">À écrire — rien n'existe</h2>
 <p class="pourquoi">Là, il faut vraiment produire quelque chose. Tant que c'est vide,
 <b>ne pas promettre ces mots-clés dans une vidéo</b>.</p>
 <ul>
-${orphelins.filter((o) => !URGENT[o.mot] && !existe((PROPOSE[o.mot] || {}).f)).map((o) => ligneOrpheline(o.mot)).join('\n')}
+${orphelins.filter((o) => !URGENT[o.mot] && !existe((PROPOSE[o.mot] || {}).f, (PROPOSE[o.mot] || {}).url)).map((o) => ligneOrpheline(o.mot)).join('\n')}
 </ul>
 
 <h2 class="b">Ce qui marche déjà</h2>
@@ -469,5 +491,5 @@ console.log(`  cta/index.html · ${vivants.length} liens vivants · ${morts.leng
 console.log(`  🔇 ${horsTable.length} mots promis SANS ligne dans l'onglet — rien ne part :`);
 console.log(`     ${horsTable.join(', ')}`);
 console.log(`  📩 ${orphelins.length} mots avec une ligne mais sans lien — la bibliothèque part quand même`);
-console.log(`  ✍️  ${horsTable.filter((m) => existe((PROPOSE[m] || {}).f)).length} des silencieux ont déjà une page écrite`);
+console.log(`  ✍️  ${horsTable.filter((m) => existe((PROPOSE[m] || {}).f, (PROPOSE[m] || {}).url)).length} des silencieux ont déjà une page écrite`);
 console.log(`  urgents (calendrier) : ${Object.keys(URGENT).join(', ')}`);
