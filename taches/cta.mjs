@@ -50,7 +50,13 @@ const PROPOSE = {
                  url: 'https://previsualisation.automatisationboost.com/ressource-site/',
                  sur: true,
                  pourquoi: "Le post promet « d'un site figé à un site qui bosse pour toi » et « je t'envoie le système ». Cette page décrit les trois mécanismes — publier, capter, relancer — et les trois pannes qui les cassent sans lever d'erreur." },
-  ETUDE:       { f: 'etude-42-concurrents-restaurateurs.html', sur: true,
+  /* Porte de repli, meme raison que SITE : les 5 videos etude promettent
+     ce mot et la page du site principal attend un push refuse. Publiee sur
+     previsualisation, dont les sous-routes sont publiques. A rebasculer sur
+     le fichier du site principal des que le push passe (retirer 'url'). */
+  ETUDE:       { f: 'etude-42-concurrents-restaurateurs.html',
+                 url: 'https://previsualisation.automatisationboost.com/ressource-etude/',
+                 sur: true,
                  pourquoi: "Les quatre vidéos de l'étude finissent sur « Commente ÉTUDE, je t'envoie les 42 ». Cette page publie le relevé — tableau de fréquence, prix des deux blocs, promesses affichées, les trois trous — sans la stratégie de Tony." },
   RESTO:       { f: 'vendre-prospection-restaurants-rdv-automatique.html', sur: true, pourquoi: 'Prospection restaurants → RDV automatique.' },
   PROSPECTION: { f: 'vendre-prospection-restaurants-rdv-automatique.html', sur: true, pourquoi: 'Même méthode, angle prospection.' },
