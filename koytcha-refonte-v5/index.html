@@ -498,7 +498,9 @@ h2.tt i{font-style:italic}
 /* Notre metier : deux colonnes, le texte cale a gauche et la galerie a
    droite. En pleine largeur, le texte partait a 62 caracteres par ligne et
    la galerie tombait dessous, ce qui allongeait la section pour rien. */
-.metier{display:grid;grid-template-columns:1.05fr .95fr;gap:clamp(34px,5vw,72px);align-items:start}
+/* Une seule colonne depuis le retrait de la galerie d'intérieurs : garder les
+   deux colonnes laisserait une moitié de section vide à droite du texte. */
+.metier{display:grid;grid-template-columns:1fr;gap:clamp(34px,5vw,72px);align-items:start}
 .metier .corps{max-width:52ch}
 .metier .gal{margin-top:0;grid-template-columns:repeat(2,1fr)}
 .metier .gal figure:first-child{grid-column:1/-1;aspect-ratio:16/10}
@@ -814,10 +816,30 @@ footer a:hover{color:var(--magenta)}
 .intro-prog{margin-top:14px;max-width:62ch;font-size:15.5px;line-height:1.75;color:var(--gris,#5b5b60)}
 .promoteur-note{margin-top:18px;max-width:70ch;font-size:15.5px;line-height:1.75;color:var(--gris,#5b5b60)}
 .realisations{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-top:30px}
-@media(max-width:900px){.realisations{grid-template-columns:repeat(2,1fr)}}
 .realisations figure{margin:0}
 .realisations img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:6px;display:block}
 .realisations figcaption{margin-top:7px;font-size:12.5px;letter-spacing:.04em;color:var(--gris,#5b5b60)}
+
+/* ── Les réalisations passent en carrousel sur écran étroit ───────────────
+   En grille de deux colonnes sur 390 px, chaque photo tombe à ~178 px : sur
+   des vues aériennes de programmes, on ne distingue plus le bâtiment. Même
+   mécanique que la galerie qu'elle remplace — scroll-snap natif, cartes à
+   86 % pour que le bord de la suivante dépasse et dise qu'on peut glisser.
+   Les marges négatives font déborder le carrousel jusqu'aux bords de l'écran
+   sans casser la gouttière du reste de la section. */
+@media(max-width:900px){
+  .realisations{
+    display:flex; gap:10px;
+    overflow-x:auto; overscroll-behavior-x:contain;
+    scroll-snap-type:x mandatory; -webkit-overflow-scrolling:touch;
+    margin-inline:calc(var(--gouttiere) * -1);
+    padding-inline:var(--gouttiere);
+    scroll-padding-inline:var(--gouttiere);
+    scrollbar-width:none;
+  }
+  .realisations::-webkit-scrollbar{display:none}
+  .realisations figure{flex:0 0 86%; scroll-snap-align:start}
+}
 </style>
 </head>
 <body>
@@ -960,12 +982,11 @@ footer a:hover{color:var(--magenta)}
         <li>Accompagnement du client par un conseil global</li>
       </ul>
     </div>
-    <div class="gal monte">
-      <figure><img src="../koytcha-reveal/assets/web/reveal-sm.jpg" alt="Façade d'un programme Koytcha Immo" loading="lazy"><figcaption>La façade</figcaption></figure>
-      <figure><img src="../koytcha-reveal/assets/web/varangue-sm.jpg" alt="Varangue ouverte sur le jardin" loading="lazy"><figcaption>La varangue</figcaption></figure>
-      <figure><img src="../koytcha-reveal/assets/web/sejour-sm.jpg" alt="Séjour lumineux" loading="lazy"><figcaption>Le séjour</figcaption></figure>
-      <figure><img src="assets/philo-sm.jpg" alt="Jardin planté en fin de journée" loading="lazy"><figcaption>Le jardin, fin de journée</figcaption></figure>
-    </div>
+    <!-- La galerie d'intérieurs qui était ici (façade, varangue, séjour,
+         jardin) est retirée : elle doublonnait avec le carrousel de biens plus
+         haut dans la page, et sur téléphone elle imposait un second glissement
+         horizontal juste avant celui des réalisations. C'est désormais le bloc
+         « réalisations » ci-dessous qui porte le carrousel. -->
     </div>
   
           <p class="promoteur-note">Agissant également en tant que promoteur immobilier, Koytcha Immo commercialise de
