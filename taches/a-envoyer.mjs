@@ -60,6 +60,20 @@ const CONTACTS = {
     nom: "Mam'Zelle Pizza", tel: '+262 262 02 84 42', site: null,
     source: 'site Mam\'Zelle (32 rue du docteur Henri Roussel, Le Tampon) — une seule source', sur: false,
   },
+
+  /* Family Arena était le seul livrable « livré · cash direct » SANS aucun
+     contact : le site était en ligne et le message écrit, mais rien pour
+     l'envoyer. Relevé le 26/08 sur deux sources indépendantes qui donnent le
+     même numéro — leur site (familyarena.re, lien tel: en clair) et l'annuaire
+     tiers total-immersion.fr, qui ajoute l'adresse. C'est un 692, donc un
+     mobile : WhatsApp fonctionne, contrairement à Giulietta, Koytcha et
+     Mam'Zelle qui n'ont qu'un fixe. */
+  'family-arena': {
+    nom: 'Family Arena — Saint-Pierre', tel: '+262 692 44 43 64', mobile: '+262 692 44 43 64',
+    site: 'https://familyarena.re/',
+    source: 'familyarena.re et total-immersion.fr — même numéro · 6 rue Pointe du Bois, 97410 Saint-Pierre',
+    sur: true,
+  },
 };
 
 /* Ce que chaque livrable dit de lui-même. Le message reprend UNIQUEMENT ce
