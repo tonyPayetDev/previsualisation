@@ -346,20 +346,52 @@ h2.tt i{font-style:italic}
 .revele .derriere{position:absolute;inset:0;z-index:0;clip-path:inset(0)}
 .revele .derriere img{position:fixed;top:0;left:0;width:100%;height:100vh;
   object-fit:cover}
-.revele .derriere::after{content:'';position:absolute;inset:0;
-  background:linear-gradient(180deg,rgba(255,255,255,.94),rgba(255,255,255,.88) 45%,rgba(255,255,255,.95));
-  transition:opacity .85s var(--ease)}
-/* Au survol, le voile blanc se lève et la photo apparaît vraiment.
-   Il ne descend pas à zéro : sous 0,55 d'opacité, le texte gris passe sous
-   le seuil de contraste sur les zones claires de la photo. On compense donc
-   AUSSI en fonçant le texte — lever le voile sans ça rendrait la section
-   jolie et illisible. */
-.revele:hover .derriere::after{opacity:.30}
+/* Le voile est BLANC PLEIN en permanence : dans le rythme de la page
+   (blanc, gris clair, rose, blanc, gris clair) cette section est une section
+   blanche, et elle doit le rester. L'ancien dégradé montait à .88 seulement :
+   la photo transparaissait partout en filigrane, mesuré à 228 de luminosité
+   au lieu de 255 — ce n'était pas du blanc. */
+.revele .derriere::after{content:'';position:absolute;inset:0;background:#fff}
+
+/* ── LE PINCEAU QUI SUIT LA SOURIS ───────────────────────────────────────
+   Avant : survoler n'importe où levait le voile sur TOUTE la section, qui
+   devenait une photo pleine page — le fond blanc disparaissait et le rythme
+   de la page avec.
+   Maintenant : le fond reste blanc, et seule une tache autour du curseur
+   laisse voir la photo. C'est la même photo que `.derriere`, posée par-dessus
+   le voile et découpée par un masque radial centré sur le curseur.
+   `filter:url(#brosse)` déforme le bord du masque avec la même turbulence que
+   la marque en fenêtre : le bord n'est pas un cercle net mais un coup de
+   pinceau.
+   Placé APRÈS `.derriere` dans le DOM — les deux sont en z-index 0, c'est
+   donc l'ordre du document qui met la tache au-dessus du voile, et le texte
+   (z-index 1) reste au-dessus de tout. */
+.revele .brosse-curseur{position:absolute;inset:0;z-index:0;pointer-events:none;
+  opacity:0;transition:opacity .4s var(--ease);
+  -webkit-mask-image:radial-gradient(circle var(--br,170px) at var(--bx,-999px) var(--by,-999px),
+    #000 0%,rgba(0,0,0,.72) 48%,transparent 100%);
+  mask-image:radial-gradient(circle var(--br,170px) at var(--bx,-999px) var(--by,-999px),
+    #000 0%,rgba(0,0,0,.72) 48%,transparent 100%);
+  filter:url(#brosse)}
+.revele.brosse-active .brosse-curseur{opacity:1}
+.revele .brosse-curseur img{position:fixed;top:0;left:0;width:100%;height:100vh;
+  object-fit:cover;
+  /* La photo est sombre (luminosité moyenne 110). Révélée telle quelle sous un
+     paragraphe, elle rend le texte gris illisible. On l'éclaircit et on pose
+     par-dessus un lavis blanc : la trace de pinceau se voit, la section reste
+     claire, et le texte garde son contraste. */
+  filter:saturate(.88) contrast(.94) brightness(1.5)}
+.revele .brosse-curseur::after{content:'';position:absolute;inset:0;
+  background:rgba(255,255,255,.42)}
+@media(prefers-reduced-motion:reduce){.revele .brosse-curseur{transition:none}}
+/* Sans souris (téléphone, tablette) il n'y a pas de survol : la section reste
+   blanche, ce qui est le comportement voulu — on n'invente pas un déclencheur
+   tactile qui ferait clignoter la photo au scroll. */
+@media(hover:none),(pointer:coarse){.revele .brosse-curseur{display:none}}
+
 /* Le filigrane de bas de section répétait le logo à trente centimètres de la
    marque en fenêtre. Un seul des deux doit rester. */
 .revele .filigrane,.revele .marque-bas{display:none}
-.revele:hover .corps p,.revele:hover .pilier p,.revele:hover .fin-txt{color:var(--noir)}
-.revele .corps p,.revele .pilier p,.revele .fin-txt{transition:color .85s var(--ease)}
 .revele>*{position:relative;z-index:1}
 .duo{display:grid;grid-template-columns:1fr 1fr;gap:clamp(40px,6vw,90px);align-items:center}
 .txt p{color:var(--gris);font-size:15.5px;max-width:46ch}
@@ -988,6 +1020,10 @@ footer a:hover{color:var(--magenta)}
        à droite du fichier). On sert donc ici la même photo recadrée sous les
        15 % du bas : c'est la seule façon de le supprimer. -->
   <div class="derriere"><img src="assets/philo.jpg" alt=""></div>
+  <!-- La tache de peinture qui suit la souris. Elle vient APRÈS `.derriere`
+       exprès : à z-index égal, c'est l'ordre du DOM qui la place au-dessus du
+       voile blanc. -->
+  <div class="brosse-curseur" aria-hidden="true"><img src="assets/philo.jpg" alt=""></div>
   <div class="pinceau" aria-hidden="true">
     <div class="fenetre"><img src="assets/philo.jpg" alt=""></div>
   </div>
@@ -1240,6 +1276,32 @@ footer a:hover{color:var(--magenta)}
   /* Carrousel de biens. */
   if (window.Coverflow && document.getElementById('cf')) {
     window.Coverflow.creer(document.getElementById('cf'), { auto: reduit ? 0 : 4200 });
+  }
+
+  /* ── Le pinceau qui suit la souris, section « philosophie » ────────────
+     On ne pose QUE deux variables CSS ; tout le rendu est fait par le masque
+     radial de la feuille de style. Les coordonnées sont relatives à la
+     section, ce qui est exactement le repère de la couche masquée.
+     `getBoundingClientRect` plutôt que `offsetX` : offsetX est relatif à
+     l'élément SURVOLÉ, donc il saute d'un paragraphe à l'autre. */
+  var philo = document.getElementById('philosophie');
+  var finePointer = window.matchMedia('(hover:hover) and (pointer:fine)').matches;
+  if (philo && finePointer) {
+    var attente = false;
+    philo.addEventListener('pointermove', function (e) {
+      if (attente) return;
+      attente = true;
+      requestAnimationFrame(function () {
+        var r = philo.getBoundingClientRect();
+        philo.style.setProperty('--bx', (e.clientX - r.left) + 'px');
+        philo.style.setProperty('--by', (e.clientY - r.top) + 'px');
+        attente = false;
+      });
+      philo.classList.add('brosse-active');
+    });
+    philo.addEventListener('pointerleave', function () {
+      philo.classList.remove('brosse-active');
+    });
   }
 
   /* Les deux onglets du module de recherche. */
