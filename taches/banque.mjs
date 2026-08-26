@@ -45,8 +45,16 @@ const bgm = lister(path.join(S, 'bgm'), ['.mp3']).map((f) => ({
       : /valse/.test(f) ? 'Essai contemplatif' : 'Autoboost',
 }));
 
-/* ── 3. SFX ── */
-const sfx = [...new Set(lister(path.join(S, 'sfx-palette/v1'), ['.mp3', '.wav']))];
+/* ── 3. SFX ──
+ * Les fichiers sont rangés dans `<version>/assets/`, pas à la racine de la
+ * version, et `lister` ne descend pas dans les sous-dossiers : la page affichait
+ * donc « 0 son » alors que la palette existe depuis des semaines. On lit chaque
+ * version présente, ce qui fait aussi apparaître la v2 — invisible jusqu'ici. */
+const versionsSfx = lister(path.join(S, 'sfx-palette'), [''])
+  .filter((v) => fs.existsSync(path.join(S, 'sfx-palette', v, 'assets')))
+  .sort()
+  .map((v) => ({ v, sons: lister(path.join(S, 'sfx-palette', v, 'assets'), ['.mp3', '.wav']) }));
+const sfx = [...new Set(versionsSfx.flatMap((x) => x.sons))];
 
 /* ── 4. avatar : les plages de lèvres sont l'info critique ── */
 let avatar = [];
@@ -114,8 +122,9 @@ ${bloc('Musiques', `${bgm.length} pistes — <code>_shared/bgm/</code>. Le préf
     bgm.map((b) => `<tr><td>${esc(b.f)}</td><td>${Math.round(b.s)} s</td><td>${esc(b.usage)}</td></tr>`).join('')
   }</table>`)}
 
-${bloc('Bruitages · palette v1', `${sfx.length} sons — <code>_shared/sfx-palette/v1/</code>. Palette figée : toute évolution est une v2, on n'écrase jamais.`,
-  `<div class="puces">${sfx.map((s) => `<span class="puce">${esc(s.replace(/^sfx-|\.(mp3|wav)$/g, ''))}</span>`).join('')}</div>`)}
+${bloc('Bruitages', `${sfx.length} sons distincts sur ${versionsSfx.length} version(s) — <code>_shared/sfx-palette/&lt;version&gt;/assets/</code>. Une palette est figée : toute évolution est une nouvelle version, on n'écrase jamais.`,
+  versionsSfx.map((x) => `<p class="w"><b>${esc(x.v)}</b> — ${x.sons.length} son(s)</p>
+    <div class="puces">${x.sons.map((s) => `<span class="puce">${esc(s.replace(/^sfx-|\.(mp3|wav)$/g, ''))}</span>`).join('')}</div>`).join(''))}
 
 ${bloc('Avatar — banque bureau', 'Les clips ne parlent PAS de bout en bout. Un plan posé sous une voix active doit tenir <b>entièrement</b> dans une plage active, sinon la bouche est figée pendant que la voix parle.',
   `<table><tr><th>Clip</th><th>Durée</th><th>Parlé</th><th>Plage utile</th></tr>${

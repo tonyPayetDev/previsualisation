@@ -37,7 +37,10 @@ const OKR = [
     cible: 'décision GO / NO-GO sur chiffres réels',
     echeance: '1er septembre 2026',
     notion: 'https://app.notion.com/p/3265fda3ad0581e583aecbb4d9f138d3',
-    filtre: (t) => /fusionia|oz\b|humian/i.test(t.t + ' ' + (t.note || '')),
+    /* Le filtre d'origine ne cherchait que « fusionia / oz / humian » et ne
+       trouvait RIEN : aucune tâche ne porte ces noms. On cherche donc ce qui
+       fait avancer une décision produit — offre, lancement, inscrits, payant. */
+    filtre: (t) => /produit|saas|offre|lancement|inscrit|payant|abonnement|fusionia|humian/i.test(`${t.t} ${t.note || ''} ${t.cashNote || ''}`),
     kr: [{ texte: '30 inscrits payants avant juillet', mesure: 'compteur produit' }],
   },
   {
@@ -46,7 +49,11 @@ const OKR = [
     echeance: 'fin août 2026',
     notion: 'https://app.notion.com/p/3265fda3ad058193a25bd14c561aab04',
     /* Un revenu récurrent vient d'un système qui tourne seul. */
-    filtre: (t) => t.cash === 'proche' && /workflow|automatis|r[ée]current|abonnement|n8n/i.test(t.t + ' ' + (t.note || '')),
+    /* Le « et cash === proche » vidait le filtre : les tâches marquées proches
+       sont des tâches de contenu, jamais des tâches de tuyauterie. Ce qui sert
+       un revenu récurrent, c'est un système qui tourne seul — quel que soit son
+       éloignement de la facture. */
+    filtre: (t) => /workflow|automatis|r[ée]current|abonnement|n8n|cron|pipeline/i.test(`${t.t} ${t.note || ''} ${t.cashNote || ''}`),
     kr: [
       { texte: '1 500 €/mois hors CDI en août', mesure: 'relevé bancaire mensuel' },
       { texte: '1 workflow qui tourne 30 jours sans intervention', mesure: 'exécutions n8n' },
@@ -106,7 +113,11 @@ const carteOKR = (o) => {
     <div class="okr-t">${o.icone} ${esc(o.titre)}</div>
     <div class="okr-c">${esc(o.cible)}</div>
     <div class="barre"><span style="width:${pct}%"></span></div>
-    <div class="okr-m">${faites}/${liees.length} tâches liées livrées · échéance ${esc(o.echeance)}</div>
+    <div class="okr-m">${liees.length
+    /* Un « 0/0 » silencieux se lit comme « rien à signaler » alors qu'il dit
+       l'inverse : un objectif sur lequel personne ne travaille. On le nomme. */
+    ? `${faites}/${liees.length} tâches liées livrées · échéance ${esc(o.echeance)}`
+    : `⚠️ aucune tâche en cours ne sert cet objectif · échéance ${esc(o.echeance)}`}</div>
     <ul class="kr">${o.kr.map((k) => `<li>${esc(k.texte)} <i>— ${esc(k.mesure)}</i></li>`).join('')}</ul>
     <a href="${o.notion}" target="_blank" rel="noopener">ouvrir dans Notion →</a>
   </div>`;

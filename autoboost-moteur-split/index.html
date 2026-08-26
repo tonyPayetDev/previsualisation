@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Prévisualisation — MOTEUR, écran scindé</title>
+<style>
+  :root{ --bg:#0a0a0f; --panel:#111117; --border:#242430; --jaune:#f5d90a; --violet:#a855f7; --texte:#f2f2f5; --doux:#9a9aa8; }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--texte);
+       font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;padding:2rem 1rem 4rem}
+  .wrap{max-width:480px;margin:0 auto}
+  a.back{color:var(--doux);font-size:.8rem;text-decoration:none;display:inline-block;margin-bottom:1rem}
+  a.back:hover{color:var(--jaune)}
+  h1{font-size:1.35rem;margin:0 0 .35rem;letter-spacing:-.01em}
+  .chapeau{color:var(--doux);font-size:.9rem;margin:0 0 1.4rem;line-height:1.55}
+  video{width:100%;border-radius:14px;border:1px solid var(--border);display:block;background:#000}
+  .fiche{margin-top:1.4rem;background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:1rem 1.1rem}
+  .fiche h2{font-size:.72rem;letter-spacing:.09em;text-transform:uppercase;color:var(--jaune);margin:0 0 .7rem}
+  .fiche dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:.45rem 1rem;font-size:.86rem}
+  .fiche dt{color:var(--doux)}
+  .fiche dd{margin:0}
+  .note{margin-top:1rem;font-size:.8rem;color:var(--doux);line-height:1.6}
+  .note b{color:var(--texte)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="/">← toutes les prévisualisations</a>
+
+  <h1>MOTEUR — écran scindé</h1>
+  <p class="chapeau">
+    Le hook visuel ouvre en haut, la voix clonée enchaîne, et l’avatar parle en bas
+    pendant toute la vidéo.
+  </p>
+
+  <video src="video.mp4" poster="cover.jpg" controls playsinline preload="metadata"></video>
+
+  <div class="fiche">
+    <h2>Ce qu’il y a dedans</h2>
+    <dl>
+      <dt>Durée</dt><dd>26,4 s · 1080×1920 · 30 fps</dd>
+      <dt>Haut</dt><dd>hook Higgsfield, puis b-roll et cartons chiffrés</dd>
+      <dt>Bas</dt><dd>avatar v3, décor bureau, présent du début à la fin</dd>
+      <dt>Voix</dt><dd>clone de Tony, six segments</dd>
+      <dt>Mot-clé</dt><dd>MOTEUR</dd>
+    </dl>
+  </div>
+
+  <p class="note">
+    <b>La contrainte qui a commandé le montage :</b> le décor bureau ne contient que
+    <b>13,5 s</b> de « lèvres actives » pour 26 s de vidéo. L’avatar rejoue donc des plages
+    différentes des trois clips, et chaque plan tient entièrement dans une plage où la bouche
+    bouge — c’est ce qui évite le défaut de la fois précédente, où la voix parlait sur une
+    bouche figée. Un contrôle automatique refuse de lancer le rendu si un plan déborde.
+  </p>
+  <p class="note">
+    Le fond du segment « la différence… » est volontairement sobre. S’il te paraît trop vide,
+    c’est une seule ligne à changer dans <b>build_split.mjs</b>.
+  </p>
+</div>
+</body>
+</html>
