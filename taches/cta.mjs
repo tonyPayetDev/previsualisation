@@ -32,8 +32,16 @@ const audit = JSON.parse(fs.readFileSync('/tmp/audit.json', 'utf8'));
 const PROPOSE = {
   OUTILS:      { f: 'classement-outils-video-ia.html', sur: true,
                  pourquoi: "Le post dit « un fait derrière chaque verdict, pas un adjectif » et « la méthode pour refaire ce travail ». C'est mot pour mot le contenu de cette page — elle a été écrite pour ce post." },
-  SITE:        { f: 'relance-clients-site-demo.html', sur: true,
-                 pourquoi: "Le post promet « d'un site figé à un site qui bosse pour toi » et « je t'envoie le système ». Cette page est la méthode site-démo → contrat : script d'appel, objections, relance sur 7 jours." },
+  /* Relu le 26/08 : `relance-clients-site-demo` enseigne la relance commerciale
+     À UN FREELANCE qui vend des sites-démo. Or le post s'adresse à celui dont
+     le site est figé, et lui promet « le système ». Mauvais destinataire.
+     `site-qui-travaille` a été écrite pour ce post — mais elle n'est pas encore
+     en ligne (commit non poussé), donc le test HTTP la refusera tant qu'elle
+     n'y est pas. C'est exactement le but : mieux vaut aucune porte qu'un 404. */
+  SITE:        { f: 'site-qui-travaille.html', sur: true,
+                 pourquoi: "Le post promet « d'un site figé à un site qui bosse pour toi » et « je t'envoie le système ». Cette page décrit les trois mécanismes — publier, capter, relancer — et les trois pannes qui les cassent sans lever d'erreur." },
+  ETUDE:       { f: 'etude-42-concurrents-restaurateurs.html', sur: true,
+                 pourquoi: "Les quatre vidéos de l'étude finissent sur « Commente ÉTUDE, je t'envoie les 42 ». Cette page publie le relevé — tableau de fréquence, prix des deux blocs, promesses affichées, les trois trous — sans la stratégie de Tony." },
   RESTO:       { f: 'vendre-prospection-restaurants-rdv-automatique.html', sur: true, pourquoi: 'Prospection restaurants → RDV automatique.' },
   PROSPECTION: { f: 'vendre-prospection-restaurants-rdv-automatique.html', sur: true, pourquoi: 'Même méthode, angle prospection.' },
   VEILLE:      { f: 'veille-ia-quotidienne.html', sur: true, pourquoi: 'La veille IA quotidienne, exactement.' },
@@ -103,10 +111,57 @@ const URGENT = {
 /* Une ressource n'est pas forcément dans `ressources/`. La page de formation
    vit à la RACINE du site (`formation.html`) — je l'avais cherchée au mauvais
    endroit et conclu à tort qu'il fallait écrire le programme, alors qu'il
-   existait déjà. D'où le champ `url` : quand il est présent, il l'emporte et
-   la vérification se fait en HTTP, pas sur le disque. */
-const existe = (f, url) => Boolean(url) || Boolean(f && fs.existsSync(path.join(RES, f)));
+   existait déjà. D'où le champ `url`, qui l'emporte sur le nom de fichier. */
 const urlDe = (p) => (p && p.url) || (p && p.f ? BASE_RES + p.f : '');
+
+/* ── « Écrite » ne veut pas dire « en ligne » ──────────────────────────────
+ *
+ * Cette fonction testait `fs.existsSync` : la présence du fichier SUR LE
+ * DISQUE. Or le dépôt du site attend des commits non poussés — vérifié le
+ * 26/08, `site-qui-travaille.html` et `etude-42-concurrents-restaurateurs.html`
+ * existaient sur le disque et rendaient **404 en ligne**. Une page dans cet
+ * état était comptée comme une porte valide et proposée dans le bloc à coller :
+ * le mot-clé aurait été relié à un lien mort, et la personne qui commente
+ * aurait reçu un 404 — pire que le silence actuel.
+ *
+ * On teste donc l'adresse réelle, une fois, avant de générer quoi que ce soit.
+ * `?cb=` est indispensable : le CDN garde les 404 en cache plusieurs heures et
+ * une page tout juste déployée répondrait encore « absente ». */
+const VIVANTES = new Map();
+
+async function testerEnLigne(urls) {
+  const liste = [...new Set(urls.filter(Boolean))];
+  const lot = 8;
+  for (let i = 0; i < liste.length; i += lot) {
+    await Promise.all(liste.slice(i, i + lot).map(async (u) => {
+      try {
+        const c = new AbortController();
+        const t = setTimeout(() => c.abort(), 12000);
+        const r = await fetch(u + (u.includes('?') ? '&' : '?') + 'cb=' + Math.random(),
+          { redirect: 'follow', signal: c.signal });
+        clearTimeout(t);
+        VIVANTES.set(u, r.status === 200);
+      } catch { VIVANTES.set(u, false); }
+    }));
+  }
+}
+
+/* Tant que le test n'a pas tourné, on retombe sur le disque : le script reste
+   utilisable hors ligne, mais il ne PROMET plus qu'une page est joignable. */
+const existe = (f, url) => {
+  const u = urlDe({ f, url });
+  if (VIVANTES.has(u)) return VIVANTES.get(u);
+  return Boolean(f && fs.existsSync(path.join(RES, f)));
+};
+
+/* Une seule passe, avant toute génération : toutes les portes proposées. */
+await testerEnLigne(Object.values(PROPOSE).map((p) => urlDe(p)));
+{
+  const total = VIVANTES.size;
+  const morts = [...VIVANTES].filter(([, v]) => !v);
+  console.log(`  ${total} porte(s) testée(s) en ligne · ${total - morts.length} joignable(s)`);
+  for (const [u] of morts) console.log(`     ⚠️  écrite mais PAS en ligne : ${u.replace(BASE_RES, '')}`);
+}
 
 /* ── Les mots réellement promis, relevés dans les scripts ──────────────────
  *
