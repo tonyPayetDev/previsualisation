@@ -56,6 +56,8 @@ const PROPOSE = {
                  pourquoi: "La vidéo dit « le cerveau premium garde les vraies décisions, le sale boulot part sur des agents plus légers… commente le mot FABLE et je t'envoie l'outil ». Cette page est la règle de délégation, chiffrée sur l'audit des 132 sessions." },
   DEVIS:       { f: 'devis-proposition-automatique.html', sur: true,
                  pourquoi: 'Le workflow formulaire → devis PDF → email, décrit nœud par nœud.' },
+  MP4:         { f: 'monter-video-claude-hyperframes.html', sur: true,
+                 pourquoi: "autoboost-claude-monte-mp4 promet « commente MP4, je t'envoie le guide complet ». La page donne l'architecture en deux passes (HyperFrames fige sur toute balise vidéo) et les huit pièges, dont ceux qui ne produisent aucune erreur." },
   OPENCODE:    { f: 'opencode-lien-et-configuration.html', sur: true,
                  pourquoi: "autoboost-opencode promet « commente OPENCODE et je t'envoie le lien et la configuration ». La page donne les deux — et la configuration qui compte n'est pas l'installation mais le fichier-contrat entre l'agent bon marché et le superviseur." },
   MOTEUR:      { f: 'moteur-n8n-vrai-exemple.html', sur: true,
