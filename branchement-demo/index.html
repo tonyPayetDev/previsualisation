@@ -82,14 +82,22 @@
   </ol>
 </div>
 
-<h2>Le mail « il faut l'appeler »</h2>
+<h2>Le mail « il faut l'appeler » — fait et testé</h2>
 <div class="c">
-  <p>C'est la seule pièce qui manque vraiment. Le workflow t'alerte à la <i>création</i> d'un lead,
-  pas à l'<i>ouverture</i> de la démo — or c'est ce moment-là qui vaut un appel.</p>
-  <p>Brevo sait le dire par webhook (événements <code>opened</code> et <code>clicked</code>).
-  Je le câble dès que tu me dis go : le déclencheur existe côté Brevo, il n'y a qu'à le pointer
-  sur un webhook n8n qui t'envoie « <i>Façon Kréol a ouvert sa maquette il y a 10 minutes —
-  appelle maintenant</i> ».</p>
+  <p>C'était la seule pièce qui manquait : le workflow d'envoi t'alerte à la <i>création</i> d'un
+  lead, pas à l'<i>ouverture</i> de la maquette — or c'est ce moment-là qui vaut un appel.</p>
+  <p><b>Workflow créé, actif et testé de bout en bout</b> :
+  <code>Alerte — un prospect a ouvert sa maquette</code> (<code>VxocZBPHedigx0q9</code>).
+  Un événement simulé a bien produit un mail dans ta boîte — tu as dû recevoir
+  « <i>TEST-branchement@example.com a OUVERT le mail</i> ». C'est un test, personne n'a rien ouvert.</p>
+  <p><b>Il reste un seul geste, côté Brevo</b> : ajouter cette adresse dans les webhooks
+  (événements <i>Ouvert</i> et <i>Cliqué</i>) —</p>
+  <p><code>https://n7n.automatisationboost.com/webhook/brevo-ouverture</code></p>
+  <p>À partir de là, dès qu'un prospect ouvre ou clique, tu reçois un mail
+  « <i>appelle maintenant</i> » avec son adresse, l'heure et le lien cliqué.</p>
+  <p style="color:var(--m);font-size:.85rem">Le format exact des événements Brevo n'a pas pu être
+  observé ici : le nœud de lecture accepte donc les formes connues et <b>le mail te renvoie le
+  message brut</b>. Au premier vrai événement, on verra la forme réelle et on resserrera si besoin.</p>
 </div>
 
 <div class="c">
