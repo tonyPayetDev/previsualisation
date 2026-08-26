@@ -4,7 +4,7 @@
  * un ordre — et surtout une raison d'appeler celui-là plutôt qu'un autre.
  *
  * Le signal est gratuit et c'est exactement l'argument de vente de Tony : on
- * mesure ce qui cloche sur leur site. Quatre défauts, tous vérifiables, tous
+ * mesure les défauts techniques de leur site. Quatre défauts, tous vérifiables, tous
  * énonçables au téléphone en une phrase :
  *
  *   · le site ne répond plus        → « votre site est hors ligne »
@@ -144,7 +144,7 @@ const html = `<!doctype html>
 <html lang="fr"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
-<title>Leads qualifiés — par défaut de site</title>
+<title>Restaurants à contacter — défauts techniques mesurés</title>
 <style>
 :root{--noir:#0f1115;--carte:#171a21;--ligne:#262b36;--blanc:#eef1f6;--gris:#8b93a3;
       --vert:#3BC47D;--chaud:#F5A524;--rouge:#C2444C}
@@ -181,10 +181,10 @@ h2{font-size:12px;letter-spacing:.18em;text-transform:uppercase;font-weight:700;
 </style></head><body><div class="wrap">
 
 <p class="sur">Prospection — qualifiée</p>
-<h1>${resultats.length} restaurants dont le site cloche</h1>
+<h1>${resultats.length} restaurants dont le site a un défaut mesurable</h1>
 <p class="intro">Sur les <b>${avecSite.length}</b> établissements qui ont un site, chacun a été
-<b>appelé en HTTP</b> pour mesurer quatre défauts vendables. Rien n'est supposé : la phrase
-d'accroche cite le défaut réellement constaté. Les plus atteints d'abord.</p>
+<b>appelé en HTTP</b> pour mesurer quatre défauts techniques courants. Rien n'est supposé : la phrase
+d'accroche cite le défaut réellement constaté. Les plus concernés d'abord.</p>
 
 <div class="compte">
   <span class="r"><b>${resultats.filter((r) => r.score >= 4).length}</b>défaut lourd</span>
@@ -195,7 +195,7 @@ d'accroche cite le défaut réellement constaté. Les plus atteints d'abord.</p>
 
 <p class="intro" style="margin-top:14px">Les ${leads.length - resultats.length} autres restent
 sur <a href="../leads-restaurants/" style="color:var(--vert)">la liste complète</a> — un site sain
-n'est pas une mauvaise cible, c'est juste une accroche plus difficile.</p>
+reste un interlocuteur pertinent : l'angle d'approche est simplement différent.</p>
 
 <h2>À appeler en premier</h2>
 ${resultats.slice(0, 25).map((x, i) => carte(x, i + 1)).join('\n')}
