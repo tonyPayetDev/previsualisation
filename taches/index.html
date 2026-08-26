@@ -139,8 +139,8 @@ footer{margin-top:34px; font-size:12px; color:var(--gris2); line-height:1.6}
 </header>
 
 <div class="compteurs">
-  <button class="c livre"   data-f="livre"   aria-pressed="false"><b>28</b><span>Livré</span></button>
-  <button class="c bloque"  data-f="bloque"  aria-pressed="false"><b>7</b><span>Bloqué</span></button>
+  <button class="c livre"   data-f="livre"   aria-pressed="false"><b>29</b><span>Livré</span></button>
+  <button class="c bloque"  data-f="bloque"  aria-pressed="false"><b>6</b><span>Bloqué</span></button>
   <button class="c attente" data-f="attente" aria-pressed="false"><b>19</b><span>Attend toi</span></button>
 </div>
 <p class="aide" id="aide">Touche un chiffre pour ne voir que celles-là.</p>
@@ -155,9 +155,10 @@ footer{margin-top:34px; font-size:12px; color:var(--gris2); line-height:1.6}
 
 <div class="envoi">
   <h3>À envoyer maintenant</h3>
-  <p>10 tâches sont à la fois <strong>cash direct</strong> et <strong>déjà livrées</strong>.
+  <p>11 tâches sont à la fois <strong>cash direct</strong> et <strong>déjà livrées</strong>.
   Le travail est fait, il n'est simplement jamais parti. C'est là qu'est ton argent — pas dans ce qui reste à construire.</p>
   <ol>
+    <li><span class="pt"></span><span>Prospection restaurants réparée — ce n’était pas le quota, mais une credential morte</span></li>
     <li><span class="pt"></span><span>Vidéo The Grill — burgers, tacos, wraps, assiettes</span><a href="https://previsualisation.automatisationboost.com/the-grill-burgers/">Ouvrir</a></li>
     <li><span class="pt"></span><span>Koytcha — image révélée à travers le logo, bords de pinceau</span><a href="/koytcha-refonte-v4/">Ouvrir</a></li>
     <li><span class="pt"></span><span>Boutons remis à la charte : Giulietta en vert, Coulommiers sur son accent, Mam'Zelle sur le brun de son logo</span><a href="/client-giulietta-pizzeria-saint-pierre/">Ouvrir</a></li>
@@ -205,11 +206,11 @@ footer{margin-top:34px; font-size:12px; color:var(--gris2); line-height:1.6}
   </div>
   <span class="voir vide" aria-hidden="true"></span>
 </li>
-<li class="t" data-etat="bloque" data-cash="direct">
-  <span class="pastille bloque" aria-hidden="true"></span>
+<li class="t" data-etat="livre" data-cash="direct">
+  <span class="pastille livre" aria-hidden="true"></span>
   <div class="corps">
-    <p class="titre"><span class="eur direct" title="Cash direct — Zéro nouveau prospect restaurant depuis 14 jours. C’est le robinet de leads qui est fermé.">€€€</span>Quota Apify épuisé — la prospection restaurants ne ramène plus rien depuis 14 jours</p>
-    <p class="note">Workflow n8n « C31 | Vendre services restaurants » (4FXdW8gWi7iew8WB), planifié tous les soirs à 22h00. Le nœud « Recherche Google Maps » (Apify) rend un HTTP 403 « Monthly usage hard limit exceeded ». Échec constaté chaque jour du 11/08 au 24/08 inclus, soit 14 exécutions. Trois autres workflows actifs dépendent d’Apify : Veille rss, Scraping Restaurants Réunion, Récupération lead Resto 12h. Ce dernier ressort « vert » mais n’atteint jamais Apify : son filtre rend 0 item, il ne fait donc rien du tout.</p>
+    <p class="titre"><span class="eur direct" title="Cash direct — Rien à payer : le quota n'a jamais été en cause. La branche ne fait que scraper Google Maps, analyser et écrire dans Airtable — aucun message ne part vers un commerçant. Preuve réelle attendue à la prochaine exécution planifiée, ce soir 22h00.">€€€</span>Prospection restaurants réparée — ce n’était pas le quota, mais une credential morte</p>
+    <p class="note">Vérifié le 26/08 : le message réel n'était pas « quota épuisé » mais « Forbidden - perhaps check your credentials ». Apify fonctionne — trois workflows ont réussi le 26/08 avec « Apify account 2 » (dont « Récuperation lead Resto 12h » à 10h00). Dans C31 (4FXdW8gWi7iew8WB), deux planificateurs tournent chaque soir à 22h : la branche « Schedule Trigger » passait, celle de « Schedule Trigger1 » échouait sur le nœud « Recherche Google Maps », seul à utiliser « Apify account 3 tony dsi gmail » — compte mort. Repointé sur « Apify account 2 », publié (versionId = activeVersionId). Sauvegardes avant/après dans prospection-formation/sauvegardes-n8n/.</p>
   </div>
   <span class="voir vide" aria-hidden="true"></span>
 </li>

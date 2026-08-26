@@ -43,12 +43,12 @@
       "echeance": "2026-08-25"
     },
     {
-      "t": "Quota Apify épuisé — la prospection restaurants ne ramène plus rien depuis 14 jours",
-      "etat": "bloque",
+      "t": "Prospection restaurants réparée — ce n’était pas le quota, mais une credential morte",
+      "etat": "livre",
       "lien": "",
-      "note": "Workflow n8n « C31 | Vendre services restaurants » (4FXdW8gWi7iew8WB), planifié tous les soirs à 22h00. Le nœud « Recherche Google Maps » (Apify) rend un HTTP 403 « Monthly usage hard limit exceeded ». Échec constaté chaque jour du 11/08 au 24/08 inclus, soit 14 exécutions. Trois autres workflows actifs dépendent d’Apify : Veille rss, Scraping Restaurants Réunion, Récupération lead Resto 12h. Ce dernier ressort « vert » mais n’atteint jamais Apify : son filtre rend 0 item, il ne fait donc rien du tout.",
+      "note": "Vérifié le 26/08 : le message réel n'était pas « quota épuisé » mais « Forbidden - perhaps check your credentials ». Apify fonctionne — trois workflows ont réussi le 26/08 avec « Apify account 2 » (dont « Récuperation lead Resto 12h » à 10h00). Dans C31 (4FXdW8gWi7iew8WB), deux planificateurs tournent chaque soir à 22h : la branche « Schedule Trigger » passait, celle de « Schedule Trigger1 » échouait sur le nœud « Recherche Google Maps », seul à utiliser « Apify account 3 tony dsi gmail » — compte mort. Repointé sur « Apify account 2 », publié (versionId = activeVersionId). Sauvegardes avant/après dans prospection-formation/sauvegardes-n8n/.",
       "cash": "direct",
-      "cashNote": "Zéro nouveau prospect restaurant depuis 14 jours. C’est le robinet de leads qui est fermé.",
+      "cashNote": "Rien à payer : le quota n'a jamais été en cause. La branche ne fait que scraper Google Maps, analyser et écrire dans Airtable — aucun message ne part vers un commerçant. Preuve réelle attendue à la prochaine exécution planifiée, ce soir 22h00.",
       "echeance": "2026-08-25"
     },
     {
