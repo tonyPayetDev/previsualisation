@@ -91,6 +91,11 @@ const norm = (s) => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toU
 const GENERIQUES = new Set(['UN', 'TON', 'LE', 'MACHIN', 'MOT', 'MOTCLE', 'CLE', 'CE', 'CES', 'TA', 'MA',
   'XXX', 'XX', 'MOTCLÉ', 'TONMOT', 'ICI']);
 
+/* Mots promis par au moins une vidéo qui n'attend PAS de validation.
+   Déclaré AVANT la fonction qui le remplit : le laisser après marche par
+   chance (les appels viennent plus bas) mais casse dès qu'on réordonne. */
+const vifs = new Set();
+
 const scanScripts = (racine) => {
   const trouve = new Map();
   const fichiers = [];
@@ -119,16 +124,30 @@ const scanScripts = (racine) => {
     /* Dans une page HTML le mot-clé est souvent en gras : « commente le mot
        <b>MOTEUR</b> ». Sans retirer les balises, la capture s'arrête sur « b ». */
     if (f.endsWith('.html')) txt = txt.replace(/<[^>]+>/g, ' ');
+
+    /* ⚠️ Une promesse n'est rompue que si la vidéo est SORTIE. Sur une page de
+       prévisualisation, le statut est écrit en toutes lettres — et il l'est sous
+       DEUX formulations : « En attente validation » et « À valider ». Ne
+       reconnaître que la première comptait des brouillons comme des vidéos
+       publiées, ce qui gonflait l'alarme et poussait à remplir le tableur pour
+       des vidéos qui ne sortiront peut-être jamais. */
+    const enAttente = f.endsWith('.html')
+      && /en\s+attente\s+validation|à\s+valider|a\s+valider/i.test(txt);
+
     let m;
     while ((m = re.exec(txt))) {
       const k = norm(m[1]);
       if (GENERIQUES.has(k)) continue;
       if (!trouve.has(k)) trouve.set(k, new Set());
       trouve.get(k).add(path.basename(path.dirname(f)));
+      /* Un mot promis dans au moins une vidéo sortie est « vif », même s'il
+         apparaît aussi dans un brouillon. Le doute profite à l'alarme. */
+      if (!enAttente) vifs.add(k);
     }
   }
   return { trouve, nbFichiers: fichiers.length };
 };
+
 
 /* Deux racines : les projets vidéo, ET les vidéos publiées directement sur
    previsualisation. Fusionner les deux relevés, sinon une promesse récente
@@ -214,6 +233,10 @@ for (const m of horsTable) {
 }
 
 const tsvRemplir = aRemplir.map((x) => `${x.ligne ? 'ligne ' + x.ligne + '\t' : ''}${x.mot}\t${x.url}`).join('\n');
+/* Les mots venant d'une vidéo DÉJÀ SORTIE en tête : c'est la seule partie du
+   bloc qui répare une promesse réellement rompue. Le reste peut attendre le
+   feu vert de Tony sur les rendus concernés. */
+aAjouter.sort((a, b) => Number(vifs.has(b.mot)) - Number(vifs.has(a.mot)) || a.mot.localeCompare(b.mot));
 const tsvAjouter = aAjouter.map((x) => `${x.mot}\t${x.url}`).join('\n');
 console.log(`  bloc « à remplir » : ${aRemplir.length} · bloc « à ajouter » : ${aAjouter.length}`);
 
@@ -369,8 +392,12 @@ ${aAjouter.length ? `
 <div class="coller">
   <div class="coller-hd">
     <b>${aAjouter.length} lignes à ajouter</b>
-    <span>ces mots n'ont AUCUNE ligne — donc rien ne part</span>
+    <span>${aAjouter.filter((x) => vifs.has(x.mot)).length} sur une vidéo SORTIE · ${aAjouter.filter((x) => !vifs.has(x.mot)).length} en attente de ta validation</span>
   </div>
+  <p class="pq">⚠️ <b>Toutes ne sont pas urgentes.</b> Une promesse n'est rompue que si la vidéo est
+  sortie. Les autres viennent de rendus qui attendent encore ton feu vert — la promesse n'a pas
+  encore été faite, et rien ne presse. Le tri ci-dessous vient du statut affiché sur chaque page
+  de prévisualisation, pas d'une supposition.</p>
   <pre class="tsv">${esc(tsvAjouter)}</pre>
   <div class="act"><button type="button" class="cp" data-txt="${esc(tsvAjouter)}">Copier le bloc entier</button></div>
   <p class="pq">Deux colonnes séparées par une tabulation : clique la première cellule vide sous
