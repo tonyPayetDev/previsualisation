@@ -56,6 +56,15 @@ const PROPOSE = {
                  pourquoi: "La vidéo dit « le cerveau premium garde les vraies décisions, le sale boulot part sur des agents plus légers… commente le mot FABLE et je t'envoie l'outil ». Cette page est la règle de délégation, chiffrée sur l'audit des 132 sessions." },
   DEVIS:       { f: 'devis-proposition-automatique.html', sur: true,
                  pourquoi: 'Le workflow formulaire → devis PDF → email, décrit nœud par nœud.' },
+  /* Les cinq vidéos prompt-reveal promettent chacune « je te l envoie en
+     message privé » — c est le prompt lui-même. Ils existent dans le dépôt
+     (prompt-full.txt) : la page les publie en entier, copiables. Une seule
+     ressource ferme cinq promesses. */
+  REGARD:      { f: "cinq-prompts-video-complets.html", sur: true, pourquoi: "Le prompt entier de la vidéo REGARD, publié tel quel." },
+  BURGER:      { f: "cinq-prompts-video-complets.html", sur: true, pourquoi: "Le prompt entier de la vidéo BURGER, publié tel quel." },
+  SHONEN:      { f: "cinq-prompts-video-complets.html", sur: true, pourquoi: "Le prompt entier de la vidéo SHONEN, publié tel quel." },
+  NEON:        { f: "cinq-prompts-video-complets.html", sur: true, pourquoi: "Le prompt entier de la vidéo NEON, publié tel quel." },
+  COMBAT:      { f: "cinq-prompts-video-complets.html", sur: true, pourquoi: "Le prompt entier de la vidéo COMBAT, publié tel quel." },
   MP4:         { f: 'monter-video-claude-hyperframes.html', sur: true,
                  pourquoi: "autoboost-claude-monte-mp4 promet « commente MP4, je t'envoie le guide complet ». La page donne l'architecture en deux passes (HyperFrames fige sur toute balise vidéo) et les huit pièges, dont ceux qui ne produisent aucune erreur." },
   OPENCODE:    { f: 'opencode-lien-et-configuration.html', sur: true,
