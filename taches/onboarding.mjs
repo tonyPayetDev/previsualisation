@@ -155,6 +155,7 @@ const html = `<!doctype html>
  td.n{text-align:right;font-variant-numeric:tabular-nums}
  .liens{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.3rem}
  .lien{background:#1b1b24;border:1px solid var(--b);border-radius:999px;padding:.45rem .9rem;font-size:.84rem;text-decoration:none;color:var(--t)}
+ .lien-fort{background:var(--j,#f5d90a);color:#000;border-color:var(--j,#f5d90a);font-weight:700}
  .regle{font-size:.86rem;margin:.3rem 0}
  .pied{color:var(--m);font-size:.75rem;margin-top:1.5rem;text-align:center}
 </style></head><body><div class="w">
@@ -211,6 +212,9 @@ Le seul chiffre qui compte chaque jour : <b>nombre de prospects contactés</b>.<
 <section>
   <h2>Aller à</h2>
   <div class="liens">
+    <!-- Le sprint passe en premier et en évidence : c'est la seule entrée d'où
+         l'on ressort avec du travail fait, les autres ne font que montrer. -->
+    <a class="lien lien-fort" href="/sprint/">▶ Lancer un sprint de 7 min</a>
     <a class="lien" href="/taches/">Mes tâches (${taches.length})</a>
     <a class="lien" href="/a-envoyer/">À envoyer</a>
     <a class="lien" href="/cta/">Mots-clés &amp; portes</a>
