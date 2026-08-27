@@ -206,7 +206,14 @@ main{max-width:900px;margin:0 auto;padding:20px 18px 80px}
       <button data-min="5" aria-pressed="false">5 min</button>
       <button data-min="7" aria-pressed="true">7 min</button>
       <button data-min="10" aria-pressed="false">10 min</button>
+      <button id="btnMusique" aria-pressed="true" title="Musique au lancement">♪ musique</button>
     </div>
+
+    <!-- 26 s de « mindset-epical-drums-03-80 », coupées après ses deux
+         secondes de silence de tête pour que ça attaque tout de suite, avec un
+         fondu de sortie de 5 s : ça lance, puis ça laisse le silence travailler.
+         preload="none" — 417 Ko qu'on ne télécharge pas tant qu'on ne lance rien. -->
+    <audio id="mindset" src="mindset.mp3" preload="none"></audio>
 
     <div class="actions" id="actions">
       <button id="btnStart" class="principal" disabled>Démarrer</button>
@@ -308,6 +315,22 @@ function bip(dans, notes, vol) {
 }
 const couperSons = () => { while (programmes.length) { try { programmes.pop().stop(); } catch (e) {} } };
 
+/* ── la musique de lancement ────────────────────────────────────────── */
+let musiqueOn = localStorage.getItem('sprint-musique') !== '0';
+const audio = () => document.getElementById('mindset');
+function lancerMusique() {
+  if (!musiqueOn) return;
+  const a = audio(); if (!a) return;
+  a.currentTime = 0; a.volume = 0.62;
+  // Le clic sur « Démarrer » est le geste utilisateur : la lecture est permise.
+  // Si le navigateur refuse quand même, on ne casse rien — le chrono prime.
+  a.play().catch(() => {});
+}
+function couperMusique() {
+  const a = audio(); if (!a) return;
+  a.pause(); a.currentTime = 0;
+}
+
 /* ── la liste ───────────────────────────────────────────────────────── */
 const LIB_CASH = { direct: 'rapporte directement', proche: 'y mène', loin: 'plus loin du cash' };
 function bâtir() {
@@ -375,6 +398,7 @@ function demarrer() {
   const reste = S.duree;
   if (reste > 62) bip(reste - 60, [880, 1046], 0.16);   // « il te reste une minute »
   bip(reste, [660, 880, 1174], 0.22);                    // fin
+  lancerMusique();
   $('#btnStart').hidden = true; $('#btnStop').hidden = false;
   $('#cadran').hidden = false; $('#verdict').hidden = true;
   $('#sceneQuoi').textContent = 'En cours';
@@ -410,6 +434,7 @@ function finir() {
 
 function arreter() {
   couperSons();
+  couperMusique();
   clearInterval(boucle); boucle = null;
   S.debut = null; sauver();
   $('#btnStop').hidden = true; $('#btnStart').hidden = false;
@@ -461,6 +486,12 @@ function bilan() {
 /* ── branchements ───────────────────────────────────────────────────── */
 $('#btnStart').onclick = demarrer;
 $('#btnStop').onclick = arreter;
+$('#btnMusique').onclick = () => {
+  musiqueOn = !musiqueOn;
+  localStorage.setItem('sprint-musique', musiqueOn ? '1' : '0');
+  $('#btnMusique').setAttribute('aria-pressed', String(musiqueOn));
+  if (!musiqueOn) couperMusique();
+};
 $('#btnFait').onclick = () => conclure('fait');
 $('#btnPasFaite').onclick = () => { $('#zonePourquoi').hidden = false; $('#pourquoi').focus(); };
 document.querySelectorAll('#raisons button').forEach((b) => b.onclick = () => {
@@ -470,10 +501,13 @@ document.querySelectorAll('#raisons button').forEach((b) => b.onclick = () => {
 $('#btnValiderNon').onclick = () => conclure('passe', $('#pourquoi').value.trim() || 'sans raison donnée');
 $('#pourquoi').addEventListener('keydown', (e) => { if (e.key === 'Enter') $('#btnValiderNon').click(); });
 
-document.querySelectorAll('#durees button').forEach((b) => b.onclick = () => {
+/* Le filtre data-min est indispensable : le bouton « musique » vit dans le même
+   bloc, et un sélecteur large lui réécrivait son gestionnaire avec celui des
+   durées — il aurait posé une durée NaN au lieu de couper le son. */
+document.querySelectorAll('#durees button[data-min]').forEach((b) => b.onclick = () => {
   if (S.debut) return;
   S.duree = +b.dataset.min * 60; sauver();
-  document.querySelectorAll('#durees button').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+  document.querySelectorAll('#durees button[data-min]').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
   $('#chrono').textContent = fmt(S.duree);
 });
 
@@ -490,8 +524,9 @@ $('#btnReset').onclick = () => {
 
 /* ── démarrage ──────────────────────────────────────────────────────── */
 bâtir();
-document.querySelectorAll('#durees button').forEach((b) =>
+document.querySelectorAll('#durees button[data-min]').forEach((b) =>
   b.setAttribute('aria-pressed', String(+b.dataset.min * 60 === S.duree)));
+$('#btnMusique').setAttribute('aria-pressed', String(musiqueOn));
 $('#chrono').textContent = fmt(S.duree);
 rafraichir();
 if (S.courante) {
