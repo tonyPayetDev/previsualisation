@@ -147,3 +147,23 @@ document.querySelectorAll('img[loading="lazy"]').forEach(img => {
     img.addEventListener('load', () => { img.style.opacity = '1'; });
   }
 });
+
+/* ── 27/08 · liste des pizzerias remontée dans le header ──────────────────
+   Sur mobile, le menu est un panneau plein écran sans hover : la liste des
+   9 pizzerias ne peut s'ouvrir qu'au tap sur le petit chevron, pas sur tout
+   le lien "Nos Pizzerias" (qui doit garder son comportement normal : mène
+   à la section). Sur desktop, le survol suffit (CSS seul, pas de JS ici). */
+(() => {
+  const dropdownItem = document.querySelector('.nav-item-dropdown');
+  const toggle = document.getElementById('pizzeriasDropdownToggle');
+  if (!dropdownItem || !toggle) return;
+  const caret = toggle.querySelector('.dropdown-caret');
+
+  caret.addEventListener('click', (e) => {
+    if (window.innerWidth > 768) return; // desktop : le survol gère déjà tout
+    e.preventDefault();
+    e.stopPropagation();
+    const open = dropdownItem.classList.toggle('dropdown-open');
+    toggle.setAttribute('aria-expanded', String(open));
+  });
+})();

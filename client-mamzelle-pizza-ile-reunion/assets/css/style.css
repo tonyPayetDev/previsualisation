@@ -938,6 +938,7 @@ footer {
     align-items: flex-start;
     padding: 2rem;
     gap: 1.5rem;
+    overflow-y: auto;
     transition: right var(--transition);
     box-shadow: -5px 0 30px rgba(0,0,0,0.1);
     z-index: 999;
@@ -1173,4 +1174,98 @@ img { border-radius: 0 !important; }
   inset: 0;
   pointer-events: none;
   background: linear-gradient(180deg, rgba(28,20,16,.55) 0%, rgba(28,20,16,.20) 34%, rgba(28,20,16,.66) 100%);
+}
+
+/* ── Correctif 27/08 · les pizzerias remontées dans le header ─────────────
+   Demande : la liste des pizzerias devrait être dans le header. Elle vivait
+   uniquement dans le hero (`.hero-lieux`, sous le H1) : invisible dès qu'on
+   a scrollé, absente de la barre fixe qui reste affichée partout. Le vrai
+   header (`.navbar`) montrait un simple lien "Nos Pizzerias" qui renvoie à
+   la section, sans jamais nommer les 9 lieux réels. On ajoute un sous-menu
+   au lien du header — 9 noms de la grille .pizzerias-grid, aucun inventé,
+   chacun pointe vers sa fiche (id ajouté sur chaque <article>). Le hero
+   garde sa propre liste : rien n'est retiré, seulement complété plus haut,
+   là où elle reste visible même après le scroll. */
+.nav-item-dropdown { position: relative; }
+
+.nav-item-dropdown > a {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.dropdown-caret {
+  width: 10px;
+  height: 10px;
+  transition: transform var(--transition);
+}
+
+.nav-item-dropdown:hover .dropdown-caret,
+.nav-item-dropdown.dropdown-open .dropdown-caret {
+  transform: rotate(180deg);
+}
+
+.nav-dropdown {
+  position: absolute;
+  top: calc(100% + 18px);
+  left: 50%;
+  transform: translateX(-50%) translateY(-6px);
+  background: var(--white);
+  border-radius: 6px;
+  box-shadow: 0 16px 44px rgba(0,0,0,.16);
+  padding: .5rem 0;
+  min-width: 190px;
+  display: flex;
+  flex-direction: column;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity var(--transition), transform var(--transition), visibility var(--transition);
+  z-index: 1001;
+}
+
+.nav-item-dropdown:hover .nav-dropdown,
+.nav-item-dropdown:focus-within .nav-dropdown {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translateX(-50%) translateY(0);
+}
+
+.nav-dropdown a {
+  color: var(--black) !important;
+  font-size: .78rem;
+  font-weight: 500;
+  letter-spacing: .02em;
+  text-transform: none !important;
+  padding: .55rem 1.2rem;
+  white-space: nowrap;
+}
+
+.nav-dropdown a::after { display: none; }
+.nav-dropdown a:hover { background: var(--beige, #f4ece1); }
+
+@media (max-width: 768px) {
+  /* Sur le panneau plein écran, le survol n'existe pas : le sous-menu
+     s'ouvre au tap sur le petit chevron (JS), le texte garde son rôle de
+     lien classique vers la section. */
+  .nav-dropdown {
+    position: static;
+    transform: none;
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    box-shadow: none;
+    background: transparent;
+    padding: 0;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height var(--transition);
+  }
+  .nav-item-dropdown.dropdown-open .nav-dropdown { max-height: 400px; padding-top: .4rem; }
+  .nav-dropdown a {
+    font-size: .92rem;
+    padding: .5rem 0 .5rem 1rem;
+    border-left: 2px solid var(--beige, #e8d9c0);
+  }
 }
