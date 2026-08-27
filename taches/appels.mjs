@@ -32,9 +32,27 @@ const echauffement = tous
   .filter((r) => !r.site && !dansCoeur(r) && r.type === 'fast_food')
   .slice(0, 3);
 
-const vrais = tous
-  .filter((r) => r.site && dansCoeur(r) && !echauffement.includes(r))
-  .slice(0, 12);
+/* Les leads QUALIFIÉS de l'onglet Sortie2 passent devant les leads OSM bruts.
+ * Trois raisons, dans l'ordre : ils portent une note Google et un nombre d'avis
+ * (de quoi ouvrir autrement que par « bonjour, je vends des vidéos »), ils ont
+ * tous un site web, et surtout aucun n'a JAMAIS été contacté — ni mail ni SMS —
+ * alors qu'ils dorment dans le Sheet depuis avril.
+ * On ne les restreint pas au cœur commercial : un lead noté 4,8 sur 178 avis
+ * vaut le déplacement même à Saint-Pierre. */
+let QUALIFIES = [];
+try {
+  QUALIFIES = JSON.parse(fs.readFileSync('/work/previsualisation/taches/leads-qualifies-sheet.json', 'utf8')).leads || [];
+} catch { /* le fichier n'existe pas encore : on retombe sur la source OSM seule */ }
+
+/* Les résultats d'appels sont chargés plus bas dans le fichier ; on en a besoin
+   DÈS ICI pour ne pas reproposer un lead déjà appelé. */
+let RESU_PRE = {};
+try { RESU_PRE = JSON.parse(fs.readFileSync('/work/previsualisation/appels/resultats.json', 'utf8')).appels || {}; } catch { /* pas encore de résultats */ }
+
+const vrais = [
+  ...QUALIFIES.filter((r) => r.telephone && !RESU_PRE[cleTot(r.nom)]),
+  ...tous.filter((r) => r.site && dansCoeur(r) && !echauffement.includes(r)),
+].slice(0, 12);
 
 /* Résultats d'appels dictés par Tony. Le suivi localStorage ne vit que dans un
    navigateur : invisible ailleurs, perdu au premier nettoyage. Ce fichier-là
@@ -152,7 +170,19 @@ const carte = (r, i, chaud) => `
           <div class="rang">${i}</div>
           <div class="corps">
             <b>${esc(r.nom)}</b>
-            <span class="meta">${esc(r.type === 'fast_food' ? 'Snack / fast-food' : r.type === 'cafe' ? 'Café' : 'Restaurant')}${r.commune ? ' · ' + esc(r.commune) : ''}${r.cuisine ? ' · ' + esc(r.cuisine.split(';')[0]) : ''}</span>
+            <span class="meta">${
+              /* Un lead qualifié porte son vrai secteur (« Pizzeria », « Villa »),
+                 pas la catégorie OSM. Et sa note Google est l'information qui
+                 change l'ouverture de l'appel : on la met au premier plan. */
+              r.qualifie
+                ? esc(r.type || 'Commerce')
+                  + (r.commune ? ' · ' + esc(r.commune) : '')
+                  + (r.note ? ` · <b class="note">${r.note}★</b>` : '')
+                  + (r.avis ? ` (${r.avis} avis)` : '')
+                : esc(r.type === 'fast_food' ? 'Snack / fast-food' : r.type === 'cafe' ? 'Café' : 'Restaurant')
+                  + (r.commune ? ' · ' + esc(r.commune) : '')
+                  + (r.cuisine ? ' · ' + esc(r.cuisine.split(';')[0]) : '')
+            }</span>
             ${(() => { const v = vitrine(r); return r.site
               ? `<a class="site v-${v.sorte}" href="${esc(r.site)}" target="_blank" rel="noopener">${esc(v.dit)} ↗</a>`
               : `<span class="site v-aucun">${esc(v.dit)}</span>`; })()}
