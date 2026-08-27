@@ -49,6 +49,24 @@ try {
 let RESU_PRE = {};
 try { RESU_PRE = JSON.parse(fs.readFileSync('/work/previsualisation/appels/resultats.json', 'utf8')).appels || {}; } catch { /* pas encore de résultats */ }
 
+/* Ceux qui ont demandé qu'on les rappelle.
+ *
+ * Ils étaient tombés de la page : la sélection ci-dessous écarte tout numéro
+ * déjà appelé (`!RESU_PRE[...]`), ce qui est juste pour un « pas intéressé »
+ * et faux pour un « rappelez-moi à 14 h ». La Page Gourmande, qui attendait
+ * un rappel à 14 h avec une vidéo déjà prête, avait ainsi disparu de la
+ * feuille le jour même où il fallait la rappeler.
+ *
+ * Ce sont les fiches les plus chaudes du fichier : elles passent AVANT
+ * l'échauffement, et rien ne les tronque. */
+const rappels = Object.entries(RESU_PRE)
+  .filter(([, d]) => d.etat === 'rappeler')
+  .map(([k, d]) => {
+    const src = QUALIFIES.find((r) => cleTot(r.nom) === k) || tous.find((r) => cleTot(r.nom) === k);
+    return src ? { ...src, _suite: d.suite || d.dit || '' } : null;
+  })
+  .filter(Boolean);
+
 const vrais = [
   ...QUALIFIES.filter((r) => r.telephone && !RESU_PRE[cleTot(r.nom)]),
   ...tous.filter((r) => r.site && dansCoeur(r) && !echauffement.includes(r)),
@@ -248,6 +266,7 @@ body{background:var(--noir);color:var(--blanc);
 h1{font-size:clamp(28px,7vw,40px);line-height:1.05;font-weight:800;letter-spacing:-.03em;margin:8px 0 0}
 h2{font-size:12px;letter-spacing:.2em;text-transform:uppercase;font-weight:700;
   margin:34px 0 4px}
+h2.r{--c:#ef4444}
 h2.a{color:var(--chaud)} h2.b{color:var(--vrai)} h2.c{color:#7FB2E8}
 .pourquoi{color:var(--gris);font-size:13.5px;margin-bottom:14px;max-width:56ch}
 ul{list-style:none}
@@ -365,6 +384,13 @@ ${(() => {
     </div>
   </div>`;
 })()}
+
+${rappels.length ? `
+<h2 class="r">À rappeler · ils attendent ton appel</h2>
+<p class="pourquoi">Les fiches les plus chaudes : quelqu'un t'a déjà répondu et a demandé
+ que tu reviennes vers lui. À passer avant tout le reste.</p>
+<ul>${rappels.map((r, i) => carte(r, i + 1, true)).join('')}
+</ul>` : ''}
 
 <h2 class="a">D'abord · s'échauffer</h2>
 <p class="pourquoi">Trois appels sans enjeu : petites structures, loin de ton secteur,
