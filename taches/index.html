@@ -121,7 +121,7 @@ footer{margin-top:34px; font-size:12px; color:var(--gris2); line-height:1.6}
 
 <header>
   <h1>Où en sont mes demandes</h1>
-  <p>Tout ce que tu m'as demandé, et où ça en est. Mis à jour le 2026-08-24.</p>
+  <p>Tout ce que tu m'as demandé, et où ça en est. Mis à jour le 2026-08-27.</p>
   <nav class="nav">
     <a href="/taches/" class="ici" title="où en est chaque chose">Mes demandes</a>
     <a href="/a-envoyer/" title="fini, jamais parti">À envoyer</a>
@@ -147,18 +147,17 @@ footer{margin-top:34px; font-size:12px; color:var(--gris2); line-height:1.6}
 
 <h2>Proximité du cash</h2>
 <div class="cash-f">
-  <button class="cf direct" data-c="direct" aria-pressed="false"><b>14</b><span>€€€ Cash direct</span></button>
-  <button class="cf proche" data-c="proche" aria-pressed="false"><b>21</b><span>€€ Amène du cash</span></button>
-  <button class="cf loin"   data-c="loin"   aria-pressed="false"><b>19</b><span>€ Convertible</span></button>
+  <button class="cf direct" data-c="direct" aria-pressed="false"><b>13</b><span>€€€ Cash direct</span></button>
+  <button class="cf proche" data-c="proche" aria-pressed="false"><b>20</b><span>€€ Amène du cash</span></button>
+  <button class="cf loin"   data-c="loin"   aria-pressed="false"><b>21</b><span>€ Convertible</span></button>
 </div>
 <p class="aide" id="aideCash">Rouge : un prospect nommé est au bout. Vert : utile, mais personne ne paie pour ça aujourd'hui.</p>
 
 <div class="envoi">
   <h3>À envoyer maintenant</h3>
-  <p>11 tâches sont à la fois <strong>cash direct</strong> et <strong>déjà livrées</strong>.
+  <p>10 tâches sont à la fois <strong>cash direct</strong> et <strong>déjà livrées</strong>.
   Le travail est fait, il n'est simplement jamais parti. C'est là qu'est ton argent — pas dans ce qui reste à construire.</p>
   <ol>
-    <li><span class="pt"></span><span>Prospection restaurants réparée — ce n’était pas le quota, mais une credential morte</span></li>
     <li><span class="pt"></span><span>Vidéo The Grill — burgers, tacos, wraps, assiettes</span><a href="https://previsualisation.automatisationboost.com/the-grill-burgers/">Ouvrir</a></li>
     <li><span class="pt"></span><span>Koytcha — image révélée à travers le logo, bords de pinceau</span><a href="/koytcha-refonte-v4/">Ouvrir</a></li>
     <li><span class="pt"></span><span>Boutons remis à la charte : Giulietta en vert, Coulommiers sur son accent, Mam'Zelle sur le brun de son logo</span><a href="/client-giulietta-pizzeria-saint-pierre/">Ouvrir</a></li>
@@ -201,15 +200,15 @@ footer{margin-top:34px; font-size:12px; color:var(--gris2); line-height:1.6}
 <li class="t" data-etat="bloque" data-cash="loin">
   <span class="pastille bloque" aria-hidden="true"></span>
   <div class="corps">
-    <p class="titre"><span class="eur loin" title="Convertible — Recharger OpenAI remet 3 workflows en marche, dont la démo restaurant envoyée aux prospects. Le 4e demande deux corrections séparées : un identifiant de modèle Anthropic valide, et un endpoint Puppeteer vivant. | Le 4e workflow envoie des messages : sa panne depuis le 17/08 a peut-être ÉVITÉ des envois non voulus. À décider avant de le rallumer.">€</span>Comptes IA à zéro — 3 workflows sur 4 repartent en rechargeant OpenAI, le 4e non</p>
+    <p class="titre"><span class="eur loin" title="Convertible — Non rattaché à un prospect ni à un canal d’acquisition.">€</span>Comptes IA à zéro — 3 workflows sur 4 repartent en rechargeant OpenAI, le 4e non</p>
     <p class="note">Vérifié le 26/08, erreur réelle de la dernière exécution de chacun. OpenAI à zéro (3) : « Automatisé la création de sites web avec claude code restaurant » (jRl7GsvAVkB2xEk6), « Agent ia retourne solution » (iyuosFSnXzZhdIKB), « restaurant v5 demo + essai » (iIv2o7ADJl6wVKYT). Le libellé n8n dit « Rate limit reached », mais ces workflows ne tournent que 1 à 4 fois par JOUR : à cette fréquence un rate limit de débit ne peut pas se déclencher — c'est le 429 d'un solde épuisé. Le 4e, « kilo code restaurant » (nOmnxsyQUp1HtuYq), a DEUX pannes distinctes et aucune n'est OpenAI : le nœud Anthropic demande le modèle claude-opus-4-5-20251101 et reçoit « Bad request - please check your parameters », et « Scrape with Puppeteer2 » pointe sur http://164.68.127.62:80 qui ne répond plus (timeout à 20 s, testé). Recharger OpenAI ne le réparera pas. | MAJ 26/08 : les deux corrections du 4e workflow (nOmnxsyQUp1HtuYq) sont TROUVÉES et prouvées, mais NON APPLIQUÉES — volontairement. (1) Modèle : claude-opus-4-5-20251101 est refusé ; claude-haiku-4-5-20251001 est le seul identifiant Anthropic du parc avec un succès récent (« Blotato — Réponse auto commentaires Instagram », 26/08). (2) Puppeteer : l'endpoint browserless sur 164.68.127.62 est MORT (HTTP 000, timeout 20 s) ; celui sur 158.220.127.234 répond en 0,03 s et sert déjà 104 workflows. POURQUOI JE N'AI RIEN TOUCHÉ : en aval du scraper il y a « Mail Validation », « Send a transactional email1 » et « Envoie message whatsapp » (Evolution API). Réparer = rallumer des emails et des WhatsApp automatiques vers de vrais restaurateurs. Un mot de Tony et j'applique les deux en cinq minutes.</p>
   </div>
   <span class="voir vide" aria-hidden="true"></span>
 </li>
-<li class="t" data-etat="livre" data-cash="direct">
+<li class="t" data-etat="livre" data-cash="loin">
   <span class="pastille livre" aria-hidden="true"></span>
   <div class="corps">
-    <p class="titre"><span class="eur direct" title="Cash direct — Rien à payer : le quota n'a jamais été en cause. La branche ne fait que scraper Google Maps, analyser et écrire dans Airtable — aucun message ne part vers un commerçant. Preuve réelle attendue à la prochaine exécution planifiée, ce soir 22h00.">€€€</span>Prospection restaurants réparée — ce n’était pas le quota, mais une credential morte</p>
+    <p class="titre"><span class="eur loin" title="Convertible — Non rattaché à un prospect ni à un canal d’acquisition.">€</span>Prospection restaurants réparée — ce n’était pas le quota, mais une credential morte</p>
     <p class="note">Vérifié le 26/08 : le message réel n'était pas « quota épuisé » mais « Forbidden - perhaps check your credentials ». Apify fonctionne — trois workflows ont réussi le 26/08 avec « Apify account 2 » (dont « Récuperation lead Resto 12h » à 10h00). Dans C31 (4FXdW8gWi7iew8WB), deux planificateurs tournent chaque soir à 22h : la branche « Schedule Trigger » passait, celle de « Schedule Trigger1 » échouait sur le nœud « Recherche Google Maps », seul à utiliser « Apify account 3 tony dsi gmail » — compte mort. Repointé sur « Apify account 2 », publié (versionId = activeVersionId). Sauvegardes avant/après dans prospection-formation/sauvegardes-n8n/.</p>
   </div>
   <span class="voir vide" aria-hidden="true"></span>
@@ -590,10 +589,10 @@ footer{margin-top:34px; font-size:12px; color:var(--gris2); line-height:1.6}
   </div>
   <span class="voir vide" aria-hidden="true"></span>
 </li>
-<li class="t" data-etat="attente" data-cash="proche">
+<li class="t" data-etat="attente" data-cash="loin">
   <span class="pastille attente" aria-hidden="true"></span>
   <div class="corps">
-    <p class="titre"><span class="eur proche" title="Amene du cash — Ce n'est plus de l'outillage : une page publique qui dit que le site de 52 prospects « cloche » peut coûter une relance. Passer le dépôt en privé n'est PAS un clic — l'app Coolify clone en HTTPS anonyme (source_id 0, aucune clé), il faut attacher une clé de déploiement AVANT, sinon toutes les prévisualisations tombent.">€€</span>Dépôt previsualisation public — 689 numéros lisibles sans mot de passe</p>
+    <p class="titre"><span class="eur loin" title="Convertible — Non rattaché à un prospect ni à un canal d’acquisition.">€</span>Dépôt previsualisation public — 689 numéros lisibles sans mot de passe</p>
     <p class="note">Mesuré le 26/08 en anonyme sur raw.githubusercontent.com : leads-restaurants 573 numéros (source OpenStreetMap, déjà publics), sites-clients 58, leads-qualifies 58, etude-concurrents 0 mais le positionnement en prix. Le verrou nginx protège le serveur, pas GitHub. Le plus grave n'est pas le volume : leads-qualifies s'intitule « 52 restaurants dont le site cloche » — un jugement nominatif publié sous ton nom sur tes propres prospects. Détail et 3 options dans /work/EXPOSITION-DEPOT-PUBLIC.md.</p>
   </div>
   <span class="voir vide" aria-hidden="true"></span>

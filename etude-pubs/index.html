@@ -1,0 +1,271 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Étude pubs concurrentes</title>
+<style>
+ :root{ --bg:#0a0a0f; --panel:#111117; --bord:#242430; --jaune:#f5d90a;
+        --texte:#f2f2f5; --doux:#9a9aa8; --faible:#6b6b78; }
+ *{box-sizing:border-box}
+ body{margin:0;background:var(--bg);color:var(--texte);line-height:1.65;
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+      -webkit-font-smoothing:antialiased}
+ .wrap{max-width:840px;margin:0 auto;padding:2rem 1.1rem 5rem}
+ a.back{color:var(--doux);font-size:.8rem;text-decoration:none;display:inline-block;margin-bottom:1.2rem}
+ a.back:hover{color:var(--jaune)}
+ h1{font-size:clamp(1.5rem,4.4vw,2rem);margin:0 0 1.2rem;letter-spacing:-.02em;text-wrap:balance}
+ h2{font-size:1.15rem;margin:2.4rem 0 .7rem;padding-top:1.2rem;border-top:1px solid var(--bord);
+    letter-spacing:-.01em;text-wrap:balance}
+ h3{font-size:1rem;margin:1.7rem 0 .5rem;color:var(--jaune);text-wrap:balance}
+ h4{font-size:.9rem;margin:1.2rem 0 .4rem;color:var(--doux)}
+ p{margin:0 0 .9rem;font-size:.93rem}
+ b{color:#fff}
+ i{color:var(--doux);font-style:italic}
+ ul{margin:0 0 1rem;padding-left:1.2rem}
+ li{margin-bottom:.4rem;font-size:.92rem;color:var(--doux)}
+ li b{color:var(--texte)}
+ code{background:#16161d;border:1px solid var(--bord);border-radius:4px;
+      padding:.05rem .3rem;font-size:.83em;color:#d7d7de;word-break:break-word}
+ blockquote{margin:1rem 0;padding:.8rem 1rem;background:var(--panel);
+            border-left:3px solid var(--jaune);border-radius:0 10px 10px 0;
+            font-size:.92rem;color:var(--doux)}
+ blockquote b{color:var(--texte)}
+ hr{border:0;border-top:1px solid var(--bord);margin:2rem 0}
+ /* Les tableaux défilent DANS leur conteneur : la page, elle, ne bouge jamais
+    latéralement, même avec neuf colonnes sur un écran de 390 px. */
+ .tableau{overflow-x:auto;margin:1rem 0;border:1px solid var(--bord);border-radius:10px;
+          -webkit-overflow-scrolling:touch}
+ table{border-collapse:collapse;min-width:100%;font-size:.83rem}
+ th{text-align:left;padding:.55rem .7rem;background:#16161d;color:var(--jaune);
+    font-weight:700;white-space:nowrap;border-bottom:1px solid var(--bord)}
+ td{padding:.55rem .7rem;border-bottom:1px solid rgba(36,36,48,.7);vertical-align:top;
+    color:var(--doux);min-width:9rem}
+ td b{color:var(--texte)}
+ tr:last-child td{border-bottom:0}
+</style>
+</head>
+<body>
+<div class="wrap">
+<a class="back" href="/">← toutes les prévisualisations</a>
+<h1>Étude des publicités concurrentes — méthode Tony, appliquée</h1>
+<p><b>Pour</b> : Tony PAYET — AutomatisationBoost / VideoBoost / FoodBoost (La Réunion, marché France) <b>Date de relevé</b> : <b>27 août 2026</b> <b>Source</b> : Bibliothèque publicitaire Meta, pays = <b>France</b>, statut = <b>Actives</b>, catégorie = <b>Toutes les publicités</b>. <b>Accès</b> : lecture automatisée réelle (Chromium/Playwright depuis cette machine). Chaque annonce citée a été affichée et son texte capturé.</p>
+<blockquote>Cette étude <b>remplace</b> <code>ETUDE-CONCURRENTS-PUB.md</code> (20 août) sur le plan méthodologique. L'ancienne version listait 5 annonceurs <b>sans</b> appliquer les filtres. Ici les filtres sont appliqués, et <b>les 5 annonceurs de l'ancienne liste y sont repassés</b> : DIOQA, Limova.ai et THEYO passent ; <b>Meridian Partners</b> échoue (42 jours, il en faut 45) et <b>MedAgency</b> n'a plus aucune annonce active. Une de ses conclusions est également corrigée : DIOQA n'est pas un annonceur « récent », il diffuse depuis <b>322 jours</b>.</blockquote>
+<hr>
+<h2>0. L'accès à l'Ad Library — ce qui a marché, ce qui n'a pas marché</h2>
+<p><b>Ce qui a marché.</b> La Bibliothèque publicitaire est lisible depuis cette machine. Détail utile pour la prochaine fois : la requête HTTP renvoie un <b>statut 403</b>, mais la page se rend quand même et le DOM contient tout le contenu. Il ne faut donc pas se fier au code retour.</p>
+<p>Trois modes de lecture ont été utilisés :</p>
+<div class="tableau"><table><thead><tr><th>Mode</th><th>URL</th><th>Ce qu'il donne</th></tr></thead><tbody><tr><td>Recherche par mot-clé</td><td><code>…&amp;q=&lt;requête&gt;&amp;search_type=keyword_unordered</code></td><td>le repérage large</td></tr><tr><td>Recherche <b>par annonceur</b></td><td><code>…&amp;q=&lt;nom&gt;&amp;search_type=page</code></td><td><b>le décompte réel des annonces actives d'un annonceur</b></td></tr><tr><td>Fiche annonce</td><td>bloc <code>ID dans la bibliothèque</code></td><td>date de début, mention « plusieurs versions », mention « N publicités utilisent ce contenu publicitaire »</td></tr></tbody></table></div>
+<p><b>Ce qui n'a pas marché — et qui a failli fausser toute l'étude.</b> Le décompte des variantes <b>à partir des pages de résultats par mot-clé est faux</b>. Meta n'y affiche qu'une poignée d'annonces par annonceur. Exemple mesuré : sur la recherche <code>automatisation IA</code>, Limova.ai ressort avec <b>8 annonces actives, la plus ancienne datée du 24 juillet (34 jours)</b> — ce qui la ferait <i>sortir</i> du filtre. En recherche <b>par annonceur</b>, la même marque affiche <b>15 annonces actives identifiées, la plus ancienne du 26 juin (62 jours)</b> — ce qui la fait <i>entrer</i>. <b>Tout décompte de variantes fait sur une page de résultats mot-clé est à jeter.</b></p>
+<p><b>Ce que je n'ai pas pu lire, et qui laisse des trous dans le tableau :</b></p>
+<ul>
+<li><b>Les 3 premières secondes des vidéos.</b> Le lecteur vidéo de la bibliothèque affiche « Nous rencontrons des problèmes pour lire cette vidéo » sur la quasi-totalité des créas vidéo (THEYO, Yelido, Alegria, Oscar AI, AI pour Pme, Blue Star…). <b>La colonne « objection traitée dans les 3 premières secondes » est donc renseignée à partir du texte de l'annonce, pas de l'image.</b> C'est une limite réelle : chez ces annonceurs, la vidéo peut ouvrir autrement que le texte. Chaque case concernée est marquée <code>(texte)</code>.</li>
+<li><b>Le nombre exact de versions à l'intérieur d'une annonce.</b> Meta affiche « Cette publicité a plusieurs versions » sans le chiffre. Il n'affiche un nombre que dans un cas particulier : « N publicités utilisent ce contenu publicitaire et ce texte ».</li>
+<li><b>Le budget, la portée, les conversions.</b> Meta ne les publie pas pour les annonceurs commerciaux. Aucun chiffre de ce type n'apparaît ici. Les seules mentions quantifiées vues sont les étiquettes « Nombre faible d'impressions / &lt;100 ».</li>
+<li><b>La durée continue de diffusion.</b> La bibliothèque donne la <b>date de début d'un créatif</b>, pas une durée ininterrompue. Une créa a pu être mise en pause et relancée. Les « jours » ci-dessous sont des <b>écarts entre la date de début affichée et le 27 août 2026</b>, pas des durées certifiées.</li>
+<li><b>La destination réelle de plusieurs annonces.</b> Quand le libellé affiché est <code>FB.ME</code> (Yelido, Agence Blue Star), le clic mène à <b>Messenger</b>, pas à une page. Le site rattaché à ces marques a été ouvert séparément — le rattachement est alors une <b>déduction sur le nom</b>, signalée comme telle.</li>
+<li><b>Les prix Limova.ai.</b> La page <code>/offres</code> charge ses montants en JavaScript ; la lecture n'a renvoyé que des emplacements vides. <b>Prix non lu.</b></li>
+<li><b>Le ciblage géographique.</b> Le filtre « France » inclut La Réunion. Impossible de savoir si un annonceur exclut ou cible les DOM.</li>
+</ul>
+<p>Aucune donnée de ce document n'est estimée. <b>Ce qui n'a pas été lu est écrit « non lu », jamais comblé.</b></p>
+<hr>
+<h2>1. La méthode, telle qu'appliquée</h2>
+<p>Les sept étapes de Tony, dans l'ordre, sans aménagement.</p>
+<p><b>Étape 1 — Repérage.</b> 9 requêtes en France, statut Actives : <code>automatisation IA</code> · <code>agence automatisation IA</code> · <code>agent IA entreprise</code> · <code>agence IA PME</code> · <code>standard telephonique IA</code> · <code>video IA entreprise</code> · <code>chatbot entreprise</code> · <code>generation de leads IA</code> · <code>creation site internet IA</code>. Résultat brut : <b>141 annonces uniques, 62 annonceurs distincts</b>. Sur ces 62, une partie est écartée d'emblée comme <b>hors créneau</b> (le créneau de Tony = vendre de l'automatisation IA, des agents IA ou de la vidéo IA à des entreprises) : éditeurs SaaS génériques, médias, e-commerce, formations destinées à des particuliers. Le reste est passé au filtre — <b>bien plus que les 8-10 annonceurs demandés</b>, ce qui permet de filtrer sévèrement sans se retrouver à court.</p>
+<p><b>Résultat du filtre : 12 annonceurs le passent.</b> Tous les autres sont listés en §2 avec leur raison de rejet.</p>
+<p><b>Étape 2 — Le filtre, non négociable.</b> Deux conditions cumulatives, mesurées <b>en recherche par annonceur</b> :</p>
+<ul>
+<li><b>≥ 45 jours</b> : la plus ancienne annonce <b>encore active</b> de l'annonceur a démarré <b>le 13 juillet 2026 ou avant</b>.</li>
+<li><b>≥ 3 variantes actives</b> : l'annonceur a <b>au moins 3 identifiants d'annonce actifs distincts</b> en France. C'est la seule lecture mesurable de « 3 variantes » — Meta ne publie pas le nombre de versions à l'intérieur d'une annonce.</li>
+</ul>
+<p><b>Étape 3</b> — tableau à six colonnes, promesses en verbatim. <b>Étape 4</b> — funnels parcourus jusqu'à la page de prix quand elle existe. <b>Étape 5</b> — les angles retenus sont ceux qui reviennent chez <b>plusieurs annonceurs indépendants</b> (marques différentes, propriétaires différents, offres différentes). Un angle porté par un seul annonceur n'est pas un signal. <b>Étape 6</b> — réécriture du message d'outreach. <b>Étape 7</b> — rappel du cadre d'exécution.</p>
+<hr>
+<h2>2. Les annonceurs écartés, et pourquoi</h2>
+<p>Le filtre est appliqué avant toute analyse. Un annonceur qui ne le passe pas ne figure pas dans le tableau principal, quelle que soit la qualité de ses annonces.</p>
+<h3>Écartés sur l'ancienneté (&lt; 45 jours)</h3>
+<div class="tableau"><table><thead><tr><th>Annonceur</th><th>Ce qu'il vend</th><th>Annonces actives</th><th>Plus ancienne encore active</th><th>Âge</th><th>Raison du rejet</th></tr></thead><tbody><tr><td><b>Meridian Partners.</b></td><td>Cursus « Responsable Automatisation IA »</td><td><b>22</b></td><td>16 juil. 2026</td><td><b>42 j</b></td><td><b>Manque 3 jours.</b> 22 créas simultanées, mais toutes lancées le même jour : c'est un test de créa massif, pas un annonceur qui rentabilise. À re-vérifier début septembre.</td></tr><tr><td><b>Scalezia.co</b></td><td>Formation / outils IA</td><td><b>26</b></td><td>26 juil. 2026</td><td><b>32 j</b></td><td>Même profil : gros volume, lancement récent.</td></tr><tr><td><b>InProcess</b></td><td>Agence d'automatisation IA pour PME</td><td><b>3</b></td><td>27 juil. 2026</td><td><b>31 j</b></td><td>Trop récent — de 14 jours. Dommage : c'est le seul du corpus entier à afficher <b>à la fois</b> une promesse en heures, un prix, et une garantie (voir §4). <b>À re-vérifier le 10 septembre.</b></td></tr><tr><td><b>Sola IA</b></td><td>Agents IA branchés au CRM</td><td>2</td><td>31 juil. 2026</td><td><b>27 j</b></td><td>Trop récent et &lt; 3 variantes.</td></tr><tr><td><b>La Révolution IA</b></td><td>Contenu / formation IA</td><td>2</td><td>1er août 2026</td><td><b>26 j</b></td><td>Trop récent et &lt; 3 variantes.</td></tr><tr><td><b>Entrepreneurs.com</b></td><td>Formation entrepreneuriat IA</td><td>2</td><td>6 août 2026</td><td>21 j</td><td>Trop récent.</td></tr><tr><td><b>Marcus Levin</b>, <b>Landing Lab</b>, <b>Agence Akylia</b>, <b>Ades Bootcamp</b>, <b>Hautes Spheres</b>, <b>RNA Solutions</b>, <b>sokelogroup</b>, <b>Sophie TMB</b>, <b>L'académie Big Wave</b>, <b>louis.key</b>, <b>Bernezac Communication</b></td><td>Agences / formations IA diverses</td><td>1 à 3</td><td>2 à 24 août 2026</td><td>2 à 24 j</td><td>Phase de test.</td></tr></tbody></table></div>
+<h3>Écartés sur les variantes (&lt; 3 annonces actives)</h3>
+<div class="tableau"><table><thead><tr><th>Annonceur</th><th>Ce qu'il vend</th><th>Annonces actives</th><th>Plus ancienne</th><th>Raison du rejet</th></tr></thead><tbody><tr><td><b>AI pour Pme</b></td><td><b>Pubs vidéo IA + réponse auto aux messages, pour les métiers du bâtiment et des services à domicile</b></td><td><b>1</b></td><td>21 juin 2026 (67 j)</td><td><b>Passe l'ancienneté, échoue sur les variantes.</b> C'est le concurrent le plus proche de VideoBoost trouvé dans tout le corpus, et il n'a <b>qu'une seule créa active</b> — vérifié deux fois, dont une recherche ciblée sur une phrase exacte de son annonce. Son CTA est <b>« Laisse VIDEO! en commentaire pour une démo personnalisée »</b> : la mécanique commentaire→DM de Tony, financée en publicité. <b>À surveiller de près, pas à copier tel quel.</b></td></tr><tr><td><b>Sproclub</b></td><td>Formation IA dans SAP</td><td>1</td><td>28 juil. 2025 (395 j)</td><td>1 seule créa, malgré 13 mois d'ancienneté.</td></tr><tr><td><b>bureau24.fr</b>, <b>Educly AI App</b>, <b>Maxime Thimonier</b>, <b>Mohamed MEG</b>, <b>Nej Douma</b>, <b>Raggae.eu</b>, <b>IA Pro Academy</b>, <b>La Plateforme Campus</b>, <b>Agence Com'2</b></td><td>Divers</td><td>1 à 2</td><td>variable</td><td>&lt; 3 créas actives.</td></tr></tbody></table></div>
+<h3>Écartés parce que hors du créneau de Tony</h3>
+<p>Ils remontent sur les requêtes mais ne vendent pas d'automatisation ni de vidéo IA à des entreprises. Trois d'entre eux <b>passent pourtant les deux filtres</b> et sont écartés uniquement pour cette raison — ils restent utiles comme points de comparaison :</p>
+<div class="tableau"><table><thead><tr><th>Annonceur</th><th>Ce qu'il vend</th><th>Annonces actives</th><th>Plus ancienne</th><th>Pourquoi hors créneau</th></tr></thead><tbody><tr><td><b>Factorial FR</b></td><td>SaaS RH tout-en-un pour PME</td><td><b>22</b></td><td>9 juin 2026 (79 j)</td><td>Logiciel RH, pas de l'automatisation sur mesure.</td></tr><tr><td><b>Advancing AI / JobEscape.me</b></td><td>Formation « Learn AI Automation »</td><td><b>15</b></td><td>20 juin 2026 (68 j)</td><td>Vend à des particuliers en reconversion.</td></tr><tr><td><b>Charles Baras – Copy chief</b></td><td>Formation « AI-CMO » pour copywriters</td><td>3</td><td>20 mai 2026 (99 j)</td><td>Vend à des freelances, pas à des entreprises.</td></tr></tbody></table></div>
+<p>Et les autres, écartés sans discussion : <b>Brevo</b>, <b>Bitdefender</b>, <b>monday.com</b>, <b>Skool</b>, <b>Travaux.com</b>, <b>La Dépêche du Midi</b>, <b>L'Express</b>, <b>Le Monde</b>, <b>Elektor France</b>, <b>ImmoZen Groupe Suisse</b>, <b>Soumission Reno Plus</b>, <b>La perlerie 22</b>, <b>conscience_eco</b>, <b>Olivier Lambert</b>, <b>Désire Morgane</b>, <b>Alfred et Jim / ICD Media</b>, <b>Ecole des Webdesigners</b>, <b>IFTM</b>, <b>Annuaire des Formations</b>, <b>Yann Le Mad</b>, <b>Pub Pros 7</b>.</p>
+<h3>Écartés parce qu'ils n'ont plus aucune annonce active</h3>
+<p>Ces deux-là figuraient dans l'étude du 20 août. <b>Au 27 août, la recherche par annonceur ne remonte aucune annonce active à leur nom.</b></p>
+<div class="tableau"><table><thead><tr><th>Annonceur</th><th>Statut au 27/08/2026</th></tr></thead><tbody><tr><td><b>MedAgency</b></td><td>Aucune annonce active identifiée. La créa du 12 août relevée précédemment n'apparaît plus.</td></tr><tr><td><b>local.fr</b></td><td>Aucune annonce active identifiée sur les 9 requêtes ni en recherche par annonceur.</td></tr></tbody></table></div>
+<blockquote><b>Correction importante par rapport à l'étude du 20 août.</b> Celle-ci classait <b>DIOQA</b> comme « récent, créa du 11 août 2026 ». C'est faux : en recherche <b>par annonceur</b>, DIOQA affiche <b>23 annonces actives dont la plus ancienne date du 9 octobre 2025 — 322 jours</b>. C'est l'annonceur le plus installé de tout le corpus sur le créneau français. L'erreur venait de la lecture par mot-clé (voir §0).</blockquote>
+<hr>
+<h2>3. Le tableau — les annonceurs qui passent le filtre</h2>
+<p><b>12 annonceurs</b> passent les deux conditions. Tous les décomptes ci-dessous viennent de la <b>recherche par annonceur</b>, relevée le <b>27 août 2026</b>.</p>
+<h3>3.1 — Le passage du filtre, annonceur par annonceur</h3>
+<div class="tableau"><table><thead><tr><th>#</th><th>Annonceur</th><th>Annonces actives (FR)</th><th>Plus ancienne encore active</th><th>Ancienneté</th><th>≥45 j</th><th>≥3 var.</th></tr></thead><tbody><tr><td>1</td><td><b>DIOQA</b></td><td><b>23</b></td><td>9 oct. 2025</td><td><b>322 j</b></td><td>✅</td><td>✅</td></tr><tr><td>2</td><td><b>WhatChimp</b></td><td><b>20</b></td><td>12 nov. 2025</td><td><b>288 j</b></td><td>✅</td><td>✅</td></tr><tr><td>3</td><td><b>Leadfox</b></td><td><b>13</b></td><td>20 févr. 2026</td><td><b>188 j</b></td><td>✅</td><td>✅</td></tr><tr><td>4</td><td><b>Agentova.ai</b></td><td><b>16</b> (10 sur la page <code>Agentova-IA</code> + 6 sur <code>Agentova-AI</code>, hors pages créateurs)</td><td>2 mai 2026</td><td><b>117 j</b></td><td>✅</td><td>✅</td></tr><tr><td>5</td><td><b>Oscar AI</b></td><td><b>8</b></td><td>20 mai 2026</td><td><b>99 j</b></td><td>✅</td><td>✅</td></tr><tr><td>6</td><td><b>L'agence you'nivers</b></td><td><b>8</b></td><td>20 mai 2026</td><td><b>99 j</b></td><td>✅</td><td>✅</td></tr><tr><td>7</td><td><b>Galadrim</b></td><td><b>18</b></td><td>26 mai 2026</td><td><b>93 j</b></td><td>✅</td><td>✅</td></tr><tr><td>8</td><td><b>Agence Blue Star</b></td><td><b>25</b></td><td>27 mai 2026</td><td><b>92 j</b></td><td>✅</td><td>✅</td></tr><tr><td>9</td><td><b>Alegria.group</b></td><td><b>10</b></td><td>27 mai 2026</td><td><b>92 j</b></td><td>✅</td><td>✅</td></tr><tr><td>10</td><td><b>THEYO</b></td><td><b>11</b></td><td>11 juin 2026</td><td><b>77 j</b></td><td>✅</td><td>✅</td></tr><tr><td>11</td><td><b>Limova.ai</b></td><td><b>15</b></td><td>26 juin 2026</td><td><b>62 j</b></td><td>✅</td><td>✅</td></tr><tr><td>12</td><td><b>Yelido</b></td><td><b>4</b></td><td>6 juil. 2026</td><td><b>52 j</b></td><td>✅</td><td>✅</td></tr></tbody></table></div>
+<p><i>Note sur THEYO</i> : une créa datée du <b>31 mars 2026</b> (ID <code>1572210410746114</code>, <b>149 j</b>) a aussi été vue active en recherche par mot-clé. Le décompte par annonceur ci-dessus est donc un <b>plancher</b>, pas un plafond — le défilement de la page annonceur n'avait pas atteint cette annonce. <i>Note sur L'agence you'nivers</i> : la recherche par annonceur échoue sur ce nom (l'apostrophe casse la requête). Les 8 annonces actives et la date du 20 mai ont été obtenues par une recherche ciblée sur une phrase exacte de leurs annonces (« créer vos propres agents IA »).</p>
+<h3>3.2 — Le tableau à six colonnes</h3>
+<p>Les promesses sont en <b>verbatim entre guillemets</b>, jamais reformulées. <code>(texte)</code> signale que l'ouverture a été lue <b>dans le texte de l'annonce</b> parce que la vidéo ne s'est pas chargée.</p>
+<div class="tableau"><table><thead><tr><th>Annonceur</th><th>Promesse exacte (verbatim)</th><th>Mécanisme annoncé</th><th>Cible nommée</th><th>Objection traitée dans les 3 premières secondes</th><th>Garantie</th><th>Prix affiché</th></tr></thead><tbody><tr><td><b>DIOQA</b> (322 j)</td><td>« <b>🤖 Et si l'IA travaillait pour vous ?</b> » — « <b>automatisez vos processus et concentrez-vous sur ce qui crée réellement de la valeur</b> »</td><td>« <b>Dioqa conçoit des automatisations IA sur mesure</b> » : « traitement des emails, génération de documents, comptes-rendus, devis, relances, CRM, workflows métiers »</td><td>« <b>Entrepreneurs et entreprises de Bordeaux</b> » · « Dioqa Caen » · site : <b>TPE, PME, ETI, collectivités</b></td><td><i>(texte)</i> « <b>⏳ Vos équipes passent encore trop de temps sur des tâches répétitives ?</b> » → répond à « je ne vois pas ce que l'IA ferait chez moi » en nommant les tâches</td><td>« <b>nous réalisons d'abord un audit gratuit de votre présence actuelle</b> »</td><td><b>Aucun.</b> Site : « <b>Le prix dépend de la complexité du processus</b> »</td></tr><tr><td><b>WhatChimp</b> (288 j)</td><td>« <b>#1 Official WhatsApp Marketing Platform for Business 🏆</b> » — « <b>Lock in Early Bird Pricing for Life starting at just $12/month</b> »</td><td>« <b>Use the official WhatsApp API with WhatChimp</b> » — envoi de masse, chatbots, boîte partagée multi-agents</td><td>« <b>from small startups to large enterprises</b> », « <b>thousands of businesses in 90+ countries</b> »</td><td><i>(texte)</i> « <b>Looking to send personalised bulk messages on WhatsApp without getting banned?</b> » → l'objection est <b>la peur du bannissement</b>, traitée dans la première phrase</td><td>« <b>Verified Meta Business Partner</b> » · « <b>Pay 0% Markup Fees</b> » · essai 7 j sans carte</td><td><b>Oui, dans l'annonce</b> : « <b>$12/month</b> ». Grille : Basic <b>24 $/mois</b> (annuel) / <b>40 $</b> (mensuel) ; Pro <b>60 $</b> / <b>100 $</b> ; Enterprise sur devis</td></tr><tr><td><b>Leadfox</b> (188 j)</td><td>« <b>GUIDE GRATUIT — Plus de temps et de ventes avec le marketing automatisé</b> »</td><td>« <b>démarrer le marketing automatisé pour augmenter vos prospects, vos ventes et la fidélisation de vos clients</b> »</td><td>« <b>Directeur(trice) marketing et spécialiste marketing/communication débordé ✋</b> »</td><td><i>(texte)</i> « <b>Mais vous manquez de temps, de ressources ou de connaissances ?</b> » → l'objection compétence + temps, traitée en ligne 3</td><td>« <b>Déjà 10 000 PME ont obtenu ce guide</b> » (preuve, pas garantie) — <b>aucune garantie explicite</b></td><td><b>Aucun</b></td></tr><tr><td><b>Agentova.ai</b> (117 j)</td><td>Site : « <b>Vos agents IA qui travaillent pendant que {{vous dormez}}.</b> » — annonce : « <b>Margot répond aux mails. Arthur engage les prospects et prend les RDV. Charlotte crée le contenu. Amandine gère le SEO.</b> »</td><td>Une équipe d'agents IA nommés, « <b>Tout ça branché à vos outils</b> »</td><td>« <b>Pour tous les agents immo qui gèrent tout seuls</b> » · site : entrepreneurs, TPE/PME, indépendants</td><td><i>(texte)</i> « <b>y'a un truc dont personne parle et qui change vraiment la donne</b> » → répond à « je gère déjà tout seul »</td><td>« <b>7 jours d'essai gratuit sans engagement et sans carte bancaire requise</b> »</td><td><b>Oui, sur le site</b> : <b>75 €/mois</b> (mensuel), <b>68 €/mois</b> (trimestriel), <b>60 €/mois</b> (annuel), ancré sur <b>150 €/mois</b> barré</td></tr><tr><td><b>Oscar AI</b> (99 j)</td><td>« <b>L'agent IA qui révolutionne votre SEO/GEO 💡</b> » — « <b>Déjà +500 business optimisent leur SEO et GEO avec Oscar ai, ils génèrent plus de ventes, démos ou leads, sans efforts.</b> »</td><td>Agent IA qui « analyse un marché, construit une stratégie SEO, génère le contenu, le publie »</td><td>« <b>+500 business</b> » · site : TPE-PME · témoignage nominatif (responsable e-commerce)</td><td><i>(texte)</i> « <b>sans efforts</b> » → l'objection est <b>la charge de travail du SEO</b>, traitée dans le corps de l'accroche</td><td>« <b>C'est gratuit et sans engagement</b> » (audit)</td><td><b>Oui, sur le site</b> : « <b>Nos plans commencent à 99€/mois pour le pack Starter</b> »</td></tr><tr><td><b>L'agence you'nivers</b> (99 j)</td><td>« <b>Stop à la paperasse</b> » — « <b>on va juste passer 3 jours ensemble pour que vous puissiez créer vos propres agents IA</b> »</td><td>Session intensive de 3 jours : « <b>ils gèrent vos mails et votre administratif</b> »</td><td>« <b>On est beaucoup d'entrepreneurs à Roanne dans ce cas</b> » · « <b>5 professionnels d'ici</b> »</td><td><i>(texte)</i> « <b>Honnêtement, qui aime passer son dimanche soir à rédiger des devis ou à relancer des factures impayées ? 🙄</b> » puis « <b>On ne va pas vous vendre du rêve ou des théories complexes.</b> »</td><td>« <b>C'est financé à 100% par votre CPF (zéro reste à charge)</b> » · « <b>on s'occupe même du café et du repas le midi</b> »</td><td><b>Oui, indirectement</b> : « <b>zéro euro de reste à charge</b> ». Site : aucun tarif</td></tr><tr><td><b>Galadrim</b> (93 j)</td><td>« <b>Décuplez la productivité de vos équipes avec des solutions IA développées sur mesure</b> »</td><td>« <b>solutions IA développées sur mesure</b> »</td><td>« <b>vos équipes</b> » — <b>aucun métier ni taille d'entreprise nommés</b></td><td><b>Aucune.</b> L'annonce ouvre sur « <b>Agence IA n°1 en France</b> » : une auto-proclamation, pas une objection levée. <b>Seul qualifié dans ce cas.</b></td><td><b>Aucune.</b> CTA « <b>Devis Gratuit</b> »</td><td><b>Aucun</b></td></tr><tr><td><b>Agence Blue Star</b> (92 j)</td><td>« <b>Sur ton site, tout se joue en 5 secondes.</b> » — « <b>ton site arrête de perdre des visiteurs et commence à convertir</b> »</td><td>« <b>on optimise ton site pour qu'il soit compris instantanément</b> » : message clair, structure logique, parcours fluide, CTA évident</td><td>Entrepreneurs ayant déjà un site — <b>métier non nommé</b></td><td><i>(texte)</i> « <b>Pas ton logo. Pas tes couleurs. Pas ton animation d'accueil.</b> » → tue l'objection « mon site est déjà beau » en trois lignes</td><td>« <b>audit gratuit</b> », borné : « <b>Découvre en 30 minutes</b> »</td><td><b>Aucun</b> — et <b>aucune page de prix accessible</b> (le clic va sur Messenger). <b>Non lu.</b></td></tr><tr><td><b>Alegria.group</b> (92 j)</td><td>« <b>Un revenu en plus en 1H par semaine</b> » — « <b>Tu n'as pas besoin de quitter ton CDI pour gagner plus.</b> »</td><td>« <b>Avec l'IA, tu peux créer un revenu en parallèle en 1 à 2h/jour</b> » — « <b>Juste savoir utiliser ChatGPT, Sora, Gamma…</b> »</td><td>Salariés en CDI</td><td><i>(texte)</i> « <b>Pas de diplôme. Pas d'investissement. Pas de business à lancer.</b> » → trois objections tuées en trois lignes</td><td>« <b>Et c'est 100% gratuit.</b> » (masterclass) · caution : « <b>Francis Lelong (fondateur de Sarenza + Alegria)</b> »</td><td><b>Aucun</b> — le prix de l'offre n'apparaît nulle part dans la partie publique</td></tr><tr><td><b>THEYO</b> (77 j)</td><td>« <b>De comptable à +25 000€/mois en créant des agents IA</b> »</td><td>« <b>Ils créent des automatisations avec l'IA et le no-code pour des entreprises et facturent entre 3 000 et 20 000€ par projet.</b> »</td><td>Salariés en CDI — « <b>Rénald était comptable en CDI</b> », « <b>Mayeul bossait dans le commerce</b> »</td><td><i>(texte)</i> « <b>Dans 5 ans, tu seras toujours au même bureau. Même trajet. Même patron. Même frustration.</b> » — puis, plus bas : « <b>Pas besoin de coder. Pas besoin de diplôme.</b> »</td><td><b>Aucune garantie.</b> La preuve remplace la garantie : témoignages nominatifs chiffrés</td><td><b>Aucun</b> — « <b>Inscris-toi à la formation gratuite</b> »</td></tr><tr><td><b>Limova.ai</b> (62 j)</td><td>« <b>Gagnez 15h/sem</b> » — « <b>Respirez, gagnez du temps, concentrez-vous sur la croissance. 🚀</b> »</td><td>« <b>Limova automatise vos tâches redondantes : compta, marketing, téléphonie…</b> »</td><td>« <b>les entreprises</b> » · site : entrepreneurs, freelances, startups, PME, grandes entreprises, étudiants</td><td><i>(texte)</i> « <b>Vous bossez trop et vous ne pouvez pas tout faire ? 😮‍💨</b> » → l'objection est <b>la saturation</b>, posée en question dès la première ligne</td><td>« <b>Démo offerte 🎁</b> » · site : <b>« 7 jours gratuits »</b></td><td><b>Non lu.</b> Une page <code>/offres</code> existe mais ses montants sont chargés en JavaScript et n'ont pas pu être lus. Seule mention captée : « <b>Tom Phone AI : 0,20€/min d'appel</b> »</td></tr><tr><td><b>Yelido</b> (52 j)</td><td>« <b>En tant que dirigeant à la tête d'une équipe de plus de 10 collaborateurs</b> » — « <b>Vous ne résolvez pas le véritable problème, vous ne faites que lutter contre les symptômes d'une charge de travail manuel excessive et d'un manque d'automatisation.</b> »</td><td>Automatisation sur mesure · site : architecture, intégration CRM/ERP/GED, conformité RGPD / AI Act</td><td>« <b>Vous dirigez une entreprise de plus de 10 salariés.</b> » · site : <b>PME de 20+</b>, santé, éducation, énergie, social</td><td><i>(texte)</i> « <b>Alors vous publiez une offre d'emploi. Vous recrutez. Et vos coûts fixes explosent.</b> » → tue <b>l'alternative recrutement</b>. C'est l'objection la mieux traitée de tout le corpus.</td><td>« <b>Vous réceptionnez et testez avant de payer</b> » · « <b>Réservez votre diagnostic IA gratuit</b> » (½ journée)</td><td><b>Aucun dans l'annonce.</b> Site : diagnostic gratuit ; POC « <b>quelques milliers d'euros</b> » ; industrialisation non chiffrée</td></tr></tbody></table></div>
+<h3>3.3 — Ce que le tableau donne à voir en une lecture</h3>
+<ul>
+<li><b>Le prix n'est affiché que par les éditeurs de logiciel</b> : WhatChimp (12-100 $/mois), Agentova (60-75 €/mois), Oscar AI (99 €/mois). <b>Aucune des cinq agences de service qualifiées</b> (DIOQA, Galadrim, Blue Star, Yelido, Limova) n'affiche de tarif. Le constat de l'étude du 20 août tient — et il tient maintenant sur des annonceurs filtrés.</li>
+<li><b>La cible est nommée par métier chez deux annonceurs seulement</b> : Agentova (« agents immo ») et Leadfox (« Directeur(trice) marketing »). Yelido et you'nivers nomment une <b>taille</b> ou une <b>ville</b>, pas un métier. Les autres disent « les entreprises », « vos équipes ».</li>
+<li><b>Un seul qualifié ne traite aucune objection en ouverture</b> : Galadrim. Il compense par l'auto-proclamation « n°1 en France » — et c'est aussi le seul dont le CTA est un devis.</li>
+<li><b>Les garanties, quand elles existent, ne sont jamais des garanties de résultat.</b> Ce sont des garanties de <b>non-risque</b> : essai sans carte, audit offert, « testez avant de payer », « zéro reste à charge ». Personne ne garantit un résultat chiffré.</li>
+</ul>
+<hr>
+<h2>4. Les funnels, parcourus jusqu'au bout</h2>
+<p>Ce que je cherchais dans chaque funnel : <b>où ils qualifient</b> (à quel moment ils trient le prospect) et <b>comment ils justifient le tarif</b>.</p>
+<h3>Yelido — le diagnostic offert qui fait le tri à la place du formulaire</h3>
+<ul>
+<li><b>L'annonce ne mène pas à une page.</b> Le libellé de destination est <code>FB.ME</code> : le clic ouvre <b>Messenger</b>. Il n'y a ni landing, ni formulaire, ni prix dans le parcours publicitaire.</li>
+<li>Le site de la marque (rattachement déduit du nom, <b>non lié depuis l'annonce</b>) organise la qualification en escalier : <b>diagnostic gratuit d'une demi-journée</b> → shortlist de 2-3 cas d'usage → <b>POC 2-3 semaines sur vraies données avec décision Go/No-Go</b> → industrialisation 6-10 semaines.</li>
+<li><b>Où ils qualifient</b> : au diagnostic. Le tri est fait par un travail offert, pas par un questionnaire.</li>
+<li><b>Comment ils justifient le tarif</b> : par le forfait et par le risque porté par eux — « <b>Vous réceptionnez et testez avant de payer</b> ». Le POC est chiffré en « quelques milliers d'euros » ; l'industrialisation n'est pas chiffrée. Ils citent aussi des dispositifs de financement public couvrant une partie du diagnostic et du cadrage.</li>
+<li>Source : <a href="https://www.yelido.be/intelligence-artificielle-entreprise/" target="_blank" rel="noopener">yelido.be/intelligence-artificielle-entreprise</a> — lu le 27/08/2026.</li>
+</ul>
+<h3>Agentova.ai — le seul funnel entièrement en libre-service, prix affichés</h3>
+<ul>
+<li><b>Où ils qualifient</b> : <b>ils ne qualifient pas avant.</b> « Essayer gratuitement » ouvre un essai <b>« 7 jours d'essai gratuit sans engagement et sans carte bancaire requise »</b>. Le tri se fait <i>après</i>, à l'usage. Une piste « Réserver une démo » existe en parallèle pour ceux qui veulent parler à quelqu'un.</li>
+<li><b>Comment ils justifient le tarif</b> : par l'ancrage et la remise. Le tarif de référence affiché est <b>150 €/mois</b>, barré, et les paliers réels sont <b>75 €/mois</b> (mensuel), <b>68 €/mois</b> (trimestriel), <b>60 €/mois</b> (annuel). La justification est un effectif : chaque agent porte un prénom (Margot, Arthur, Charlotte, Amandine) et une fonction — on achète une équipe, pas un logiciel.</li>
+<li>Preuve affichée dans l'annonce : « <b>+3000 entrepreneurs satisfaits</b> ».</li>
+<li>Source : <a href="https://agentova.ai" target="_blank" rel="noopener">agentova.ai</a> — lu le 27/08/2026.</li>
+</ul>
+<h3>Oscar AI — le prix d'entrée affiché, l'audit comme porte</h3>
+<ul>
+<li><b>Où ils qualifient</b> : à l'audit. « Prenez rendez-vous avec un de nos experts SEO. Il réalisera un audit complet […] <b>C'est gratuit et sans engagement.</b> » En parallèle, un onboarding en libre-service (« Connectez votre site via Wordpress, Shopify et d'autres intégrations »).</li>
+<li><b>Comment ils justifient le tarif</b> : par la comparaison chiffrée avant/après sur un cas client nommé — « <b>+110% de clics en 6 mois</b> », « <b>+320% clics en 3 mois</b> », « 25k total de clics » contre « 17 clics ». Le prix d'entrée est affiché : « <b>Nos plans commencent à 99€/mois pour le pack Starter</b> ».</li>
+<li>Source : <a href="https://oscar-seo.ai/" target="_blank" rel="noopener">oscar-seo.ai</a> — lu le 27/08/2026.</li>
+</ul>
+<h3>WhatChimp — le prix est l'argument, pas une information de fin de parcours</h3>
+<ul>
+<li><b>Où ils qualifient</b> : nulle part avant l'inscription. Le CTA est « GIVE ME INSTANT ACCESS ➞ », avec un essai de 7 jours et sans carte.</li>
+<li><b>Comment ils justifient le tarif</b> : <b>par la structure de coût du concurrent.</b> Ils affichent « <b>Pay 0% Markup Fees</b> » et opposent explicitement les 20-25 % de marge que prendraient les autres sur l'API Meta. Le prix est dans l'annonce elle-même : « <b>Lock in Early Bird Pricing for Life starting at just $12/month</b> ». Grille publique : Basic 24 $/mois en annuel, 40 $/mois en mensuel ; Pro 60 $/mois en annuel, 100 $/mois en mensuel ; Enterprise sur devis.</li>
+<li>Source : <a href="https://whatchimp.com/" target="_blank" rel="noopener">whatchimp.com</a> et <a href="https://whatchimp.com/pricing/" target="_blank" rel="noopener">whatchimp.com/pricing</a> — lus le 27/08/2026.</li>
+</ul>
+<h3>Leadfox — le plus ancien du corpus, et le seul qui échange un document contre un email</h3>
+<ul>
+<li><b>Où ils qualifient</b> : <b>au téléchargement</b>. L'annonce ne propose ni appel, ni démo, ni essai : « <b>Téléchargez gratuitement notre guide gratuit : Le guide du marketing automatisé, rentable et simple 📗📈</b> », CTA « Download ». La qualification est faite par le sujet du guide — celui qui le télécharge s'est auto-déclaré « débordé et sans process ».</li>
+<li><b>Comment ils justifient le tarif</b> : <b>ils ne parlent jamais de tarif dans l'annonce.</b> Ils justifient la <i>demande d'email</i> par un volume : « <b>Déjà 10 000 PME ont obtenu ce guide</b> ».</li>
+<li>Détail à noter : une des créas actives affiche encore « <b>en 2024</b> » dans son texte, alors qu'elle tourne depuis le <b>20 février 2026</b>. Une annonce qui rapporte n'est pas retouchée pour si peu.</li>
+</ul>
+<h3>Agence Blue Star — l'audit daté, sans page</h3>
+<ul>
+<li><b>L'annonce ne mène pas à une page</b> : destination <code>FB.ME</code>, CTA « <b>Réserve ton Audit Site Offert 👉</b> ». Tout le funnel visible tient dans Messenger. <b>Pas de page de prix lisible depuis l'annonce — non lu.</b></li>
+<li><b>Où ils qualifient</b> : dans la conversation, après l'audit. L'annonce borne l'audit dans le temps — « <b>Découvre en 30 minutes</b> » — ce qui est la qualification déguisée : celui qui n'a pas 30 minutes ne répond pas.</li>
+</ul>
+<h3>L'agence you'nivers — la qualification par la rareté et le financement</h3>
+<ul>
+<li><b>Où ils qualifient</b> : par le nombre de places. « <b>On ne peut prendre que 5 personnes pour garder un vrai côté coaching</b> », « ⚠️ Attention : il ne reste que 5 places pour octobre. »</li>
+<li><b>Comment ils justifient le tarif</b> : <b>ils le suppriment.</b> « <b>C'est financé à 100% par votre CPF (zéro reste à charge)</b> ». Le site de l'agence, lui, n'affiche aucun tarif et renvoie à un devis après échange — « Le premier contact avec you'Nivers est gratuit et sans engagement ». Source : <a href="https://younivers.fr/" target="_blank" rel="noopener">younivers.fr</a> — lu le 27/08/2026.</li>
+</ul>
+<h3>THEYO et Alegria.group — le prix n'existe pas dans le funnel visible</h3>
+<ul>
+<li><b>Où ils qualifient</b> : à l'inscription à un contenu gratuit. THEYO : « <b>Inscris-toi à la formation gratuite</b> ». Alegria : « <b>Et c'est 100% gratuit.</b> 👇 Récupère la méthode maintenant », puis masterclass/webinaire.</li>
+<li><b>Comment ils justifient le tarif</b> : le tarif n'apparaît jamais dans la partie publique. Ce qui est chiffré, c'est <b>le revenu du client</b>, pas le prix du produit — THEYO : « <b>Ils créent des automatisations avec l'IA et le no-code pour des entreprises et facturent entre 3 000 et 20 000€ par projet.</b> » Le prix de l'offre est repoussé après la VSL. Source : <a href="https://alegria.group/" target="_blank" rel="noopener">alegria.group</a> — lu le 27/08/2026 ; THEYO : <b>site non atteint</b> (<code>theyo.fr</code> ne résout pas), funnel connu uniquement par l'annonce.</li>
+</ul>
+<h3>AI pour Pme — le funnel est un commentaire</h3>
+<ul>
+<li><b>Où ils qualifient</b> : dans le DM. Le CTA est « <b>Laisse VIDEO! en commentaire pour une démo personnalisée pour ton entreprise</b> ». Pas de landing, pas de formulaire, pas de prix. C'est exactement la mécanique commentaire→DM que Tony fait déjà en organique, ici financée en publicité.</li>
+<li><b>Comment ils justifient le tarif</b> : ils ne le justifient pas — <b>ils ne l'affichent pas</b>. La justification est reportée sur la démo personnalisée.</li>
+</ul>
+<h3>InProcess — hors filtre (31 j), mais c'est le modèle à copier</h3>
+<p>Il est écarté, et il faut quand même le lire : <b>c'est le seul funnel du corpus entier qui fait les trois choses à la fois</b> — promesse en heures, prix affiché, garantie.</p>
+<ul>
+<li>Promesse : « <b>Et si les tâches administratives qui vous prennent 10 h par semaine se faisaient toutes seules ?</b> » — puis le mécanisme nommé : « <b>devis, relances, facturation, reporting. Vous validez, la machine exécute.</b> »</li>
+<li>Preuve chiffrée sur un client identifié : « <b>+100 dossiers suivis en 3 mois → ≈ 10 h/semaine de suivi commercial en moins</b> ».</li>
+<li><b>Où ils qualifient</b> : « <b>On en parle 15 minutes</b> », et la contrepartie est annoncée d'avance — « <b>Vous repartez de l'appel avec 2-3 pistes d'automatisation concrètes</b> ». Le prospect sait ce qu'il gagne même s'il n'achète pas.</li>
+<li><b>Comment ils justifient le tarif</b> : ils l'affichent — « <b>À partir de 1 500 €</b> », paiement unique, sur-mesure — adossé à une méthode en trois étapes (Cartographie → Design → Pilotage) et à « <b>Sans engagement</b> ».</li>
+<li>Source : <a href="https://agence.inprocess.ai" target="_blank" rel="noopener">agence.inprocess.ai</a> — lu le 27/08/2026.</li>
+</ul>
+<p><b>Pourquoi ça compte pour Tony</b> : InProcess n'a que 31 jours de diffusion. On ne sait donc <b>pas</b> si ça marche — c'est exactement pour ça que le filtre existe. Mais c'est la seule structure de funnel du corpus qui coche les trois cases que Tony peut cocher lui aussi. <b>À re-vérifier le 10 septembre</b> : s'il passe les 45 jours, il devient la référence à suivre ; s'il a coupé, la structure est à réinterroger.</p>
+<h3>Ce que le parcours des funnels apprend, en une ligne</h3>
+<p><b>Sur les annonceurs qualifiés, aucun ne demande un devis en premier contact.</b> Ils demandent tous une chose bornée dans le temps et offerte : une demi-journée, 30 minutes, 7 jours d'essai, un audit, un commentaire. <b>Le prix n'apparaît que chez les éditeurs de logiciel</b> (Agentova 60-75 €/mois, Oscar AI 99 €/mois, WhatChimp 12-100 $/mois). <b>Aucune agence de service qualifiée n'affiche de prix.</b></p>
+<hr>
+<h2>5. Les 3 angles convergents</h2>
+<p>Règle appliquée : <b>un angle n'est retenu que s'il apparaît chez au moins trois annonceurs qualifiés indépendants</b> — marques différentes, propriétaires différents, offres différentes. Un angle porté par un seul annonceur, même très gros, n'est pas un signal.</p>
+<h3>Angle 1 — Ouvrir sur le temps volé à l'équipe, avec les tâches <b>nommées</b>. Jamais sur l'IA.</h3>
+<p>Aucun annonceur qui dure n'ouvre sur la technologie. Tous ouvrent sur une scène de travail, et presque tous <b>listent les tâches par leur nom</b> au lieu de dire « vos processus ».</p>
+<ul>
+<li><b>DIOQA</b> (322 j) : « <b>⏳ Vos équipes passent encore trop de temps sur des tâches répétitives ?</b> » puis la liste : « <b>traitement des emails, génération de documents, comptes-rendus, devis, relances, CRM, workflows métiers</b> ».</li>
+<li><b>Yelido</b> (52 j) : « <b>La charge de travail augmente. Vous et votre équipe faites des heures supplémentaires. Le stress monte. Certains employés sont au bord du burn-out.</b> »</li>
+<li><b>L'agence you'nivers</b> (99 j) : « <b>Honnêtement, qui aime passer son dimanche soir à rédiger des devis ou à relancer des factures impayées ?</b> »</li>
+<li><b>Limova.ai</b> (62 j) : « <b>Vous bossez trop et vous ne pouvez pas tout faire ?</b> » — « compta, marketing, téléphonie… »</li>
+<li><b>Galadrim</b> (93 j) : « <b>Décuplez la productivité de vos équipes</b> ».</li>
+<li><b>Leadfox</b> (188 j, le plus ancien du corpus) : « <b>Directeur(trice) marketing et spécialiste marketing/communication débordé ✋</b> ».</li>
+</ul>
+<p><b>6 annonceurs indépendants.</b> Le mot « IA » arrive systématiquement <b>après</b> la scène, jamais avant.</p>
+<p><i>Corollaire mesuré</i> : la promesse, quand elle est chiffrée, l'est <b>en heures</b> — Limova affiche « <b>Gagnez 15h/sem</b> » en titre d'annonce. Aucun annonceur qualifié ne promet un chiffre d'affaires.</p>
+<h3>Angle 2 — Le premier pas est un <b>travail offert et borné</b>, jamais un devis.</h3>
+<p>C'est la convergence la plus forte de l'étude, et elle traverse des modèles économiques différents (agences de service <i>et</i> éditeurs de logiciel).</p>
+<ul>
+<li><b>DIOQA</b> : « <b>nous réalisons d'abord un audit gratuit de votre présence actuelle</b> ».</li>
+<li><b>Oscar AI</b> : « <b>Il réalisera un audit complet […] C'est gratuit et sans engagement.</b> »</li>
+<li><b>Agence Blue Star</b> : « <b>Réserve ton Audit Site Offert 👉</b> », borné : « <b>Découvre en 30 minutes</b> ».</li>
+<li><b>Yelido</b> : « <b>Réservez votre diagnostic IA gratuit</b> » — une demi-journée — et le risque renversé : « <b>Vous réceptionnez et testez avant de payer</b> ».</li>
+<li><b>Limova.ai</b> : « <b>Démo offerte 🎁</b> ».</li>
+<li><b>Agentova.ai</b> et <b>WhatChimp</b>, côté logiciel : « <b>7 jours d'essai gratuit sans engagement et sans carte bancaire requise</b> » / « Start 7-Days Free Trial ».</li>
+<li><b>Leadfox</b>, variante document : « <b>Téléchargez gratuitement notre guide gratuit</b> ».</li>
+</ul>
+<p><b>8 annonceurs indépendants.</b> L'exception qui confirme : <b>Galadrim</b> est le seul à écrire « <b>Devis Gratuit</b> » — et c'est le seul dont l'entrée de funnel demande au prospect de se projeter dans un achat plutôt que de recevoir quelque chose.</p>
+<p>Le mécanisme commun n'est pas « c'est gratuit ». C'est : <b>quelque chose de délimité, daté, et livré avant qu'on parle d'argent.</b> Une demi-journée, 30 minutes, 7 jours, un audit.</p>
+<h3>Angle 3 — La preuve est <b>empruntée</b>, jamais démontrée.</h3>
+<p>Trois substituts, dans cet ordre de fréquence.</p>
+<ul>
+<li><b>Le rang ou le nombre</b> : Galadrim — « <b>Agence IA n°1 en France</b> » ; Oscar AI — « <b>Déjà +500 business optimisent leur SEO et GEO avec Oscar ai</b> » ; Agentova — « <b>+3000 entrepreneurs satisfaits</b> » ; WhatChimp — « <b>Trusted by thousands of businesses in 90+ countries</b> » ; Leadfox — « <b>Déjà 10 000 PME ont obtenu ce guide</b> ».</li>
+<li><b>La caution d'un tiers</b> : WhatChimp — « <b>Verified Meta Business Partner</b> » ; Alegria — « <b>Francis Lelong (fondateur de Sarenza + Alegria)</b> » ; L'agence you'nivers — le CPF et la certification ; Limova — une créa diffusée depuis la page <b>La Dépêche du Midi</b> (2 annonces actives depuis le 9 juin 2026, destination <code>limova.ai</code>).</li>
+<li><b>Le témoignage nominatif chiffré</b> : THEYO — « <b>Rénald était comptable en CDI […] Aujourd'hui ? +15 000€/mois</b> » ; Oscar AI — « <b>+110% de clics en 6 mois</b> » attribué à un responsable nommé.</li>
+</ul>
+<p><b>7 annonceurs indépendants.</b> Sur les 12 qualifiés, <b>un seul montre un résultat mesuré chez un client identifié</b> (Oscar AI). Tous les autres substituent un volume, un rang ou une caution.</p>
+<blockquote>⚠️ <b>Ce que je ne peux PAS affirmer.</b> L'ancienne étude concluait « personne ne montre la machine en train de tourner ». <b>Je ne peux pas le confirmer ce run</b> : les créas vidéo ne se sont pas lues. Je peux seulement dire que <b>dans les textes</b>, aucun annonceur qualifié n'annonce montrer son système à l'écran. Le contenu des vidéos reste inconnu. À vérifier avant d'en faire un pilier.</blockquote>
+<h3>Un quatrième motif, plus faible mais directement transposable</h3>
+<p><b>Deux annonceurs qualifiés indépendants font atterrir leur pub sur une page géolocalisée</b> : DIOQA avec <code>dioqa.com/automatisation-ia-bordeaux/</code> <b>et</b> <code>dioqa.com/referencement-ia-caen/</code>, et L'agence you'nivers en nommant sa ville dans le corps du texte — « <b>On est beaucoup d'entrepreneurs à Roanne dans ce cas</b> », « <b>Salut Roanne !</b> ». Deux annonceurs seulement : ce n'est pas une convergence au sens de la règle. Mais ce sont <b>deux des plus anciens du corpus</b> (322 j et 99 j), et c'est le seul motif de l'étude qui se transpose tel quel à La Réunion.</p>
+<hr>
+<h2>6. Le message d'outreach réécrit</h2>
+<blockquote>« Ton DM devient ton annonce, ton appel devient ta landing page. »</blockquote>
+<p>Le message ci-dessous applique les trois angles convergents, dans leur ordre : <b>scène avec tâches nommées</b> (angle 1) → <b>objection tuée tout de suite</b> → <b>travail offert et borné</b> (angle 2) → <b>preuve de première main au lieu d'une preuve empruntée</b> (angle 3, pris à contre-pied).</p>
+<h3>Ce que l'ancien message faisait mal (au regard des données)</h3>
+<div class="tableau"><table><thead><tr><th>Réflexe courant</th><th>Ce que disent les annonceurs qui durent</th></tr></thead><tbody><tr><td>Ouvrir sur « je fais de l'automatisation IA / des vidéos IA »</td><td>Aucun des 11 n'ouvre sur la techno. Tous ouvrent sur une scène.</td></tr><tr><td>Proposer « un appel de 15 min pour discuter de vos besoins »</td><td>Aucun ne propose de <i>discuter</i>. Ils <b>livrent</b> un audit, un diagnostic, une démo, un essai.</td></tr><tr><td>Dire « j'ai déjà fait X sites / X vidéos »</td><td>C'est la preuve empruntée par le volume — celle que <b>tout le monde</b> utilise déjà. Elle ne différencie plus.</td></tr><tr><td>Demander un rendez-vous</td><td>Le rendez-vous est la <i>conséquence</i> du travail offert, jamais son prix d'entrée.</td></tr></tbody></table></div>
+<h3>Le message — version DM / premier contact</h3>
+<blockquote>Bonjour {Prénom},  Vous êtes {métier} à {ville}. Une question bête : ce mois-ci, combien de devis sont partis en retard, et combien de messages Instagram sont restés sans réponse après 19 h ?  Je ne vous vends pas de l'IA. Je récupère trois tâches précises — les devis, les relances, les réponses aux messages — et je les fais tourner toutes seules.  Ce que je propose : <b>je prends une de vos trois tâches et je la monte pour vous, en 48 h, gratuitement.</b> Vous la voyez tourner sur votre vrai cas, avec vos vrais messages. Pas une démo générique, la vôtre.  Ensuite vous me dites oui ou non. Si c'est non, vous gardez ce que j'ai monté.  Ça vous intéresse de savoir laquelle des trois je choisirais chez vous ?</blockquote>
+<h3>Pourquoi chaque ligne est là</h3>
+<div class="tableau"><table><thead><tr><th>Ligne</th><th>Angle appliqué</th><th>Ce qui la fonde</th></tr></thead><tbody><tr><td>« combien de devis sont partis en retard… après 19 h »</td><td><b>Angle 1</b> — scène + tâches nommées, zéro techno</td><td>DIOQA nomme « devis, relances, CRM » ; you'nivers nomme « le dimanche soir » ; Yelido nomme les heures sup</td></tr><tr><td>« Je ne vous vends pas de l'IA »</td><td>Objection tuée en ligne 3</td><td>Blue Star : « Pas ton logo. Pas tes couleurs. » — tuer l'attente fausse avant de proposer</td></tr><tr><td>« je la monte pour vous, en 48 h, gratuitement »</td><td><b>Angle 2</b> — travail offert <b>et borné</b></td><td>Yelido ½ journée · Blue Star 30 min · Agentova/WhatChimp 7 jours</td></tr><tr><td>« sur votre vrai cas, avec vos vrais messages »</td><td><b>Angle 3 à contre-pied</b></td><td>Les 12 qualifiés prouvent par un rang ou un volume. Aucun ne prouve sur le cas du prospect. C'est la seule preuve que Tony peut produire à coût marginal quasi nul.</td></tr><tr><td>« Si c'est non, vous gardez ce que j'ai monté »</td><td>Renversement du risque</td><td>Copié de Yelido : « Vous réceptionnez et testez avant de payer »</td></tr><tr><td>« laquelle des trois je choisirais chez vous ? »</td><td>La réponse coûte un mot</td><td>Aucune demande de rendez-vous. Le RDV vient après.</td></tr></tbody></table></div>
+<h3>Trois variantes de la première ligne à tester</h3>
+<p>L'accroche est la seule variable à isoler ; le reste du message ne bouge pas.</p>
+<ul>
+<li><b>A — la tâche</b> : « Ce mois-ci, combien de devis sont partis en retard chez vous ? »</li>
+<li><b>B — l'heure</b> : « Vos messages Instagram du dimanche soir, qui y répond ? »</li>
+<li><b>C — le local</b> : « Je suis à La Réunion, je bosse avec des {métier} d'ici. Une question : … »</li>
+</ul>
+<p>La variante C teste le seul motif que les annonceurs longue durée exploitent et qui est libre ici (DIOQA/Bordeaux+Caen, you'nivers/Roanne).</p>
+<h3>Ce que le message ne doit PAS contenir</h3>
+<ul>
+<li><b>Pas de promesse de revenu.</b> Le registre « +15 000 €/mois » (THEYO, Alegria) fonctionne sur un public de reconversion, pas sur un dirigeant qui a déjà une entreprise.</li>
+<li><b>Pas de « n°1 » ni de « +500 clients ».</b> C'est la preuve empruntée que tout le monde emploie déjà — et sur un petit volume réel, elle est invérifiable et se retourne.</li>
+<li><b>Pas de tarif dans le premier message.</b> Aucune des agences de service qualifiées n'affiche de prix ; seuls les éditeurs de logiciel le font. Le prix arrive après le travail offert.</li>
+</ul>
+<hr>
+<h2>7. Le cadre d'exécution — rappel</h2>
+<p>Rappelé tel que Tony l'a posé. Cette étude ne le modifie pas — elle alimente le message, pas le calendrier.</p>
+<p><b>Le sprint : 60 contacts en 72 heures.</b> Le message ci-dessus est le message du sprint. Une seule variable bouge d'un contact à l'autre : la première ligne (A / B / C). Tout le reste est identique, sinon rien n'est mesurable sur 60 contacts.</p>
+<p><b>La grille go/no-go est déjà définie</b> et reste celle de Tony. Ce que l'étude ajoute, c'est <b>ce qu'il faut compter</b> pendant le sprint, parce que c'est ce qui distingue les annonceurs qui durent : ce n'est ni le taux d'ouverture ni le nombre de rendez-vous, c'est <b>le nombre de prospects qui acceptent le travail offert de 48 h</b>. Chez les 12 annonceurs qualifiés, l'acceptation du travail offert est le seul point de bascule du funnel. C'est le chiffre à suivre.</p>
+<p><b>Le seuil avant de payer de la publicité : 1 client payant encaissé + 1 témoignage chiffré.</b></p>
+<blockquote>« Avant ça, chaque euro dépensé achète du bruit. »</blockquote>
+<p>Et l'étude le confirme mécaniquement, sans qu'on ait besoin de le croire sur parole :</p>
+<ul>
+<li>Dix des douze annonceurs qualifiés font tourner <b>8 à 25 créas simultanées</b> (Blue Star 25, DIOQA 23, WhatChimp 20, Galadrim 18, Limova 15, Agentova 16, Leadfox 13, THEYO 11, Alegria 10, Oscar AI 8). Entrer sur ce terrain avec une créa, c'est se faire sortir à l'enchère.</li>
+<li><b>Les deux briques qui manquent à Tony sont exactement celles qui portent la conversion chez tous les qualifiés</b> : la preuve chiffrée sur un client identifié (seul Oscar AI en a une, et c'est son meilleur atout) et le travail offert que quelqu'un a déjà accepté. Payer de la diffusion avant d'avoir ces deux briques, c'est payer pour montrer une annonce qui n'a pas encore d'argument.</li>
+<li>Le corpus donne aussi un contre-exemple net : <b>Meridian Partners fait tourner 22 créas actives depuis le 16 juillet</b> — et se fait écarter de cette étude pour 3 jours d'ancienneté. Le volume de créas ne prouve rien à lui seul ; c'est la <b>durée</b> qui prouve qu'un annonceur rentabilise.</li>
+</ul>
+<p><b>Ordre d'exécution, sans ambiguïté :</b> le sprint 60/72 h d'abord → 1 client payant encaissé → 1 témoignage chiffré → <b>et seulement ensuite</b>, la publicité, avec ce témoignage comme créa.</p>
+<hr>
+<h2>8. Ce que cette étude ne dit pas</h2>
+<ul>
+<li>Aucun chiffre de budget, de portée ou de conversion — <b>Meta ne les publie pas</b>.</li>
+<li>Aucune vérification de la véracité des preuves citées par les annonceurs (« n°1 en France », « +500 business », « +3000 entrepreneurs », témoignages THEYO). <b>Non vérifiable dans la bibliothèque, non vérifié ailleurs.</b></li>
+<li><b>Les créas vidéo n'ont pas été visionnées</b> (lecteur en erreur). Toutes les ouvertures citées viennent du <b>texte</b> de l'annonce.</li>
+<li><b>Aucun concurrent réunionnais n'a été identifié</b> — mais c'est une absence dans 9 requêtes en français, pas une preuve d'absence. Le filtre « France » inclut La Réunion sans permettre de l'isoler.</li>
+<li><b>9 requêtes seulement.</b> Un annonceur qui n'emploie aucun de ces termes n'apparaît pas dans ce corpus.</li>
+<li><b>Aucun contact n'a été pris, aucun formulaire rempli, aucune inscription faite, aucune dépense engagée.</b> Les funnels ont été lus, pas parcourus en tant que prospect.</li>
+</ul>
+</div>
+</body>
+</html>

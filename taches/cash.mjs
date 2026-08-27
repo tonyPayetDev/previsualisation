@@ -59,7 +59,10 @@ j.taches.forEach((t) => {
   compte[niveau]++;
 });
 
-j.maj = '2026-08-24';
+/* La date etait ECRITE EN DUR : le fichier se declarait a jour au 24 aout quel que
+   soit le jour ou on le regenerait, alors que sa propre note promet « mis a jour
+   chaque jour ». Trois jours de travail etaient invisibles. */
+j.maj = new Date().toISOString().slice(0, 10);
 writeFileSync(F, JSON.stringify(j, null, 2) + '\n');
 
 console.log(`  ${j.taches.length} tâches classées`);

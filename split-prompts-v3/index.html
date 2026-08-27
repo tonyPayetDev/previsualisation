@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Split-prompts v3 — suspense, explication, révélation, CTA</title>
+<style>
+  :root{ --bg:#0a0a0f; --panel:#111117; --bord:#242430; --jaune:#f5d90a; --bleu:#57A8FF;
+         --texte:#f2f2f5; --doux:#9a9aa8; --rouge:#ef4444; --vert:#3ED37B; }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--texte);line-height:1.6;
+       font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;padding:2rem 1rem 4rem}
+  .wrap{max-width:520px;margin:0 auto}
+  a.back{color:var(--doux);font-size:.8rem;text-decoration:none;display:inline-block;margin-bottom:1rem}
+  a.back:hover{color:var(--jaune)}
+  h1{font-size:1.35rem;margin:0 0 .35rem}
+  .chapeau{color:var(--doux);font-size:.9rem;margin:0 0 1.4rem}
+  video{width:100%;border-radius:14px;border:1px solid var(--bord);display:block;background:#000}
+  .bloc{margin-top:1.4rem;background:var(--panel);border:1px solid var(--bord);border-radius:14px;padding:1rem 1.1rem}
+  .bloc h2{font-size:.72rem;letter-spacing:.09em;text-transform:uppercase;color:var(--jaune);margin:0 0 .7rem}
+  .bloc p{margin:0 0 .7rem;font-size:.87rem;color:var(--doux)}
+  .bloc p:last-child{margin-bottom:0}
+  .bloc b{color:var(--texte)}
+  .att{border-left:3px solid var(--rouge)}
+  .att h2{color:#fca5a5}
+  table{width:100%;border-collapse:collapse;font-size:.78rem;font-variant-numeric:tabular-nums}
+  th{text-align:left;color:var(--doux);font-weight:600;padding:.3rem .35rem;border-bottom:1px solid var(--bord)}
+  td{padding:.3rem .35rem;border-bottom:1px solid rgba(36,36,48,.6);vertical-align:top}
+  td.n{color:var(--bleu);white-space:nowrap}
+  .tag{display:inline-block;font-size:.62rem;letter-spacing:.08em;text-transform:uppercase;
+       padding:.12rem .4rem;border-radius:5px;border:1px solid var(--bord);color:var(--doux)}
+  .t-av{color:#0a0a0f;background:var(--vert);border-color:var(--vert)}
+  .t-si{color:#0a0a0f;background:var(--bleu);border-color:var(--bleu)}
+  .t-mo{color:var(--texte);background:#1e2c45;border-color:#2a3b58}
+  .t-po{color:#0a0a0f;background:#e8c05a;border-color:#e8c05a}
+  .jauge{display:flex;height:22px;border-radius:6px;overflow:hidden;border:1px solid var(--bord);margin:.6rem 0}
+  .jauge i{display:block}
+  .parle{background:var(--vert)}
+  .souffle{background:#1b1b24}
+  ul{margin:.2rem 0 .7rem;padding-left:1.1rem;font-size:.87rem;color:var(--doux)}
+  li{margin-bottom:.25rem}
+  code{font-size:.8rem;color:var(--bleu);background:#0d0d14;padding:.05rem .3rem;border-radius:4px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="/">← toutes les prévisualisations</a>
+  <h1>Split-prompts v3</h1>
+  <p class="chapeau">Suspense flouté → explication animée → révélation de l’outil → CTA.
+  Le site n’est plus à l’écran en permanence, et l’avatar n’apparaît que quand la voix parle.</p>
+
+  <video src="video.mp4" poster="cover.jpg" controls playsinline preload="metadata"></video>
+
+  <div class="bloc">
+    <h2>Le problème réglé : la synchro</h2>
+    <p>La voix est une piste figée de <b>27,12 s</b> et les clips d’avatar sont génériques :
+    leurs lèvres ne diront <b>jamais</b> les mots français exacts. Déplacer les plans ne peut donc
+    rien y changer. La v3 attaque le problème par l’autre bout : <b>on ne montre l’avatar que
+    pendant que la voix parle</b>, et on coupe ailleurs.</p>
+    <p>Les zones de parole ont été mesurées sur la piste <b>voix seule</b>
+    (<code>voix-corr.wav</code>, 27,06 s), pas sur le mix : la musique franchit le seuil et ferait
+    passer toute la bande pour « parlée ». Méthode : décodage PCM mono 48 kHz, enveloppe RMS
+    calculée par tranches de 40 ms, seuil = médiane − 6 dB (soit <b>−36,4 dB</b>),
+    silences de moins de 0,25 s fusionnés.</p>
+  </div>
+
+  <div class="bloc">
+    <h2>13 zones de parole mesurées</h2>
+    <div class="jauge" id="jauge"></div>
+    <table>
+      <tr><th>#</th><th>Parle</th><th>Durée</th><th>#</th><th>Parle</th><th>Durée</th></tr>
+      <tr><td class="n">1</td><td>0,40 → 2,84</td><td>2,44</td><td class="n">8</td><td>18,00 → 20,36</td><td>2,36</td></tr>
+      <tr><td class="n">2</td><td>4,08 → 6,48</td><td>2,40</td><td class="n">9</td><td>20,84 → 22,32</td><td>1,48</td></tr>
+      <tr><td class="n">3</td><td>6,96 → 7,80</td><td>0,84</td><td class="n">10</td><td>22,64 → 23,00</td><td>0,36</td></tr>
+      <tr><td class="n">4</td><td>8,08 → 8,88</td><td>0,80</td><td class="n">11</td><td>23,52 → 24,00</td><td>0,48</td></tr>
+      <tr><td class="n">5</td><td>10,64 → 11,48</td><td>0,84</td><td class="n">12</td><td>24,28 → 25,20</td><td>0,92</td></tr>
+      <tr><td class="n">6</td><td>12,16 → 15,08</td><td>2,92</td><td class="n">13</td><td>25,88 → 27,00</td><td>1,12</td></tr>
+      <tr><td class="n">7</td><td>16,80 → 17,48</td><td>0,68</td><td></td><td></td><td></td></tr>
+    </table>
+    <p style="margin-top:.8rem">Les respirations les plus longues — 2,84→4,08 · 8,88→10,64 ·
+    15,08→16,80 · 17,48→18,00 — sont exactement les endroits où la v3 coupe vers le site,
+    le mur de post-it ou l’animation.</p>
+  </div>
+
+  <div class="bloc">
+    <h2>La structure, en 4 actes</h2>
+    <ul>
+      <li><b>0,00 → 4,03 — Suspense.</b> Le site apparaît <b>flouté</b> (gaussienne σ 38),
+      illisible ; puis un mur de post-it. On ne sait pas encore de quoi on parle.</li>
+      <li><b>4,03 → 17,47 — Explication animée.</b> Le motion design porte le propos :
+      compteur qui monte jusqu’à 30 000, grille par modèle, cartes par cas d’usage,
+      « arrête de deviner ». Un seul aperçu du site, encore flou (σ 13), à 10,63 s.</li>
+      <li><b>17,47 → 22,33 — Révélation.</b> Le flou tombe en 0,35 s (fondu croisé net/flou)
+      pile dans la respiration 17,48→18,00. Le cadrage démarre à gauche, là où vit le logo
+      <b>YouMind</b>, puis glisse vers les cartes. Le site est net, lisible, identifiable.</li>
+      <li><b>22,33 → 27,13 — CTA.</b> Les trois étapes (copie / change / c’est tout),
+      puis « Commente <b>PROMPT</b> », et Tony face caméra sur la dernière phrase.</li>
+    </ul>
+  </div>
+
+  <div class="bloc">
+    <h2>Les 16 plans</h2>
+    <table>
+      <tr><th>À l’écran</th><th>Plan</th><th>Source</th><th>Contrôle</th></tr>
+      <tr><td class="n">0,000 → 1,100</td><td><span class="tag t-si">site</span></td><td>capture 6,00 s · flou 38</td><td>suspense</td></tr>
+      <tr><td class="n">1,100 → 2,833</td><td><span class="tag t-av">avatar</span></td><td>E2 confidence 1,98 → 3,71</td><td>parole 0,40–2,84</td></tr>
+      <tr><td class="n">2,833 → 4,033</td><td><span class="tag t-po">post-it</span></td><td>E0 1,20 → 2,40 (mur seul)</td><td>respiration</td></tr>
+      <tr><td class="n">4,033 → 6,467</td><td><span class="tag t-mo">motion</span></td><td>compteur 0 → 30 000</td><td>—</td></tr>
+      <tr><td class="n">6,467 → 8,100</td><td><span class="tag t-mo">motion</span></td><td>grille par modèle</td><td>—</td></tr>
+      <tr><td class="n">8,100 → 8,867</td><td><span class="tag t-av">avatar</span></td><td>E1 trois doigts 2,10 → 2,87</td><td>parole 8,08–8,88</td></tr>
+      <tr><td class="n">8,867 → 10,633</td><td><span class="tag t-mo">motion</span></td><td>cartes</td><td>respiration</td></tr>
+      <tr><td class="n">10,633 → 11,467</td><td><span class="tag t-si">site</span></td><td>capture 11,00 s · flou 13</td><td>aperçu</td></tr>
+      <tr><td class="n">11,467 → 12,167</td><td><span class="tag t-mo">motion</span></td><td>cartes (suite)</td><td>respiration</td></tr>
+      <tr><td class="n">12,167 → 15,067</td><td><span class="tag t-av">avatar</span></td><td>E3 neutre 1,80 → 4,70</td><td>parole 12,16–15,08</td></tr>
+      <tr><td class="n">15,067 → 16,800</td><td><span class="tag t-mo">motion</span></td><td>arrête de deviner</td><td>respiration</td></tr>
+      <tr><td class="n">16,800 → 17,467</td><td><span class="tag t-av">avatar</span></td><td>E1 trois doigts 4,75 → 5,42</td><td>parole 16,80–17,48</td></tr>
+      <tr><td class="n">17,467 → 22,333</td><td><span class="tag t-si">site</span></td><td>capture 13,00 s · flou → net + pano</td><td>RÉVÉLATION</td></tr>
+      <tr><td class="n">22,333 → 23,500</td><td><span class="tag t-mo">motion</span></td><td>copie / change / c’est tout</td><td>—</td></tr>
+      <tr><td class="n">23,500 → 25,900</td><td><span class="tag t-mo">motion</span></td><td>Commente PROMPT</td><td>—</td></tr>
+      <tr><td class="n">25,900 → 27,133</td><td><span class="tag t-av">avatar</span></td><td>E2 confidence 5,30 → 6,53</td><td>parole 25,88–27,00</td></tr>
+    </table>
+    <p style="margin-top:.8rem">Les cinq plans d’avatar totalisent <b>7,17 s sur 27,13</b> (26 %).
+    Chacun tient entièrement dans une plage de <b>lèvres actives</b> mesurée sur son clip source
+    (E1 [0,04–1,50] [1,88–4,17] [4,67–6,04] · E2 [1,96–7,00] · E3 [0,96–1,33] [1,67–6,79])
+    <i>et</i> entièrement dans une zone de parole. Aucun avatar sur une respiration.</p>
+    <p>Le site, lui, n’occupe que <b>6,73 s</b> — dont 4,87 pour la seule révélation.
+    Il apparaît, il disparaît : c’est ce que demandait le brief.</p>
+  </div>
+
+  <div class="bloc">
+    <h2>Deux pièges payés sur ce rendu</h2>
+    <p><b>La dérive de concaténation.</b> Bornes données en secondes, <code>-t 0.780</code>
+    ne tombe pas sur une image entière à 30 ips : chaque plan gagnait une image et, au
+    treizième, la révélation arrivait <b>0,28 s trop tard</b> — assez pour qu’un plan d’avatar
+    déborde de sa zone de parole. La durée totale, elle, restait juste, et aucun journal ffmpeg
+    ne le signalait. Corrigé : toutes les bornes sont désormais en <b>images</b>, et chaque plan
+    sort avec un <code>-frames:v</code> exact vérifié par <code>ffprobe -count_frames</code>.</p>
+    <p><b>L’option qui n’existe pas.</b> Le panoramique de la révélation passe par une expression
+    en <code>t</code> dans <code>crop</code>. On lui a ajouté <code>eval=frame</code> par prudence :
+    <code>crop</code> réévalue déjà x et y à chaque image, et n’accepte pas cette option — le graphe
+    échoue sur « Option not found ».</p>
+  </div>
+
+  <div class="bloc att">
+    <h2>À trancher avant publication</h2>
+    <p>La voix dit « <b>plus de 30 000 prompts</b> » et le compteur animé monte jusqu’à 30 000.
+    Le site, lui, affiche « <b>10 000+ PROMPTS</b> » sur sa page d’accueil. La contradiction
+    n’est pas à l’écran en même temps dans cette version — la révélation cadre la section
+    « Parcourir par média », où YouMind annonce d’ailleurs <b>32 100 consignes</b> pour l’image
+    seule — mais l’écart entre la promesse dite et le chiffre affiché reste un choix éditorial.
+    Corriger demanderait de régénérer ce segment de voix : ni la voix ni la bande son validée
+    n’ont été touchées ici.</p>
+  </div>
+</div>
+<script>
+  // la jauge de parole, dessinee depuis les mesures reelles
+  var P=[[0.40,2.84],[4.08,6.48],[6.96,7.80],[8.08,8.88],[10.64,11.48],[12.16,15.08],
+         [16.80,17.48],[18.00,20.36],[20.84,22.32],[22.64,23.00],[23.52,24.00],
+         [24.28,25.20],[25.88,27.00]];
+  var D=27.12, h='', c=0;
+  for(var i=0;i<P.length;i++){
+    h+='<i class="souffle" style="width:'+((P[i][0]-c)/D*100)+'%"></i>';
+    h+='<i class="parle" style="width:'+((P[i][1]-P[i][0])/D*100)+'%"></i>';
+    c=P[i][1];
+  }
+  h+='<i class="souffle" style="width:'+((D-c)/D*100)+'%"></i>';
+  document.getElementById('jauge').innerHTML=h;
+</script>
+</body>
+</html>

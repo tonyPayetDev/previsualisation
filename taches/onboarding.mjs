@@ -88,6 +88,21 @@ const trim = somme(jours(90));
 
 const evo = (a, b) => (b === 0 ? (a > 0 ? '+∞' : '=') : `${a >= b ? '+' : ''}${Math.round((a - b) / b * 100)} %`);
 
+/* ── L'activité de Tony, celle qui compte vraiment ────────────────────
+ * Le cockpit ne lisait que TASKLOG.md, c'est-à-dire MON journal. Résultat : une
+ * semaine à 367 lignes affichait « ça avance » alors que le seul chiffre qui
+ * rapproche d'une facture — les appels passés — n'apparaissait nulle part.
+ * Tony a appelé 12 personnes le 25/08 ; rien ne le montrait. */
+let APPELS = {};
+try { APPELS = JSON.parse(fs.readFileSync(`${R}/appels/resultats.json`, 'utf8')).appels || {}; } catch { /* pas encore d'appels */ }
+const fiches = Object.values(APPELS);
+const passe = (d) => d.etat && String(d.etat).trim() && d.etat !== '?';
+const dansSemaine = (d) => jours(7).includes(String(d.date || '').slice(0, 10));
+const appelsSemaine = fiches.filter((d) => passe(d) && dansSemaine(d)).length;
+const appelsTotal = fiches.filter(passe).length;
+const aRappeler = fiches.filter((d) => d.etat === 'rappeler');
+const suites = fiches.filter((d) => d.suite && String(d.suite).trim());
+
 /* ── Ratio de santé, selon SES règles ────────────────────────────────── */
 const direct = taches.filter((t) => t.cash === 'direct');
 const directLivre = direct.filter((t) => t.etat === 'livre');
@@ -97,9 +112,13 @@ const attente = taches.filter((t) => t.etat === 'attente');
 /* La règle de Tony : livrer ne suffit pas, il faut que ça SORTE. Une tâche
    cash direct livrée mais jamais envoyée ne rapproche d'aucune facture. */
 const livreNonEnvoye = directLivre.length;
+/* Le terme du milieu mesurait « y a-t-il eu des lignes dans TASKLOG cette
+   semaine ». C'était toujours vrai, donc il valait toujours 30 : un point
+   gratuit. Il mesure désormais la règle que Tony s'est donnée — « 1 action cash
+   par jour, le dev produit ne compte pas » — soit 7 appels sur 7 jours. */
 const sante = Math.max(0, Math.min(100, Math.round(
   40 * (direct.length ? 1 - livreNonEnvoye / direct.length : 1)   // ce qui est parti
-  + 30 * (sem > 0 ? 1 : 0)                                        // activité de la semaine
+  + 30 * Math.min(1, appelsSemaine / 7)                           // les actions cash de la semaine
   + 30 * (taches.length ? 1 - bloquees.length / taches.length : 1) // ce qui n'est pas bloqué
 )));
 const verdict = sante >= 70 ? ['#22c55e', 'ça avance'] : sante >= 45 ? ['#f5d90a', 'à surveiller'] : ['#ef4444', 'ça coince'];
@@ -183,6 +202,17 @@ Le seul chiffre qui compte chaque jour : <b>nombre de prospects contactés</b>.<
 </section>
 
 <section>
+  <h2>Ce que TU as fait cette semaine</h2>
+  <div class="okr" style="border-top:0;padding-top:0;margin-top:0">
+    <div class="okr-t">📞 ${appelsSemaine} appel${appelsSemaine > 1 ? 's' : ''} passé${appelsSemaine > 1 ? 's' : ''}
+      <span style="color:var(--m);font-weight:400;font-size:.85rem">· ${appelsTotal} au total</span></div>
+    <div class="okr-c">La règle que tu t'es donnée : 1 action cash par jour. Sur 7 jours, ${appelsSemaine}/7.</div>
+    <div class="barre"><span style="width:${Math.round(Math.min(1, appelsSemaine / 7) * 100)}%"></span></div>
+    <div class="okr-m">${aRappeler.length} à rappeler · ${suites.length} suite${suites.length > 1 ? 's' : ''} notée${suites.length > 1 ? 's' : ''}</div>
+    ${aRappeler.length ? `<ul class="kr">${aRappeler.slice(0, 5).map((d) => `<li>${esc(String(d.dit || '').slice(0, 90))}</li>`).join('')}</ul>` : ''}
+    <a href="/appels/">ouvrir la feuille d'appel →</a>
+  </div>
+
   <h2>Mes 3 OKR 2026</h2>
   ${OKR.map(carteOKR).join('')}
 </section>
