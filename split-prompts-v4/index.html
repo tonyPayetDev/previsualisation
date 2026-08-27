@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Split-prompts v4 — le split-screen de la référence</title>
+<style>
+  :root{ --bg:#0a0a0f; --panel:#111117; --bord:#242430; --jaune:#f5d90a; --bleu:#57A8FF;
+         --texte:#f2f2f5; --doux:#9a9aa8; --rouge:#ef4444; --vert:#3ED37B; }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--texte);line-height:1.6;
+       font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;padding:2rem 1rem 4rem}
+  .wrap{max-width:520px;margin:0 auto}
+  a.back{color:var(--doux);font-size:.8rem;text-decoration:none;display:inline-block;margin-bottom:1rem}
+  a.back:hover{color:var(--jaune)}
+  h1{font-size:1.35rem;margin:0 0 .35rem}
+  .chapeau{color:var(--doux);font-size:.9rem;margin:0 0 1.4rem}
+  video{width:100%;border-radius:14px;border:1px solid var(--bord);display:block;background:#000}
+  .bloc{margin-top:1.4rem;background:var(--panel);border:1px solid var(--bord);border-radius:14px;padding:1rem 1.1rem}
+  .bloc h2{font-size:.72rem;letter-spacing:.09em;text-transform:uppercase;color:var(--jaune);margin:0 0 .7rem}
+  .bloc p{margin:0 0 .7rem;font-size:.87rem;color:var(--doux)}
+  .bloc p:last-child{margin-bottom:0}
+  .bloc b{color:var(--texte)}
+  .att{border-left:3px solid var(--rouge)}
+  .att h2{color:#fca5a5}
+  table{width:100%;border-collapse:collapse;font-size:.78rem;font-variant-numeric:tabular-nums}
+  th{text-align:left;color:var(--doux);font-weight:600;padding:.3rem .35rem;border-bottom:1px solid var(--bord)}
+  td{padding:.3rem .35rem;border-bottom:1px solid rgba(36,36,48,.6);vertical-align:top}
+  td.n{color:var(--bleu);white-space:nowrap}
+  .tag{display:inline-block;font-size:.62rem;letter-spacing:.08em;text-transform:uppercase;
+       padding:.12rem .4rem;border-radius:5px;border:1px solid var(--bord);color:var(--doux)}
+  .t-av{color:#0a0a0f;background:var(--vert);border-color:var(--vert)}
+  .t-si{color:#0a0a0f;background:var(--bleu);border-color:var(--bleu)}
+  .t-mo{color:var(--texte);background:#1e2c45;border-color:#2a3b58}
+  .t-po{color:#0a0a0f;background:#e8c05a;border-color:#e8c05a}
+  .jauge{display:flex;height:22px;border-radius:6px;overflow:hidden;border:1px solid var(--bord);margin:.6rem 0}
+  .jauge i{display:block}
+  .parle{background:var(--vert)}
+  .souffle{background:#1b1b24}
+  ul{margin:.2rem 0 .7rem;padding-left:1.1rem;font-size:.87rem;color:var(--doux)}
+  li{margin-bottom:.25rem}
+  code{font-size:.8rem;color:var(--bleu);background:#0d0d14;padding:.05rem .3rem;border-radius:4px}
+</style>
+<body>
+<div class="wrap">
+<a class="back" href="/">← toutes les prévisualisations</a>
+<header>
+  <h1>Split-prompts v4</h1>
+  <p class="sub">Le format de la référence, retrouvé : le site en haut, Tony en bas, du début à la fin.</p>
+</header>
+
+<video controls playsinline preload="metadata" poster="cover.jpg" src="video.mp4"></video>
+
+<section>
+  <h2>Ce qui change par rapport à la v3</h2>
+  <p>La v3 avait remplacé le split-screen par une alternance plein cadre : le site n’était
+  plus à l’écran en permanence et l’avatar n’y tenait que <b>8,5 s sur 27</b>. C’était
+  s’éloigner de la vidéo de référence, qui est un split permanent.</p>
+  <p>La v4 revient au split et y intègre le suspense demandé <b>dans la bande du haut</b> :
+  le site ouvre flou et illisible, puis se révèle net par un fondu continu entre
+  <b>3,4 s et 6,0 s</b>. Mesuré sur les images extraites, pas jugé à l’œil :
+  netteté 8,8 à 2,5 s → 20,7 à 5,5 s → 31,0 à 9 s.</p>
+</section>
+
+<section>
+  <h2>Les lèvres bougent sous chaque mot — mais ne disent pas les mots</h2>
+  <p>Les neuf plans de la bande basse tiennent <b>entièrement</b> dans une plage de lèvres
+  actives mesurée sur les clips sources. La bouche bouge donc partout où la voix parle,
+  sans zone morte.</p>
+  <p>Ce que ce montage ne peut pas faire, et qu’il faut dire franchement : les clips sont
+  génériques, leurs lèvres <b>ne prononcent pas</b> les mots français de la voix clonée.
+  Seul un modèle de synchronisation labiale corrigerait ça, et il est payant.</p>
+</section>
+
+<section>
+  <h2>Sous-titres</h2>
+  <p>Calés sur la transcription Whisper (script recalé), avec un bandeau sombre à 42 %
+  posé à la couture : au-delà de 9 s le site affiche des cartes chargées et le texte
+  blanc s’y perdait.</p>
+</section>
+
+<p class="pied">Rendu le 27/08/2026 · 27,13 s · 7,5 Mo · 720×1280</p>
+</div>
+</body>
+</html>
