@@ -52,6 +52,10 @@
 <a class="back" href="/">← toutes les prévisualisations</a>
 <header><h1>Réunion Renouvelables — étude de cas</h1>
 <p class="sub">Photovoltaïque, La Réunion · 42,5 s · 9:16 · CTA SOLAIRE</p></header>
+<div class="choix">
+  <button class="opt actif" data-src="https://assets.automatisationboost.com/previsualisation/client-reunion-renouvelables/v3.mp4">Médaillon 612 px</button>
+  <button class="opt" data-src="https://assets.automatisationboost.com/previsualisation/client-reunion-renouvelables/v3-cta-plein.mp4">CTA plein cadre</button>
+</div>
 <video id="v" controls playsinline preload="metadata" poster="cover.jpg"
   src="https://assets.automatisationboost.com/previsualisation/client-reunion-renouvelables/v3.mp4"></video>
 <p class="souscadre">L'avatar apparaît sur <b>trois phrases entières</b> de la voix off —
@@ -77,5 +81,28 @@ RGE, 19 ans, 600 installations. Aucun n'est inventé ni arrondi.</p></section>
 <section><h2>Un point à régler avant publication</h2>
 <p>Le mot-clé <b>SOLAIRE</b> n'a aucune ressource derrière. Si la vidéo part avec ce CTA,
 ceux qui commentent ne recevront rien.</p></section>
-<section><h2>Synchro de l’avatar — ce que la mesure a montré</h2><p>Tony : « l’avatar commence à parler à 2 secondes ». Vérifié en mesurant le mouvement de la zone bouche, image par image, sur les clips sources. Le résultat est pire que le symptôme : sur les quatre clips de la banque, <b>seul E2 parle vraiment</b>, et seulement sur deux fenêtres — [1,93→3,13] et [5,70→6,93]. E3 et E1 n’ont <b>aucune</b> plage de parole soutenue d’une seconde.</p><p>La carte de lèvres du dépôt annonçait E2 en [1,96→7,00] d’un seul tenant. C’est faux : elle contient une zone morte de 0,7 s, qui tombait pile à deux secondes de vidéo.</p><p>Le médaillon ne dure donc plus que <b>1,15 s, deux fois</b> — la durée réellement disponible. Vérifié après montage : la bouche bouge sur toute la fenêtre visible, sans trou.</p></section><p class="pied">Rendu le 27/08/2026 · 1080×1920 · 3,5 Mo · voix clonée</p>
-</div></body></html>
+<section><h2>Deux variantes, à trancher</h2>
+<p>Les deux sont identiques jusqu’à la 37e seconde. Elles ne diffèrent que sur le CTA :
+<b>médaillon</b> garde le disque de 612 px dans la zone photo ; <b>plein cadre</b> laisse
+l’avatar occuper tout l’écran, avec le bloc SOLAIRE et les sous-titres reposés par-dessus.</p>
+<p>En plein cadre, le bloc CTA descend à 1150 px : à sa position d’origine (820 px) il tombait
+sur la bouche — la seule chose qu’on veut voir pendant qu’il parle.</p>
+<p><b>La synchro est la même dans les deux.</b> Le plan vient du même endroit du même clip
+(E3 neutre, de 1,72 s pendant 4,85 s), à l’intérieur de sa plage de lèvres actives mesurée
+1,67 → 6,79 s. Seul le cadrage change, pas une image de la timeline ni un octet de l’audio.</p>
+<p>L’avatar apparaît sur <b>trois phrases entières</b> de la voix off et finit ce qu’il dit
+avant de disparaître. Un seul clip source, celui qui reste à distance : l’autre avançait vers
+la caméra pendant la prise, vérifié image par image.</p></section>
+<p class="pied">Rendu le 27/08/2026 · 1080×1920 · 3,5 Mo · voix clonée</p>
+</div>
+<script>
+  const v=document.getElementById("v");
+  document.querySelectorAll(".opt").forEach(b=>b.addEventListener("click",()=>{
+    document.querySelectorAll(".opt").forEach(o=>o.classList.remove("actif"));
+    b.classList.add("actif");
+    const t=v.currentTime; v.src=b.dataset.src;
+    // on reprend là où il regardait : les deux variantes ont la même timeline
+    v.addEventListener("loadedmetadata",()=>{v.currentTime=t;v.play()},{once:true});
+  }));
+</script>
+</body></html>
