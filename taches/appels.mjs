@@ -562,7 +562,12 @@ const pourMode = (r, cat) => {
       const base = script(r, cat === 'echauffement');
       if (cat !== 'rappel') return base;
       const quand = d.date ? new Date(d.date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' }) : null;
-      const ouvre = `Bonjour, Tony PAYET${quand ? `, on s'est parlé le ${quand}` : ''}. Je vous rappelle comme convenu — vous avez deux minutes ?`;
+      /* Deux histoires différentes, deux ouvertures. Un contact venu du
+         tracking email n'a jamais parlé à Tony : lui servir « on s'est
+         parlé » le ferait raccrocher. */
+      const ouvre = d.origine === 'tracking'
+        ? `Bonjour, Tony PAYET, je suis à La Réunion. Je vous avais envoyé une maquette de votre site${quand ? ` début ${new Date(d.date).toLocaleDateString('fr-FR', { month: 'long' })}` : ''}, et je vois que vous l'aviez ouverte. Je vous appelle simplement pour savoir ce que vous en avez pensé.`
+        : `Bonjour, Tony PAYET${quand ? `, on s'est parlé le ${quand}` : ''}. Je vous rappelle comme convenu — vous avez deux minutes ?`;
       return [['Ouvrir', ouvre],
               ['Ce qui restait à faire', d.suite || d.dit || 'Reprendre là où vous en étiez.'],
               ...base.filter((x) => x[0] !== 'Ouvrir')];
