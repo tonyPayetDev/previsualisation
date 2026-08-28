@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
 <title>Quelques réalisations récentes — Tony PAYET</title>
-<meta name="description" content="Six sites livrés et deux exemples de vidéo, tous en ligne. La Réunion.">
+<meta name="description" content="Huit sites livrés et trois exemples de vidéo et d'animation, tous en ligne. La Réunion.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
@@ -66,6 +66,20 @@ figure video{width:100%;display:block;background:#000}
 figcaption{padding:14px 17px 17px;font-size:13.5px;color:var(--attenue)}
 figcaption b{display:block;color:var(--blanc);font-weight:500;font-size:15px;margin-bottom:3px}
 
+/* La page au défilement : une vignette large, parce qu'une capture ne rend pas
+   ce qu'elle fait — c'est le lien qui compte, la vignette n'est qu'une porte. */
+.scroll{display:block;text-decoration:none;color:inherit;margin-top:clamp(20px,3vw,28px);
+  background:var(--panneau);border:1px solid var(--bord);border-radius:14px;overflow:hidden;
+  transition:transform .35s var(--sortie),border-color .35s ease}
+.scroll:hover{transform:translateY(-4px);border-color:rgba(201,162,39,.45)}
+.scroll img{width:100%;aspect-ratio:16/9;object-fit:cover}
+.scroll .dedans{padding:16px 18px 20px}
+.scroll h3{font-family:var(--sans);font-weight:500;color:var(--blanc);font-size:16px;margin:0 0 6px}
+.scroll p{margin:0;font-size:13.5px;color:var(--attenue)}
+.scroll p b{color:var(--corps);font-weight:500}
+.scroll .lien{display:inline-block;margin-top:10px;font-size:12.5px;color:var(--or);word-break:break-all}
+@media(prefers-reduced-motion:reduce){.scroll:hover{transform:none}}
+
 .note{margin-top:clamp(44px,6vw,66px);padding:20px 22px;background:var(--panneau);
   border:1px solid var(--bord);border-left:2px solid var(--or);border-radius:12px;
   font-size:14.5px;color:var(--attenue)}
@@ -81,8 +95,8 @@ footer a{color:var(--or)}
 <div class="page">
 
   <h1>Quelques réalisations récentes</h1>
-  <p class="chapeau">Six sites livrés et deux exemples de vidéo. Tout est en ligne : les liens
-    ouvrent les vrais sites, pas des maquettes.</p>
+  <p class="chapeau">Huit sites livrés et trois exemples de vidéo et d'animation. Tout est en ligne :
+    les liens ouvrent les vrais sites, pas des maquettes.</p>
 
   <h2>Sites livrés</h2>
   <p class="sous">Restaurants, commerces et services, à La Réunion. Chacun avec sa propre
@@ -119,6 +133,18 @@ footer a{color:var(--or)}
         <p class="quoi">Café · restaurant</p>
         <span class="lien">club-cafe-la-reunion.automatisationboost.com</span></div>
     </a>
+    <a class="site" href="https://bloom.automatisationboost.com/" target="_blank" rel="noopener">
+      <img src="vignettes/bloom.jpg" alt="Site du salon Bloom" loading="lazy">
+      <div class="dedans"><h3>Bloom</h3>
+        <p class="quoi">Salon du mariage · événementiel</p>
+        <span class="lien">bloom.automatisationboost.com</span></div>
+    </a>
+    <a class="site" href="https://previsualisation.automatisationboost.com/client-creperie-saintgeorges/" target="_blank" rel="noopener">
+      <img src="vignettes/creperie.jpg" alt="Site de la Crêperie Saint Georges" loading="lazy">
+      <div class="dedans"><h3>Crêperie Saint Georges</h3>
+        <p class="quoi">Restaurant · Saint-Denis</p>
+        <span class="lien">creperie-saintgeorges</span></div>
+    </a>
     <a class="site" href="https://koytcha.automatisationboost.com/" target="_blank" rel="noopener">
       <img src="vignettes/koytcha.jpg" alt="Site de Koytcha Conseil" loading="lazy">
       <div class="dedans"><h3>Koytcha Conseil</h3>
@@ -127,8 +153,8 @@ footer a{color:var(--or)}
     </a>
   </div>
 
-  <h2>Vidéo</h2>
-  <p class="sous">Deux usages différents, faits à partir des photos du client — sans tournage,
+  <h2>Vidéo &amp; animation</h2>
+  <p class="sous">Trois usages différents, faits à partir des photos du client — sans tournage,
     sans photographe.</p>
 
   <div class="videos">
@@ -147,6 +173,17 @@ footer a{color:var(--or)}
         <em>Mettez le son.</em></figcaption>
     </figure>
   </div>
+
+  <a class="scroll" href="https://previsualisation.automatisationboost.com/reunion-vol/" target="_blank" rel="noopener">
+    <img src="vignettes/reunion-vol.jpg" alt="Page cinématique Du lagon au cratère" loading="lazy">
+    <div class="dedans">
+      <h3>Une page qui se joue au défilement</h3>
+      <p>« Du lagon au cratère » — l'image avance à mesure qu'on descend, et la couleur change
+        avec l'altitude. Ce n'est pas une vidéo posée sur une page : c'est la page elle-même.
+        <b>À ouvrir et à faire défiler.</b></p>
+      <span class="lien">previsualisation.automatisationboost.com/reunion-vol</span>
+    </div>
+  </a>
 
   <div class="note">
     <b>Comment je travaille.</b> Les visuels sont faits à partir de ce que le client a déjà —
