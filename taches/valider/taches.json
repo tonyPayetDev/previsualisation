@@ -140,7 +140,7 @@
       "fini": "Un formulaire n8n : nom, prénom, email, téléphone, établissement, Instagram, site, image ou vidéo à reproduire, et une question d'audit sur ce qui les bloque pour poster.",
       "cout": "0 €",
       "etat": "fait",
-      "note": "Le formulaire existait déjà et il était actif — je ne l'ai pas dupliqué, je l'ai complété. Ajoutés : prénom, nom, téléphone, Instagram, site, lien d'une vidéo à reproduire, et la question d'audit. Surtout : il ne prévenait PERSONNE. Il générait la maquette, l'envoyait au prospect, et tu n'avais aucun moyen de savoir qui avait demandé. Une alerte part maintenant vers ta boîte AVANT la génération d'image, donc même si Kie échoue tu as le lead.",
+      "note": "Repris. Les 13 champs du « fini quand » y étaient déjà et le formulaire répond en 200 — le défaut était ailleurs : « Image prête ? [faux] → Attendre 20s » était une boucle SANS SORTIE. La dernière vraie demande a fait 10 tours (204 s) et rien ne bornait le 11e : si Kie ne rend jamais l’image, l’exécution tourne indéfiniment. Ajouté un nœud « Sortie de secours » qui coupe au 15e tour (~5 min) ou dès que Kie renvoie un état d’échec. Le lead ne se perd pas pour autant : « Prévenir Tony » part en parallèle juste après le formulaire, avant toute génération. Workflow actif et publié (versionId = activeVersionId), les 4 credentials conservées. Pas de soumission de test : elle aurait envoyé un vrai email.",
       "lien": "https://n7n.automatisationboost.com/form/481d9cd4-caf9-4fdc-a58f-e1c816b133bc"
     },
     {
