@@ -1,0 +1,329 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>Cockpit</title>
+<style>
+  @font-face{font-family:Outfit;src:url(Outfit-Regular.ttf) format("truetype");font-weight:400;font-display:swap}
+  @font-face{font-family:Outfit;src:url(Outfit-Bold.ttf) format("truetype");font-weight:700;font-display:swap}
+  :root{
+    --fond:#04050a; --surface:#0a0d16; --ligne:#1b2233;
+    --texte:#e8ecf5; --gris:#7c869c;
+    --jaune:#FFE600; --violet:#A855F7; --cyan:#22d3ee;
+    --sain:#34d399; --tiede:#fbbf24; --cloche:#fb7185;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{height:100%;overflow:hidden}
+  body{background:var(--fond);color:var(--texte);
+       font:15px/1.55 Outfit,system-ui,-apple-system,"Segoe UI",sans-serif;
+       -webkit-font-smoothing:antialiased}
+  /* Une nappe très sombre derrière le graphe : sans elle le noir plat fait
+     paraître les néons collés sur du vide. */
+  body::before{content:"";position:fixed;inset:0;pointer-events:none;
+    background:radial-gradient(circle at 50% 46%,rgba(168,85,247,.10),transparent 58%),
+               radial-gradient(circle at 50% 46%,rgba(34,211,238,.07),transparent 40%)}
+
+  #scene{position:fixed;inset:0;transition:right .3s cubic-bezier(.2,.9,.25,1)}
+  @media (min-width:761px){ body.decale #scene{right:min(400px,92vw)} }
+  svg{width:100%;height:100%;display:block;touch-action:manipulation}
+
+  .fil{fill:none;stroke:#233046;stroke-width:1.2}
+  .fil.actif{stroke:rgba(34,211,238,.55);stroke-width:1.6}
+  .anneau{fill:none;stroke:#141c2b;stroke-width:1;stroke-dasharray:3 7}
+
+  .nd{cursor:pointer}
+  .nd .disque{fill:#0b1120;stroke-width:2;transition:filter .25s}
+  .nd .halo{fill:none;stroke-width:8;opacity:.10}
+  .nd:hover .disque{filter:url(#lueur)}
+  .nd .lib{font-size:13.5px;font-weight:700;letter-spacing:-.01em;fill:var(--texte);pointer-events:none}
+  .nd .sous{font-size:11px;fill:var(--gris);pointer-events:none;letter-spacing:.04em}
+  .nd .cpt{font-size:13px;font-weight:700;fill:#dfe6f2;pointer-events:none}
+  .centre .lib{font-size:19px}
+  .centre .but{font-size:12.5px;fill:var(--gris)}
+
+  /* L'explosion : chaque enfant part du centre et s'installe. Le décalage
+     entre les enfants est ce qui donne l'impression d'ouverture, pas la durée. */
+  @keyframes eclat{from{opacity:0;transform:scale(.2)}to{opacity:1;transform:scale(1)}}
+  .nd.entre{animation:eclat .42s cubic-bezier(.2,.9,.25,1) backwards}
+  @media (prefers-reduced-motion:reduce){.nd.entre{animation:none}}
+
+  /* Fil d'Ariane */
+  #fil{position:fixed;top:0;left:0;right:0;padding:14px 16px;display:flex;gap:7px;
+       align-items:center;flex-wrap:wrap;z-index:5;
+       background:linear-gradient(180deg,rgba(4,5,10,.94),rgba(4,5,10,0))}
+  #fil button{font:inherit;font-size:12.5px;font-weight:700;background:#0d1320;color:var(--gris);
+       border:1px solid var(--ligne);border-radius:999px;padding:6px 13px;cursor:pointer;min-height:34px}
+  #fil button:last-child{color:var(--texte);border-color:#2b3956}
+  #fil .sep{color:#33405c;font-size:12px}
+
+  /* Panneau de détail */
+  #panneau{position:fixed;right:0;top:0;bottom:0;width:min(400px,92vw);z-index:6;
+     background:rgba(8,11,18,.97);border-left:1px solid var(--ligne);
+     padding:22px 20px 30px;overflow-y:auto;transform:translateX(101%);
+     transition:transform .3s cubic-bezier(.2,.9,.25,1)}
+  #panneau.ouvert{transform:none}
+  #panneau h2{font-size:20px;line-height:1.2;letter-spacing:-.02em;margin-bottom:4px}
+  #panneau .kind{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--gris);margin-bottom:12px}
+  #panneau .but{color:#b9c2d2;font-size:14.5px;margin:10px 0 16px;padding-left:11px;border-left:2px solid var(--violet)}
+  .chiffres{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+  .chip{border:1px solid var(--ligne);border-radius:8px;padding:7px 11px;font-size:12.5px;color:var(--gris)}
+  .chip b{color:var(--texte);font-size:15px}
+  .chip.mal{border-color:#5b2733;color:#f9a8b4}
+  .chip.mal b{color:var(--cloche)}
+  #panneau h3{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--gris);
+     margin:20px 0 9px;font-weight:700}
+  .liste{display:flex;flex-direction:column;gap:6px}
+  .liste a,.liste .ln{display:flex;justify-content:space-between;gap:10px;align-items:baseline;
+     background:#0c111c;border:1px solid var(--ligne);border-radius:8px;padding:9px 11px;
+     color:var(--texte);text-decoration:none;font-size:13.5px;width:100%;text-align:left;
+     font-family:inherit;font-weight:400;min-height:0}
+  .liste a:hover,.liste .nav:hover{border-color:#2f4160}
+  .liste .nav{cursor:pointer}
+  .liste .nav::after{content:"›";color:var(--cyan);font-weight:700;margin-left:2px}
+  .liste .age{color:var(--gris);font-size:11.5px;white-space:nowrap}
+  .alerte{background:#170e14;border:1px solid #4a2130;border-radius:9px;padding:13px 14px;margin-top:6px}
+  .alerte b{color:var(--cloche)}
+  .alerte p{font-size:13.5px;color:#d7bcc4;margin-top:5px}
+  .aller{display:block;text-align:center;background:#131a29;border:1px solid #2b3956;
+     border-radius:9px;padding:12px;color:var(--jaune);text-decoration:none;font-weight:700;
+     font-size:14.5px;margin-top:18px}
+  #fermer{position:absolute;top:14px;right:14px;background:none;border:none;color:var(--gris);
+     font:inherit;font-size:22px;cursor:pointer;line-height:1;padding:4px 8px}
+
+  #legende{position:fixed;left:16px;bottom:14px;z-index:4;display:flex;gap:12px;font-size:11.5px;color:var(--gris)}
+  #legende i{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px}
+  @media (max-width:760px){
+    #panneau{left:0;right:0;top:auto;bottom:0;width:auto;max-height:74vh;
+      border-left:none;border-top:1px solid var(--ligne);border-radius:16px 16px 0 0;
+      transform:translateY(101%)}
+    #legende{display:none}
+  }
+</style>
+</head>
+<body>
+<div id="scene">
+  <svg id="carte" preserveAspectRatio="xMidYMid meet">
+    <defs>
+      <filter id="lueur" x="-70%" y="-70%" width="240%" height="240%">
+        <feGaussianBlur stdDeviation="5" result="f"/>
+        <feMerge><feMergeNode in="f"/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+      <filter id="lueurForte" x="-90%" y="-90%" width="280%" height="280%">
+        <feGaussianBlur stdDeviation="9" result="f"/>
+        <feMerge><feMergeNode in="f"/><feMergeNode in="f"/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+    </defs>
+    <g id="fils"></g><g id="noeuds"></g>
+  </svg>
+</div>
+
+<div id="fil"></div>
+
+<aside id="panneau">
+  <button id="fermer" aria-label="Fermer">×</button>
+  <div id="contenu"></div>
+</aside>
+
+<div id="legende">
+  <span><i style="background:#34d399"></i>sain</span>
+  <span><i style="background:#fbbf24"></i>à surveiller</span>
+  <span><i style="background:#fb7185"></i>ça cloche</span>
+</div>
+
+<script>
+(async () => {
+  const svg = document.getElementById('carte');
+  const gFils = document.getElementById('fils');
+  const gNoeuds = document.getElementById('noeuds');
+  const NS = 'http://www.w3.org/2000/svg';
+  const el = (t, a = {}) => { const n = document.createElementNS(NS, t); for (const k in a) n.setAttribute(k, a[k]); return n; };
+
+  const { arbre, doublons, maj } = await (await fetch('arbre.json?t=' + Date.now())).json();
+
+  /* Chaque nœud reçoit un identifiant unique et son parent : c'est ce qui
+     permet de sauter directement à une branche depuis le panneau, en
+     reconstruisant le fil d'Ariane au lieu de le perdre. */
+  const parUid = new Map();
+  (function marquer(n, parent) {
+    n._uid = parUid.size; n._parent = parent || null; parUid.set(n._uid, n);
+    for (const e of n.enfants || []) marquer(e, n);
+  })(arbre, null);
+  const cheminVers = (n) => { const c = []; for (let x = n; x; x = x._parent) c.unshift(x); return c; };
+
+  /* Un nœud est « sain », « tiède » ou « il cloche » selon la PART de ses
+     routes qui portent un souci — pas leur nombre brut : 19 soucis sur 146
+     maquettes n'est pas la même chose que 19 sur 20. */
+  const sante = (n) => {
+    if (n.type === 'route') return n.souci && n.souci.length ? (n.souci.includes('doublon') ? 'cloche' : 'tiede') : 'sain';
+    if (!n.n) return 'sain';
+    const p = (n.soucis || 0) / n.n;
+    return p === 0 ? 'sain' : p < 0.12 ? 'tiede' : 'cloche';
+  };
+  const COUL = { sain: '#34d399', tiede: '#fbbf24', cloche: '#fb7185' };
+
+  let chemin = [arbre];
+  const focus = () => chemin[chemin.length - 1];
+
+  const dessiner = (anime = true) => {
+    const r = svg.getBoundingClientRect();
+    const L = Math.max(r.width, 360), H = Math.max(r.height, 480);
+    svg.setAttribute('viewBox', `0 0 ${L} ${H}`);
+    gFils.innerHTML = ''; gNoeuds.innerHTML = '';
+
+    const cx = L / 2, cy = H / 2 + 6;
+    const f = focus();
+    const enfants = f.enfants || [];
+    /* Le rayon suit la place disponible ET le nombre d'enfants : à vingt nœuds
+       sur un petit écran, un rayon fixe les fait se chevaucher. */
+    const R = Math.min(L, H) / 2 - Math.min(96, Math.max(58, 520 / Math.max(6, enfants.length)));
+    const rn = Math.max(17, Math.min(31, 190 / Math.max(5, enfants.length) + 12));
+
+    gFils.appendChild(el('circle', { cx, cy, r: R, class: 'anneau' }));
+
+    enfants.forEach((e, i) => {
+      const a = -Math.PI / 2 + (i / enfants.length) * Math.PI * 2;
+      const x = cx + Math.cos(a) * R, y = cy + Math.sin(a) * R;
+      const c = COUL[sante(e)];
+
+      const d = el('path', { class: 'fil actif',
+        d: `M ${cx} ${cy} Q ${cx + Math.cos(a) * R * 0.45} ${cy + Math.sin(a) * R * 0.45} ${x} ${y}` });
+      gFils.appendChild(d);
+
+      const g = el('g', { class: 'nd' + (anime ? ' entre' : '') });
+      g.style.transformOrigin = `${x}px ${y}px`;
+      if (anime) g.style.animationDelay = (i * 34) + 'ms';
+      g.appendChild(el('circle', { cx: x, cy: y, r: rn + 5, class: 'halo', stroke: c }));
+      g.appendChild(el('circle', { cx: x, cy: y, r: rn, class: 'disque', stroke: c }));
+
+      if (e.type !== 'route') {
+        const t = el('text', { x, y: y + 4.5, class: 'cpt', 'text-anchor': 'middle', fill: c });
+        t.textContent = e.n; g.appendChild(t);
+      } else {
+        const t = el('text', { x, y: y + 4.5, class: 'cpt', 'text-anchor': 'middle', fill: c });
+        t.textContent = e.video ? '▶' : '·'; g.appendChild(t);
+      }
+
+      /* L'étiquette se pose à l'extérieur, et bascule d'ancrage sur la moitié
+         gauche — sinon la moitié des noms sort du cadre. */
+      const gauche = Math.cos(a) < -0.15, dessus = Math.sin(a) < -0.55, dessous = Math.sin(a) > 0.55;
+      const lx = x + Math.cos(a) * (rn + 13), ly = y + Math.sin(a) * (rn + 13);
+      const anc = dessus || dessous ? 'middle' : gauche ? 'end' : 'start';
+      const lib = el('text', { x: lx, y: ly + (dessous ? 13 : dessus ? -4 : 4), class: 'lib', 'text-anchor': anc });
+      lib.textContent = e.nom.length > 26 ? e.nom.slice(0, 25) + '…' : e.nom;
+      g.appendChild(lib);
+      if (e.type !== 'route' && e.soucis) {
+        const s = el('text', { x: lx, y: ly + (dessous ? 28 : dessus ? 11 : 19), class: 'sous', 'text-anchor': anc, fill: COUL.cloche });
+        s.textContent = e.soucis + (e.soucis > 1 ? ' soucis' : ' souci');
+        g.appendChild(s);
+      }
+
+      g.onclick = () => ouvrir(e);
+      gNoeuds.appendChild(g);
+    });
+
+    /* Le centre */
+    const gc = el('g', { class: 'nd centre' });
+    const cc = COUL[sante(f)];
+    gc.appendChild(el('circle', { cx, cy, r: 54, class: 'halo', stroke: cc, 'stroke-width': 14 }));
+    const dq = el('circle', { cx, cy, r: 47, class: 'disque', stroke: cc, 'stroke-width': 2.5 });
+    dq.setAttribute('filter', 'url(#lueurForte)');
+    gc.appendChild(dq);
+    const mots = f.nom.split(' ');
+    const lignes = f.nom.length <= 15 || mots.length === 1
+      ? [f.nom.length > 15 ? f.nom.replace(/([a-z])([A-Z])/g, '$1 $2').split(' ') : [f.nom]].flat()
+      : (() => { const m = Math.ceil(mots.length / 2); return [mots.slice(0, m).join(' '), mots.slice(m).join(' ')]; })();
+    lignes.forEach((t, k) => {
+      const n0 = el('text', { x: cx, y: cy - 8 + k * 19 - (lignes.length - 1) * 4, class: 'lib', 'text-anchor': 'middle' });
+      n0.setAttribute('font-size', lignes.length > 1 ? 15 : 19);
+      n0.textContent = t; gc.appendChild(n0);
+    });
+    const sc = el('text', { x: cx, y: cy + 12 + (lignes.length - 1) * 10, class: 'sous', 'text-anchor': 'middle' });
+    sc.textContent = (f.n || 0) + ' pages';
+    gc.appendChild(sc);
+    gc.onclick = () => detailler(f);
+    gNoeuds.appendChild(gc);
+
+    /* Fil d'Ariane */
+    const fil = document.getElementById('fil');
+    fil.innerHTML = '';
+    chemin.forEach((n, i) => {
+      if (i) { const s = document.createElement('span'); s.className = 'sep'; s.textContent = '›'; fil.appendChild(s); }
+      const b = document.createElement('button');
+      b.textContent = i === 0 ? 'Tout' : n.nom;
+      b.onclick = () => { chemin = chemin.slice(0, i + 1); fermer(); dessiner(); };
+      fil.appendChild(b);
+    });
+  };
+
+  const ouvrir = (n) => {
+    if (n.enfants && n.enfants.length) { chemin.push(n); fermer(); dessiner(); }
+    else detailler(n);
+  };
+
+  const AGE = (j) => j === null || j === undefined ? 'jamais publiée'
+    : j === 0 ? "aujourd'hui" : j === 1 ? 'hier' : j < 31 ? `il y a ${j} j` : `il y a ${Math.round(j / 30)} mois`;
+
+  const detailler = (n) => {
+    const p = document.getElementById('panneau'), c = document.getElementById('contenu');
+    const kind = { racine: 'Vue d’ensemble', objectif: 'Objectif', famille: 'Branche', groupe: 'Série', route: 'Page' }[n.type] || '';
+    let h = `<div class="kind">${kind}</div><h2>${n.nom}</h2>`;
+    if (n.but) h += `<p class="but">${n.but}</p>`;
+
+    if (n.type === 'route') {
+      h += `<div class="chiffres"><span class="chip">Modifiée<br><b>${AGE(n.jours)}</b></span>`
+         + `<span class="chip">Poids<br><b>${n.poids ? Math.round(n.poids / 1024) + ' Ko' : '—'}</b></span>`
+         + (n.video ? `<span class="chip">Contient<br><b>une vidéo</b></span>` : '') + `</div>`;
+      if (n.souci && n.souci.length) {
+        h += `<div class="alerte"><b>Ce qui cloche</b><p>${n.souci.map((s) => ({
+          doublon: 'Plusieurs routes existent pour ce même client — il faut en garder une.',
+          'page vide': 'La page fait moins de 2 Ko : c’est un gabarit, pas une maquette.',
+          'sans page': 'Aucun index.html : rien ne s’affiche à cette adresse.',
+          dormante: 'Rien n’a bougé depuis plus de quatre mois.',
+        }[s] || s)).join('<br>')}</p></div>`;
+      }
+      h += `<a class="aller" href="${n.lien}" target="_blank" rel="noopener">Ouvrir la page ↗</a>`;
+    } else {
+      h += `<div class="chiffres"><span class="chip">Pages<br><b>${n.n || 0}</b></span>`
+         + `<span class="chip ${n.soucis ? 'mal' : ''}">À regarder<br><b>${n.soucis || 0}</b></span>`
+         + `<span class="chip">Branches<br><b>${(n.enfants || []).length}</b></span></div>`;
+
+      if (n.type === 'racine' && doublons.length) {
+        h += `<h3>Ce qui cloche le plus</h3><div class="alerte"><b>${doublons.length} clients ont plusieurs routes</b>`
+           + `<p>Une hésitation laissée en l’état : on ne sait plus laquelle envoyer.</p></div><div class="liste">`
+           + doublons.map((d) => `<div class="ln"><span>${d.client.replace(/-/g, ' ')}</span><span class="age">${d.routes.length} routes</span></div>`).join('')
+           + `</div>`;
+      }
+      const enf = (n.enfants || []).slice().sort((a, b) => (b.soucis || 0) - (a.soucis || 0) || (a.jours ?? 999) - (b.jours ?? 999));
+      if (enf.length) {
+        h += `<h3>Ce qu’il y a dedans</h3><div class="liste">` + enf.map((e) => e.type === 'route'
+          ? `<a href="${e.lien}" target="_blank" rel="noopener"><span>${e.nom}</span><span class="age">${AGE(e.jours)}</span></a>`
+          : `<button class="ln nav" data-uid="${e._uid}"><span>${e.nom}</span><span class="age">${e.n} pages${e.soucis ? ' · ' + e.soucis + ' ⚠' : ''}</span></button>`).join('') + `</div>`;
+      }
+    }
+    c.innerHTML = h;
+    p.classList.add('ouvert');
+    document.body.classList.add('decale');
+    /* La scène a changé de largeur : le graphe doit se recentrer dedans,
+       sinon la moitié droite reste sous le panneau. */
+    setTimeout(() => dessiner(false), 310);
+  };
+  const fermer = () => { document.getElementById('panneau').classList.remove('ouvert');
+    document.body.classList.remove('decale'); dessiner(false); };
+  document.getElementById('fermer').onclick = fermer;
+  document.getElementById('contenu').addEventListener('click', (ev) => {
+    const b = ev.target.closest('.nav'); if (!b) return;
+    const n = parUid.get(+b.dataset.uid); if (!n) return;
+    chemin = cheminVers(n); fermer(); dessiner();
+  });
+  svg.addEventListener('click', (ev) => { if (ev.target === svg) fermer(); });
+
+  let redim;
+  addEventListener('resize', () => { clearTimeout(redim); redim = setTimeout(() => dessiner(false), 160); });
+  dessiner();
+  detailler(arbre);
+})();
+</script>
+</body>
+</html>
