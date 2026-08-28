@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>BeFresh — montage bar, clips animés</title>
+<style>
+  :root{--fond:#08080a;--panneau:#111114;--bord:#232328;--or:#E0AE3A;--magenta:#E9268C;
+        --texte:#f2f2f5;--doux:#9a9aa4}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--fond);color:var(--texte);padding:32px 16px 80px;
+    font:400 16px/1.55 Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+    -webkit-font-smoothing:antialiased}
+  .enveloppe{max-width:1080px;margin:0 auto}
+  a.retour{color:var(--doux);font-size:13px;text-decoration:none;display:inline-block;margin-bottom:20px}
+  a.retour:hover{color:var(--or)}
+  .surtitre{font:700 11px/1 Inter,sans-serif;letter-spacing:.18em;text-transform:uppercase;
+    color:var(--or);margin:0 0 14px}
+  h1{font:700 clamp(25px,4.6vw,36px)/1.12 Inter,sans-serif;letter-spacing:-.02em;margin:0 0 14px}
+  .chapeau{color:var(--doux);max-width:62ch;margin:0 0 30px}
+  .chapeau b{color:var(--texte);font-weight:600}
+  .trio{display:grid;gap:20px;grid-template-columns:repeat(auto-fit,minmax(230px,1fr))}
+  figure{margin:0;background:var(--panneau);border:1px solid var(--bord);border-radius:14px;overflow:hidden}
+  figure.retenue{border-color:var(--or)}
+  video{width:100%;display:block;background:#000;aspect-ratio:9/16;object-fit:contain}
+  figcaption{padding:13px 15px}
+  .etq{font:700 10.5px/1 Inter,sans-serif;letter-spacing:.12em;text-transform:uppercase;display:block;margin-bottom:7px}
+  .retenue .etq{color:var(--or)} figure:not(.retenue) .etq{color:var(--doux)}
+  figcaption p{margin:0;font-size:12.5px;color:var(--doux);line-height:1.5}
+  .mesures{display:grid;gap:1px;background:var(--bord);border:1px solid var(--bord);
+    border-radius:12px;overflow:hidden;margin:34px 0 0;
+    grid-template-columns:repeat(auto-fit,minmax(165px,1fr))}
+  .mesures div{background:var(--panneau);padding:17px 18px}
+  .mesures .n{font:700 25px/1 Inter,sans-serif;font-variant-numeric:tabular-nums;
+    display:block;margin-bottom:5px;color:var(--or)}
+  .mesures .l{font-size:12.5px;color:var(--doux);line-height:1.4}
+  h2{font:700 19px/1.2 Inter,sans-serif;margin:44px 0 12px}
+  .bloc{border-left:2px solid var(--or);padding:3px 0 3px 18px;max-width:64ch;color:var(--doux)}
+  .bloc p{margin:0 0 12px} .bloc p:last-child{margin:0}
+  .bloc b{color:var(--texte)}
+  .franc{border-left-color:var(--magenta)}
+  code{font:400 13px/1.5 ui-monospace,Menlo,monospace;color:var(--or)}
+</style>
+</head>
+<body>
+<div class="enveloppe">
+  <a class="retour" href="/">← toutes les prévisualisations</a>
+  <p class="surtitre">BeFresh Events · vidu q3-pro start-end</p>
+  <h1>Même rythme que ta vidéo, mais des plans qui bougent vraiment</h1>
+  <p class="chapeau">Cette fois la matière n'est plus une photo poussée au zoom : ce sont
+  <b>huit clips de 3 secondes réellement animés</b>. Et le montage ne tourne plus sur un BPM
+  approché — il reprend <b>les 31 temps de coupe relevés image par image sur ta vidéo</b>, avec
+  <b>sa propre bande son</b>. Même durée, même rythme, à 3 millisecondes près.</p>
+
+  <div class="trio">
+    <figure>
+      <video src="reference.mp4" controls playsinline preload="metadata" muted loop></video>
+      <figcaption><span class="etq">Ta référence</span>
+      <p>15,86 s · 32 plans. C'est d'elle que viennent la grille de coupe et la musique.</p></figcaption>
+    </figure>
+    <figure class="retenue">
+      <video src="video.mp4" controls playsinline preload="metadata" poster="cover.jpg"></video>
+      <figcaption><span class="etq">Clips animés · q3-pro</span>
+      <p>15,86 s · 32 plans. Le jus coule, l'éclaboussure retombe, la main presse l'agrume.
+      3,00 $ de génération.</p></figcaption>
+    </figure>
+    <figure>
+      <video src="images-fixes.mp4" controls playsinline preload="metadata" muted></video>
+      <figcaption><span class="etq">La version d'avant</span>
+      <p>16,67 s. Images fixes en travelling, autre musique. Zéro dépense — gardée pour comparer.</p></figcaption>
+    </figure>
+  </div>
+
+  <div class="mesures">
+    <div><span class="n">8</span><span class="l">clips de 3 s générés en <code>vidu/q3-pro/start-end-to-video</code>, même image en début et en fin : la boucle est parfaite, on peut couper n'importe où.</span></div>
+    <div><span class="n">3 ms</span><span class="l">d'écart maximum entre mes coupes et celles de ta vidéo. Une image en vaut 33.</span></div>
+    <div><span class="n">0,37 $</span><span class="l">le clip de 3 s. C'est le prix mesuré au solde, pas une estimation : la q3-pro coûte 4,6× l'ancienne q2-fast.</span></div>
+    <div><span class="n">3,00 $</span><span class="l">dépensés en tout. Solde WaveSpeed restant : 4,94 $.</span></div>
+  </div>
+
+  <h2>Ce que ça change, et ce que ça coûte</h2>
+  <div class="bloc">
+    <p><b>Le mouvement est maintenant dans le plan.</b> Donc aucun zoom ajouté par-dessus : deux
+    mouvements qui se superposent se battent. Chaque plan est un simple recadrage dans un clip qui
+    bouge déjà.</p>
+    <p><b>Un clip animé se recadre à l'instant où on le coupe, pas sur l'image de départ.</b>
+    Deux plans tombaient dans le vide parce que le sujet avait dérivé une seconde plus tard —
+    dont un entièrement noir. J'ai relevé une carte de luminance <em>au point d'entrée de chaque
+    plan</em> pour les replacer.</p>
+    <p><b>Le carton final a demandé un détour.</b> Une image fixe passée à ffmpeg sans
+    <code>-loop</code> ne rend qu'une seule image : le montage sortait à 13,97 s au lieu de 15,86.
+    Il est fabriqué par <code>zoompan</code>, seule façon sûre ici — <code>-loop 1</code> combiné à
+    <code>zoompan</code> rendrait <em>d</em> images par image d'entrée et produirait un fichier de
+    plusieurs minutes.</p>
+  </div>
+
+  <h2>Avant de publier</h2>
+  <div class="bloc franc">
+    <p><b>La musique est celle de ta vidéo</b>, telle quelle. Parfait pour valider le montage,
+    à remplacer par une piste libre de droits avant toute publication.</p>
+    <p><b>Les huit clips sont animés à partir des visuels du dossier</b>, pas de vraies photos du
+    bar. Pour une vidéo publiée au nom de BeFresh, la règle du dossier reste les rushes réels — et
+    ce qui manque tient toujours en vingt minutes de téléphone au bar : douze plans macro, fond
+    sombre, une lampe de côté. Le moteur, lui, est écrit : la liste de plans est un simple JSON,
+    on remplace les sources et on relance.</p>
+  </div>
+</div>
+</body>
+</html>
