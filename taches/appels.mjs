@@ -59,11 +59,19 @@ try { RESU_PRE = JSON.parse(fs.readFileSync('/work/previsualisation/appels/resul
  *
  * Ce sont les fiches les plus chaudes du fichier : elles passent AVANT
  * l'échauffement, et rien ne les tronque. */
+const joliNom = (k) => k.replace(/^l-/, 'L\u2019').replace(/-/g, ' ').replace(/^./, (c) => c.toUpperCase());
 const rappels = Object.entries(RESU_PRE)
-  .filter(([, d]) => d.etat === 'rappeler')
+  .filter(([, d]) => (d.etat === 'rappeler' || d.chaud === true) && (d.suite || d.dit))
   .map(([k, d]) => {
     const src = QUALIFIES.find((r) => cleTot(r.nom) === k) || tous.find((r) => cleTot(r.nom) === k);
-    return src ? { ...src, _suite: d.suite || d.dit || '' } : null;
+    if (src) return { ...src, _suite: d.suite || d.dit || '' };
+    /* Repli : le prospect a quitté les sources parce qu'une maquette lui a été
+       livrée. On reconstruit sa fiche depuis le journal d'appels — sinon le
+       numéro direct qu'il a donné disparaît de la feuille. */
+    const tel = d.telDirect || d.telephone;
+    if (!tel) return null;
+    return { nom: d.nom || joliNom(k), telephone: tel, type: d.type || 'Commerce',
+             commune: d.commune || '', site: d.site || '', _suite: d.suite || d.dit || '' };
   })
   .filter(Boolean);
 
@@ -211,7 +219,7 @@ const carte = (r, i, chaud) => `
           return e.ok ? `<a class="vign" href="${esc(r.site)}" target="_blank" rel="noopener"><img loading="lazy" src="vignettes/${k}.jpg" alt="Aperçu du site de ${esc(r.nom)}"></a>` : '';
         })()}
         <a class="tel" href="tel:${telBrut(r.telephone)}">📞 ${esc(r.telephone)}</a>
-        ${(() => { const d = RESU[cle(r.nom)]; return d && d.telDirect
+        ${(() => { const d = RESU[cle(r.nom)]; return d && d.telDirect && telBrut(d.telDirect) !== telBrut(r.telephone)
           ? `<a class="tel direct" href="tel:${telBrut(d.telDirect)}">📱 ${esc(d.telDirect)} — son direct</a>` : ''; })()}
         ${(() => {
           const d = RESU[cle(r.nom)];

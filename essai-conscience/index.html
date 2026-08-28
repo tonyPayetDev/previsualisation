@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Et si tu étais la seule personne consciente ?</title>
+<style>
+  :root{ --noir:#06070a; --carte:#0f1117; --ligne:#20242e; --blanc:#eceef2;
+         --gris:#8a8f9a; --pale:#c9ccd3; }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:var(--noir);color:var(--blanc);
+    font:15px/1.65 system-ui,-apple-system,"Segoe UI",sans-serif;
+    padding:clamp(20px,5vw,56px) clamp(16px,4vw,40px) 90px}
+  .wrap{max-width:1060px;margin:0 auto}
+  .eyebrow{font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:var(--gris)}
+  h1{font-size:clamp(29px,5vw,50px);line-height:1.04;font-weight:700;
+    letter-spacing:-.025em;margin:14px 0 0;max-width:20ch}
+  .meta{display:flex;flex-wrap:wrap;gap:9px;margin-top:24px}
+  .tag{border:1px solid var(--ligne);border-radius:999px;padding:6px 14px;
+    font-size:12.5px;color:var(--gris)}
+  video{display:block;width:100%;height:auto;background:#000;margin-top:32px;
+    border-radius:10px;border:1px solid var(--ligne)}
+  h2{font-size:13px;letter-spacing:.2em;text-transform:uppercase;color:var(--gris);
+    margin:56px 0 18px;font-weight:600}
+  .grille{display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(230px,1fr))}
+  .grille img{width:100%;height:auto;display:block;border-radius:8px;border:1px solid var(--ligne)}
+  .note{background:var(--carte);border:1px solid var(--ligne);border-left:2px solid #4a5160;
+    border-radius:8px;padding:18px 20px;margin-top:22px;color:var(--pale);font-size:14.5px}
+  .note b{color:var(--blanc);font-weight:600}
+  ul{margin:10px 0 0 18px;color:var(--pale)}
+  li{margin:5px 0}
+  .pied{margin-top:64px;padding-top:20px;border-top:1px solid var(--ligne);
+    color:var(--gris);font-size:12.5px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="eyebrow">Essai contemplatif · VideoBoost</div>
+  <h1>Et si tu étais la seule personne consciente ?</h1>
+  <div class="meta">
+    <span class="tag">5 min 22</span>
+    <span class="tag">1920 × 1080</span>
+    <span class="tag">voix clonée</span>
+    <span class="tag">16 plans générés</span>
+    <span class="tag">CTA · CONSCIENCE</span>
+  </div>
+
+  <video src="https://assets.automatisationboost.com/previsualisation/essai-conscience/video.mp4"
+         controls playsinline preload="metadata"></video>
+
+  <div class="note">
+    <b>Une chose à savoir avant de regarder.</b> Le compte WaveSpeed est tombé à zéro crédit
+    pendant la fabrication de la voix : 33 blocs sur 39 ont été générés. Trois phrases
+    redondantes ont été retirées, et trois autres sont devenues des <b>temps typographiques
+    silencieux</b> — dont « On n’est pas seuls. On est petits. », que le script prévoyait déjà
+    en carton plein écran. Une recharge WaveSpeed les repasse en voix et rallonge l’essai
+    vers les 7 minutes visées.
+  </div>
+
+  <h2>Ce qui a été construit</h2>
+  <ul>
+    <li>16 plans générés, aucun visage identifiable — le sujet est justement qu’on ne voit
+        jamais l’intérieur de quelqu’un.</li>
+    <li>Un zoom lent sur chaque plan, jamais dans le même sens deux fois de suite.</li>
+    <li>Désaturation progressive à partir de la troisième minute, jusqu’au fondu au blanc.</li>
+    <li>Quatorze ponctuations typographiques — pas un sous-titrage : dans chacune, un mot
+        grossit au moment où la voix l’appuie.</li>
+    <li>Deux mouvements musicaux, la bascule tombant sur le changement d’échelle.</li>
+  </ul>
+
+  <h2>Les seize plans</h2>
+  <div class="grille" id="grille"></div>
+
+  <div class="pied">VideoBoost · AutomatisationBoost — prévisualisation privée</div>
+</div>
+<script>
+  const plans = ["01-la-file","02-le-visage","03-les-mains","04-la-cellule","05-la-conscience",
+    "06-le-recul","07-la-caisse","08-la-rue","09-la-facade","10-le-decor","11-les-deux",
+    "12-le-bus","13-le-passage","14-l-antenne","15-l-atome","16-le-blanc"];
+  document.getElementById('grille').innerHTML = plans.map(p =>
+    `<img loading="lazy" alt="${p}" src="https://assets.automatisationboost.com/previsualisation/essai-conscience/plans/${p}.jpg">`).join('');
+</script>
+</body>
+</html>
