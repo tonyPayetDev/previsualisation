@@ -141,8 +141,8 @@
           <article class="service-card reveal">
             <div class="service-card-img">
               <img
-                src="assets/images/service-1.jpg"
-                alt="Grillades maison au Club Café"
+                src="assets/images/rougail.png"
+                alt="Rougail saucisse servi au Club Café"
                 width="600" height="450"
                 loading="lazy"
               />
@@ -159,8 +159,8 @@
           <article class="service-card reveal">
             <div class="service-card-img">
               <img
-                src="assets/images/service-2.jpg"
-                alt="Boissons et cocktails au Club Café"
+                src="assets/images/3-P1211656-2.jpg"
+                alt="Bouchées et fritures servies au Club Café"
                 width="600" height="450"
                 loading="lazy"
               />
@@ -177,8 +177,8 @@
           <article class="service-card reveal">
             <div class="service-card-img">
               <img
-                src="assets/images/service-3.jpg"
-                alt="Desserts et douceurs du Club Café"
+                src="assets/images/hero-slider-3.jpg"
+                alt="Le dressage en cuisine au Club Café"
                 width="600" height="450"
                 loading="lazy"
               />
@@ -262,6 +262,36 @@
     </section>
 
     <!-- ===================== SECTION 3 — QUELQUES PHOTOS / CARTE ===================== -->
+    <!-- ══ La carte ══ -->
+    <section class="carte-section" id="carte">
+      <div class="container">
+        <div class="section-head center">
+          <span class="eyebrow">La carte</span>
+          <h2>Nos cartes, en entier</h2>
+          <p>Touchez une carte pour l'ouvrir en grand.</p>
+        </div>
+        <div class="cartes-grille">
+          <button class="carte-vignette" data-carte="assets/images/service-1.jpg" aria-label="Ouvrir la carte des desserts et boissons">
+            <img src="assets/images/service-1.jpg" alt="Carte des desserts, boissons chaudes et glaces" loading="lazy">
+            <span>Desserts, boissons &amp; glaces</span>
+          </button>
+          <button class="carte-vignette" data-carte="assets/images/service-2.jpg" aria-label="Ouvrir la carte des plats">
+            <img src="assets/images/service-2.jpg" alt="Carte des viandes grillées, desserts et coupes de glaces" loading="lazy">
+            <span>Viandes grillées &amp; plats</span>
+          </button>
+          <button class="carte-vignette" data-carte="assets/images/service-3.jpg" aria-label="Ouvrir la carte des boissons">
+            <img src="assets/images/service-3.jpg" alt="Carte des softs, bières, cocktails et vins" loading="lazy">
+            <span>Softs, bières &amp; cocktails</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <div class="loupe" id="loupe" hidden>
+      <button class="loupe-fermer" id="loupeFermer" aria-label="Fermer">&times;</button>
+      <img id="loupeImg" alt="">
+    </div>
+
     <section id="gallery" class="section-pad">
       <div class="container">
         <div class="gallery-header text-center">
@@ -713,5 +743,42 @@
   </button>
 
   <script src="assets/js/main.js" defer></script>
+
+<script>
+/* La loupe des cartes. Elle rend au client ce que la vignette lui prenait :
+   la possibilité de lire les prix. Fermeture au clic, à Échap, et au bouton —
+   trois sorties, parce qu'un plein écran dont on ne sait pas sortir sur un
+   téléphone, c'est un visiteur perdu. */
+(function () {
+  var loupe = document.getElementById('loupe');
+  var img = document.getElementById('loupeImg');
+  var fermer = document.getElementById('loupeFermer');
+  if (!loupe) return;
+  var ouvreur = null;
+
+  document.querySelectorAll('.carte-vignette').forEach(function (b) {
+    b.addEventListener('click', function () {
+      ouvreur = b;
+      img.src = b.dataset.carte;
+      img.alt = b.querySelector('span').textContent;
+      loupe.hidden = false;
+      document.body.style.overflow = 'hidden';
+      fermer.focus();
+    });
+  });
+
+  var fermerLoupe = function () {
+    loupe.hidden = true;
+    img.removeAttribute('src');
+    document.body.style.overflow = '';
+    if (ouvreur) ouvreur.focus();
+  };
+  fermer.addEventListener('click', fermerLoupe);
+  loupe.addEventListener('click', function (e) { if (e.target === loupe) fermerLoupe(); });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && !loupe.hidden) fermerLoupe();
+  });
+})();
+</script>
 </body>
 </html>
