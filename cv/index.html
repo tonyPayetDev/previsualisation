@@ -55,10 +55,13 @@ a{color:inherit}
 .decor svg{position:absolute;stroke:var(--blanc);fill:none;stroke-width:1.1;
   stroke-linejoin:round;opacity:.055}
 .decor .clavier{right:-34mm;bottom:-14mm;width:190mm}
-.decor .souris{right:6mm;top:-8mm;width:52mm;opacity:.045}
+.decor .souris{right:12mm;top:6mm;width:30mm;opacity:.07;
+  filter:drop-shadow(0 0 3mm rgba(255,230,0,.45))}
+/* La lueur derrière la souris est resserrée : elle éclaire l'objet, elle ne
+   baigne plus le quart de la page. */
 .decor .lueur{position:absolute;inset:0;
-  background:radial-gradient(78% 55% at 88% 4%,rgba(255,230,0,.09),transparent 62%),
-             radial-gradient(70% 50% at 4% 96%,rgba(168,85,247,.10),transparent 60%)}
+  background:radial-gradient(26% 18% at 89% 7%,rgba(255,230,0,.16),transparent 70%),
+             radial-gradient(62% 44% at 2% 98%,rgba(168,85,247,.09),transparent 62%)}
 
 .dedans{position:relative;z-index:1;padding:10mm 11mm 8mm}
 
@@ -193,7 +196,52 @@ main .poste:nth-of-type(4)::before{animation-delay:1.20s}
   .poste::before,.decor .clavier g rect,.decor .souris{animation:none !important;
     opacity:1 !important;transform:none !important}
   .real:hover{transform:none}
+  .decor .lueur,.decor .souris,h2::after,.puce.fort{animation:none !important}
 }
+
+
+/* ── Ce qui bouge en permanence ──────────────────────────────────────────
+   Sur un CV, une animation continue doit être lente et périphérique : elle
+   occupe le fond de l'œil, jamais le centre. Rien ne bouge dans le texte —
+   c'est la règle qui rend le reste supportable pendant une minute de lecture.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* La lueur de la souris respire. 7 s : plus court, on la remarque et elle
+   agace ; plus long, elle ne se voit plus du tout. */
+@keyframes respire{0%,100%{opacity:.55;transform:scale(1)}
+                   50%{opacity:1;transform:scale(1.06)}}
+.decor .lueur{animation:respire 7s ease-in-out infinite 1.6s}
+
+/* La souris reste allumée : son halo pulse au même rythme. */
+@keyframes halo{0%,100%{filter:drop-shadow(0 0 2mm rgba(255,230,0,.30));opacity:.06}
+                50%{filter:drop-shadow(0 0 4.5mm rgba(255,230,0,.60));opacity:.10}}
+.decor .souris{animation:fondu 1.4s ease-out both .5s, halo 7s ease-in-out infinite 1.6s}
+
+/* Une onde traverse le clavier, rangée par rangée, et recommence. Douze
+   secondes de cycle : assez rare pour qu'on la découvre au lieu de la subir. */
+@keyframes onde{0%,72%,100%{opacity:.055}
+                78%{opacity:.26}
+                84%{opacity:.055}}
+.decor .clavier g:nth-of-type(1) rect{animation:touche 2.6s ease-out both .7s,
+  onde 12s ease-in-out infinite 3.4s}
+.decor .clavier g:nth-of-type(2) rect{animation:touche 2.6s ease-out both .95s,
+  onde 12s ease-in-out infinite 3.7s}
+.decor .clavier g:nth-of-type(3) rect{animation:touche 2.6s ease-out both 1.2s,
+  onde 12s ease-in-out infinite 4s}
+.decor .clavier g:nth-of-type(4) rect{animation:touche 2.6s ease-out both 1.45s,
+  onde 12s ease-in-out infinite 4.3s}
+
+/* Le trait sous l'exergue de chaque section garde un souffle. */
+@keyframes souffle{0%,100%{opacity:.55}50%{opacity:1}}
+h2{position:relative}
+h2::after{content:"";position:absolute;left:0;bottom:-1.2mm;width:5mm;height:1px;
+  background:var(--jaune);opacity:.55;animation:souffle 5s ease-in-out infinite}
+.cote h2::after{animation-delay:1.2s}
+
+/* Les trois puces mises en avant respirent très légèrement. */
+@keyframes vivant{0%,100%{border-color:rgba(255,230,0,.42)}
+                  50%{border-color:rgba(255,230,0,.85)}}
+.puce.fort{animation:glisse .5s var(--sortie) both, vivant 4.5s ease-in-out infinite 1.4s}
 
 /* ══ Impression ══ */
 @page{size:A4;margin:0}
@@ -203,6 +251,7 @@ main .poste:nth-of-type(4)::before{animation-delay:1.20s}
   .poste::before,.decor .clavier g rect,.decor .souris{animation:none !important;
     opacity:1 !important;transform:none !important}
   .decor .clavier g rect{opacity:.05 !important}
+  .decor .lueur,.decor .souris,h2::after,.puce.fort{animation:none !important}
   .feuille{width:210mm;min-height:297mm;margin:0;box-shadow:none;
     -webkit-print-color-adjust:exact;print-color-adjust:exact}
   .decor svg{opacity:.05}
