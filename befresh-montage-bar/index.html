@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>BeFresh — montage bar au beat</title>
+<style>
+  :root{--fond:#08080a;--panneau:#111114;--bord:#232328;--or:#E0AE3A;--magenta:#E9268C;
+        --texte:#f2f2f5;--doux:#9a9aa4}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--fond);color:var(--texte);padding:32px 16px 80px;
+    font:400 16px/1.55 Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+    -webkit-font-smoothing:antialiased}
+  .enveloppe{max-width:900px;margin:0 auto}
+  a.retour{color:var(--doux);font-size:13px;text-decoration:none;display:inline-block;margin-bottom:20px}
+  a.retour:hover{color:var(--or)}
+  .surtitre{font:700 11px/1 Inter,sans-serif;letter-spacing:.18em;text-transform:uppercase;
+    color:var(--or);margin:0 0 14px}
+  h1{font:700 clamp(25px,4.6vw,36px)/1.12 Inter,sans-serif;letter-spacing:-.02em;margin:0 0 14px}
+  .chapeau{color:var(--doux);max-width:62ch;margin:0 0 30px}
+  .chapeau b{color:var(--texte);font-weight:600}
+  .paire{display:grid;gap:22px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+  figure{margin:0;background:var(--panneau);border:1px solid var(--bord);border-radius:14px;overflow:hidden}
+  figure.mien{border-color:var(--or)}
+  video{width:100%;display:block;background:#000;aspect-ratio:9/16;object-fit:contain}
+  figcaption{padding:14px 16px}
+  .etq{font:700 11px/1 Inter,sans-serif;letter-spacing:.12em;text-transform:uppercase;display:block;margin-bottom:7px}
+  .mien .etq{color:var(--or)} .ref .etq{color:var(--doux)}
+  figcaption p{margin:0;font-size:13px;color:var(--doux);line-height:1.5}
+  .mesures{display:grid;gap:1px;background:var(--bord);border:1px solid var(--bord);
+    border-radius:12px;overflow:hidden;margin:34px 0 0;
+    grid-template-columns:repeat(auto-fit,minmax(160px,1fr))}
+  .mesures div{background:var(--panneau);padding:17px 18px}
+  .mesures .n{font:700 25px/1 Inter,sans-serif;font-variant-numeric:tabular-nums;
+    display:block;margin-bottom:5px;color:var(--or)}
+  .mesures .l{font-size:12.5px;color:var(--doux);line-height:1.4}
+  h2{font:700 19px/1.2 Inter,sans-serif;margin:44px 0 12px}
+  .bloc{border-left:2px solid var(--or);padding:3px 0 3px 18px;max-width:64ch;color:var(--doux)}
+  .bloc p{margin:0 0 12px} .bloc p:last-child{margin:0}
+  .bloc b{color:var(--texte)}
+  .franc{border-left-color:var(--magenta)}
+  code{font:400 13px/1.5 ui-monospace,Menlo,monospace;color:var(--or)}
+</style>
+</head>
+<body>
+<div class="enveloppe">
+  <a class="retour" href="/">← toutes les prévisualisations</a>
+  <p class="surtitre">BeFresh Events · format « bar »</p>
+  <h1>Le montage de la référence, refait au beat</h1>
+  <p class="chapeau">La référence n'est pas une vidéo « avec de jolis plans » : c'est une
+  <b>mécanique de montage</b>. 32 plans en 15,9 s, une coupe par temps, aucun texte par-dessus
+  l'image. J'ai mesuré sa grille avant de copier quoi que ce soit — <b>150,4 BPM, une coupe
+  toutes les 0,40 s</b> — puis rejoué la même mécanique sur la matière BeFresh.</p>
+
+  <div class="paire">
+    <figure class="ref">
+      <video src="reference.mp4" controls playsinline preload="metadata" muted loop></video>
+      <figcaption>
+        <span class="etq">La référence</span>
+        <p>15,86 s · 32 plans · 150,4 BPM. Bar à cocktails, studio, pinces à garniture,
+        lumière rasante chaude.</p>
+      </figcaption>
+    </figure>
+    <figure class="mien">
+      <video src="video.mp4" controls playsinline preload="metadata" poster="cover.jpg"></video>
+      <figcaption>
+        <span class="etq">BeFresh</span>
+        <p>16,67 s · 31 plans · 129,7 BPM. Mojito, menthe, citron vert, glace — carton final
+        à la charte or et magenta.</p>
+      </figcaption>
+    </figure>
+  </div>
+
+  <div class="mesures">
+    <div><span class="n">129,7</span><span class="l">BPM réels de la musique, mesurés par ajustement période + phase. Le nom du fichier annonçait 128.</span></div>
+    <div><span class="n">30</span><span class="l">coupes, toutes à moins d'une demi-image du temps musical (écart médian 8 ms).</span></div>
+    <div><span class="n">0,47 s</span><span class="l">par plan, avec une rafale d'ouverture à 0,23 s et quatre plans tenus à 0,93 s.</span></div>
+    <div><span class="n">0 €</span><span class="l">de génération : tout vient de la banque visuelle BeFresh déjà au dossier.</span></div>
+  </div>
+
+  <h2>Ce qui fait marcher ce format</h2>
+  <div class="bloc">
+    <p><b>La coupe est calée sur le temps, pas sur une durée ronde.</b> Un beat vaut 13,878 images
+    à 30 fps. Chaque coupe est donc calculée depuis sa position cumulée en beats et arrondie à la
+    fin — additionner des durées arrondies décroche d'une demi-seconde en 36 temps.</p>
+    <p><b>Chaque plan bouge.</b> À 0,47 s, un plan fixe se lit comme une photo. Tous ont un
+    travelling avant, arrière ou latéral, calculé sur la durée exacte du plan.</p>
+    <p><b>Le cadrage se choisit sur la matière, pas à l'estime.</b> J'ai relevé une carte de
+    luminance de chaque source avant de découper : trois cadrages tombaient dans le fond noir,
+    dont un entièrement. Et <code>trio-couleurs.jpg</code> s'est révélé être le même fichier que
+    <code>mojito-03.png</code> — il aurait servi quatre fois sans qu'on le voie.</p>
+  </div>
+
+  <h2>Ce qu'il faut savoir avant de le publier</h2>
+  <div class="bloc franc">
+    <p><b>Deux plans seulement viennent de vraies photos BeFresh</b> (le verre passion sur la
+    table et la main au bec verseur). Tout le reste vient des visuels du dossier — mojitos sur
+    fond noir et tuiles du feed. C'est très bien pour montrer le format ; pour une publication
+    au nom du client, la règle du dossier reste : <b>rushes réels</b>.</p>
+    <p>Le vrai matériel filmé de BeFresh, aujourd'hui, c'est 8 s de camion en plein jour, en
+    paysage. Ça ne peut pas produire ce registre-là. <b>Ce qui manque tient en vingt minutes de
+    téléphone</b> au bar : douze plans macro, fond sombre, une seule lampe de côté — la coulée,
+    la glace qui tombe, la menthe qu'on claque, le citron pressé, le verre qu'on pose. Avec ça,
+    le même montage devient une vraie vidéo BeFresh.</p>
+    <p><b>Pour un restaurant, la même mécanique marche telle quelle</b> à partir des photos de
+    son site : c'est déjà ce qui a été fait pour L'Unisson. Dis-moi lequel et je le monte.</p>
+  </div>
+</div>
+</body>
+</html>
