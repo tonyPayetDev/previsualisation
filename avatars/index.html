@@ -1,0 +1,317 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Banque d'avatars — plages de parole</title>
+<style>
+:root{
+  --fond:#0a0a0f; --panneau:#14141c; --bord:#26263a; --bord-fort:#3a3a55;
+  --texte:#ecedf3; --sourd:#8e8fa3; --jaune:#eab308; --violet:#8b5cf6;
+  --mort:#e0463c; --actif:#eab308;
+  --mono:ui-monospace,"SF Mono",Menlo,monospace;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--fond);color:var(--texte);
+  font:400 16px/1.55 Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  -webkit-font-smoothing:antialiased}
+.enveloppe{max-width:1180px;margin:0 auto;padding:0 24px 96px}
+
+/* ---------- en-tete ---------- */
+header{padding:56px 0 36px;border-bottom:1px solid var(--bord)}
+.surtitre{font:700 12px/1 Inter,sans-serif;letter-spacing:.18em;text-transform:uppercase;color:var(--jaune);margin:0 0 16px}
+h1{font:700 clamp(30px,5vw,46px)/1.08 Inter,sans-serif;letter-spacing:-.02em;margin:0 0 18px;text-wrap:balance}
+.chapeau{max-width:60ch;color:var(--sourd);font-size:17px;margin:0}
+.chapeau b{color:var(--texte);font-weight:600}
+
+/* ---------- verdict ---------- */
+.verdict{display:grid;gap:1px;background:var(--bord);border:1px solid var(--bord);
+  border-radius:14px;overflow:hidden;margin:32px 0 0;grid-template-columns:repeat(auto-fit,minmax(190px,1fr))}
+.verdict div{background:var(--panneau);padding:20px 22px}
+.verdict .n{font:700 32px/1 Inter,sans-serif;letter-spacing:-.02em;font-variant-numeric:tabular-nums;display:block;margin-bottom:6px}
+.verdict .n.rouge{color:var(--mort)} .verdict .n.jaune{color:var(--jaune)}
+.verdict .l{font-size:13px;color:var(--sourd);line-height:1.4}
+
+/* ---------- sections ---------- */
+section{padding-top:64px}
+h2{font:700 24px/1.2 Inter,sans-serif;letter-spacing:-.01em;margin:0 0 10px}
+.intro{color:var(--sourd);max-width:64ch;margin:0 0 28px;font-size:15px}
+
+/* ---------- reglage ---------- */
+.reglage{position:sticky;top:0;z-index:20;background:rgba(10,10,15,.93);
+  backdrop-filter:blur(12px);border-bottom:1px solid var(--bord);
+  margin:0 -24px 32px;padding:16px 24px;display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.reglage label{font:600 13px/1 Inter,sans-serif;color:var(--sourd);white-space:nowrap}
+.reglage input[type=range]{flex:1;min-width:180px;accent-color:var(--jaune);height:22px}
+.valeur{font:700 20px/1 Inter,sans-serif;font-variant-numeric:tabular-nums;color:var(--jaune);min-width:66px}
+.compte{font-size:13px;color:var(--sourd)}
+.compte b{color:var(--texte)}
+
+/* ---------- grille clips ---------- */
+.grille{display:grid;gap:20px;grid-template-columns:repeat(auto-fill,minmax(300px,1fr))}
+.carte{background:var(--panneau);border:1px solid var(--bord);border-radius:14px;overflow:hidden;
+  display:flex;flex-direction:column;transition:border-color .18s,opacity .18s}
+.carte.tient{border-color:var(--bord-fort)}
+.carte.trop-court{opacity:.42}
+.carte.exclu{opacity:.42;border-style:dashed}
+.media{position:relative;background:#000;aspect-ratio:9/16;max-height:320px;overflow:hidden;
+  display:flex;align-items:center;justify-content:center}
+.media video{width:100%;height:100%;object-fit:cover;display:block;cursor:pointer}
+.jeton{position:absolute;top:10px;left:10px;font:700 10px/1 Inter,sans-serif;letter-spacing:.1em;
+  text-transform:uppercase;padding:5px 8px;border-radius:5px;background:rgba(0,0,0,.68);
+  border:1px solid var(--bord-fort);color:var(--sourd)}
+.jeton.voiture{color:var(--violet);border-color:var(--violet)}
+.jeton.bureau{color:var(--jaune);border-color:var(--jaune)}
+.corps{padding:16px 18px 18px;display:flex;flex-direction:column;gap:12px;flex:1}
+.titre{font:700 15px/1.25 Inter,sans-serif;margin:0;display:flex;justify-content:space-between;gap:10px;align-items:baseline}
+.titre span{font:400 12px/1 Inter,sans-serif;color:var(--sourd);white-space:nowrap}
+
+/* ---------- barre de plages ---------- */
+.barre{position:relative;height:34px;border-radius:6px;background:var(--mort);
+  overflow:hidden;cursor:pointer;border:1px solid #00000060}
+.zone{position:absolute;top:0;bottom:0;background:#3d3a1c}
+.fenetre{position:absolute;top:0;bottom:0;background:var(--jaune);opacity:.9}
+.curseur{position:absolute;top:0;bottom:0;width:2px;background:#fff;box-shadow:0 0 6px #fff;
+  opacity:0;transition:opacity .12s}
+.barre.joue .curseur{opacity:1}
+.echelle{display:flex;justify-content:space-between;font:400 10px/1 var(--mono);color:var(--sourd);margin-top:5px}
+.legende{display:flex;gap:14px;font-size:12px;color:var(--sourd);flex-wrap:wrap;margin-bottom:22px}
+.legende i{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+
+.mesure{display:flex;gap:16px;font-size:13px;font-variant-numeric:tabular-nums;flex-wrap:wrap}
+.mesure b{font:700 15px/1 Inter,sans-serif}
+.mesure .ok{color:var(--jaune)} .mesure .ko{color:var(--mort)}
+.mesure em{font-style:normal;color:var(--sourd);display:block;font-size:11px;margin-top:3px}
+.verd{font-size:13px;padding:9px 11px;border-radius:7px;line-height:1.45;margin-top:auto}
+.verd.oui{background:#eab3081a;color:#f0cd5c;border:1px solid #eab30833}
+.verd.non{background:#e0463c14;color:#ea7b73;border:1px solid #e0463c2e}
+.note{font-size:12.5px;color:var(--sourd);line-height:1.5;margin:0}
+
+/* ---------- tableaux ---------- */
+.defile{overflow-x:auto;border:1px solid var(--bord);border-radius:12px;background:var(--panneau)}
+table{border-collapse:collapse;width:100%;font-size:14px;min-width:640px}
+th,td{padding:11px 16px;text-align:left;border-bottom:1px solid var(--bord)}
+th{font:600 11px/1 Inter,sans-serif;letter-spacing:.09em;text-transform:uppercase;color:var(--sourd);
+  background:#1a1a26;position:sticky;top:0}
+tbody tr:last-child td{border-bottom:none}
+td.n{font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
+td code{font:400 12.5px/1.5 var(--mono);color:var(--sourd)}
+.mort-n{color:var(--mort);font-weight:600}
+.zero{color:var(--jaune);font-weight:600}
+tfoot td{background:#1a1a26;font-weight:600;border-top:1px solid var(--bord-fort)}
+
+.encadre{border-left:2px solid var(--jaune);padding:2px 0 2px 18px;margin:26px 0;color:var(--sourd);
+  font-size:15px;max-width:64ch}
+.encadre b{color:var(--texte)}
+pre{background:#000;border:1px solid var(--bord);border-radius:10px;padding:16px 18px;overflow-x:auto;
+  font:400 13px/1.65 var(--mono);color:#c9cbd6;margin:16px 0 0}
+pre .cle{color:var(--jaune)} pre .com{color:#5d5f70}
+@media (max-width:620px){.enveloppe{padding:0 16px 64px}.reglage{margin:0 -16px 26px;padding:14px 16px}}
+</style>
+</head>
+<body>
+<div class="enveloppe">
+
+<header>
+  <p class="surtitre">Banque d'avatars · mesuré le 28 août 2026</p>
+  <h1>Où chaque clip parle vraiment</h1>
+  <p class="chapeau">Un plan d'avatar posé sous ta voix doit tenir <b>entièrement</b> dans une plage
+  où les lèvres bougent. Sinon la voix continue et la bouche s'arrête — c'est exactement le défaut
+  du split. Ce qui décide n'est donc pas la durée d'un clip, c'est sa <b>plus longue plage continue</b>.
+  Les 14 clips sont mesurés ci-dessous, et la barre jaune te montre exactement où couper.</p>
+
+  <div class="verdict">
+    <div><span class="n rouge">6,9 s</span><span class="l">de lèvres figées sous voix active dans le split actuel, sur 80,6 s — soit 9 % du montage</span></div>
+    <div><span class="n jaune">9,71 s</span><span class="l">la plus longue plage de toute la banque (D3 cta lunettes). Aucun clip ne couvre un segment de 14 s d'un seul plan</span></div>
+    <div><span class="n">22</span><span class="l">plans nécessaires pour couvrir les 8 segments sans jamais figer une bouche</span></div>
+    <div><span class="n">13</span><span class="l">clips exploitables — E1 deux doigts retiré à ta demande</span></div>
+  </div>
+</header>
+
+<section>
+  <h2>Ce qui casse le split, précisément</h2>
+  <p class="intro">Ce n'est ni le cadrage ni la voix : c'est une ligne de <code>build_split.sh</code>.
+  L'avatar entre avec <code>-stream_loop -1</code>, donc chaque plan <b>reboucle</b> sur toute la durée
+  du segment. À chaque bouclage il traverse la fin muette du clip puis son début muet. Le segment
+  <em>04_code</em> fait 13,97 s pour un clip de 3,25 s : il reboucle 4,3 fois.</p>
+
+  <div class="defile"><table>
+    <thead><tr><th>Segment</th><th class="n">Durée</th><th>Clip monté</th><th class="n">Départ</th><th class="n">Bouclages</th><th class="n">Lèvres figées</th></tr></thead>
+    <tbody>
+      <tr><td><code>02_bascule</code></td><td class="n">5.63 s</td><td>D1 hook frontal</td><td class="n">1.00 s</td><td class="n">0.6×</td><td class="n"><span class="mort-n">0.33 s</span> <em style="color:var(--sourd);font-style:normal">(6 %)</em></td></tr>
+      <tr><td><code>03_assistant</code></td><td class="n">10.50 s</td><td>D2 pointe boucle</td><td class="n">0.00 s</td><td class="n">3.2×</td><td class="n"><span class="mort-n">1.20 s</span> <em style="color:var(--sourd);font-style:normal">(11 %)</em></td></tr>
+      <tr><td><code>04_code</code></td><td class="n">13.97 s</td><td>D2 pointe boucle</td><td class="n">0.00 s</td><td class="n">4.3×</td><td class="n"><span class="mort-n">1.57 s</span> <em style="color:var(--sourd);font-style:normal">(11 %)</em></td></tr>
+      <tr><td><code>05_video</code></td><td class="n">11.87 s</td><td>D2 pointe boucle</td><td class="n">0.00 s</td><td class="n">3.7×</td><td class="n"><span class="mort-n">1.20 s</span> <em style="color:var(--sourd);font-style:normal">(10 %)</em></td></tr>
+      <tr><td><code>06_scraping</code></td><td class="n">11.53 s</td><td>D4 relance barbe</td><td class="n">1.00 s</td><td class="n">1.3×</td><td class="n"><span class="mort-n">0.40 s</span> <em style="color:var(--sourd);font-style:normal">(3 %)</em></td></tr>
+      <tr><td><code>07_automatisation</code></td><td class="n">12.47 s</td><td>D2 pointe boucle</td><td class="n">0.00 s</td><td class="n">3.8×</td><td class="n"><span class="mort-n">1.20 s</span> <em style="color:var(--sourd);font-style:normal">(10 %)</em></td></tr>
+      <tr><td><code>08_prix</code></td><td class="n">7.33 s</td><td>D1 hook frontal</td><td class="n">3.00 s</td><td class="n">1.0×</td><td class="n"><span class="mort-n">1.00 s</span> <em style="color:var(--sourd);font-style:normal">(14 %)</em></td></tr>
+      <tr><td><code>09_cta</code></td><td class="n">7.27 s</td><td>D3 cta lunettes</td><td class="n">1.00 s</td><td class="n">0.8×</td><td class="n"><span class="zero">0.00 s</span> </td></tr>
+    </tbody>
+    <tfoot><tr><td>Total</td><td class="n">80,60 s</td><td colspan="3"></td><td class="n"><span class="mort-n">6,90 s</span></td></tr></tfoot>
+  </table></div>
+
+  <div class="encadre">Le correctif tient en deux gestes : <b>retirer <code>-stream_loop -1</code> de l'entrée
+  avatar</b>, et découper chaque segment en plusieurs plans qui tombent chacun dans une plage jaune.
+  Le plan de coupe calculé plus bas donne 22 plans et <b>0 s de lèvres figées</b>.</div>
+</section>
+
+<section>
+  <h2>Les clips, et où les couper</h2>
+  <p class="intro">Règle le curseur sur la durée du plan que tu veux poser : les clips qui ne peuvent
+  pas la tenir s'éteignent, et la barre jaune montre les départs valides. <b>Clique sur une barre pour
+  lancer la lecture à cet endroit</b> — tu vois le plan exact que tu couperais.</p>
+
+  <div class="reglage">
+    <label for="duree">Durée du plan</label>
+    <input type="range" id="duree" min="1" max="9.5" step="0.1" value="3">
+    <span class="valeur" id="valeur">3,0 s</span>
+    <span class="compte" id="compte"></span>
+  </div>
+
+  <p class="legende">
+    <span><i style="background:var(--mort)"></i>bouche immobile</span>
+    <span><i style="background:#3d3a1c"></i>lèvres actives</span>
+    <span><i style="background:var(--jaune)"></i>départs valides pour la durée choisie</span>
+  </p>
+
+  <div class="grille" id="grille"></div>
+</section>
+
+<section>
+  <h2>Le plan de coupe du split, recalculé</h2>
+  <p class="intro">Un décor par vidéo : le split est tourné en voiture, donc seuls D1 à D4 entrent
+  ici. Chaque plan tient dans une plage active, avec 0,10 s de marge à chaque bord — la banque est en
+  24 fps et le rendu en 30, il ne faut jamais accoster le bord d'une plage. Aucun clip ne revient
+  deux fois de suite.</p>
+
+  <div class="defile"><table>
+    <thead><tr><th>Segment</th><th class="n">Durée</th><th>Plans à monter</th></tr></thead>
+    <tbody>
+      <tr><td><code>02_bascule</code></td><td class="n">5.63 s</td><td><code>D3_cta_lunettes @0.14s ×3.23s&nbsp; · &nbsp;D4_relance_barbe @0.64s ×2.4s</code></td></tr>
+      <tr><td><code>03_assistant</code></td><td class="n">10.50 s</td><td><code>D3_cta_lunettes @3.37s ×4.2s&nbsp; · &nbsp;D4_relance_barbe @3.04s ×3.9s&nbsp; · &nbsp;D2_insistance_doigts @5.14s ×2.4s</code></td></tr>
+      <tr><td><code>04_code</code></td><td class="n">13.97 s</td><td><code>D3_cta_lunettes @0.14s ×4.2s&nbsp; · &nbsp;D4_relance_barbe @0.64s ×4.2s&nbsp; · &nbsp;D3_cta_lunettes @4.34s ×3.17s&nbsp; · &nbsp;D4_relance_barbe @4.84s ×2.4s</code></td></tr>
+      <tr><td><code>05_video</code></td><td class="n">11.87 s</td><td><code>D3_cta_lunettes @0.14s ×4.2s&nbsp; · &nbsp;D4_relance_barbe @0.64s ×4.2s&nbsp; · &nbsp;D3_cta_lunettes @4.34s ×3.47s</code></td></tr>
+      <tr><td><code>06_scraping</code></td><td class="n">11.53 s</td><td><code>D4_relance_barbe @4.84s ×4.2s&nbsp; · &nbsp;D3_cta_lunettes @0.14s ×4.2s&nbsp; · &nbsp;D1_hook_frontal @0.64s ×3.13s</code></td></tr>
+      <tr><td><code>07_automatisation</code></td><td class="n">12.47 s</td><td><code>D3_cta_lunettes @4.34s ×4.2s&nbsp; · &nbsp;D4_relance_barbe @0.64s ×4.2s&nbsp; · &nbsp;D3_cta_lunettes @0.14s ×4.07s</code></td></tr>
+      <tr><td><code>08_prix</code></td><td class="n">7.33 s</td><td><code>D4_relance_barbe @4.84s ×4.2s&nbsp; · &nbsp;D3_cta_lunettes @4.21s ×3.13s</code></td></tr>
+      <tr><td><code>09_cta</code></td><td class="n">7.27 s</td><td><code>D4_relance_barbe @0.64s ×4.2s&nbsp; · &nbsp;D1_hook_frontal @5.06s ×3.07s</code></td></tr>
+    </tbody>
+  </table></div>
+
+  <pre><span class="com"># build_split.sh — l'entrée avatar, avant / après</span>
+<span class="com">-</span> -ss "$SS" <span class="cle">-stream_loop -1</span> -t "$DUR" -i "$CLIP"   <span class="com"># reboucle, traverse les zones mortes</span>
+<span class="com">+</span> -ss "$SS" -t "$DUR" -i "$CLIP"                    <span class="com"># un plan = une plage, jamais de bouclage</span></pre>
+</section>
+
+</div>
+
+<script>
+const CLIPS = [{"id":"D3_cta_lunettes","set":"VOITURE","role":"CTA","note":"La meilleure prise de toute la banque : 9,71 s d’affilée, aucune coupure.","duree":10.08,"actif":9.71,"max":9.71,"zones":[{"start":0.04,"end":9.75}],"src":"clips/D3_cta_lunettes.mp4","vign":"vign/D3_cta_lunettes.jpg"},{"id":"D4_relance_barbe","set":"VOITURE","role":"Relance","note":"Deuxième meilleure : 9,13 s d’affilée.","duree":10.08,"actif":9.13,"max":9.13,"zones":[{"start":0.54,"end":9.67}],"src":"clips/D4_relance_barbe.mp4","vign":"vign/D4_relance_barbe.jpg"},{"id":"E3_neutre","set":"STUDIO","role":"Neutre","note":"Plan large stable. C’est celui retenu pour l’avatar de reunion-renouvelables.","duree":7.04,"actif":5.49,"max":5.12,"zones":[{"start":0.96,"end":1.33},{"start":1.67,"end":6.79}],"src":"clips/E3_neutre.mp4","vign":"vign/E3_neutre.jpg"},{"id":"E2_confidence","set":"STUDIO","role":"Confidence","note":"Il se rapproche de la caméra pendant la prise. À ne pas mélanger avec un plan fixe dans la même fenêtre.","duree":7.07,"actif":5.04,"max":5.04,"zones":[{"start":1.96,"end":7}],"src":"clips/E2_confidence.mp4","vign":"vign/E2_confidence.jpg"},{"id":"B1_principe","set":"BUREAU","role":"Explication","note":"","duree":5.06,"actif":4.8,"max":4.8,"zones":[{"start":0.08,"end":4.88}],"src":"clips/B1_principe.mp4","vign":"vign/B1_principe.jpg"},{"id":"C2_commente_motcle","set":"BUREAU","role":"CTA","note":"","duree":5.06,"actif":4.75,"max":4.75,"zones":[{"start":0.08,"end":4.83}],"src":"clips/C2_commente_motcle.mp4","vign":"vign/C2_commente_motcle.jpg"},{"id":"D2_insistance_doigts","set":"VOITURE","role":"Insistance","note":"Deux zones mortes internes. Utilisable, mais par plans courts.","duree":10.08,"actif":8.51,"max":4.71,"zones":[{"start":0.58,"end":2.46},{"start":2.71,"end":4.63},{"start":5.04,"end":9.75}],"src":"clips/D2_insistance_doigts.mp4","vign":"vign/D2_insistance_doigts.jpg"},{"id":"E0_hook_postits","set":"STUDIO","role":"Hook","note":"","duree":7.07,"actif":4.3,"max":4.3,"zones":[{"start":1.08,"end":5.38}],"src":"clips/E0_hook_postits.mp4","vign":"vign/E0_hook_postits.jpg"},{"id":"D1_hook_frontal","set":"VOITURE","role":"Hook","note":"Zone morte interne à 4,63→4,96 s : un plan qui la traverse fige les lèvres en plein milieu.","duree":10.08,"actif":8.55,"max":4.09,"zones":[{"start":0.54,"end":4.63},{"start":4.96,"end":8.42},{"start":8.67,"end":9.67}],"src":"clips/D1_hook_frontal.mp4","vign":"vign/D1_hook_frontal.jpg"},{"id":"A1_hook_frontal","set":"BUREAU","role":"Hook","note":"","duree":5.06,"actif":3.91,"max":3.91,"zones":[{"start":0.67,"end":4.58}],"src":"clips/A1_hook_frontal.mp4","vign":"vign/A1_hook_frontal.jpg"},{"id":"D2_pointe_boucle","set":"VOITURE","role":"Pointe","note":"Le plus court de la banque. C’est lui qui reboucle 4 fois dans le split actuel.","duree":3.25,"actif":2.88,"max":2.88,"zones":[{"start":0.08,"end":2.96}],"src":"clips/D2_pointe_boucle.mp4","vign":"vign/D2_pointe_boucle.jpg"},{"id":"E1_trois_doigts","set":"STUDIO","role":"Retiré","note":"Retiré à ta demande. La mesure te donne raison : c’est la pire prise du studio, 2,29 s utiles au mieux, hachée en trois.","exclu":true,"duree":7.07,"actif":5.12,"max":2.29,"zones":[{"start":0.04,"end":1.5},{"start":1.88,"end":4.17},{"start":4.67,"end":6.04}],"src":"clips/E1_trois_doigts.mp4","vign":"vign/E1_trois_doigts.jpg"},{"id":"SPIDER_talking","set":"SPIDER","role":"—","note":"1,08 s utiles seulement.","duree":2.04,"actif":1.08,"max":1.08,"zones":[{"start":0.63,"end":1.71}],"src":"clips/SPIDER_talking.mp4","vign":"vign/SPIDER_talking.jpg"},{"id":"HOOK_spider_entree","set":"SPIDER","role":"Entrée","note":"Aucune plage de parole mesurée : à réserver aux passages sans voix.","muet":true,"duree":8,"actif":0,"max":0,"zones":[],"src":"clips/HOOK_spider_entree.mp4","vign":"vign/HOOK_spider_entree.jpg"}];
+const grille = document.getElementById('grille');
+const curseurDuree = document.getElementById('duree');
+const valeur = document.getElementById('valeur');
+const compte = document.getElementById('compte');
+const fr = n => n.toFixed(n < 10 ? 2 : 1).replace('.', ',');
+
+// Departs valides : le plan doit tenir en entier dans une plage, marge de 0,10 s aux deux bords.
+const MARGE = 0.10;
+function fenetres(clip, d){
+  return clip.zones
+    .map(z => ({deb: z.start + MARGE, fin: z.end - MARGE - d}))
+    .filter(f => f.fin >= f.deb);
+}
+
+CLIPS.forEach((c, i) => {
+  const carte = document.createElement('article');
+  carte.className = 'carte' + (c.exclu ? ' exclu' : '');
+  carte.innerHTML = `
+    <div class="media">
+      <video src="${c.src}" poster="${c.vign}" muted playsinline preload="none" loop></video>
+      <span class="jeton ${c.set.toLowerCase()}">${c.set}${c.role && c.role !== '—' ? ' · ' + c.role : ''}</span>
+    </div>
+    <div class="corps">
+      <h3 class="titre">${c.id.replace(/_/g, ' ')} <span>${fr(c.duree)} s</span></h3>
+      <div>
+        <div class="barre" data-i="${i}"><div class="curseur"></div></div>
+        <div class="echelle"><span>0 s</span><span>${fr(c.duree)} s</span></div>
+      </div>
+      <div class="mesure">
+        <span><b class="${c.max >= 3 ? 'ok' : 'ko'}">${fr(c.max)} s</b><em>plus longue plage</em></span>
+        <span><b>${fr(c.actif)} s</b><em>parole au total</em></span>
+        <span><b>${c.zones.length || '—'}</b><em>plage${c.zones.length > 1 ? 's' : ''}</em></span>
+      </div>
+      ${c.note ? '<p class="note">' + c.note + '</p>' : ''}
+      <p class="verd"></p>`;
+  grille.appendChild(carte);
+  c.el = {carte, barre: carte.querySelector('.barre'), verd: carte.querySelector('.verd'),
+          video: carte.querySelector('video'), curseur: carte.querySelector('.curseur')};
+
+  // Les plages actives sont fixes : on les dessine une fois.
+  c.zones.forEach(z => {
+    const d = document.createElement('div');
+    d.className = 'zone';
+    d.style.left = (z.start / c.duree * 100) + '%';
+    d.style.width = ((z.end - z.start) / c.duree * 100) + '%';
+    c.el.barre.appendChild(d);
+  });
+
+  // Cliquer sur la barre lance la lecture au point vise : on voit le plan qu'on couperait.
+  c.el.barre.addEventListener('click', e => {
+    const r = c.el.barre.getBoundingClientRect();
+    const t = (e.clientX - r.left) / r.width * c.duree;
+    const v = c.el.video;
+    document.querySelectorAll('video').forEach(o => { if (o !== v) o.pause(); });
+    document.querySelectorAll('.barre').forEach(b => b.classList.remove('joue'));
+    c.el.barre.classList.add('joue');
+    v.currentTime = Math.max(0, Math.min(t, c.duree - 0.05));
+    v.play();
+  });
+  c.el.video.addEventListener('timeupdate', () => {
+    c.el.curseur.style.left = (c.el.video.currentTime / c.duree * 100) + '%';
+  });
+  c.el.video.addEventListener('click', () => {
+    c.el.video.paused ? c.el.video.play() : c.el.video.pause();
+  });
+});
+
+function redessiner(){
+  const d = parseFloat(curseurDuree.value);
+  valeur.textContent = d.toFixed(1).replace('.', ',') + ' s';
+  let tiennent = 0;
+  CLIPS.forEach(c => {
+    c.el.barre.querySelectorAll('.fenetre').forEach(f => f.remove());
+    const f = fenetres(c, d);
+    const ok = f.length > 0 && !c.exclu;
+    if (ok) tiennent++;
+    c.el.carte.classList.toggle('tient', ok);
+    c.el.carte.classList.toggle('trop-court', !ok && !c.exclu);
+    f.forEach(x => {
+      const el = document.createElement('div');
+      el.className = 'fenetre';
+      el.style.left = (x.deb / c.duree * 100) + '%';
+      // La fenetre affichee couvre le plan entier : depart valide + duree du plan.
+      el.style.width = ((x.fin - x.deb + d) / c.duree * 100) + '%';
+      c.el.barre.appendChild(el);
+    });
+    c.el.curseur.parentNode.appendChild(c.el.curseur);
+    if (c.exclu) {
+      c.el.verd.className = 'verd non';
+      c.el.verd.textContent = 'Retiré de la banque à ta demande.';
+    } else if (ok) {
+      const total = f.reduce((s, x) => s + (x.fin - x.deb + d), 0);
+      c.el.verd.className = 'verd oui';
+      c.el.verd.textContent = f.length === 1
+        ? `Tient un plan de ${d.toFixed(1).replace('.',',')} s — départ entre ${fr(f[0].deb)} s et ${fr(f[0].fin)} s.`
+        : `Tient un plan de ${d.toFixed(1).replace('.',',')} s dans ${f.length} fenêtres, ${fr(total)} s exploitables au total.`;
+    } else {
+      c.el.verd.className = 'verd non';
+      c.el.verd.textContent = `Trop court : ${fr(c.max)} s d'affilée au maximum. Coupe plus court, ou change de clip.`;
+    }
+  });
+  compte.innerHTML = '<b>' + tiennent + '</b> clip' + (tiennent > 1 ? 's' : '') + ' sur ' + CLIPS.length + (tiennent > 1 ? ' peuvent' : ' peut') + ' tenir ce plan';
+}
+curseurDuree.addEventListener('input', redessiner);
+redessiner();
+</script>
+</body>
+</html>
