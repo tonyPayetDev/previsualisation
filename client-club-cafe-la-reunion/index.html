@@ -45,85 +45,54 @@
 
   <main>
 
-    <!-- ===================== HERO SLIDER ===================== -->
-    <section id="hero" aria-label="Présentation du restaurant">
-      <div class="slider-track" role="list" aria-roledescription="carousel">
+    <!-- ===================== HÉROS ===================== -->
+    <section id="hero" aria-label="Club Café, restaurant à La Réunion">
 
-        <div class="slide" role="listitem" aria-label="Slide 1">
-          <img
-            src="assets/images/hero-slider-1.jpg"
-            alt="Terrasse et ambiance du Club Café à La Réunion"
-            width="1920" height="1080"
-          />
-          <div class="slide-overlay"></div>
-          <div class="slide-content">
-            <h1>Club Café<br><span style="font-size:0.6em;font-weight:300;">La Réunion</span></h1>
-            <p>Un lieu où la cuisine rencontre la convivialité — saveurs créoles et maison dans un cadre authentique</p>
-            <div style="display:flex;gap:1rem;flex-wrap:wrap;justify-content:center;">
-              <a href="#services" class="btn btn-outline-white">Voir nos menus</a>
-              <a href="#contact" class="btn btn-primary" style="background:rgba(255,255,255,0.15);border-color:rgba(255,255,255,0.5);">Réserver</a>
-            </div>
-            <div class="hero-badges">
-              <span class="hero-badge">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 8h2a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2h-2v4l-4-4H9a1.994 1.994 0 0 1-1.414-.586m0 0L11 14h4a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2v4l.586-.586z"/></svg>
-                Ambiance chaleureuse
-              </span>
-              <span class="hero-badge">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 1 0 0 20A10 10 0 0 0 12 2zm0 0v10l4 2"/></svg>
-                Mer–Lun · 9h–14h30
-              </span>
-              <span class="hero-badge">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-                Grotte des Premiers Français
-              </span>
-            </div>
-          </div>
+      <!-- Les photos passent en fond, en fondu. Elles ne portent aucun texte :
+           le texte vit au-dessus et ne bouge jamais. -->
+      <div class="hero-fonds" aria-hidden="true">
+        <div class="hero-fond actif"><img src="assets/images/hero-slider-1.jpg" alt="" width="1920" height="1080" fetchpriority="high"></div>
+        <div class="hero-fond"><img src="assets/images/hero-slider-2.jpg" alt="" width="1920" height="1080" loading="lazy"></div>
+        <div class="hero-fond"><img src="assets/images/hero-slider-3.jpg" alt="" width="1920" height="1080" loading="lazy"></div>
+      </div>
+      <div class="hero-voile" aria-hidden="true"></div>
+
+      <div class="hero-dedans">
+        <p class="hero-lieu">Saint-Denis · La Grotte des Premiers Français</p>
+
+        <h1>Club Café</h1>
+
+        <!-- Une seule ligne change, et c'est la promesse. La structure, elle,
+             reste identique : c'est ce qui empêche la page de sauter. -->
+        <p class="hero-promesse" id="heroPromesse" aria-live="polite">
+          <span class="actif">Cuisine créole et maison, dans un cadre authentique.</span>
+          <span>Grillades, rougail saucisse, burgers et salades fraîches.</span>
+          <span>Karaoké, concerts et animations plusieurs fois par mois.</span>
+        </p>
+
+        <div class="hero-actions">
+          <a href="#carte" class="btn btn-primary">Voir la carte</a>
+          <a href="#contact" class="btn btn-outline-white">Réserver une table</a>
         </div>
 
-        <div class="slide" role="listitem" aria-label="Slide 2">
-          <img
-            src="assets/images/hero-slider-2.jpg"
-            alt="Plats créoles et grillades du Club Café"
-            width="1920" height="1080"
-            loading="lazy"
-          />
-          <div class="slide-overlay"></div>
-          <div class="slide-content">
-            <h1>Cuisine maison<br><span style="font-size:0.55em;font-weight:300;">créole & métropolitaine</span></h1>
-            <p>Grillades, rougail saucisse, burgers et salades fraîches — une carte variée faite avec passion</p>
-            <a href="#gallery" class="btn btn-outline-white">Découvrir la carte</a>
-          </div>
-        </div>
-
-        <div class="slide" role="listitem" aria-label="Slide 3">
-          <img
-            src="assets/images/hero-slider-3.jpg"
-            alt="Soirées et événements au Club Café"
-            width="1920" height="1080"
-            loading="lazy"
-          />
-          <div class="slide-overlay"></div>
-          <div class="slide-content">
-            <h1>Soirées &amp;<br><span style="font-size:0.6em;font-weight:300;">événements inoubliables</span></h1>
-            <p>Karaoké, concerts et animations plusieurs fois par mois — rejoignez la fête !</p>
-            <a href="#events" class="btn btn-outline-white">Voir les événements</a>
-          </div>
-        </div>
-
+        <ul class="hero-infos" role="list">
+          <li><strong>Mer – Lun</strong> 9h – 14h30</li>
+          <li><strong>Fermé</strong> le mardi</li>
+          <li><a href="tel:+262692109181">0692 10 91 81</a></li>
+        </ul>
       </div>
 
-      <!-- Controls -->
-      <button class="slider-btn prev" aria-label="Slide précédente">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
-      </button>
-      <button class="slider-btn next" aria-label="Slide suivante">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
-      </button>
-      <div class="slider-dots" role="tablist" aria-label="Navigation slider">
-        <button class="dot active" role="tab" aria-label="Slide 1" aria-selected="true"></button>
-        <button class="dot" role="tab" aria-label="Slide 2" aria-selected="false"></button>
-        <button class="dot" role="tab" aria-label="Slide 3" aria-selected="false"></button>
+      <!-- La barre dit où on en est et combien de temps il reste. Trois points
+           ne disent ni l'un ni l'autre. -->
+      <div class="hero-barre" role="tablist" aria-label="Photos du restaurant">
+        <button class="hero-onglet actif" role="tab" aria-selected="true" aria-label="Photo 1"><i></i></button>
+        <button class="hero-onglet" role="tab" aria-selected="false" aria-label="Photo 2"><i></i></button>
+        <button class="hero-onglet" role="tab" aria-selected="false" aria-label="Photo 3"><i></i></button>
       </div>
+
+      <a class="hero-fleche" href="#services" aria-label="Descendre">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><polyline points="6 9 12 15 18 9"/></svg>
+      </a>
     </section>
 
     <!-- ===================== SECTION 1 — CE QUE NOUS PROPOSONS ===================== -->

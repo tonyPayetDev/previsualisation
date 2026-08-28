@@ -24,47 +24,65 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  /* ===================== HERO SLIDER ===================== */
-  const track = document.querySelector('.slider-track');
-  const slides = document.querySelectorAll('.slide');
-  const dots = document.querySelectorAll('.dot');
-  let current = 0;
-  let autoplayTimer;
+  /* ═══════════════ HÉROS ═══════════════
+     Le fond et la phrase avancent ensemble, sur le même index. Un seul
+     minuteur pour les deux : deux minuteurs séparés dérivent, et au bout de
+     quelques tours la phrase ne parle plus de la photo affichée. */
+  (function () {
+    const fonds = [...document.querySelectorAll('.hero-fond')];
+    const phrases = [...document.querySelectorAll('.hero-promesse span')];
+    const onglets = [...document.querySelectorAll('.hero-onglet')];
+    if (!fonds.length) return;
+    const reduit = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let i = 0, minuteur = null;
 
-  function goTo(index) {
-    current = (index + slides.length) % slides.length;
-    track.style.transform = `translateX(-${current * 100}%)`;
-    dots.forEach((d, i) => {
-      const active = i === current;
-      d.classList.toggle('active', active);
-      d.setAttribute('aria-selected', String(active));
+    function aller(n) {
+      i = (n + fonds.length) % fonds.length;
+      fonds.forEach((el, k) => el.classList.toggle('actif', k === i));
+      phrases.forEach((el, k) => el.classList.toggle('actif', k === i));
+      onglets.forEach((el, k) => {
+        el.classList.remove('actif');
+        el.setAttribute('aria-selected', String(k === i));
+      });
+      /* On force le redémarrage de l'animation de la barre : sans ce reflow,
+         le navigateur réutilise l'animation en cours et la barre ne repart
+         pas de zéro. */
+      if (onglets[i]) { void onglets[i].offsetWidth; onglets[i].classList.add('actif'); }
+    }
+
+    function relancer() {
+      clearInterval(minuteur);
+      if (!reduit) minuteur = setInterval(() => aller(i + 1), 6000);
+    }
+
+    onglets.forEach((b, k) => b.addEventListener('click', () => { aller(k); relancer(); }));
+
+    /* Au clavier : flèches gauche/droite quand le héros a le focus. */
+    document.getElementById('hero')?.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight') { aller(i + 1); relancer(); }
+      if (e.key === 'ArrowLeft')  { aller(i - 1); relancer(); }
     });
-  }
 
-  function startAutoplay() {
-    autoplayTimer = setInterval(() => goTo(current + 1), 5000);
-  }
+    /* Glissement du doigt. */
+    let x = null;
+    const hero = document.getElementById('hero');
+    hero?.addEventListener('touchstart', (e) => { x = e.touches[0].clientX; }, { passive: true });
+    hero?.addEventListener('touchend', (e) => {
+      if (x === null) return;
+      const d = x - e.changedTouches[0].clientX;
+      if (Math.abs(d) > 50) { aller(i + (d > 0 ? 1 : -1)); relancer(); }
+      x = null;
+    });
 
-  function resetAutoplay() {
-    clearInterval(autoplayTimer);
-    startAutoplay();
-  }
+    /* Onglet en arrière-plan : on arrête. Rien ne sert de faire tourner des
+       photos que personne ne regarde, et ça vide la batterie d'un téléphone. */
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) clearInterval(minuteur); else relancer();
+    });
 
-  document.querySelector('.slider-btn.prev')?.addEventListener('click', () => { goTo(current - 1); resetAutoplay(); });
-  document.querySelector('.slider-btn.next')?.addEventListener('click', () => { goTo(current + 1); resetAutoplay(); });
-  dots.forEach((dot, i) => dot.addEventListener('click', () => { goTo(i); resetAutoplay(); }));
-
-  /* Touch swipe on hero */
-  let touchX = null;
-  document.getElementById('hero')?.addEventListener('touchstart', e => { touchX = e.touches[0].clientX; }, { passive: true });
-  document.getElementById('hero')?.addEventListener('touchend', e => {
-    if (touchX === null) return;
-    const diff = touchX - e.changedTouches[0].clientX;
-    if (Math.abs(diff) > 50) { goTo(current + (diff > 0 ? 1 : -1)); resetAutoplay(); }
-    touchX = null;
-  });
-
-  startAutoplay();
+    aller(0);
+    relancer();
+  })();
 
   /* ===================== SCROLL REVEAL ===================== */
   const revealEls = document.querySelectorAll('.reveal, .reveal-left, .reveal-right');
