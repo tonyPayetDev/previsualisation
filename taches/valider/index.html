@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>À valider</title>
+<style>
+  :root{--noir:#07080b;--carte:#0f1218;--ligne:#212734;--blanc:#eef1f6;--gris:#8b93a3;
+        --vert:#34d399;--ambre:#fbbf24;--rouge:#f87171;--bleu:#60a5fa}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:var(--noir);color:var(--blanc);font:16px/1.6 system-ui,-apple-system,"Segoe UI",sans-serif;
+       padding:22px 16px 120px}
+  .w{max-width:760px;margin:0 auto}
+  .eb{font-size:11px;letter-spacing:.26em;text-transform:uppercase;color:var(--gris)}
+  h1{font-size:clamp(26px,6vw,38px);line-height:1.08;letter-spacing:-.02em;margin:10px 0 6px}
+  .sous{color:var(--gris);font-size:14.5px;max-width:52ch}
+  .compte{display:flex;gap:8px;flex-wrap:wrap;margin:18px 0 26px}
+  .pill{border:1px solid var(--ligne);border-radius:999px;padding:5px 13px;font-size:12.5px;color:var(--gris)}
+  .pill b{color:var(--blanc)}
+  ul{list-style:none;display:flex;flex-direction:column;gap:14px}
+  .t{background:var(--carte);border:1px solid var(--ligne);border-radius:12px;padding:16px 16px 14px}
+  .t.e-valide{border-left:3px solid var(--bleu)}
+  .t.e-propose{border-left:3px solid var(--ambre)}
+  .t.e-fait{border-left:3px solid var(--vert)}
+  .t.e-ok{opacity:.55}
+  .t.e-refuse{opacity:.42}
+  .t.e-revoir{border-left:3px solid var(--rouge)}
+  .t.e-attente-toi{border-left:3px solid #7c8598}
+  .haut{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+  h3{font-size:18px;line-height:1.25;font-weight:650;letter-spacing:-.01em}
+  .etat{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--gris);
+        border:1px solid var(--ligne);border-radius:999px;padding:3px 9px;white-space:nowrap}
+  .pq{color:#c3cad6;font-size:14.5px;margin-top:9px}
+  .fi,.co{color:var(--gris);font-size:13.5px;margin-top:7px}
+  .fi b,.co b{color:#aab3c2;font-weight:600}
+  .no{color:var(--gris);font-size:13.5px;margin-top:8px;padding-left:11px;border-left:2px solid var(--ligne)}
+  .lien{display:inline-block;margin-top:11px;color:var(--bleu);font-size:14px;text-decoration:none}
+  .actes{display:flex;gap:9px;flex-wrap:wrap;margin-top:14px}
+  button{font:inherit;font-size:14.5px;font-weight:600;border:1px solid var(--ligne);background:#161b23;
+         color:var(--blanc);border-radius:9px;padding:11px 17px;cursor:pointer;min-height:46px}
+  button:active{transform:translateY(1px)}
+  button.oui{border-color:#1f6f52;background:#123024;color:#8ff0c4}
+  button.non{border-color:#6f2626;background:#2b1414;color:#f4a3a3}
+  .dit{font-size:13px;color:var(--gris);margin-top:9px;min-height:0}
+  .dit:empty{display:none}
+  .bandeau{position:fixed;left:0;right:0;bottom:0;background:#0b0e13;border-top:1px solid var(--ligne);
+           padding:11px 16px;font-size:13px;color:var(--gris);text-align:center}
+  .bandeau b{color:var(--blanc)}
+</style>
+</head>
+<body>
+<div class="w">
+  <div class="eb">Tableau de validation</div>
+  <h1>Ce que je propose de faire</h1>
+  <p class="sous">Tu dis oui, je le fais. Quand c’est livré, tu dis si ça passe.
+     Rien ne se lance sans ton feu vert — et rien n’est considéré fini sans ton « c’est bon ».</p>
+  <div class="compte" id="compte"></div>
+  <ul id="liste">
+  <li class="t" data-id="demo-unisson" data-defaut="valide">
+    <div class="haut">
+      <span class="etat"></span>
+      <h3>Vidéo démo pour L'Unisson</h3>
+    </div>
+    <p class="pq">Ils ont demandé une maquette + une vidéo pendant l'appel du 25/08. C'est la fiche la plus avancée du fichier d'appels, et ils comparent à une agence à 300 €/mois.</p>
+    <p class="fi"><b>Fini quand :</b> Une vidéo verticale de ~13 s au format FoodBoost (mots qui s'allument sur le beat, décompte, carton final), faite avec LEURS vraies photos, en ligne sur previsualisation.</p>
+    <p class="co"><b>Coût :</b> ~0,30 $ si les photos suffisent</p>
+    <p class="no">Demandée de vive voix ce matin — je l'ai lancée.</p>
+    
+    <div class="actes"></div>
+    <p class="dit"></p>
+  </li>
+  <li class="t" data-id="recharge-wavespeed" data-defaut="attente-toi">
+    <div class="haut">
+      <span class="etat"></span>
+      <h3>Recharger WaveSpeed, puis finir l'essai « conscience »</h3>
+    </div>
+    <p class="pq">Le compte est à 0. Trois phrases de l'essai sont muettes, dont la dernière ligne. Et aucune autre vidéo avec ta voix ne peut sortir tant que c'est vide.</p>
+    <p class="fi"><b>Fini quand :</b> Les 6 blocs manquants en voix clonée, l'essai remonté vers 7 min, republié sur la même route.</p>
+    <p class="co"><b>Coût :</b> la recharge est de ton côté ; le reste ne coûte que du temps machine</p>
+    <p class="no">Rien à valider : c'est une action que je ne peux pas faire à ta place.</p>
+    
+    <div class="actes"></div>
+    <p class="dit"></p>
+  </li>
+  <li class="t" data-id="rappel-unisson" data-defaut="attente-toi">
+    <div class="haut">
+      <span class="etat"></span>
+      <h3>Rappeler L'Unisson avec la maquette et la vidéo</h3>
+    </div>
+    <p class="pq">Son numéro direct est sur la fiche d'appels. L'agence à 300 €/mois est le point de comparaison : c'est dessus qu'il faut se positionner, pas à côté.</p>
+    <p class="fi"><b>Fini quand :</b> Appel passé, réaction notée dans la fiche.</p>
+    <p class="co"><b>Coût :</b> 10 minutes</p>
+    <p class="no">À faire après la vidéo, pas avant — c'est le lien qui fait la conversation.</p>
+    
+    <div class="actes"></div>
+    <p class="dit"></p>
+  </li>
+  <li class="t" data-id="50-emails-secteur-2" data-defaut="propose">
+    <div class="haut">
+      <span class="etat"></span>
+      <h3>50 emails sur un deuxième secteur</h3>
+    </div>
+    <p class="pq">Tu voulais comparer quel secteur répond le mieux. Les agences de voyages sont à 30/50 envoyés, on aura une base de comparaison en fin de semaine.</p>
+    <p class="fi"><b>Fini quand :</b> Un secteur choisi, 50 sites audités, 50 rapports, 50 emails en file à 15/jour.</p>
+    <p class="co"><b>Coût :</b> gratuit (OpenStreetMap + audit maison)</p>
+    <p class="no">Dis-moi le secteur : hôtels ? garages ? salles de sport ? kinés ?</p>
+    
+    <div class="actes"></div>
+    <p class="dit"></p>
+  </li>
+  <li class="t" data-id="pubs-douleur" data-defaut="propose">
+    <div class="haut">
+      <span class="etat"></span>
+      <h3>Réécrire les 3 pubs avec la vraie douleur</h3>
+    </div>
+    <p class="pq">Tu as dit que la douleur devait être plus forte, et tu as donné l'angle : « tu te sens largué par l'IA ». Les créas actuelles sont trop tièdes.</p>
+    <p class="fi"><b>Fini quand :</b> 3 créas réécrites, redirigeant vers les vraies offres et le paiement Stripe.</p>
+    <p class="co"><b>Coût :</b> gratuit</p>
+    
+    
+    <div class="actes"></div>
+    <p class="dit"></p>
+  </li>
+  <li class="t" data-id="comparer-chrissansfiltre" data-defaut="propose">
+    <div class="haut">
+      <span class="etat"></span>
+      <h3>Comparer chrissansfiltre.com à VideoBoost</h3>
+    </div>
+    <p class="pq">Tu me l'as demandé et je ne l'ai jamais fait. C'est une offre concurrente directe.</p>
+    <p class="fi"><b>Fini quand :</b> Une page de comparaison : promesse, prix, format, ce qu'ils font mieux, ce sur quoi tu gagnes.</p>
+    <p class="co"><b>Coût :</b> gratuit</p>
+    
+    
+    <div class="actes"></div>
+    <p class="dit"></p>
+  </li>
+  <li class="t" data-id="cta-sans-ressource" data-defaut="propose">
+    <div class="haut">
+      <span class="etat"></span>
+      <h3>Les 15 mots-clés CTA qui ne mènent nulle part</h3>
+    </div>
+    <p class="pq">PLANÈTE, SOLAIRE, BURGER, NEON, COMBAT… sont dits dans des vidéos publiées, mais aucune ressource n'existe derrière. Quelqu'un qui commente ne reçoit rien.</p>
+    <p class="fi"><b>Fini quand :</b> Une ressource réelle par mot-clé, ou le mot-clé retiré des vidéos concernées.</p>
+    <p class="co"><b>Coût :</b> gratuit</p>
+    <p class="no">Le plus rentable : ce sont des gens qui ont DÉJÀ levé la main.</p>
+    
+    <div class="actes"></div>
+    <p class="dit"></p>
+  </li>
+  <li class="t" data-id="workflow-gpt-image-2" data-defaut="propose">
+    <div class="haut">
+      <span class="etat"></span>
+      <h3>Basculer le workflow de posts sur GPT Image 2</h3>
+    </div>
+    <p class="pq">Trois branches tournent encore sur Gemini alors que le feed est passé à GPT Image 2, et la branche « Promotion » n'a jamais été câblée.</p>
+    <p class="fi"><b>Fini quand :</b> Les 4 types de post passent par le même moteur, et « Promotion » produit vraiment quelque chose.</p>
+    <p class="co"><b>Coût :</b> ~0,03 $ par image générée</p>
+    
+    
+    <div class="actes"></div>
+    <p class="dit"></p>
+  </li>
+  <li class="t" data-id="presets-feed" data-defaut="attente-toi">
+    <div class="haut">
+      <span class="etat"></span>
+      <h3>Verrouiller les styles de feed que tu gardes</h3>
+    </div>
+    <p class="pq">Les 9 styles sont en ligne. Tant que tu n'as pas éliminé, je ne peux pas en faire des presets propres pour les clients.</p>
+    <p class="fi"><b>Fini quand :</b> Les styles retenus deviennent des presets du workflow, utilisables sans réécrire un prompt.</p>
+    <p class="co"><b>Coût :</b> gratuit</p>
+    <p class="no">J'attends juste que tu me dises lesquels tu jettes.</p>
+    
+    <div class="actes"></div>
+    <p class="dit"></p>
+  </li>
+  <li class="t" data-id="musetalk-vps" data-defaut="propose">
+    <div class="haut">
+      <span class="etat"></span>
+      <h3>MuseTalk sur le VPS — trancher</h3>
+    </div>
+    <p class="pq">Tu l'as demandé, mais le VPS n'a pas de GPU : MuseTalk y tournerait à une vitesse inutilisable. Il faut choisir entre payer un GPU ou passer par une API hébergée.</p>
+    <p class="fi"><b>Fini quand :</b> Une décision, et le lip-sync qui marche pour de vrai.</p>
+    <p class="co"><b>Coût :</b> un GPU se loue ~0,40 $/h, une API de lip-sync ~0,10 $/vidéo</p>
+    
+    
+    <div class="actes"></div>
+    <p class="dit"></p>
+  </li></ul>
+</div>
+<div class="bandeau" id="bandeau">Chargement de tes décisions…</div>
+<script>
+(() => {
+  const URL_ETAT = 'https://n7n.automatisationboost.com/webhook/taches-validation';
+  const LIB = {"propose":["À valider","Je ne commence pas tant que tu n’as pas dit oui."],"valide":["Validé — en cours","Tu as dit oui. C’est à moi de jouer."],"refuse":["Écarté","Tu n’en veux pas. Je n’y touche plus."],"fait":["Fait — à ton avis","C’est livré. Dis-moi si ça passe."],"ok":["Clos","Validé des deux côtés."],"revoir":["À reprendre","Tu as dit non. Je reprends."],"attente-toi":["Sur toi","Rien à valider : c’est une action que je ne peux pas faire à ta place."]};
+  let etat = {};             // { id: { etat, maj } }
+  let duNeuf = false;        // le drapeau : il reste quelque chose à envoyer
+  let enVol = false;
+
+  const boutons = (e) => {
+    if (e === 'propose') return [['valide', 'Go', 'oui'], ['refuse', 'Non merci', 'non']];
+    if (e === 'fait') return [['ok', 'C’est bon', 'oui'], ['revoir', 'À reprendre', 'non']];
+    if (e === 'valide') return [['propose', 'Annuler le go', '']];
+    if (e === 'refuse' || e === 'ok' || e === 'revoir') return [['propose', 'Remettre à valider', '']];
+    return [];
+  };
+
+  const peindre = () => {
+    let aValider = 0, enCours = 0, aTonAvis = 0;
+    document.querySelectorAll('.t').forEach((li) => {
+      const id = li.dataset.id;
+      const e = (etat[id] && etat[id].etat) || li.dataset.defaut;
+      li.className = 't e-' + e;
+      const lib = LIB[e] || [e, ''];
+      li.querySelector('.etat').textContent = lib[0];
+      if (e === 'propose') aValider++;
+      if (e === 'valide') enCours++;
+      if (e === 'fait') aTonAvis++;
+      const zone = li.querySelector('.actes');
+      zone.innerHTML = '';
+      for (const [vers, texte, cl] of boutons(e)) {
+        const b = document.createElement('button');
+        b.textContent = texte; if (cl) b.className = cl;
+        b.onclick = () => decider(id, vers);
+        zone.appendChild(b);
+      }
+      const d = li.querySelector('.dit');
+      d.textContent = etat[id] && etat[id].maj
+        ? 'Ta décision : ' + lib[0].toLowerCase() + ' — ' + new Date(etat[id].maj).toLocaleString('fr-FR')
+        : '';
+    });
+    document.getElementById('compte').innerHTML =
+      '<span class="pill"><b>' + aValider + '</b> à valider</span>' +
+      '<span class="pill"><b>' + enCours + '</b> en cours</span>' +
+      '<span class="pill"><b>' + aTonAvis + '</b> à ton avis</span>';
+  };
+
+  const decider = (id, vers) => {
+    etat[id] = { etat: vers, maj: new Date().toISOString() };
+    peindre();
+    duNeuf = true;
+    envoyer();
+  };
+
+  /* On n'annule jamais un envoi en cours : on lève un drapeau et on renvoie
+     après. Une minuterie annulée a déjà fait perdre une décision. */
+  const envoyer = async () => {
+    if (enVol || !duNeuf) return;
+    enVol = true; duNeuf = false;
+    const bandeau = document.getElementById('bandeau');
+    bandeau.innerHTML = 'Enregistrement…';
+    try {
+      await fetch(URL_ETAT, { method: 'POST', headers: { 'Content-Type': 'text/plain' },
+                              body: JSON.stringify(etat) });
+      bandeau.innerHTML = '<b>Enregistré.</b> Tes décisions sont sur le serveur, pas sur ce téléphone.';
+    } catch (err) {
+      duNeuf = true;
+      bandeau.innerHTML = 'Enregistrement impossible — je réessaie.';
+    } finally {
+      enVol = false;
+      if (duNeuf) setTimeout(envoyer, 1200);
+    }
+  };
+
+  (async () => {
+    try {
+      const r = await fetch(URL_ETAT + '?t=' + Date.now());
+      const j = await r.json();
+      const d = typeof j.donnees === 'string' ? JSON.parse(j.donnees || '{}') : (j.donnees || {});
+      etat = d && typeof d === 'object' ? d : {};
+      document.getElementById('bandeau').innerHTML =
+        'Tes décisions sont enregistrées côté serveur. Dernière écriture : <b>' +
+        (j.maj ? new Date(j.maj).toLocaleString('fr-FR') : 'jamais') + '</b>';
+    } catch (e) {
+      document.getElementById('bandeau').textContent =
+        'Impossible de lire tes décisions — la page affiche les états par défaut.';
+    }
+    peindre();
+  })();
+})();
+</script>
+</body>
+</html>
