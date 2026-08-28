@@ -52,15 +52,11 @@
 <a class="back" href="/">← toutes les prévisualisations</a>
 <header><h1>Réunion Renouvelables — étude de cas</h1>
 <p class="sub">Photovoltaïque, La Réunion · 42,5 s · 9:16 · CTA SOLAIRE</p></header>
-<div class="choix">
-  <button class="opt actif" data-src="https://assets.automatisationboost.com/previsualisation/client-reunion-renouvelables/cercle.mp4">Avatar en cercle</button>
-  <button class="opt" data-src="https://assets.automatisationboost.com/previsualisation/client-reunion-renouvelables/cta-plein.mp4">CTA plein cadre</button>
-</div>
 <video id="v" controls playsinline preload="metadata" poster="cover.jpg"
-  src="https://assets.automatisationboost.com/previsualisation/client-reunion-renouvelables/cercle.mp4"></video>
-<p class="souscadre">L'avatar apparaît à <b>0:00</b>, <b>0:06</b> et <b>0:37</b>, 2,6 à 3 s chaque fois.
-Le médaillon est passé de 250 px à 612 px et il est remonté dans la zone photo, où il ne recouvre
-aucune ligne de texte.</p>
+  src="https://assets.automatisationboost.com/previsualisation/client-reunion-renouvelables/v3.mp4"></video>
+<p class="souscadre">L'avatar apparaît sur <b>trois phrases entières</b> de la voix off —
+<b>0:00</b>, <b>0:16</b> et <b>0:37</b> — et il finit ce qu'il dit avant de disparaître.
+Un seul clip source, celui qui reste à distance : l'autre avançait vers la caméra pendant la prise.</p>
 <section><h2>Photos, avatar, musique</h2>
 <p><b>Trois photos en domaine public</b> (cc0 / pdm) remplacent les cadres marqués de la v1.
 Le domaine public a été préféré au CC-BY exprès : aucune mention d’attribution à porter à
@@ -82,24 +78,4 @@ RGE, 19 ans, 600 installations. Aucun n'est inventé ni arrondi.</p></section>
 <p>Le mot-clé <b>SOLAIRE</b> n'a aucune ressource derrière. Si la vidéo part avec ce CTA,
 ceux qui commentent ne recevront rien.</p></section>
 <section><h2>Synchro de l’avatar — ce que la mesure a montré</h2><p>Tony : « l’avatar commence à parler à 2 secondes ». Vérifié en mesurant le mouvement de la zone bouche, image par image, sur les clips sources. Le résultat est pire que le symptôme : sur les quatre clips de la banque, <b>seul E2 parle vraiment</b>, et seulement sur deux fenêtres — [1,93→3,13] et [5,70→6,93]. E3 et E1 n’ont <b>aucune</b> plage de parole soutenue d’une seconde.</p><p>La carte de lèvres du dépôt annonçait E2 en [1,96→7,00] d’un seul tenant. C’est faux : elle contient une zone morte de 0,7 s, qui tombait pile à deux secondes de vidéo.</p><p>Le médaillon ne dure donc plus que <b>1,15 s, deux fois</b> — la durée réellement disponible. Vérifié après montage : la bouche bouge sur toute la fenêtre visible, sans trou.</p></section><p class="pied">Rendu le 27/08/2026 · 1080×1920 · 3,5 Mo · voix clonée</p>
-</div><script>
-/* Changer de variante sans recharger la page : on garde la position de lecture,
-   sinon on repart du début à chaque comparaison et on ne compare plus rien. */
-(function(){
-  var v=document.getElementById('v');
-  document.querySelectorAll('.opt').forEach(function(b){
-    b.addEventListener('click',function(){
-      if(b.classList.contains('actif')) return;
-      var t=v.currentTime, jouait=!v.paused;
-      document.querySelectorAll('.opt').forEach(function(o){o.classList.remove('actif')});
-      b.classList.add('actif');
-      v.src=b.dataset.src;
-      v.addEventListener('loadedmetadata',function once(){
-        v.currentTime=Math.min(t,v.duration-0.1); if(jouait) v.play();
-        v.removeEventListener('loadedmetadata',once);
-      });
-    });
-  });
-})();
-</script>
-</body></html>
+</div></body></html>
