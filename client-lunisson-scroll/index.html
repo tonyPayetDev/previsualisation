@@ -85,7 +85,11 @@ a{color:inherit}
 .hero{position:relative;height:100svh;min-height:600px;overflow:hidden;
   display:flex;align-items:flex-end}
 .hero .fond{position:absolute;inset:0;z-index:0;will-change:transform}
-.hero .fond img{width:100%;height:100%;object-fit:cover}
+.hero .fond img,.hero .fond video{width:100%;height:100%;object-fit:cover;display:block}
+/* Qui a coupé les animations n'a pas demandé une vidéo qui tourne en fond :
+   on la fige sur sa première image, le poster prend le relais. */
+@media(prefers-reduced-motion:reduce){.hero .fond video{display:none}
+  .hero .fond{background:url(img/p01.webp) center/cover no-repeat}}
 .hero .voile{position:absolute;inset:0;z-index:1;
   background:
     linear-gradient(180deg,rgba(20,17,16,.72) 0%,rgba(20,17,16,.28) 34%,rgba(20,17,16,.94) 100%),
@@ -232,7 +236,10 @@ footer{padding:34px var(--pad);border-top:1px solid var(--bord);
 </nav>
 
 <header class="hero" id="haut">
-  <div class="fond" id="heroFond"><img src="img/p01.webp" alt="Plat créole servi au restaurant L'Unisson" fetchpriority="high"></div>
+  <div class="fond" id="heroFond">
+    <video src="img/hero.mp4" poster="img/p01.webp" autoplay muted loop playsinline
+           preload="metadata" aria-label="Le restaurant L'Unisson en images"></video>
+  </div>
   <div class="voile"></div>
   <div class="dedans">
     <h1 class="dsp">
