@@ -544,3 +544,174 @@ fs.writeFileSync(OUT, html);
 console.log(`  ${echauffement.length} échauffement · ${vrais.length} vrais · sur ${tous.length} joignables`);
 echauffement.forEach((r) => console.log(`   échauffement : ${r.nom.slice(0, 32).padEnd(32)} ${r.telephone}  ${r.commune}`));
 vrais.slice(0, 4).forEach((r) => console.log(`   vrai         : ${r.nom.slice(0, 32).padEnd(32)} ${r.telephone}  ${r.commune}`));
+
+
+/* ---------------------------------------------------------------- MODE APPEL
+ * Les données du mode sont écrites à part : la page de la feuille reste
+ * inchangée, et les deux vues lisent la même vérité.
+ */
+const pourMode = (r, cat) => {
+  const d = RESU[cle(r.nom)] || {};
+  return {
+    id: cle(r.nom), nom: r.nom, cat,
+    tel: r.telephone, direct: d.telDirect || null,
+    commune: r.commune || '', type: r.type || '',
+    site: r.site || null, vitrine: vitrine(r).dit,
+    note: r.note || null, avis: r.avis || null,
+    script: (() => {
+      const base = script(r, cat === 'echauffement');
+      if (cat !== 'rappel') return base;
+      const quand = d.date ? new Date(d.date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' }) : null;
+      const ouvre = `Bonjour, Tony PAYET${quand ? `, on s'est parlé le ${quand}` : ''}. Je vous rappelle comme convenu — vous avez deux minutes ?`;
+      return [['Ouvrir', ouvre],
+              ['Ce qui restait à faire', d.suite || d.dit || 'Reprendre là où vous en étiez.'],
+              ...base.filter((x) => x[0] !== 'Ouvrir')];
+    })(),
+    dejaDit: d.dit || null, suite: d.suite || null,
+  };
+};
+const listeMode = [
+  ...rappels.map((r) => pourMode(r, 'rappel')),
+  ...echauffement.map((r) => pourMode(r, 'echauffement')),
+  ...vrais.map((r) => pourMode(r, 'vrai')),
+];
+
+fs.mkdirSync('/work/previsualisation/appels/mode', { recursive: true });
+fs.writeFileSync('/work/previsualisation/appels/mode/leads.json',
+  JSON.stringify({ maj: new Date().toISOString(), leads: listeMode }, null, 1));
+
+fs.writeFileSync('/work/previsualisation/appels/mode/index.html', `<!doctype html>
+<html lang="fr"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>Mode appel</title>
+<style>
+  :root{--fond:#07080c;--carte:#101420;--ligne:#1e2637;--blanc:#f0f3f8;--gris:#8590a3;
+        --vert:#34d399;--jaune:#FFE600;--rouge:#fb7185;--bleu:#60a5fa}
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{height:100%}
+  body{background:var(--fond);color:var(--blanc);
+    font:16px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif;
+    display:flex;flex-direction:column;padding:14px 16px calc(14px + env(safe-area-inset-bottom))}
+  header{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px}
+  .prog{flex:1;height:5px;background:#161d2b;border-radius:999px;overflow:hidden}
+  .prog i{display:block;height:100%;background:linear-gradient(90deg,var(--jaune),#A855F7);width:0;transition:width .35s}
+  .cpt{font-size:12.5px;color:var(--gris);white-space:nowrap;font-variant-numeric:tabular-nums}
+  a.retour{color:var(--gris);text-decoration:none;font-size:12.5px}
+  main{flex:1;display:flex;flex-direction:column;justify-content:center;gap:14px;min-height:0;overflow-y:auto}
+  .badge{display:inline-block;font-size:11px;letter-spacing:.2em;text-transform:uppercase;
+    border:1px solid var(--ligne);border-radius:999px;padding:4px 11px;color:var(--gris);align-self:flex-start}
+  .badge.echauffement{color:var(--bleu);border-color:#26405f}
+  .badge.rappel{color:var(--jaune);border-color:#4a4310}
+  h1{font-size:clamp(28px,7.5vw,42px);line-height:1.06;letter-spacing:-.025em}
+  .meta{color:var(--gris);font-size:14px}
+  .vu{background:var(--carte);border:1px solid var(--ligne);border-left:2px solid var(--bleu);
+      border-radius:9px;padding:11px 13px;font-size:14px;color:#c2cbd9}
+  .dire{background:#0d1626;border:1px solid #22354f;border-radius:12px;padding:16px 17px}
+  .dire .t{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--gris);margin-bottom:8px}
+  .dire p{font-size:clamp(17px,4.6vw,21px);line-height:1.42}
+  details{background:var(--carte);border:1px solid var(--ligne);border-radius:9px;padding:11px 13px}
+  details summary{cursor:pointer;font-size:13.5px;color:var(--gris);list-style:none}
+  details summary::-webkit-details-marker{display:none}
+  details p{font-size:14.5px;margin-top:9px;color:#cbd3e0}
+  details p b{display:block;color:var(--gris);font-size:11.5px;letter-spacing:.14em;
+    text-transform:uppercase;margin-bottom:2px;font-weight:600}
+  .tel{display:block;text-align:center;background:#10281c;border:1px solid #1f6f52;color:#8ff0c4;
+    border-radius:13px;padding:19px;font-size:23px;font-weight:700;text-decoration:none;
+    letter-spacing:.02em;font-variant-numeric:tabular-nums}
+  .tel small{display:block;font-size:12px;font-weight:400;color:#5fae8c;letter-spacing:.1em;
+    text-transform:uppercase;margin-bottom:3px}
+  footer{display:flex;flex-direction:column;gap:9px;padding-top:13px}
+  .rang{display:flex;gap:9px}
+  button{flex:1;font:inherit;font-size:15px;font-weight:600;border:1px solid var(--ligne);
+    background:#141a26;color:var(--blanc);border-radius:11px;padding:15px 10px;cursor:pointer;min-height:54px}
+  button:active{transform:translateY(1px)}
+  button.parle{border-color:#1f6f52;background:#12271e;color:#8ff0c4}
+  .fini{text-align:center;padding:40px 10px}
+  .fini h2{font-size:26px;margin-bottom:10px}
+  .fini p{color:var(--gris)}
+  .note{color:var(--gris);font-size:12.5px;text-align:center}
+</style></head>
+<body>
+<header>
+  <a class="retour" href="../">‹ feuille</a>
+  <div class="prog"><i id="barre"></i></div>
+  <div class="cpt" id="cpt"></div>
+</header>
+<main id="ecran"></main>
+<footer id="pied"></footer>
+<script>
+(() => {
+  const URL_ETAT='https://n7n.automatisationboost.com/webhook/appels-journal';
+  let LEADS=[], etat={}, i=0, duNeuf=false, enVol=false;
+
+  /* Le journal part sur le serveur : le stockage du navigateur ne survit pas
+     au navigateur intégré des applis, ni à sept jours de Safari. */
+  const envoyer=async()=>{
+    if(enVol||!duNeuf) return; enVol=true; duNeuf=false;
+    try{ await fetch(URL_ETAT,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify(etat)}); }
+    catch(e){ duNeuf=true; }
+    finally{ enVol=false; if(duNeuf) setTimeout(envoyer,1200); }
+  };
+
+  const aujourdhui=()=>new Date().toISOString().slice(0,10);
+  const faitsAujourdhui=()=>Object.values(etat).filter(x=>x&&x.date===aujourdhui()).length;
+
+  const suivant=()=>{ while(i<LEADS.length && etat[LEADS[i].id] && etat[LEADS[i].id].date===aujourdhui()) i++; peindre(); };
+
+  const marquer=(r,quoi)=>{ etat[r.id]={etat:quoi,date:aujourdhui(),h:new Date().toISOString()};
+    duNeuf=true; envoyer(); i++; suivant(); };
+
+  const peindre=()=>{
+    const ec=document.getElementById('ecran'), pi=document.getElementById('pied');
+    const fait=faitsAujourdhui();
+    document.getElementById('barre').style.width=Math.min(100,(fait/Math.max(1,LEADS.length))*100)+'%';
+    document.getElementById('cpt').textContent=fait+' / '+LEADS.length;
+
+    if(i>=LEADS.length){
+      ec.innerHTML='<div class="fini"><h2>C\u2019est fini pour aujourd\u2019hui.</h2>'
+        +'<p>'+fait+' appel'+(fait>1?'s':'')+' pass\u00e9'+(fait>1?'s':'')+'. Note ce qui s\u2019est dit sur la feuille pendant que c\u2019est frais.</p></div>';
+      pi.innerHTML='<a class="tel" href="../" style="background:#141a26;border-color:#1e2637;color:#f0f3f8">Retour \u00e0 la feuille</a>';
+      return;
+    }
+    const r=LEADS[i];
+    const LIB={echauffement:'\u00e9chauffement',rappel:'il attend ton appel',vrai:'appel r\u00e9el'};
+    const ouvre=r.script.find(x=>x[0]==='Ouvrir')||r.script[0];
+    const reste=r.script.filter(x=>x!==ouvre);
+
+    ec.innerHTML=
+      '<span class="badge '+r.cat+'">'+LIB[r.cat]+'</span>'
+      +'<h1>'+r.nom+'</h1>'
+      +'<div class="meta">'+[r.commune,r.note?r.note+'\u2605':null].filter(Boolean).join(' \u00b7 ')+'</div>'
+      +'<div class="vu">Ce que tu as vu chez eux : <b>'+r.vitrine+'</b></div>'
+      +(r.suite?'<div class="vu" style="border-left-color:#FFE600">La derni\u00e8re fois : '+r.suite+'</div>':'')
+      +'<div class="dire"><div class="t">\u00c0 lire, mot pour mot</div><p>'+ouvre[1]+'</p></div>'
+      +'<details><summary>La suite, si \u00e7a s\u2019ouvre \u2014 et les objections</summary>'
+      +reste.map(x=>'<p><b>'+x[0]+'</b>'+x[1]+'</p>').join('')+'</details>';
+
+    pi.innerHTML=
+      '<a class="tel" href="tel:'+(r.direct||r.tel).replace(/[^+0-9]/g,'')+'">'
+      +'<small>appeler</small>'+(r.direct||r.tel)+'</a>'
+      +'<div class="rang">'
+      +'<button data-q="repondu">Pas d\u00e9croch\u00e9</button>'
+      +'<button class="parle" data-q="appele">J\u2019ai parl\u00e9</button>'
+      +'</div>'
+      +'<div class="note">'+(r.cat==='echauffement'
+        ? 'Celui-l\u00e0 ne compte pas. Le but est d\u2019entendre ta voix, pas de vendre.'
+        : 'Tu ne notes rien ici : deux boutons, et on passe au suivant.')+'</div>';
+
+    pi.querySelectorAll('button').forEach(b=>b.onclick=()=>marquer(r,b.dataset.q));
+  };
+
+  (async()=>{
+    LEADS=(await (await fetch('leads.json?t='+Date.now())).json()).leads;
+    try{ const j=await (await fetch(URL_ETAT+'?t='+Date.now())).json();
+      const d=typeof j.donnees==='string'?JSON.parse(j.donnees||'{}'):(j.donnees||{});
+      etat=d&&typeof d==='object'?d:{}; }catch(e){}
+    suivant();
+  })();
+})();
+</script>
+</body></html>`);
+console.log(`   mode appel : ${listeMode.length} fiches (${rappels.length} rappels, ${echauffement.length} échauffement, ${vrais.length} vrais)`);
