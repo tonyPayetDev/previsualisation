@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tuto artisan — hook métro</title>
+<style>
+  :root{ --bg:#0a0a0f; --panel:#111117; --border:#242430; --y:#f5d90a; --p:#a855f7; --o:#ff7a1a; --text:#f2f2f5; --muted:#9a9aa8; }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;padding:2rem 1rem 4rem}
+  .wrap{max-width:480px;margin:0 auto}
+  a.back{color:var(--muted);font-size:.8rem;text-decoration:none;display:inline-block;margin-bottom:1rem}
+  header{text-align:center;margin-bottom:1.6rem}
+  header h1{font-size:1.4rem;margin:0 0 .3rem;background:linear-gradient(90deg,var(--y),var(--o));-webkit-background-clip:text;background-clip:text;color:transparent}
+  header p{color:var(--muted);font-size:.85rem;margin:0}
+  .card{background:var(--panel);border:1px solid var(--border);border-radius:16px;overflow:hidden;box-shadow:0 0 0 1px rgba(245,217,10,.06),0 20px 60px -20px rgba(168,85,247,.35);margin-bottom:1.5rem}
+  .card-head{padding:1rem 1.2rem .8rem;display:flex;justify-content:space-between;align-items:center;gap:.5rem}
+  .badge{font-size:.7rem;font-weight:600;padding:.25rem .6rem;border-radius:999px;background:rgba(245,217,10,.12);color:var(--y);border:1px solid rgba(245,217,10,.3);white-space:nowrap}
+  .card-head h2{font-size:1rem;margin:0;font-weight:600}
+  video{display:block;width:100%;aspect-ratio:9/16;background:#000}
+  .meta{padding:1rem 1.2rem 1.3rem;border-top:1px solid var(--border);font-size:.82rem;color:#c9c9d4;line-height:1.7}
+  .meta b{color:var(--y)}
+  ol{margin:.4rem 0 0;padding:0 0 0 1.15rem;line-height:1.75}
+  ol b{color:#fff}
+  code{background:rgba(168,85,247,.14);border:1px solid rgba(168,85,247,.3);border-radius:5px;padding:.08rem .35rem;font-size:.78rem;color:#d9c7ff}
+  .t{display:flex;gap:.7rem;padding:.45rem 0;border-bottom:1px solid var(--border)}
+  .t:last-child{border-bottom:0}
+  .t span:first-child{color:var(--muted);min-width:8.5rem}
+  footer{text-align:center;margin-top:2rem;font-size:.75rem;color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="/">← toutes les prévisualisations</a>
+  <header>
+    <h1>Tuto artisan</h1>
+    <p>hook métro + le workflow n8n en 6 nœuds — 29 août 2026</p>
+  </header>
+
+  <div class="card">
+    <div class="card-head"><h2>La vidéo</h2><span class="badge">60 s · 9:16</span></div>
+    <video src="video.mp4" controls playsinline preload="metadata" poster="cover.jpg"></video>
+    <div class="meta">
+      Tes <b>10 secondes de métro gardées entières</b>, plein cadre, ambiance conservée sous la voix.
+      Puis le workflow se construit nœud par nœud pendant qu'il s'explique.
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><h2>La valeur est dans la vidéo</h2><span class="badge">pas de péage</span></div>
+    <div class="meta">
+      Les six nœuds sont nommés à l'écran avec la syntaxe à recopier. Les trois pièges qui font
+      vraiment planter un débutant sont dits à voix haute :
+      <ol>
+        <li>les en-têtes Google&nbsp;Sheets doivent être <b>exactement</b> les libellés du formulaire, sinon l'auto-map ne prend rien</li>
+        <li>le champ n'est pas à la racine : <code>$json.body["Votre nom"]</code>, libellé entier, accent compris</li>
+        <li>le nœud <b>Wait ne consomme aucune exécution</b> pendant ses 2 jours d'attente</li>
+      </ol>
+      Quelqu'un peut reconstruire le workflow sans jamais commenter. Le fichier importable
+      devient un bonus, pas la contrepartie.
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><h2>Source</h2><span class="badge">rien d'inventé</span></div>
+    <div class="meta">
+      Tout vient de ton <code>artisan.json</code> réel — six nœuds, vrais paramètres :
+      formulaire → registre → confirmation → alerte → attente 2 jours → relance.
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><h2>Réglages de ce montage</h2><span class="badge">à valider</span></div>
+    <div class="meta">
+      <div class="t"><span>Hook</span><span>10,04 s <b>entiers</b> — c'est la voix qu'on allonge, jamais le clip qu'on coupe</span></div>
+      <div class="t"><span>Ambiance métro</span><span>gardée à 0,22 sous la voix, fondue à la fin du hook</span></div>
+      <div class="t"><span>Sous-titres</span><span>3 mots, 1 surligné, 72 px</span></div>
+      <div class="t"><span>Avatar</span><span>retiré de l'écran de fin — il masquait le carton avant/après</span></div>
+      <div class="t"><span>Musique</span><span>0,20 + duck sidechain sous la voix</span></div>
+    </div>
+  </div>
+
+  <footer>AutomatisationBoost — prévisualisation</footer>
+</div>
+</body>
+</html>
