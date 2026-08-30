@@ -48,6 +48,47 @@ const ouvertes = brutes
    n'y change rien) mais ça doit rester sous les yeux. */
 const aToi = (src.aToi || []).map((x) => String(x.t || x).trim()).filter(Boolean);
 
+/* ── Le bilan de la semaine ──────────────────────────────────────────────
+   La page dit ce qu'il RESTE à faire ; ce bloc dit ce qui a ÉTÉ fait. Les deux
+   ensemble, sinon on n'ouvre une salle de sprint que pour se voir en retard.
+
+   Le nombre de séances vient de semaine.json et pas du compteur de la page :
+   le sprint écrit dans le localStorage, donc rien n'en sort et rien n'y survit
+   à un changement de téléphone. C'est Tony qui le dicte, comme les appels.
+
+   L'évolution ne s'affiche que si la semaine précédente existe VRAIMENT dans le
+   registre. Contre une semaine absente, un pourcentage n'est pas « +100 % »,
+   il n'est pas défini — et l'afficher quand même serait un chiffre inventé. */
+let bilan = null;
+try {
+  const reg = JSON.parse(fs.readFileSync(path.join(ICI, 'semaine.json'), 'utf8'));
+  const sem = (reg.semaines || []).slice().sort((a, b) => String(a.debut).localeCompare(b.debut));
+  const cette = sem[sem.length - 1];
+  if (cette) {
+    const avant = sem[sem.length - 2] || null;
+    const jour = (s) => {
+      const [, m, d] = String(s).split('-');
+      return `${Number(d)} ${['jan', 'fév', 'mars', 'avr', 'mai', 'juin', 'juil', 'août', 'sep', 'oct', 'nov', 'déc'][Number(m) - 1]}`;
+    };
+    const eva = (n, k) => {
+      if (!avant || typeof avant[k] !== 'number' || avant[k] === 0) return null;
+      return Math.round(((n - avant[k]) / avant[k]) * 100);
+    };
+    bilan = {
+      periode: `${jour(cette.debut)} → ${jour(cette.fin)}`,
+      note: String(cette.note || ''),
+      premiere: !avant,
+      chiffres: [
+        { k: 'seances', label: 'séances de sprint', v: cette.seances },
+        { k: 'appels', label: 'clients appelés', v: cette.appels },
+        { k: 'aboutis', label: 'ont décroché', v: cette.aboutis },
+        { k: 'aRappeler', label: 'à rappeler', v: cette.aRappeler },
+        { k: 'decisions', label: 'décisions prises', v: cette.decisions },
+      ].filter((c) => typeof c.v === 'number').map((c) => ({ ...c, ev: eva(c.v, c.k) })),
+    };
+  }
+} catch { /* le bilan est un plus : son absence ne doit pas empêcher le sprint */ }
+
 const ech = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
 const html = `<!doctype html>
@@ -115,6 +156,20 @@ main{max-width:900px;margin:0 auto;padding:20px 18px 80px}
 .durees{display:flex;gap:7px;justify-content:center;margin-top:14px}
 .durees button{padding:6px 13px;font-size:12.5px;border-radius:999px}
 .durees button[aria-pressed="true"]{border-color:var(--or);color:var(--or)}
+
+/* ── le bilan de la semaine ── */
+.semaine{margin-bottom:16px;padding:16px 18px 15px}
+.semaine .titre{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap;margin-bottom:14px}
+.semaine h2{font-size:14px}
+.semaine .periode{font-size:12px;color:var(--faible);font-variant-numeric:tabular-nums}
+.chiffres{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:12px}
+.chiffre{background:var(--carte2);border:1px solid var(--bord);border-radius:12px;padding:11px 12px}
+.chiffre .n{font-size:26px;font-weight:800;line-height:1;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.chiffre .l{font-size:11px;color:var(--doux);margin-top:5px;line-height:1.3}
+.chiffre .ev{font-size:11px;font-weight:700;margin-top:4px;font-variant-numeric:tabular-nums}
+.chiffre .ev.up{color:var(--vert)} .chiffre .ev.down{color:var(--rouge)} .chiffre .ev.flat{color:var(--faible)}
+.semaine .socle{margin-top:13px;font-size:12.5px;color:var(--doux);line-height:1.5}
+.semaine .socle b{color:var(--or);font-weight:700}
 
 /* ── le verdict ── */
 .verdict{margin-top:16px;border-top:1px solid var(--bord);padding-top:16px}
@@ -185,6 +240,21 @@ main{max-width:900px;margin:0 auto;padding:20px 18px 80px}
 </header>
 
 <main>
+${bilan ? `
+  <section class="panneau semaine">
+    <div class="titre">
+      <h2>Ce que tu as fait</h2>
+      <span class="periode">${ech(bilan.periode)}</span>
+    </div>
+    <div class="chiffres">
+${bilan.chiffres.map((c) => `      <div class="chiffre">
+        <div class="n">${c.v}</div>
+        <div class="l">${ech(c.label)}</div>
+${c.ev === null ? '' : `        <div class="ev ${c.ev > 0 ? 'up' : c.ev < 0 ? 'down' : 'flat'}">${c.ev > 0 ? '+' : ''}${c.ev}&nbsp;% vs S-1</div>`}
+      </div>`).join('\n')}
+    </div>
+${bilan.note ? `    <p class="socle">${ech(bilan.note)}</p>` : ''}
+  </section>` : ''}
   <section class="panneau scene" id="scene">
     <div class="quoi" id="sceneQuoi">Prêt</div>
     <div class="tache" id="sceneTache">Choisis une tâche pour lancer le chrono.</div>
