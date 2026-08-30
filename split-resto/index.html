@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Resto en écran scindé</title>
+<style>
+ :root{--bg:#0a0a0f;--panel:#111117;--border:#242430;--y:#f5d90a;--o:#ff7a1a;--text:#f2f2f5;--muted:#9a9aa8}
+ *{box-sizing:border-box}
+ body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;padding:2rem 1rem 4rem}
+ .wrap{max-width:480px;margin:0 auto}
+ a.back{color:var(--muted);font-size:.8rem;text-decoration:none;display:inline-block;margin-bottom:1rem}
+ header{text-align:center;margin-bottom:1.5rem}
+ header h1{font-size:1.45rem;margin:0 0 .3rem;background:linear-gradient(90deg,var(--y),var(--o));-webkit-background-clip:text;background-clip:text;color:transparent}
+ header p{color:var(--muted);font-size:.85rem;margin:0}
+ .card{background:var(--panel);border:1px solid var(--border);border-radius:16px;overflow:hidden;margin-bottom:1.4rem;box-shadow:0 18px 50px -24px rgba(168,85,247,.45)}
+ .head{padding:.9rem 1.1rem;display:flex;justify-content:space-between;align-items:center;gap:.5rem}
+ .head h2{font-size:1rem;margin:0;font-weight:600}
+ .badge{font-size:.68rem;font-weight:700;padding:.24rem .62rem;border-radius:999px;background:rgba(245,217,10,.12);color:var(--y);border:1px solid rgba(245,217,10,.3);white-space:nowrap}
+ video{display:block;width:100%;aspect-ratio:9/16;background:#000}
+ .meta{padding:.9rem 1.1rem 1.1rem;border-top:1px solid var(--border);font-size:.82rem;color:#c9c9d4;line-height:1.68}
+ .meta b{color:var(--y)}
+ .alerte{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.35);border-radius:14px;padding:1rem 1.1rem;font-size:.83rem;line-height:1.65;color:#ffc9c9;margin-bottom:1.4rem}
+ .alerte b{color:#fff}
+ .t{display:flex;gap:.7rem;padding:.42rem 0;border-bottom:1px solid var(--border)}
+ .t:last-child{border-bottom:0}
+ .t span:first-child{color:var(--muted);min-width:8.5rem}
+ footer{text-align:center;margin-top:2rem;font-size:.75rem;color:var(--muted)}
+</style></head><body>
+<div class="wrap">
+ <a class="back" href="/">← toutes les prévisualisations</a>
+ <header><h1>Resto — écran scindé</h1><p>hook plein écran 10 s, puis split · 30 août 2026</p></header>
+
+ <div class="alerte">
+  <b>Ce n'est pas fini — un défaut mesuré.</b> La bande basse est <b>noire pendant 9,5 s sur 38</b>
+  (de 18,5 à 23 s, puis de 28 à 33 s). Ce sont les deux segments où l'ancien format n'avait pas
+  d'avatar&nbsp;: invisible en plein cadre, béant en split. Regarde le <b>format</b>, pas ces deux trous.
+ </div>
+
+ <div class="card">
+  <div class="head"><h2>La vidéo</h2><span class="badge">37,8 s · 9:16</span></div>
+  <video src="video.mp4" controls playsinline preload="metadata" poster="cover.jpg"></video>
+  <div class="meta">
+   <b>0 → 10 s</b> le clip métro, plein écran, rien par-dessus — ni voix, ni habillage, ni musique.<br>
+   <b>10 s → fin</b> écran scindé : le workflow n8n se construit en haut, toi en bas.
+  </div>
+ </div>
+
+ <div class="card">
+  <div class="head"><h2>Les réglages</h2><span class="badge">mesuré</span></div>
+  <div class="meta">
+   <div class="t"><span>Hook</span><span>10,04 s <b>entières</b>, son du clip seul (−20,4 dB)</span></div>
+   <div class="t"><span>Musique</span><span>n'entre <b>qu'après</b> le hook, fondu 1,5 s</span></div>
+   <div class="t"><span>Bande haute</span><span>0 → 1174 px · le canvas tient <b>toute</b> l'explication</span></div>
+   <div class="t"><span>Bande basse</span><span>1186 → 1920 px · crop 720×489, tête + épaules</span></div>
+   <div class="t"><span>Sous-titres</span><span>3 mots, 1 surligné, remontés au-dessus du filet</span></div>
+  </div>
+ </div>
+
+ <div class="card">
+  <div class="head"><h2>Ce qu'il reste à trancher</h2><span class="badge">pour toi</span></div>
+  <div class="meta">
+   <b>1.</b> Le format te va&nbsp;? Si oui je traite les 9 autres secteurs.<br>
+   <b>2.</b> Les 9,5 s de bande noire&nbsp;: pour les combler il faut rejouer des plages de lèvres
+   actives — la banque bureau n'a que 13,5 s exploitables. C'est faisable, c'est ce que fait le
+   moteur split d'origine, mais c'est un vrai travail.<br>
+   <b>3.</b> Le hook est le clip métro, générique. Un hook par secteur&nbsp;? Ou le même partout,
+   ce qui testerait justement ton hypothèse sur le hook visuel.
+  </div>
+ </div>
+
+ <footer>AutomatisationBoost — prévisualisation</footer>
+</div></body></html>
