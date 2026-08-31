@@ -1,0 +1,1019 @@
+<!doctype html>
+<html lang="fr" data-theme="">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Les Papi'es — Restaurant à Saint-Pierre, La Réunion</title>
+<meta name="description" content="Restaurant Les Papi'es, 8 chemin Ringuin à Saint-Pierre. Cuisine créole, grillades, poissons et desserts maison. 4,5 étoiles sur 300 avis. Ouvert du mercredi au dimanche.">
+<meta name="theme-color" content="#F6F1E8" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#14110E" media="(prefers-color-scheme: dark)">
+<meta property="og:title" content="Les Papi'es — Restaurant à Saint-Pierre">
+<meta property="og:description" content="Cuisine créole, grillades et poissons, faits maison. 4,5 sur 300 avis. 8 chemin Ringuin, Saint-Pierre.">
+<meta property="og:image" content="img/h-plateau-creole.jpg">
+<meta property="og:type" content="restaurant">
+<link rel="icon" href="img/logo.png">
+
+<!--
+  ─────────────────────────────────────────────────────────────────────────
+  LES PAPI'ES — maquette de refonte (démonstration commerciale).
+
+  RÈGLE TENUE SUR TOUTE LA PAGE : aucun contenu inventé.
+  Les plats, les prix, les horaires, l'adresse, le téléphone, le texte de
+  présentation, l'avis client et la FAQ proviennent tous de leur site
+  actuel (restaurant-les-papies.fr). La note 4,5 / 300 avis vient de leur
+  fiche Google. Les seules retouches sont orthographiques (« Tagiatelle »
+  → « Tagliatelle », « Enctrecôte » → « Entrecôte », etc.) : aucun prix,
+  aucune composition de plat, aucun horaire n'a été modifié.
+
+  Photos : les leurs, reprises de leur galerie et réétalonnées
+  (lumière, contraste, balance des blancs, netteté). Aucune image de
+  synthèse, aucun plat remplacé.
+
+  Palette : prélevée sur leurs propres matières — le crème de leurs nappes,
+  l'encre de leur logo, le brun-carry de leurs plats, le vert bouteille des
+  plateaux Isautier. Typographie 100 % système, aucune police distante.
+  ─────────────────────────────────────────────────────────────────────────
+-->
+
+<style>
+/* ── Jetons ────────────────────────────────────────────────────────────── */
+:root{
+  --papier:#F6F1E8;
+  --papier-2:#EFE8DC;
+  --papier-3:#E5DCCC;
+  --encre:#191512;
+  --encre-doux:#5F564C;
+  --carry:#A6521F;
+  --carry-vif:#BE6227;
+  --sur-carry:#FFF8F0;
+  --vert:#2C4A3B;
+  --bord:rgba(25,21,18,.13);
+  --bord-fort:rgba(25,21,18,.24);
+  --carte:#FFFCF6;
+  --ombre:0 1px 2px rgba(25,21,18,.05),0 8px 26px rgba(25,21,18,.07);
+  --ombre-fort:0 2px 6px rgba(25,21,18,.08),0 20px 50px rgba(25,21,18,.13);
+  --pad:clamp(18px,5vw,68px);
+  --serif:Georgia,"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua","Times New Roman",serif;
+  --sans:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --r:14px;
+  --logo-inv:0;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --papier:#14110E;
+    --papier-2:#1C1815;
+    --papier-3:#252019;
+    --encre:#F2EBE0;
+    --encre-doux:#A99C8D;
+    --carry:#E09355;
+    --carry-vif:#EBA469;
+    --sur-carry:#1A1108;
+    --vert:#7FB49B;
+    --bord:rgba(242,235,224,.14);
+    --bord-fort:rgba(242,235,224,.26);
+    --carte:#1B1713;
+    --ombre:0 1px 2px rgba(0,0,0,.4),0 8px 26px rgba(0,0,0,.34);
+    --ombre-fort:0 2px 6px rgba(0,0,0,.45),0 20px 50px rgba(0,0,0,.5);
+    --logo-inv:1;
+  }
+}
+:root[data-theme="dark"]{
+  --papier:#14110E;
+  --papier-2:#1C1815;
+  --papier-3:#252019;
+  --encre:#F2EBE0;
+  --encre-doux:#A99C8D;
+  --carry:#E09355;
+  --carry-vif:#EBA469;
+  --sur-carry:#1A1108;
+  --vert:#7FB49B;
+  --bord:rgba(242,235,224,.14);
+  --bord-fort:rgba(242,235,224,.26);
+  --carte:#1B1713;
+  --ombre:0 1px 2px rgba(0,0,0,.4),0 8px 26px rgba(0,0,0,.34);
+  --ombre-fort:0 2px 6px rgba(0,0,0,.45),0 20px 50px rgba(0,0,0,.5);
+  --logo-inv:1;
+}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;background:var(--papier);-webkit-text-size-adjust:100%}
+body{
+  margin:0;background:var(--papier);color:var(--encre);
+  font-family:var(--sans);font-size:16.5px;line-height:1.65;
+  -webkit-font-smoothing:antialiased;overflow-x:hidden;
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation-duration:.001ms!important;transition-duration:.001ms!important}
+}
+img{display:block;max-width:100%}
+a{color:inherit}
+h1,h2,h3{margin:0;font-family:var(--serif);font-weight:400;letter-spacing:-.012em;line-height:1.1;text-wrap:balance}
+p{margin:0 0 1em}
+:focus-visible{outline:2.5px solid var(--carry);outline-offset:3px;border-radius:4px}
+
+.enveloppe{max-width:1180px;margin:0 auto;padding-inline:var(--pad)}
+.etroit{max-width:760px}
+.surtitre{
+  font-size:11.5px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--carry);margin:0 0 14px;font-family:var(--sans);
+}
+.chapo{font-size:clamp(16.5px,1.7vw,19px);color:var(--encre-doux);max-width:60ch}
+section{padding-block:clamp(56px,8vw,110px)}
+.filet{height:1px;background:var(--bord);border:0;margin:0}
+
+/* ── Boutons ───────────────────────────────────────────────────────────── */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:9px;
+  font-family:var(--sans);font-size:15.5px;font-weight:650;text-decoration:none;
+  padding:13px 22px;border-radius:999px;border:1.5px solid transparent;
+  white-space:nowrap;cursor:pointer;min-height:48px;
+  transition:transform .18s ease,box-shadow .18s ease,background .18s ease,border-color .18s ease;
+}
+.btn svg{width:18px;height:18px;flex:none}
+.btn-plein{background:var(--carry);color:var(--sur-carry);box-shadow:0 6px 18px rgba(166,82,31,.26)}
+.btn-plein:hover{background:var(--carry-vif);transform:translateY(-2px);box-shadow:0 10px 26px rgba(166,82,31,.32)}
+.btn-creux{border-color:var(--bord-fort);color:var(--encre);background:transparent}
+.btn-creux:hover{border-color:var(--carry);color:var(--carry);transform:translateY(-2px)}
+
+/* ── Barre haute ───────────────────────────────────────────────────────── */
+.barre{
+  position:sticky;top:0;z-index:60;
+  display:flex;align-items:center;justify-content:space-between;gap:14px;
+  padding:11px var(--pad);
+  background:var(--papier);
+  background:color-mix(in srgb,var(--papier) 88%,transparent);
+  backdrop-filter:saturate(1.6) blur(14px);
+  -webkit-backdrop-filter:saturate(1.6) blur(14px);
+  border-bottom:1px solid transparent;transition:border-color .3s ease;
+}
+.barre.collee{border-bottom-color:var(--bord)}
+.marque{display:flex;align-items:center;gap:11px;text-decoration:none;min-width:0}
+.marque img{width:40px;height:40px;object-fit:contain;filter:invert(var(--logo-inv))}
+.marque b{font-family:var(--serif);font-size:19px;font-weight:400;letter-spacing:-.01em;white-space:nowrap}
+.marque span{display:block;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--encre-doux);margin-top:1px}
+.barre-liens{display:none;gap:26px;align-items:center}
+.barre-liens a{font-size:14.5px;text-decoration:none;color:var(--encre-doux);transition:color .2s}
+.barre-liens a:hover{color:var(--carry)}
+.barre-actions{display:flex;align-items:center;gap:9px}
+.bascule{
+  width:42px;height:42px;border-radius:999px;border:1.5px solid var(--bord-fort);
+  background:transparent;color:var(--encre);cursor:pointer;display:grid;place-items:center;
+  transition:border-color .2s,color .2s;flex:none;
+}
+.bascule:hover{border-color:var(--carry);color:var(--carry)}
+.bascule svg{width:19px;height:19px}
+.bascule .lune{display:none}
+:root[data-theme="dark"] .bascule .lune,
+:root:not([data-theme="light"]) .bascule .lune{display:block}
+:root[data-theme="dark"] .bascule .soleil,
+:root:not([data-theme="light"]) .bascule .soleil{display:none}
+@media (prefers-color-scheme:light){
+  :root:not([data-theme="dark"]) .bascule .lune{display:none}
+  :root:not([data-theme="dark"]) .bascule .soleil{display:block}
+}
+.tel-barre{display:none}
+@media (min-width:900px){
+  .barre-liens{display:flex}
+  .tel-barre{display:inline-flex}
+}
+
+/* ── Ouverture ─────────────────────────────────────────────────────────── */
+.ouverture{position:relative;isolation:isolate;min-height:min(86vh,760px);min-height:min(86svh,760px);display:flex;align-items:flex-end}
+.ouverture-img{position:absolute;inset:0;z-index:-2;overflow:hidden}
+.ouverture-img img{width:100%;height:100%;object-fit:cover;object-position:50% 36%}
+.ouverture::after{
+  content:"";position:absolute;inset:0;z-index:-1;
+  background:linear-gradient(178deg,rgba(12,9,7,.52) 0%,rgba(12,9,7,.28) 34%,rgba(12,9,7,.72) 76%,rgba(12,9,7,.9) 100%);
+}
+.ouverture-txt{width:100%;padding:clamp(34px,7vw,74px) var(--pad) clamp(30px,5vw,58px);color:#FBF6EE;max-width:1180px;margin:0 auto}
+.ouverture-txt .surtitre{color:#F0C08C}
+.ouverture h1{font-size:clamp(40px,10vw,84px);line-height:.98;margin:0 0 16px;color:#FDF9F3}
+.ouverture h1 em{font-style:italic;color:#F3C68F}
+.ouverture .accroche{font-size:clamp(16.5px,2vw,20px);color:#E5D9C9;max-width:46ch;margin:0 0 26px}
+.note-etoiles{
+  display:inline-flex;align-items:center;gap:10px;flex-wrap:wrap;
+  background:rgba(253,249,243,.1);border:1px solid rgba(253,249,243,.24);
+  backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+  padding:8px 15px;border-radius:999px;margin-bottom:24px;font-size:14.5px;color:#FBF6EE;
+}
+.note-etoiles .etoiles{color:#F3C037;letter-spacing:1px;font-size:15px}
+.note-etoiles b{font-weight:700}
+.ouverture-boutons{display:flex;gap:11px;flex-wrap:wrap}
+.ouverture .btn-creux{border-color:rgba(253,249,243,.42);color:#FDF9F3}
+.ouverture .btn-creux:hover{border-color:#FDF9F3;color:#FDF9F3;background:rgba(253,249,243,.1)}
+
+/* ── Bandeau infos ─────────────────────────────────────────────────────── */
+.bandeau{background:var(--papier-2);border-block:1px solid var(--bord)}
+.bandeau-grille{display:grid;gap:2px;padding-block:0}
+@media (min-width:760px){.bandeau-grille{grid-template-columns:repeat(3,1fr)}}
+.info{padding:26px 0;display:flex;gap:15px;align-items:flex-start}
+@media (min-width:760px){
+  .info{padding:32px 26px}
+  .info+.info{border-left:1px solid var(--bord)}
+}
+@media (max-width:759px){.info+.info{border-top:1px solid var(--bord)}}
+.info-ic{
+  width:40px;height:40px;border-radius:11px;flex:none;display:grid;place-items:center;
+  background:color-mix(in srgb,var(--carry) 13%,transparent);color:var(--carry);
+}
+.info-ic svg{width:20px;height:20px}
+.info h3{font-family:var(--sans);font-size:11.5px;font-weight:700;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--encre-doux);margin:0 0 7px}
+.info p{margin:0;font-size:16px;line-height:1.5}
+.info a{text-decoration:none;font-weight:600;border-bottom:1.5px solid color-mix(in srgb,var(--carry) 45%,transparent);
+  transition:border-color .2s,color .2s}
+.info a:hover{color:var(--carry);border-bottom-color:var(--carry)}
+.info .creneau{display:flex;justify-content:space-between;gap:16px;font-size:15.5px;
+  padding:3px 0;max-width:290px}
+.info .creneau span:first-child{color:var(--encre-doux)}
+.info .creneau b{font-weight:600;text-align:right}
+
+/* ── En-têtes de section ───────────────────────────────────────────────── */
+.entete{margin-bottom:clamp(32px,4.5vw,54px);max-width:640px}
+.entete h2{font-size:clamp(29px,4.6vw,48px);margin:0 0 14px}
+
+/* ── Présentation ──────────────────────────────────────────────────────── */
+.presentation{display:grid;gap:clamp(28px,4vw,58px);align-items:center}
+@media (min-width:900px){.presentation{grid-template-columns:1fr 1fr}}
+.presentation .texte p{max-width:52ch}
+.presentation figure{margin:0;border-radius:var(--r);overflow:hidden;box-shadow:var(--ombre-fort)}
+.presentation figure img{width:100%;aspect-ratio:4/3;object-fit:cover}
+.presentation figcaption{font-size:13px;color:var(--encre-doux);padding:11px 14px;background:var(--carte);border-top:1px solid var(--bord)}
+.signature{font-family:var(--serif);font-style:italic;font-size:20px;color:var(--carry);margin-top:6px}
+
+/* ── Galerie ───────────────────────────────────────────────────────────── */
+.galerie{display:grid;grid-template-columns:repeat(2,1fr);gap:clamp(8px,1.4vw,16px)}
+@media (min-width:700px){.galerie{grid-template-columns:repeat(3,1fr)}}
+.vignette{
+  position:relative;margin:0;padding:0;border:0;background:var(--papier-3);
+  border-radius:10px;overflow:hidden;cursor:zoom-in;display:block;width:100%;
+  aspect-ratio:1/1;box-shadow:var(--ombre);
+}
+.vignette img{width:100%;height:100%;object-fit:cover;transition:transform .55s cubic-bezier(.2,.7,.3,1)}
+.vignette:hover img,.vignette:focus-visible img{transform:scale(1.055)}
+.vignette figcaption{
+  position:absolute;left:0;right:0;bottom:0;padding:26px 13px 11px;text-align:left;
+  font-size:13px;font-weight:600;color:#FBF6EE;
+  background:linear-gradient(to top,rgba(12,9,7,.86),rgba(12,9,7,0));
+  opacity:0;transform:translateY(6px);transition:opacity .3s ease,transform .3s ease;
+}
+.vignette:hover figcaption,.vignette:focus-visible figcaption{opacity:1;transform:none}
+.vignette.grande{grid-column:span 2;grid-row:span 2}
+
+/* Visionneuse */
+.visionneuse{
+  border:0;padding:0;max-width:none;max-height:none;width:100%;height:100%;
+  background:rgba(10,8,6,.94);overscroll-behavior:contain;
+}
+.visionneuse::backdrop{background:rgba(10,8,6,.9)}
+.visionneuse-int{width:100%;height:100%;display:grid;place-items:center;padding:16px;position:relative}
+.visionneuse img{max-width:100%;max-height:82svh;object-fit:contain;border-radius:8px}
+.visionneuse figcaption{color:#E5D9C9;font-size:14px;text-align:center;margin-top:14px}
+.v-fermer,.v-prec,.v-suiv{
+  position:absolute;border:1px solid rgba(253,249,243,.3);background:rgba(20,15,12,.6);
+  color:#FBF6EE;border-radius:999px;cursor:pointer;display:grid;place-items:center;
+  width:48px;height:48px;transition:background .2s,border-color .2s;
+}
+.v-fermer:hover,.v-prec:hover,.v-suiv:hover{background:rgba(166,82,31,.85);border-color:transparent}
+.v-fermer{top:14px;right:14px;font-size:22px;line-height:1}
+.v-prec{left:12px;top:50%;transform:translateY(-50%)}
+.v-suiv{right:12px;top:50%;transform:translateY(-50%)}
+.v-prec svg,.v-suiv svg{width:22px;height:22px}
+
+/* ── Carte ─────────────────────────────────────────────────────────────── */
+.carte-bloc{background:var(--papier-2);border-block:1px solid var(--bord)}
+.ancres{
+  display:flex;gap:8px;overflow-x:auto;padding-bottom:10px;margin-bottom:clamp(26px,3.5vw,42px);
+  scrollbar-width:thin;-webkit-overflow-scrolling:touch;
+}
+.ancres a{
+  flex:none;text-decoration:none;font-size:13.5px;font-weight:600;padding:8px 15px;
+  border-radius:999px;border:1.5px solid var(--bord-fort);color:var(--encre-doux);
+  transition:all .2s;white-space:nowrap;
+}
+.ancres a:hover{border-color:var(--carry);color:var(--carry);background:color-mix(in srgb,var(--carry) 8%,transparent)}
+.menu-cols{columns:1;column-gap:clamp(28px,4vw,58px)}
+@media (min-width:760px){.menu-cols{columns:2}}
+@media (min-width:1120px){.menu-cols{columns:3}}
+.groupe{break-inside:avoid;margin:0 0 clamp(26px,3vw,38px);scroll-margin-top:86px}
+#maison,#galerie,#carte,#avis,#questions,#venir,#haut{scroll-margin-top:76px}
+.groupe h3{
+  font-family:var(--sans);font-size:12px;font-weight:800;letter-spacing:.19em;
+  text-transform:uppercase;color:var(--carry);margin:0 0 4px;
+}
+.groupe .precision{font-size:12.5px;color:var(--encre-doux);margin:0 0 13px;font-style:italic}
+.groupe hr{height:1.5px;background:color-mix(in srgb,var(--carry) 30%,transparent);border:0;margin:0 0 13px}
+.plat{display:flex;align-items:baseline;gap:9px;padding:6px 0;border-bottom:1px dotted var(--bord)}
+.plat:last-child{border-bottom:0}
+.plat .nom{flex:1;font-size:15.5px;line-height:1.4}
+.plat .prix{font-variant-numeric:tabular-nums;font-weight:700;font-size:15px;white-space:nowrap;color:var(--encre)}
+.parfums{
+  break-inside:avoid;background:var(--carte);border:1px solid var(--bord);border-radius:var(--r);
+  padding:20px 22px;box-shadow:var(--ombre);
+}
+.parfums h3{font-family:var(--sans);font-size:12px;font-weight:800;letter-spacing:.19em;
+  text-transform:uppercase;color:var(--carry);margin:0 0 10px}
+.parfums p{margin:0;font-size:15.5px;line-height:1.7}
+
+/* ── Avis ──────────────────────────────────────────────────────────────── */
+.avis-grille{display:grid;gap:clamp(24px,3.5vw,48px);align-items:center}
+@media (min-width:880px){.avis-grille{grid-template-columns:auto 1fr}}
+.score{
+  text-align:center;background:var(--carte);border:1px solid var(--bord);border-radius:var(--r);
+  padding:30px 38px;box-shadow:var(--ombre);
+}
+.score .chiffre{font-family:var(--serif);font-size:66px;line-height:1;color:var(--carry)}
+.score .etoiles{color:#E0A21C;font-size:21px;letter-spacing:3px;margin:9px 0 6px}
+.score .nb{font-size:13.5px;color:var(--encre-doux)}
+blockquote{
+  margin:0;font-family:var(--serif);font-size:clamp(19px,2.5vw,27px);line-height:1.45;
+  position:relative;padding-left:44px;
+}
+blockquote::before{
+  content:"\201C";position:absolute;left:0;top:.08em;font-size:2.6em;line-height:.72;
+  color:var(--carry);opacity:.32;font-family:var(--serif);
+}
+blockquote cite{
+  display:block;font-family:var(--sans);font-style:normal;font-size:14px;font-weight:650;
+  color:var(--encre-doux);margin-top:18px;
+}
+blockquote cite::before{content:"— "}
+
+/* ── Vidéo ─────────────────────────────────────────────────────────────── */
+.video-bloc{background:var(--papier-2);border-block:1px solid var(--bord)}
+.video-grille{display:grid;gap:clamp(26px,4vw,52px);align-items:center}
+@media (min-width:880px){.video-grille{grid-template-columns:auto 1fr}}
+.video-grille video{
+  width:min(300px,100%);height:auto;border-radius:var(--r);background:#000;
+  box-shadow:var(--ombre-fort);display:block;margin-inline:auto;
+}
+
+/* ── FAQ ───────────────────────────────────────────────────────────────── */
+.faq{max-width:760px}
+details{
+  border:1px solid var(--bord);border-radius:var(--r);background:var(--carte);
+  margin-bottom:11px;overflow:hidden;transition:border-color .2s;
+}
+details[open]{border-color:var(--bord-fort)}
+summary{
+  cursor:pointer;padding:17px 20px;font-weight:650;font-size:16.5px;list-style:none;
+  display:flex;justify-content:space-between;align-items:center;gap:16px;min-height:56px;
+}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"";width:9px;height:9px;flex:none;border-right:2px solid var(--carry);
+  border-bottom:2px solid var(--carry);transform:rotate(45deg);margin-top:-4px;transition:transform .25s}
+details[open] summary::after{transform:rotate(-135deg);margin-top:2px}
+details .rep{padding:0 20px 18px;color:var(--encre-doux);margin:0}
+
+/* ── Pied ──────────────────────────────────────────────────────────────── */
+.pied{background:var(--papier-3);border-top:1px solid var(--bord);padding-block:clamp(44px,6vw,72px) 0}
+.pied-grille{display:grid;gap:32px}
+@media (min-width:760px){.pied-grille{grid-template-columns:1.3fr 1fr 1fr}}
+.pied h3{font-family:var(--sans);font-size:11.5px;font-weight:700;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--encre-doux);margin:0 0 14px}
+.pied p,.pied li{font-size:15.5px;margin:0 0 7px}
+.pied ul{list-style:none;padding:0;margin:0}
+.pied a{text-decoration:none;transition:color .2s}
+.pied a:hover{color:var(--carry)}
+.pied .marque img{width:52px;height:52px}
+.reseaux{display:flex;gap:10px;margin-top:16px}
+.reseaux a{
+  width:42px;height:42px;border-radius:999px;border:1.5px solid var(--bord-fort);
+  display:grid;place-items:center;transition:all .2s;
+}
+.reseaux a:hover{border-color:var(--carry);color:var(--carry);transform:translateY(-2px)}
+.reseaux svg{width:19px;height:19px}
+.pied-bas{
+  margin-top:clamp(36px,5vw,56px);border-top:1px solid var(--bord);
+  padding-block:20px 26px;display:flex;flex-wrap:wrap;gap:10px 22px;justify-content:space-between;
+  font-size:13px;color:var(--encre-doux);
+}
+
+/* ── Barre d'appel mobile ──────────────────────────────────────────────── */
+.appel-mobile{
+  position:fixed;left:0;right:0;bottom:0;z-index:70;display:flex;gap:9px;
+  padding:10px 12px calc(10px + env(safe-area-inset-bottom));
+  background:var(--papier);
+  background:color-mix(in srgb,var(--papier) 94%,transparent);
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  border-top:1px solid var(--bord);
+}
+.appel-mobile .btn{flex:1;font-size:15px;padding-inline:12px}
+@media (min-width:900px){.appel-mobile{display:none}}
+@media (max-width:899px){body{padding-bottom:78px}}
+
+/* ── Apparition au défilement ──────────────────────────────────────────── */
+.surgit{opacity:0;transform:translateY(20px);transition:opacity .7s ease,transform .7s cubic-bezier(.2,.7,.3,1)}
+.surgit.vu{opacity:1;transform:none}
+</style>
+</head>
+<body>
+
+<!-- ══ Barre haute ══════════════════════════════════════════════════════ -->
+<header class="barre" id="barre">
+  <a class="marque" href="#haut">
+    <img src="img/logo.png" alt="" width="40" height="40">
+    <b>Les Papi'es<span>Grill &amp; Confort</span></b>
+  </a>
+  <nav class="barre-liens">
+    <a href="#maison">La maison</a>
+    <a href="#galerie">Photos</a>
+    <a href="#carte">La carte</a>
+    <a href="#avis">Avis</a>
+    <a href="#venir">Nous trouver</a>
+  </nav>
+  <div class="barre-actions">
+    <button class="bascule" id="bascule" type="button" aria-label="Basculer entre le thème clair et le thème sombre">
+      <svg class="soleil" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.4v2.2M12 19.4v2.2M2.4 12h2.2M19.4 12h2.2M5.2 5.2l1.6 1.6M17.2 17.2l1.6 1.6M18.8 5.2l-1.6 1.6M6.8 17.2l-1.6 1.6"/></svg>
+      <svg class="lune" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 14.2A8.6 8.6 0 1 1 9.8 3.5a6.9 6.9 0 0 0 10.7 10.7Z"/></svg>
+    </button>
+    <a class="btn btn-plein tel-barre" href="tel:+262692760324">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.5 16.9v2.9a1.9 1.9 0 0 1-2.1 1.9 18.9 18.9 0 0 1-8.2-2.9 18.6 18.6 0 0 1-5.7-5.7A18.9 18.9 0 0 1 2.6 4.8 1.9 1.9 0 0 1 4.5 2.7h2.9a1.9 1.9 0 0 1 1.9 1.6c.1 1 .35 1.9.7 2.8a1.9 1.9 0 0 1-.4 2l-1.2 1.2a15.2 15.2 0 0 0 5.7 5.7l1.2-1.2a1.9 1.9 0 0 1 2-.4c.9.35 1.8.6 2.8.7a1.9 1.9 0 0 1 1.6 1.9Z"/></svg>
+      0692 76 03 24
+    </a>
+  </div>
+</header>
+
+<!-- ══ Ouverture ════════════════════════════════════════════════════════ -->
+<div class="ouverture" id="haut">
+  <div class="ouverture-img">
+    <img src="img/h-plateau-creole.jpg" alt="Plateau créole des Papi'es : carry de poisson, civet de zourite, brèdes et grains." width="1500" height="1625" fetchpriority="high">
+  </div>
+  <div class="ouverture-txt">
+    <p class="surtitre">Saint-Pierre · La Réunion</p>
+    <h1>La cuisine <em>créole</em><br>faite maison.</h1>
+    <p class="accroche">Des plats faits maison, une cuisine simple, authentique et gourmande. Sur place ou à emporter, au 8&nbsp;chemin Ringuin.</p>
+    <div class="note-etoiles">
+      <span class="etoiles" aria-hidden="true">★★★★★</span>
+      <span><b>4,5</b> sur 300 avis Google</span>
+    </div>
+    <div class="ouverture-boutons">
+      <a class="btn btn-plein" href="tel:+262692760324">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.5 16.9v2.9a1.9 1.9 0 0 1-2.1 1.9 18.9 18.9 0 0 1-8.2-2.9 18.6 18.6 0 0 1-5.7-5.7A18.9 18.9 0 0 1 2.6 4.8 1.9 1.9 0 0 1 4.5 2.7h2.9a1.9 1.9 0 0 1 1.9 1.6c.1 1 .35 1.9.7 2.8a1.9 1.9 0 0 1-.4 2l-1.2 1.2a15.2 15.2 0 0 0 5.7 5.7l1.2-1.2a1.9 1.9 0 0 1 2-.4c.9.35 1.8.6 2.8.7a1.9 1.9 0 0 1 1.6 1.9Z"/></svg>
+        Réserver au 0692 76 03 24
+      </a>
+      <a class="btn btn-creux" href="#carte">Voir la carte</a>
+    </div>
+  </div>
+</div>
+
+<!-- ══ Bandeau infos pratiques ══════════════════════════════════════════ -->
+<div class="bandeau">
+  <div class="enveloppe">
+    <div class="bandeau-grille">
+
+      <div class="info">
+        <span class="info-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.2"/><path d="M12 6.6V12l3.6 2.1"/></svg></span>
+        <div>
+          <h3>Horaires</h3>
+          <div class="creneau"><span>Mercredi – samedi</span><b>12h–14h30<br>19h–22h30</b></div>
+          <div class="creneau"><span>Dimanche</span><b>12h–15h</b></div>
+        </div>
+      </div>
+
+      <div class="info">
+        <span class="info-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10.4c0 5.6-8 12.2-8 12.2s-8-6.6-8-12.2a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10.2" r="2.9"/></svg></span>
+        <div>
+          <h3>Adresse</h3>
+          <p><a href="https://www.google.com/maps/search/?api=1&amp;query=8%20Chem.%20Ringuin%2C%20Saint-Pierre%2097410%2C%20La%20R%C3%A9union" target="_blank" rel="noopener">8 chemin Ringuin<br>97410 Saint-Pierre</a></p>
+        </div>
+      </div>
+
+      <div class="info">
+        <span class="info-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.5 16.9v2.9a1.9 1.9 0 0 1-2.1 1.9 18.9 18.9 0 0 1-8.2-2.9 18.6 18.6 0 0 1-5.7-5.7A18.9 18.9 0 0 1 2.6 4.8 1.9 1.9 0 0 1 4.5 2.7h2.9a1.9 1.9 0 0 1 1.9 1.6c.1 1 .35 1.9.7 2.8a1.9 1.9 0 0 1-.4 2l-1.2 1.2a15.2 15.2 0 0 0 5.7 5.7l1.2-1.2a1.9 1.9 0 0 1 2-.4c.9.35 1.8.6 2.8.7a1.9 1.9 0 0 1 1.6 1.9Z"/></svg></span>
+        <div>
+          <h3>Réservations</h3>
+          <p><a href="tel:+262692760324">0692 76 03 24</a></p>
+          <p style="color:var(--encre-doux);font-size:14.5px">Sur place ou à emporter.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ══ La maison ════════════════════════════════════════════════════════ -->
+<section id="maison">
+  <div class="enveloppe">
+    <div class="presentation surgit">
+      <div class="texte">
+        <p class="surtitre">La maison</p>
+        <h2 style="font-size:clamp(29px,4.6vw,48px);margin-bottom:20px">Bien manger,<br>et passer un bon moment.</h2>
+        <p><b>Les Papi'es</b>, c'est un lieu convivial où l'on vient pour bien manger et passer un bon moment.</p>
+        <p>Notre équipe vous accueille dans une ambiance chaleureuse, autour de plats faits maison, préparés avec soin et passion.</p>
+        <p>Que ce soit pour une pause déjeuner, un dîner entre amis ou un repas à emporter, Les Papi'es est l'endroit idéal pour savourer une cuisine simple, authentique et gourmande.</p>
+        <p class="signature">À très bientôt autour de notre table !</p>
+      </div>
+      <figure>
+        <img src="img/h-salle.jpg" alt="La salle des Papi'es sous la varangue : tables nappées, ardoises du jour et mur en pierre de lave." width="1400" height="1051" loading="lazy">
+        <figcaption>La salle, sous la varangue.</figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<!-- ══ Galerie ══════════════════════════════════════════════════════════ -->
+<section id="galerie" style="padding-top:0">
+  <div class="enveloppe">
+    <div class="entete surgit">
+      <p class="surtitre">En cuisine</p>
+      <h2>Ce qui sort des assiettes</h2>
+      <p class="chapo">Toutes les photos sont celles du restaurant. Touchez une image pour l'agrandir.</p>
+    </div>
+    <div class="galerie surgit" id="galerie-grille">
+      <!-- Les vignettes sont injectées par le script, à partir de PHOTOS. -->
+    </div>
+  </div>
+</section>
+
+<dialog class="visionneuse" id="visionneuse" aria-label="Photo agrandie">
+  <div class="visionneuse-int">
+    <button class="v-fermer" id="v-fermer" type="button" aria-label="Fermer">&times;</button>
+    <button class="v-prec" id="v-prec" type="button" aria-label="Photo précédente"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5 8 12l7 7"/></svg></button>
+    <button class="v-suiv" id="v-suiv" type="button" aria-label="Photo suivante"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 5 7 7-7 7"/></svg></button>
+    <figure style="margin:0;display:grid;place-items:center">
+      <img id="v-img" alt="">
+      <figcaption id="v-txt"></figcaption>
+    </figure>
+  </div>
+</dialog>
+
+<!-- ══ La carte ═════════════════════════════════════════════════════════ -->
+<div class="carte-bloc" id="carte">
+  <section style="padding-bottom:clamp(48px,7vw,96px)">
+    <div class="enveloppe">
+      <div class="entete surgit">
+        <p class="surtitre">La carte</p>
+        <h2>Menu à la carte</h2>
+        <p class="chapo">La carte servie au restaurant. Sauces au choix sur les viandes ; les prix sont ceux affichés en salle.</p>
+      </div>
+
+      <nav class="ancres surgit" aria-label="Rubriques de la carte">
+        <a href="#g-creole">Créole</a>
+        <a href="#g-boeuf">Bœuf</a>
+        <a href="#g-poisson">Poisson</a>
+        <a href="#g-crevettes">Crevettes</a>
+        <a href="#g-poulet">Poulet</a>
+        <a href="#g-porc">Porc</a>
+        <a href="#g-agneau">Agneau</a>
+        <a href="#g-canard">Canard</a>
+        <a href="#g-kangourou">Kangourou</a>
+        <a href="#g-risotto">Risotto</a>
+        <a href="#g-chinois">Chinois</a>
+        <a href="#g-pates">Pâtes</a>
+        <a href="#g-salade">Salades</a>
+        <a href="#g-enfant">Box enfant</a>
+        <a href="#g-dessert">Desserts</a>
+      </nav>
+
+      <div class="menu-cols">
+
+        <div class="groupe" id="g-creole">
+          <h3>Créole</h3><hr>
+          <div class="plat"><span class="nom">Cabri massalé</span><span class="prix">18,00 €</span></div>
+          <div class="plat"><span class="nom">Civet zourite</span><span class="prix">22,00 €</span></div>
+          <div class="plat"><span class="nom">Civet cabri</span><span class="prix">22,00 €</span></div>
+          <div class="plat"><span class="nom">Coq au vin</span><span class="prix">18,00 €</span></div>
+          <div class="plat"><span class="nom">Coq massalé</span><span class="prix">18,00 €</span></div>
+          <div class="plat"><span class="nom">Carry coq</span><span class="prix">18,00 €</span></div>
+          <div class="plat"><span class="nom">Carry poisson rouge</span><span class="prix">38,00 €</span></div>
+          <div class="plat"><span class="nom">Rougail morue</span><span class="prix">18,00 €</span></div>
+          <div class="plat"><span class="nom">Rougail boucané</span><span class="prix">15,00 €</span></div>
+          <div class="plat"><span class="nom">Carry patte cochon</span><span class="prix">18,00 €</span></div>
+          <div class="plat"><span class="nom">Carry légine</span><span class="prix">26,00 €</span></div>
+          <div class="plat"><span class="nom">Carry camaron</span><span class="prix">24,00 €</span></div>
+          <div class="plat"><span class="nom">Carry langouste</span><span class="prix">38,00 €</span></div>
+          <div class="plat"><span class="nom">Queue de bœuf</span><span class="prix">24,00 €</span></div>
+        </div>
+
+        <div class="groupe" id="g-boeuf">
+          <h3>Bœuf</h3><hr>
+          <div class="plat"><span class="nom">Entrecôte sauce au choix (300 g)</span><span class="prix">28,00 €</span></div>
+          <div class="plat"><span class="nom">Langue de bœuf sauce piquante</span><span class="prix">24,00 €</span></div>
+          <div class="plat"><span class="nom">Filet de bœuf sauce au choix</span><span class="prix">32,00 €</span></div>
+          <div class="plat"><span class="nom">Fondant de bœuf (jarret)</span><span class="prix">22,00 €</span></div>
+          <div class="plat"><span class="nom">Steak de bœuf à la créole ou à la cantonaise</span><span class="prix">20,00 €</span></div>
+          <div class="plat"><span class="nom">Joue de bœuf braisée à la Leffe</span><span class="prix">26,00 €</span></div>
+          <div class="plat"><span class="nom">Faux-filet au poivre vert ou forestière</span><span class="prix">20,00 €</span></div>
+        </div>
+
+        <div class="groupe" id="g-poisson">
+          <h3>Poisson</h3><hr>
+          <div class="plat"><span class="nom">Filet de daurade à la crème citronnée ou combava</span><span class="prix">18,00 €</span></div>
+          <div class="plat"><span class="nom">Pavé d'espadon rôti</span><span class="prix">18,00 €</span></div>
+          <div class="plat"><span class="nom">Tartare de thon</span><span class="prix">22,00 €</span></div>
+          <div class="plat"><span class="nom">Croustille de légine</span><span class="prix">24,00 €</span></div>
+          <div class="plat"><span class="nom">Pavé de saumon</span><span class="prix">22,00 €</span></div>
+          <div class="plat"><span class="nom">Légine grillée à la plancha</span><span class="prix">24,00 €</span></div>
+          <div class="plat"><span class="nom">Palette de la mer (gambas, langouste, tartare, saumon)</span><span class="prix">38,00 €</span></div>
+        </div>
+
+        <div class="groupe" id="g-crevettes">
+          <h3>Crevettes</h3><hr>
+          <div class="plat"><span class="nom">Crevette 4 saisons</span><span class="prix">18,00 €</span></div>
+          <div class="plat"><span class="nom">Gambas flambées au vieux rhum et sa persillade</span><span class="prix">22,00 €</span></div>
+          <div class="plat"><span class="nom">Brochette de camarons</span><span class="prix">28,00 €</span></div>
+          <div class="plat"><span class="nom">Langoustes grillées à la plancha</span><span class="prix">42,00 €</span></div>
+        </div>
+
+        <div class="groupe" id="g-poulet">
+          <h3>Poulet</h3><hr>
+          <div class="plat"><span class="nom">Émincé de poulet sauce au choix</span><span class="prix">18,00 €</span></div>
+          <div class="plat"><span class="nom">Suprême à la crème et champignons</span><span class="prix">18,00 €</span></div>
+          <div class="plat"><span class="nom">Escalope milanaise sauce au choix</span><span class="prix">20,00 €</span></div>
+        </div>
+
+        <div class="groupe" id="g-porc">
+          <h3>Porc</h3><hr>
+          <div class="plat"><span class="nom">Filet mignon sauce au choix</span><span class="prix">24,00 €</span></div>
+          <div class="plat"><span class="nom">Steak de porc à la cantonaise</span><span class="prix">18,00 €</span></div>
+          <div class="plat"><span class="nom">Travers de porc sauce au miel</span><span class="prix">24,00 €</span></div>
+        </div>
+
+        <div class="groupe" id="g-agneau">
+          <h3>Agneau</h3><hr>
+          <div class="plat"><span class="nom">Souris rôtie au miel et au gingembre</span><span class="prix">25,00 €</span></div>
+          <div class="plat"><span class="nom">Côte d'agneau 1<sup>er</sup> choix</span><span class="prix">26,00 €</span></div>
+        </div>
+
+        <div class="groupe" id="g-canard">
+          <h3>Canard</h3><hr>
+          <div class="plat"><span class="nom">Magret entier (sauce au choix)</span><span class="prix">28,00 €</span></div>
+          <div class="plat"><span class="nom">Émincé de magret à la créole ou miel gingembre</span><span class="prix">24,00 €</span></div>
+        </div>
+
+        <div class="groupe" id="g-kangourou">
+          <h3>Kangourou</h3><hr>
+          <div class="plat"><span class="nom">Filet de kangourou sauce au choix</span><span class="prix">25,00 €</span></div>
+          <div class="plat"><span class="nom">Brochette de kangourou sauce miel agrumes</span><span class="prix">24,00 €</span></div>
+        </div>
+
+        <div class="groupe" id="g-sauces">
+          <h3>Nos sauces</h3><hr>
+          <div class="plat"><span class="nom">Poivre vert, roquefort, forestière, miel agrumes, morilles, citronnée</span><span class="prix">3,00 €</span></div>
+        </div>
+
+        <div class="groupe" id="g-risotto">
+          <h3>Risotto</h3><hr>
+          <div class="plat"><span class="nom">Risotto crémeux, mi-cuit de thon, parmesan</span><span class="prix">24,00 €</span></div>
+          <div class="plat"><span class="nom">Risotto crémeux, gambas et chorizo, parmesan</span><span class="prix">26,00 €</span></div>
+          <div class="plat"><span class="nom">Risotto crémeux, noix de Saint-Jacques, parmesan</span><span class="prix">28,00 €</span></div>
+          <div class="plat"><span class="nom">Risotto royale : truffe, gambas, chorizo et noix de Saint-Jacques, champignons frais, parmesan</span><span class="prix">42,00 €</span></div>
+          <div class="plat"><span class="nom">Risotto crémeux, truffe et parmesan</span><span class="prix">24,00 €</span></div>
+        </div>
+
+        <div class="groupe" id="g-chinois">
+          <h3>Chinois</h3><hr>
+          <div class="plat"><span class="nom">Bol renversé</span><span class="prix">15,00 €</span></div>
+          <div class="plat"><span class="nom">Riz cantonais</span><span class="prix">12,00 €</span></div>
+        </div>
+
+        <div class="groupe" id="g-pates">
+          <h3>Nos pâtes</h3><hr>
+          <div class="plat"><span class="nom">Tagliatelle bolognaise, parmesan</span><span class="prix">12,00 €</span></div>
+          <div class="plat"><span class="nom">Tagliatelle végétarienne, parmesan</span><span class="prix">12,00 €</span></div>
+          <div class="plat"><span class="nom">Tagliatelle poulet à la crème, parmesan</span><span class="prix">18,00 €</span></div>
+          <div class="plat"><span class="nom">Tagliatelle poisson à la crème, parmesan</span><span class="prix">18,00 €</span></div>
+          <div class="plat"><span class="nom">Tagliatelle des papi'es (bœuf, chorizo, crevettes, sauce tomate)</span><span class="prix">20,00 €</span></div>
+        </div>
+
+        <div class="groupe" id="g-salade">
+          <h3>Salades</h3><hr>
+          <div class="plat"><span class="nom">Salade de bœuf</span><span class="prix">20,00 €</span></div>
+          <div class="plat"><span class="nom">Salade poulet ou poisson</span><span class="prix">18,00 €</span></div>
+          <div class="plat"><span class="nom">Salade 3 viandes</span><span class="prix">22,00 €</span></div>
+        </div>
+
+        <div class="groupe" id="g-enfant">
+          <h3>Box enfant</h3>
+          <p class="precision">Caprisonne, plat et glace compris.</p><hr>
+          <div class="plat"><span class="nom">Caprisonne ou sirop à l'eau, steak haché + frites ou poulet frites</span><span class="prix">10,00 €</span></div>
+          <div class="plat"><span class="nom">Pâtes au jambon</span><span class="prix">10,00 €</span></div>
+          <div class="plat"><span class="nom">Riz marmaille (riz, jambon, œuf)</span><span class="prix">10,00 €</span></div>
+          <div class="plat"><span class="nom">Poisson + frites (boule de glace en dessert)</span><span class="prix">10,00 €</span></div>
+        </div>
+
+        <div class="groupe" id="g-dessert">
+          <h3>Desserts</h3><hr>
+          <div class="plat"><span class="nom">Crème brûlée à la vanille</span><span class="prix">9,00 €</span></div>
+          <div class="plat"><span class="nom">Fondant au chocolat, glace vanille chantilly</span><span class="prix">9,00 €</span></div>
+          <div class="plat"><span class="nom">Crumble citron</span><span class="prix">8,00 €</span></div>
+          <div class="plat"><span class="nom">Tiramisu</span><span class="prix">8,00 €</span></div>
+          <div class="plat"><span class="nom">Nougat glacé</span><span class="prix">8,00 €</span></div>
+          <div class="plat"><span class="nom">Panna cotta (coulis fruits rouges)</span><span class="prix">8,00 €</span></div>
+          <div class="plat"><span class="nom">Café gourmand</span><span class="prix">9,50 €</span></div>
+          <div class="plat"><span class="nom">Thé ou cappuccino gourmand</span><span class="prix">11,50 €</span></div>
+          <div class="plat"><span class="nom">Pain brioché perdu et sa glace vanille</span><span class="prix">8,00 €</span></div>
+          <div class="plat"><span class="nom">Gaufres des papi'es (glace vanille, sauce au choix + chantilly)</span><span class="prix">9,00 €</span></div>
+          <div class="plat"><span class="nom">Chocolat, café ou caramel liégeois</span><span class="prix">8,00 €</span></div>
+          <div class="plat"><span class="nom">Profiteroles</span><span class="prix">8,00 €</span></div>
+          <div class="plat"><span class="nom">Marronnade</span><span class="prix">8,00 €</span></div>
+          <div class="plat"><span class="nom">Ananas surprise</span><span class="prix">8,00 €</span></div>
+          <div class="plat"><span class="nom">Fraise Melba</span><span class="prix">8,00 €</span></div>
+          <div class="plat"><span class="nom">Dame blanche</span><span class="prix">8,00 €</span></div>
+          <div class="plat"><span class="nom">Colonel</span><span class="prix">10,00 €</span></div>
+          <div class="plat"><span class="nom">Crêpe pomme d'api (pomme cuite, glace vanille, caramel et chantilly)</span><span class="prix">9,00 €</span></div>
+          <div class="plat"><span class="nom">Crêpe marronnade (glace vanille, marron, crème de marron et chantilly)</span><span class="prix">9,00 €</span></div>
+          <div class="plat"><span class="nom">Crêpe Snickers (glace caramel, sauces chocolat et caramel beurre salé, chantilly)</span><span class="prix">9,00 €</span></div>
+        </div>
+
+        <div class="parfums">
+          <h3>Nos parfums de glace</h3>
+          <p>Vanille · chocolat · café · caramel · pistache · coco · ananas · citron · passion · mangue · corossol · fraise</p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ══ Avis ═════════════════════════════════════════════════════════════ -->
+<section id="avis">
+  <div class="enveloppe">
+    <div class="entete surgit">
+      <p class="surtitre">Ce qu'on en dit</p>
+      <h2>300 avis, 4,5 de moyenne</h2>
+    </div>
+    <div class="avis-grille surgit">
+      <div class="score">
+        <div class="chiffre">4,5</div>
+        <div class="etoiles" aria-hidden="true">★★★★★</div>
+        <div class="nb">sur 300 avis Google</div>
+      </div>
+      <blockquote>
+        Super restaurant avec une superbe ambiance. L'équipe est vraiment super sympa et réactive.
+        La cuisine y est très bonne (surtout la cuisine créole). Bol renversé et civet zourite
+        vraiment top, et brioche perdue magique.
+        <cite>David-Adrien Indian</cite>
+      </blockquote>
+    </div>
+  </div>
+</section>
+
+<!-- ══ Vidéo ════════════════════════════════════════════════════════════ -->
+<div class="video-bloc">
+  <section>
+    <div class="enveloppe">
+      <div class="video-grille surgit">
+        <video src="/demo-papies/video.mp4" poster="/demo-papies/cover.jpg" controls playsinline preload="none"
+               width="300" height="533" aria-label="Vidéo de présentation du restaurant Les Papi'es"></video>
+        <div>
+          <p class="surtitre">En mouvement</p>
+          <h2 style="font-size:clamp(26px,3.8vw,40px);margin-bottom:16px">La maison en douze secondes</h2>
+          <p class="chapo" style="margin-bottom:22px">
+            Un format court, pensé pour Instagram et TikTok, monté uniquement avec les photos du
+            restaurant et les rubriques de sa propre carte.
+          </p>
+          <a class="btn btn-creux" href="/demo-papies/">Voir la page de la démo vidéo</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ══ Questions ════════════════════════════════════════════════════════ -->
+<section id="questions">
+  <div class="enveloppe">
+    <div class="entete surgit">
+      <p class="surtitre">Bon à savoir</p>
+      <h2>Questions fréquentes</h2>
+    </div>
+    <div class="faq surgit">
+      <details open>
+        <summary>Quels sont vos horaires d'ouverture ?</summary>
+        <p class="rep">Nous sommes ouverts du mercredi au samedi de 12h à 14h30 et de 19h à 22h30, et le dimanche de 12h00 à 15h00.</p>
+      </details>
+      <details>
+        <summary>Proposez-vous des plats végétariens ?</summary>
+        <p class="rep">Oui, nous proposons une sélection de plats végétariens pour satisfaire tous les goûts.</p>
+      </details>
+      <details>
+        <summary>Pouvons-nous réserver une table pour un événement spécial ?</summary>
+        <p class="rep">Oui, vous pouvez réserver une table pour un événement spécial en nous contactant directement.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- ══ Pied ═════════════════════════════════════════════════════════════ -->
+<footer class="pied" id="venir">
+  <div class="enveloppe">
+    <div class="pied-grille">
+
+      <div>
+        <a class="marque" href="#haut" style="margin-bottom:16px">
+          <img src="img/logo.png" alt="" width="52" height="52">
+          <b>Les Papi'es<span>Grill &amp; Confort</span></b>
+        </a>
+        <p style="color:var(--encre-doux);max-width:34ch">
+          Cuisine créole et grillades faites maison, à Saint-Pierre.
+        </p>
+        <div class="reseaux">
+          <a href="https://facebook.com/LesPapies" target="_blank" rel="noopener" aria-label="Les Papi'es sur Facebook">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M14 8.6V6.9c0-.8.2-1.2 1.4-1.2h1.5V2.8c-.3 0-1.2-.1-2.2-.1-2.2 0-3.7 1.3-3.7 3.8v2.1H8.6v3h2.4v7.6h3V11.6h2.4l.4-3H14Z"/></svg>
+          </a>
+          <a href="https://instagram.com/sisselgenralei" target="_blank" rel="noopener" aria-label="Les Papi'es sur Instagram">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="3.8"/><circle cx="17.2" cy="6.8" r="1.1" fill="currentColor" stroke="none"/></svg>
+          </a>
+        </div>
+      </div>
+
+      <div>
+        <h3>Nous trouver</h3>
+        <p>
+          <a href="https://www.google.com/maps/search/?api=1&amp;query=8%20Chem.%20Ringuin%2C%20Saint-Pierre%2097410%2C%20La%20R%C3%A9union" target="_blank" rel="noopener">
+            8 chemin Ringuin<br>97410 Saint-Pierre<br>La Réunion
+          </a>
+        </p>
+        <p style="margin-top:14px"><a href="tel:+262692760324"><b>0692 76 03 24</b></a></p>
+      </div>
+
+      <div>
+        <h3>Horaires</h3>
+        <ul>
+          <li><b>Mercredi – samedi</b><br>12h – 14h30 · 19h – 22h30</li>
+          <li style="margin-top:9px"><b>Dimanche</b><br>12h – 15h</li>
+        </ul>
+      </div>
+
+    </div>
+
+    <div class="pied-bas">
+      <span>© Restaurant Les Papi'es — Saint-Pierre, La Réunion</span>
+      <span>Maquette de refonte · prévisualisation privée</span>
+    </div>
+  </div>
+</footer>
+
+<!-- ══ Barre d'appel mobile ═════════════════════════════════════════════ -->
+<div class="appel-mobile">
+  <a class="btn btn-plein" href="tel:+262692760324">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.5 16.9v2.9a1.9 1.9 0 0 1-2.1 1.9 18.9 18.9 0 0 1-8.2-2.9 18.6 18.6 0 0 1-5.7-5.7A18.9 18.9 0 0 1 2.6 4.8 1.9 1.9 0 0 1 4.5 2.7h2.9a1.9 1.9 0 0 1 1.9 1.6c.1 1 .35 1.9.7 2.8a1.9 1.9 0 0 1-.4 2l-1.2 1.2a15.2 15.2 0 0 0 5.7 5.7l1.2-1.2a1.9 1.9 0 0 1 2-.4c.9.35 1.8.6 2.8.7a1.9 1.9 0 0 1 1.6 1.9Z"/></svg>
+    Appeler
+  </a>
+  <a class="btn btn-creux" href="https://www.google.com/maps/search/?api=1&amp;query=8%20Chem.%20Ringuin%2C%20Saint-Pierre%2097410%2C%20La%20R%C3%A9union" target="_blank" rel="noopener">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10.4c0 5.6-8 12.2-8 12.2s-8-6.6-8-12.2a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10.2" r="2.9"/></svg>
+    Itinéraire
+  </a>
+</div>
+
+<script type="application/ld+json">
+{
+  "@context":"https://schema.org",
+  "@type":"Restaurant",
+  "name":"Restaurant Les Papi'es",
+  "servesCuisine":["Créole","Française","Grillades"],
+  "telephone":"+262692760324",
+  "url":"https://www.restaurant-les-papies.fr/",
+  "address":{
+    "@type":"PostalAddress",
+    "streetAddress":"8 chemin Ringuin",
+    "addressLocality":"Saint-Pierre",
+    "postalCode":"97410",
+    "addressRegion":"La Réunion",
+    "addressCountry":"RE"
+  },
+  "aggregateRating":{"@type":"AggregateRating","ratingValue":"4.5","reviewCount":"300"},
+  "openingHoursSpecification":[
+    {"@type":"OpeningHoursSpecification","dayOfWeek":["Wednesday","Thursday","Friday","Saturday"],"opens":"12:00","closes":"14:30"},
+    {"@type":"OpeningHoursSpecification","dayOfWeek":["Wednesday","Thursday","Friday","Saturday"],"opens":"19:00","closes":"22:30"},
+    {"@type":"OpeningHoursSpecification","dayOfWeek":"Sunday","opens":"12:00","closes":"15:00"}
+  ],
+  "sameAs":["https://facebook.com/LesPapies"]
+}
+</script>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ── Thème clair / sombre ─────────────────────────────────────────── */
+  var racine = document.documentElement;
+  try{
+    var memo = localStorage.getItem("papies-theme");
+    if(memo === "light" || memo === "dark") racine.setAttribute("data-theme", memo);
+  }catch(e){}
+
+  document.getElementById("bascule").addEventListener("click", function(){
+    var actuel = racine.getAttribute("data-theme");
+    var sombreSysteme = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    var sombreActif = actuel === "dark" || (!actuel && sombreSysteme);
+    var suivant = sombreActif ? "light" : "dark";
+    racine.setAttribute("data-theme", suivant);
+    try{ localStorage.setItem("papies-theme", suivant); }catch(e){}
+  });
+
+  /* ── Barre haute au défilement ────────────────────────────────────── */
+  var barre = document.getElementById("barre");
+  var auDefilement = function(){ barre.classList.toggle("collee", window.scrollY > 12); };
+  auDefilement();
+  window.addEventListener("scroll", auDefilement, {passive:true});
+
+  /* ── Galerie ──────────────────────────────────────────────────────── */
+  var PHOTOS = [
+    {f:"h-carry-accompagnements", t:"Carry servi avec riz, grains et brèdes", grande:true},
+    {f:"h-boeuf-riz",       t:"Viande en sauce, riz et brèdes"},
+    {f:"h-plateau-creole",  t:"Plateau créole : carry de poisson, civet de zourite, brèdes et grains"},
+    {f:"h-grillade-riz",    t:"Grillade sauce brune, riz et brèdes"},
+    {f:"h-poulet-frites",   t:"Poulet à la crème, frites maison et salade"},
+    {f:"h-tagliatelle",     t:"Tagliatelle bolognaise et parmesan"},
+    {f:"h-riz-cantonais",   t:"Riz cantonais"},
+    {f:"h-cafe-gourmand",   t:"Café gourmand : crème brûlée, fondant, glace vanille"},
+    {f:"h-fondant-chocolat",t:"Fondant au chocolat, glace vanille et chantilly"},
+    {f:"h-crepe-chocolat",  t:"Crêpe chocolat, amandes et chantilly"},
+    {f:"h-coupe-fraise",    t:"Coupe glacée à la fraise et chantilly"},
+    {f:"h-cocktails",       t:"Cocktails maison"},
+    {f:"h-cocktail-agrume", t:"Cocktail aux fruits frais"},
+    {f:"h-punch",           t:"Punch au rhum de La Réunion"},
+    {f:"h-salle",           t:"La salle, sous la varangue"}
+  ];
+
+  var grille = document.getElementById("galerie-grille");
+  var frag = document.createDocumentFragment();
+
+  PHOTOS.forEach(function(p, i){
+    var b = document.createElement("button");
+    b.type = "button";
+    b.className = "vignette" + (p.grande ? " grande" : "");
+    b.setAttribute("data-i", i);
+    b.setAttribute("aria-label", "Agrandir : " + p.t);
+
+    var img = document.createElement("img");
+    img.src = "img/" + p.f + "-sm.jpg";
+    img.alt = p.t;
+    img.loading = i < 4 ? "eager" : "lazy";
+    img.decoding = "async";
+
+    var cap = document.createElement("figcaption");
+    cap.textContent = p.t;
+
+    b.appendChild(img);
+    b.appendChild(cap);
+    frag.appendChild(b);
+  });
+  grille.appendChild(frag);
+
+  /* ── Visionneuse ──────────────────────────────────────────────────── */
+  var dlg   = document.getElementById("visionneuse");
+  var vImg  = document.getElementById("v-img");
+  var vTxt  = document.getElementById("v-txt");
+  var index = 0;
+  var ouvrable = typeof dlg.showModal === "function";
+
+  function montrer(i){
+    index = (i + PHOTOS.length) % PHOTOS.length;
+    var p = PHOTOS[index];
+    vImg.src = "img/" + p.f + ".jpg";
+    vImg.alt = p.t;
+    vTxt.textContent = p.t + "  ·  " + (index + 1) + " / " + PHOTOS.length;
+  }
+
+  grille.addEventListener("click", function(e){
+    var b = e.target.closest(".vignette");
+    if(!b) return;
+    montrer(parseInt(b.getAttribute("data-i"), 10));
+    if(ouvrable) dlg.showModal(); else dlg.setAttribute("open","");
+  });
+
+  function fermer(){ if(ouvrable) dlg.close(); else dlg.removeAttribute("open"); }
+  document.getElementById("v-fermer").addEventListener("click", fermer);
+  document.getElementById("v-prec").addEventListener("click", function(){ montrer(index - 1); });
+  document.getElementById("v-suiv").addEventListener("click", function(){ montrer(index + 1); });
+
+  dlg.addEventListener("click", function(e){
+    if(e.target === dlg || e.target.classList.contains("visionneuse-int")) fermer();
+  });
+  document.addEventListener("keydown", function(e){
+    if(!dlg.open) return;
+    if(e.key === "ArrowRight") montrer(index + 1);
+    if(e.key === "ArrowLeft")  montrer(index - 1);
+  });
+
+  /* Balayage tactile */
+  var x0 = null;
+  dlg.addEventListener("touchstart", function(e){ x0 = e.changedTouches[0].clientX; }, {passive:true});
+  dlg.addEventListener("touchend", function(e){
+    if(x0 === null) return;
+    var d = e.changedTouches[0].clientX - x0;
+    if(Math.abs(d) > 46) montrer(index + (d < 0 ? 1 : -1));
+    x0 = null;
+  }, {passive:true});
+
+  /* ── Apparition au défilement ─────────────────────────────────────── */
+  var doux = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var cibles = document.querySelectorAll(".surgit");
+  if(doux || !("IntersectionObserver" in window)){
+    cibles.forEach(function(el){ el.classList.add("vu"); });
+  }else{
+    var obs = new IntersectionObserver(function(entrees){
+      entrees.forEach(function(en){
+        if(en.isIntersecting){ en.target.classList.add("vu"); obs.unobserve(en.target); }
+      });
+    }, {rootMargin:"0px 0px -8% 0px", threshold:.06});
+    cibles.forEach(function(el){ obs.observe(el); });
+  }
+})();
+</script>
+</body>
+</html>
