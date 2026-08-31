@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tuto — Wan 3.0 contre Seedance 2.5</title>
+<style>
+  :root{--noir:#08080a;--carte:#101015;--ligne:#22222b;--blanc:#f0eee9;
+        --gris:#8b8b93;--accent:#eab308}
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{background:var(--noir)}
+  body{background:var(--noir);color:var(--blanc);
+    font:15.5px/1.65 system-ui,-apple-system,"Segoe UI",sans-serif;
+    padding:clamp(20px,5vw,52px) clamp(16px,4vw,36px) 90px}
+  .w{max-width:940px;margin:0 auto}
+  .eb{font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:var(--accent)}
+  h1{font-size:clamp(28px,5vw,44px);line-height:1.06;letter-spacing:-.022em;margin:12px 0 8px}
+  .sous{color:var(--gris);max-width:58ch}
+  .meta{display:flex;gap:8px;flex-wrap:wrap;margin:22px 0 26px}
+  .tag{border:1px solid var(--ligne);border-radius:999px;padding:6px 13px;font-size:12.5px;color:var(--gris)}
+  .lecteur{display:flex;gap:26px;flex-wrap:wrap;align-items:flex-start}
+  video{width:min(340px,100%);height:auto;background:#000;border-radius:12px;border:1px solid var(--ligne)}
+  .cote{flex:1;min-width:260px}
+  h2{font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--accent);
+     margin:26px 0 12px;font-weight:700}
+  table{width:100%;border-collapse:collapse;font-size:14px}
+  td{padding:9px 8px;border-bottom:1px solid var(--ligne);vertical-align:top}
+  td:first-child{color:var(--accent);font-weight:700;white-space:nowrap;width:1%;padding-right:16px}
+  td:last-child{color:#c6c6cd}
+  .note{background:var(--carte);border:1px solid var(--ligne);border-left:2px solid var(--accent);
+    border-radius:8px;padding:15px 17px;margin-top:20px;color:#c6c6cd;font-size:14.5px}
+  .note b{color:var(--blanc)}
+  .pied{margin-top:48px;padding-top:18px;border-top:1px solid var(--ligne);color:var(--gris);font-size:12.5px}
+</style>
+</head>
+<body>
+<div class="w">
+  <div class="eb">Tuto · Wan 3.0 vs Seedance 2.5</div>
+  <h1>Un écart de prix de 72 %, et il est vérifiable</h1>
+  <p class="sous">Le hook Higgsfield en entier, puis le comparatif chiffré aux trois résolutions,
+  le piège de facturation, et le CTA. Sous-titres à trois mots en majuscules, voix qui ne démarre
+  qu’une fois le clip terminé.</p>
+
+  <div class="meta">
+    <span class="tag">39,4 s</span>
+    <span class="tag">1080 × 1920</span>
+    <span class="tag">hook 10,08 s entier</span>
+    <span class="tag">voix clonée</span>
+  </div>
+
+  <div class="lecteur">
+    <video src="video.mp4" poster="cover.jpg" controls playsinline preload="metadata"></video>
+    <div class="cote">
+      <h2>Les chiffres, et d’où ils sortent</h2>
+      <table>
+        <tr><td>480p</td><td><b>0,04 $/s</b> contre 0,14 $/s — <b>−71 %</b></td></tr>
+        <tr><td>720p</td><td><b>0,08 $/s</b> contre 0,315 $/s — <b>−75 %</b></td></tr>
+        <tr><td>1080p</td><td><b>0,16 $/s</b> contre 0,57 $/s — <b>−72 %</b></td></tr>
+        <tr><td>Sur 10 s</td><td>1,60 $ avec Wan contre 5,70 $ avec Seedance.</td></tr>
+        <tr><td>La source</td><td>Ta propre page <span class="mono">prompt-burger-video.html</span>, qui porte déjà ces tarifs. Je ne les ai pas repris de mémoire : 8, 16 et 32 crédits par seconde × 0,005 $ donnent bien 0,04, 0,08 et 0,16 — et (5,70 − 1,60) / 5,70 = 71,9 %, arrondi à 72 %.</td></tr>
+      </table>
+
+      <div class="note"><b>Le piège a sa propre scène.</b> Wan facture
+      <b>(durée d’entrée + durée de sortie) × prix à la seconde</b>. Si tu pars d’une vidéo
+      existante, tu payes les deux durées. Sur un texte seul, tu ne payes que ce qui sort.
+      C’est ce qui peut annuler l’écart sans qu’on comprenne pourquoi.</div>
+
+      <div class="note"><b>Le clip est gardé entier.</b> Il fait 10,08 s en 1280 × 720. Porté en
+      9:16, il est posé net sur un fond flouté tiré de lui-même — pas recadré : un recadrage
+      16:9 vers 9:16 jetterait les deux tiers de l’image. Rien n’est écrit par-dessus pendant
+      ces dix secondes, et la voix ne démarre qu’après.</div>
+
+      <div class="note" style="border-color:#ef6461"><b>Une question à trancher avant toute
+      publication.</b> Cette vidéo affiche des prix. Le 19 août tu te demandais s’il fallait en
+      mettre dans une vidéo TikTok — c’était une question, pas une règle, et elle n’a jamais été
+      tranchée. Ta fiche de tâche, elle, demande explicitement le comparatif chiffré. Je l’ai donc
+      fait, mais la vidéo <b>s’arrête ici</b> : rien n’est programmé nulle part.</div>
+    </div>
+  </div>
+
+  <div class="pied">VideoBoost · AutomatisationBoost — prévisualisation privée</div>
+</div>
+</body>
+</html>
