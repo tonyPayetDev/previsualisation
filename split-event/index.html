@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Événementiel en écran scindé</title>
+<style>
+ :root{--bg:#0a0a0f;--panel:#111117;--border:#242430;--y:#f5d90a;--o:#ff7a1a;--text:#f2f2f5;--muted:#9a9aa8}
+ *{box-sizing:border-box}
+ body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;padding:2rem 1rem 4rem}
+ .wrap{max-width:480px;margin:0 auto}
+ a.back{color:var(--muted);font-size:.8rem;text-decoration:none;display:inline-block;margin-bottom:1rem}
+ header{text-align:center;margin-bottom:1.5rem}
+ header h1{font-size:1.45rem;margin:0 0 .3rem;background:linear-gradient(90deg,var(--y),var(--o));-webkit-background-clip:text;background-clip:text;color:transparent}
+ header p{color:var(--muted);font-size:.85rem;margin:0}
+ .card{background:var(--panel);border:1px solid var(--border);border-radius:16px;overflow:hidden;margin-bottom:1.4rem;box-shadow:0 18px 50px -24px rgba(168,85,247,.45)}
+ .card.vieux{box-shadow:none;opacity:.9}
+ .head{padding:.9rem 1.1rem;display:flex;justify-content:space-between;align-items:center;gap:.5rem}
+ .head h2{font-size:1rem;margin:0;font-weight:600}
+ .badge{font-size:.68rem;font-weight:700;padding:.24rem .62rem;border-radius:999px;background:rgba(245,217,10,.12);color:var(--y);border:1px solid rgba(245,217,10,.3);white-space:nowrap}
+ .badge.ko{background:rgba(239,68,68,.12);color:#ff9b9b;border-color:rgba(239,68,68,.35)}
+ video{display:block;width:100%;aspect-ratio:9/16;background:#000}
+ .meta{padding:.9rem 1.1rem 1.1rem;border-top:1px solid var(--border);font-size:.82rem;color:#c9c9d4;line-height:1.68}
+ .meta b{color:var(--y)}
+ .alerte{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.35);border-radius:14px;padding:1rem 1.1rem;font-size:.83rem;line-height:1.65;color:#ffc9c9;margin-bottom:1.4rem}
+ .alerte b{color:#fff}
+ .t{display:flex;gap:.7rem;padding:.42rem 0;border-bottom:1px solid var(--border)}
+ .t:last-child{border-bottom:0}
+ .t span:first-child{color:var(--muted);min-width:8.5rem}
+ footer{text-align:center;margin-top:2rem;font-size:.75rem;color:var(--muted)}
+</style></head><body>
+<div class="wrap">
+ <a class="back" href="/">← toutes les prévisualisations</a>
+ <header><h1>Événementiel — écran scindé</h1><p>hook plein écran 10 s, puis split · refaite le 31 août 2026</p></header>
+
+ <div class="alerte">
+  <b>Rien n'a été déprogrammé.</b> Sur Blotato, c'est toujours la version du 29/08 qui part
+  le <b>29 septembre</b>. Cette page te montre la version refaite au format que tu as validé
+  sur <a href="/split-resto/" style="color:#fff">split-resto</a> ; le remplacement, c'est toi qui le décides.
+ </div>
+
+ <div class="card">
+  <div class="head"><h2>La refaite — format validé</h2><span class="badge">28,2 s · 9:16</span></div>
+  <video src="video.mp4" controls playsinline preload="metadata" poster="cover.jpg"></video>
+  <div class="meta">
+   <b>0 → 10 s</b> le clip métro, plein écran, rien par-dessus — ni voix, ni habillage, ni musique.<br>
+   <b>10 s → fin</b> écran scindé : le workflow n8n « Devis » se construit en haut, toi en bas.
+  </div>
+ </div>
+
+ <div class="card vieux">
+  <div class="head"><h2>Celle du 29/08 — celle que tu as refusée</h2><span class="badge ko">23,5 s · plein cadre</span></div>
+  <video src="/secteurs-videos/event.mp4" controls playsinline preload="none"></video>
+  <div class="meta">Plein cadre du début à la fin, habillage et sous-titres <b>dès la première seconde</b> — c'est ce qui n'allait pas.</div>
+ </div>
+
+ <div class="card">
+  <div class="head"><h2>Les réglages</h2><span class="badge">mesuré</span></div>
+  <div class="meta">
+   <div class="t"><span>Hook</span><span>10,04 s <b>entières</b>, son du clip seul</span></div>
+   <div class="t"><span>Musique</span><span>n'entre <b>qu'après</b> le hook, fondu 1,5 s</span></div>
+   <div class="t"><span>Bande haute</span><span>0 → 1174 px · b-roll puis canvas n8n</span></div>
+   <div class="t"><span>Bande basse</span><span>1186 → 1920 px · crop 720×489, tête + épaules</span></div>
+   <div class="t"><span>Sous-titres</span><span>3 mots, 1 surligné, à 930 px — la pastille à 1030 px</span></div>
+   <div class="t"><span>Voix</span><span>clonée, blancs coupés + <b>atempo 1,12</b> + dynaudnorm</span></div>
+  </div>
+ </div>
+
+ <div class="card">
+  <div class="head"><h2>Ce qui n'est pas réglé</h2><span class="badge">honnête</span></div>
+  <div class="meta">
+   <b>1. La bande basse est noire 5,3 s sur 28</b>
+   (17,2 → 20,7 s, 23,8 → 25,5 s). Même défaut que sur split-resto :
+   la banque bureau n'a que 13,5 s de lèvres actives, donc l'avatar ne couvre que quatre
+   segments sur six. Le combler demande de rejouer des plages de lèvres — et c'est
+   exactement là qu'on avait fabriqué du faux synchro. Pas touché sans ton feu vert.<br>
+   <b>2. Le b-roll est abstrait</b> (motif « spirale » du kit). Ce secteur n'a pas d'images
+   propres ; en faire générer coûterait ~5 $ par secteur. Le resto, lui, avait tes plats FoodBoost.<br>
+   <b>3. Le hook est le même métro pour les 10.</b> C'est volontaire — ça teste ton hypothèse
+   sur le hook visuel à contenu constant.
+  </div>
+ </div>
+
+ <footer>AutomatisationBoost — prévisualisation</footer>
+</div></body></html>
