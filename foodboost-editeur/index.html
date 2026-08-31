@@ -1,0 +1,443 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Éditeur de feed — FoodBoost</title>
+<style>
+/* Éditeur de maquette de feed. On clique une vignette, on change sa photo ou
+   son texte, on change la charte — et on envoie la composition à planifier.
+   Tout est local au navigateur : rien ne part tant qu'on n'appuie pas. */
+@font-face{font-family:Anton;src:url(fonts/anton-latin-400-normal.woff2) format('woff2');font-display:swap}
+@font-face{font-family:Sora;font-weight:400;src:url(fonts/sora-latin-400-normal.woff2) format('woff2');font-display:swap}
+@font-face{font-family:Sora;font-weight:700;src:url(fonts/sora-latin-700-normal.woff2) format('woff2');font-display:swap}
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --ui-fond:#0F1113; --ui-panneau:#181B1E; --ui-trait:#2A2F34;
+  --ui-texte:#EDEFF1; --ui-doux:#9AA2AA; --ui-vif:#FF8A2B;
+  /* la charte du client, pilotée par le sélecteur d'ambiance */
+  --fond:#1E2124; --fond2:#17191B; --accent:#FF8A2B; --clair:#FFFFFF;
+}
+html{-webkit-text-size-adjust:100%}
+body{background:var(--ui-fond);color:var(--ui-texte);
+  font:400 15px/1.55 Sora,ui-sans-serif,system-ui,sans-serif;
+  padding-bottom:env(safe-area-inset-bottom)}
+::selection{background:var(--ui-vif);color:#140C02}
+:where(button,select,input,[contenteditable]):focus-visible{
+  outline:2.5px solid var(--ui-vif);outline-offset:2px;border-radius:3px}
+html{scrollbar-color:#2A2F34 var(--ui-fond)}
+
+header{position:sticky;top:0;z-index:30;background:rgba(15,17,19,.92);
+  backdrop-filter:blur(10px);border-bottom:1px solid var(--ui-trait)}
+.bar{max-width:1180px;margin-inline:auto;padding:14px 18px;
+  display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.marque{font-weight:700;font-size:1.05rem;letter-spacing:-.01em}
+.marque em{font-style:normal;color:var(--ui-vif)}
+.grandir{flex:1}
+label.champ{display:flex;align-items:center;gap:8px;font-size:.83rem;color:var(--ui-doux)}
+select,input[type=text]{background:#101315;color:var(--ui-texte);border:1px solid var(--ui-trait);
+  border-radius:6px;padding:9px 11px;font:inherit;font-size:.87rem;min-height:40px}
+button{font:inherit;cursor:pointer;border:0;border-radius:6px;min-height:44px;padding:0 18px;
+  font-weight:700;font-size:.9rem;transition:transform .16s cubic-bezier(.2,.8,.3,1),filter .16s}
+button:hover{transform:translateY(-1px)}
+button:active{transform:none}
+.primaire{background:var(--ui-vif);color:#160D02}
+.second{background:#1E2327;color:var(--ui-texte);border:1px solid var(--ui-trait)}
+
+main{max-width:1180px;margin-inline:auto;padding:22px 18px 120px;
+  display:grid;gap:26px;grid-template-columns:1fr}
+@media (min-width:62rem){main{grid-template-columns:minmax(0,420px) 1fr;align-items:start}}
+
+/* ── l'aperçu, aux couleurs du client ─────────────────────────────── */
+.apercu{background:var(--fond);border:1px solid var(--ui-trait);border-radius:10px;
+  overflow:hidden;position:sticky;top:76px}
+.tete{padding:20px 20px 14px;color:var(--clair)}
+.tligne{display:flex;align-items:center;gap:14px}
+.pp{width:62px;height:62px;border-radius:50%;object-fit:cover;flex:none;
+  border:2px solid rgba(255,255,255,.16)}
+.tid h2{font-family:Sora;font-size:1.15rem;font-weight:700;letter-spacing:-.01em}
+.tid p{font-size:.8rem;opacity:.72;margin-top:3px;line-height:1.35}
+.sto{display:flex;gap:14px;margin-top:16px}
+.sto div{text-align:center;width:52px}
+.sto i{display:block;width:52px;height:52px;border-radius:50%;overflow:hidden;
+  border:2px solid var(--accent);padding:2px}
+.sto i img{width:100%;height:100%;object-fit:cover;border-radius:50%;display:block}
+.sto span{display:block;margin-top:5px;font-size:.62rem;opacity:.72}
+
+.grille{display:grid;grid-template-columns:repeat(3,1fr)}
+.v{position:relative;aspect-ratio:9/16;overflow:hidden;cursor:pointer;
+  background:var(--fond2);color:var(--clair)}
+.v>img{width:100%;height:100%;object-fit:cover;display:block}
+.v.actif{outline:3px solid var(--ui-vif);outline-offset:-3px;z-index:2}
+.v .voile{position:absolute;inset:0}
+.v .voile img{width:100%;height:100%;object-fit:cover;filter:saturate(.72) brightness(.42)}
+.v .voile::after{content:"";position:absolute;inset:0;
+  background:linear-gradient(180deg,rgba(0,0,0,.5),rgba(0,0,0,.26) 38%,rgba(0,0,0,.86))}
+.v .mot{position:absolute;left:9%;right:9%;top:50%;transform:translateY(-50%);z-index:1}
+.v .mot b{font-family:Anton;font-weight:400;display:block;
+  font-size:clamp(.72rem,2.4vw,1.05rem);line-height:1.1}
+.v .mot b em{font-style:normal;color:var(--accent)}
+.v .mot hr{width:24px;height:2px;background:var(--accent);border:0;margin-top:7px}
+.v .bas{position:absolute;left:9%;right:9%;bottom:7%;z-index:1}
+.v .bas b{font-family:Anton;font-weight:400;display:block;
+  font-size:clamp(.66rem,2.2vw,.95rem);line-height:1.1;text-shadow:0 2px 12px rgba(0,0,0,.85)}
+.v .bas b em{font-style:normal;color:var(--accent)}
+.v .carte{position:absolute;left:7%;right:7%;bottom:6%;z-index:2;
+  background:rgba(10,10,12,.86);border:1px solid rgba(255,255,255,.14);padding:7px 8px}
+.v .carte h4{font-size:.5rem;letter-spacing:.18em;color:var(--accent);
+  text-transform:uppercase;margin-bottom:4px;font-weight:700}
+.v .carte li{list-style:none;font-size:.6rem;line-height:1.6;
+  display:flex;gap:5px;align-items:baseline}
+.v .carte li i{flex:1;border-bottom:1px dotted rgba(255,255,255,.28);transform:translateY(-3px)}
+.v .play{position:absolute;right:7%;top:6%;z-index:3;width:20px;height:20px;
+  border:2px solid rgba(255,255,255,.92);border-radius:50%;background:rgba(0,0,0,.34)}
+.v .play::after{content:"";position:absolute;left:6px;top:4px;
+  border-left:7px solid #fff;border-top:5px solid transparent;border-bottom:5px solid transparent}
+.v .sig{position:absolute;inset:0;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:6px;padding:0 8px;text-align:center;z-index:1}
+.v .sig b{font-family:Sora;font-weight:700;font-size:clamp(.6rem,1.9vw,.82rem);line-height:1.25}
+.v .sig b em{font-style:normal;color:var(--accent);display:block}
+
+/* ── le panneau de réglage ────────────────────────────────────────── */
+.panneau{display:grid;gap:18px}
+.bloc{background:var(--ui-panneau);border:1px solid var(--ui-trait);border-radius:10px;padding:18px}
+.bloc h3{font-size:.95rem;font-weight:700;margin-bottom:4px}
+.bloc p.aide{font-size:.82rem;color:var(--ui-doux);margin-bottom:14px;line-height:1.5}
+.rangee{display:grid;gap:12px;grid-template-columns:1fr}
+@media (min-width:34rem){.rangee.deux{grid-template-columns:1fr 1fr}}
+.rangee label{display:grid;gap:5px;font-size:.78rem;color:var(--ui-doux)}
+.vide{color:var(--ui-doux);font-size:.85rem}
+
+.banque{display:grid;grid-template-columns:repeat(auto-fill,minmax(72px,1fr));gap:8px;
+  max-height:300px;overflow-y:auto;padding-right:4px}
+.banque img{width:100%;aspect-ratio:9/16;object-fit:cover;border-radius:5px;cursor:pointer;
+  border:2px solid transparent;transition:border-color .15s}
+.banque img:hover{border-color:var(--ui-vif)}
+
+.edit{background:#101315;border:1px solid var(--ui-trait);border-radius:6px;
+  padding:10px 11px;min-height:44px;font:inherit;font-size:.87rem;color:var(--ui-texte)}
+.edit:empty::before{content:attr(data-vide);color:var(--ui-doux)}
+
+.pied{position:fixed;left:0;right:0;bottom:0;z-index:40;background:rgba(15,17,19,.94);
+  backdrop-filter:blur(10px);border-top:1px solid var(--ui-trait);
+  padding:12px 18px calc(12px + env(safe-area-inset-bottom))}
+.pied .bar{padding:0;gap:10px}
+.etat{font-size:.8rem;color:var(--ui-doux)}
+.etat b{color:var(--ui-texte)}
+dialog{border:0;border-radius:12px;background:var(--ui-panneau);color:var(--ui-texte);
+  max-width:520px;width:calc(100% - 36px);padding:22px}
+dialog::backdrop{background:rgba(0,0,0,.66)}
+dialog h3{font-size:1.05rem;margin-bottom:8px}
+dialog p{font-size:.87rem;color:var(--ui-doux);line-height:1.55;margin-bottom:14px}
+dialog pre{background:#0C0F11;border:1px solid var(--ui-trait);border-radius:7px;
+  padding:12px;font-size:.72rem;overflow:auto;max-height:230px;color:#C8D0D6}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="bar">
+    <span class="marque">FOOD<em>BOOST</em> · éditeur</span>
+    <span class="grandir"></span>
+    <label class="champ">Ambiance
+      <select id="ambiance">
+        <option value="moderne">Moderne et minimaliste</option>
+        <option value="chic">Chic et épurée</option>
+        <option value="tropicale">Tropicale et colorée</option>
+        <option value="chaleureuse">Chaleureuse et familiale</option>
+        <option value="rustique">Rustique et authentique</option>
+      </select>
+    </label>
+  </div>
+</header>
+
+<main>
+  <section class="apercu" id="apercu">
+    <div class="tete">
+      <div class="tligne">
+        <img class="pp" id="pp" alt="">
+        <div class="tid">
+          <h2 id="v-nom">Chez Marlène</h2>
+          <p id="v-bio">Restaurant créole à Saint-Pierre.</p>
+        </div>
+      </div>
+      <div class="sto" id="stories"></div>
+    </div>
+    <div class="grille" id="grille"></div>
+  </section>
+
+  <section class="panneau">
+    <div class="bloc">
+      <h3>L'établissement</h3>
+      <p class="aide">Ce que le client voit en haut de son profil. Aucun chiffre n'est
+        affiché : ni abonnés, ni prix, ni horaires — on ne les invente pas.</p>
+      <div class="rangee deux">
+        <label>Nom<input type="text" id="nom" value="Chez Marlène"></label>
+        <label>Type<input type="text" id="type" value="Restaurant créole"></label>
+        <label>Ville<input type="text" id="ville" value="Saint-Pierre"></label>
+        <label>Famille de photos
+          <select id="famille">
+            <option value="creole">Créole</option>
+            <option value="pizza">Pizza</option>
+            <option value="japonais">Japonais / poké</option>
+            <option value="burger">Burger / grill</option>
+            <option value="snack">Snack / sandwich</option>
+          </select>
+        </label>
+      </div>
+    </div>
+
+    <div class="bloc" id="bloc-tuile">
+      <h3>La vignette sélectionnée</h3>
+      <p class="aide" id="aide-tuile">Clique une vignette dans l'aperçu pour la modifier.</p>
+      <div id="reglages-tuile"></div>
+    </div>
+
+    <div class="bloc">
+      <h3>Changer la photo</h3>
+      <p class="aide">Choisis dans la banque, ou envoie celle du client. Une photo
+        téléversée reste dans ce navigateur — elle ne part nulle part tant que tu
+        n'as pas appuyé sur « Envoyer à planifier ».</p>
+      <div class="rangee">
+        <label>Ta propre photo<input type="file" id="fichier" accept="image/*"></label>
+      </div>
+      <div class="banque" id="banque"></div>
+    </div>
+  </section>
+</main>
+
+<div class="pied">
+  <div class="bar">
+    <span class="etat" id="etat">Prêt. <b id="compte">0</b> modification(s).</span>
+    <span class="grandir"></span>
+    <button class="second" id="reinit">Repartir de zéro</button>
+    <button class="primaire" id="planifier">Envoyer à planifier</button>
+  </div>
+</div>
+
+<dialog id="dlg">
+  <h3 id="dlg-t">Composition prête</h3>
+  <p id="dlg-p"></p>
+  <pre id="dlg-json"></pre>
+  <div class="bar" style="padding:14px 0 0">
+    <span class="grandir"></span>
+    <button class="second" id="dlg-copier">Copier</button>
+    <button class="primaire" id="dlg-fermer">Fermer</button>
+  </div>
+</dialog>
+
+<script src="banque.js"></script>
+<script>
+/* ── Les données. Rien n'est généré ici : les photos viennent de la banque déjà
+      produite, les accroches d'une bibliothèque écrite à l'avance. C'est ce qui
+      permet à une démo de ne coûter ni token ni centime. ─────────────── */
+const PALETTES = {
+  moderne:     { fond:'#1E2124', fond2:'#17191B', accent:'#FF8A2B', clair:'#FFFFFF' },
+  chic:        { fond:'#141414', fond2:'#0D0D0D', accent:'#C6A96B', clair:'#F2F0EB' },
+  tropicale:   { fond:'#123024', fond2:'#0C2119', accent:'#D3A34A', clair:'#F1E9D8' },
+  chaleureuse: { fond:'#3A1710', fond2:'#2C110B', accent:'#D8A23C', clair:'#F6EDE0' },
+  rustique:    { fond:'#2E211A', fond2:'#221812', accent:'#C97B2C', clair:'#EFE3CE' },
+};
+const FAMILLES = {
+  creole: { photos:['02-vitrine--rougail-saucisse','02-vitrine--cari-poulet','01-demo--food-rougail','06-snacking--samoussas','02-vitrine--gateau-patate'],
+    hooks:[['ÇA MIJOTE','DEPUIS CE MATIN.'],['LA SAUCE QUI FAIT',"FINIR L'ASSIETTE."],['TU PENSES CONNAÎTRE','LE ROUGAIL ?']],
+    sig:['LE GOÛT',"D'ICI."], menu:[['Menu du jour',['Rougail saucisse','Cari poulet','Riz · grains']],['À emporter',['Samoussas','Bouchons','Gâteau patate']]] },
+  pizza: { photos:['07-pizza--margherita','07-pizza--calzone','11-grillades--brochettes','03-burger--frites-maison','04-sandwich--club-sandwich'],
+    hooks:[['FAIT AVEC','PASSION.'],['UN BON JOUR','COMMENCE ICI.'],['PRÊT POUR','LA PROCHAINE FOURNÉE ?']],
+    sig:['LA PIZZA.','TOUT SIMPLEMENT.'], menu:[['Menu du jour',['Margherita','Calzone','Reine']],['Ce soir',['Focaccia maison','Antipasti','Tiramisu']]] },
+  japonais: { photos:['08-sushi--california','08-sushi--sashimi','05-poke--poke-saumon','05-poke--poke-thon-epice','05-poke--bowl-exotique'],
+    hooks:[['LE POISSON','NE MENT PAS.'],['ICI, ON COUPE','À LA MINUTE.'],['TU CONNAIS','LA VRAIE DIFFÉRENCE ?']],
+    sig:['LE GESTE.','RIEN DE PLUS.'], menu:[['Au comptoir',['Sashimi du jour','Makis maison','Chirashi']],['Ce soir',['Poké saumon','Edamame','Mochi']]] },
+  burger: { photos:['03-burger--burger-bacon-bbq','03-burger--burger-cheddar','03-burger--frites-maison','04-sandwich--club-sandwich','11-grillades--travers'],
+    hooks:[['LA VIANDE','SAIGNANTE.'],['ON NE TRICHE PAS','SUR LE PAIN.'],['PRÊT À','MORDRE DEDANS ?']],
+    sig:['LE VRAI','BURGER.'], menu:[['Menu du jour',['Cheddar bacon','Poulet croustillant','Frites maison']],['Ce soir',['Double steak','Coleslaw','Brownie']]] },
+  snack: { photos:['06-snacking--samoussas','06-snacking--bonbons-piment','04-sandwich--wrap-poulet','04-sandwich--bagel-saumon','03-burger--frites-maison'],
+    hooks:[['CHAUD,','TOUT DE SUITE.'],['LA PAUSE','QUI FAIT DU BIEN.'],['TU PRENDS QUOI',"AUJOURD'HUI ?"]],
+    sig:['VITE FAIT.','BIEN FAIT.'], menu:[['Menu du jour',['Samoussas','Bouchons','Wrap poulet']],['À emporter',['Bagel saumon','Frites maison','Beignet']]] },
+};
+/* Le plan des 9 vignettes. « p » = index de photo, « r » = rôle.
+   Les 4 tuiles à texte sont en 2, 4, 7 et 9 : dispersées, jamais en colonne —
+   c'est ce qui empêche la grille de se lire comme un catalogue. */
+const PLAN = [
+  {r:'photo', p:0}, {r:'hook', h:0, p:2}, {r:'menu', m:0, p:1},
+  {r:'hook', h:1, p:3, play:1}, {r:'bas', h:2, p:2, play:1}, {r:'photo', p:3},
+  {r:'hook', h:2, p:1, play:1}, {r:'menu', m:1, p:4}, {r:'sig', p:0},
+];
+
+const url = (n) => n.startsWith('data:') ? n : 'photos/' + n + '.jpg';
+let E = null;      // état courant
+let selection = null;
+let modifs = 0;
+
+function neuf(famille) {
+  const F = FAMILLES[famille];
+  return {
+    nom: document.getElementById('nom').value,
+    type: document.getElementById('type').value,
+    ville: document.getElementById('ville').value,
+    ambiance: document.getElementById('ambiance').value,
+    famille,
+    photos: F.photos.slice(),
+    hooks: F.hooks.map((h) => h.slice()),
+    sig: F.sig.slice(),
+    menu: F.menu.map(([t, l]) => [t, l.slice()]),
+  };
+}
+
+function peindre() {
+  const P = PALETTES[E.ambiance];
+  for (const [k, v] of Object.entries(P)) document.documentElement.style.setProperty('--' + k, v);
+  document.getElementById('v-nom').textContent = E.nom || '—';
+  document.getElementById('v-bio').textContent =
+    (E.type || '') + (E.ville ? ' à ' + E.ville : '') + (E.type || E.ville ? '.' : '');
+  document.getElementById('pp').src = url(E.photos[0]);
+
+  document.getElementById('stories').innerHTML = ['Maison','Cuisine','Frais','Partage','Goût']
+    .map((s, i) => `<div><i><img src="${url(E.photos[i])}" alt=""></i><span>${s}</span></div>`).join('');
+
+  document.getElementById('grille').innerHTML = PLAN.map((t, i) => {
+    const ph = url(E.photos[t.p]);
+    const play = t.play ? '<div class="play"></div>' : '';
+    if (t.r === 'photo') return `<div class="v" data-i="${i}"><img src="${ph}" alt=""></div>`;
+    if (t.r === 'hook') return `<div class="v" data-i="${i}"><div class="voile"><img src="${ph}" alt=""></div>
+      <div class="mot"><b>${E.hooks[t.h][0]}<br><em>${E.hooks[t.h][1]}</em></b><hr></div>${play}</div>`;
+    if (t.r === 'bas') return `<div class="v" data-i="${i}"><img src="${ph}" alt="">
+      <div class="bas"><b>${E.hooks[t.h][0]}<br><em>${E.hooks[t.h][1]}</em></b></div>${play}</div>`;
+    if (t.r === 'menu') { const [ti, pl] = E.menu[t.m];
+      return `<div class="v" data-i="${i}"><img src="${ph}" alt="">
+        <div class="carte"><h4>${ti}</h4><ul>${pl.map((d) => `<li>${d}<i></i></li>`).join('')}</ul></div></div>`; }
+    return `<div class="v" data-i="${i}"><div class="voile"><img src="${ph}" alt=""></div>
+      <div class="sig"><b>${E.sig[0]}<em>${E.sig[1]}</em></b></div></div>`;
+  }).join('');
+
+  document.querySelectorAll('.v').forEach((v) => {
+    v.addEventListener('click', () => choisir(+v.dataset.i));
+    if (+v.dataset.i === selection) v.classList.add('actif');
+  });
+  document.getElementById('compte').textContent = modifs;
+}
+
+/* Le panneau s'adapte au rôle de la vignette : on ne propose que ce qui existe
+   dessus, plutôt qu'un formulaire générique où trois champs sur cinq sont morts. */
+function choisir(i) {
+  selection = i;
+  const t = PLAN[i];
+  const zone = document.getElementById('reglages-tuile');
+  document.getElementById('aide-tuile').textContent =
+    'Vignette ' + (i + 1) + ' sur 9 — ' +
+    ({ photo:'photo seule', hook:'accroche sur fond', bas:'accroche sur la photo',
+       menu:'carte de menu', sig:'carton de signature' })[t.r] + '.';
+
+  if (t.r === 'photo') { zone.innerHTML = '<p class="vide">Rien à écrire ici : choisis une photo ci-dessous.</p>'; peindre(); return; }
+  if (t.r === 'menu') {
+    const [ti, pl] = E.menu[t.m];
+    zone.innerHTML = `<div class="rangee">
+      <label>Titre de la carte<div class="edit" contenteditable data-c="mt">${ti}</div></label>
+      ${pl.map((d, k) => `<label>Ligne ${k + 1}<div class="edit" contenteditable data-c="ml" data-k="${k}">${d}</div></label>`).join('')}
+      </div><p class="aide" style="margin:12px 0 0">Aucun prix : l'email promet qu'on n'invente
+      rien de chiffré sur l'établissement.</p>`;
+  } else if (t.r === 'sig') {
+    zone.innerHTML = `<div class="rangee deux">
+      <label>Ligne 1<div class="edit" contenteditable data-c="s0">${E.sig[0]}</div></label>
+      <label>Ligne 2 (en couleur)<div class="edit" contenteditable data-c="s1">${E.sig[1]}</div></label></div>`;
+  } else {
+    const h = E.hooks[t.h];
+    zone.innerHTML = `<div class="rangee deux">
+      <label>Ligne 1<div class="edit" contenteditable data-c="h0">${h[0]}</div></label>
+      <label>Ligne 2 (en couleur)<div class="edit" contenteditable data-c="h1">${h[1]}</div></label></div>`;
+  }
+  zone.querySelectorAll('[contenteditable]').forEach((el) => {
+    el.addEventListener('input', () => {
+      const t2 = PLAN[selection], v = el.textContent.trim();
+      const c = el.dataset.c;
+      if (c === 'h0') E.hooks[t2.h][0] = v;
+      if (c === 'h1') E.hooks[t2.h][1] = v;
+      if (c === 's0') E.sig[0] = v;
+      if (c === 's1') E.sig[1] = v;
+      if (c === 'mt') E.menu[t2.m][0] = v;
+      if (c === 'ml') E.menu[t2.m][1][+el.dataset.k] = v;
+      modifs++; garder();
+      const g = el.getBoundingClientRect().top;   /* on repeint sans perdre le focus */
+      peindre(); el.focus();
+      if (Math.abs(el.getBoundingClientRect().top - g) > 2) el.scrollIntoView({ block:'nearest' });
+    });
+  });
+  peindre();
+}
+
+/* La banque : cliquer une photo remplace celle de la vignette sélectionnée. */
+function banque(liste) {
+  document.getElementById('banque').innerHTML = liste
+    .map((n) => `<img src="photos/${n}.jpg" data-n="${n}" alt="" loading="lazy">`).join('');
+  document.querySelectorAll('#banque img').forEach((im) => {
+    im.addEventListener('click', () => {
+      if (selection === null) { alert('Choisis d\'abord une vignette dans l\'aperçu.'); return; }
+      E.photos[PLAN[selection].p] = im.dataset.n;
+      modifs++; garder(); peindre();
+    });
+  });
+}
+
+const garder = () => { try { localStorage.setItem('fb-editeur', JSON.stringify(E)); } catch (e) {} };
+
+document.getElementById('fichier').addEventListener('change', (ev) => {
+  const f = ev.target.files[0];
+  if (!f) return;
+  if (selection === null) { alert('Choisis d\'abord une vignette dans l\'aperçu.'); ev.target.value = ''; return; }
+  const r = new FileReader();
+  r.onload = () => { E.photos[PLAN[selection].p] = r.result; modifs++; garder(); peindre(); };
+  r.readAsDataURL(f);
+});
+
+for (const id of ['nom', 'type', 'ville']) {
+  document.getElementById(id).addEventListener('input', (e) => { E[id] = e.target.value; modifs++; garder(); peindre(); });
+}
+document.getElementById('ambiance').addEventListener('change', (e) => { E.ambiance = e.target.value; modifs++; garder(); peindre(); });
+document.getElementById('famille').addEventListener('change', (e) => {
+  E = Object.assign(neuf(e.target.value), { nom:E.nom, type:E.type, ville:E.ville, ambiance:E.ambiance });
+  selection = null; modifs++; garder(); peindre();
+  document.getElementById('reglages-tuile').innerHTML = '';
+  document.getElementById('aide-tuile').textContent = 'Clique une vignette dans l\'aperçu pour la modifier.';
+});
+document.getElementById('reinit').addEventListener('click', () => {
+  if (!confirm('Tout remettre comme au départ ?')) return;
+  try { localStorage.removeItem('fb-editeur'); } catch (e) {}
+  E = neuf(document.getElementById('famille').value); selection = null; modifs = 0; peindre();
+});
+
+/* Envoyer : on montre EXACTEMENT ce qui partirait. Rien n'est envoyé
+   automatiquement — la chaîne rendu + planification n'est pas encore branchée,
+   et annoncer « c'est planifié » sans que ce soit vrai serait pire que rien. */
+const dlg = document.getElementById('dlg');
+document.getElementById('planifier').addEventListener('click', () => {
+  const sortie = JSON.parse(JSON.stringify(E));
+  const televersees = sortie.photos.filter((p) => p.startsWith('data:')).length;
+  sortie.photos = sortie.photos.map((p) => p.startsWith('data:') ? '(photo téléversée)' : p);
+  document.getElementById('dlg-p').textContent =
+    televersees
+      ? televersees + ' photo(s) que tu as envoyée(s) ne sont pas encore transmissibles : le lien vers le rendu n\'est pas branché. Voici la composition telle qu\'elle serait envoyée.'
+      : 'Voici la composition, prête à être rendue puis planifiée. Le lien vers le moteur de rendu n\'est pas encore branché : rien n\'est parti.';
+  document.getElementById('dlg-json').textContent = JSON.stringify(sortie, null, 2);
+  dlg.showModal();
+});
+document.getElementById('dlg-copier').addEventListener('click', async () => {
+  try { await navigator.clipboard.writeText(document.getElementById('dlg-json').textContent);
+    document.getElementById('dlg-copier').textContent = 'Copié'; } catch (e) {}
+});
+document.getElementById('dlg-fermer').addEventListener('click', () => dlg.close());
+
+/* Reprise de la session précédente, si le navigateur l'a gardée. */
+try {
+  const gardee = JSON.parse(localStorage.getItem('fb-editeur') || 'null');
+  E = gardee && gardee.photos ? gardee : neuf('creole');
+} catch (e) { E = neuf('creole'); }
+document.getElementById('nom').value = E.nom;
+document.getElementById('type').value = E.type;
+document.getElementById('ville').value = E.ville;
+document.getElementById('ambiance').value = E.ambiance;
+document.getElementById('famille').value = E.famille;
+banque(PHOTOS_BANQUE);
+peindre();
+</script>
+</body>
+</html>
