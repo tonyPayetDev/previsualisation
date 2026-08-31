@@ -75,7 +75,71 @@ const rappels = Object.entries(RESU_PRE)
   })
   .filter(Boolean);
 
+/* ── Trois leads HORS RESTAURATION ────────────────────────────────────────
+ * Demande de Tony (31/08) : « rajoute 3 numéros au hasard, n'importe quel
+ * secteur », avec un script qui accroche et enchaîne sur ses trois offres —
+ * planification réseaux, vidéo, création de site.
+ *
+ * Ils ne sortent PAS d'un tirage au hasard. Ils sont pris dans le jeu
+ * OpenStreetMap des commerces de La Réunion, filtrés sur trois conditions qui
+ * décident de l'appel :
+ *  · un téléphone PUBLIC (aucun numéro deviné, aucun numéro inventé) ;
+ *  · un site à eux, VIVANT, et qui porte des photos — sans photos, la démo est
+ *    impossible et l'accroche devient un mensonge ;
+ *  · un indépendant, pas une enseigne : chez Midas ou KeepCool la
+ *    communication se décide au siège, l'appel est perdu d'avance. C'est déjà
+ *    la règle de ce fichier pour les restaurants, elle vaut ici aussi.
+ *
+ * Le script est ÉCRIT À LA MAIN pour chacun, parce que celui des restaurants
+ * parle de plats et de cuisine — il sonnerait faux chez un hôtelier.
+ */
+const HORS_RESTO = [
+  {
+    nom: 'Le Vieux Cep', telephone: '+262 262 317 189', commune: 'Cilaos',
+    type: 'Hôtel-restaurant de montagne', site: 'https://levieuxcep.re/',
+    secteur: 'hotel', photos: 21,
+    script: [
+      ['Ouvrir', "Bonjour, Tony PAYET, je suis à La Réunion. J’ai regardé votre site avant d’appeler : vous avez une vingtaine de photos de Cilaos et de la maison qui ne servent qu’une fois. Vous avez deux minutes ?"],
+      ['La question qui ouvre', "Aujourd’hui, ces photos, vous en faites quoi ? Elles restent sur le site, ou vous publiez sur Instagram ?"],
+      ['Ce que tu proposes', "Je pars de vos propres photos et j’en fais une vidéo verticale de dix secondes, prête à publier. Pas de tournage, pas de déplacement. Et si ça vous va, je programme vos publications pour le mois — vous n’y touchez plus."],
+      ['S’il dit « on n’a pas le temps »', "C’est exactement le problème que je règle. Vous ne faites rien : vous validez, ou vous ne validez pas."],
+      ['S’il demande le prix', "Ça dépend du volume. Je préfère vous en montrer une d’abord : si elle ne vous plaît pas, la question ne se pose pas."],
+      ['Fermer', "Je vous en monte une cette semaine avec vos photos et je vous envoie le lien. Vous regardez, vous me dites oui ou non."],
+      ['La sortie', "Si ce n’est pas le moment, dites-le franchement, je ne rappelle pas."],
+    ],
+  },
+  {
+    nom: 'La Case Déco', telephone: '+262 692 93 11 42', commune: 'Saint-Denis',
+    type: 'Décoration & ameublement', site: 'https://www.lacasedeco.com/',
+    secteur: 'furniture', photos: 43,
+    script: [
+      ['Ouvrir', "Bonjour, Tony PAYET, je suis à La Réunion. Votre site porte plus de quarante photos de vos pièces — c’est de la matière que la plupart des boutiques n’ont pas. Vous avez deux minutes ?"],
+      ['La question qui ouvre', "Ces photos, vous les repostez ? Ou elles ne vivent que sur le site ?"],
+      ['Ce que tu proposes', "Je transforme vos photos en vidéos courtes pour Instagram, et je peux prendre en charge la planification : vous validez une fois, ça part tout seul pendant le mois."],
+      ['S’il a déjà quelqu’un', "Très bien — alors je ne vous dérange pas longtemps. Je vous en fais une gratuitement, vous comparerez."],
+      ['S’il demande le prix', "Je vous montre d’abord. Si le rendu ne vous plaît pas, il n’y a rien à discuter."],
+      ['Fermer', "Je monte une vidéo avec trois de vos pièces et je vous envoie le lien. Vous jugez sur pièce."],
+      ['La sortie', "Si ce n’est pas le moment, dites-le franchement, je ne rappelle pas."],
+    ],
+  },
+  {
+    nom: 'Jean Josia', telephone: '+262 262 11 37 37', commune: 'Saint-Denis',
+    type: 'Mobilier & agencement', site: 'https://www.jeanjosia.com/',
+    secteur: 'furniture', photos: 21,
+    script: [
+      ['Ouvrir', "Bonjour, Tony PAYET, je suis à La Réunion. J’ai regardé votre site : vos meubles sont bien photographiés, mais je ne vous vois nulle part en vidéo. Vous avez deux minutes ?"],
+      ['La question qui ouvre', "Vos clients vous trouvent comment, aujourd’hui ? Le bouche-à-oreille, ou les réseaux ?"],
+      ['Ce que tu proposes', "Trois choses, et vous prenez ce qui vous sert : des vidéos courtes faites à partir de vos photos, la planification de vos publications, et si besoin la refonte du site. On peut commencer par la vidéo, c’est le plus rapide à juger."],
+      ['S’il dit « ça coûte cher »', "La vidéo, non. Et je vous en fais une avant qu’on parle d’argent."],
+      ['S’il demande le prix', "Ça dépend de ce que vous prenez. Commençons par ce qui ne vous engage pas."],
+      ['Fermer', "Je vous en monte une cette semaine avec vos photos et je vous envoie le lien."],
+      ['La sortie', "Si ce n’est pas le moment, dites-le franchement, je ne rappelle pas."],
+    ],
+  },
+];
+
 const vrais = [
+  ...HORS_RESTO,
   ...QUALIFIES.filter((r) => r.telephone && !RESU_PRE[cleTot(r.nom)]),
   ...tous.filter((r) => r.site && dansCoeur(r) && !echauffement.includes(r)),
 ].slice(0, 12);
@@ -137,6 +201,9 @@ function vitrine(r) {
    s'il a un site ou non. Rien d'autre. Prétendre connaître son établissement au
    téléphone, c'est se faire raccrocher au nez à la deuxième phrase. */
 function script(r, chaud) {
+  /* Un lead hors restauration porte son script écrit à la main : celui qui suit
+     parle de plats et de cuisine, il sonnerait faux chez un hôtelier. */
+  if (r.script) return r.script;
   const quoi = r.type === 'fast_food' ? 'votre snack'
     : r.type === 'cafe' ? 'votre établissement' : 'votre restaurant';
   /* Les étiquettes OSM sont en anglais et brutes. Les lire telles quelles au
