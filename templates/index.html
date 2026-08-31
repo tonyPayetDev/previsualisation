@@ -1,0 +1,894 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Catalogue des templates video</title>
+<style>
+:root{
+  --fond:#fbfbfd; --panneau:#ffffff; --bord:#e2e2ea; --bord-fort:#cfcfda;
+  --texte:#16161d; --doux:#5b5b6b;
+  --accent:#7a4dd6; --accent-doux:#f2ecff;
+  --ok:#1a7f4b; --ok-fond:#e6f6ed;
+  --warn:#9a4b00; --warn-fond:#fdf0e2;
+  --code-fond:#f2f2f6;
+  --ombre:0 1px 2px rgba(20,20,40,.06), 0 8px 24px rgba(20,20,40,.05);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --fond:#0d0d12; --panneau:#15151c; --bord:#26262f; --bord-fort:#34343f;
+    --texte:#eaeaf0; --doux:#9a9aab;
+    --accent:#b18cff; --accent-doux:#241a3a;
+    --ok:#5dd39a; --ok-fond:#12291f;
+    --warn:#f0a860; --warn-fond:#2c1e10;
+    --code-fond:#1e1e26;
+    --ombre:0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.25);
+  }
+}
+:root[data-theme="dark"]{
+  --fond:#0d0d12; --panneau:#15151c; --bord:#26262f; --bord-fort:#34343f;
+  --texte:#eaeaf0; --doux:#9a9aab;
+  --accent:#b18cff; --accent-doux:#241a3a;
+  --ok:#5dd39a; --ok-fond:#12291f;
+  --warn:#f0a860; --warn-fond:#2c1e10;
+  --code-fond:#1e1e26;
+  --ombre:0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.25);
+}
+
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0; background:var(--fond); color:var(--texte);
+  font:400 16px/1.62 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  overflow-x:hidden;
+}
+.env{max-width:920px;margin:0 auto;padding:24px 16px 96px}
+a{color:var(--accent)}
+a:hover{text-decoration:none}
+code{
+  font:500 .88em/1.4 ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+  background:var(--code-fond); padding:.12em .38em; border-radius:5px;
+  overflow-wrap:anywhere;
+}
+
+/* ---- entete ---- */
+.retour{display:inline-block;font-size:13px;color:var(--doux);text-decoration:none;margin-bottom:18px}
+.retour:hover{color:var(--accent)}
+h1{font-size:clamp(26px,5.4vw,36px);line-height:1.12;letter-spacing:-.022em;margin:0 0 10px;font-weight:700}
+.sous{color:var(--doux);margin:0 0 6px;font-size:15px}
+.compte{color:var(--doux);font-size:13.5px;margin:0}
+
+/* ---- filtres ---- */
+.filtres{
+  position:sticky; top:0; z-index:20; margin:22px -16px 0; padding:14px 16px 12px;
+  background:color-mix(in srgb, var(--fond) 88%, transparent);
+  backdrop-filter:saturate(1.6) blur(10px);
+  border-bottom:1px solid var(--bord);
+}
+@supports not (backdrop-filter: blur(4px)){ .filtres{background:var(--fond)} }
+.recherche{
+  width:100%; padding:11px 13px; font-size:16px; color:var(--texte);
+  background:var(--panneau); border:1px solid var(--bord-fort); border-radius:9px;
+}
+.recherche:focus{outline:2px solid var(--accent);outline-offset:1px;border-color:transparent}
+.recherche::placeholder{color:var(--doux)}
+.groupes{display:flex;flex-wrap:wrap;gap:14px 20px;margin-top:11px}
+.groupe{display:flex;flex-wrap:wrap;align-items:center;gap:6px;min-width:0}
+.groupe > b{font-size:11px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--doux);margin-right:2px}
+.f{
+  font:500 13px/1 inherit; padding:6px 10px; border-radius:999px; cursor:pointer;
+  background:var(--panneau); color:var(--texte); border:1px solid var(--bord-fort);
+}
+.f:hover{border-color:var(--accent)}
+.f[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]) .f[aria-pressed="true"]{color:#12101a}
+}
+:root[data-theme="dark"] .f[aria-pressed="true"]{color:#12101a}
+.barre-bas{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-top:11px}
+#resultat{font-size:13px;color:var(--doux)}
+.lien-bouton{background:none;border:none;padding:0;font:inherit;font-size:13px;color:var(--accent);cursor:pointer;text-decoration:underline}
+
+/* ---- cartes ---- */
+.carte{
+  background:var(--panneau); border:1px solid var(--bord); border-radius:14px;
+  padding:20px; margin-top:20px; box-shadow:var(--ombre);
+}
+.carte[hidden]{display:none}
+.tete h2{font-size:clamp(19px,3.4vw,23px);line-height:1.2;letter-spacing:-.015em;margin:0 0 8px;font-weight:700}
+.voit{margin:0 0 12px;color:var(--texte);font-size:15.5px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{
+  font:500 12px/1.35 inherit; padding:3.5px 9px; border-radius:999px;
+  background:var(--code-fond); color:var(--doux); border:1px solid var(--bord);
+}
+.chip-av{background:var(--accent-doux);color:var(--accent);border-color:transparent}
+.chip-ok{background:var(--ok-fond);color:var(--ok);border-color:transparent}
+.chip-warn{background:var(--warn-fond);color:var(--warn);border-color:transparent;font-weight:700}
+
+.ex{margin:16px 0 0}
+.ex video{
+  display:block; width:100%; max-width:290px; height:auto; background:#000;
+  border-radius:10px; border:1px solid var(--bord);
+}
+.ex figcaption{margin-top:7px;font-size:13px}
+.ex.vide{
+  border:1px dashed var(--warn); background:var(--warn-fond); color:var(--warn);
+  border-radius:10px; padding:13px 15px;
+}
+.ex.vide p{margin:0}
+.ex.vide p + p{margin-top:5px}
+.sec{color:var(--doux)}
+.ex.vide .sec{color:inherit;opacity:.85}
+
+.plus{margin-top:14px;border:1px solid var(--bord);border-radius:10px;background:var(--fond)}
+.plus summary{cursor:pointer;padding:10px 13px;font-size:13.5px;font-weight:600;border-radius:10px}
+.plus summary:hover{color:var(--accent)}
+.routes{margin:0;padding:2px 13px 12px 30px;font-size:13.5px}
+.routes li{margin:3px 0;overflow-wrap:anywhere}
+
+.bloc{margin-top:20px;padding-top:16px;border-top:1px solid var(--bord)}
+.bloc h3{font-size:11.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--doux);margin:0 0 9px}
+.cmd{margin:0 0 4px}
+.cmd code{font-size:14px;background:var(--accent-doux);color:var(--accent);padding:.3em .55em;font-weight:600}
+.sec-cmd code{background:var(--code-fond);color:var(--texte);font-weight:500;font-size:12.5px}
+.lab{margin:13px 0 5px;font-size:12.5px;font-weight:600;color:var(--doux)}
+.bloc ul{margin:0;padding-left:19px;font-size:14.5px}
+.bloc ul li{margin:5px 0}
+.reserve{
+  margin:13px 0 0; padding:10px 13px; font-size:13.8px;
+  background:var(--warn-fond); color:var(--warn); border-radius:9px;
+  border-left:3px solid currentColor;
+}
+.reserve code{background:rgba(128,128,128,.18);color:inherit}
+.preuve p{margin:0;font-size:13.6px;color:var(--doux)}
+.preuve .apart{margin-top:8px;padding-top:8px;border-top:1px dotted var(--bord)}
+
+.rien{margin-top:28px;padding:22px;text-align:center;color:var(--doux);border:1px dashed var(--bord-fort);border-radius:12px}
+.rien[hidden]{display:none}
+
+footer{margin-top:40px;padding-top:18px;border-top:1px solid var(--bord);font-size:13px;color:var(--doux)}
+footer p{margin:0 0 7px}
+</style>
+</head>
+<body>
+<div class="env">
+
+  <a class="retour" href="/">&larr; Prévisualisation</a>
+
+  <h1>Catalogue des templates vidéo</h1>
+  <p class="sous">Un style, sa commande, et toutes les vidéos qui en sont sorties. Tu reconnais une vidéo &rarr; tu retrouves le template &rarr; tu le relances.</p>
+  <p class="compte">14 templates · 11 avec exemple réel · 3 sans · 77 vidéos rattachées.</p>
+
+  <div class="filtres">
+    <input class="recherche" id="q" type="search" autocomplete="off"
+           placeholder="Chercher un template ou un nom de vidéo (foodboost, lunisson, seedance…)"
+           aria-label="Chercher un template ou un nom de route vidéo">
+    <div class="groupes">
+      <div class="groupe"><b>Durée</b>
+        <button class="f" data-k="duree" data-v="court" aria-pressed="false">≤ 40 s</button>
+        <button class="f" data-k="duree" data-v="moyen" aria-pressed="false">45 s – 1 min 30</button>
+        <button class="f" data-k="duree" data-v="long" aria-pressed="false">&gt; 1 min 30</button>
+      </div>
+      <div class="groupe"><b>Avatar</b>
+        <button class="f" data-k="avatar" data-v="oui" aria-pressed="false">avec</button>
+        <button class="f" data-k="avatar" data-v="non" aria-pressed="false">sans</button>
+      </div>
+      <div class="groupe"><b>Usage</b>
+        <button class="f" data-k="usage" data-v="vendre" aria-pressed="false">Vendre</button>
+        <button class="f" data-k="usage" data-v="informer" aria-pressed="false">Informer</button>
+        <button class="f" data-k="usage" data-v="prouver" aria-pressed="false">Prouver</button>
+        <button class="f" data-k="usage" data-v="divertir" aria-pressed="false">Divertir</button>
+      </div>
+      <div class="groupe"><b>Exemple</b>
+        <button class="f" data-k="exemple" data-v="oui" aria-pressed="false">avec vidéo</button>
+        <button class="f" data-k="exemple" data-v="non" aria-pressed="false">sans vidéo</button>
+      </div>
+    </div>
+    <div class="barre-bas">
+      <span id="resultat">14 templates affichés</span>
+      <button class="lien-bouton" id="raz" type="button">Tout réafficher</button>
+    </div>
+  </div>
+
+  <main id="liste">
+
+  <article class="carte" data-duree="moyen" data-avatar="oui" data-usage="informer" data-exemple="oui" data-hay="journal ia veille-journal-ia un bulletin d'actu : 3 a 5 breves qui defilent en cartes neon, l'avatar qui ponctue l'intro, les vannes et le cta, un compte a rebours 3-2-1 pour finir. journal-ia-2026-08-27 journal-ia-2026-08-15 journal-ia-2026-08-17 journal-ia-2026-08-19 journal-ia-2026-08-20 journal-ia-2026-08-21 journal-ia-2026-08-23 journal-ia-2026-08-25 journal-ia-2026-08-26 journal-ia-2026-08-29 journal-ia-2026-08-30 journal-ia-2026-08-31" id="veille-journal-ia">
+    <header class="tete">
+      <h2>Journal IA</h2>
+      <p class="voit">Un bulletin d'actu : 3 a 5 breves qui defilent en cartes neon, l'avatar qui ponctue l'intro, les vannes et le CTA, un compte a rebours 3-2-1 pour finir.</p>
+      <div class="chips"><span class="chip">45 s a 1 min</span><span class="chip">9:16 · 1080×1920</span><span class="chip chip-av">avec avatar</span><span class="chip">Informer</span><span class="chip chip-ok">12 videos</span></div>
+    </header>
+
+    
+      <figure class="ex">
+        <video controls preload="none" playsinline src="/journal-ia-2026-08-27/video.mp4"></video>
+        <figcaption>
+          <a href="/journal-ia-2026-08-27/">journal-ia-2026-08-27</a> <span class="sec">— edition du 27/08</span>
+        </figcaption>
+      </figure>
+    
+      <details class="plus">
+        <summary>Les 11 autres videos de ce template</summary>
+        <ul class="routes">
+          <li><a href="/journal-ia-2026-08-15/">journal-ia-2026-08-15</a> <span class="sec">15/08</span></li>
+          <li><a href="/journal-ia-2026-08-17/">journal-ia-2026-08-17</a> <span class="sec">17/08</span></li>
+          <li><a href="/journal-ia-2026-08-19/">journal-ia-2026-08-19</a> <span class="sec">19/08</span></li>
+          <li><a href="/journal-ia-2026-08-20/">journal-ia-2026-08-20</a> <span class="sec">20/08</span></li>
+          <li><a href="/journal-ia-2026-08-21/">journal-ia-2026-08-21</a> <span class="sec">21/08</span></li>
+          <li><a href="/journal-ia-2026-08-23/">journal-ia-2026-08-23</a> <span class="sec">23/08</span></li>
+          <li><a href="/journal-ia-2026-08-25/">journal-ia-2026-08-25</a> <span class="sec">25/08</span></li>
+          <li><a href="/journal-ia-2026-08-26/">journal-ia-2026-08-26</a> <span class="sec">26/08</span></li>
+          <li><a href="/journal-ia-2026-08-29/">journal-ia-2026-08-29</a> <span class="sec">29/08</span></li>
+          <li><a href="/journal-ia-2026-08-30/">journal-ia-2026-08-30</a> <span class="sec">30/08</span></li>
+          <li><a href="/journal-ia-2026-08-31/">journal-ia-2026-08-31</a> <span class="sec">31/08</span></li>
+        </ul>
+      </details>
+
+    <section class="bloc">
+      <h3>Le relancer</h3>
+      <p class="cmd"><code>/veille-journal-ia</code></p>
+      <p class="cmd sec-cmd"><code>/work/.claude/skills/veille-journal-ia/render-publish.sh 2026-08-31</code></p>
+      <p class="lab">Ce que tu dois fournir</p>
+      <ul class="fournir"><li>Rien a fournir en temps normal : la routine cloud ecrit <code>journal-ia/AAAA-MM-JJ.md</code> dans ce depot chaque nuit, le script le lit.</li><li>Si l'edition du jour n'existe pas, le script sort en <code>STATUS: FAIL</code> code 3 — il faut la fournir ou attendre la routine.</li></ul>
+      <p class="reserve">Sans <code>/work/.blotato.env</code> (absent ici), le script publie sur previsualisation mais ne programme rien : il ecrit <code>work/blotato-plan.json</code> et sort quand meme en OK.</p>
+    </section>
+
+    <section class="bloc">
+      <h3>Ce qui est verrouille</h3>
+      <ul class="verrou"><li>Refus de rendre en dessous de 3 breves (garde-fou pose apres l'edition vide du 21/08).</li><li>La duree sort de l'audio reel, jamais d'une constante : 45-60 s, une edition sous 30 s est amputee.</li><li>Running gags : 2 adjectifs empiles maximum, jamais 3, et jamais la meme paire deux editions de suite.</li><li>Avatar visible uniquement sur intro / gags / outro / CTA. CTA verrouille sur le mot VEILLE.</li></ul>
+    </section>
+
+    <section class="bloc preuve">
+      <h3>Pourquoi ces videos sont bien celles-la</h3>
+      <p><code>render-publish.sh</code> cree lui-meme la route <code>journal-ia-&lt;DATE&gt;</code> ; un dossier projet <code>journal-ia-&lt;DATE&gt;</code> existe sous <code>/work/autoboost-neon-videos/</code> pour chacune.</p>
+      <p class="apart">L'edition <a href="/journal-ia-2026-08-16/">journal-ia-2026-08-16</a> existe en page mais n'a jamais eu de video.</p>
+    </section>
+  </article>
+
+  <article class="carte" data-duree="court" data-avatar="non" data-usage="vendre" data-exemple="oui" data-hay="prompt reveal prompt-reveal-branded un rendu ia bluffant plein cadre, puis le prompt qui defile facon terminal — coupe net apres trois lignes. il se floute, un cadenas rouge tombe, et la carte cta demande de commenter un mot. prompt-reveal-01 prompt-reveal-02 prompt-reveal-03 prompt-reveal-04 prompt-reveal-05" id="prompt-reveal-branded">
+    <header class="tete">
+      <h2>Prompt Reveal</h2>
+      <p class="voit">Un rendu IA bluffant plein cadre, puis le prompt qui defile facon terminal — coupe net apres trois lignes. Il se floute, un cadenas rouge tombe, et la carte CTA demande de commenter un mot.</p>
+      <div class="chips"><span class="chip">25 a 30 s</span><span class="chip">9:16 · 1080×1920 · 30 fps</span><span class="chip">sans avatar</span><span class="chip">Vendre</span><span class="chip chip-ok">5 videos</span></div>
+    </header>
+
+    
+      <figure class="ex">
+        <video controls preload="none" playsinline src="https://assets.automatisationboost.com/previsualisation/prompt-reveal-01/video.mp4"></video>
+        <figcaption>
+          <a href="/prompt-reveal-01/">prompt-reveal-01</a> <span class="sec">— Le regard · 17/08/2026</span>
+        </figcaption>
+      </figure>
+    
+      <details class="plus">
+        <summary>Les 4 autres videos de ce template</summary>
+        <ul class="routes">
+          <li><a href="/prompt-reveal-02/">prompt-reveal-02</a> <span class="sec">17/08 · Le burger</span></li>
+          <li><a href="/prompt-reveal-03/">prompt-reveal-03</a> <span class="sec">17/08 · La transformation</span></li>
+          <li><a href="/prompt-reveal-04/">prompt-reveal-04</a> <span class="sec">17/08 · Le clip neon</span></li>
+          <li><a href="/prompt-reveal-05/">prompt-reveal-05</a> <span class="sec">17/08 · La teleportation</span></li>
+        </ul>
+      </details>
+
+    <section class="bloc">
+      <h3>Le relancer</h3>
+      <p class="cmd"><code>/prompt-reveal-branded</code></p>
+      
+      <p class="lab">Ce que tu dois fournir</p>
+      <ul class="fournir"><li>Le <strong>rendu IA final</strong> (la video ou l'image bluffante du hook).</li><li>Le <strong>prompt complet</strong> — c'est lui qui part en DM.</li><li>Les <strong>images de reference</strong> montrees en b-roll.</li><li>Le <strong>mot-cle CTA</strong> en majuscules, un seul mot.</li></ul>
+      <p class="reserve">Le mot-cle de la video doit correspondre a une automation Blotato existante — sinon chaque commentaire est une promesse non tenue.</p>
+    </section>
+
+    <section class="bloc">
+      <h3>Ce qui est verrouille</h3>
+      <ul class="verrou"><li>Le prompt n'est JAMAIS lisible en entier : coupe/floute au tease, ecran <code>PROMPT VERROUILLE</code> rouge avant le CTA.</li><li>Fond #0a0a0a, or #FFD700 dominant, cyan #00D4FF, rouge #FF3333 ; titres Bebas Neue avec la 1re lettre en or ; prompt en JetBrains Mono sous le label <code>// PROMPT_REVEAL _</code>.</li><li>CTA = abonne-toi + commente [MOT]. Jamais l'URL du site en clair.</li></ul>
+    </section>
+
+    <section class="bloc preuve">
+      <h3>Pourquoi ces videos sont bien celles-la</h3>
+      <p>Les 5 videos sortent du builder partage <code>_shared/prompt-reveal-builder/</code> ; ses <code>configs.mjs</code>/<code>run.mjs</code> listent exactement les 5 projets <code>autoboost-56-prompt-reveal-01..05</code>, durees 25,3 a 28,0 s, rendus le meme jour (17/08).</p>
+      
+    </section>
+  </article>
+
+  <article class="carte" data-duree="moyen" data-avatar="oui" data-usage="prouver" data-exemple="oui" data-hay="revelation a/b revelation-ab-branded deux panneaux cote a cote : la version que tout le monde fait, desaturee, et celle qui change tout. le prompt se tape en direct a l'ecran, l'avatar martele le detail au doigt, et ca finit sur un triplet « tu vas… tu vas… tu vas… ». autoboost-61-dix-questions" id="revelation-ab-branded">
+    <header class="tete">
+      <h2>Revelation A/B</h2>
+      <p class="voit">Deux panneaux cote a cote : la version que tout le monde fait, desaturee, et celle qui change tout. Le prompt se tape en direct a l'ecran, l'avatar martele le detail au doigt, et ca finit sur un triplet « tu vas… tu vas… tu vas… ».</p>
+      <div class="chips"><span class="chip">35 a 45 s</span><span class="chip">9:16 · 1080×1920</span><span class="chip chip-av">avec avatar</span><span class="chip">Prouver</span><span class="chip chip-ok">1 video</span></div>
+    </header>
+
+    
+      <figure class="ex">
+        <video controls preload="none" playsinline src="https://assets.automatisationboost.com/previsualisation/autoboost-61-dix-questions/video.mp4"></video>
+        <figcaption>
+          <a href="/autoboost-61-dix-questions/">autoboost-61-dix-questions</a> <span class="sec">— Les 10 questions Claude — la video fondatrice</span>
+        </figcaption>
+      </figure>
+    
+
+    <section class="bloc">
+      <h3>Le relancer</h3>
+      <p class="cmd"><code>/revelation-ab-branded</code></p>
+      
+      <p class="lab">Ce que tu dois fournir</p>
+      <ul class="fournir"><li>Une <strong>astuce IA qui circule deja</strong> (le cote A).</li><li>Le <strong>detail qui change tout</strong>, et surtout de quoi le <strong>montrer</strong> a l'ecran (le cote B).</li><li>Un <strong>mot-cle CTA</strong> libre, avec une ressource reelle derriere.</li></ul>
+      <p class="reserve"><code>check_lips_rule.mjs</code> doit sortir en code 0 avant assemblage (jamais de voix active sur une portion muette du clip avatar).</p>
+    </section>
+
+    <section class="bloc">
+      <h3>Ce qui est verrouille</h3>
+      <ul class="verrou"><li>Sans cote B demontrable a l'ecran, ce n'est pas ce format — le skill renvoie vers /script-pspc-branded.</li><li>Deux panneaux HTML, jamais deux videos ; le cote inactif desature a 30 % ; cote A d'un coup, cote B un par un.</li><li>Le triplet de cloture est la signature du format, on ne le lisse jamais. Max 2 adjectifs empiles.</li><li>Aucune donnee perso reelle a l'ecran : les ecrans sont reconstruits en HTML.</li></ul>
+    </section>
+
+    <section class="bloc preuve">
+      <h3>Pourquoi ces videos sont bien celles-la</h3>
+      <p>Le SKILL.md designe <code>/work/autoboost-neon-videos/autoboost-61-dix-questions/</code> comme le projet de reference a copier, et decrit la timeline de cette video-la bloc par bloc.</p>
+      <p class="apart">C'est le seul exemple. Le format est recent et n'a servi qu'une fois.</p>
+    </section>
+  </article>
+
+  <article class="carte" data-duree="court" data-avatar="oui" data-usage="informer" data-exemple="oui" data-hay="videoboost v3 — banque avatar veille-to-video-v3 tony parle face camera dans un cercle neon jaune, en bureau ou en voiture, coupe en micro-plans invisibles ; entre deux, une demo reconstruite en html se tape toute seule. captions mot-a-mot, compte a rebours 3-2-1, claque finale. veille-to-avatar-v3-v3 veille-to-avatar-v3 veille-to-avatar-v3-v2 veille-to-avatar-v3-test autoboost-62-meme-systeme autoboost-62-valse autoboost-62-valse-full autoboost-formation-contenu autoboost-formation-dechirure autoboost-formation-dechirure-v2 autoboost-matrix-revelation autoboost-storytime-terminal autoboost-tuto-claude-code-mcp autoboost-tuto-claude-code-mcp-v2 autoboost-tuto-claude-code-mcp-v3 autoboost-tuto-claude-code-mcp-v4 formation-vsl tuto-graphify-16-9 showcase-claude-max tuto-artisan-metro" id="veille-to-video-v3">
+    <header class="tete">
+      <h2>VideoBoost v3 — banque avatar</h2>
+      <p class="voit">Tony parle face camera dans un cercle neon jaune, en bureau ou en voiture, coupe en micro-plans invisibles ; entre deux, une demo reconstruite en HTML se tape toute seule. Captions mot-a-mot, compte a rebours 3-2-1, claque finale.</p>
+      <div class="chips"><span class="chip">~30 s (25 a 40 s)</span><span class="chip">9:16 · 1080×1920 · Inter 700</span><span class="chip chip-av">avec avatar</span><span class="chip">Informer</span><span class="chip chip-ok">20 videos</span></div>
+    </header>
+
+    
+      <figure class="ex">
+        <video controls preload="none" playsinline src="https://assets.automatisationboost.com/previsualisation/veille-to-avatar-v3-v3/video.mp4"></video>
+        <figcaption>
+          <a href="/veille-to-avatar-v3-v3/">veille-to-avatar-v3-v3</a> <span class="sec">— la reference verrouillee par Tony · 15/08/2026</span>
+        </figcaption>
+      </figure>
+    
+      <details class="plus">
+        <summary>Les 19 autres videos de ce template</summary>
+        <ul class="routes">
+          <li><a href="/veille-to-avatar-v3/">veille-to-avatar-v3</a></li>
+          <li><a href="/veille-to-avatar-v3-v2/">veille-to-avatar-v3-v2</a> <span class="sec">14/08</span></li>
+          <li><a href="/veille-to-avatar-v3-test/">veille-to-avatar-v3-test</a> <span class="sec">15/08</span></li>
+          <li><a href="/autoboost-62-meme-systeme/">autoboost-62-meme-systeme</a></li>
+          <li><a href="/autoboost-62-valse/">autoboost-62-valse</a></li>
+          <li><a href="/autoboost-62-valse-full/">autoboost-62-valse-full</a></li>
+          <li><a href="/autoboost-formation-contenu/">autoboost-formation-contenu</a></li>
+          <li><a href="/autoboost-formation-dechirure/">autoboost-formation-dechirure</a></li>
+          <li><a href="/autoboost-formation-dechirure-v2/">autoboost-formation-dechirure-v2</a></li>
+          <li><a href="/autoboost-matrix-revelation/">autoboost-matrix-revelation</a></li>
+          <li><a href="/autoboost-storytime-terminal/">autoboost-storytime-terminal</a></li>
+          <li><a href="/autoboost-tuto-claude-code-mcp/">autoboost-tuto-claude-code-mcp</a></li>
+          <li><a href="/autoboost-tuto-claude-code-mcp-v2/">autoboost-tuto-claude-code-mcp-v2</a></li>
+          <li><a href="/autoboost-tuto-claude-code-mcp-v3/">autoboost-tuto-claude-code-mcp-v3</a></li>
+          <li><a href="/autoboost-tuto-claude-code-mcp-v4/">autoboost-tuto-claude-code-mcp-v4</a></li>
+          <li><a href="/formation-vsl/">formation-vsl</a></li>
+          <li><a href="/tuto-graphify-16-9/">tuto-graphify-16-9</a></li>
+          <li><a href="/showcase-claude-max/">showcase-claude-max</a></li>
+          <li><a href="/tuto-artisan-metro/">tuto-artisan-metro</a></li>
+        </ul>
+      </details>
+
+    <section class="bloc">
+      <h3>Le relancer</h3>
+      <p class="cmd"><code>/veille-to-video-v3</code></p>
+      
+      <p class="lab">Ce que tu dois fournir</p>
+      <ul class="fournir"><li>Un <strong>script</strong> (ou une ligne « a faire » du Sheet de suivi).</li><li>Le <strong>decor</strong> : bureau pour un tuto/technique, voiture pour humour/mindset. Jamais les deux.</li></ul>
+      <p class="reserve">Utiliser <code>lips-map-hf0826.json</code> ; <code>zones-parole-mesurees.json</code> ment (E3 marque « muet » alors qu'il parle). Le set spider n'est pas cartographie : interdit sous voix active.</p>
+    </section>
+
+    <section class="bloc">
+      <h3>Ce qui est verrouille</h3>
+      <ul class="verrou"><li>Un seul decor par video, et le decor doit correspondre au propos.</li><li>Le bureau ne donne que 13,5 s de levres actives au total (A1+B1+C2) : au-dela il faut rejouer d'autres plages des memes clips.</li><li>Audio natif des clips coupe, seule la voix clonee est entendue ; atempo ~1,12, silences retires.</li><li>Charte neon verrouillee : matte black + jaune #eab308 / violet #8b5cf6, countdown 3-2-1, claque finale.</li></ul>
+    </section>
+
+    <section class="bloc preuve">
+      <h3>Pourquoi ces videos sont bien celles-la</h3>
+      <p>Tony a valide <code>previsualisation/veille-to-avatar-v3-v3</code> (« c'est ok nickel, verrouille ») — c'est la reference de style citee dans le SKILL.md. Les autres routes viennent de projets qui referencent la banque <code>_shared/avatar-bank/clips</code>.</p>
+      
+    </section>
+  </article>
+
+  <article class="carte" data-duree="court" data-avatar="oui" data-usage="divertir" data-exemple="oui" data-hay="horror beat-sync horror-beatsync-video tout est cale sur la trend « you can ask the flowers (horror mix) » : la revelation tombe pile sur le drop, un plan change a chaque mini-drop, et l'anneau neon de l'avatar flashe toutes les 2,67 s. autoboost-site-immersif autoboost-site-immersif-v2 autoboost-site-immersif-v3 autoboost-site-immersif-v4 autoboost-seedance-tuto autoboost-seedance-tuto-v2 autoboost-seedance-tuto-v3 autoboost-seedance-tuto-v4 autoboost-seedance-tuto-v5 autoboost-seedance-tuto-v6 autoboost-seedance-tuto-v7 autoboost-53-usine-ia" id="horror-beatsync-video">
+    <header class="tete">
+      <h2>Horror Beat-Sync</h2>
+      <p class="voit">Tout est cale sur la trend « YOU CAN ASK THE FLOWERS (HORROR MIX) » : la revelation tombe pile sur le drop, un plan change a chaque mini-drop, et l'anneau neon de l'avatar flashe toutes les 2,67 s.</p>
+      <div class="chips"><span class="chip">34,42 s max (fin sur un mini-drop)</span><span class="chip">9:16 · 1080×1920</span><span class="chip chip-av">avec avatar</span><span class="chip">Divertir</span><span class="chip chip-ok">12 videos</span></div>
+    </header>
+
+    
+      <figure class="ex">
+        <video controls preload="none" playsinline src="https://assets.automatisationboost.com/previsualisation/autoboost-site-immersif/video.mp4"></video>
+        <figcaption>
+          <a href="/autoboost-site-immersif/">autoboost-site-immersif</a> <span class="sec">— 04/08/2026 · la variante SITE, beat mesure sur la bande kick</span>
+        </figcaption>
+      </figure>
+    
+      <details class="plus">
+        <summary>Les 11 autres videos de ce template</summary>
+        <ul class="routes">
+          <li><a href="/autoboost-site-immersif-v2/">autoboost-site-immersif-v2</a> <span class="sec">04/08</span></li>
+          <li><a href="/autoboost-site-immersif-v3/">autoboost-site-immersif-v3</a> <span class="sec">06/08</span></li>
+          <li><a href="/autoboost-site-immersif-v4/">autoboost-site-immersif-v4</a> <span class="sec">06/08</span></li>
+          <li><a href="/autoboost-seedance-tuto/">autoboost-seedance-tuto</a> <span class="sec">06/08</span></li>
+          <li><a href="/autoboost-seedance-tuto-v2/">autoboost-seedance-tuto-v2</a> <span class="sec">10/08</span></li>
+          <li><a href="/autoboost-seedance-tuto-v3/">autoboost-seedance-tuto-v3</a> <span class="sec">10/08</span></li>
+          <li><a href="/autoboost-seedance-tuto-v4/">autoboost-seedance-tuto-v4</a> <span class="sec">11/08</span></li>
+          <li><a href="/autoboost-seedance-tuto-v5/">autoboost-seedance-tuto-v5</a> <span class="sec">11/08</span></li>
+          <li><a href="/autoboost-seedance-tuto-v6/">autoboost-seedance-tuto-v6</a> <span class="sec">11/08</span></li>
+          <li><a href="/autoboost-seedance-tuto-v7/">autoboost-seedance-tuto-v7</a> <span class="sec">12/08</span></li>
+          <li><a href="/autoboost-53-usine-ia/">autoboost-53-usine-ia</a> <span class="sec">13/08</span></li>
+        </ul>
+      </details>
+
+    <section class="bloc">
+      <h3>Le relancer</h3>
+      <p class="cmd"><code>/horror-beatsync-video</code></p>
+      
+      <p class="lab">Ce que tu dois fournir</p>
+      <ul class="fournir"><li>Un <strong>rush talking-head</strong> (voix incluse) ou une compo HyperFrames.</li><li>Un <strong>script</strong> — ou l'un des 3 deja cales sur la grille dans <code>references/scripts-horror.md</code>.</li></ul>
+      <p class="reserve">Le referencement sur la trend demande d'ajouter le son officiel a 1-5 % <strong>a la main dans l'app</strong> apres upload. Cette etape ne peut pas etre faite ici.</p>
+    </section>
+
+    <section class="bloc">
+      <h3>Ce qui est verrouille</h3>
+      <ul class="verrou"><li>Grille mesuree non negociable : drop principal a 2,34 s, mini-drops tous les 8,02 s, beat 0,50125 s.</li><li>Un cut a chaque mini-drop ; la revelation visuelle pile sur le drop, jamais avant ni apres.</li><li>Pulse du neon jaune toutes les 2,673 s — pas un zoom plein ecran (ecarte par Tony).</li><li>Musique a <code>volume=0.09</code> sous la voix : c'est le volume qui place le mix, pas le ducking.</li></ul>
+    </section>
+
+    <section class="bloc preuve">
+      <h3>Pourquoi ces videos sont bien celles-la</h3>
+      <p>Chacun de ces projets embarque <code>assets/flowers_horror.mp3</code> comme piste <code>#bgm</code> dans son <code>public/index.html</code> ; <code>autoboost-site-immersif</code> porte en plus un <code>render-horror.sh</code>. Les routes versionnees correspondent aux rendus dates du meme projet (7 rendus pour les 7 routes seedance-tuto, 4 pour les 4 site-immersif).</p>
+      <p class="apart">Six autres projets utilisent la meme piste (<code>autoboost-35-claude-mem</code>, 36, 37, 39, 40, 41) mais n'ont pas de route previsualisation.</p>
+    </section>
+  </article>
+
+  <article class="carte" data-duree="court" data-avatar="oui" data-usage="informer" data-exemple="oui" data-hay="reel remix reel-remix ecran scinde : en haut un screen record ou un schema anime ou un point lumineux parcourt une chaine de noeuds ; en bas l'avatar qui parle. le format d'un reel viral, avec un contenu entierement neuf. autoboost-45-mcp-v3 autoboost-45-mcp autoboost-45-mcp-v2 autoboost-44-trois-agents" id="reel-remix">
+    <header class="tete">
+      <h2>Reel Remix</h2>
+      <p class="voit">Ecran scinde : en haut un screen record ou un schema anime ou un point lumineux parcourt une chaine de noeuds ; en bas l'avatar qui parle. Le format d'un reel viral, avec un contenu entierement neuf.</p>
+      <div class="chips"><span class="chip">30 a 35 s (100-115 mots)</span><span class="chip">9:16 · panneau haut 1080×1120</span><span class="chip chip-av">avec avatar</span><span class="chip">Informer</span><span class="chip chip-ok">4 videos</span></div>
+    </header>
+
+    
+      <figure class="ex">
+        <video controls preload="none" playsinline src="https://assets.automatisationboost.com/previsualisation/autoboost-45-mcp-v3/video.mp4"></video>
+        <figcaption>
+          <a href="/autoboost-45-mcp-v3/">autoboost-45-mcp-v3</a> <span class="sec">— 24/07/2026</span>
+        </figcaption>
+      </figure>
+    
+      <details class="plus">
+        <summary>Les 3 autres videos de ce template</summary>
+        <ul class="routes">
+          <li><a href="/autoboost-45-mcp/">autoboost-45-mcp</a> <span class="sec">24/07</span></li>
+          <li><a href="/autoboost-45-mcp-v2/">autoboost-45-mcp-v2</a> <span class="sec">24/07</span></li>
+          <li><a href="/autoboost-44-trois-agents/">autoboost-44-trois-agents</a> <span class="sec">23/07</span></li>
+        </ul>
+      </details>
+
+    <section class="bloc">
+      <h3>Le relancer</h3>
+      <p class="cmd"><code>/reel-remix</code></p>
+      
+      <p class="lab">Ce que tu dois fournir</p>
+      <ul class="fournir"><li>Une <strong>URL de reel</strong> Instagram, TikTok ou YouTube Short.</li><li>Le <strong>sujet equivalent cote Autoboost</strong> — ton angle, pas le sien.</li><li>Ton propre <strong>screen record</strong> pour le panneau du haut (ou on tombe sur un clip Mixkit / un schema).</li></ul>
+      <p class="reserve">Depend du MCP TokScript pour le transcript (5/jour en gratuit) ; <code>download_video</code> est reserve aux comptes Pro, le MP4 source n'est de toute facon pas reutilisable.</p>
+    </section>
+
+    <section class="bloc">
+      <h3>Ce qui est verrouille</h3>
+      <ul class="verrou"><li>On clone le FORMAT, jamais le contenu : aucune phrase de la source dans le script final, ni telle quelle ni en synonymes.</li><li>Jamais le rush de la source dans le panneau du haut. Panneau muet (<code>-an</code>) et loop-etendu a la duree de la compo.</li><li>Debit reel 3,3 mots/s — pas 3,7-4,1. Le CTA s'ecrit « Commente le mot X », sinon le TTS prononce « Commande ».</li></ul>
+    </section>
+
+    <section class="bloc preuve">
+      <h3>Pourquoi ces videos sont bien celles-la</h3>
+      <p>Chacun de ces projets porte un <code>brief.md</code> — l'artefact propre au skill — qui nomme le reel source. <code>autoboost-44/45</code> partent du reel @henriexploria du 21/07 ; le SKILL.md designe <code>autoboost-18-voice-clone</code> comme implementation de reference (pas de route publiee).</p>
+      <p class="apart"><code>autoboost-45-mcp</code> est aussi monte sur la piste horror : le format vient de Reel Remix, la bande-son de Horror Beat-Sync.</p>
+    </section>
+  </article>
+
+  <article class="carte" data-duree="court" data-avatar="oui" data-usage="informer" data-exemple="oui" data-hay="yapping face camera yapping-facecam-branded un talking-head qui ne tient jamais en place : nouveau plan, nouveau cadrage, gros mot neon ou mockup toutes les 2 a 4 secondes. hook brutal d'entree, punchline seche a la sortie. yapping-oneclick yapping-algo" id="yapping-facecam-branded">
+    <header class="tete">
+      <h2>Yapping face camera</h2>
+      <p class="voit">Un talking-head qui ne tient jamais en place : nouveau plan, nouveau cadrage, gros mot neon ou mockup toutes les 2 a 4 secondes. Hook brutal d'entree, punchline seche a la sortie.</p>
+      <div class="chips"><span class="chip">25 a 40 s</span><span class="chip">9:16 · 1080×1920 · 30 fps</span><span class="chip chip-av">avec avatar</span><span class="chip">Informer</span><span class="chip chip-ok">2 videos</span></div>
+    </header>
+
+    
+      <figure class="ex">
+        <video controls preload="none" playsinline src="https://assets.automatisationboost.com/previsualisation/yapping-oneclick/video.mp4"></video>
+        <figcaption>
+          <a href="/yapping-oneclick/">yapping-oneclick</a>
+        </figcaption>
+      </figure>
+    
+      <details class="plus">
+        <summary>Les 1 autres videos de ce template</summary>
+        <ul class="routes">
+          <li><a href="/yapping-algo/">yapping-algo</a></li>
+        </ul>
+      </details>
+
+    <section class="bloc">
+      <h3>Le relancer</h3>
+      <p class="cmd"><code>/yapping-facecam-branded</code></p>
+      
+      <p class="lab">Ce que tu dois fournir</p>
+      <ul class="fournir"><li>Un <strong>sujet / angle</strong>.</li><li>Un <strong>mot-cle CTA</strong> et le message DM associe.</li></ul>
+      
+    </section>
+
+    <section class="bloc">
+      <h3>Ce qui est verrouille</h3>
+      <ul class="verrou"><li>Aucun plan ne depasse 4 s sans qu'un element change — c'est la regle qui definit le format.</li><li>Bloc 4 dans cet ordre : probleme -> tension -> revelation -> preuve -> solution.</li><li>Jamais « salut, aujourd'hui je vais vous montrer » : le hook des 0-2 s est une provocation.</li><li>Avatar = banque v3 reelle, son natif coupe, on n'entend que la voix clonee.</li></ul>
+    </section>
+
+    <section class="bloc preuve">
+      <h3>Pourquoi ces videos sont bien celles-la</h3>
+      <p>Dossiers projet <code>/work/autoboost-neon-videos/autoboost-yapping-algo/</code> et <code>yapping-oneclick/</code>, tous deux batis sur la banque <code>_shared/avatar-bank/</code>.</p>
+      
+    </section>
+  </article>
+
+  <article class="carte" data-duree="court" data-avatar="oui" data-usage="vendre" data-exemple="oui" data-hay="hook puissant (hook stacking) hook-puissant-branded une entree qui casse le cadre — on tombe du plafond, un objet vole vers l'objectif — enchainee sans respirer sur une phrase qui ouvre une boucle. ca se termine en compte a rebours et decollage. hook-puissant hook-chaos-automatiser autoboost-matrix-formation-hook autoboost-matrix-formation-hook-6s" id="hook-puissant-branded">
+    <header class="tete">
+      <h2>Hook puissant (hook stacking)</h2>
+      <p class="voit">Une entree qui casse le cadre — on tombe du plafond, un objet vole vers l'objectif — enchainee sans respirer sur une phrase qui ouvre une boucle. Ca se termine en compte a rebours et decollage.</p>
+      <div class="chips"><span class="chip">25 a 30 s</span><span class="chip">9:16 · 1080×1920</span><span class="chip chip-av">avec avatar</span><span class="chip">Vendre</span><span class="chip chip-ok">4 videos</span></div>
+    </header>
+
+    
+      <figure class="ex">
+        <video controls preload="none" playsinline src="https://assets.automatisationboost.com/previsualisation/hook-puissant/video.mp4"></video>
+        <figcaption>
+          <a href="/hook-puissant/">hook-puissant</a> <span class="sec">— 16/08/2026</span>
+        </figcaption>
+      </figure>
+    
+      <details class="plus">
+        <summary>Les 3 autres videos de ce template</summary>
+        <ul class="routes">
+          <li><a href="/hook-chaos-automatiser/">hook-chaos-automatiser</a> <span class="sec">hook partage _shared/hooks/chaos-automatiser/</span></li>
+          <li><a href="/autoboost-matrix-formation-hook/">autoboost-matrix-formation-hook</a></li>
+          <li><a href="/autoboost-matrix-formation-hook-6s/">autoboost-matrix-formation-hook-6s</a> <span class="sec">variante 6 s</span></li>
+        </ul>
+      </details>
+
+    <section class="bloc">
+      <h3>Le relancer</h3>
+      <p class="cmd"><code>/hook-puissant-branded</code></p>
+      
+      <p class="lab">Ce que tu dois fournir</p>
+      <ul class="fournir"><li>Le <strong>sujet reel</strong> livre entre le hook et le CTA (bloc valeur 8-22 s).</li><li>Un <strong>mot-cle CTA</strong> et la ressource promise derriere.</li></ul>
+      <p class="reserve">Les hooks visuels forts (chute, decollage, poing) ne sont pas dans la banque avatar. Par defaut ils sont <strong>simules en compositing HTML</strong> ; un vrai clip demande des credits Seedance/Higgsfield ou une generation web par Tony.</p>
+    </section>
+
+    <section class="bloc">
+      <h3>Ce qui est verrouille</h3>
+      <ul class="verrou"><li>Deux hooks empiles, pas un : un VISUEL dans la 1re seconde, un VERBAL dans les 3 premieres.</li><li>Explication meta legere et assumee juste apres (« je viens d'enchainer deux hooks »).</li><li>Climax final obligatoire : compte a rebours 3-2-1 + effet visuel (decollage, bris d'ecran).</li></ul>
+    </section>
+
+    <section class="bloc preuve">
+      <h3>Pourquoi ces videos sont bien celles-la</h3>
+      <p>Dossier projet <code>/work/autoboost-neon-videos/hook-puissant/</code>, plus le hook cle en main partage <code>_shared/hooks/chaos-automatiser/</code> (cite par /script-pspc-branded) qui a donne la route hook-chaos-automatiser.</p>
+      
+    </section>
+  </article>
+
+  <article class="carte" data-duree="moyen" data-avatar="non" data-usage="divertir" data-exemple="oui" data-hay="essai contemplatif essai-contemplatif-branded un objet banal filme lentement, une voix off calme qui monte par paliers vers l'existentiel, l'image qui se desature a chaque palier — et un fondu au blanc suivi de silence. essai-contemplatif-plafond essai-ego-pourquoi-ce-format essai-ego-tom-odell essai-ego-tom-odell-v2" id="essai-contemplatif-branded">
+    <header class="tete">
+      <h2>Essai contemplatif</h2>
+      <p class="voit">Un objet banal filme lentement, une voix off calme qui monte par paliers vers l'existentiel, l'image qui se desature a chaque palier — et un fondu au blanc suivi de silence.</p>
+      <div class="chips"><span class="chip">45 a 75 s (defaut 60 s)</span><span class="chip">16:9 ou 9:16 — a demander</span><span class="chip">sans avatar</span><span class="chip">Divertir</span><span class="chip chip-ok">4 videos</span></div>
+    </header>
+
+    
+      <figure class="ex">
+        <video controls preload="none" playsinline src="https://assets.automatisationboost.com/previsualisation/essai-contemplatif-plafond/essai-contemplatif-plafond-yellow-final.mp4"></video>
+        <figcaption>
+          <a href="/essai-contemplatif-plafond/">essai-contemplatif-plafond</a> <span class="sec">— Le plafond de verre</span>
+        </figcaption>
+      </figure>
+    
+      <details class="plus">
+        <summary>Les 3 autres videos de ce template</summary>
+        <ul class="routes">
+          <li><a href="/essai-ego-pourquoi-ce-format/">essai-ego-pourquoi-ce-format</a> <span class="sec">20/08 · 86 s</span></li>
+          <li><a href="/essai-ego-tom-odell/">essai-ego-tom-odell</a> <span class="sec">60,5 s</span></li>
+          <li><a href="/essai-ego-tom-odell-v2/">essai-ego-tom-odell-v2</a> <span class="sec">60,5 s</span></li>
+        </ul>
+      </details>
+
+    <section class="bloc">
+      <h3>Le relancer</h3>
+      <p class="cmd"><code>/essai-contemplatif-branded</code></p>
+      
+      <p class="lab">Ce que tu dois fournir</p>
+      <ul class="fournir"><li>L'<strong>objet banal de depart</strong> (le point d'entree concret).</li><li>Le <strong>pourquoi / la these</strong> vers laquelle on monte.</li><li>La <strong>derniere phrase</strong>, celle qui retourne juste avant le blanc.</li></ul>
+      <p class="reserve">Format qui vise l'impact, pas la vue : il fera moins de vues qu'une video Autoboost classique, et se produit <em>entre</em> les autres, jamais a leur place.</p>
+    </section>
+
+    <section class="bloc">
+      <h3>Ce qui est verrouille</h3>
+      <ul class="verrou"><li>Ouverture sous-estimee, jamais criee ; escalade continue concret -> conceptuel -> existentiel, sans jamais redescendre.</li><li>Fondu au blanc final + silence : c'est la chute du format, pas une option.</li><li>Le bloc final (plafond + limite + blanc) fait au moins 35 % de la duree.</li><li>Ce format ne suit pas la charte sombre + or habituelle : la palette se desature vers le blanc.</li></ul>
+    </section>
+
+    <section class="bloc preuve">
+      <h3>Pourquoi ces videos sont bien celles-la</h3>
+      <p>Dossiers projet homonymes sous <code>/work/autoboost-neon-videos/</code> ; le nom du skill apparait dans <code>essai-contemplatif-plafond</code> et <code>essai-ego-pourquoi-ce-format</code>. Les tom-odell sont en 60,5 s / 1080×1920, dans la fenetre du skill.</p>
+      <p class="apart">Les essais <strong>longs</strong> (<code>essai-apres-ia-v3</code> 9 min 12, <code>essai-vitesse-lumiere</code>, <code>essai-conscience</code>) ne sont pas ce template : ils relevent du skill <code>essai-long-ego</code>, 16:9, 8-12 min.</p>
+    </section>
+  </article>
+
+  <article class="carte" data-duree="court" data-avatar="non" data-usage="vendre" data-exemple="oui" data-hay="foodboost vitrine foodboost-vitrine-video trois plats en food-porn, chacun plein cadre en cinemagraphe qui boucle — vapeur, lumiere chaude rasante, faible profondeur de champ — puis une carte preuve et « commente menu ». aucune image n'a ete photographiee. foodboost-03 foodboost-02 foodboost-04 foodboost-05 foodboost-06 foodboost-07 foodboost-08 foodboost-09 foodboost-10 foodboost-11 foodboost-12" id="foodboost-vitrine-video">
+    <header class="tete">
+      <h2>FoodBoost vitrine</h2>
+      <p class="voit">Trois plats en food-porn, chacun plein cadre en cinemagraphe qui boucle — vapeur, lumiere chaude rasante, faible profondeur de champ — puis une carte preuve et « commente MENU ». Aucune image n'a ete photographiee.</p>
+      <div class="chips"><span class="chip">18 a 22 s</span><span class="chip">9:16 · 1080×1920 · 30 fps</span><span class="chip">sans avatar</span><span class="chip">Vendre</span><span class="chip chip-ok">11 videos</span></div>
+    </header>
+
+    
+      <figure class="ex">
+        <video controls preload="none" playsinline src="https://assets.automatisationboost.com/previsualisation/foodboost-03/video.mp4"></video>
+        <figcaption>
+          <a href="/foodboost-03/">foodboost-03</a> <span class="sec">— burger</span>
+        </figcaption>
+      </figure>
+    
+      <details class="plus">
+        <summary>Les 10 autres videos de ce template</summary>
+        <ul class="routes">
+          <li><a href="/foodboost-02/">foodboost-02</a> <span class="sec">vitrine</span></li>
+          <li><a href="/foodboost-04/">foodboost-04</a> <span class="sec">sandwich</span></li>
+          <li><a href="/foodboost-05/">foodboost-05</a> <span class="sec">poke</span></li>
+          <li><a href="/foodboost-06/">foodboost-06</a> <span class="sec">snacking</span></li>
+          <li><a href="/foodboost-07/">foodboost-07</a> <span class="sec">pizza</span></li>
+          <li><a href="/foodboost-08/">foodboost-08</a> <span class="sec">sushi</span></li>
+          <li><a href="/foodboost-09/">foodboost-09</a> <span class="sec">petit-dej</span></li>
+          <li><a href="/foodboost-10/">foodboost-10</a> <span class="sec">desserts</span></li>
+          <li><a href="/foodboost-11/">foodboost-11</a> <span class="sec">grillades</span></li>
+          <li><a href="/foodboost-12/">foodboost-12</a> <span class="sec">boissons</span></li>
+        </ul>
+      </details>
+
+    <section class="bloc">
+      <h3>Le relancer</h3>
+      <p class="cmd"><code>/foodboost-vitrine-video</code></p>
+      
+      <p class="lab">Ce que tu dois fournir</p>
+      <ul class="fournir"><li>Une <strong>liste de plats</strong> (n'importe quelle cuisine — ne rien supposer) et un <strong>angle</strong>.</li><li>Tout le reste part de <code>config.json</code> : style, plats, narration.</li></ul>
+      <p class="reserve">Chaque video coute ~0,45 $ de credits WaveSpeed (3 images + 3 clips + voix). Publication sur Instagram @foodboost uniquement (accountId 55611), 5 hashtags maximum.</p>
+    </section>
+
+    <section class="bloc">
+      <h3>Ce qui est verrouille</h3>
+      <ul class="verrou"><li>1 scene plein cadre par plat (badge n°, nom, sous-titre) + 1 scene preuve/CTA. CTA toujours « Commente le mot MENU ».</li><li>Palette figee : mangue #FFB020, lagon #2EC4B6, piment #FF3B30, fond #070503.</li><li>Un clip vidu fait 8,125 s : ne jamais l'afficher plus longtemps, sinon le rendu aborte (coverage gate). Au-dela, une <code>&lt;img&gt;</code> avec zoom GSAP.</li><li>Ne jamais coder les plats en dur — tout passe par <code>config.json</code>.</li></ul>
+    </section>
+
+    <section class="bloc preuve">
+      <h3>Pourquoi ces videos sont bien celles-la</h3>
+      <p>Onze projets <code>/work/foodboost-videos/foodboost-02-vitrine</code> … <code>foodboost-12-boissons</code>, un par route, exactement la convention <code>foodboost-NN/</code> ecrite dans le SKILL.md.</p>
+      <p class="apart">Des routes doublons existent (<code>foodboost-06-snacking</code> … <code>foodboost-12-boissons</code>) et servent les memes videos. <code>foodboost-01-demo</code> est un autre format (avatar + broll), explicitement hors de ce skill.</p>
+    </section>
+  </article>
+
+  <article class="carte" data-duree="long" data-avatar="non" data-usage="divertir" data-exemple="oui" data-hay="clip musical ia clip-musical-ia un vrai clip : cent et quelques plans generes, coupes sur le pouls du morceau, avec les paroles qui apparaissent quand il chante et un glitch qui prend la main sur les instrumentaux. livre en vertical et en horizontal. clip-roule-kiki clip-roule-kiki-v2" id="clip-musical-ia">
+    <header class="tete">
+      <h2>Clip musical IA</h2>
+      <p class="voit">Un vrai clip : cent et quelques plans generes, coupes sur le pouls du morceau, avec les paroles qui apparaissent quand il chante et un glitch qui prend la main sur les instrumentaux. Livre en vertical et en horizontal.</p>
+      <div class="chips"><span class="chip">2 min 30 par defaut</span><span class="chip">9:16 ET 16:9 — les deux, toujours</span><span class="chip">sans avatar</span><span class="chip">Divertir</span><span class="chip chip-ok">2 videos</span></div>
+    </header>
+
+    
+      <figure class="ex">
+        <video controls preload="none" playsinline src="https://assets.automatisationboost.com/previsualisation/clip-roule-kiki/vertical.mp4"></video>
+        <figcaption>
+          <a href="/clip-roule-kiki/">clip-roule-kiki</a> <span class="sec">— roule kiki — ouwa · version verticale</span>
+        </figcaption>
+      </figure>
+    
+      <details class="plus">
+        <summary>Les 1 autres videos de ce template</summary>
+        <ul class="routes">
+          <li><a href="/clip-roule-kiki-v2/">clip-roule-kiki-v2</a> <span class="sec">remontage</span></li>
+        </ul>
+      </details>
+
+    <section class="bloc">
+      <h3>Le relancer</h3>
+      <p class="cmd"><code>/clip-musical-ia</code></p>
+      
+      <p class="lab">Ce que tu dois fournir</p>
+      <ul class="fournir"><li>Le <strong>fichier .wav</strong> du morceau (obligatoire).</li><li>Une <strong>liste de liens</strong> <code>higgsfield.ai/s/...</code> (obligatoire).</li><li>Titre, nom d'artiste, duree cible et CTA de fin — sinon defauts.</li></ul>
+      <p class="reserve">Les liens <code>/s/&lt;slug&gt;</code> sont des SPA : le MCP Higgsfield ne donne pas le slug de partage, il faut passer par <code>outils/resoudre-liens.mjs</code> qui lit le payload TanStack.</p>
+    </section>
+
+    <section class="bloc">
+      <h3>Ce qui est verrouille</h3>
+      <ul class="verrou"><li>On mesure le morceau, et la mesure decide du montage — jamais l'oreille : fin reelle, pouls, ou il chante.</li><li>La duree des plans vient de la SOURCE, aimantee sur la grille rythmique, pas l'inverse.</li><li>Les deux formats sont une intention, pas un recadrage : recadrer un 9:16 en 16:9 coupe la tete a tous les coups.</li><li>Copie web sous 50 Mo par format (CRF 28, maxrate 2500k).</li></ul>
+    </section>
+
+    <section class="bloc preuve">
+      <h3>Pourquoi ces videos sont bien celles-la</h3>
+      <p>Le SKILL.md nomme <code>/work/previsualisation/clip-roule-kiki/</code> comme sortie de reference de la premiere production (« roule kiki — ouwa », 2 min 30, 109 plans, 6 clips sources).</p>
+      
+    </section>
+  </article>
+
+  <article class="carte" data-duree="moyen" data-avatar="na" data-usage="vendre" data-exemple="non" data-hay="script psvc script-pspc-branded rien : ce template ne produit pas d'image. il produit le texte — probleme vecu et chiffre, mecanisme montre, preuve verifiable, cta gate par un mot — dans la voix de tony." id="script-pspc-branded">
+    <header class="tete">
+      <h2>Script PSVC</h2>
+      <p class="voit">Rien : ce template ne produit pas d'image. Il produit le texte — probleme vecu et chiffre, mecanisme montre, preuve verifiable, CTA gate par un mot — dans la voix de Tony.</p>
+      <div class="chips"><span class="chip">vise 30 a 45 s de narration (~15 car./s)</span><span class="chip">script, pas de video</span><span class="chip">Vendre</span><span class="chip chip-warn">aucun exemple video</span></div>
+    </header>
+
+    
+      <div class="ex vide">
+        <p><strong>Pas d'exemple video reel.</strong></p>
+        <p class="sec">Aucune video de previsualisation n'est rattachable a ce template. Rien n'a ete emprunte a un autre style pour combler le trou.</p>
+      </div>
+    
+
+    <section class="bloc">
+      <h3>Le relancer</h3>
+      <p class="cmd"><code>/script-pspc-branded</code></p>
+      
+      <p class="lab">Ce que tu dois fournir</p>
+      <ul class="fournir"><li>Le <strong>sujet</strong> et ta galere vecue, datee et chiffree.</li><li>Une <strong>preuve montrable</strong> pour le bloc validation (site en ligne, post programme, chiffre mesure).</li><li>Un <strong>mot-cle CTA</strong> libre, avec la ressource qui existe deja.</li></ul>
+      <p class="reserve"><strong>Ce template n'a aucun exemple video, et c'est normal :</strong> sa sortie est un script. Pour le monter, l'enchainer sur <code>/veille-to-video-v3</code>.</p>
+    </section>
+
+    <section class="bloc">
+      <h3>Ce qui est verrouille</h3>
+      <ul class="verrou"><li>PROBLEME (0-8 s) : une histoire vecue chiffree, et aucun outil nomme avant la seconde 8.</li><li>VALIDATION (22-32 s) : preuve reelle. Aucun temoignage invente, aucune promesse de revenu, aucune urgence artificielle.</li><li>Maximum 2 adjectifs empiles, jamais 3. 1 a 2 touches d'humour par script, jamais dans la validation.</li></ul>
+    </section>
+
+    <section class="bloc preuve">
+      <h3>Pourquoi ces videos sont bien celles-la</h3>
+      <p>Le SKILL.md l'ecrit lui-meme : « Output : un script pret a monter […], pas une video ».</p>
+      
+    </section>
+  </article>
+
+  <article class="carte" data-duree="site" data-avatar="na" data-usage="vendre" data-exemple="non" data-hay="site motion design (flipbook au scroll) motion-design-site une landing sombre ou la molette pilote une animation image par image dans un canvas — on scrolle a travers la scene au lieu de la regarder defiler." id="motion-design-site">
+    <header class="tete">
+      <h2>Site motion design (flipbook au scroll)</h2>
+      <p class="voit">Une landing sombre ou la molette pilote une animation image par image dans un canvas — on scrolle a travers la scene au lieu de la regarder defiler.</p>
+      <div class="chips"><span class="chip">sans objet (page web)</span><span class="chip">site statique, pas une video</span><span class="chip">Vendre</span><span class="chip chip-warn">aucun exemple video</span></div>
+    </header>
+
+    
+      <div class="ex vide">
+        <p><strong>Pas d'exemple video reel.</strong></p>
+        <p class="sec">Aucune video de previsualisation n'est rattachable a ce template. Rien n'a ete emprunte a un autre style pour combler le trou.</p>
+      </div>
+    
+
+    <section class="bloc">
+      <h3>Le relancer</h3>
+      <p class="cmd"><code>/motion-design-site</code></p>
+      
+      <p class="lab">Ce que tu dois fournir</p>
+      <ul class="fournir"><li>Une <strong>direction visuelle</strong> : references, palette hex, ambiance, typographies.</li><li>Le <strong>sujet de l'animation</strong> qui defile au scroll.</li></ul>
+      <p class="reserve"><strong>Aucun exemple reel trouve.</strong> Je n'ai trouve nulle part dans previsualisation la signature du template (sequence d'images numerotees + <code>frameCount</code> dans un canvas). Les routes en <code>-scroll</code> qui existent relevent d'un autre skill (<code>site-cinematique-scroll</code>) ou sont des sites clients : je ne les rattache pas ici.</p>
+    </section>
+
+    <section class="bloc">
+      <h3>Ce qui est verrouille</h3>
+      <ul class="verrou"><li>L'effet n'est PAS une balise <code>&lt;video&gt;</code> : c'est une sequence d'images numerotees dessinee dans un <code>&lt;canvas&gt;</code>, index pilote par le scroll (GSAP ScrollTrigger).</li><li>Viser 60 a 150 images a 30 fps — assez pour la fluidite, pas assez pour plomber le poids.</li><li>Section hero <code>sticky</code>/<code>fixed</code> sur 100vh.</li></ul>
+    </section>
+
+    <section class="bloc preuve">
+      <h3>Pourquoi ces videos sont bien celles-la</h3>
+      <p>—</p>
+      
+    </section>
+  </article>
+
+  <article class="carte" data-duree="court" data-avatar="non" data-usage="vendre" data-exemple="non" data-hay="website to video website-to-video une visite guidee d'un site : captures headless de ses pages remontees en video, avec ses propres visuels et sa charte." id="website-to-video">
+    <header class="tete">
+      <h2>Website to video</h2>
+      <p class="voit">Une visite guidee d'un site : captures headless de ses pages remontees en video, avec ses propres visuels et sa charte.</p>
+      <div class="chips"><span class="chip">15 a 30 s selon la demande</span><span class="chip">selon la demande</span><span class="chip">sans avatar</span><span class="chip">Vendre</span><span class="chip chip-warn">aucun exemple video</span></div>
+    </header>
+
+    
+      <div class="ex vide">
+        <p><strong>Pas d'exemple video reel.</strong></p>
+        <p class="sec">Aucune video de previsualisation n'est rattachable a ce template. Rien n'a ete emprunte a un autre style pour combler le trou.</p>
+      </div>
+    
+
+    <section class="bloc">
+      <h3>Le relancer</h3>
+      <p class="cmd"><code>/website-to-video</code></p>
+      
+      <p class="lab">Ce que tu dois fournir</p>
+      <ul class="fournir"><li>Une <strong>URL</strong> de site a capturer.</li><li>Le workflow a 7 etapes et des points d'arret qui posent des questions : ce n'est pas un one-shot.</li></ul>
+      <p class="reserve"><strong>Aucun exemple reel.</strong> Aucun projet de previsualisation ne porte la trace de ce pipeline. Et rappel de terrain : plusieurs sites (Cloudflare, geo, CDN) ne sont pas capturables en headless depuis ici.</p>
+    </section>
+
+    <section class="bloc">
+      <h3>Ce qui est verrouille</h3>
+      <ul class="verrou"><li>Skill amont HyperFrames, redige en anglais — il ne porte aucune charte Autoboost.</li><li>Il refuse le job si l'intention est un lancement produit (-> /product-launch-video), un explainer sans site (-> /faceless-explainer), ou des captions sur une video existante (-> /embedded-captions).</li></ul>
+    </section>
+
+    <section class="bloc preuve">
+      <h3>Pourquoi ces videos sont bien celles-la</h3>
+      <p>—</p>
+      
+    </section>
+  </article>
+  </main>
+
+  <p class="rien" id="rien" hidden>Aucun template ne correspond. <button class="lien-bouton" type="button" onclick="document.getElementById('raz').click()">Réinitialiser</button></p>
+
+  <footer>
+    <p><strong>Ce catalogue ne comble aucun trou.</strong> Un template sans exemple réel le dit sur sa carte, et aucune vidéo n'a été rangée par ressemblance de nom : chaque rattachement s'appuie sur un dossier projet, un asset partagé ou une mention explicite dans le SKILL.md, indiqué au bas de chaque carte.</p>
+    <p>239 routes de prévisualisation portent une vidéo ; 77 sont rattachées ici. Les autres viennent de styles couverts par d'autres skills (essai long EGO, top 3 outils, BeFresh, tuto 16:9…), de <code>veille-to-video</code> v2 mis en pause, ou de styles sans skill.</p>
+    <p>Source : les 14 <code>SKILL.md</code> de <code>/work/.claude/skills/</code>. Les durées, formats et contraintes sont recopiés d'eux, pas interprétés.</p>
+  </footer>
+
+</div>
+
+<script>
+(function(){
+  var cartes = Array.prototype.slice.call(document.querySelectorAll('.carte'));
+  var q = document.getElementById('q');
+  var res = document.getElementById('resultat');
+  var rien = document.getElementById('rien');
+  var boutons = Array.prototype.slice.call(document.querySelectorAll('.f'));
+  var actifs = { duree:[], avatar:[], usage:[], exemple:[] };
+
+  function norm(s){
+    return (s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+  }
+
+  function appliquer(){
+    var terme = norm(q.value.trim());
+    var n = 0;
+    cartes.forEach(function(c){
+      var ok = true;
+      for (var k in actifs){
+        if (actifs[k].length && actifs[k].indexOf(c.dataset[k]) === -1){ ok = false; break; }
+      }
+      if (ok && terme){ ok = norm(c.dataset.hay).indexOf(terme) !== -1; }
+      c.hidden = !ok;
+      if (ok) n++;
+    });
+    res.textContent = n + ' template' + (n > 1 ? 's affichés' : ' affiché');
+    rien.hidden = n !== 0;
+  }
+
+  boutons.forEach(function(b){
+    b.addEventListener('click', function(){
+      var k = b.dataset.k, v = b.dataset.v;
+      var i = actifs[k].indexOf(v);
+      if (i === -1){ actifs[k].push(v); b.setAttribute('aria-pressed','true'); }
+      else { actifs[k].splice(i,1); b.setAttribute('aria-pressed','false'); }
+      appliquer();
+    });
+  });
+
+  q.addEventListener('input', appliquer);
+
+  document.getElementById('raz').addEventListener('click', function(){
+    q.value = '';
+    for (var k in actifs) actifs[k] = [];
+    boutons.forEach(function(b){ b.setAttribute('aria-pressed','false'); });
+    appliquer();
+  });
+
+  // une seule vidéo joue à la fois
+  document.addEventListener('play', function(e){
+    if (e.target.tagName !== 'VIDEO') return;
+    document.querySelectorAll('video').forEach(function(v){ if (v !== e.target) v.pause(); });
+  }, true);
+
+  appliquer();
+})();
+</script>
+</body>
+</html>
