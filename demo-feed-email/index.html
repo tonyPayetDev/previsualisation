@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Démo par email — le workflow des 9 tuiles</title>
+<style>
+  :root{--noir:#08080a;--carte:#101015;--ligne:#22222b;--blanc:#f0eee9;
+        --gris:#8b8b93;--accent:#E8A33D}
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{background:var(--noir)}
+  body{background:var(--noir);color:var(--blanc);
+    font:15.5px/1.65 system-ui,-apple-system,"Segoe UI",sans-serif;
+    padding:clamp(20px,5vw,52px) clamp(16px,4vw,36px) 90px}
+  .w{max-width:940px;margin:0 auto}
+  .eb{font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:var(--accent)}
+  h1{font-size:clamp(28px,5vw,44px);line-height:1.06;letter-spacing:-.022em;margin:12px 0 8px}
+  .sous{color:var(--gris);max-width:58ch}
+  .meta{display:flex;gap:8px;flex-wrap:wrap;margin:22px 0 26px}
+  .tag{border:1px solid var(--ligne);border-radius:999px;padding:6px 13px;font-size:12.5px;color:var(--gris)}
+  .lecteur{display:flex;gap:26px;flex-wrap:wrap;align-items:flex-start}
+  video{width:min(340px,100%);height:auto;background:#000;border-radius:12px;border:1px solid var(--ligne)}
+  .cote{flex:1;min-width:260px}
+  h2{font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--accent);
+     margin:26px 0 12px;font-weight:700}
+  table{width:100%;border-collapse:collapse;font-size:14px}
+  td{padding:9px 8px;border-bottom:1px solid var(--ligne);vertical-align:top}
+  td:first-child{color:var(--accent);font-weight:700;white-space:nowrap;width:1%;padding-right:16px}
+  td:last-child{color:#c6c6cd}
+  .note{background:var(--carte);border:1px solid var(--ligne);border-left:2px solid var(--accent);
+    border-radius:8px;padding:15px 17px;margin-top:20px;color:#c6c6cd;font-size:14.5px}
+  .note b{color:var(--blanc)}
+  .pied{margin-top:48px;padding-top:18px;border-top:1px solid var(--ligne);color:var(--gris);font-size:12.5px}
+</style>
+</head>
+<body>
+<div class="w">
+  <div class="eb">n8n · Démo — Feed 9 tuiles par email</div>
+  <h1>La moitié des visiteurs n’attendra pas trois minutes</h1>
+  <p class="sous">Le premier workflow rend une image de profil simulé pendant que la personne
+  patiente devant l’écran. Celui-ci génère les <b>neuf tuiles séparées</b>, les héberge, et
+  envoie un lien par email — la personne referme l’onglet et reçoit le résultat.</p>
+
+  <div class="meta">
+    <span class="tag">17 nœuds</span>
+    <span class="tag">actif</span>
+    <span class="tag">9 tuiles</span>
+    <span class="tag">~0,27 $ / demande</span>
+  </div>
+
+  <div class="lecteur" style="display:block">
+    <div class="cote">
+      <h2>Le chemin, dans l’ordre</h2>
+      <table>
+        <tr><td>1 · Formulaire</td><td>Dix champs. En ligne et vérifié : <a href="https://n7n.automatisationboost.com/form/e2dea67e-0c96-4163-b18b-925abcfb709a">ouvrir le formulaire</a>.</td></tr>
+        <tr><td>2 · Prévenir Tony</td><td>Part <b>immédiatement</b>, avant toute génération. Si Kie tombe, le contact est déjà arrivé — c’est la correction apprise sur le premier workflow.</td></tr>
+        <tr><td>3 · Neuf prompts</td><td>3 plats, 2 reels, 1 culture, 1 coulisses, 1 accroche, 1 carton de marque. La répartition vient du feed de référence : neuf assiettes d’affilée se lisent comme un catalogue.</td></tr>
+        <tr><td>4 · Boucle</td><td>Une tuile à la fois : création Kie → attente 25 s → relecture → téléchargement → upload R2. L’URL rendue par Kie est temporaire, celle de R2 ne l’est pas.</td></tr>
+        <tr><td>5 · La page</td><td>Une page autonome, sans police distante ni script, uploadée elle aussi. Elle doit s’ouvrir sur un téléphone en connexion faible, des mois après.</td></tr>
+        <tr><td>6 · L’email</td><td>Un bouton vers la page. Le message répète ce que la maquette ne contient pas : ni prix, ni horaire, ni adresse, ni avis.</td></tr>
+      </table>
+
+      <div class="note"><b>Le garde-fou qui manquait la dernière fois.</b> Sur le premier
+      workflow, « image prête ? [non] → attendre 20 s » n’avait <b>aucune sortie</b> : une vraie
+      demande a tourné dix tours et rien ne bornait le onzième. Ici la boucle s’arrête au
+      quinzième tour, ou dès que Kie renvoie un état d’échec.</div>
+
+      <div class="note" style="border-color:#ef6461"><b>Ce que je n’ai pas fait, et pourquoi.</b>
+      Je ne l’ai <b>jamais exécuté</b>. Une soumission de test aurait envoyé un vrai email et
+      lancé neuf générations payantes — les deux choses que je ne fais pas sans ton accord.
+      Ce qui est vérifié l’est donc par la structure et non par l’usage : les 18 liaisons pointent
+      toutes vers un nœud existant, aucun nœud n’est orphelin, les cinq expressions
+      <span class="mono">$('…')</span> visent des nœuds réels, les six credentials sont en place,
+      et le formulaire répond en 200 avec ses dix champs. <b>Le premier vrai passage reste à faire
+      par toi.</b></div>
+    </div>
+  </div>
+
+  <div class="pied">AutomatisationBoost — prévisualisation privée</div>
+</div>
+</body>
+</html>
