@@ -69,6 +69,21 @@
 .rate .d{font-size:13.3px;color:#8590a3;line-height:1.5}
 .passer{background:none;border:0;color:#8590a3;font:inherit;font-size:14px;
   text-decoration:underline;text-underline-offset:3px;cursor:pointer;padding:12px;min-height:44px}
+
+.note-zone{display:flex;flex-direction:column;gap:9px;margin-top:11px}
+.note-haut{display:flex;gap:8px;align-items:stretch}
+.micro{flex:1;display:flex;align-items:center;justify-content:center;gap:9px;
+  background:#1b1430;border:1px solid #4b3a7a;color:#c9b6ff;border-radius:11px;
+  min-height:52px;font:600 15px/1 inherit;cursor:pointer;padding:0 14px}
+.micro.actif{background:#3a1220;border-color:#8a2440;color:#ffb3c4}
+.micro .pastille{width:10px;height:10px;border-radius:50%;background:currentColor;flex:0 0 auto}
+.micro.actif .pastille{animation:bat 1s ease-in-out infinite}
+@keyframes bat{50%{opacity:.25;transform:scale(.7)}}
+.note-txt{width:100%;min-height:74px;font:inherit;font-size:15px;line-height:1.5;
+  color:var(--blanc);background:#0b0f16;border:1px solid var(--ligne);
+  border-radius:10px;padding:11px 12px;resize:vertical}
+.note-txt:focus{outline:0;border-color:#4b3a7a}
+.note-aide{font-size:12.5px;color:var(--gris);line-height:1.5}
 </style></head>
 <body>
 <header>
@@ -168,9 +183,74 @@
   const aujourdhui=()=>new Date().toISOString().slice(0,10);
   const faitsAujourdhui=()=>Object.values(etat).filter(x=>x&&x.date===aujourdhui()).length;
 
+
+  /* ── Dictée de la note d'appel ─────────────────────────────────────────
+     La note voyage avec la décision : `etat[id].note`. */
+  const Reco = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+  const blocNote = () =>
+    '<div class="note-zone">'
+    + '<div class="note-haut">'
+    + (Reco
+        ? '<button type="button" class="micro" id="micro">'
+          + '<span class="pastille"></span>Dicter la note</button>'
+        : '')
+    + '</div>'
+    + '<textarea class="note-txt" id="noteTxt" placeholder="'
+    + (Reco ? 'ou tape ici' : 'Ce navigateur ne sait pas transcrire — tape la note ici')
+    + '"></textarea>'
+    + '<p class="note-aide">' + (Reco
+        ? 'Appuie, parle, ré-appuie pour arrêter. La note part avec l’appel.'
+        : 'La note part avec l’appel.') + '</p>'
+    + '</div>';
+
+  let reco = null;
+
+  const brancherNote = (racine) => {
+    const b = racine.querySelector('#micro');
+    const t = racine.querySelector('#noteTxt');
+    if (!b || !t) return;
+    b.onclick = () => {
+      if (reco) { reco.stop(); return; }
+      reco = new Reco();
+      reco.lang = 'fr-FR';
+      reco.continuous = true;
+      reco.interimResults = true;
+      let acquis = t.value ? t.value + ' ' : '';
+      reco.onresult = (e) => {
+        let vol = '';
+        for (let i = e.resultIndex; i < e.results.length; i++) {
+          const m = e.results[i][0].transcript;
+          if (e.results[i].isFinal) acquis += m + ' '; else vol += m;
+        }
+        t.value = (acquis + vol).replace(/\s+/g, ' ').trim();
+      };
+      /* Un refus de micro doit se voir : sinon on croit que ça enregistre. */
+      reco.onerror = (e) => {
+        b.textContent = e.error === 'not-allowed'
+          ? 'Micro refusé — tape la note'
+          : 'La dictée a coupé — reprends';
+        reco = null;
+        b.classList.remove('actif');
+      };
+      reco.onend = () => { reco = null; b.classList.remove('actif');
+        b.innerHTML = '<span class="pastille"></span>Reprendre la dictée'; };
+      reco.start();
+      b.classList.add('actif');
+      b.innerHTML = '<span class="pastille"></span>J’écoute — appuie pour arrêter';
+    };
+  };
+
+  const lireNote = () => {
+    const t = document.getElementById('noteTxt');
+    return t ? t.value.trim() : '';
+  };
+
   const suivant=()=>{ while(i<LEADS.length && etat[LEADS[i].id] && etat[LEADS[i].id].date===aujourdhui()) i++; peindre(); };
 
-  const marquer=(r,quoi)=>{ etat[r.id]={etat:quoi,date:aujourdhui(),h:new Date().toISOString()};
+  const marquer=(r,quoi)=>{ const n=lireNote();
+    etat[r.id]={etat:quoi,date:aujourdhui(),h:new Date().toISOString()};
+    if(n) etat[r.id].note=n;
     duNeuf=true; envoyer(); i++; suivant(); };
 
   const rate=(r)=>{
@@ -220,11 +300,13 @@
       +'<button data-q="repondu">Pas décroché</button>'
       +'<button class="parle" data-q="appele">J’ai parlé</button>'
       +'</div>'
+      +blocNote()
       +'<div class="note">'+(r.cat==='echauffement'
         ? 'Celui-là ne compte pas. Le but est d’entendre ta voix, pas de vendre.'
         : 'Tu ne notes rien ici : deux boutons, et on passe au suivant.')+'</div>';
 
-    pi.querySelectorAll('button').forEach(b=>b.onclick=()=>{
+    brancherNote(pi);
+    pi.querySelectorAll('button:not(.micro)').forEach(b=>b.onclick=()=>{
       if(b.dataset.q==='repondu' && premierMobile(r)) return rate(r);
       marquer(r,b.dataset.q);
     });
