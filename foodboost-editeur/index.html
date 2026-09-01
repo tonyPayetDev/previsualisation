@@ -151,6 +151,14 @@ dialog pre{background:#0C0F11;border:1px solid var(--ui-trait);border-radius:7px
 .banque-titre.client b{color:#e8c98a}
 .banque-titre em{font-style:normal;font-weight:400;color:#6b7089;font-size:11px;
   letter-spacing:0;text-transform:none}
+
+.creneau{display:flex;gap:10px;margin-top:11px;flex-wrap:wrap}
+.creneau label{flex:1;min-width:132px;display:flex;flex-direction:column;gap:5px;
+  font-size:12.5px;color:#9aa4b8}
+.creneau input{font:inherit;font-size:15px;color:#eceef5;background:#0c1614;
+  border:1px solid #1f4a41;border-radius:9px;padding:11px 12px;min-height:46px}
+.creneau input:focus{outline:0;border-color:#3dc4c2}
+.creneau .quand{flex:0 0 100%;font-size:12.8px;color:#6b7089;line-height:1.5}
 </style>
 </head>
 <body>
@@ -226,6 +234,11 @@ dialog pre{background:#0C0F11;border:1px solid var(--ui-trait);border-radius:7px
     <span class="t">Destination</span>
     <span class="cible">Instagram <b>@foodboost</b> <span>· reel 9:16, 9 s</span></span>
     <div class="tags" id="tags"></div>
+    <div class="creneau">
+      <label>Date de publication<input type="date" id="d-date"></label>
+      <label>Heure<input type="time" id="d-heure" value="18:00"></label>
+      <span class="quand" id="d-quand"></span>
+    </div>
     <p class="avert" id="avert-pub">Le bouton « Envoyer à planifier » <b>ne publie pas</b> :
     il montre exactement ce qui partirait. La publication attend le feu vert de Tony.</p>
     </div>
@@ -487,13 +500,42 @@ const peindreTags = () => {
   poser('famille', 'famille'); poser('ambiance', 'ambiance');
 })();
 
+/* Demain, pas aujourd'hui : le rendu et la relecture prennent du temps, et
+   proposer une heure déjà passée est le meilleur moyen de rater le créneau. */
+(() => {
+  const d = new Date(Date.now() + 86400000);
+  const iso = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0')
+    + '-' + String(d.getDate()).padStart(2, '0');
+  const e = document.getElementById('d-date');
+  if (e && !e.value) e.value = iso;
+  const dire = () => {
+    const z = document.getElementById('d-quand');
+    const dd = document.getElementById('d-date').value;
+    const hh = document.getElementById('d-heure').value;
+    if (!z) return;
+    if (!dd || !hh) { z.textContent = ''; return; }
+    const q = new Date(dd + 'T' + hh + ':00');
+    z.textContent = q.toLocaleDateString('fr-FR',
+      { weekday: 'long', day: 'numeric', month: 'long' }) + ' à ' + hh.replace(':', ' h ')
+      + ' — heure de La Réunion.';
+  };
+  ['d-date', 'd-heure'].forEach((id) => {
+    const x = document.getElementById(id);
+    if (x) x.addEventListener('change', dire);
+  });
+  dire();
+})();
+
 peindreTags();
 
 const dlg = document.getElementById('dlg');
 document.getElementById('planifier').addEventListener('click', () => {
   const sortie = JSON.parse(JSON.stringify(E));
+  const d1 = (document.getElementById('d-date') || {}).value || '';
+  const h1 = (document.getElementById('d-heure') || {}).value || '';
   sortie.destination = { reseau: 'instagram', compte: '@foodboost',
-    format: 'reel 9:16', hashtags: calculerTags(), publie: false };
+    format: 'reel 9:16', hashtags: calculerTags(), publie: false,
+    creneau: d1 && h1 ? d1 + 'T' + h1 + ':00+04:00' : null };
   const televersees = sortie.photos.filter((p) => p.startsWith('data:')).length;
   sortie.photos = sortie.photos.map((p) => p.startsWith('data:') ? '(photo téléversée)' : p);
   /* On signale sans bloquer : la fenêtre s ouvre même si le réseau tombe. */
