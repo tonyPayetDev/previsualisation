@@ -15,6 +15,7 @@
   --or-clair:  #d8cfb4;
   --encre:     #1a1a1a;
   --mid:       #555550;
+  --mid-clair: #6f6a5f;  /* texte en retrait — 4,85:1 sur papier, lisible */
   --papier:    #f5f5f3;
   --bord:      #e8e4dc;
   --blanc:     #ffffff;
@@ -30,7 +31,7 @@
   --gouttiere: 2rem;
 
   --barre-h: 74px;   /* hauteur de l'étage logo/menu */
-  --rail-h:  42px;   /* hauteur du rail des pizzerias */
+  --rail-h:  46px;   /* hauteur du rail des pizzerias */
 }
 
 /* ===== RESET ===== */
@@ -55,7 +56,12 @@ body {
 }
 
 img, svg { display: block; max-width: 100%; }
-img { border-radius: 0; }
+/* `height: auto` est indispensable, pas cosmétique : les attributs width et
+   height du HTML (gardés pour réserver la place et éviter les sauts de mise
+   en page) sont traduits par le navigateur en `height: 667px` & co. Tant que
+   cette hauteur est figée, toute règle `aspect-ratio` est ignorée en
+   silence — l'image sort au format du fichier, pas au format demandé. */
+img { border-radius: 0; height: auto; }
 a { color: inherit; text-decoration: none; }
 ul, ol { list-style: none; }
 button { font: inherit; color: inherit; background: none; border: none; cursor: pointer; }
@@ -109,7 +115,7 @@ p { max-width: 68ch; }
 .micro {
   display: inline-block;
   font-family: var(--sans);
-  font-size: .625rem;
+  font-size: .69rem;
   font-weight: 500;
   letter-spacing: .3em;
   text-transform: uppercase;
@@ -153,7 +159,7 @@ section { padding: clamp(5rem, 10vw, 8.5rem) 0; }
   background: transparent;
   color: var(--or-texte);
   font-family: var(--sans);
-  font-size: .69rem;
+  font-size: .7rem;
   font-weight: 500;
   letter-spacing: .22em;
   text-transform: uppercase;
@@ -220,15 +226,27 @@ section { padding: clamp(5rem, 10vw, 8.5rem) 0; }
   content: "";
   position: absolute;
   left: 0; bottom: 0;
-  width: 0; height: 1px;
+  width: 100%; height: 1px;
   background: var(--or);
-  transition: width var(--lent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--lent);
 }
-.nav-links a:hover::after { width: 100%; }
+.nav-links a:hover::after { transform: scaleX(1); }
 .navbar:not(.scrolled) .nav-links a { color: #fff; }
 
 .nav-cta { padding: .8rem 1.6rem !important; }
 .nav-cta::after { display: none !important; }
+/* Une fois l'en-tête passé sur fond papier, un bouton bordé de blanc n'a
+   plus de bord du tout : il faut le repasser en filet or. */
+.navbar.scrolled .nav-cta {
+  border-color: var(--or-texte);
+  color: var(--or-texte) !important;
+}
+.navbar.scrolled .nav-cta:hover {
+  background: var(--or-texte);
+  color: #fff !important;
+}
 
 /* --- Rail des pizzerias --- */
 .navbar-lieux {
@@ -244,36 +262,28 @@ section { padding: clamp(5rem, 10vw, 8.5rem) 0; }
   gap: 1.4rem;
 }
 
-.lieux-label {
-  flex-shrink: 0;
-  font-size: .58rem;
-  font-weight: 600;
-  letter-spacing: .28em;
-  text-transform: uppercase;
-  color: var(--or);
-  transition: color var(--lent);
-}
+/* Le libellé « Nos pizzerias » a été retiré du rail : le menu juste au-dessus
+   porte déjà le mot, et l'étiquette prenait 140 px sur une ligne qui doit
+   loger neuf noms. Les noms passent avant l'étiquette. L'intitulé reste
+   porté par l'aria-label de la liste pour les lecteurs d'écran. */
 
 .lieux-list {
   display: flex;
   align-items: center;
-  gap: 1.35rem;
+  gap: 1.15rem;
   overflow-x: auto;
   scrollbar-width: none;
   -ms-overflow-style: none;
-  padding: .4rem 0;
-  /* le rail s'estompe à droite au lieu d'être coupé net */
-  mask-image: linear-gradient(90deg, #000 calc(100% - 34px), transparent 100%);
-  -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 34px), transparent 100%);
+  padding: .72rem 0;
 }
 .lieux-list::-webkit-scrollbar { display: none; }
 
 .lieux-list a {
   position: relative;
   white-space: nowrap;
-  font-size: .655rem;
+  font-size: .705rem;
   font-weight: 500;
-  letter-spacing: .13em;
+  letter-spacing: .105em;
   text-transform: uppercase;
   color: rgba(255,255,255,.78);
   transition: color var(--lent);
@@ -282,12 +292,12 @@ section { padding: clamp(5rem, 10vw, 8.5rem) 0; }
 }
 .lieux-list a:hover { color: #fff; border-bottom-color: var(--or); }
 
-.lieu-soon { color: rgba(255,255,255,.44) !important; }
+.lieu-soon { color: rgba(255,255,255,.74) !important; }
 .lieu-soon em {
   font-style: normal;
-  font-size: .82em;
+  font-size: .69rem;
   letter-spacing: .1em;
-  color: var(--or);
+  color: var(--or-clair);
   margin-left: .35rem;
 }
 
@@ -299,10 +309,9 @@ section { padding: clamp(5rem, 10vw, 8.5rem) 0; }
   box-shadow: 0 1px 0 var(--bord), 0 8px 34px rgba(26,26,26,.06);
 }
 .navbar.scrolled .navbar-lieux { border-top-color: var(--bord); }
-.navbar.scrolled .lieux-label { color: var(--or-texte); }
 .navbar.scrolled .lieux-list a { color: var(--mid); }
 .navbar.scrolled .lieux-list a:hover { color: var(--encre); border-bottom-color: var(--or-texte); }
-.navbar.scrolled .lieu-soon { color: #9c968a !important; }
+.navbar.scrolled .lieu-soon { color: var(--mid-clair) !important; }
 .navbar.scrolled .lieu-soon em { color: var(--or-texte); }
 
 /* --- Hamburger --- */
@@ -354,12 +363,17 @@ section { padding: clamp(5rem, 10vw, 8.5rem) 0; }
 }
 .hero.loaded .hero-bg { transform: scale(1); }
 
+/* Deux calques, deux rôles distincts.
+   Le voile radial creuse un puits d'ombre SOUS le bloc de texte : la pizza
+   est claire au centre, et un simple dégradé vertical y laissait le texte
+   illisible. Le dégradé vertical, lui, ne sert qu'à asseoir l'en-tête en
+   haut et le repère de défilement en bas. */
 .hero-overlay {
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(180deg, rgba(10,8,6,.62) 0%, rgba(10,8,6,.14) 32%, rgba(10,8,6,.20) 62%, rgba(10,8,6,.72) 100%),
-    rgba(10,8,6,.20);
+    radial-gradient(ellipse 78% 62% at 50% 47%, rgba(10,8,6,.80) 0%, rgba(10,8,6,.55) 45%, rgba(10,8,6,.12) 78%, rgba(10,8,6,0) 100%),
+    linear-gradient(180deg, rgba(10,8,6,.60) 0%, rgba(10,8,6,.10) 26%, rgba(10,8,6,.14) 66%, rgba(10,8,6,.66) 100%);
 }
 
 .hero-content {
@@ -371,12 +385,15 @@ section { padding: clamp(5rem, 10vw, 8.5rem) 0; }
   color: #fff;
 }
 
+/* Blanc, pas or : l'or sourd sur une photo de pizza claire tombe à 2:1, et
+   ce libellé est du petit texte. L'or reste sur la ligne italique du titre,
+   qui est assez grande pour s'en contenter. */
 .hero-badge {
-  font-size: .625rem;
+  font-size: .7rem;
   font-weight: 500;
   letter-spacing: .34em;
   text-transform: uppercase;
-  color: var(--or);
+  color: #fff;
   display: block;
   margin-bottom: 1.5rem;
 }
@@ -387,7 +404,7 @@ section { padding: clamp(5rem, 10vw, 8.5rem) 0; }
 .hero-subtitle {
   max-width: 46ch;
   margin: 0 auto 2.6rem;
-  color: rgba(255,255,255,.86);
+  color: rgba(255,255,255,.93);
   font-size: 1rem;
   font-weight: 300;
   line-height: 1.8;
@@ -410,7 +427,7 @@ section { padding: clamp(5rem, 10vw, 8.5rem) 0; }
   flex-direction: column;
   align-items: center;
   gap: .5rem;
-  font-size: .58rem;
+  font-size: .69rem;
   letter-spacing: .3em;
   text-transform: uppercase;
   color: rgba(255,255,255,.62);
@@ -436,9 +453,13 @@ section { padding: clamp(5rem, 10vw, 8.5rem) 0; }
 }
 
 .welcome-img-wrap { position: relative; }
+/* Format natif de la photo (3:2), pas de recadrage : c'est la seule image
+   du fonds qui montre une pizza ENTIÈRE dans son assiette. Recadrée en
+   portrait, elle se réduisait à un gros plan de garniture — exactement le
+   défaut qu'on corrige. */
 .welcome-img-wrap img {
   width: 100%;
-  aspect-ratio: 4 / 5;
+  aspect-ratio: 3 / 2;
   object-fit: cover;
   box-shadow: 0 10px 46px rgba(26,26,26,.13);
 }
@@ -463,7 +484,7 @@ section { padding: clamp(5rem, 10vw, 8.5rem) 0; }
 .welcome-img-badge .label {
   display: block;
   margin-top: .45rem;
-  font-size: .55rem;
+  font-size: .69rem;
   letter-spacing: .24em;
   text-transform: uppercase;
   color: rgba(255,255,255,.72);
@@ -493,7 +514,7 @@ section { padding: clamp(5rem, 10vw, 8.5rem) 0; }
 .stat-label {
   display: block;
   margin-top: .55rem;
-  font-size: .58rem;
+  font-size: .69rem;
   letter-spacing: .2em;
   text-transform: uppercase;
   color: var(--or-texte);
@@ -517,6 +538,8 @@ section { padding: clamp(5rem, 10vw, 8.5rem) 0; }
    composant, et c'est ce que demande le style. */
 .pizzeria-card {
   position: relative;
+  display: flex;
+  flex-direction: column;
   background: var(--blanc);
   padding: 2.4rem 2rem 2.2rem;
   transition: background var(--lent);
@@ -525,14 +548,19 @@ section { padding: clamp(5rem, 10vw, 8.5rem) 0; }
   content: "";
   position: absolute;
   left: 2rem; top: 0;
-  width: 0; height: 2px;
+  width: 42px; height: 2px;
   background: var(--or);
-  transition: width var(--tres-lent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--tres-lent);
 }
 .pizzeria-card:hover { background: #fdfdfc; }
-.pizzeria-card:hover::after { width: 42px; }
+.pizzeria-card:hover::after { transform: scaleX(1); }
 
 .pizzeria-card h3 { margin-bottom: 1.2rem; }
+/* garantit l'écart sous la dernière ligne d'adresse, que le badge soit
+   poussé en bas ou non */
+.pizzeria-card .card-detail:last-of-type { margin-bottom: 1.4rem; }
 
 .card-detail {
   display: flex;
@@ -551,21 +579,23 @@ section { padding: clamp(5rem, 10vw, 8.5rem) 0; }
 }
 .card-detail a:hover { color: var(--encre); border-bottom: 1px solid var(--or); }
 
+/* `auto` en haut : les libellés s'alignent sur une même ligne de base d'une
+   fiche à l'autre, même quand une adresse passe sur deux lignes. */
 .card-badge {
-  display: inline-block;
-  margin-top: 1.1rem;
+  align-self: flex-start;
+  margin-top: auto;
   padding: .42rem .85rem;
   border: 1px solid var(--bord);
-  font-size: .55rem;
+  font-size: .69rem;
   font-weight: 500;
   letter-spacing: .18em;
   text-transform: uppercase;
   color: var(--or-texte);
 }
-.card-badge.soon { border-color: transparent; background: var(--papier); color: #8a8478; }
+.card-badge.soon { border-color: transparent; background: var(--papier); color: var(--mid-clair); }
 
-.card-soon { color: #8a8478; }
-.card-soon svg { color: #a9a396; }
+.card-soon { color: var(--mid-clair); }
+.card-soon svg { color: var(--mid-clair); }
 
 /* ============================================================
    LA MARQUE / CHAMPIONS
@@ -625,23 +655,24 @@ section { padding: clamp(5rem, 10vw, 8.5rem) 0; }
   aspect-ratio: 4 / 5;
   object-fit: cover;
 }
+/* Le médaillon reste DANS le cadre de la photo : débordant vers le bas il
+   recouvrait la légende, qui se retrouvait coupée en deux. */
 .champions-img-inset {
   position: absolute;
-  right: -14px;
-  bottom: -22px;
-  width: 40%;
-  max-width: 190px;
+  right: 16px;
+  bottom: 16px;
+  width: 34%;
+  max-width: 172px;
   aspect-ratio: 1;
   object-fit: cover;
-  border: 6px solid var(--nuit);
+  border: 5px solid var(--nuit);
 }
 .champions-img-legende {
-  margin-top: 1.3rem;
-  font-size: .6rem;
-  letter-spacing: .18em;
-  text-transform: uppercase;
-  color: rgba(255,255,255,.42);
-  max-width: 52%;
+  margin-top: 1.1rem;
+  font-size: .78rem;
+  letter-spacing: .04em;
+  line-height: 1.7;
+  color: rgba(255,255,255,.52);
 }
 
 /* ============================================================
@@ -683,7 +714,7 @@ section { padding: clamp(5rem, 10vw, 8.5rem) 0; }
   color: var(--or-texte);
 }
 .feature-icon svg { width: 100%; height: 100%; }
-.feature-card h4 {
+.feature-card h3 {
   font-size: 1.08rem;
   margin-bottom: .2rem;
 }
@@ -759,7 +790,7 @@ section { padding: clamp(5rem, 10vw, 8.5rem) 0; }
 
 .contact-item-text strong {
   display: block;
-  font-size: .58rem;
+  font-size: .69rem;
   font-weight: 600;
   letter-spacing: .2em;
   text-transform: uppercase;
@@ -804,7 +835,7 @@ section { padding: clamp(5rem, 10vw, 8.5rem) 0; }
 .form-group label {
   display: block;
   margin-bottom: .5rem;
-  font-size: .56rem;
+  font-size: .69rem;
   font-weight: 600;
   letter-spacing: .2em;
   text-transform: uppercase;
@@ -826,7 +857,7 @@ section { padding: clamp(5rem, 10vw, 8.5rem) 0; }
   caret-color: var(--or-texte);
 }
 .form-group input::placeholder,
-.form-group textarea::placeholder { color: #8a8478; }
+.form-group textarea::placeholder { color: var(--mid-clair); }
 
 .form-group input:focus,
 .form-group textarea:focus,
@@ -853,9 +884,9 @@ footer { background: var(--nuit); color: rgba(255,255,255,.6); padding: 5rem 0 2
 .footer-brand img { height: 52px; width: auto; object-fit: contain; margin-bottom: 1.3rem; }
 .footer-brand p { font-size: .82rem; line-height: 1.75; max-width: 34ch; }
 
-.footer-col h4 {
+.footer-col h3 {
   font-family: var(--sans);
-  font-size: .58rem;
+  font-size: .69rem;
   font-weight: 600;
   letter-spacing: .22em;
   text-transform: uppercase;
@@ -934,6 +965,16 @@ footer { background: var(--nuit); color: rgba(255,255,255,.6); padding: 5rem 0 2
 /* ============================================================
    RESPONSIVE
    ============================================================ */
+/* Le dégradé de bord ne sert que si le rail défile vraiment. Appliqué en
+   permanence, il rongeait le dernier nom (« La Possession ») alors que la
+   liste tenait entière. */
+@media (max-width: 1100px) {
+  .lieux-list {
+    mask-image: linear-gradient(90deg, #000 calc(100% - 30px), transparent 100%);
+    -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 30px), transparent 100%);
+  }
+}
+
 @media (max-width: 1024px) {
   :root { --gouttiere: 1.6rem; }
   .welcome-grid,
@@ -945,8 +986,7 @@ footer { background: var(--nuit); color: rgba(255,255,255,.6); padding: 5rem 0 2
   .welcome-img-wrap img,
   .champions-img-main,
   .formation-img { aspect-ratio: 3 / 2; }
-  .champions-img-inset { width: 30%; right: 0; bottom: -18px; }
-  .champions-img-legende { max-width: 100%; }
+  .champions-img-inset { width: 30%; right: 14px; bottom: 14px; }
   .footer-top { grid-template-columns: 1fr 1fr; gap: 2rem; }
   .galerie-grid { grid-template-columns: repeat(3, 1fr); }
 }
@@ -974,9 +1014,8 @@ footer { background: var(--nuit); color: rgba(255,255,255,.6); padding: 5rem 0 2
   .nav-links a::after { background: var(--or-texte); }
 
   .navbar-lieux-inner { gap: .9rem; }
-  .lieux-label { display: none; }
   .lieux-list { gap: 1.05rem; }
-  .lieux-list a { font-size: .615rem; letter-spacing: .1em; }
+  .lieux-list a { font-size: .69rem; letter-spacing: .07em; }
 
   .hero { padding-top: calc(var(--barre-h) + var(--rail-h) + 2rem); }
   .hero-actions { flex-direction: column; align-items: stretch; }
@@ -984,7 +1023,7 @@ footer { background: var(--nuit); color: rgba(255,255,255,.6); padding: 5rem 0 2
 
   .welcome-stats { padding: 1.6rem 0; gap: .8rem; }
   .stat-number { font-size: 1.7rem; }
-  .stat-label { font-size: .5rem; letter-spacing: .14em; }
+  .stat-label { font-size: .69rem; letter-spacing: .1em; }
 
   .welcome-img-badge { padding: 1.1rem 1.4rem; }
   .welcome-img-badge .year { font-size: 1.7rem; }
