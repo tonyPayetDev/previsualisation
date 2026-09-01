@@ -1024,30 +1024,7 @@ footer a:hover{color:var(--magenta)}
 
 
 
-<section class="sect revele" id="philosophie">
-  <!-- Le filtre qui donne le bord de pinceau : une turbulence déplace les
-       contours du masque. baseFrequency très allongée en Y pour que la
-       déformation file dans le sens du geste, pas en tous sens. -->
-  <svg width="0" height="0" aria-hidden="true" style="position:absolute">
-    <filter id="brosse" x="-12%" y="-40%" width="124%" height="180%">
-      <feTurbulence type="fractalNoise" baseFrequency="0.014 0.42"
-                    numOctaves="3" seed="9" result="bruit"/>
-      <feDisplacementMap in="SourceGraphic" in2="bruit" scale="17"
-                         xChannelSelector="R" yChannelSelector="G"/>
-    </filter>
-  </svg>
-  <!-- Correctif v3 · 4 : le « filigrane » n'était pas un élément de la page —
-       il est INCRUSTÉ dans arrival.jpg (logo + « Conseil & expertise » en bas
-       à droite du fichier). On sert donc ici la même photo recadrée sous les
-       15 % du bas : c'est la seule façon de le supprimer. -->
-  <div class="derriere"><img src="assets/philo.jpg" alt=""></div>
-  <!-- La tache de peinture qui suit la souris. Elle vient APRÈS `.derriere`
-       exprès : à z-index égal, c'est l'ordre du DOM qui la place au-dessus du
-       voile blanc. -->
-  <div class="brosse-curseur" aria-hidden="true"><img src="assets/philo.jpg" alt=""></div>
-  <div class="pinceau" aria-hidden="true">
-    <div class="fenetre"><img src="assets/philo.jpg" alt=""></div>
-  </div>
+<section class="sect" id="philosophie">
   <div class="wrap">
     <div class="monte">
       <p class="eyebrow">Notre philosophie</p>
@@ -1297,32 +1274,6 @@ footer a:hover{color:var(--magenta)}
   /* Carrousel de biens. */
   if (window.Coverflow && document.getElementById('cf')) {
     window.Coverflow.creer(document.getElementById('cf'), { auto: reduit ? 0 : 4200 });
-  }
-
-  /* ── Le pinceau qui suit la souris, section « philosophie » ────────────
-     On ne pose QUE deux variables CSS ; tout le rendu est fait par le masque
-     radial de la feuille de style. Les coordonnées sont relatives à la
-     section, ce qui est exactement le repère de la couche masquée.
-     `getBoundingClientRect` plutôt que `offsetX` : offsetX est relatif à
-     l'élément SURVOLÉ, donc il saute d'un paragraphe à l'autre. */
-  var philo = document.getElementById('philosophie');
-  var finePointer = window.matchMedia('(hover:hover) and (pointer:fine)').matches;
-  if (philo && finePointer) {
-    var attente = false;
-    philo.addEventListener('pointermove', function (e) {
-      if (attente) return;
-      attente = true;
-      requestAnimationFrame(function () {
-        var r = philo.getBoundingClientRect();
-        philo.style.setProperty('--bx', (e.clientX - r.left) + 'px');
-        philo.style.setProperty('--by', (e.clientY - r.top) + 'px');
-        attente = false;
-      });
-      philo.classList.add('brosse-active');
-    });
-    philo.addEventListener('pointerleave', function () {
-      philo.classList.remove('brosse-active');
-    });
   }
 
   /* Les deux onglets du module de recherche. */
