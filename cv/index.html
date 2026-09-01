@@ -317,6 +317,9 @@ h2::after{content:"";position:absolute;left:0;bottom:-1.2mm;width:5mm;height:1px
   text-transform:uppercase;color:rgba(255,255,255,.62);font-weight:700;
   transition:opacity .3s ease;pointer-events:none;text-align:center;line-height:1.4}
 .portrait.ouvert img{opacity:1;transform:scale(1)}
+.portrait .parle{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+  opacity:0;transition:opacity .35s ease;pointer-events:none}
+.portrait.parlant .parle{opacity:1}
 .portrait.ouvert .invite{opacity:0}
 .portrait:focus-visible{outline:2px solid var(--jaune);outline-offset:3mm}
 
@@ -327,7 +330,11 @@ h2::after{content:"";position:absolute;left:0;bottom:-1.2mm;width:5mm;height:1px
   border:1px solid var(--bord);color:var(--corps);background:rgba(255,255,255,.03);
   transition:border-color .16s,color .16s,background .16s}
 .actions a:hover{border-color:var(--jaune);color:var(--blanc);background:rgba(255,230,0,.07)}
-.actions a.premier{background:var(--jaune);border-color:var(--jaune);color:#111;font-weight:700}
+.actions a.premier{background:var(--jaune);border-color:var(--jaune);color:#111;
+  font-weight:700;font-size:8.4pt;padding-inline:3.4mm}
+.actions a.wa{border-color:#1f7a4c;color:#7bebb0;background:rgba(31,122,76,.1)}
+.actions a.wa:hover{border-color:#2fa768;color:#a8f5cc;background:rgba(31,122,76,.18)}
+.actions a.wa svg{fill:currentColor;flex:0 0 auto}
 .actions a.premier:hover{background:#fff;border-color:#fff;color:#111}
 .actions a .pt{font-size:10pt;line-height:1}
 
@@ -337,9 +344,10 @@ h2::after{content:"";position:absolute;left:0;bottom:-1.2mm;width:5mm;height:1px
 @media print{
   /* Sur papier, la photo est toujours là et l'anneau ne tourne pas. */
   .portrait img{opacity:1!important;transform:none!important}
-  .portrait .invite{display:none}
+  .portrait .invite,.portrait .parle{display:none}
   .portrait::before{animation:none;background:#999}
   .actions a{background:none!important;color:#111!important;border-color:#bbb!important}
+  .actions a.wa svg{fill:#111!important}
   .actions a.premier{background:none!important;font-weight:700}
 }
 @media (prefers-reduced-motion:reduce){
@@ -419,6 +427,10 @@ h2::after{content:"";position:absolute;left:0;bottom:-1.2mm;width:5mm;height:1px
           <span class="dedansrond">
             <img src="assets/tony.jpg" width="560" height="560"
                  alt="Portrait de Tony Payet" loading="eager">
+            <video class="parle" muted loop playsinline preload="none" aria-hidden="true">
+              <source src="assets/avatar.webm" type="video/webm">
+              <source src="assets/avatar.mp4" type="video/mp4">
+            </video>
           </span>
           <span class="invite">Cliquez</span>
         </button>
@@ -427,6 +439,10 @@ h2::after{content:"";position:absolute;left:0;bottom:-1.2mm;width:5mm;height:1px
       <div class="actions">
         <a class="premier" href="tel:+262692417749" data-suivi="telephone">
           <span class="pt" aria-hidden="true">&#9742;</span>06 92 41 77 49</a>
+        <a class="wa" href="https://wa.me/262692417749" target="_blank" rel="noopener"
+           data-suivi="whatsapp">
+          <svg viewBox="0 0 24 24" aria-hidden="true" width="15" height="15"><path
+            d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.4-.7-1.7-.8-.2-.1-.4-.1-.5.1l-.7.9c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.1-.2 0-.4.1-.5l.4-.5c.1-.2.1-.3 0-.5l-.7-1.7c-.2-.4-.4-.4-.5-.4h-.5c-.2 0-.5.1-.7.3a3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.9 11.9 0 0 0 4.6 4c.6.3 1.1.4 1.5.5.6.2 1.2.2 1.6.1.5-.1 1.4-.6 1.6-1.2.2-.6.2-1.1.1-1.2 0-.1-.2-.2-.4-.3z"/></svg>WhatsApp</a>
         <a href="mailto:tony.payet.professionnel@gmail.com" data-suivi="email">
           <span class="pt" aria-hidden="true">&#9993;</span>tony.payet.professionnel@gmail.com</a>
         <a href="https://tony.automatisationboost.com" target="_blank" rel="noopener"
@@ -624,13 +640,46 @@ h2::after{content:"";position:absolute;left:0;bottom:-1.2mm;width:5mm;height:1px
 (function () {
   var b = document.querySelector('.portrait');
   if (!b) return;
-  b.addEventListener('click', function () {
-    var ouvert = b.classList.toggle('ouvert');
+
+  var poser = function (ouvert) {
+    b.classList.toggle('ouvert', ouvert);
     b.setAttribute('aria-pressed', ouvert ? 'true' : 'false');
     b.setAttribute('aria-label', ouvert
       ? 'Masquer la photo de Tony Payet'
       : 'Afficher la photo de Tony Payet');
+  };
+
+  /* Elle s'ouvre seule, comme si on avait cliqué — sauf si le visiteur a
+     demandé moins d'animation, auquel cas elle est là tout de suite. */
+  var sobre = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (sobre) poser(true);
+  else setTimeout(function () { if (!b.dataset.touche) poser(true); }, 2000);
+
+  b.addEventListener('click', function () {
+    b.dataset.touche = '1';
+    poser(!b.classList.contains('ouvert'));
   });
+
+  /* L'avatar ne se déclenche qu'au survol réel : sur un écran tactile il n'y a
+     pas de survol, et le clic sert déjà à révéler la photo. */
+  var v = b.querySelector('.parle');
+  if (v && !sobre && window.matchMedia && window.matchMedia('(hover: hover)').matches) {
+    var entre = function () {
+      poser(true);
+      b.classList.add('parlant');
+      var essai = v.play();
+      if (essai && essai.catch) essai.catch(function () { b.classList.remove('parlant'); });
+    };
+    var sort = function () {
+      b.classList.remove('parlant');
+      v.pause();
+      v.currentTime = 0;
+    };
+    b.addEventListener('mouseenter', entre);
+    b.addEventListener('mouseleave', sort);
+    b.addEventListener('focus', entre);
+    b.addEventListener('blur', sort);
+  }
 })();
 </script>
 </body>
