@@ -5,21 +5,41 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Le Saint-Pierre — Restaurant Franco-Portugais · Coulommiers</title>
   <meta name="description" content="Restaurant franco-portugais à Coulommiers. Cuisine authentique, saveurs généreuses, cadre chaleureux. Déjeuner du lundi au samedi, dîner vendredi et samedi." />
+  <meta name="theme-color" content="#1a1a1a" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/style.css?v=202608240422" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css?v=202609011600" />
+  <script>document.documentElement.classList.add('js');</script>
+
+  <!-- ────────────────────────────────────────────────────────────────
+       PHOTOS PROVISOIRES — à remplacer par les vraies photos du
+       restaurant. Toutes portent data-photo="provisoire".
+       Source : Unsplash (licence Unsplash — usage commercial autorisé,
+       sans attribution obligatoire). Fichiers servis en local, jamais
+       en lien distant.
+         hero.jpg         photo-1414235077428-338989a2e8c0
+         salle.jpg        photo-1537047902294-62a40c20a6ae
+         evenements.jpg   photo-1528605248644-14dd04022da1
+         terrasse.jpg     photo-1600093463592-8e36ae95ef56
+         plat-poisson.jpg photo-1476224203421-9ac39bcb3327
+         plat-grill.jpg   photo-1600891964092-4316c288032e
+         fait-maison.jpg  photo-1551218808-94e220e084d2
+       ──────────────────────────────────────────────────────────────── -->
 </head>
 <body>
 
-  <!-- NAV -->
+  <a href="#contenu" class="saut">Aller au contenu</a>
+
+  <!-- NAVIGATION -->
   <nav class="nav" id="nav">
     <div class="nav__inner">
       <a href="#accueil" class="nav__logo">Le Saint-Pierre</a>
-      <button class="nav__toggle" id="navToggle" aria-label="Menu">
+      <button class="nav__bascule" id="navBascule" aria-label="Ouvrir le menu"
+              aria-expanded="false" aria-controls="navLiens">
         <span></span><span></span><span></span>
       </button>
-      <ul class="nav__links" id="navLinks">
+      <ul class="nav__liens" id="navLiens">
         <li><a href="#accueil">Accueil</a></li>
         <li><a href="#restaurant">Le Restaurant</a></li>
         <li><a href="#carte">La Carte</a></li>
@@ -30,368 +50,397 @@
     </div>
   </nav>
 
-  <!-- HERO -->
-  <section class="hero" id="accueil">
-    <div class="hero__bg">
-      <img src="images/hero.svg" alt="Salle du restaurant Le Saint-Pierre" class="hero__img" data-a-confirmer="photo restaurant" />
-      <div class="hero__overlay"></div>
-    </div>
-    <div class="hero__content">
-      <p class="hero__label">Coulommiers · Seine-et-Marne</p>
-      <h1 class="hero__title">Le Saint-Pierre</h1>
-      <p class="hero__sub">Cuisine franco-portugaise<br>faite maison</p>
-      <div class="hero__actions">
-        <a href="#carte" class="btn btn--light">Découvrir la carte</a>
-        <a href="tel:+33974562539" class="btn btn--outline-light">09 74 56 25 39</a>
-      </div>
-    </div>
-    <a href="#restaurant" class="hero__scroll" aria-label="Défiler">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
-    </a>
-  </section>
+  <main id="contenu">
 
-  <!-- BANDEAU HORAIRES -->
-  <div class="hours-bar">
-    <div class="hours-bar__inner">
-      <div class="hours-bar__item">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-        <span><strong>Déjeuner</strong> Lun – Sam · 12h – 14h30</span>
+    <!-- HERO -->
+    <section class="hero" id="accueil">
+      <div class="hero__fond">
+        <img src="images/hero.jpg"
+             srcset="images/hero-1200.jpg 1200w, images/hero.jpg 2000w"
+             sizes="100vw"
+             width="2000" height="1250"
+             alt="Table dressée au restaurant Le Saint-Pierre"
+             class="hero__img" id="heroImg"
+             fetchpriority="high" decoding="async"
+             data-photo="provisoire" />
+        <div class="hero__voile"></div>
       </div>
-      <div class="hours-bar__sep"></div>
-      <div class="hours-bar__item">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
-        <span><strong>Dîner</strong> Ven – Sam · 19h – 22h</span>
-      </div>
-      <div class="hours-bar__sep"></div>
-      <div class="hours-bar__item">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2A19.79 19.79 0 0 1 11.39 18a19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 3.18 2 2 0 0 1 4.11 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 8.91A16 16 0 0 0 14 14.91l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92Z"/></svg>
-        <span>09 74 56 25 39</span>
-      </div>
-    </div>
-  </div>
-
-  <!-- RESTAURANT -->
-  <section class="section" id="restaurant">
-    <div class="container grid-2">
-      <div class="section__text">
-        <span class="label">Notre histoire</span>
-        <h2 class="section__title">Deux cultures,<br>une table</h2>
-        <p>Au cœur de Coulommiers, Le Saint-Pierre est un restaurant familial qui marie avec sincérité les traditions culinaires française et portugaise. Des recettes transmises de génération en génération, des produits soigneusement choisis et des portions généreuses : voilà notre engagement quotidien.</p>
-        <p>Que vous soyez de passage ou habitués du quartier, vous trouverez ici une cuisine faite maison, servie dans un cadre chaleureux avec une terrasse pour les beaux jours.</p>
-        <a href="#contact" class="btn btn--dark">Nous trouver</a>
-      </div>
-      <div class="section__visual">
-        <div class="img-frame">
-          <img src="images/salle.svg" alt="Intérieur du restaurant" data-a-confirmer="photo intérieur" />
-        </div>
-        <div class="img-badge">
-          <span>Fait</span>
-          <span>maison</span>
+      <div class="hero__contenu">
+        <h1 class="hero__titre">
+          <span class="hero__masque" data-anim="masque"><span>Le Saint-Pierre</span></span>
+        </h1>
+        <div class="hero__filet" data-anim="filet"></div>
+        <p class="hero__sous" data-anim="monte">Cuisine franco-portugaise faite maison</p>
+        <p class="hero__lieu" data-anim="monte">Coulommiers · Seine-et-Marne</p>
+        <div class="hero__actions" data-anim="monte">
+          <a href="#carte" class="btn btn--blanc">Découvrir la carte</a>
+          <a href="tel:+33974562539" class="btn btn--fil-blanc">09 74 56 25 39</a>
         </div>
       </div>
-    </div>
-  </section>
+      <a href="#restaurant" class="hero__cue" aria-label="Descendre vers le restaurant">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" aria-hidden="true"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+      </a>
+    </section>
 
-  <!-- ATOUTS -->
-  <section class="features">
-    <div class="container">
-      <ul class="features__list">
-        <li class="features__item">
-          <div class="features__icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2Zm0 5v5l3 3"/></svg>
+    <!-- BANDEAU HORAIRES -->
+    <div class="bandeau">
+      <div class="bandeau__inner">
+        <p class="bandeau__item">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+          <span><strong>Déjeuner</strong> Lun – Sam · 12h – 14h30</span>
+        </p>
+        <span class="bandeau__sep" aria-hidden="true"></span>
+        <p class="bandeau__item">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+          <span><strong>Dîner</strong> Ven – Sam · 19h – 22h</span>
+        </p>
+        <span class="bandeau__sep" aria-hidden="true"></span>
+        <p class="bandeau__item">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2A19.79 19.79 0 0 1 11.39 18a19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 3.18 2 2 0 0 1 4.11 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 8.91A16 16 0 0 0 14 14.91l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92Z"/></svg>
+          <a href="tel:+33974562539">09 74 56 25 39</a>
+        </p>
+      </div>
+    </div>
+
+    <!-- LE RESTAURANT -->
+    <section class="section" id="restaurant">
+      <div class="contenu duo">
+        <div class="texte">
+          <h2 class="titre" data-anim="monte">Deux cultures,<br>une table</h2>
+          <div class="filet filet--gauche" data-anim="filet"></div>
+          <p data-anim="monte">Au cœur de Coulommiers, Le Saint-Pierre est un restaurant familial qui marie avec sincérité les traditions culinaires française et portugaise. Des recettes transmises de génération en génération, des produits soigneusement choisis et des portions généreuses : voilà notre engagement quotidien.</p>
+          <p data-anim="monte">Que vous soyez de passage ou habitués du quartier, vous trouverez ici une cuisine faite maison, servie dans un cadre chaleureux avec une terrasse pour les beaux jours.</p>
+          <p data-anim="monte"><a href="#contact" class="btn btn--encre">Nous trouver</a></p>
+        </div>
+        <div class="duo__visuel">
+          <div class="cadre" data-anim="voile">
+            <img src="images/salle.jpg" width="1100" height="1375" loading="lazy" decoding="async"
+                 alt="Salle du restaurant, tables dressées et banquette"
+                 data-photo="provisoire" />
           </div>
-          <h3>Cuisine maison</h3>
-          <p>Chaque plat est préparé sur place avec des ingrédients frais sélectionnés chaque semaine.</p>
-        </li>
-        <li class="features__item">
-          <div class="features__icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-          </div>
-          <h3>Ambiance familiale</h3>
-          <p>Un accueil sincère dans un espace convivial adapté aux familles, amis et collègues.</p>
-        </li>
-        <li class="features__item">
-          <div class="features__icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-          </div>
-          <h3>Rapport qualité-prix</h3>
-          <p>Des assiettes généreuses à des tarifs accessibles, pour que chaque repas soit une belle surprise.</p>
-        </li>
-        <li class="features__item">
-          <div class="features__icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-          </div>
-          <h3>Événements privés</h3>
-          <p>Anniversaires, mariages, baptêmes — nous organisons vos célébrations avec soin.</p>
-        </li>
-      </ul>
-    </div>
-  </section>
-
-  <!-- CARTE -->
-  <section class="section section--alt" id="carte">
-    <div class="container">
-      <div class="section__header">
-        <span class="label">Notre menu</span>
-        <h2 class="section__title">La Carte</h2>
-        <p class="section__intro">Une sélection de spécialités franco-portugaises mijotées avec passion. La carte peut évoluer selon les saisons et les arrivages.</p>
-      </div>
-
-      <div class="menu-grid">
-        <!-- Entrées -->
-        <div class="menu-category">
-          <h3 class="menu-category__title">Entrées</h3>
-          <ul class="menu-list">
-            <li class="menu-item">
-              <div class="menu-item__info">
-                <span class="menu-item__name">Soupe de légumes maison</span>
-                <span class="menu-item__desc">Bouillon de saison, légumes du marché</span>
-              </div>
-              <span class="menu-item__price">5,50 €</span>
-            </li>
-            <li class="menu-item">
-              <div class="menu-item__info">
-                <span class="menu-item__name">Bacalhau à Brás</span>
-                <span class="menu-item__desc">Morue effilochée, oignons, pommes de terre paille, olives</span>
-              </div>
-              <span class="menu-item__price">12,00 €</span>
-            </li>
-            <li class="menu-item">
-              <div class="menu-item__info">
-                <span class="menu-item__name">Chouriço grillé</span>
-                <span class="menu-item__desc">Saucisse portugaise fumée, pain de campagne</span>
-              </div>
-              <span class="menu-item__price">8,50 €</span>
-            </li>
-            <li class="menu-item">
-              <div class="menu-item__info">
-                <span class="menu-item__name">Salade de chèvre chaud</span>
-                <span class="menu-item__desc">Fromage de chèvre rôti, miel, noix, roquette</span>
-              </div>
-              <span class="menu-item__price">10,00 €</span>
-            </li>
-          </ul>
-        </div>
-
-        <!-- Plats -->
-        <div class="menu-category">
-          <h3 class="menu-category__title">Plats</h3>
-          <ul class="menu-list">
-            <li class="menu-item">
-              <div class="menu-item__info">
-                <span class="menu-item__name">Bacalhau à lagareiro</span>
-                <span class="menu-item__desc">Morue au four, huile d'olive, pommes de terre, ail rôti</span>
-              </div>
-              <span class="menu-item__price">17,00 €</span>
-            </li>
-            <li class="menu-item">
-              <div class="menu-item__info">
-                <span class="menu-item__name">Carne de porco à Alentejana</span>
-                <span class="menu-item__desc">Porc mariné, palourdes, coriandre, pommes de terre sautées</span>
-              </div>
-              <span class="menu-item__price">18,50 €</span>
-            </li>
-            <li class="menu-item">
-              <div class="menu-item__info">
-                <span class="menu-item__name">Entrecôte grillée</span>
-                <span class="menu-item__desc">Bœuf français, sauce au choix, frites maison</span>
-              </div>
-              <span class="menu-item__price">19,00 €</span>
-            </li>
-            <li class="menu-item">
-              <div class="menu-item__info">
-                <span class="menu-item__name">Frango na púcara</span>
-                <span class="menu-item__desc">Poulet en cocotte, amandes, porto blanc, légumes</span>
-              </div>
-              <span class="menu-item__price">15,50 €</span>
-            </li>
-            <li class="menu-item">
-              <div class="menu-item__info">
-                <span class="menu-item__name">Plat du jour</span>
-                <span class="menu-item__desc">Selon arrivage — demandez à votre serveur</span>
-              </div>
-              <span class="menu-item__price">12,00 €</span>
-            </li>
-          </ul>
-        </div>
-
-        <!-- Desserts -->
-        <div class="menu-category">
-          <h3 class="menu-category__title">Desserts</h3>
-          <ul class="menu-list">
-            <li class="menu-item">
-              <div class="menu-item__info">
-                <span class="menu-item__name">Pastel de nata</span>
-                <span class="menu-item__desc">Flan portugais, pâte feuilletée, cannelle</span>
-              </div>
-              <span class="menu-item__price">3,50 €</span>
-            </li>
-            <li class="menu-item">
-              <div class="menu-item__info">
-                <span class="menu-item__name">Arroz doce</span>
-                <span class="menu-item__desc">Riz au lait portugais, citron, cannelle</span>
-              </div>
-              <span class="menu-item__price">5,00 €</span>
-            </li>
-            <li class="menu-item">
-              <div class="menu-item__info">
-                <span class="menu-item__name">Crème brûlée maison</span>
-                <span class="menu-item__desc">Vanille Bourbon, caramel soufflé</span>
-              </div>
-              <span class="menu-item__price">6,00 €</span>
-            </li>
-            <li class="menu-item">
-              <div class="menu-item__info">
-                <span class="menu-item__name">Fondant au chocolat</span>
-                <span class="menu-item__desc">Coulant maison, glace vanille</span>
-              </div>
-              <span class="menu-item__price">6,50 €</span>
-            </li>
-          </ul>
-        </div>
-
-        <!-- Boissons -->
-        <div class="menu-category">
-          <h3 class="menu-category__title">Boissons</h3>
-          <ul class="menu-list">
-            <li class="menu-item">
-              <div class="menu-item__info">
-                <span class="menu-item__name">Vinho Verde</span>
-                <span class="menu-item__desc">Vin blanc portugais, frais et léger · 25 cl</span>
-              </div>
-              <span class="menu-item__price">5,00 €</span>
-            </li>
-            <li class="menu-item">
-              <div class="menu-item__info">
-                <span class="menu-item__name">Sagres / Super Bock</span>
-                <span class="menu-item__desc">Bière portugaise · 33 cl</span>
-              </div>
-              <span class="menu-item__price">4,00 €</span>
-            </li>
-            <li class="menu-item">
-              <div class="menu-item__info">
-                <span class="menu-item__name">Ginjinha</span>
-                <span class="menu-item__desc">Liqueur de cerise portugaise · 4 cl</span>
-              </div>
-              <span class="menu-item__price">4,50 €</span>
-            </li>
-            <li class="menu-item">
-              <div class="menu-item__info">
-                <span class="menu-item__name">Café expresso</span>
-                <span class="menu-item__desc">Bica portugaise, torréfaction intense</span>
-              </div>
-              <span class="menu-item__price">2,00 €</span>
-            </li>
-          </ul>
         </div>
       </div>
+    </section>
 
-      <p class="menu-note">Les prix sont indicatifs et susceptibles d'évoluer. Carte complète disponible au restaurant. Formule déjeuner disponible du lundi au samedi.</p>
-    </div>
-  </section>
-
-  <!-- ÉVÉNEMENTS -->
-  <section class="section" id="evenements">
-    <div class="container grid-2 grid-2--reverse">
-      <div class="section__visual">
-        <div class="img-frame">
-          <img src="images/evenements.svg" alt="Soirée au restaurant" data-a-confirmer="photo événement" />
-        </div>
-      </div>
-      <div class="section__text">
-        <span class="label">Privatisation &amp; soirées</span>
-        <h2 class="section__title">Célébrez avec nous</h2>
-        <p>Le Saint-Pierre vous accueille pour vos moments les plus précieux. Mariages, anniversaires, baptêmes, repas d'entreprise — nous adaptons notre espace et notre menu à vos besoins.</p>
-        <p>Nous organisons également des <strong>soirées à thème</strong> et des <strong>concerts live</strong> régulièrement. Suivez-nous pour ne rien manquer.</p>
-        <ul class="check-list">
-          <li>Salle privatisable jusqu'à 60 couverts</li>
-          <li>Menu personnalisé selon vos envies</li>
-          <li>Animation et décoration sur demande</li>
-          <li>Devis gratuit et sans engagement</li>
+    <!-- ATOUTS -->
+    <section class="atouts">
+      <div class="contenu">
+        <ul class="atouts__liste">
+          <li class="atouts__item" data-anim="monte">
+            <h3>Cuisine maison</h3>
+            <p>Chaque plat est préparé sur place avec des ingrédients frais sélectionnés chaque semaine.</p>
+          </li>
+          <li class="atouts__item" data-anim="monte">
+            <h3>Ambiance familiale</h3>
+            <p>Un accueil sincère dans un espace convivial adapté aux familles, amis et collègues.</p>
+          </li>
+          <li class="atouts__item" data-anim="monte">
+            <h3>Rapport qualité-prix</h3>
+            <p>Des assiettes généreuses à des tarifs accessibles, pour que chaque repas soit une belle surprise.</p>
+          </li>
+          <li class="atouts__item" data-anim="monte">
+            <h3>Événements privés</h3>
+            <p>Anniversaires, mariages, baptêmes — nous organisons vos célébrations avec soin.</p>
+          </li>
         </ul>
-        <a href="mailto:le.saint.pierre@hotmail.com" class="btn btn--dark">Nous contacter pour un événement</a>
       </div>
+    </section>
+
+    <!-- GALERIE -->
+    <div class="galerie">
+      <figure data-anim="voile">
+        <img src="images/plat-poisson.jpg" width="800" height="800" loading="lazy" decoding="async"
+             alt="Poisson grillé servi en salle" data-photo="provisoire" />
+      </figure>
+      <figure data-anim="voile">
+        <img src="images/plat-grill.jpg" width="800" height="800" loading="lazy" decoding="async"
+             alt="Viande grillée et frites maison" data-photo="provisoire" />
+      </figure>
+      <figure data-anim="voile">
+        <img src="images/fait-maison.jpg" width="800" height="800" loading="lazy" decoding="async"
+             alt="Préparation des légumes en cuisine" data-photo="provisoire" />
+      </figure>
     </div>
-  </section>
 
-  <!-- TERRACE STRIP -->
-  <div class="terrace-strip">
-    <div class="terrace-strip__inner">
-      <img src="images/terrasse.svg" alt="Terrasse du restaurant" class="terrace-strip__img" data-a-confirmer="photo terrasse" />
-      <div class="terrace-strip__overlay"></div>
-      <div class="terrace-strip__content">
-        <h2>La terrasse</h2>
-        <p>Profitez des beaux jours en terrasse, au calme, dans une atmosphère détendue.</p>
-      </div>
-    </div>
-  </div>
-
-  <!-- CONTACT -->
-  <section class="section section--alt" id="contact">
-    <div class="container">
-      <div class="section__header">
-        <span class="label">Nous trouver</span>
-        <h2 class="section__title">Contact &amp; Accès</h2>
-      </div>
-
-      <div class="contact-grid">
-        <div class="contact-info">
-          <div class="contact-block">
-            <h3>Adresse</h3>
-            <p>34 Rue de l'Orgeval<br>77120 Coulommiers<br>France</p>
-            <a href="https://maps.google.com/?q=34+Rue+de+l'Orgeval,+77120+Coulommiers" target="_blank" rel="noopener" class="link-arrow">Ouvrir dans Google Maps →</a>
-          </div>
-
-          <div class="contact-block">
-            <h3>Horaires</h3>
-            <table class="hours-table">
-              <tbody>
-                <tr>
-                  <td>Lundi – Samedi</td>
-                  <td>12h00 – 14h30</td>
-                </tr>
-                <tr>
-                  <td>Vendredi – Samedi soir</td>
-                  <td>19h00 – 22h00</td>
-                </tr>
-                <tr class="closed">
-                  <td>Dimanche</td>
-                  <td>Fermé</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-          <div class="contact-block">
-            <h3>Nous contacter</h3>
-            <p>
-              <a href="tel:+33974562539" class="contact-link">09 74 56 25 39</a><br>
-              <a href="mailto:le.saint.pierre@hotmail.com" class="contact-link">le.saint.pierre@hotmail.com</a>
-            </p>
-          </div>
+    <!-- LA CARTE -->
+    <section class="section section--papier" id="carte">
+      <div class="contenu">
+        <div class="entete">
+          <h2 class="titre" data-anim="monte">La Carte</h2>
+          <div class="filet" data-anim="filet"></div>
+          <p class="chapo" data-anim="monte">Une sélection de spécialités franco-portugaises mijotées avec passion. La carte peut évoluer selon les saisons et les arrivages.</p>
         </div>
 
-        <div class="contact-map">
-          <iframe
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2633.0!2d3.082!3d48.813!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47ee636b7a0a4c95%3A0x0!2s34+Rue+de+l'Orgeval%2C+77120+Coulommiers!5e0!3m2!1sfr!2sfr!4v1700000000000"
-            allowfullscreen=""
-            loading="lazy"
-            referrerpolicy="no-referrer-when-downgrade"
-            title="Localisation Le Saint-Pierre"
-          ></iframe>
+        <div class="carte-grille">
+
+          <div class="rubrique" data-anim="monte">
+            <h3 class="rubrique__titre">Entrées</h3>
+            <ul class="plats">
+              <li>
+                <div class="plat__ligne">
+                  <span class="plat__nom">Soupe de légumes maison</span>
+                  <span class="plat__conduite" aria-hidden="true"></span>
+                  <span class="plat__prix">5,50 €</span>
+                </div>
+                <p class="plat__desc">Bouillon de saison, légumes du marché</p>
+              </li>
+              <li>
+                <div class="plat__ligne">
+                  <span class="plat__nom">Bacalhau à Brás</span>
+                  <span class="plat__conduite" aria-hidden="true"></span>
+                  <span class="plat__prix">12,00 €</span>
+                </div>
+                <p class="plat__desc">Morue effilochée, oignons, pommes de terre paille, olives</p>
+              </li>
+              <li>
+                <div class="plat__ligne">
+                  <span class="plat__nom">Chouriço grillé</span>
+                  <span class="plat__conduite" aria-hidden="true"></span>
+                  <span class="plat__prix">8,50 €</span>
+                </div>
+                <p class="plat__desc">Saucisse portugaise fumée, pain de campagne</p>
+              </li>
+              <li>
+                <div class="plat__ligne">
+                  <span class="plat__nom">Salade de chèvre chaud</span>
+                  <span class="plat__conduite" aria-hidden="true"></span>
+                  <span class="plat__prix">10,00 €</span>
+                </div>
+                <p class="plat__desc">Fromage de chèvre rôti, miel, noix, roquette</p>
+              </li>
+            </ul>
+          </div>
+
+          <div class="rubrique" data-anim="monte">
+            <h3 class="rubrique__titre">Plats</h3>
+            <ul class="plats">
+              <li>
+                <div class="plat__ligne">
+                  <span class="plat__nom">Bacalhau à lagareiro</span>
+                  <span class="plat__conduite" aria-hidden="true"></span>
+                  <span class="plat__prix">17,00 €</span>
+                </div>
+                <p class="plat__desc">Morue au four, huile d'olive, pommes de terre, ail rôti</p>
+              </li>
+              <li>
+                <div class="plat__ligne">
+                  <span class="plat__nom">Carne de porco à Alentejana</span>
+                  <span class="plat__conduite" aria-hidden="true"></span>
+                  <span class="plat__prix">18,50 €</span>
+                </div>
+                <p class="plat__desc">Porc mariné, palourdes, coriandre, pommes de terre sautées</p>
+              </li>
+              <li>
+                <div class="plat__ligne">
+                  <span class="plat__nom">Entrecôte grillée</span>
+                  <span class="plat__conduite" aria-hidden="true"></span>
+                  <span class="plat__prix">19,00 €</span>
+                </div>
+                <p class="plat__desc">Bœuf français, sauce au choix, frites maison</p>
+              </li>
+              <li>
+                <div class="plat__ligne">
+                  <span class="plat__nom">Frango na púcara</span>
+                  <span class="plat__conduite" aria-hidden="true"></span>
+                  <span class="plat__prix">15,50 €</span>
+                </div>
+                <p class="plat__desc">Poulet en cocotte, amandes, porto blanc, légumes</p>
+              </li>
+              <li>
+                <div class="plat__ligne">
+                  <span class="plat__nom">Plat du jour</span>
+                  <span class="plat__conduite" aria-hidden="true"></span>
+                  <span class="plat__prix">12,00 €</span>
+                </div>
+                <p class="plat__desc">Selon arrivage — demandez à votre serveur</p>
+              </li>
+            </ul>
+          </div>
+
+          <div class="rubrique" data-anim="monte">
+            <h3 class="rubrique__titre">Desserts</h3>
+            <ul class="plats">
+              <li>
+                <div class="plat__ligne">
+                  <span class="plat__nom">Pastel de nata</span>
+                  <span class="plat__conduite" aria-hidden="true"></span>
+                  <span class="plat__prix">3,50 €</span>
+                </div>
+                <p class="plat__desc">Flan portugais, pâte feuilletée, cannelle</p>
+              </li>
+              <li>
+                <div class="plat__ligne">
+                  <span class="plat__nom">Arroz doce</span>
+                  <span class="plat__conduite" aria-hidden="true"></span>
+                  <span class="plat__prix">5,00 €</span>
+                </div>
+                <p class="plat__desc">Riz au lait portugais, citron, cannelle</p>
+              </li>
+              <li>
+                <div class="plat__ligne">
+                  <span class="plat__nom">Crème brûlée maison</span>
+                  <span class="plat__conduite" aria-hidden="true"></span>
+                  <span class="plat__prix">6,00 €</span>
+                </div>
+                <p class="plat__desc">Vanille Bourbon, caramel soufflé</p>
+              </li>
+              <li>
+                <div class="plat__ligne">
+                  <span class="plat__nom">Fondant au chocolat</span>
+                  <span class="plat__conduite" aria-hidden="true"></span>
+                  <span class="plat__prix">6,50 €</span>
+                </div>
+                <p class="plat__desc">Coulant maison, glace vanille</p>
+              </li>
+            </ul>
+          </div>
+
+          <div class="rubrique" data-anim="monte">
+            <h3 class="rubrique__titre">Boissons</h3>
+            <ul class="plats">
+              <li>
+                <div class="plat__ligne">
+                  <span class="plat__nom">Vinho Verde</span>
+                  <span class="plat__conduite" aria-hidden="true"></span>
+                  <span class="plat__prix">5,00 €</span>
+                </div>
+                <p class="plat__desc">Vin blanc portugais, frais et léger · 25 cl</p>
+              </li>
+              <li>
+                <div class="plat__ligne">
+                  <span class="plat__nom">Sagres / Super Bock</span>
+                  <span class="plat__conduite" aria-hidden="true"></span>
+                  <span class="plat__prix">4,00 €</span>
+                </div>
+                <p class="plat__desc">Bière portugaise · 33 cl</p>
+              </li>
+              <li>
+                <div class="plat__ligne">
+                  <span class="plat__nom">Ginjinha</span>
+                  <span class="plat__conduite" aria-hidden="true"></span>
+                  <span class="plat__prix">4,50 €</span>
+                </div>
+                <p class="plat__desc">Liqueur de cerise portugaise · 4 cl</p>
+              </li>
+              <li>
+                <div class="plat__ligne">
+                  <span class="plat__nom">Café expresso</span>
+                  <span class="plat__conduite" aria-hidden="true"></span>
+                  <span class="plat__prix">2,00 €</span>
+                </div>
+                <p class="plat__desc">Bica portugaise, torréfaction intense</p>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+
+        <p class="carte-note">Les prix sont indicatifs et susceptibles d'évoluer. Carte complète disponible au restaurant. Formule déjeuner disponible du lundi au samedi.</p>
+      </div>
+    </section>
+
+    <!-- ÉVÉNEMENTS -->
+    <section class="section" id="evenements">
+      <div class="contenu duo duo--inverse">
+        <div class="duo__visuel">
+          <div class="cadre" data-anim="voile">
+            <img src="images/evenements.jpg" width="1100" height="1375" loading="lazy" decoding="async"
+                 alt="Repas de groupe autour d'une grande tablée"
+                 data-photo="provisoire" />
+          </div>
+        </div>
+        <div class="texte">
+          <h2 class="titre" data-anim="monte">Célébrez avec nous</h2>
+          <div class="filet filet--gauche" data-anim="filet"></div>
+          <p data-anim="monte">Le Saint-Pierre vous accueille pour vos moments les plus précieux. Mariages, anniversaires, baptêmes, repas d'entreprise — nous adaptons notre espace et notre menu à vos besoins.</p>
+          <p data-anim="monte">Nous organisons également des <strong>soirées à thème</strong> et des <strong>concerts live</strong> régulièrement. Suivez-nous pour ne rien manquer.</p>
+          <ul class="coches" data-anim="monte">
+            <li>Salle privatisable jusqu'à 60 couverts</li>
+            <li>Menu personnalisé selon vos envies</li>
+            <li>Animation et décoration sur demande</li>
+            <li>Devis gratuit et sans engagement</li>
+          </ul>
+          <p data-anim="monte"><a href="mailto:le.saint.pierre@hotmail.com" class="btn btn--encre">Demander un devis</a></p>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- FOOTER -->
+    <!-- TERRASSE -->
+    <div class="terrasse">
+      <img src="images/terrasse.jpg"
+           srcset="images/terrasse-1000.jpg 1000w, images/terrasse.jpg 2000w"
+           sizes="100vw"
+           width="2000" height="760" loading="lazy" decoding="async"
+           alt="Terrasse ombragée du restaurant"
+           class="terrasse__img" id="terrasseImg"
+           data-photo="provisoire" />
+      <div class="terrasse__voile"></div>
+      <div class="terrasse__contenu">
+        <h2 data-anim="monte">La terrasse</h2>
+        <div class="filet" data-anim="filet"></div>
+        <p data-anim="monte">Profitez des beaux jours en terrasse, au calme, dans une atmosphère détendue.</p>
+      </div>
+    </div>
+
+    <!-- CONTACT -->
+    <section class="section section--papier" id="contact">
+      <div class="contenu">
+        <div class="entete">
+          <h2 class="titre" data-anim="monte">Contact &amp; Accès</h2>
+          <div class="filet" data-anim="filet"></div>
+        </div>
+
+        <div class="contact-grille">
+          <div>
+            <div class="bloc" data-anim="monte">
+              <h3>Adresse</h3>
+              <address>34 Rue de l'Orgeval<br>77120 Coulommiers<br>France</address>
+              <a href="https://maps.google.com/?q=34+Rue+de+l'Orgeval,+77120+Coulommiers" target="_blank" rel="noopener" class="lien-fleche">Ouvrir dans Google Maps</a>
+            </div>
+
+            <div class="bloc" data-anim="monte">
+              <h3>Horaires</h3>
+              <table class="horaires">
+                <tbody>
+                  <tr><td>Lundi – Samedi</td><td>12h00 – 14h30</td></tr>
+                  <tr><td>Vendredi – Samedi soir</td><td>19h00 – 22h00</td></tr>
+                  <tr class="ferme"><td>Dimanche</td><td>Fermé</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="bloc" data-anim="monte">
+              <h3>Nous contacter</h3>
+              <p>
+                <a href="tel:+33974562539" class="lien-contact">09 74 56 25 39</a><br><br>
+                <a href="mailto:le.saint.pierre@hotmail.com" class="lien-contact">le.saint.pierre@hotmail.com</a>
+              </p>
+            </div>
+          </div>
+
+          <div class="plan" data-anim="voile">
+            <iframe
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2633.0!2d3.082!3d48.813!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47ee636b7a0a4c95%3A0x0!2s34+Rue+de+l'Orgeval%2C+77120+Coulommiers!5e0!3m2!1sfr!2sfr!4v1700000000000"
+              allowfullscreen=""
+              loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade"
+              title="Localisation du restaurant Le Saint-Pierre"
+            ></iframe>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- PIED DE PAGE -->
   <footer class="footer">
-    <div class="container footer__inner">
-      <div class="footer__brand">
-        <p class="footer__name">Le Saint-Pierre</p>
+    <div class="contenu footer__inner">
+      <div>
+        <p class="footer__nom">Le Saint-Pierre</p>
         <p class="footer__tagline">Cuisine franco-portugaise · Coulommiers</p>
       </div>
-      <nav class="footer__nav">
+      <nav class="footer__nav" aria-label="Pied de page">
         <a href="#accueil">Accueil</a>
         <a href="#restaurant">Le Restaurant</a>
         <a href="#carte">La Carte</a>
@@ -402,6 +451,7 @@
     </div>
   </footer>
 
-  <script src="js/main.js"></script>
+  <script src="js/vendor/gsap.min.js"></script>
+  <script src="js/main.js?v=202609011600"></script>
 </body>
 </html>

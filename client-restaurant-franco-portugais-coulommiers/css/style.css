@@ -1,168 +1,206 @@
 /* ============================================================
-   Le Saint-Pierre — Stylesheet
-   Minimaliste · Élégant · Franco-Portugais
+   Le Saint-Pierre — Coulommiers
+   Direction : « Élégant sobre » (villa-fleurie)
+   Or sourd, serif classique, beaucoup de blanc, transitions lentes.
+   La photo porte tout, la mise en page s'efface.
    ============================================================ */
 
-/* ---------- RESET & BASE ---------- */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
+/* ---------- TOKENS ---------- */
 :root {
-  --clr-bg:        #faf9f7;
-  --clr-surface:   #f3f1ee;
-  --clr-dark:      #1a1714;
-  --clr-dark-2:    #2e2b27;
-  --clr-mid:       #6b6560;
-  --clr-light:     #ffffff;
-  --clr-accent:    #8b6f47;
-  --clr-accent-2:  #2b4c7e;  /* bleu azulejo portugais */
-  --clr-border:    #e4e0da;
+  /* Or sourd relevé sur la référence. Contraste 2,4:1 sur blanc : il ne
+     porte JAMAIS de texte sur fond clair — filets, bordures et aplats
+     seulement. Sur l'encre il monte à 7,3:1 et redevient lisible. */
+  --or:         #b3a780;
+  /* Version assombrie du même or, 6:1 sur blanc : c'est elle qui porte
+     le texte doré sur fond clair (liens, prix, petites capitales). */
+  --or-fonce:   #6f6242;
+  --or-clair:   #cfc6ad;
 
-  --font-serif:    'Cormorant Garamond', Georgia, serif;
-  --font-sans:     'Inter', system-ui, sans-serif;
+  --encre:      #1a1a1a;
+  --encre-2:    #232220;
+  --mid:        #555550;
+  --mid-clair:  #6e6c66;
 
-  --max-w:         1200px;
-  --pad-x:         clamp(1.25rem, 5vw, 3rem);
-  --section-gap:   clamp(4rem, 10vw, 8rem);
+  --blanc:      #ffffff;
+  --papier:     #f5f5f3;
+  --bord:       #e8e4dc;
 
-  --ease:          cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  --dur:           0.3s;
+  --serif:      'Cormorant Garamond', Georgia, 'Times New Roman', serif;
+  --sans:       'Montserrat', system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  --max-w:      1180px;
+  --pad-x:      clamp(1.25rem, 5vw, 3.5rem);
+  --gap-section: clamp(5rem, 11vw, 9rem);
+
+  /* Transitions lentes : c'est la signature du style. */
+  --ease:       cubic-bezier(0.22, 1, 0.36, 1);
+  --dur:        0.55s;
 }
 
-html { scroll-behavior: smooth; }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html {
+  scroll-behavior: smooth;
+  /* Le fil de défilement fait partie du dessin. */
+  scrollbar-color: var(--or-clair) var(--papier);
+  scrollbar-width: thin;
+}
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
 
 body {
-  font-family: var(--font-sans);
-  background: var(--clr-bg);
-  color: var(--clr-dark);
+  font-family: var(--sans);
+  font-weight: 300;
+  background: var(--blanc);
+  color: var(--encre);
   font-size: 1rem;
-  line-height: 1.7;
+  line-height: 1.75;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: clip; /* `clip` et non `hidden` : ne crée pas de conteneur de
+                       défilement, donc ne casse pas les éléments sticky. */
 }
 
 img { display: block; max-width: 100%; height: auto; }
-a { color: inherit; text-decoration: none; }
-ul { list-style: none; }
+a   { color: inherit; text-decoration: none; }
+ul  { list-style: none; }
 
-/* ---------- UTILS ---------- */
-.container {
+/* ---------- SURFACES DU NAVIGATEUR ----------
+   Sélection, curseur, ascenseur et anneau de focus arrivent avec des
+   réglages par défaut qui n'appartiennent à aucune charte. On les teinte. */
+::selection      { background: rgba(179, 167, 128, 0.34); color: var(--encre); }
+::-moz-selection { background: rgba(179, 167, 128, 0.34); color: var(--encre); }
+
+input, textarea { caret-color: var(--or-fonce); }
+
+::-webkit-scrollbar        { width: 11px; height: 11px; }
+::-webkit-scrollbar-track  { background: var(--papier); }
+::-webkit-scrollbar-thumb  { background: var(--or-clair); border: 3px solid var(--papier); }
+::-webkit-scrollbar-thumb:hover { background: var(--or); }
+
+:focus-visible {
+  outline: 2px solid var(--or-fonce);
+  outline-offset: 3px;
+}
+.sur-sombre :focus-visible, .nav :focus-visible, .hero :focus-visible,
+.bandeau :focus-visible, .footer :focus-visible {
+  outline-color: var(--or);
+}
+
+/* Lien d'évitement — premier arrêt au clavier. */
+.saut {
+  position: absolute; left: 50%; top: 0;
+  transform: translate(-50%, -120%);
+  z-index: 200;
+  background: var(--encre); color: var(--blanc);
+  padding: 0.75rem 1.5rem;
+  font-size: 0.75rem; letter-spacing: 0.18em; text-transform: uppercase;
+  transition: transform 0.3s var(--ease);
+}
+.saut:focus { transform: translate(-50%, 0); }
+
+/* ---------- UTILITAIRES ---------- */
+.contenu {
   max-width: var(--max-w);
   margin-inline: auto;
   padding-inline: var(--pad-x);
 }
 
-.label {
-  display: inline-block;
-  font-family: var(--font-sans);
-  font-size: 0.7rem;
-  font-weight: 500;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--clr-accent);
-  margin-bottom: 1rem;
-}
+.section { padding-block: var(--gap-section); }
+.section--papier { background: var(--papier); }
 
-.section {
-  padding-block: var(--section-gap);
-}
-
-.section--alt {
-  background: var(--clr-surface);
-}
-
-.section__header {
-  text-align: center;
-  max-width: 640px;
-  margin-inline: auto;
-  margin-bottom: clamp(2.5rem, 6vw, 4.5rem);
-}
-
-.section__title {
-  font-family: var(--font-serif);
-  font-size: clamp(2rem, 5vw, 3.25rem);
+.titre {
+  font-family: var(--serif);
   font-weight: 300;
-  line-height: 1.15;
-  color: var(--clr-dark);
-  margin-bottom: 1rem;
+  font-size: clamp(1.9rem, 4.6vw, 3.1rem);
+  line-height: 1.12;
+  letter-spacing: -0.01em;
+  color: var(--encre);
+  text-wrap: balance;
 }
 
-.section__intro {
-  color: var(--clr-mid);
-  font-size: 1.05rem;
-  line-height: 1.8;
+.entete {
+  text-align: center;
+  max-width: 34rem;
+  margin-inline: auto;
+  margin-bottom: clamp(3rem, 7vw, 5rem);
 }
+.entete .titre { margin-bottom: 1.25rem; }
 
-.section__text .section__title { margin-bottom: 1.25rem; }
-.section__text p {
-  color: var(--clr-mid);
-  margin-bottom: 1.25rem;
+/* Le filet doré remplace la sur-titraille : il marque la section sans
+   ajouter d'étiquette au-dessus du titre. */
+.filet {
+  display: block;
+  width: 3.5rem; height: 1px;
+  background: var(--or);
+  margin: 0 auto 1.75rem;
+  transform-origin: center;
+}
+.filet--gauche { margin-inline: 0 auto; margin-left: 0; }
+
+.chapo {
+  color: var(--mid);
   font-size: 1rem;
+  max-width: 62ch;
 }
 
-/* ---------- GRID ---------- */
-.grid-2 {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: clamp(2rem, 6vw, 5rem);
-  align-items: center;
+.texte p {
+  color: var(--mid);
+  margin-bottom: 1.25rem;
+  max-width: 60ch;
 }
+.texte .titre { margin-bottom: 1.5rem; }
 
-.grid-2--reverse .section__visual { order: -1; }
-
-@media (max-width: 768px) {
-  .grid-2 { grid-template-columns: 1fr; }
-  .grid-2--reverse .section__visual { order: 0; }
-}
-
-/* ---------- BUTTONS ---------- */
+/* ---------- BOUTONS ---------- */
 .btn {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.875rem 2rem;
-  font-family: var(--font-sans);
-  font-size: 0.85rem;
+  gap: 0.6rem;
+  padding: 1rem 2.25rem;
+  font-family: var(--sans);
+  font-size: 0.72rem;
   font-weight: 500;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.22em;
   text-transform: uppercase;
-  border: 1.5px solid transparent;
-  transition: background var(--dur) var(--ease), color var(--dur) var(--ease), border-color var(--dur) var(--ease);
+  border: 1px solid transparent;
   cursor: pointer;
+  transition: background var(--dur) var(--ease),
+              color var(--dur) var(--ease),
+              border-color var(--dur) var(--ease);
 }
 
-.btn--dark {
-  background: var(--clr-dark);
-  color: var(--clr-light);
-  border-color: var(--clr-dark);
-}
-.btn--dark:hover { background: var(--clr-accent); border-color: var(--clr-accent); }
+/* Action principale : l'encre. Une seule par écran. */
+.btn--encre { background: var(--encre); color: var(--blanc); border-color: var(--encre); }
+.btn--encre:hover, .btn--encre:focus-visible { background: var(--or-fonce); border-color: var(--or-fonce); }
 
-.btn--light {
-  background: var(--clr-light);
-  color: var(--clr-dark);
-  border-color: var(--clr-light);
-}
-.btn--light:hover { background: transparent; color: var(--clr-light); }
+/* Action secondaire sur fond clair : filet doré, texte encre. L'or seul
+   ne passerait pas le contraste en texte. */
+.btn--fil { background: transparent; color: var(--encre); border-color: var(--or); }
+.btn--fil:hover, .btn--fil:focus-visible { background: var(--or); color: var(--encre); }
 
-.btn--outline-light {
-  background: transparent;
-  color: var(--clr-light);
-  border-color: rgba(255,255,255,0.6);
-}
-.btn--outline-light:hover { background: var(--clr-light); color: var(--clr-dark); }
+/* Sur photo : blanc plein pour l'action principale, filet pour l'autre. */
+.btn--blanc { background: var(--blanc); color: var(--encre); border-color: var(--blanc); }
+.btn--blanc:hover, .btn--blanc:focus-visible { background: transparent; color: var(--blanc); }
 
-/* ---------- NAV ---------- */
+.btn--fil-blanc { background: transparent; color: var(--blanc); border-color: rgba(255,255,255,0.55); }
+.btn--fil-blanc:hover, .btn--fil-blanc:focus-visible { background: var(--blanc); color: var(--encre); border-color: var(--blanc); }
+
+/* ---------- NAVIGATION ---------- */
 .nav {
   position: fixed;
-  top: 0; left: 0; right: 0;
+  inset: 0 0 auto 0;
   z-index: 100;
   padding: 1.25rem var(--pad-x);
-  transition: background var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+  /* Pas de transition sur le padding : animer une propriété de mise en
+     page force un recalcul à chaque image. Seul le fond change. */
+  transition: background 0.5s var(--ease), box-shadow 0.5s var(--ease),
+              -webkit-backdrop-filter 0.5s var(--ease),
+              backdrop-filter 0.5s var(--ease);
 }
-
-.nav.scrolled {
-  background: rgba(26, 23, 20, 0.97);
-  backdrop-filter: blur(12px);
-  box-shadow: 0 1px 0 rgba(255,255,255,0.05);
+.nav.est-pose {
+  background: rgba(20, 19, 17, 0.94);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  box-shadow: 0 1px 0 rgba(179, 167, 128, 0.18);
 }
 
 .nav__inner {
@@ -175,406 +213,436 @@ ul { list-style: none; }
 }
 
 .nav__logo {
-  font-family: var(--font-serif);
-  font-size: 1.4rem;
+  font-family: var(--serif);
+  font-size: 1.5rem;
   font-weight: 400;
-  color: var(--clr-light);
-  letter-spacing: 0.02em;
+  color: var(--blanc);
+  letter-spacing: 0.03em;
   white-space: nowrap;
 }
 
-.nav__links {
-  display: flex;
-  align-items: center;
-  gap: 2rem;
-}
+.nav__liens { display: flex; align-items: center; gap: 2.25rem; }
 
-.nav__links a {
-  font-size: 0.8rem;
+.nav__liens a {
+  position: relative;
+  font-size: 0.72rem;
   font-weight: 400;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: rgba(255,255,255,0.75);
+  color: rgba(255,255,255,0.78);
   transition: color var(--dur) var(--ease);
 }
-
-.nav__links a:hover { color: var(--clr-light); }
+.nav__liens a::after {
+  content: '';
+  position: absolute;
+  left: 0; bottom: -0.45rem;
+  width: 100%; height: 1px;
+  background: var(--or);
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.5s var(--ease);
+}
+.nav__liens a:hover, .nav__liens a.actif { color: var(--blanc); }
+.nav__liens a:hover::after, .nav__liens a.actif::after { transform: scaleX(1); transform-origin: left; }
 
 .nav__cta {
-  padding: 0.5rem 1.25rem;
+  padding: 0.6rem 1.4rem;
   border: 1px solid rgba(255,255,255,0.4);
-  color: var(--clr-light) !important;
-  transition: background var(--dur) var(--ease), border-color var(--dur) var(--ease) !important;
+  color: var(--blanc) !important;
+  transition: background var(--dur) var(--ease), border-color var(--dur) var(--ease);
 }
-.nav__cta:hover { background: var(--clr-light) !important; color: var(--clr-dark) !important; }
+.nav__cta::after { display: none; }
+.nav__cta:hover { background: var(--blanc); color: var(--encre) !important; border-color: var(--blanc); }
 
-.nav__toggle {
+.nav__bascule {
   display: none;
   flex-direction: column;
-  gap: 5px;
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 4px;
+  justify-content: center;
+  gap: 6px;
+  width: 34px; height: 34px;
+  background: none; border: none; cursor: pointer;
 }
-.nav__toggle span {
-  display: block;
-  width: 24px;
-  height: 1.5px;
-  background: var(--clr-light);
-  transition: transform var(--dur) var(--ease), opacity var(--dur) var(--ease);
+.nav__bascule span {
+  display: block; width: 24px; height: 1px;
+  background: var(--blanc);
+  transition: transform 0.45s var(--ease), opacity 0.3s var(--ease);
 }
+.nav__bascule[aria-expanded="true"] span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.nav__bascule[aria-expanded="true"] span:nth-child(2) { opacity: 0; }
+.nav__bascule[aria-expanded="true"] span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
 
-@media (max-width: 900px) {
-  .nav__toggle { display: flex; }
-  .nav__links {
+@media (max-width: 940px) {
+  .nav__bascule { display: flex; }
+  .nav__liens {
     position: fixed;
-    top: 0; right: 0;
-    width: min(320px, 85vw);
-    height: 100dvh;
-    background: var(--clr-dark);
+    inset: 0 0 0 auto;
+    width: min(340px, 86vw);
+    background: var(--encre);
     flex-direction: column;
     justify-content: center;
-    gap: 1.5rem;
-    transform: translateX(100%);
-    transition: transform 0.4s var(--ease);
+    gap: 2rem;
     padding: var(--pad-x);
+    transform: translateX(100%);
+    transition: transform 0.55s var(--ease);
   }
-  .nav__links.open { transform: translateX(0); }
-  .nav__links a { font-size: 1rem; }
+  .nav__liens.ouvert { transform: translateX(0); }
+  .nav__liens a { font-size: 0.95rem; letter-spacing: 0.2em; }
 }
 
 /* ---------- HERO ---------- */
 .hero {
   position: relative;
-  height: 100dvh;
-  min-height: 600px;
+  min-height: 100svh;
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
+  background: var(--encre);
 }
 
-.hero__bg { position: absolute; inset: 0; }
+.hero__fond { position: absolute; inset: 0; overflow: hidden; }
 
 .hero__img {
-  width: 100%;
-  height: 100%;
+  width: 100%; height: 100%;
   object-fit: cover;
   object-position: center;
+  will-change: transform;
 }
 
-.hero__overlay {
+/* Deux couches : un dégradé vertical qui assied le titre et la nav, plus
+   une nappe ovale au centre. Sans elle, la ligne dorée et l'italique
+   tombent sur l'assiette blanche de la photo et deviennent illisibles —
+   assombrir toute l'image aurait éteint la photo, qui porte la page. */
+.hero__voile {
   position: absolute;
   inset: 0;
-  background: linear-gradient(
-    to bottom,
-    rgba(20, 17, 14, 0.45) 0%,
-    rgba(20, 17, 14, 0.6) 60%,
-    rgba(20, 17, 14, 0.7) 100%
-  );
+  background:
+    radial-gradient(ellipse 78% 60% at 50% 50%,
+      rgba(12, 10, 9, 0.66) 0%,
+      rgba(12, 10, 9, 0.34) 58%,
+      rgba(12, 10, 9, 0) 100%),
+    linear-gradient(to bottom,
+      rgba(14, 12, 10, 0.66) 0%,
+      rgba(14, 12, 10, 0.42) 45%,
+      rgba(14, 12, 10, 0.82) 100%);
 }
 
-.hero__content {
+.hero__contenu {
   position: relative;
-  z-index: 1;
+  z-index: 2;
   text-align: center;
-  color: var(--clr-light);
-  max-width: 700px;
+  color: var(--blanc);
+  max-width: 44rem;
   padding: var(--pad-x);
 }
 
-.hero__label {
-  font-size: 0.7rem;
-  letter-spacing: 0.25em;
-  text-transform: uppercase;
-  opacity: 0.7;
-  margin-bottom: 1rem;
+/* Le titre monte derrière un masque : le seul geste appuyé de la page. */
+.hero__titre {
+  font-family: var(--serif);
+  font-weight: 300;
+  font-size: clamp(2.75rem, 8.5vw, 6rem);
+  line-height: 1.02;
+  letter-spacing: -0.015em;
+  margin-bottom: 1.5rem;
+}
+.hero__masque { display: block; overflow: hidden; padding-bottom: 0.08em; }
+
+.hero__filet {
+  width: 4.5rem; height: 1px;
+  background: var(--or);
+  margin: 0 auto 1.5rem;
+  transform-origin: center;
 }
 
-.hero__title {
-  font-family: var(--font-serif);
-  font-size: clamp(3rem, 10vw, 6.5rem);
-  font-weight: 300;
-  line-height: 1;
-  margin-bottom: 1rem;
-  letter-spacing: -0.01em;
-}
-
-.hero__sub {
-  font-family: var(--font-serif);
-  font-size: clamp(1.1rem, 3vw, 1.5rem);
-  font-weight: 300;
+.hero__sous {
+  font-family: var(--serif);
+  font-size: clamp(1.15rem, 2.6vw, 1.6rem);
   font-style: italic;
-  opacity: 0.85;
-  margin-bottom: 2.5rem;
+  font-weight: 300;
   line-height: 1.5;
+  color: rgba(255,255,255,0.92);
+  margin-bottom: 0.85rem;
 }
 
-.hero__actions {
-  display: flex;
-  gap: 1rem;
-  justify-content: center;
-  flex-wrap: wrap;
+.hero__lieu {
+  font-size: 0.72rem;
+  font-weight: 400;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: #e8dfc9;
+  margin-bottom: 2.75rem;
 }
 
-.hero__scroll {
+.hero__actions { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+
+.hero__cue {
   position: absolute;
-  bottom: 2rem;
-  left: 50%;
+  left: 50%; bottom: 2.25rem;
   transform: translateX(-50%);
-  z-index: 1;
+  z-index: 2;
   color: rgba(255,255,255,0.6);
-  animation: bounce 2s infinite;
   transition: color var(--dur) var(--ease);
 }
-.hero__scroll:hover { color: var(--clr-light); }
-
-@keyframes bounce {
-  0%, 100% { transform: translateX(-50%) translateY(0); }
-  50%       { transform: translateX(-50%) translateY(8px); }
+.hero__cue:hover { color: var(--blanc); }
+.hero__cue svg { animation: descend 2.6s var(--ease) infinite; }
+@keyframes descend {
+  0%, 100% { transform: translateY(0);   opacity: 0.55; }
+  50%      { transform: translateY(7px); opacity: 1; }
 }
 
-/* ---------- HOURS BAR ---------- */
-.hours-bar {
-  background: var(--clr-dark);
-  color: rgba(255,255,255,0.85);
-  padding: 1.25rem var(--pad-x);
+/* ---------- BANDEAU HORAIRES ---------- */
+.bandeau {
+  background: var(--encre);
+  color: rgba(255,255,255,0.82);
+  padding: 1.5rem var(--pad-x);
 }
-
-.hours-bar__inner {
+.bandeau__inner {
   max-width: var(--max-w);
   margin-inline: auto;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 2rem;
+  gap: 2.75rem;
   flex-wrap: wrap;
 }
-
-.hours-bar__item {
+.bandeau__item {
   display: flex;
   align-items: center;
-  gap: 0.6rem;
-  font-size: 0.85rem;
+  gap: 0.7rem;
+  font-size: 0.82rem;
+  font-variant-numeric: tabular-nums;
+}
+.bandeau__item svg { color: var(--or); flex-shrink: 0; }
+.bandeau__item strong {
+  color: var(--blanc);
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-size: 0.72rem;
+  margin-right: 0.35rem;
+}
+.bandeau__sep { width: 1px; height: 1.75rem; background: rgba(179,167,128,0.3); }
+
+@media (max-width: 720px) {
+  .bandeau__sep { display: none; }
+  .bandeau__inner { flex-direction: column; gap: 0.9rem; }
 }
 
-.hours-bar__item svg { opacity: 0.6; flex-shrink: 0; }
-.hours-bar__item strong { color: var(--clr-light); font-weight: 500; }
+/* ---------- DUO TEXTE / PHOTO ---------- */
+.duo {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(2.5rem, 7vw, 6rem);
+  align-items: center;
+}
+.duo--inverse .duo__visuel { order: -1; }
 
-.hours-bar__sep {
-  width: 1px;
-  height: 1.5rem;
-  background: rgba(255,255,255,0.15);
+@media (max-width: 860px) {
+  .duo { grid-template-columns: 1fr; gap: 3rem; }
+  .duo--inverse .duo__visuel { order: 0; }
 }
 
-@media (max-width: 600px) {
-  .hours-bar__sep { display: none; }
-  .hours-bar__inner { flex-direction: column; gap: 0.75rem; }
-}
-
-/* ---------- IMG FRAME ---------- */
-.img-frame {
+/* Coins droits, ombre très diffuse, aucun filtre : relevé sur la
+   référence. C'est l'ombre large qui détache la photo du fond sans la
+   cerner — une bordure ou un coin arrondi en ferait une vignette. */
+.cadre {
   position: relative;
   overflow: hidden;
-  aspect-ratio: 4/5;
-  background: var(--clr-border);
+  aspect-ratio: 4 / 5;
+  background: var(--bord);
+  box-shadow: 0 10px 44px rgba(26, 23, 20, 0.14);
 }
-
-.img-frame img {
-  width: 100%;
-  height: 100%;
+.cadre img {
+  width: 100%; height: 100%;
   object-fit: cover;
-  transition: transform 0.7s var(--ease);
+  transition: transform 1.1s var(--ease);
 }
-.img-frame:hover img { transform: scale(1.04); }
+.cadre:hover img { transform: scale(1.045); }
 
-.img-badge {
-  position: absolute;
-  bottom: -1.5rem;
-  right: -1.5rem;
-  width: 7rem;
-  height: 7rem;
-  background: var(--clr-accent);
-  border-radius: 50%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  color: var(--clr-light);
-  font-family: var(--font-serif);
-  font-size: 1.15rem;
-  font-style: italic;
-  line-height: 1.2;
-  z-index: 2;
-}
+/* ---------- BANDE DES ATOUTS ----------
+   Quatre affirmations séparées par des filets — pas quatre cartes
+   identiques : la carte est le conteneur paresseux. */
+.atouts { background: var(--papier); padding-block: clamp(3.5rem, 8vw, 6rem); }
 
-.section__visual {
-  position: relative;
-  padding-bottom: 2rem;
-  padding-right: 2rem;
-}
-
-/* ---------- FEATURES ---------- */
-.features {
-  padding-block: clamp(3rem, 7vw, 5rem);
-  background: var(--clr-dark);
-}
-
-.features__list {
+.atouts__liste {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 2rem;
+  grid-template-rows: auto auto;
+  gap: clamp(1.75rem, 4vw, 3.25rem);
 }
+/* Les titres n'ont pas tous le même nombre de lignes (« Rapport
+   qualité-prix » passe à deux). En partageant les lignes de la grille
+   parente, les paragraphes démarrent tous à la même hauteur. */
+.atouts__item {
+  position: relative;
+  padding-left: clamp(1.75rem, 4vw, 3.25rem);
+  display: grid;
+  grid-row: span 2;
+  grid-template-rows: auto 1fr;
+  row-gap: 0.6rem;
+}
+@supports (grid-template-rows: subgrid) {
+  .atouts__item { grid-template-rows: subgrid; }
+}
+.atouts__item:first-child { padding-left: 0; }
+.atouts__item::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0.35rem; bottom: 0.35rem;
+  width: 1px;
+  background: var(--bord);
+}
+.atouts__item:first-child::before { display: none; }
 
-@media (max-width: 900px) { .features__list { grid-template-columns: repeat(2, 1fr); } }
-@media (max-width: 500px) { .features__list { grid-template-columns: 1fr; } }
-
-.features__item {
-  padding: 2rem 1.5rem;
-  border: 1px solid rgba(255,255,255,0.07);
-  transition: border-color var(--dur) var(--ease), background var(--dur) var(--ease);
-}
-.features__item:hover {
-  border-color: rgba(255,255,255,0.15);
-  background: rgba(255,255,255,0.03);
-}
-
-.features__icon {
-  width: 2.5rem;
-  height: 2.5rem;
-  margin-bottom: 1.25rem;
-}
-.features__icon svg {
-  width: 100%;
-  height: 100%;
-  stroke: var(--clr-accent);
-}
-
-.features__item h3 {
-  font-family: var(--font-serif);
-  font-size: 1.2rem;
+.atouts__item h3 {
+  font-family: var(--serif);
+  font-size: 1.45rem;
   font-weight: 400;
-  color: var(--clr-light);
-  margin-bottom: 0.75rem;
+  color: var(--encre);
+  line-height: 1.2;
+}
+.atouts__item p {
+  font-size: 0.85rem;
+  line-height: 1.75;
+  color: var(--mid);
 }
 
-.features__item p {
-  font-size: 0.875rem;
-  color: rgba(255,255,255,0.5);
-  line-height: 1.7;
+@media (max-width: 900px) {
+  .atouts__liste { grid-template-columns: repeat(2, 1fr); gap: 2.25rem; }
+  .atouts__item, .atouts__item:first-child { padding-left: 0; }
+  .atouts__item::before { display: none; }
+  .atouts__item { padding-top: 1.75rem; border-top: 1px solid var(--bord); }
+}
+@media (max-width: 520px) { .atouts__liste { grid-template-columns: 1fr; } }
+
+/* ---------- GALERIE 3 VUES ---------- */
+.galerie {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 3px;
+}
+.galerie figure { position: relative; overflow: hidden; aspect-ratio: 1; background: var(--bord); }
+.galerie img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  transition: transform 1.2s var(--ease);
+}
+.galerie figure:hover img { transform: scale(1.06); }
+@media (max-width: 620px) {
+  .galerie { grid-template-columns: repeat(3, 1fr); gap: 2px; }
 }
 
-/* ---------- MENU ---------- */
-.menu-grid {
+/* ---------- LA CARTE ---------- */
+.carte-grille {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 3rem 4rem;
+  gap: clamp(2.75rem, 6vw, 4.5rem) clamp(3rem, 8vw, 6rem);
 }
+@media (max-width: 760px) { .carte-grille { grid-template-columns: 1fr; } }
 
-@media (max-width: 700px) { .menu-grid { grid-template-columns: 1fr; } }
-
-.menu-category__title {
-  font-family: var(--font-serif);
-  font-size: 1.5rem;
+.rubrique__titre {
+  font-family: var(--serif);
+  font-size: 1.6rem;
   font-weight: 400;
-  color: var(--clr-accent);
-  border-bottom: 1px solid var(--clr-border);
-  padding-bottom: 0.5rem;
-  margin-bottom: 1.5rem;
+  color: var(--encre);
+  padding-bottom: 0.75rem;
+  margin-bottom: 1.75rem;
+  border-bottom: 1px solid var(--or);
 }
 
-.menu-list { display: flex; flex-direction: column; gap: 1.25rem; }
+.plats { display: flex; flex-direction: column; gap: 1.5rem; }
 
-.menu-item {
+.plat__ligne {
   display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 1rem;
-}
-
-.menu-item__info { flex: 1; }
-
-.menu-item__name {
-  display: block;
-  font-size: 0.95rem;
-  font-weight: 500;
-  color: var(--clr-dark);
-  margin-bottom: 0.25rem;
-}
-
-.menu-item__desc {
-  display: block;
-  font-size: 0.8rem;
-  color: var(--clr-mid);
-  font-style: italic;
-  line-height: 1.5;
-}
-
-.menu-item__price {
-  font-family: var(--font-serif);
-  font-size: 1.05rem;
-  font-weight: 500;
-  color: var(--clr-accent);
-  white-space: nowrap;
-  flex-shrink: 0;
-}
-
-.menu-note {
-  margin-top: 3rem;
-  text-align: center;
-  font-size: 0.8rem;
-  color: var(--clr-mid);
-  font-style: italic;
-}
-
-/* ---------- CHECK LIST ---------- */
-.check-list {
-  margin: 1.25rem 0 2rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.6rem;
-}
-
-.check-list li {
-  display: flex;
-  align-items: center;
+  align-items: baseline;
   gap: 0.75rem;
-  font-size: 0.9rem;
-  color: var(--clr-mid);
+}
+.plat__nom {
+  font-size: 0.92rem;
+  font-weight: 500;
+  color: var(--encre);
+  letter-spacing: 0.01em;
+}
+/* Le pointillé conduit l'œil du plat jusqu'au prix — typographie de
+   carte de restaurant, pas une décoration. */
+.plat__conduite {
+  flex: 1 1 auto;
+  height: 1px;
+  min-width: 1.5rem;
+  background-image: radial-gradient(circle, var(--or-clair) 0.5px, transparent 0.5px);
+  background-size: 5px 1px;
+  background-repeat: repeat-x;
+  background-position: 0 100%;
+  transform: translateY(-0.15em);
+}
+.plat__prix {
+  font-family: var(--serif);
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: var(--or-fonce);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.plat__desc {
+  font-size: 0.8rem;
+  line-height: 1.65;
+  color: var(--mid-clair);
+  font-style: italic;
+  max-width: 46ch;
+  margin-top: 0.2rem;
 }
 
-.check-list li::before {
+.carte-note {
+  margin-top: clamp(2.5rem, 6vw, 4rem);
+  text-align: center;
+  font-size: 0.78rem;
+  color: var(--mid-clair);
+  font-style: italic;
+  max-width: 60ch;
+  margin-inline: auto;
+}
+
+/* ---------- LISTE À COCHES ---------- */
+.coches { margin: 1.75rem 0 2.5rem; display: flex; flex-direction: column; gap: 0.8rem; }
+.coches li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.85rem;
+  font-size: 0.88rem;
+  color: var(--mid);
+  line-height: 1.6;
+}
+.coches li::before {
   content: '';
-  display: inline-block;
-  width: 1rem;
-  height: 1rem;
   flex-shrink: 0;
-  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238b6f47' stroke-width='2'%3E%3Cpolyline points='20 6 9 17 4 12'/%3E%3C/svg%3E") center/contain no-repeat;
+  width: 0.95rem; height: 0.95rem;
+  margin-top: 0.35rem;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236f6242' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'/%3E%3C/svg%3E") center/contain no-repeat;
 }
 
-/* ---------- TERRACE STRIP ---------- */
-.terrace-strip { position: relative; height: 380px; overflow: hidden; }
-
-.terrace-strip__img {
-  width: 100%;
-  height: 100%;
+/* ---------- BANDE TERRASSE ---------- */
+.terrasse { position: relative; height: clamp(360px, 52vw, 460px); overflow: hidden; }
+.terrasse__img {
+  position: absolute;
+  inset: -14% 0;
+  width: 100%; height: 128%;
   object-fit: cover;
   object-position: center;
-  transform: scale(1.05);
-  transition: transform 0.8s var(--ease);
+  will-change: transform;
 }
-.terrace-strip:hover .terrace-strip__img { transform: scale(1); }
-
-.terrace-strip__inner { position: relative; height: 100%; }
-
-.terrace-strip__overlay {
+/* Même principe qu'au hero : une nappe centrale pour asseoir le texte,
+   sans noircir les feuillages qui font tout l'intérêt de la photo. */
+.terrasse__voile {
   position: absolute;
   inset: 0;
-  background: rgba(20, 17, 14, 0.55);
+  background:
+    radial-gradient(ellipse 70% 66% at 50% 50%,
+      rgba(16, 14, 12, 0.62) 0%,
+      rgba(16, 14, 12, 0.30) 62%,
+      rgba(16, 14, 12, 0) 100%),
+    rgba(16, 14, 12, 0.42);
 }
-
-.terrace-strip__content {
+.terrasse__contenu {
   position: absolute;
   inset: 0;
   display: flex;
@@ -582,214 +650,138 @@ ul { list-style: none; }
   align-items: center;
   justify-content: center;
   text-align: center;
-  color: var(--clr-light);
+  color: var(--blanc);
   padding: var(--pad-x);
 }
-
-.terrace-strip__content h2 {
-  font-family: var(--font-serif);
-  font-size: clamp(2rem, 6vw, 3.5rem);
+.terrasse__contenu h2 {
+  font-family: var(--serif);
   font-weight: 300;
-  margin-bottom: 0.75rem;
+  font-size: clamp(2rem, 5.5vw, 3.4rem);
+  line-height: 1.1;
+  margin-bottom: 1.25rem;
 }
-
-.terrace-strip__content p {
-  font-size: 1.05rem;
-  opacity: 0.75;
-  max-width: 480px;
+.terrasse__contenu .filet { background: var(--or); margin-bottom: 1.5rem; }
+.terrasse__contenu p {
+  font-family: var(--serif);
   font-style: italic;
-  font-family: var(--font-serif);
+  font-size: clamp(1rem, 2.2vw, 1.25rem);
+  color: rgba(255,255,255,0.86);
+  max-width: 34ch;
 }
 
 /* ---------- CONTACT ---------- */
-.contact-grid {
+.contact-grille {
   display: grid;
-  grid-template-columns: 1fr 1.4fr;
-  gap: 3rem;
+  grid-template-columns: 1fr 1.35fr;
+  gap: clamp(2.5rem, 6vw, 4rem);
   align-items: start;
 }
+@media (max-width: 860px) { .contact-grille { grid-template-columns: 1fr; } }
 
-@media (max-width: 768px) { .contact-grid { grid-template-columns: 1fr; } }
+.bloc { margin-bottom: 2.5rem; }
+.bloc:last-child { margin-bottom: 0; }
 
-.contact-block { margin-bottom: 2rem; }
-.contact-block:last-child { margin-bottom: 0; }
-
-.contact-block h3 {
-  font-family: var(--font-serif);
-  font-size: 1.1rem;
-  font-weight: 400;
-  color: var(--clr-dark);
-  margin-bottom: 0.5rem;
+.bloc h3 {
+  font-family: var(--sans);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--or-fonce);
+  margin-bottom: 0.9rem;
+}
+.bloc p, .bloc address {
+  font-size: 0.92rem;
+  font-style: normal;
+  color: var(--mid);
+  line-height: 1.85;
 }
 
-.contact-block p {
-  font-size: 0.9rem;
-  color: var(--clr-mid);
-  line-height: 1.8;
-}
-
-.link-arrow {
+.lien-fleche {
   display: inline-block;
-  margin-top: 0.5rem;
-  font-size: 0.8rem;
-  letter-spacing: 0.05em;
-  color: var(--clr-accent);
-  text-decoration: underline;
-  text-decoration-color: transparent;
-  transition: text-decoration-color var(--dur) var(--ease);
+  margin-top: 0.75rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--encre);
+  border-bottom: 1px solid var(--or);
+  padding-bottom: 0.25rem;
+  transition: color var(--dur) var(--ease), border-color var(--dur) var(--ease);
 }
-.link-arrow:hover { text-decoration-color: var(--clr-accent); }
+.lien-fleche:hover { color: var(--or-fonce); border-color: var(--or-fonce); }
 
-.hours-table {
-  border-collapse: collapse;
-  width: 100%;
-  font-size: 0.875rem;
+.horaires { border-collapse: collapse; width: 100%; font-size: 0.9rem; }
+.horaires td {
+  padding: 0.55rem 0;
+  color: var(--mid);
+  border-bottom: 1px solid var(--bord);
+  font-variant-numeric: tabular-nums;
 }
-.hours-table td {
-  padding: 0.4rem 0;
-  color: var(--clr-mid);
-}
-.hours-table td:last-child { text-align: right; font-weight: 500; color: var(--clr-dark); }
-.hours-table tr.closed td { color: rgba(107, 101, 96, 0.5); }
+.horaires tr:last-child td { border-bottom: none; }
+.horaires td:last-child { text-align: right; font-weight: 500; color: var(--encre); }
+.horaires tr.ferme td, .horaires tr.ferme td:last-child { color: var(--mid-clair); font-weight: 400; }
 
-.contact-link {
-  color: var(--clr-accent);
-  font-size: 0.95rem;
+.lien-contact {
+  color: var(--encre);
+  font-size: 0.98rem;
   display: inline-block;
-  margin-bottom: 0.25rem;
-  transition: opacity var(--dur) var(--ease);
+  border-bottom: 1px solid var(--or);
+  padding-bottom: 0.1rem;
+  transition: color var(--dur) var(--ease), border-color var(--dur) var(--ease);
+  text-underline-offset: 0.2em;
 }
-.contact-link:hover { opacity: 0.7; }
+.lien-contact:hover { color: var(--or-fonce); border-color: var(--or-fonce); }
 
-.contact-map {
+.plan {
   position: relative;
-  aspect-ratio: 4/3;
+  aspect-ratio: 4 / 3;
   overflow: hidden;
-  border: 1px solid var(--clr-border);
+  box-shadow: 0 10px 44px rgba(26, 23, 20, 0.12);
 }
+.plan iframe { width: 100%; height: 100%; border: none; filter: grayscale(24%) contrast(1.02); }
 
-.contact-map iframe {
-  width: 100%;
-  height: 100%;
-  border: none;
-  filter: grayscale(20%);
-}
-
-/* ---------- FOOTER ---------- */
-.footer {
-  background: var(--clr-dark-2);
-  color: rgba(255,255,255,0.5);
-  padding-block: 3rem;
-}
-
-.footer__inner {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1.5rem;
-  text-align: center;
-}
-
-.footer__name {
-  font-family: var(--font-serif);
-  font-size: 1.5rem;
-  font-weight: 300;
-  color: var(--clr-light);
-}
-
+/* ---------- PIED DE PAGE ---------- */
+.footer { background: var(--encre-2); color: rgba(255,255,255,0.55); padding-block: clamp(3rem, 7vw, 4.5rem); }
+.footer__inner { display: flex; flex-direction: column; align-items: center; gap: 1.75rem; text-align: center; }
+.footer__nom { font-family: var(--serif); font-size: 1.7rem; font-weight: 300; color: var(--blanc); }
+/* Trop long pour des capitales espacées (39 signes) : en italique serif,
+   la ligne se lit d'un trait au lieu d'être épelée. */
 .footer__tagline {
-  font-size: 0.75rem;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  margin-top: 0.25rem;
-  opacity: 0.5;
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 1.05rem;
+  letter-spacing: 0.01em;
+  margin-top: 0.4rem;
+  color: var(--or);
 }
-
-.footer__nav {
-  display: flex;
-  gap: 1.5rem;
-  flex-wrap: wrap;
-  justify-content: center;
-}
-
+.footer__nav { display: flex; gap: 1.75rem; flex-wrap: wrap; justify-content: center; }
 .footer__nav a {
-  font-size: 0.75rem;
-  letter-spacing: 0.08em;
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: rgba(255,255,255,0.45);
+  color: rgba(255,255,255,0.5);
   transition: color var(--dur) var(--ease);
 }
-.footer__nav a:hover { color: rgba(255,255,255,0.85); }
+.footer__nav a:hover { color: var(--blanc); }
+.footer__legal { font-size: 0.7rem; color: rgba(255,255,255,0.5); }
 
-.footer__legal {
-  font-size: 0.75rem;
-  opacity: 0.35;
-}
+/* ---------- MOTION ----------
+   Les états de départ ne s'appliquent que si le JS a répondu (.js) :
+   sans script, la page est entièrement visible. */
+.js [data-anim] { opacity: 0; }
+.js [data-anim="masque"] { opacity: 1; }
+.js [data-anim="masque"] > * { opacity: 0; }
+/* L'état masqué de `voile` est posé par GSAP au démarrage du tween, PAS
+   ici : un `clip-path` qui réduit l'élément à une hauteur nulle annule
+   aussi son aire d'intersection, et l'IntersectionObserver censé le
+   révéler ne se déclenche donc jamais. Il ne reste que l'opacité, qui
+   elle n'entre pas dans le calcul d'intersection. */
 
-/* ---------- SCROLL REVEAL ---------- */
-.reveal {
-  opacity: 0;
-  transform: translateY(28px);
-  transition: opacity 0.7s var(--ease), transform 0.7s var(--ease);
-}
-.reveal.visible {
-  opacity: 1;
-  transform: none;
-}
-
-/* ---------- PLACEHOLDER IMAGES (si pas de vraies photos) ---------- */
-.hero__img[src="images/hero.svg"],
-.img-frame img[src="images/salle.svg"],
-.img-frame img[src="images/evenements.svg"],
-.terrace-strip__img[src="images/terrasse.svg"] {
-  background: var(--clr-border);
-}
-
-/* ── Correctif 23/08 : 4 px de debordement horizontal sur mobile ──────────
-   Cause mesuree : `.nav__links` ferme est pose en `position:fixed` a
-   `translateX(100%)`. Hors du cadre a l ecran, mais Chrome l inclut dans la
-   largeur du document — le doigt fait glisser la page de 4 px lateralement.
-   `clip` plutot que `hidden` : `hidden` cree un conteneur de defilement qui
-   casserait les elements `sticky` du site. */
-html, body { overflow-x: clip; }
-
-/* ── Traitement des images, aligne sur Villa Fleurie (24/08) ─────────────
-   Releve sur le site de reference : coins droits, ombre tres diffuse
-   (0 8px 40px a 12 %), `object-fit: cover`, aucun filtre. C est l ombre
-   large qui fait la finition : elle detache la photo du fond sans la cerner.
-   Une bordure ou un coin arrondi transforment une photo en vignette ; ici
-   elle reste une image. */
-.hero img, section img, article img, figure img, .galerie img, .card img,
-.pizzeria-card img, .programme img, .grid img {
-  border-radius: 0;
-  object-fit: cover;
-  box-shadow: 0 8px 40px rgba(0,0,0,.12);
-  transition: transform .5s cubic-bezier(.25,.46,.45,.94), box-shadow .5s;
-}
-.hero img:hover, section img:hover, article img:hover, figure img:hover,
-.galerie img:hover, .card img:hover, .pizzeria-card img:hover {
-  box-shadow: 0 16px 56px rgba(0,0,0,.18);
-}
-/* Le logo et les icones ne sont pas des photos : ni ombre ni recadrage. */
-.logo img, .nav-logo img, header .logo img, .footer-logo, img[src*="logo"],
-img[src*="icon"], img[src*="favicon"] {
-  box-shadow: none !important;
-  object-fit: contain;
-}
-
-
-/* ── Les boutons portent enfin l accent du site (24/08) ──────────────────
-   `--clr-accent: #8b6f47` etait declare et jamais utilise sur une action :
-   les boutons etaient blancs sur clair, sans hierarchie. Un visiteur ne
-   distingue pas ce sur quoi cliquer d un simple encadre. */
-.btn, .button, a.cta, .btn--primary {
-  background: var(--clr-accent);
-  border: 1px solid var(--clr-accent);
-  color: #fff;
-}
-.btn:hover, .button:hover, a.cta:hover, .btn--primary:hover {
-  background: #755c3a; border-color: #755c3a;
-}
-.btn--ghost, .btn--outline {
-  background: transparent; color: var(--clr-accent); border-color: var(--clr-accent);
+@media (prefers-reduced-motion: reduce) {
+  .js [data-anim],
+  .js [data-anim="masque"] > * { opacity: 1 !important; }
+  .js [data-anim="voile"] { clip-path: none !important; }
+  .hero__cue svg { animation: none; }
+  .cadre img, .galerie img { transition: none; }
+  * { scroll-behavior: auto !important; }
 }
