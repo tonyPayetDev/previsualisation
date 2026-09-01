@@ -51,6 +51,24 @@
   .fini h2{font-size:26px;margin-bottom:10px}
   .fini p{color:var(--gris)}
   .note{color:var(--gris);font-size:12.5px;text-align:center}
+
+.wa{display:flex;gap:8px;margin-top:9px}
+.wa a.wa-envoi{flex:1;display:flex;align-items:center;justify-content:center;gap:8px;
+  background:#0e2a1c;border:1px solid #1f7a4c;color:#7bebb0;border-radius:11px;
+  min-height:50px;padding:0 14px;font-size:15px;font-weight:600;text-decoration:none}
+.wa a.wa-envoi .wa-ico{font-size:17px;line-height:1}
+.wa.gros a.wa-envoi{background:#128C4A;border-color:#128C4A;color:#fff;min-height:58px;font-size:16.5px}
+.wa button.wa-copie{flex:0 0 auto;min-height:50px;padding:0 16px;border-radius:11px;
+  background:#141a26;border:1px solid #1e2637;color:#c2cbd9;font:600 14px/1 inherit;cursor:pointer}
+.wa button.wa-copie.ok{border-color:#1f7a4c;color:#7bebb0}
+.wa-texte{width:100%;margin-top:8px;min-height:96px;font:400 13px/1.5 inherit;
+  background:#0b0f16;border:1px solid #1e2637;border-radius:9px;color:#c2cbd9;padding:10px}
+.rate{background:#141a26;border:1px solid #1e2637;border-radius:12px;padding:15px;
+  display:flex;flex-direction:column;gap:5px}
+.rate .t{font-size:15.5px;font-weight:600}
+.rate .d{font-size:13.3px;color:#8590a3;line-height:1.5}
+.passer{background:none;border:0;color:#8590a3;font:inherit;font-size:14px;
+  text-decoration:underline;text-underline-offset:3px;cursor:pointer;padding:12px;min-height:44px}
 </style></head>
 <body>
 <header>
@@ -64,6 +82,79 @@
 (() => {
   const URL_ETAT='https://n7n.automatisationboost.com/webhook/appels-journal';
   let LEADS=[], etat={}, i=0, duNeuf=false, enVol=false;
+
+  /* Seuls les mobiles réunionnais reçoivent WhatsApp. Un 0262 est un fixe :
+     proposer WhatsApp dessus donne un lien mort et fait perdre confiance. */
+  const mobile = (t) => {
+    const n = String(t || '').replace(/[^0-9+]/g, '')
+      .replace(/^\+262/, '0').replace(/^00262/, '0').replace(/^262(?=6)/, '0');
+    return /^06(92|93)\d{6}$/.test(n) ? '262' + n.slice(1) : null;
+  };
+  const premierMobile = (l) => {
+    const bruts = String(l.direct || l.tel || '').split(';');
+    for (const b of bruts) { const m = mobile(b); if (m) return m; }
+    return null;
+  };
+
+  /* Le message reprend ce que la fiche dit d'eux. Jamais la note interne de
+     Tony (champ « suite ») : elle n'est pas faite pour être lue par eux. */
+  const messageWa = (l) => {
+    const nom = l.nom;
+    const vu = String(l.vitrine || (l.site ? 'site en ligne' : 'aucun site trouvé'));
+    const dejaParle = l.cat === 'rappel';
+    if (dejaParle) {
+      return 'Bonjour, Tony PAYET. On s’est parlé au téléphone au sujet de ' + nom + '. '
+        + 'Je n’arrive pas à vous rejoindre — est-ce plus simple pour vous par ici ?';
+    }
+    if (/ne répond plus|aucun site/i.test(vu)) {
+      return 'Bonjour, Tony PAYET, je suis basé à La Réunion. J’ai cherché ' + nom
+        + ' sur internet et je n’ai pas trouvé de site qui fonctionne. '
+        + 'Je fais des sites et des vidéos courtes pour les établissements d’ici. '
+        + 'Est-ce que c’est un sujet pour vous en ce moment ?';
+    }
+    if (/facebook/i.test(vu)) {
+      return 'Bonjour, Tony PAYET, je suis basé à La Réunion. J’ai vu que ' + nom
+        + ' n’est présent que sur Facebook. Je fais des sites et des vidéos courtes '
+        + 'pour les établissements d’ici. Est-ce que c’est un sujet pour vous ?';
+    }
+    return 'Bonjour, Tony PAYET, je suis basé à La Réunion. J’ai regardé le site de '
+      + nom + ' avant de vous écrire. Je fais des vidéos courtes à partir des photos '
+      + 'des établissements, celles qui tournent sur Instagram. Est-ce que je vous montre un exemple ?';
+  };
+
+  const blocWa = (l, gros) => {
+    const num = premierMobile(l);
+    /* Pas de WhatsApp sur un echauffement : la page dit elle-meme que le but
+       y est d entendre sa voix, pas de vendre. */
+    if (!num || l.cat === 'echauffement') return '';
+    const msg = messageWa(l);
+    const lien = 'https://wa.me/' + num + '?text=' + encodeURIComponent(msg);
+    return '<div class="wa' + (gros ? ' gros' : '') + '">'
+      + '<a class="wa-envoi" href="' + lien + '" target="_blank" rel="noopener">'
+      + (gros ? 'Envoyer sur WhatsApp' : 'WhatsApp') + '</a>'
+      + '<button type="button" class="wa-copie" data-msg="' + msg.replace(/"/g, '&quot;') + '">Copier</button>'
+      + '</div>';
+  };
+
+  /* Le presse-papier est refusé hors contexte sécurisé : on montre le texte
+     au lieu d'échouer sans rien dire. */
+  const brancherCopie = (racine) => {
+    racine.querySelectorAll('.wa-copie').forEach((b) => {
+      b.onclick = async () => {
+        const t = b.dataset.msg;
+        try {
+          await navigator.clipboard.writeText(t);
+          b.textContent = 'Copié'; b.classList.add('ok');
+          setTimeout(() => { b.textContent = 'Copier'; b.classList.remove('ok'); }, 1600);
+        } catch (e) {
+          const z = document.createElement('textarea');
+          z.className = 'wa-texte'; z.value = t; z.readOnly = true;
+          b.parentNode.appendChild(z); z.select(); b.textContent = 'Sélectionne';
+        }
+      };
+    });
+  };
+
 
   /* Le journal part sur le serveur : le stockage du navigateur ne survit pas
      au navigateur intégré des applis, ni à sept jours de Safari. */
@@ -81,6 +172,18 @@
 
   const marquer=(r,quoi)=>{ etat[r.id]={etat:quoi,date:aujourdhui(),h:new Date().toISOString()};
     duNeuf=true; envoyer(); i++; suivant(); };
+
+  const rate=(r)=>{
+    const pi=document.getElementById('pied');
+    pi.innerHTML='<div class="rate"><span class="t">Personne n’a décroché.</span>'
+      +'<span class="d">Son numéro est un mobile : le message est déjà écrit, '
+      +'il ne reste qu’à l’envoyer.</span></div>'
+      +blocWa(r,true)
+      +'<button type="button" class="passer" id="passer">Passer au suivant sans message</button>';
+    brancherCopie(pi);
+    document.getElementById('passer').onclick=()=>marquer(r,'repondu');
+    pi.querySelector('.wa-envoi').addEventListener('click',()=>setTimeout(()=>marquer(r,'repondu'),400));
+  };
 
   const peindre=()=>{
     const ec=document.getElementById('ecran'), pi=document.getElementById('pied');
@@ -112,6 +215,7 @@
     pi.innerHTML=
       '<a class="tel" href="tel:'+(r.direct||r.tel).replace(/[^+0-9]/g,'')+'">'
       +'<small>appeler</small>'+(r.direct||r.tel)+'</a>'
+      +blocWa(r,false)
       +'<div class="rang">'
       +'<button data-q="repondu">Pas décroché</button>'
       +'<button class="parle" data-q="appele">J’ai parlé</button>'
@@ -120,7 +224,11 @@
         ? 'Celui-là ne compte pas. Le but est d’entendre ta voix, pas de vendre.'
         : 'Tu ne notes rien ici : deux boutons, et on passe au suivant.')+'</div>';
 
-    pi.querySelectorAll('button').forEach(b=>b.onclick=()=>marquer(r,b.dataset.q));
+    pi.querySelectorAll('button').forEach(b=>b.onclick=()=>{
+      if(b.dataset.q==='repondu' && premierMobile(r)) return rate(r);
+      marquer(r,b.dataset.q);
+    });
+    brancherCopie(pi);
   };
 
   (async()=>{
