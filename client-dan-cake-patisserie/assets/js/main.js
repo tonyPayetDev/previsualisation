@@ -25,46 +25,92 @@ document.addEventListener('DOMContentLoaded', function () {
   }
   window.addEventListener('scroll', onScroll, { passive: true });
 
-  /* ---- Mobile menu ---- */
+  /* ---- Mobile menu ----
+     Refait le 01/09. L'ancienne version injectait un « × » en <span> qui
+     restait visible sur ordinateur, ne mettait jamais aria-expanded à jour,
+     ne se fermait pas à la touche Échap et ne gérait pas le clavier. */
   const mobileToggle = document.querySelector('.mobile-toggle');
   const nav = document.querySelector('.nav');
 
   if (mobileToggle && nav) {
-    // Add close button
-    const closeBtn = document.createElement('span');
-    closeBtn.className = 'nav-close';
-    closeBtn.innerHTML = '&times;';
-    nav.appendChild(closeBtn);
+    let scrollYAvant = 0;
+
+    function ouvrirMenu() {
+      scrollYAvant = window.scrollY;
+      nav.classList.add('open');
+      document.body.classList.add('nav-ouvert');
+      // On verrouille le défilement sans faire sauter la page en haut.
+      document.body.style.position = 'fixed';
+      document.body.style.top = -scrollYAvant + 'px';
+      document.body.style.width = '100%';
+      mobileToggle.setAttribute('aria-expanded', 'true');
+      mobileToggle.setAttribute('aria-label', 'Fermer le menu');
+      const premier = nav.querySelector('.nav-link');
+      if (premier) premier.focus({ preventScroll: true });
+    }
+
+    function fermerMenu(rendreLeFocus) {
+      if (!nav.classList.contains('open')) return;
+      nav.classList.remove('open');
+      document.body.classList.remove('nav-ouvert');
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.width = '';
+      window.scrollTo(0, scrollYAvant);
+      mobileToggle.setAttribute('aria-expanded', 'false');
+      mobileToggle.setAttribute('aria-label', 'Ouvrir le menu');
+      if (rendreLeFocus) mobileToggle.focus({ preventScroll: true });
+    }
 
     mobileToggle.addEventListener('click', function () {
-      nav.classList.toggle('open');
-      document.body.style.overflow = nav.classList.contains('open') ? 'hidden' : '';
+      if (nav.classList.contains('open')) fermerMenu(true); else ouvrirMenu();
     });
 
-    closeBtn.addEventListener('click', function () {
-      nav.classList.remove('open');
-      document.body.style.overflow = '';
+    // Échap ferme, et la tabulation reste enfermée dans le panneau ouvert.
+    document.addEventListener('keydown', function (e) {
+      if (!nav.classList.contains('open')) return;
+      if (e.key === 'Escape') { fermerMenu(true); return; }
+      if (e.key !== 'Tab') return;
+      const cibles = [mobileToggle].concat(
+        Array.prototype.slice.call(nav.querySelectorAll('a[href], button'))
+      );
+      const premier = cibles[0];
+      const dernier = cibles[cibles.length - 1];
+      if (e.shiftKey && document.activeElement === premier) {
+        e.preventDefault(); dernier.focus();
+      } else if (!e.shiftKey && document.activeElement === dernier) {
+        e.preventDefault(); premier.focus();
+      }
     });
 
-    // Close on nav link click
-    nav.querySelectorAll('.nav-link').forEach(link => {
-      link.addEventListener('click', function () {
-        nav.classList.remove('open');
-        document.body.style.overflow = '';
-      });
+    // Tout lien du panneau referme le menu avant de naviguer.
+    nav.querySelectorAll('a[href]').forEach(link => {
+      link.addEventListener('click', function () { fermerMenu(false); });
+    });
+
+    // Repasser en navigation large pendant que le menu est ouvert ne doit pas
+    // laisser le corps de page verrouillé.
+    window.addEventListener('resize', function () {
+      if (window.innerWidth > 1024) fermerMenu(false);
     });
   }
 
-  /* ---- Smooth scroll for anchor links ---- */
+  /* ---- Smooth scroll for anchor links ----
+     L'écart était figé à 80 px alors que la hauteur de l'en-tête change
+     entre ordinateur et mobile, et entre l'état haut de page et l'état
+     défilé : les titres passaient sous la barre. On mesure. */
+  const mouvementReduit = window.matchMedia('(prefers-reduced-motion: reduce)');
+
   document.querySelectorAll('a[href^="#"]').forEach(link => {
     link.addEventListener('click', function (e) {
-      const target = document.querySelector(this.getAttribute('href'));
-      if (target) {
-        e.preventDefault();
-        const offset = 80;
-        const top = target.getBoundingClientRect().top + window.scrollY - offset;
-        window.scrollTo({ top, behavior: 'smooth' });
-      }
+      const href = this.getAttribute('href');
+      if (href === '#') return;
+      const target = document.querySelector(href);
+      if (!target) return;
+      e.preventDefault();
+      const offset = (header ? header.offsetHeight : 80) + 16;
+      const top = target.getBoundingClientRect().top + window.scrollY - offset;
+      window.scrollTo({ top, behavior: mouvementReduit.matches ? 'auto' : 'smooth' });
     });
   });
 
@@ -111,7 +157,7 @@ document.addEventListener('DOMContentLoaded', function () {
   const scrollTopBtn = document.querySelector('.float-btn-top');
   if (scrollTopBtn) {
     scrollTopBtn.addEventListener('click', function () {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      window.scrollTo({ top: 0, behavior: mouvementReduit.matches ? 'auto' : 'smooth' });
     });
   }
 
@@ -140,6 +186,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
   /* ---- Counter animation ---- */
   function animateCounter(el, target, duration) {
+    if (mouvementReduit.matches) {
+      el.textContent = target + (el.dataset.suffix || '');
+      return;
+    }
     let start = 0;
     const step = target / (duration / 16);
     const timer = setInterval(() => {
@@ -166,10 +216,6 @@ document.addEventListener('DOMContentLoaded', function () {
     }, { threshold: 0.5 });
     counters.forEach(c => counterObserver.observe(c));
   }
-
-  /* ---- Testimonials simple slider (mobile) ---- */
-  const testimonialGrid = document.querySelector('.testimonials-grid');
-  // Only on mobile, handled via CSS grid/media queries
 
   /* ---- Image hover enhancement ---- */
   document.querySelectorAll('.gallery-item').forEach(item => {

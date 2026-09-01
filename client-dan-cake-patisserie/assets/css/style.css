@@ -18,7 +18,7 @@
   --font-title: 'Playfair Display', serif;
   --transition: 0.3s ease;
   --shadow: 0 4px 20px rgba(0,0,0,0.12);
-  --shadow-hover: 0 8px 40px rgba(207,166,112,0.25);
+  --shadow-hover: 0 14px 44px rgba(26,20,14,0.16);
 }
 
 *, *::before, *::after {
@@ -247,15 +247,17 @@ h3 { font-size: clamp(1.2rem, 2.5vw, 1.6rem); }
   position: absolute;
   bottom: -2px;
   left: 0;
-  width: 0;
+  width: 100%;
   height: 1px;
   background: var(--gold);
-  transition: width var(--transition);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform .4s cubic-bezier(.22,1,.36,1);
 }
 
 .nav-link:hover::after,
 .nav-link.active::after {
-  width: 100%;
+  transform: scaleX(1);
 }
 
 .nav-link:hover { color: var(--gold); }
@@ -459,7 +461,7 @@ h3 { font-size: clamp(1.2rem, 2.5vw, 1.6rem); }
   margin-bottom: 12px;
 }
 
-.feature-card h4 {
+.feature-card h3 {
   font-size: 0.95rem;
   color: var(--dark);
   margin-bottom: 6px;
@@ -637,10 +639,12 @@ h3 { font-size: clamp(1.2rem, 2.5vw, 1.6rem); }
   position: absolute;
   bottom: 0;
   left: 0;
-  width: 0;
-  height: 3px;
+  width: 100%;
+  height: 2px;
   background: var(--gold);
-  transition: width 0.4s ease;
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 0.5s cubic-bezier(.22,1,.36,1);
 }
 
 .collection-card:hover {
@@ -649,7 +653,7 @@ h3 { font-size: clamp(1.2rem, 2.5vw, 1.6rem); }
   transform: translateY(-6px);
 }
 
-.collection-card:hover::before { width: 100%; }
+.collection-card:hover::before { transform: scaleX(1); }
 
 .collection-icon {
   font-size: 2.2rem;
@@ -744,8 +748,8 @@ h3 { font-size: clamp(1.2rem, 2.5vw, 1.6rem); }
   font-size: 1.15rem;
   font-style: italic;
   color: var(--gold);
-  border-left: 3px solid var(--gold);
-  padding-left: 20px;
+  border-left: 1px solid var(--gold);
+  padding-left: 24px;
   margin: 28px 0;
   line-height: 1.7;
 }
@@ -802,7 +806,7 @@ h3 { font-size: clamp(1.2rem, 2.5vw, 1.6rem); }
   font-size: 1.2rem;
 }
 
-.contact-card h4 {
+.contact-card h3 {
   font-size: 0.75rem;
   letter-spacing: 0.15em;
   text-transform: uppercase;
@@ -923,10 +927,12 @@ h3 { font-size: clamp(1.2rem, 2.5vw, 1.6rem); }
   position: absolute;
   top: 0;
   left: 0;
-  width: 0;
-  height: 3px;
+  width: 100%;
+  height: 2px;
   background: var(--gold);
-  transition: width 0.4s ease;
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 0.5s cubic-bezier(.22,1,.36,1);
 }
 
 .testimonial-card:hover {
@@ -934,7 +940,7 @@ h3 { font-size: clamp(1.2rem, 2.5vw, 1.6rem); }
   box-shadow: var(--shadow-hover);
 }
 
-.testimonial-card:hover::before { width: 100%; }
+.testimonial-card:hover::before { transform: scaleX(1); }
 
 .testimonial-quote {
   font-size: 2.5rem;
@@ -1094,7 +1100,7 @@ h3 { font-size: clamp(1.2rem, 2.5vw, 1.6rem); }
   transform: translateY(-3px);
 }
 
-.footer-col h4 {
+.footer-col h3 {
   color: var(--white);
   font-size: 0.82rem;
   letter-spacing: 0.18em;
@@ -1341,19 +1347,6 @@ h3 { font-size: clamp(1.2rem, 2.5vw, 1.6rem); }
   .float-cta { bottom: 20px; right: 20px; }
 }
 
-/* ── Correctif 23/08 : le logo sur mobile ────────────────────────────────
-   Aucune regle ne le reduisait sous 768 px : il gardait ses 50 px de haut et
-   serrait la barre de navigation. On le descend a 38, on lui garde de l air
-   a droite, et on empeche l ecrasement si le nom du site est long. */
-@media (max-width: 768px) {
-  .logo img { height: 38px; }
-  .logo { flex: 0 0 auto; margin-right: 10px; }
-  .header .container, .nav-wrap { gap: 10px; }
-}
-@media (max-width: 400px) {
-  .logo img { height: 34px; }
-}
-
 /* ── Traitement des images, aligne sur Villa Fleurie (24/08) ─────────────
    Releve sur le site de reference : coins droits, ombre tres diffuse
    (0 8px 40px a 12 %), `object-fit: cover`, aucun filtre. C est l ombre
@@ -1378,66 +1371,385 @@ img[src*="icon"], img[src*="favicon"] {
   object-fit: contain;
 }
 
+/* ═══════════════════════════════════════════════════════════════════════
+   EN-TÊTE — refonte du 01/09
+   ═══════════════════════════════════════════════════════════════════════
+   Trois correctifs successifs (23/08, 24/08, 27/08) s'étaient empilés sur
+   la barre de navigation, chacun corrigeant le précédent. Le dernier posait
+   `.header:not(.scrolled){position:relative;z-index:0}` — trois pannes en
+   une seule ligne :
+     1. l'en-tête n'était plus fixe en haut de page et poussait le visuel
+        d'accueil vers le bas au lieu de flotter dessus ;
+     2. `z-index:0` créait un contexte d'empilement qui enfermait le menu
+        mobile : le panneau s'affichait DERRIÈRE la photo, invisible ;
+     3. le voile sombre du logo ne pouvait plus fonctionner.
+   Les trois blocs sont supprimés et remplacés par le système ci-dessous.
+   ─────────────────────────────────────────────────────────────────────── */
 
-/* ── Correctif 24/08 · l'en-tête sur mobile ───────────────────────────────
-   Mesuré à 390 px avant correction : le logo faisait 113×34 et le bouton
-   « Commander » 177×55. Le bouton était donc une fois et demie plus large ET
-   plus haut que la marque — sur une pâtisserie, c'est le nom qui doit tenir
-   le haut de page. À 360 px, le burger touchait le bord droit à 0 px.
+/* Le voile qui fait tenir le logo doré sur une photo claire. Il vit sur un
+   pseudo-élément DANS le contexte d'empilement de l'en-tête (z-index 1000),
+   donc il ne peut plus piéger le panneau de menu. */
+.header::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(18,13,9,.62), rgba(18,13,9,0));
+  pointer-events: none;
+  opacity: 1;
+  transition: opacity .4s ease;
+  z-index: -1;
+}
+.header.scrolled::before { opacity: 0; }
 
-   Trois ajustements, aucun inventé : on rend au logo la taille qu'il avait
-   perdue au correctif du 23/08, on ramène le bouton à une taille de bouton,
-   et on garantit une marge au burger. */
-@media (max-width: 768px) {
+/* Les intitulés de navigation ne doivent jamais se couper en deux lignes :
+   mesuré à 1440 px avant correction, « NOS CRÉATIONS » passait sur deux
+   lignes et venait buter contre le logo. */
+.nav-link,
+.header-phone { white-space: nowrap; }
+
+.logo { display: inline-flex; align-items: center; flex: 0 0 auto; }
+.logo img { height: 46px; }
+
+/* Palier intermédiaire : entre 769 et 1080 px les six intitulés plus le
+   téléphone plus le bouton ne tiennent pas sur une ligne. On resserre. */
+@media (max-width: 1180px) {
+  .nav { gap: 24px; }
+  .nav-link { font-size: 0.76rem; letter-spacing: 0.08em; }
+  .header-cta { gap: 12px; }
+}
+
+/* En dessous de 1024 px, la navigation passe au menu plein écran plutôt que
+   de continuer à se comprimer. */
+@media (max-width: 1024px) {
+  .nav { display: none; }
+  .header-cta .header-phone { display: none; }
+  .mobile-toggle { display: flex; }
+}
+
+/* ── Barre mobile : le nom d'abord ───────────────────────────────────────
+   Mesuré à 390 px : logo (133) + bouton « Commander » (118) + burger (36)
+   + écarts = 354 px de contenu dans 354 px utiles. Zéro respiration, et la
+   signature dorée — un tracé fin et manuscrit — devenait illisible.
+   Le bouton quitte la barre pour rejoindre le panneau de menu, où il est
+   plus grand et mieux vu. L'accueil garde son bouton « Passer une commande »
+   dans le premier écran, et le bouton d'appel flottant reste disponible. */
+@media (max-width: 1024px) {
+  .header { padding: 14px 0; }
+  .header.scrolled { padding: 10px 0; }
+  .header .container { padding-left: 20px; padding-right: 20px; }
+  .header-inner { gap: 16px; }
   .logo img { height: 44px; }
-
-  /* Le bouton redevient secondaire : même hauteur de frappe confortable
-     (44 px, le minimum tactile), mais il ne pèse plus plus que le nom. */
-  .header-cta .btn,
-  .header-cta .btn-gold {
-    padding: 11px 16px;
-    font-size: 12px;
-    letter-spacing: .06em;
-    min-height: 44px;
-    display: inline-flex;
-    align-items: center;
-    white-space: nowrap;
-  }
-
-  /* Le burger ne doit jamais coller au bord : `flex: 0 0 auto` l'empêche
-     d'être comprimé, la marge lui garantit sa zone de frappe entière. */
-  .mobile-toggle { flex: 0 0 auto; margin-left: 4px; }
-  .header .container { padding-left: 18px; padding-right: 18px; }
-  .header-inner { gap: 10px; }
-
-  /* Le logo est un tracé fin doré posé sur une photo de gâteau très claire :
-     par endroits il disparaît. Un voile sombre en haut le fait tenir sans
-     ajouter de bandeau opaque, qui écraserait la photo. */
-  .header:not(.scrolled)::before {
-    content: '';
-    position: absolute;
-    inset: 0 0 auto 0;
-    height: 100%;
-    background: linear-gradient(180deg, rgba(20,14,10,.55), rgba(20,14,10,0));
-    pointer-events: none;
-    z-index: -1;
-  }
-  .header:not(.scrolled) { position: relative; z-index: 0; }
+  .header-cta { display: none; }
 }
-@media (max-width: 400px) {
-  .logo img { height: 40px; }
-  .header-cta .btn, .header-cta .btn-gold { padding: 11px 13px; font-size: 11.5px; }
+@media (max-width: 360px) {
+  .logo img { height: 38px; }
 }
 
-/* ── Correctif 27/08 : débordement horizontal sous 341 px ────────────────
-   Mesuré : logo (133px) + bouton (118px) + burger (36px) + gaps (20px) +
-   marges du container (36px) = 343 px de contenu pour 320 px de viewport
-   réel (iPhone SE, plusieurs Android d'entrée de gamme) → 20 px de
-   débordement horizontal, le burger sortait du cadre et la page défilait
-   latéralement. On resserre logo/gaps/bouton juste sous ce seuil pour que
-   le total retienne sous 320 px, sans toucher aux paliers 360 px+ déjà bons. */
-@media (max-width: 340px) {
-  .logo img { height: 34px; }
-  .header .container, .header-inner { gap: 6px; }
-  .header-cta .btn, .header-cta .btn-gold { padding: 9px 11px; font-size: 10.5px; }
+/* ── Le bouton de menu ───────────────────────────────────────────────────
+   Refait : vraie cible tactile de 44 px, deux traits qui se croisent en X à
+   l'ouverture. Le « × » séparé injecté par le script est supprimé — il
+   restait visible sur ordinateur, collé au numéro de téléphone. */
+.mobile-toggle {
+  position: relative;
+  width: 44px;
+  height: 44px;
+  margin-right: -10px;
+  padding: 0;
+  gap: 0;
+  background: none;
+  border: 0;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.mobile-toggle span {
+  position: absolute;
+  left: 11px;
+  width: 22px;
+  height: 1.5px;
+  background: var(--white);
+  transition: transform .38s cubic-bezier(.22,1,.36,1),
+              opacity .18s ease,
+              background-color .4s ease;
+}
+.mobile-toggle span:nth-child(1) { transform: translateY(-5px); }
+.mobile-toggle span:nth-child(2) { opacity: 1; }
+.mobile-toggle span:nth-child(3) { transform: translateY(5px); }
+
+.header.scrolled .mobile-toggle span { background: var(--dark); }
+
+.mobile-toggle[aria-expanded="true"] span { background: var(--white); }
+.mobile-toggle[aria-expanded="true"] span:nth-child(1) { transform: rotate(45deg); }
+.mobile-toggle[aria-expanded="true"] span:nth-child(2) { opacity: 0; }
+.mobile-toggle[aria-expanded="true"] span:nth-child(3) { transform: rotate(-45deg); }
+
+/* Le bouton reste cliquable au-dessus du panneau ouvert. */
+body.nav-ouvert .mobile-toggle { position: relative; z-index: 1002; }
+body.nav-ouvert .header { background: transparent !important; box-shadow: none !important; }
+body.nav-ouvert .header::before { opacity: 0; }
+body.nav-ouvert .logo-gold { display: block; }
+body.nav-ouvert .logo-dark { display: none; }
+body.nav-ouvert .logo { position: relative; z-index: 1002; }
+
+/* Déclaré après le bloc de forme ci-dessus : à spécificité égale, c'est la
+   dernière règle qui gagne. */
+.mobile-toggle { display: none; }
+@media (max-width: 1024px) { .mobile-toggle { display: flex; } }
+
+/* ── Le panneau de menu ──────────────────────────────────────────────────
+   Encre profonde, filet doré, intitulés en Playfair : le même registre que
+   le reste de la page, pas une liste système posée sur un fond noir. */
+@media (max-width: 1024px) {
+  .nav.open {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    position: fixed;
+    inset: 0;
+    z-index: 1001;
+    gap: 0;
+    padding: 108px 32px 40px;
+    background: #14100c;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  .nav.open .nav-link {
+    font-family: var(--font-title);
+    font-weight: 400;
+    font-size: clamp(1.55rem, 7vw, 2.1rem);
+    letter-spacing: 0.005em;
+    text-transform: none;
+    color: rgba(255,255,255,.92);
+    width: 100%;
+    padding: 13px 0;
+    border-bottom: 1px solid rgba(207,166,112,.16);
+    opacity: 0;
+    transform: translateY(14px);
+    transition: color .3s ease;
+  }
+  .nav.open .nav-link:last-of-type { border-bottom: 0; }
+  .nav.open .nav-link::after { display: none; }
+  .nav.open .nav-link:hover,
+  .nav.open .nav-link.active { color: var(--gold-light); }
+
+  /* Révélation lente, décalée — la lenteur fait partie du registre. */
+  .nav.open .nav-link { animation: nav-entree .55s cubic-bezier(.22,1,.36,1) forwards; }
+  .nav.open .nav-link:nth-of-type(1) { animation-delay: .06s; }
+  .nav.open .nav-link:nth-of-type(2) { animation-delay: .12s; }
+  .nav.open .nav-link:nth-of-type(3) { animation-delay: .18s; }
+  .nav.open .nav-link:nth-of-type(4) { animation-delay: .24s; }
+  .nav.open .nav-link:nth-of-type(5) { animation-delay: .30s; }
+
+  .nav-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+    margin-top: 36px;
+    opacity: 0;
+    animation: nav-entree .55s cubic-bezier(.22,1,.36,1) .38s forwards;
+  }
+  .nav-actions .btn { justify-content: center; width: 100%; min-height: 52px; }
+  .nav-actions .btn-outline {
+    border-color: rgba(207,166,112,.5);
+    color: var(--gold-light);
+  }
+  .nav-actions .btn-outline:hover {
+    background: var(--gold);
+    border-color: var(--gold);
+    color: var(--white);
+  }
+
+  .nav-lieu {
+    margin-top: 26px;
+    font-size: 0.74rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,.42);
+    line-height: 1.9;
+    opacity: 0;
+    animation: nav-entree .55s cubic-bezier(.22,1,.36,1) .46s forwards;
+  }
+}
+
+@keyframes nav-entree {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Hors menu ouvert, ces deux blocs n'existent pas. */
+.nav-actions,
+.nav-lieu { display: none; }
+@media (max-width: 1024px) {
+  .nav.open .nav-actions { display: flex; }
+  .nav.open .nav-lieu { display: block; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   FINITION — 01/09
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* ── Les pictogrammes ────────────────────────────────────────────────────
+   Les émojis sont remplacés par un jeu dessiné, un seul trait de 1,5,
+   une seule graisse. Trois raisons : ils s'affichaient en carrés vides sur
+   une partie des navigateurs (constaté ici), chaque plateforme les redessine
+   à sa façon — donc aucune maîtrise de l'identité — et un émoji multicolore
+   n'a rien à faire dans un registre « élégant sobre ». */
+.ico {
+  width: 1em;
+  height: 1em;
+  display: inline-block;
+  vertical-align: -0.125em;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex-shrink: 0;
+}
+.btn .ico { width: 16px; height: 16px; stroke-width: 1.6; }
+
+.feature-icon {
+  font-size: 1.55rem;
+  color: var(--gold);
+  line-height: 1;
+  margin-bottom: 14px;
+  display: block;
+}
+.collection-icon { font-size: 1.9rem; color: var(--gold); line-height: 1; }
+.contact-card-icon { font-size: 1.15rem; color: var(--white); }
+.map-placeholder .map-icon { font-size: 2.4rem; color: var(--gold); line-height: 1; }
+.footer-contact-item .icon { font-size: 0.95rem; line-height: 1.6; }
+.float-btn { font-size: 1.1rem; }
+.social-link .ico { width: 17px; height: 17px; }
+.adresse-note .ico { color: var(--gold); }
+
+/* Le filet doré sous les cartes passe de 3 px à un filet. Une ligne épaisse
+   sur quatre cartes empile quatre barres de couleur ; un filet pose la même
+   accentuation sans crier. */
+.feature-card { border-bottom-width: 1px; }
+
+/* ── Les surfaces du navigateur ──────────────────────────────────────────
+   Sélection, anneau de focus, ascenseur, soulignement : livrés bruts par le
+   navigateur, ils n'appartenaient à aucune charte. */
+::selection { background: rgba(207,166,112,.28); color: var(--dark); }
+
+:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 3px;
+  border-radius: 1px;
+}
+.hero :focus-visible,
+.collections :focus-visible,
+.footer :focus-visible,
+.nav.open :focus-visible { outline-color: var(--gold-light); }
+
+a { text-underline-offset: 0.18em; text-decoration-thickness: 1px; }
+
+html { scrollbar-color: var(--gold) var(--gray-light); scrollbar-width: thin; }
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: var(--gray-light); }
+::-webkit-scrollbar-thumb { background: #d8c3a4; border: 3px solid var(--gray-light); }
+::-webkit-scrollbar-thumb:hover { background: var(--gold); }
+
+/* Lien d'évitement : premier arrêt au clavier, invisible à la souris. */
+.saut-contenu {
+  position: absolute;
+  left: 16px;
+  top: -100px;
+  z-index: 1100;
+  background: var(--dark);
+  color: var(--white);
+  padding: 12px 20px;
+  font-size: 0.8rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  transition: top .25s ease;
+}
+.saut-contenu:focus { top: 16px; }
+
+/* Le pied de page : la ligne d'attribution était moins lisible que le reste
+   sur fond sombre. */
+.footer-bottom a { color: var(--gold); }
+.footer-bottom a:hover { color: var(--gold-light); }
+
+/* ── Mouvement réduit ────────────────────────────────────────────────────
+   Le site anime les apparitions, les compteurs et le défilement. Un visiteur
+   qui a demandé moins de mouvement à son système recevait tout quand même. */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .fade-up { opacity: 1; transform: none; }
+  .nav.open .nav-link,
+  .nav-actions,
+  .nav-lieu { opacity: 1; transform: none; }
+}
+
+/* ── Contraste de l'or ───────────────────────────────────────────────────
+   Mesuré : #cfa670 porte un rapport de contraste de 2,25:1 avec le blanc et
+   avec le fond crème. Le bouton principal du site — « Commander »,
+   « Réservez votre pâtisserie » — était donc sous le seuil lisible, et les
+   sur-titres dorés sur fond clair aussi. Le seuil demandé est 4,5:1.
+
+   L'or reste identique partout où il ne porte pas de texte : filets, bordures,
+   pictogrammes, survols. Seul le texte change de teinte, d'une valeur assez
+   proche pour que la charte ne bouge pas à l'œil. */
+:root {
+  --gold-ink: #8a6633;  /* or foncé — pour du texte sur fond clair : 5,2:1 */
+  --on-gold:  #14100c;  /* encre — pour du texte sur aplat doré : 8,4:1 */
+}
+
+.btn-gold,
+.btn-gold:hover,
+.btn-gold:focus-visible { color: var(--on-gold); }
+
+.float-btn-phone { color: var(--on-gold); }
+.contact-card-icon { color: var(--on-gold); }
+.social-link:hover { color: var(--on-gold); }
+
+/* Texte doré posé sur fond clair (crème ou blanc). */
+.section-label,
+.testimonial-role,
+.histoire-content span[style*="var(--gold)"],
+.text-gold { color: var(--gold-ink); }
+
+/* Sur fond sombre, l'or clair reste le bon choix : le contraste y est déjà
+   largement au-dessus du seuil. */
+.collections .section-label,
+.footer .section-label,
+.hero .section-label { color: var(--gold-light); }
+
+/* Les intitulés des cartes de contact sont eux aussi du texte doré sur blanc. */
+.contact-card h3 { color: var(--gold-ink); }
+
+/* Reste du relevé de contraste, mesuré dans le navigateur sur le rendu réel.
+   Deux familles : du blanc posé sur l'aplat doré, et de l'or clair posé sur
+   le fond crème. Dans les deux cas la couleur du support ne bouge pas. */
+.histoire-badge strong,
+.histoire-badge span,
+.testimonial-avatar-placeholder { color: var(--on-gold); }
+
+.histoire-signature,
+.stars,
+.testimonial-stars,
+.testimonial-quote { color: var(--gold-ink); }
+
+/* La bannière d'appel à l'action : un aplat doré portait du texte blanc à
+   2,25:1. L'encre sur l'or se lit, et c'est aussi le registre de la charte
+   de référence — l'or y sert de fond, jamais de couleur de texte clair. */
+.cta-banner h2 { color: var(--on-gold); }
+.cta-banner p { color: rgba(32, 23, 10, .84); }
+.histoire-role {
+  font-size: 0.78rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--gold-ink);
 }
