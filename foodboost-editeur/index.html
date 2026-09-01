@@ -131,6 +131,18 @@ dialog h3{font-size:1.05rem;margin-bottom:8px}
 dialog p{font-size:.87rem;color:var(--ui-doux);line-height:1.55;margin-bottom:14px}
 dialog pre{background:#0C0F11;border:1px solid var(--ui-trait);border-radius:7px;
   padding:12px;font-size:.72rem;overflow:auto;max-height:230px;color:#C8D0D6}
+
+.destination{background:#101a17;border:1px solid #1f4a41;border-radius:12px;
+  padding:15px 17px;margin-top:14px;display:flex;flex-direction:column;gap:9px}
+.destination .t{font:700 11px/1 ui-monospace,monospace;letter-spacing:.16em;
+  text-transform:uppercase;color:#4fd1b5}
+.destination .cible{font-size:16px;font-weight:650}
+.destination .cible span{color:#9aa4b8;font-weight:400;font-size:14px}
+.destination .tags{display:flex;flex-wrap:wrap;gap:6px}
+.destination .tags b{font:600 12.5px/1 ui-monospace,monospace;color:#9fe8d6;
+  background:#0c1614;border:1px solid #1f4a41;border-radius:99px;padding:6px 10px}
+.destination .avert{font-size:13px;line-height:1.5;color:#e8c98a;
+  background:#1d1706;border:1px solid #443814;border-radius:9px;padding:10px 12px}
 </style>
 </head>
 <body>
@@ -202,8 +214,16 @@ dialog pre{background:#0C0F11;border:1px solid var(--ui-trait);border-radius:7px
         <label>Ta propre photo<input type="file" id="fichier" accept="image/*"></label>
       </div>
       <div class="banque" id="banque"></div>
+    <div class="destination" id="destination">
+    <span class="t">Destination</span>
+    <span class="cible">Instagram <b>@foodboost</b> <span>· reel 9:16, 9 s</span></span>
+    <div class="tags" id="tags"></div>
+    <p class="avert" id="avert-pub">Le bouton « Envoyer à planifier » <b>ne publie pas</b> :
+    il montre exactement ce qui partirait. La publication attend le feu vert de Tony.</p>
+    </div>
     </div>
   </section>
+  
 </main>
 
 <div class="pied">
@@ -408,9 +428,55 @@ document.getElementById('reinit').addEventListener('click', () => {
 /* Envoyer : on montre EXACTEMENT ce qui partirait. Rien n'est envoyé
    automatiquement — la chaîne rendu + planification n'est pas encore branchée,
    et annoncer « c'est planifié » sans que ce soit vrai serait pire que rien. */
+/* Cinq hashtags maximum : au-delà, Instagram via Blotato rejette le post.
+   On prend donc les cinq qui portent le plus — le métier, la ville, l'île. */
+const sansAccent = (t) => String(t || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+  .toLowerCase().replace(/[^a-z0-9]+/g, '');
+const HASH_FAMILLE = {
+  creole: ['cuisinecreole', 'rougail'],
+  pizza: ['pizza', 'pizzeria'],
+  japonais: ['sushi', 'restaurantjaponais'],
+  burger: ['burger', 'streetfood'],
+  snack: ['snack', 'streetfood'],
+};
+const calculerTags = () => {
+  const ville = sansAccent(document.getElementById('ville').value);
+  const fam = document.getElementById('famille').value;
+  const t = ['reunion974'];
+  (HASH_FAMILLE[fam] || ['restaurant']).forEach((x) => t.push(x));
+  if (ville) t.push(ville + '974');
+  t.push('foodreunion');
+  return [...new Set(t)].slice(0, 5);
+};
+const peindreTags = () => {
+  const z = document.getElementById('tags');
+  if (z) z.innerHTML = calculerTags().map((t) => '<b>#' + t + '</b>').join('');
+};
+['ville', 'famille'].forEach((id) => {
+  const e = document.getElementById(id);
+  if (e) e.addEventListener('change', peindreTags);
+  if (e) e.addEventListener('input', peindreTags);
+});
+/* Un feed produit pour un lead arrive ici pré-rempli : le générateur n'a qu'à
+   composer l'adresse. Sans ça, il faut retaper le nom et la ville à la main. */
+(() => {
+  const q = new URLSearchParams(location.search);
+  const poser = (id, cle) => {
+    const v = q.get(cle);
+    const e = document.getElementById(id);
+    if (v && e) { e.value = v; e.dispatchEvent(new Event('change', { bubbles: true })); }
+  };
+  poser('nom', 'nom'); poser('type', 'type'); poser('ville', 'ville');
+  poser('famille', 'famille'); poser('ambiance', 'ambiance');
+})();
+
+peindreTags();
+
 const dlg = document.getElementById('dlg');
 document.getElementById('planifier').addEventListener('click', () => {
   const sortie = JSON.parse(JSON.stringify(E));
+  sortie.destination = { reseau: 'instagram', compte: '@foodboost',
+    format: 'reel 9:16', hashtags: calculerTags(), publie: false };
   const televersees = sortie.photos.filter((p) => p.startsWith('data:')).length;
   sortie.photos = sortie.photos.map((p) => p.startsWith('data:') ? '(photo téléversée)' : p);
   document.getElementById('dlg-p').textContent =
