@@ -1035,7 +1035,32 @@ thead th:first-child{position:sticky;left:0;background:#0a0a0f;z-index:3}
   try { etat = JSON.parse(localStorage.getItem(CLE) || '{}'); } catch (_) { etat = {}; }
   var sauver = function () {
     try { localStorage.setItem(CLE, JSON.stringify(etat)); } catch (_) {}
+    pousser();
   };
+
+  // Pousser l'état vers le serveur, sans jamais bloquer l'interface : une
+  // coupure réseau ne doit pas empêcher de cocher. keepalive permet à l'envoi
+  // d'aboutir même si la page est fermée dans la foulée.
+  var enVol = false;
+  var pousser = function () {
+    if (enVol) return;
+    enVol = true;
+    setTimeout(function () {
+      enVol = false;
+      try {
+        fetch('https://n7n.automatisationboost.com/webhook/sites-etat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(etat),
+          keepalive: true
+        }).catch(function () {});
+      } catch (_) {}
+    }, 400);
+  };
+
+  // Au chargement, on envoie ce que le navigateur détient déjà : c'est ce qui
+  // rattrape tout l'historique coché avant que cette synchronisation existe.
+  if (Object.keys(etat).length) pousser();
 
   // Identifiant stable : le dossier du client, pas sa position dans la table.
   function idDe(tr) {
