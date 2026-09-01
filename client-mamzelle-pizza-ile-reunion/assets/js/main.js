@@ -12,18 +12,24 @@ window.addEventListener('scroll', () => {
 });
 
 // Mobile menu
+function setMenu(open) {
+  hamburger.classList.toggle('open', open);
+  navLinks.classList.toggle('open', open);
+  hamburger.setAttribute('aria-expanded', String(open));
+  document.body.style.overflow = open ? 'hidden' : '';
+}
+
 hamburger.addEventListener('click', () => {
-  hamburger.classList.toggle('open');
-  navLinks.classList.toggle('open');
-  document.body.style.overflow = navLinks.classList.contains('open') ? 'hidden' : '';
+  setMenu(!navLinks.classList.contains('open'));
 });
 
 navLinks.querySelectorAll('a').forEach(link => {
-  link.addEventListener('click', () => {
-    hamburger.classList.remove('open');
-    navLinks.classList.remove('open');
-    document.body.style.overflow = '';
-  });
+  link.addEventListener('click', () => setMenu(false));
+});
+
+// Échap ferme le panneau : sans ça, au clavier, on y reste enfermé.
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && navLinks.classList.contains('open')) setMenu(false);
 });
 
 // Hero loaded animation
@@ -78,13 +84,15 @@ if (form) {
     e.preventDefault();
     const btn = form.querySelector('.form-submit');
     const original = btn.innerHTML;
-    btn.innerHTML = 'Message envoyé ✓';
-    btn.style.background = '#2d7a2d';
-    btn.style.borderColor = '#2d7a2d';
+    btn.innerHTML = 'Message envoyé';
+    btn.style.background = '#7a6f4a';
+    btn.style.borderColor = '#7a6f4a';
+    btn.style.color = '#fff';
     setTimeout(() => {
       btn.innerHTML = original;
       btn.style.background = '';
       btn.style.borderColor = '';
+      btn.style.color = '';
       form.reset();
     }, 3000);
   });
@@ -148,22 +156,7 @@ document.querySelectorAll('img[loading="lazy"]').forEach(img => {
   }
 });
 
-/* ── 27/08 · liste des pizzerias remontée dans le header ──────────────────
-   Sur mobile, le menu est un panneau plein écran sans hover : la liste des
-   9 pizzerias ne peut s'ouvrir qu'au tap sur le petit chevron, pas sur tout
-   le lien "Nos Pizzerias" (qui doit garder son comportement normal : mène
-   à la section). Sur desktop, le survol suffit (CSS seul, pas de JS ici). */
-(() => {
-  const dropdownItem = document.querySelector('.nav-item-dropdown');
-  const toggle = document.getElementById('pizzeriasDropdownToggle');
-  if (!dropdownItem || !toggle) return;
-  const caret = toggle.querySelector('.dropdown-caret');
-
-  caret.addEventListener('click', (e) => {
-    if (window.innerWidth > 768) return; // desktop : le survol gère déjà tout
-    e.preventDefault();
-    e.stopPropagation();
-    const open = dropdownItem.classList.toggle('dropdown-open');
-    toggle.setAttribute('aria-expanded', String(open));
-  });
-})();
+/* ── 01/09 · le sous-menu déroulant a été retiré ──────────────────────────
+   Les pizzerias ne sont plus cachées derrière un survol : elles occupent un
+   rail permanent dans l'en-tête (.navbar-lieux), visible sur mobile comme
+   sur desktop. Le JS qui ouvrait le sous-menu au tap n'a plus d'objet. */

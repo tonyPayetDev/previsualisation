@@ -1,280 +1,396 @@
-/* ===== RESET & BASE ===== */
+/* ============================================================
+   Mam'Zelle Pizza — feuille de style
+   Ligne graphique : « villa-fleurie » (élégant sobre)
+   Palette et polices relevées sur /styles/#villa-fleurie :
+     or sourd #b3a780 · encre #1a1a1a · papier #f5f5f3
+     Cormorant Garamond (titres) + Montserrat (texte)
+   Principe du style : la photo porte tout, la mise en page s'efface.
+   Coins droits, beaucoup de blanc, transitions lentes.
+   ============================================================ */
+
+/* ===== JETONS ===== */
+:root {
+  --or:        #b3a780;  /* or sourd — filets, accents sur fond sombre */
+  --or-texte:  #7a6f4a;  /* même teinte assombrie : 5:1 sur blanc, lisible */
+  --or-clair:  #d8cfb4;
+  --encre:     #1a1a1a;
+  --mid:       #555550;
+  --papier:    #f5f5f3;
+  --bord:      #e8e4dc;
+  --blanc:     #ffffff;
+  --nuit:      #14120f;  /* noir chaud des sections sombres */
+
+  --serif: 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
+  --sans:  'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+  --lent:  .55s cubic-bezier(.22,.61,.36,1);
+  --tres-lent: .9s cubic-bezier(.22,.61,.36,1);
+
+  --max: 1180px;
+  --gouttiere: 2rem;
+
+  --barre-h: 74px;   /* hauteur de l'étage logo/menu */
+  --rail-h:  42px;   /* hauteur du rail des pizzerias */
+}
+
+/* ===== RESET ===== */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-:root {
-  --black: #000000;
-  --white: #ffffff;
-  --light: #F7F7F7;
-  --gray: #e8e8e8;
-  --gray-mid: #888888;
-  --accent: #1a1a1a;
-  --font-main: 'Montserrat', sans-serif;
-  --font-serif: 'Playfair Display', serif;
-  --transition: 0.3s ease;
-  --radius: 4px;
-  --max-width: 1200px;
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: calc(var(--barre-h) + var(--rail-h) + 12px);
+  -webkit-text-size-adjust: 100%;
 }
-
-html { scroll-behavior: smooth; }
 
 body {
-  font-family: var(--font-main);
-  background-color: var(--light);
-  color: var(--black);
-  line-height: 1.6;
-  font-size: 16px;
+  font-family: var(--sans);
+  font-weight: 400;
+  font-size: 15px;
+  line-height: 1.75;
+  color: var(--mid);
+  background: var(--blanc);
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
 }
 
-img {
-  max-width: 100%;
-  height: auto;
-  display: block;
+img, svg { display: block; max-width: 100%; }
+img { border-radius: 0; }
+a { color: inherit; text-decoration: none; }
+ul, ol { list-style: none; }
+button { font: inherit; color: inherit; background: none; border: none; cursor: pointer; }
+
+/* ===== SURFACES DU NAVIGATEUR =====
+   Sélection, curseur, focus et ascenseur sortent par défaut d'aucune charte :
+   on les rattache à la palette, sinon la page se trahit dès qu'on la manipule. */
+::selection { background: var(--or); color: var(--nuit); }
+::-moz-selection { background: var(--or); color: var(--nuit); }
+
+:focus-visible {
+  outline: 2px solid var(--or-texte);
+  outline-offset: 3px;
+}
+.hero :focus-visible,
+.champions :focus-visible,
+footer :focus-visible,
+.navbar:not(.scrolled) .navbar-main :focus-visible,
+.navbar:not(.scrolled) .navbar-lieux :focus-visible {
+  outline-color: var(--or-clair);
 }
 
-a { text-decoration: none; color: inherit; }
+* { scrollbar-width: thin; scrollbar-color: var(--or) var(--papier); }
+::-webkit-scrollbar { width: 10px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--papier); }
+::-webkit-scrollbar-thumb { background: #cfc7b2; }
+::-webkit-scrollbar-thumb:hover { background: var(--or); }
 
-/* ===== TYPOGRAPHY ===== */
-h1, h2, h3 {
-  font-family: var(--font-serif);
-  line-height: 1.2;
-  letter-spacing: -0.02em;
+/* ===== TYPOGRAPHIE ===== */
+h1, h2, h3, h4 {
+  font-family: var(--serif);
+  font-weight: 400;
+  color: var(--encre);
+  line-height: 1.12;
+  letter-spacing: .005em;
+  text-wrap: balance;
 }
 
-h1 { font-size: clamp(2rem, 5vw, 3.5rem); }
-h2 { font-size: clamp(1.5rem, 3.5vw, 2.5rem); margin-bottom: 1rem; }
-h3 { font-size: clamp(1.1rem, 2vw, 1.4rem); margin-bottom: 0.5rem; }
+h1 { font-size: clamp(2.6rem, 6vw, 4.6rem); font-weight: 300; }
+h2 { font-size: clamp(2rem, 3.6vw, 2.9rem); }
+h3 { font-size: 1.35rem; }
+h4 { font-size: 1.15rem; }
 
-p { color: #333; line-height: 1.8; }
+h1 em, h2 em, h3 em { font-style: italic; font-weight: 300; }
 
-.section-tag {
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.15em;
+p { max-width: 68ch; }
+
+/* Micro-libellé or : la voix du style. Réservé aux informations réelles
+   (lieu, statut, chiffre), jamais posé en simple étiquette au-dessus d'un
+   titre — un titre porte son propre poids. */
+.micro {
+  display: inline-block;
+  font-family: var(--sans);
+  font-size: .625rem;
+  font-weight: 500;
+  letter-spacing: .3em;
   text-transform: uppercase;
-  color: var(--gray-mid);
-  display: block;
-  margin-bottom: 0.75rem;
+  color: var(--or-texte);
 }
+
+.filet {
+  width: 46px;
+  height: 1px;
+  background: var(--or);
+  border: 0;
+  margin: 1.6rem 0;
+}
+.filet-centre { margin-left: auto; margin-right: auto; }
 
 /* ===== LAYOUT ===== */
 .container {
-  max-width: var(--max-width);
+  width: 100%;
+  max-width: var(--max);
   margin: 0 auto;
-  padding: 0 1.5rem;
+  padding: 0 var(--gouttiere);
 }
 
-section { padding: 6rem 0; }
+section { padding: clamp(5rem, 10vw, 8.5rem) 0; }
 
-/* ===== BUTTONS ===== */
+.section-header {
+  max-width: 620px;
+  margin: 0 auto clamp(3rem, 6vw, 4.5rem);
+  text-align: center;
+}
+.section-header p { margin: 1.4rem auto 0; }
+
+/* ===== BOUTONS =====
+   Filet or, lettres capitales espacées, aucun arrondi. */
 .btn {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.85rem 2rem;
-  font-family: var(--font-main);
-  font-size: 0.85rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
+  gap: .7rem;
+  padding: 1rem 2rem;
+  border: 1px solid var(--or-texte);
+  background: transparent;
+  color: var(--or-texte);
+  font-family: var(--sans);
+  font-size: .69rem;
+  font-weight: 500;
+  letter-spacing: .22em;
   text-transform: uppercase;
-  border: 2px solid var(--black);
-  background: var(--black);
-  color: var(--white);
   cursor: pointer;
-  transition: all var(--transition);
-  border-radius: var(--radius);
+  transition: background var(--lent), color var(--lent), border-color var(--lent);
 }
+.btn svg { width: 15px; height: 15px; flex-shrink: 0; transition: transform var(--lent); }
+.btn:hover { background: var(--or-texte); color: var(--blanc); }
+.btn:hover svg { transform: translateX(5px); }
 
-.btn:hover {
-  background: transparent;
-  color: var(--black);
-}
+/* Sur photo ou fond sombre */
+.btn-clair { border-color: rgba(255,255,255,.55); color: #fff; }
+.btn-clair:hover { background: #fff; color: var(--encre); border-color: #fff; }
 
-.btn-outline {
-  background: transparent;
-  color: var(--black);
-}
+.btn-or { border-color: var(--or); color: var(--or); }
+.btn-or:hover { background: var(--or); color: var(--nuit); border-color: var(--or); }
 
-.btn-outline:hover {
-  background: var(--black);
-  color: var(--white);
-}
-
-.btn svg {
-  width: 16px;
-  height: 16px;
-  transition: transform var(--transition);
-}
-
-.btn:hover svg { transform: translateX(4px); }
-
-/* ===== NAVBAR ===== */
+/* ============================================================
+   EN-TÊTE — deux étages
+   Étage 1 : logo + menu.  Étage 2 : le rail des pizzerias.
+   Le rail est la demande de Tony : les points de vente vivaient
+   sous le titre du hero (invisibles dès qu'on scrolle) et dans un
+   sous-menu qui n'existe qu'au survol. Ils sont désormais dans
+   l'en-tête, affichés en permanence, sur mobile comme sur desktop.
+   ============================================================ */
 .navbar {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
+  inset: 0 0 auto 0;
   z-index: 1000;
-  padding: 1.25rem 0;
-  transition: all var(--transition);
-  background: transparent;
+  transition: background var(--lent), box-shadow var(--lent);
 }
 
-.navbar.scrolled {
-  background: var(--white);
-  padding: 0.85rem 0;
-  box-shadow: 0 1px 20px rgba(0,0,0,0.08);
-}
+.navbar-main { height: var(--barre-h); display: flex; align-items: center; }
 
 .navbar-inner {
   display: flex;
   align-items: center;
   justify-content: space-between;
-}
-
-.navbar-logo img {
-  height: 50px;
-  width: auto;
-  transition: filter var(--transition);
-}
-
-.navbar:not(.scrolled) .navbar-logo img { filter: brightness(0) invert(1); }
-
-.nav-links {
-  display: flex;
-  align-items: center;
-  list-style: none;
   gap: 2rem;
 }
 
+.navbar-logo img {
+  height: 44px;
+  width: auto;
+  object-fit: contain;
+  transition: filter var(--lent);
+}
+/* Le logo est brun : sur la photo du hero il disparaît, on le passe en blanc. */
+.navbar:not(.scrolled) .navbar-logo img { filter: brightness(0) invert(1); }
+
+.nav-links { display: flex; align-items: center; gap: 2.1rem; }
+
 .nav-links a {
-  font-size: 0.82rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--black);
-  transition: opacity var(--transition);
   position: relative;
+  font-size: .7rem;
+  font-weight: 500;
+  letter-spacing: .17em;
+  text-transform: uppercase;
+  color: var(--encre);
+  transition: color var(--lent);
+  padding: .35rem 0;
 }
-
 .nav-links a::after {
-  content: '';
+  content: "";
   position: absolute;
-  bottom: -3px;
-  left: 0;
-  width: 0;
-  height: 1px;
-  background: var(--black);
-  transition: width var(--transition);
+  left: 0; bottom: 0;
+  width: 0; height: 1px;
+  background: var(--or);
+  transition: width var(--lent);
 }
-
 .nav-links a:hover::after { width: 100%; }
+.navbar:not(.scrolled) .nav-links a { color: #fff; }
 
-.navbar:not(.scrolled) .nav-links a { color: var(--white); }
-.navbar:not(.scrolled) .nav-links a::after { background: var(--white); }
+.nav-cta { padding: .8rem 1.6rem !important; }
+.nav-cta::after { display: none !important; }
 
-.nav-cta {
-  font-size: 0.78rem;
-  padding: 0.6rem 1.4rem;
+/* --- Rail des pizzerias --- */
+.navbar-lieux {
+  height: var(--rail-h);
+  border-top: 1px solid rgba(255,255,255,.16);
+  transition: border-color var(--lent), background var(--lent);
 }
 
-/* Mobile menu */
+.navbar-lieux-inner {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  gap: 1.4rem;
+}
+
+.lieux-label {
+  flex-shrink: 0;
+  font-size: .58rem;
+  font-weight: 600;
+  letter-spacing: .28em;
+  text-transform: uppercase;
+  color: var(--or);
+  transition: color var(--lent);
+}
+
+.lieux-list {
+  display: flex;
+  align-items: center;
+  gap: 1.35rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  padding: .4rem 0;
+  /* le rail s'estompe à droite au lieu d'être coupé net */
+  mask-image: linear-gradient(90deg, #000 calc(100% - 34px), transparent 100%);
+  -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 34px), transparent 100%);
+}
+.lieux-list::-webkit-scrollbar { display: none; }
+
+.lieux-list a {
+  position: relative;
+  white-space: nowrap;
+  font-size: .655rem;
+  font-weight: 500;
+  letter-spacing: .13em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.78);
+  transition: color var(--lent);
+  padding-bottom: 2px;
+  border-bottom: 1px solid transparent;
+}
+.lieux-list a:hover { color: #fff; border-bottom-color: var(--or); }
+
+.lieu-soon { color: rgba(255,255,255,.44) !important; }
+.lieu-soon em {
+  font-style: normal;
+  font-size: .82em;
+  letter-spacing: .1em;
+  color: var(--or);
+  margin-left: .35rem;
+}
+
+/* --- État « défilé » : l'en-tête devient papier --- */
+.navbar.scrolled {
+  background: rgba(255,255,255,.97);
+  backdrop-filter: saturate(150%) blur(8px);
+  -webkit-backdrop-filter: saturate(150%) blur(8px);
+  box-shadow: 0 1px 0 var(--bord), 0 8px 34px rgba(26,26,26,.06);
+}
+.navbar.scrolled .navbar-lieux { border-top-color: var(--bord); }
+.navbar.scrolled .lieux-label { color: var(--or-texte); }
+.navbar.scrolled .lieux-list a { color: var(--mid); }
+.navbar.scrolled .lieux-list a:hover { color: var(--encre); border-bottom-color: var(--or-texte); }
+.navbar.scrolled .lieu-soon { color: #9c968a !important; }
+.navbar.scrolled .lieu-soon em { color: var(--or-texte); }
+
+/* --- Hamburger --- */
 .hamburger {
   display: none;
   flex-direction: column;
   gap: 5px;
-  cursor: pointer;
-  padding: 4px;
-  background: none;
-  border: none;
+  padding: 6px;
+  z-index: 1002;
 }
-
 .hamburger span {
   display: block;
-  width: 24px;
-  height: 2px;
-  background: var(--white);
-  transition: all var(--transition);
+  width: 24px; height: 1.5px;
+  background: var(--encre);
+  transition: transform var(--lent), opacity var(--lent), background var(--lent);
 }
-
-.navbar.scrolled .hamburger span { background: var(--black); }
-
-.hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.navbar:not(.scrolled) .hamburger span { background: #fff; }
+.hamburger.open span { background: var(--encre); }
+.hamburger.open span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
 .hamburger.open span:nth-child(2) { opacity: 0; }
-.hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+.hamburger.open span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
 
-/* ===== HERO ===== */
+/* ============================================================
+   HERO
+   ============================================================ */
 .hero {
-  min-height: 100vh;
+  position: relative;
+  min-height: 100svh;
   display: flex;
   align-items: center;
   justify-content: center;
-  position: relative;
   overflow: hidden;
-  background: var(--black);
+  background: var(--nuit);
+  padding: calc(var(--barre-h) + var(--rail-h) + 3rem) 0 5rem;
 }
 
+/* La photo est une VRAIE photo de pizza de la maison, affichée en pleine
+   opacité. Elle était posée à 45 % puis 72 % derrière un dégradé triple :
+   à ce régime une bonne photo devient une tache brune. Ici c'est un voile
+   plat et unique qui protège le texte, la photo garde sa matière. */
 .hero-bg {
   position: absolute;
   inset: 0;
-  background-image: url('../images/mamzelle-pizza.jpeg');
+  background-image: url('../images/galerie-01.jpeg');
   background-size: cover;
-  background-position: center;
-  opacity: 0.45;
-  transform: scale(1.05);
-  transition: transform 8s ease;
+  background-position: center 45%;
+  transform: scale(1.08);
+  transition: transform 14s cubic-bezier(.19,1,.22,1);
 }
-
 .hero.loaded .hero-bg { transform: scale(1); }
 
 .hero-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.6) 100%);
+  background:
+    linear-gradient(180deg, rgba(10,8,6,.62) 0%, rgba(10,8,6,.14) 32%, rgba(10,8,6,.20) 62%, rgba(10,8,6,.72) 100%),
+    rgba(10,8,6,.20);
 }
 
 .hero-content {
   position: relative;
-  z-index: 1;
+  z-index: 2;
   text-align: center;
-  color: var(--white);
-  max-width: 800px;
-  padding: 0 1.5rem;
-  animation: fadeUp 0.8s ease forwards;
+  max-width: 760px;
+  padding: 0 var(--gouttiere);
+  color: #fff;
 }
 
 .hero-badge {
-  display: inline-block;
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.2em;
+  font-size: .625rem;
+  font-weight: 500;
+  letter-spacing: .34em;
   text-transform: uppercase;
-  border: 1px solid rgba(255,255,255,0.5);
-  padding: 0.4rem 1rem;
-  border-radius: 50px;
-  margin-bottom: 2rem;
-  color: rgba(255,255,255,0.85);
-}
-
-.hero h1 {
-  font-family: var(--font-serif);
-  font-size: clamp(2.2rem, 6vw, 4.5rem);
-  line-height: 1.1;
+  color: var(--or);
+  display: block;
   margin-bottom: 1.5rem;
-  color: var(--white);
 }
 
-.hero h1 em {
-  font-style: italic;
-  color: rgba(255,255,255,0.85);
-}
+.hero h1 { color: #fff; margin-bottom: 1.6rem; }
+.hero h1 em { display: block; color: var(--or-clair); }
 
 .hero-subtitle {
-  font-size: clamp(0.95rem, 2vw, 1.15rem);
-  color: rgba(255,255,255,0.8);
-  max-width: 550px;
-  margin: 0 auto 2.5rem;
-  line-height: 1.7;
+  max-width: 46ch;
+  margin: 0 auto 2.6rem;
+  color: rgba(255,255,255,.86);
+  font-size: 1rem;
+  font-weight: 300;
+  line-height: 1.8;
 }
 
 .hero-actions {
@@ -286,579 +402,473 @@ section { padding: 6rem 0; }
 
 .hero-scroll {
   position: absolute;
-  bottom: 2rem;
   left: 50%;
+  bottom: 2.2rem;
   transform: translateX(-50%);
-  z-index: 1;
-  color: rgba(255,255,255,0.6);
-  font-size: 0.72rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
+  z-index: 2;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.5rem;
-  animation: bounce 2s infinite;
+  gap: .5rem;
+  font-size: .58rem;
+  letter-spacing: .3em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.62);
+  animation: derive 3s ease-in-out infinite;
+}
+.hero-scroll svg { width: 15px; height: 15px; }
+
+@keyframes derive {
+  0%, 100% { transform: translate(-50%, 0); opacity: .55; }
+  50%      { transform: translate(-50%, 7px); opacity: 1; }
 }
 
-.hero-scroll svg { width: 20px; height: 20px; }
-
-/* ===== WELCOME SECTION ===== */
-.welcome {
-  background: var(--white);
-  padding: 7rem 0;
-}
+/* ============================================================
+   BIENVENUE
+   ============================================================ */
+.welcome { background: var(--blanc); }
 
 .welcome-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 5rem;
+  gap: clamp(2.5rem, 6vw, 5.5rem);
   align-items: center;
 }
 
-.welcome-img-wrap {
-  position: relative;
-}
-
+.welcome-img-wrap { position: relative; }
 .welcome-img-wrap img {
   width: 100%;
-  height: 500px;
+  aspect-ratio: 4 / 5;
   object-fit: cover;
-  border-radius: 2px;
+  box-shadow: 0 10px 46px rgba(26,26,26,.13);
 }
 
 .welcome-img-badge {
   position: absolute;
-  bottom: -1.5rem;
-  right: -1.5rem;
-  background: var(--black);
-  color: var(--white);
-  padding: 1.5rem;
+  right: -1px;
+  bottom: -1px;
+  background: var(--nuit);
+  color: #fff;
+  padding: 1.5rem 2rem;
   text-align: center;
-  min-width: 130px;
 }
-
 .welcome-img-badge .year {
-  font-family: var(--font-serif);
-  font-size: 2.5rem;
-  font-weight: 700;
+  display: block;
+  font-family: var(--serif);
+  font-size: 2.1rem;
+  font-weight: 300;
   line-height: 1;
-  display: block;
+  color: var(--or-clair);
 }
-
 .welcome-img-badge .label {
-  font-size: 0.68rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: rgba(255,255,255,0.7);
   display: block;
-  margin-top: 0.25rem;
+  margin-top: .45rem;
+  font-size: .55rem;
+  letter-spacing: .24em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.72);
 }
 
-.welcome-text { }
-
-.welcome-text .section-tag { margin-bottom: 1rem; }
+.welcome-text h2 { margin-bottom: 1.4rem; }
+.welcome-text p + p { margin-top: 1.1rem; }
 
 .welcome-stats {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 1.5rem;
-  margin: 2.5rem 0;
+  margin: 2.6rem 0;
   padding: 2rem 0;
-  border-top: 1px solid var(--gray);
-  border-bottom: 1px solid var(--gray);
-}
-
-.stat-item { text-align: center; }
-
-.stat-number {
-  font-family: var(--font-serif);
-  font-size: 2.2rem;
-  font-weight: 700;
-  line-height: 1;
-  display: block;
-  margin-bottom: 0.35rem;
-}
-
-.stat-label {
-  font-size: 0.72rem;
-  font-weight: 600;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--gray-mid);
-}
-
-/* ===== PIZZERIAS SECTION ===== */
-.pizzerias {
-  background: var(--light);
-  padding: 7rem 0;
-}
-
-.section-header {
+  border-top: 1px solid var(--bord);
+  border-bottom: 1px solid var(--bord);
   text-align: center;
-  margin-bottom: 4rem;
+}
+.stat-number {
+  display: block;
+  font-family: var(--serif);
+  font-size: 2.2rem;
+  font-weight: 300;
+  line-height: 1;
+  color: var(--encre);
+}
+.stat-label {
+  display: block;
+  margin-top: .55rem;
+  font-size: .58rem;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--or-texte);
 }
 
-.section-header p {
-  max-width: 600px;
-  margin: 1rem auto 0;
-  color: var(--gray-mid);
-}
+/* ============================================================
+   PIZZERIAS
+   ============================================================ */
+.pizzerias { background: var(--papier); }
 
 .pizzerias-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1.5rem;
-  margin-bottom: 3rem;
+  grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+  gap: 1px;
+  background: var(--bord);
+  border: 1px solid var(--bord);
 }
 
+/* Les fiches ne sont pas des cartes flottantes : elles forment un tableau
+   d'adresses tenu par un filet d'un pixel. Plus proche du bristol que du
+   composant, et c'est ce que demande le style. */
 .pizzeria-card {
-  background: var(--white);
-  border: 1px solid var(--gray);
-  padding: 1.75rem;
-  transition: all var(--transition);
   position: relative;
-  overflow: hidden;
+  background: var(--blanc);
+  padding: 2.4rem 2rem 2.2rem;
+  transition: background var(--lent);
 }
-
-.pizzeria-card::before {
-  content: '';
+.pizzeria-card::after {
+  content: "";
   position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 0;
-  height: 2px;
-  background: var(--black);
-  transition: width var(--transition);
+  left: 2rem; top: 0;
+  width: 0; height: 2px;
+  background: var(--or);
+  transition: width var(--tres-lent);
 }
+.pizzeria-card:hover { background: #fdfdfc; }
+.pizzeria-card:hover::after { width: 42px; }
 
-.pizzeria-card:hover::before { width: 100%; }
-.pizzeria-card:hover { transform: translateY(-4px); box-shadow: 0 12px 30px rgba(0,0,0,0.08); }
-
-.card-number {
-  font-size: 0.7rem;
-  font-weight: 700;
-  letter-spacing: 0.15em;
-  color: var(--gray-mid);
-  margin-bottom: 0.75rem;
-  display: block;
-}
-
-.pizzeria-card h3 {
-  font-size: 1.15rem;
-  margin-bottom: 1rem;
-}
+.pizzeria-card h3 { margin-bottom: 1.2rem; }
 
 .card-detail {
   display: flex;
-  gap: 0.5rem;
   align-items: flex-start;
-  font-size: 0.82rem;
-  color: #555;
-  margin-bottom: 0.4rem;
+  gap: .7rem;
+  font-size: .82rem;
+  line-height: 1.6;
+  color: var(--mid);
+  margin-bottom: .55rem;
 }
-
 .card-detail svg {
-  width: 14px;
-  height: 14px;
+  width: 14px; height: 14px;
   flex-shrink: 0;
-  margin-top: 2px;
-  color: var(--gray-mid);
+  margin-top: .32rem;
+  color: var(--or-texte);
 }
+.card-detail a:hover { color: var(--encre); border-bottom: 1px solid var(--or); }
 
 .card-badge {
   display: inline-block;
-  margin-top: 1rem;
-  font-size: 0.68rem;
-  font-weight: 700;
-  letter-spacing: 0.1em;
+  margin-top: 1.1rem;
+  padding: .42rem .85rem;
+  border: 1px solid var(--bord);
+  font-size: .55rem;
+  font-weight: 500;
+  letter-spacing: .18em;
   text-transform: uppercase;
-  background: var(--light);
-  padding: 0.3rem 0.7rem;
-  border-radius: 50px;
+  color: var(--or-texte);
 }
+.card-badge.soon { border-color: transparent; background: var(--papier); color: #8a8478; }
 
-.card-badge.soon {
-  background: var(--black);
-  color: var(--white);
-}
+.card-soon { color: #8a8478; }
+.card-soon svg { color: #a9a396; }
 
-.pizzerias-cta {
-  text-align: center;
-}
-
-/* ===== CHAMPIONS SECTION ===== */
+/* ============================================================
+   LA MARQUE / CHAMPIONS
+   ============================================================ */
 .champions {
-  background: var(--black);
-  color: var(--white);
-  padding: 7rem 0;
   position: relative;
+  background: var(--nuit);
   overflow: hidden;
-}
-
-.champions-bg-text {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  font-family: var(--font-serif);
-  font-size: clamp(5rem, 15vw, 14rem);
-  font-weight: 700;
-  color: rgba(255,255,255,0.03);
-  white-space: nowrap;
-  pointer-events: none;
-  user-select: none;
 }
 
 .champions-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 5rem;
+  gap: clamp(2.5rem, 6vw, 5rem);
   align-items: center;
-  position: relative;
-  z-index: 1;
 }
 
-.champions-text .section-tag { color: rgba(255,255,255,0.5); }
-.champions-text h2 { color: var(--white); margin-bottom: 1.5rem; }
-.champions-text p { color: rgba(255,255,255,0.7); margin-bottom: 1.5rem; }
+.champions h2 { color: #fff; margin-bottom: 1.4rem; }
+.champions h2 em { color: var(--or-clair); }
+.champions-text p { color: rgba(255,255,255,.72); }
+.champions-text p + p { margin-top: 1.1rem; }
 
-.awards-list {
-  list-style: none;
-  margin: 2rem 0;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
+.awards-list { margin: 2.4rem 0; }
 .awards-list li {
   display: flex;
-  align-items: flex-start;
-  gap: 1rem;
-  font-size: 0.9rem;
-  color: rgba(255,255,255,0.75);
+  gap: 1.1rem;
+  padding: 1.25rem 0;
+  border-top: 1px solid rgba(255,255,255,.11);
+  font-size: .85rem;
+  line-height: 1.65;
+  color: rgba(255,255,255,.66);
 }
+.awards-list li:last-child { border-bottom: 1px solid rgba(255,255,255,.11); }
 
 .award-icon {
-  width: 36px;
-  height: 36px;
-  background: rgba(255,255,255,0.08);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   flex-shrink: 0;
-  font-size: 1rem;
+  width: 22px; height: 22px;
+  margin-top: .18rem;
+  color: var(--or);
+}
+.award-icon svg { width: 100%; height: 100%; }
+
+.awards-list strong {
+  display: block;
+  margin-bottom: .25rem;
+  font-family: var(--serif);
+  font-size: 1.08rem;
+  font-weight: 400;
+  letter-spacing: .01em;
+  color: #fff;
 }
 
-.champions-img-wrap {
-  position: relative;
-}
-
+/* Composition photo : le geste du pizzaiolo en grand, le guide en médaillon. */
+.champions-img-wrap { position: relative; }
 .champions-img-main {
   width: 100%;
-  height: 520px;
+  aspect-ratio: 4 / 5;
   object-fit: cover;
-  border-radius: 2px;
-  opacity: 0.9;
 }
-
-.champions-img-overlay {
+.champions-img-inset {
   position: absolute;
-  bottom: 2rem;
-  left: -2rem;
-  background: var(--white);
-  color: var(--black);
-  padding: 1.5rem 2rem;
-  max-width: 280px;
+  right: -14px;
+  bottom: -22px;
+  width: 40%;
+  max-width: 190px;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border: 6px solid var(--nuit);
+}
+.champions-img-legende {
+  margin-top: 1.3rem;
+  font-size: .6rem;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.42);
+  max-width: 52%;
 }
 
-.champions-img-overlay .award-title {
-  font-family: var(--font-serif);
-  font-size: 1.1rem;
-  font-weight: 700;
-  margin-bottom: 0.25rem;
-}
-
-.champions-img-overlay .award-desc {
-  font-size: 0.78rem;
-  color: var(--gray-mid);
-  line-height: 1.5;
-}
-
-.btn-white {
-  border-color: var(--white);
-  background: var(--white);
-  color: var(--black);
-}
-
-.btn-white:hover {
-  background: transparent;
-  color: var(--white);
-}
-
-/* ===== FORMATION SECTION ===== */
-.formation {
-  background: var(--white);
-  padding: 7rem 0;
-}
+/* ============================================================
+   FORMATION
+   ============================================================ */
+.formation { background: var(--blanc); }
 
 .formation-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 5rem;
+  gap: clamp(2.5rem, 6vw, 5.5rem);
   align-items: center;
 }
-
-.formation-text { order: 1; }
 .formation-visual { order: 2; }
-
-.formation-cards {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-  margin: 2rem 0;
-}
-
-.feature-card {
-  background: var(--light);
-  padding: 1.5rem;
-  border-radius: var(--radius);
-}
-
-.feature-icon {
-  font-size: 1.8rem;
-  margin-bottom: 0.75rem;
-}
-
-.feature-card h4 {
-  font-size: 0.9rem;
-  font-weight: 700;
-  margin-bottom: 0.4rem;
-}
-
-.feature-card p {
-  font-size: 0.8rem;
-  color: var(--gray-mid);
-  line-height: 1.5;
-}
+.formation-text   { order: 1; }
 
 .formation-img {
   width: 100%;
-  height: 460px;
+  aspect-ratio: 4 / 5;
   object-fit: cover;
+  box-shadow: 0 10px 46px rgba(26,26,26,.13);
 }
 
-/* ===== CONTACT SECTION ===== */
-.contact {
-  background: var(--light);
-  padding: 7rem 0;
+.formation-text h2 { margin-bottom: 1.4rem; }
+
+/* Liste de prestations, pas une grille de cartes identiques. */
+.formation-cards { margin: 2.4rem 0; }
+.feature-card {
+  display: flex;
+  gap: 1.15rem;
+  padding: 1.3rem 0;
+  border-top: 1px solid var(--bord);
 }
+.feature-card:last-child { border-bottom: 1px solid var(--bord); }
+.feature-icon {
+  flex-shrink: 0;
+  width: 22px; height: 22px;
+  margin-top: .2rem;
+  color: var(--or-texte);
+}
+.feature-icon svg { width: 100%; height: 100%; }
+.feature-card h4 {
+  font-size: 1.08rem;
+  margin-bottom: .2rem;
+}
+.feature-card p { font-size: .84rem; line-height: 1.65; }
+
+/* ============================================================
+   GALERIE
+   ============================================================ */
+.galerie { background: var(--papier); }
+
+.galerie-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 3px;
+}
+
+.galerie-item {
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  background: var(--bord);
+  aspect-ratio: 1;
+}
+.galerie-item img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  transition: transform 1.1s cubic-bezier(.22,.61,.36,1), filter var(--tres-lent);
+}
+.galerie-item::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(20,18,15,.16);
+  opacity: 0;
+  transition: opacity var(--tres-lent);
+}
+.galerie-item:hover img { transform: scale(1.07); }
+.galerie-item:hover::after { opacity: 1; }
+
+/* La première photo tient deux colonnes : une grille parfaitement régulière
+   ne hiérarchise rien, et c'est la meilleure pizza du lot. */
+.galerie-item:first-child { grid-column: span 2; grid-row: span 2; }
+
+/* ============================================================
+   CONTACT
+   ============================================================ */
+.contact { background: var(--blanc); }
 
 .contact-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 5rem;
-  align-items: start;
+  grid-template-columns: 1fr 1.15fr;
+  gap: clamp(2.5rem, 6vw, 5rem);
 }
 
-.contact-info h2 { margin-bottom: 1rem; }
-.contact-info p { margin-bottom: 2.5rem; color: var(--gray-mid); }
+.contact-info h2 { margin-bottom: 1.3rem; }
+.contact-info > p { margin-bottom: 2.4rem; }
 
-.contact-details {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-  margin-bottom: 2.5rem;
-}
-
+.contact-details { margin-bottom: 2.4rem; }
 .contact-item {
   display: flex;
-  gap: 1rem;
-  align-items: flex-start;
+  gap: 1.1rem;
+  padding: 1.2rem 0;
+  border-top: 1px solid var(--bord);
 }
-
+.contact-item:last-child { border-bottom: 1px solid var(--bord); }
 .contact-icon {
-  width: 44px;
-  height: 44px;
-  background: var(--black);
-  color: var(--white);
-  display: flex;
-  align-items: center;
-  justify-content: center;
   flex-shrink: 0;
-  border-radius: var(--radius);
+  width: 20px; height: 20px;
+  margin-top: .15rem;
+  color: var(--or-texte);
 }
-
-.contact-icon svg { width: 18px; height: 18px; }
+.contact-icon svg { width: 100%; height: 100%; }
 
 .contact-item-text strong {
   display: block;
-  font-size: 0.78rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
+  font-size: .58rem;
+  font-weight: 600;
+  letter-spacing: .2em;
   text-transform: uppercase;
-  color: var(--gray-mid);
-  margin-bottom: 0.2rem;
+  color: var(--or-texte);
+  margin-bottom: .35rem;
 }
+.contact-item-text span,
+.contact-item-text a { font-size: .88rem; color: var(--mid); line-height: 1.6; }
+.contact-item-text a:hover { color: var(--encre); border-bottom: 1px solid var(--or); }
 
-.contact-item-text span, .contact-item-text a {
-  font-size: 0.95rem;
-  color: var(--black);
-  font-weight: 500;
-}
-
-.contact-item-text a:hover { text-decoration: underline; }
-
-.social-links {
-  display: flex;
-  gap: 0.75rem;
-}
-
+.social-links { display: flex; gap: .7rem; }
 .social-link {
-  width: 40px;
-  height: 40px;
-  border: 1px solid var(--gray);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: var(--radius);
-  transition: all var(--transition);
-  color: var(--black);
+  display: grid;
+  place-items: center;
+  width: 42px; height: 42px;
+  border: 1px solid var(--bord);
+  color: var(--or-texte);
+  transition: background var(--lent), color var(--lent), border-color var(--lent);
 }
+.social-link svg { width: 17px; height: 17px; }
+.social-link:hover { background: var(--or-texte); border-color: var(--or-texte); color: #fff; }
 
-.social-link:hover {
-  background: var(--black);
-  border-color: var(--black);
-  color: var(--white);
-}
-
-.social-link svg { width: 18px; height: 18px; }
-
-/* Contact Map */
-.contact-map {
-  background: var(--white);
-  border: 1px solid var(--gray);
-  border-radius: var(--radius);
-  overflow: hidden;
-}
+.contact-map { display: flex; flex-direction: column; gap: 1px; background: var(--bord); }
 
 .map-placeholder {
-  height: 260px;
-  background: var(--light);
   display: flex;
   align-items: center;
-  justify-content: center;
-  flex-direction: column;
   gap: 1rem;
-  font-size: 0.85rem;
-  color: var(--gray-mid);
+  padding: 1.6rem 1.8rem;
+  background: var(--papier);
+  font-size: .8rem;
+  line-height: 1.6;
+  color: var(--mid);
 }
+.map-placeholder svg { width: 22px; height: 22px; flex-shrink: 0; color: var(--or-texte); }
 
-.map-placeholder svg { width: 32px; height: 32px; opacity: 0.4; }
+.contact-form { background: var(--papier); padding: clamp(1.8rem, 4vw, 2.6rem); }
 
-.contact-form {
-  padding: 2rem;
-}
-
-.form-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-}
-
-.form-group {
-  margin-bottom: 1rem;
-}
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.form-group { margin-bottom: 1.1rem; }
 
 .form-group label {
   display: block;
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
+  margin-bottom: .5rem;
+  font-size: .56rem;
+  font-weight: 600;
+  letter-spacing: .2em;
   text-transform: uppercase;
-  color: var(--gray-mid);
-  margin-bottom: 0.4rem;
+  color: var(--or-texte);
 }
 
 .form-group input,
 .form-group textarea,
 .form-group select {
   width: 100%;
-  padding: 0.75rem 1rem;
-  font-family: var(--font-main);
-  font-size: 0.9rem;
-  border: 1px solid var(--gray);
-  background: var(--light);
-  color: var(--black);
-  border-radius: var(--radius);
-  transition: border-color var(--transition);
-  outline: none;
-  appearance: none;
+  padding: .85rem 1rem;
+  border: 1px solid var(--bord);
+  border-radius: 0;
+  background: var(--blanc);
+  font-family: var(--sans);
+  font-size: .88rem;
+  color: var(--encre);
+  transition: border-color var(--lent);
+  caret-color: var(--or-texte);
 }
+.form-group input::placeholder,
+.form-group textarea::placeholder { color: #8a8478; }
 
 .form-group input:focus,
 .form-group textarea:focus,
 .form-group select:focus {
-  border-color: var(--black);
+  outline: none;
+  border-color: var(--or-texte);
 }
-
-.form-group textarea { resize: vertical; min-height: 100px; }
+.form-group textarea { resize: vertical; min-height: 116px; }
 
 .form-submit { width: 100%; justify-content: center; }
 
-/* ===== FOOTER ===== */
-footer {
-  background: var(--black);
-  color: var(--white);
-  padding: 4rem 0 2rem;
-}
+/* ============================================================
+   PIED DE PAGE
+   ============================================================ */
+footer { background: var(--nuit); color: rgba(255,255,255,.6); padding: 5rem 0 2rem; }
 
 .footer-top {
   display: grid;
-  grid-template-columns: 1.5fr 1fr 1fr 1fr;
-  gap: 3rem;
+  grid-template-columns: 1.6fr 1fr 1fr 1fr;
+  gap: 2.5rem;
   padding-bottom: 3rem;
-  border-bottom: 1px solid rgba(255,255,255,0.08);
-  margin-bottom: 2rem;
 }
 
-.footer-brand img {
-  height: 55px;
-  width: auto;
-  margin-bottom: 1.25rem;
-}
-
-.footer-brand p {
-  font-size: 0.85rem;
-  color: rgba(255,255,255,0.5);
-  line-height: 1.7;
-  max-width: 260px;
-}
+.footer-brand img { height: 52px; width: auto; object-fit: contain; margin-bottom: 1.3rem; }
+.footer-brand p { font-size: .82rem; line-height: 1.75; max-width: 34ch; }
 
 .footer-col h4 {
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.15em;
+  font-family: var(--sans);
+  font-size: .58rem;
+  font-weight: 600;
+  letter-spacing: .22em;
   text-transform: uppercase;
-  color: rgba(255,255,255,0.5);
-  margin-bottom: 1.25rem;
+  color: var(--or);
+  margin-bottom: 1.2rem;
 }
-
-.footer-col ul {
-  list-style: none;
-  display: flex;
-  flex-direction: column;
-  gap: 0.65rem;
-}
-
+.footer-col ul li { margin-bottom: .6rem; }
 .footer-col ul li a {
-  font-size: 0.88rem;
-  color: rgba(255,255,255,0.75);
-  transition: color var(--transition);
+  font-size: .82rem;
+  color: rgba(255,255,255,.58);
+  transition: color var(--lent);
 }
-
-.footer-col ul li a:hover { color: var(--white); }
+.footer-col ul li a:hover { color: var(--or-clair); }
 
 .footer-bottom {
   display: flex;
@@ -866,406 +876,141 @@ footer {
   align-items: center;
   flex-wrap: wrap;
   gap: 1rem;
-  font-size: 0.78rem;
-  color: rgba(255,255,255,0.35);
+  padding-top: 2rem;
+  border-top: 1px solid rgba(255,255,255,.1);
+  font-size: .72rem;
+  color: rgba(255,255,255,.4);
 }
+.footer-bottom a { color: rgba(255,255,255,.55); }
+.footer-bottom a:hover { color: var(--or-clair); }
 
-.footer-bottom a {
-  color: rgba(255,255,255,0.35);
-  transition: color var(--transition);
-}
-
-.footer-bottom a:hover { color: rgba(255,255,255,0.7); }
-
-/* ===== ANIMATIONS ===== */
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(30px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes bounce {
-  0%, 100% { transform: translateX(-50%) translateY(0); }
-  50% { transform: translateX(-50%) translateY(8px); }
-}
-
+/* ============================================================
+   APPARITIONS
+   Une seule idée : le contenu monte de quelques pixels, lentement.
+   ============================================================ */
 .reveal {
   opacity: 0;
-  transform: translateY(20px);
-  transition: opacity 0.6s ease, transform 0.6s ease;
+  transform: translateY(14px);
+  transition: opacity 1s cubic-bezier(.22,.61,.36,1), transform 1s cubic-bezier(.22,.61,.36,1);
 }
+.reveal.visible { opacity: 1; transform: none; }
+.reveal-delay-1 { transition-delay: .09s; }
+.reveal-delay-2 { transition-delay: .18s; }
+.reveal-delay-3 { transition-delay: .27s; }
+.reveal-delay-4 { transition-delay: .36s; }
 
-.reveal.visible {
-  opacity: 1;
-  transform: translateY(0);
+/* ============================================================
+   VISIONNEUSE
+   ============================================================ */
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(10,8,6,.94);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity var(--lent), visibility var(--lent);
 }
+.lightbox.active { opacity: 1; visibility: visible; }
+.lightbox img { max-width: 88vw; max-height: 86vh; object-fit: contain; }
 
-.reveal-delay-1 { transition-delay: 0.1s; }
-.reveal-delay-2 { transition-delay: 0.2s; }
-.reveal-delay-3 { transition-delay: 0.3s; }
-.reveal-delay-4 { transition-delay: 0.4s; }
+.lightbox-close,
+.lightbox-nav {
+  position: absolute;
+  color: #fff;
+  opacity: .55;
+  transition: opacity var(--lent);
+  line-height: 1;
+}
+.lightbox-close:hover, .lightbox-nav:hover { opacity: 1; }
+.lightbox-close { top: 1.5rem; right: 1.8rem; font-size: 2.2rem; }
+.lightbox-nav { top: 50%; transform: translateY(-50%); font-size: 3rem; padding: 0 1rem; }
+.lightbox-prev { left: .6rem; }
+.lightbox-next { right: .6rem; }
 
-/* ===== RESPONSIVE ===== */
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
 @media (max-width: 1024px) {
+  :root { --gouttiere: 1.6rem; }
   .welcome-grid,
   .champions-grid,
   .formation-grid,
-  .contact-grid { grid-template-columns: 1fr; gap: 3rem; }
-
-  .pizzerias-grid { grid-template-columns: repeat(2, 1fr); }
-
-  .footer-top { grid-template-columns: 1fr 1fr; }
-
-  .champions-img-overlay { left: 1rem; }
-
-  .formation-text { order: 1; }
-  .formation-visual { order: 2; }
-
-  .welcome-img-badge { right: 1rem; }
-}
-
-@media (max-width: 768px) {
-  section { padding: 4rem 0; }
-
-  .nav-links {
-    position: fixed;
-    top: 0;
-    right: -100%;
-    width: 280px;
-    height: 100vh;
-    background: var(--white);
-    flex-direction: column;
-    justify-content: center;
-    align-items: flex-start;
-    padding: 2rem;
-    gap: 1.5rem;
-    overflow-y: auto;
-    transition: right var(--transition);
-    box-shadow: -5px 0 30px rgba(0,0,0,0.1);
-    z-index: 999;
-  }
-
-  .nav-links.open { right: 0; }
-  .nav-links a { color: var(--black) !important; font-size: 1rem; }
-  .nav-links a::after { background: var(--black) !important; }
-
-  .hamburger { display: flex; z-index: 1001; }
-
-  .nav-cta { display: none; }
-
-  .pizzerias-grid { grid-template-columns: 1fr; }
-
-  .footer-top { grid-template-columns: 1fr; gap: 2rem; }
-
-  .hero h1 { font-size: clamp(1.8rem, 8vw, 2.8rem); }
-
-  .welcome-stats { grid-template-columns: repeat(3, 1fr); gap: 1rem; }
-
-  .champions-img-overlay { position: static; margin-top: 1rem; max-width: 100%; left: 0; }
-
-  .form-row { grid-template-columns: 1fr; }
-
-  .footer-bottom { flex-direction: column; text-align: center; }
-}
-
-@media (max-width: 480px) {
-  .hero-actions { flex-direction: column; align-items: center; }
-  .welcome-stats { grid-template-columns: 1fr; }
-  .formation-cards { grid-template-columns: 1fr; }
-}
-
-/* ===== GALERIE ===== */
-.galerie {
-  padding: 5rem 0;
-  background: var(--white);
-}
-
-.galerie-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 1rem;
-  margin-top: 3rem;
-}
-
-.galerie-item {
-  overflow: hidden;
-  border-radius: var(--radius);
-  aspect-ratio: 1 / 1;
-  background: var(--gray);
-  cursor: pointer;
-}
-
-.galerie-item img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 0.5s ease, filter 0.3s ease;
-  filter: brightness(0.95);
-}
-
-.galerie-item:hover img {
-  transform: scale(1.06);
-  filter: brightness(1.05);
-}
-
-/* Lightbox */
-.lightbox {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.92);
-  z-index: 9999;
-  align-items: center;
-  justify-content: center;
-}
-
-.lightbox.active {
-  display: flex;
-}
-
-.lightbox img {
-  max-width: 90vw;
-  max-height: 85vh;
-  object-fit: contain;
-  border-radius: var(--radius);
-  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
-}
-
-.lightbox-close {
-  position: absolute;
-  top: 1.5rem;
-  right: 2rem;
-  color: #fff;
-  font-size: 2rem;
-  cursor: pointer;
-  line-height: 1;
-  opacity: 0.8;
-  background: none;
-  border: none;
-  transition: opacity 0.2s;
-}
-
-.lightbox-close:hover { opacity: 1; }
-
-.lightbox-nav {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  color: #fff;
-  font-size: 2.5rem;
-  cursor: pointer;
-  background: none;
-  border: none;
-  opacity: 0.7;
-  padding: 0.5rem;
-  transition: opacity 0.2s;
-  line-height: 1;
-}
-
-.lightbox-nav:hover { opacity: 1; }
-.lightbox-prev { left: 1.5rem; }
-.lightbox-next { right: 1.5rem; }
-
-@media (max-width: 900px) {
+  .contact-grid { grid-template-columns: 1fr; }
+  .formation-visual { order: 1; }
+  .formation-text   { order: 2; }
+  .welcome-img-wrap img,
+  .champions-img-main,
+  .formation-img { aspect-ratio: 3 / 2; }
+  .champions-img-inset { width: 30%; right: 0; bottom: -18px; }
+  .champions-img-legende { max-width: 100%; }
+  .footer-top { grid-template-columns: 1fr 1fr; gap: 2rem; }
   .galerie-grid { grid-template-columns: repeat(3, 1fr); }
 }
 
-@media (max-width: 600px) {
-  .galerie-grid { grid-template-columns: repeat(2, 1fr); gap: 0.5rem; }
-}
-
-/* ── Correctif 23/08 : les huit pizzerias dans le header ─────────────────
-   Elles n apparaissaient qu apres 2 500 px de defilement. Or « ou est la
-   plus proche de chez moi » est la premiere question d un visiteur local :
-   la reponse doit tenir dans le premier ecran.
-   Les noms sont repris de la section plus bas, ils ne sont pas ressaisis. */
-.hero-lieux {
-  display: flex; flex-wrap: wrap; justify-content: center;
-  gap: 8px 10px; margin: 22px auto 26px; max-width: 720px;
-}
-.hero-lieux a {
-  font-size: 13px; letter-spacing: .04em; text-decoration: none;
-  color: rgba(255,255,255,.92);
-  border: 1px solid rgba(255,255,255,.28);
-  border-radius: 999px; padding: 7px 15px;
-  backdrop-filter: blur(6px); background: rgba(255,255,255,.07);
-  transition: background .25s, border-color .25s, transform .25s;
-}
-.hero-lieux a:hover {
-  background: rgba(255,255,255,.18);
-  border-color: rgba(255,255,255,.55);
-  transform: translateY(-2px);
-}
-@media (max-width: 600px) {
-  .hero-lieux { gap: 6px 7px; margin: 16px auto 20px; }
-  .hero-lieux a { font-size: 11.5px; padding: 6px 11px; }
-}
-
-/* ── Traitement des images, aligne sur Villa Fleurie (24/08) ─────────────
-   Releve sur le site de reference : coins droits, ombre tres diffuse
-   (0 8px 40px a 12 %), `object-fit: cover`, aucun filtre. C est l ombre
-   large qui fait la finition : elle detache la photo du fond sans la cerner.
-   Une bordure ou un coin arrondi transforment une photo en vignette ; ici
-   elle reste une image. */
-.hero img, section img, article img, figure img, .galerie img, .card img,
-.pizzeria-card img, .programme img, .grid img {
-  border-radius: 0;
-  object-fit: cover;
-  box-shadow: 0 8px 40px rgba(0,0,0,.12);
-  transition: transform .5s cubic-bezier(.25,.46,.45,.94), box-shadow .5s;
-}
-.hero img:hover, section img:hover, article img:hover, figure img:hover,
-.galerie img:hover, .card img:hover, .pizzeria-card img:hover {
-  box-shadow: 0 16px 56px rgba(0,0,0,.18);
-}
-/* Le logo et les icones ne sont pas des photos : ni ombre ni recadrage. */
-.logo img, .nav-logo img, header .logo img, .footer-logo, img[src*="logo"],
-img[src*="icon"], img[src*="favicon"] {
-  box-shadow: none !important;
-  object-fit: contain;
-}
-
-
-/* ── Une couleur d action, prise sur le logo (24/08) ─────────────────────
-   La charte etait noir, blanc et gris : aucun bouton ne se distinguait d un
-   encadre. La couleur retenue n est pas inventee — c est le brun du logo
-   `logo-brun.png`, releve a l echantillonnage : #584242. */
-:root { --brun: #584242; --brun-clair: #6E5858; }
-.btn:not(.btn-ghost), a.btn:not(.btn-ghost), .hero-actions .btn:first-child {
-  background: var(--brun);
-  border-color: var(--brun);
-  color: #fff;
-}
-.btn:not(.btn-ghost):hover, .hero-actions .btn:first-child:hover {
-  background: var(--brun-clair); border-color: var(--brun-clair);
-}
-img { border-radius: 0 !important; }
-
-/* ── Correctif 24/08 · une vraie photo de pizza dans le header ────────────
-   Le hero affichait `mamzelle-pizza.jpeg` — qui n'est PAS une pizza : c'est
-   leur logotype à plat sur fond taupe. Posé à 45 % d'opacité derrière le
-   titre, il donnait un fond brun flou où l'on ne distinguait rien, et le mot
-   « PIZZA » du logo se lisait en filigrane derrière le vrai titre.
-
-   Or leur photothèque contient ONZE photos professionnelles de pizzas
-   (galerie-01 à 11) : napolitaines à la figue, à la burrata, au jambon cru,
-   toutes sur fond sombre. `galerie-01` est retenue — fond noir, donc le titre
-   blanc tient dessus sans qu'on ait à écraser la photo sous un voile.
-
-   L'opacité passe de 0,45 à 0,72 : à 45 % une bonne photo devient une tache.
-   C'est le dégradé du calque supérieur qui protège le texte, pas l'effacement
-   de l'image. */
-.hero-bg {
-  background-image: url('../images/galerie-01.jpeg') !important;
-  background-position: center 42% !important;
-  opacity: .72 !important;
-}
-/* Le dégradé qui protège le texte est posé À L INTÉRIEUR du fond, pas sur le
-   hero. Première tentative : un ::before sur .hero, plus
-   `.hero > *:not(.hero-bg){position:relative;z-index:2}` pour repasser le
-   contenu devant. Ça a CASSÉ la mise en page — donner `position:relative` aux
-   enfants directs a changé leur contexte et la colonne de texte s est
-   rétrécie à 150 px. Aucune erreur émise, seulement une page ratée.
-   Ici le dégradé vit dans .hero-bg::after : il couvre l image, et le contenu,
-   qui vient après dans le DOM, reste devant sans qu on touche à son
-   positionnement. */
-.hero-bg::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background: linear-gradient(180deg, rgba(28,20,16,.55) 0%, rgba(28,20,16,.20) 34%, rgba(28,20,16,.66) 100%);
-}
-
-/* ── Correctif 27/08 · les pizzerias remontées dans le header ─────────────
-   Demande : la liste des pizzerias devrait être dans le header. Elle vivait
-   uniquement dans le hero (`.hero-lieux`, sous le H1) : invisible dès qu'on
-   a scrollé, absente de la barre fixe qui reste affichée partout. Le vrai
-   header (`.navbar`) montrait un simple lien "Nos Pizzerias" qui renvoie à
-   la section, sans jamais nommer les 9 lieux réels. On ajoute un sous-menu
-   au lien du header — 9 noms de la grille .pizzerias-grid, aucun inventé,
-   chacun pointe vers sa fiche (id ajouté sur chaque <article>). Le hero
-   garde sa propre liste : rien n'est retiré, seulement complété plus haut,
-   là où elle reste visible même après le scroll. */
-.nav-item-dropdown { position: relative; }
-
-.nav-item-dropdown > a {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.dropdown-caret {
-  width: 10px;
-  height: 10px;
-  transition: transform var(--transition);
-}
-
-.nav-item-dropdown:hover .dropdown-caret,
-.nav-item-dropdown.dropdown-open .dropdown-caret {
-  transform: rotate(180deg);
-}
-
-.nav-dropdown {
-  position: absolute;
-  top: calc(100% + 18px);
-  left: 50%;
-  transform: translateX(-50%) translateY(-6px);
-  background: var(--white);
-  border-radius: 6px;
-  box-shadow: 0 16px 44px rgba(0,0,0,.16);
-  padding: .5rem 0;
-  min-width: 190px;
-  display: flex;
-  flex-direction: column;
-  opacity: 0;
-  visibility: hidden;
-  pointer-events: none;
-  transition: opacity var(--transition), transform var(--transition), visibility var(--transition);
-  z-index: 1001;
-}
-
-.nav-item-dropdown:hover .nav-dropdown,
-.nav-item-dropdown:focus-within .nav-dropdown {
-  opacity: 1;
-  visibility: visible;
-  pointer-events: auto;
-  transform: translateX(-50%) translateY(0);
-}
-
-.nav-dropdown a {
-  color: var(--black) !important;
-  font-size: .78rem;
-  font-weight: 500;
-  letter-spacing: .02em;
-  text-transform: none !important;
-  padding: .55rem 1.2rem;
-  white-space: nowrap;
-}
-
-.nav-dropdown a::after { display: none; }
-.nav-dropdown a:hover { background: var(--beige, #f4ece1); }
-
 @media (max-width: 768px) {
-  /* Sur le panneau plein écran, le survol n'existe pas : le sous-menu
-     s'ouvre au tap sur le petit chevron (JS), le texte garde son rôle de
-     lien classique vers la section. */
-  .nav-dropdown {
-    position: static;
-    transform: none;
-    opacity: 1;
-    visibility: visible;
-    pointer-events: auto;
-    box-shadow: none;
-    background: transparent;
-    padding: 0;
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height var(--transition);
+  :root { --barre-h: 62px; --rail-h: 38px; }
+
+  .hamburger { display: flex; }
+
+  /* Menu principal en panneau plein écran. Le rail des pizzerias, lui,
+     reste TOUJOURS visible : c'est l'objet de la demande. */
+  .nav-links {
+    position: fixed;
+    inset: 0;
+    flex-direction: column;
+    justify-content: center;
+    gap: 1.9rem;
+    background: var(--blanc);
+    transform: translateX(100%);
+    transition: transform var(--lent);
+    z-index: 1001;
   }
-  .nav-item-dropdown.dropdown-open .nav-dropdown { max-height: 400px; padding-top: .4rem; }
-  .nav-dropdown a {
-    font-size: .92rem;
-    padding: .5rem 0 .5rem 1rem;
-    border-left: 2px solid var(--beige, #e8d9c0);
+  .nav-links.open { transform: translateX(0); }
+  .nav-links a { color: var(--encre) !important; font-size: .82rem; letter-spacing: .2em; }
+  .nav-links a::after { background: var(--or-texte); }
+
+  .navbar-lieux-inner { gap: .9rem; }
+  .lieux-label { display: none; }
+  .lieux-list { gap: 1.05rem; }
+  .lieux-list a { font-size: .615rem; letter-spacing: .1em; }
+
+  .hero { padding-top: calc(var(--barre-h) + var(--rail-h) + 2rem); }
+  .hero-actions { flex-direction: column; align-items: stretch; }
+  .hero-actions .btn { justify-content: center; }
+
+  .welcome-stats { padding: 1.6rem 0; gap: .8rem; }
+  .stat-number { font-size: 1.7rem; }
+  .stat-label { font-size: .5rem; letter-spacing: .14em; }
+
+  .welcome-img-badge { padding: 1.1rem 1.4rem; }
+  .welcome-img-badge .year { font-size: 1.7rem; }
+
+  .galerie-grid { grid-template-columns: repeat(2, 1fr); }
+
+  .form-row { grid-template-columns: 1fr; }
+
+  .footer-top { grid-template-columns: 1fr; }
+  .footer-bottom { flex-direction: column; align-items: flex-start; }
+}
+
+@media (max-width: 420px) {
+  :root { --gouttiere: 1.25rem; }
+  .pizzeria-card { padding: 1.9rem 1.5rem; }
+  .galerie-item:first-child { grid-column: span 2; grid-row: span 1; aspect-ratio: 2 / 1; }
+}
+
+/* ===== ACCESSIBILITÉ ===== */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
   }
+  .reveal { opacity: 1; transform: none; }
+  .hero-bg { transform: none; }
 }
