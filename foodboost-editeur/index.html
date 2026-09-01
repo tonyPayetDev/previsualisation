@@ -143,6 +143,14 @@ dialog pre{background:#0C0F11;border:1px solid var(--ui-trait);border-radius:7px
   background:#0c1614;border:1px solid #1f4a41;border-radius:99px;padding:6px 10px}
 .destination .avert{font-size:13px;line-height:1.5;color:#e8c98a;
   background:#1d1706;border:1px solid #443814;border-radius:9px;padding:10px 12px}
+
+.banque-titre{font:700 11px/1 ui-monospace,monospace;letter-spacing:.16em;
+  text-transform:uppercase;color:#9aa4b8;margin:14px 0 8px;display:flex;
+  align-items:center;gap:9px}
+.banque-titre b{color:#4fd1b5;font-weight:700}
+.banque-titre.client b{color:#e8c98a}
+.banque-titre em{font-style:normal;font-weight:400;color:#6b7089;font-size:11px;
+  letter-spacing:0;text-transform:none}
 </style>
 </head>
 <body>
@@ -386,9 +394,18 @@ function choisir(i) {
 }
 
 /* La banque : cliquer une photo remplace celle de la vignette sélectionnée. */
-function banque(liste) {
-  document.getElementById('banque').innerHTML = liste
+function banque(liste, client) {
+  const grille = (l) => l
     .map((n) => `<img src="photos/${n}.jpg" data-n="${n}" alt="" loading="lazy">`).join('');
+  const z = document.getElementById('banque');
+  z.innerHTML =
+    (client && client.photos.length
+      ? `<div class="banque-titre client"><b>${client.photos.length} photos</b>
+         de ${client.nom} <em>· prises sur ${client.source}</em></div>`
+        + grille(client.photos)
+        + '<div class="banque-titre"><b>La banque</b> <em>· pour ce qu\'ils n\'ont pas</em></div>'
+      : '')
+    + grille(liste);
   document.querySelectorAll('#banque img').forEach((im) => {
     im.addEventListener('click', () => {
       if (selection === null) { alert('Choisis d\'abord une vignette dans l\'aperçu.'); return; }
@@ -502,7 +519,18 @@ document.getElementById('type').value = E.type;
 document.getElementById('ville').value = E.ville;
 document.getElementById('ambiance').value = E.ambiance;
 document.getElementById('famille').value = E.famille;
-banque(PHOTOS_BANQUE);
+/* Sans ?client=, l'éditeur se comporte exactement comme avant. */
+(async () => {
+  const slug = new URLSearchParams(location.search).get('client');
+  let client = null;
+  if (slug) {
+    try {
+      const tous = await (await fetch('clients.json?t=' + Date.now())).json();
+      client = tous[slug] || null;
+    } catch (e) { /* pas de fiche client : on garde la banque seule */ }
+  }
+  banque(PHOTOS_BANQUE, client);
+})();
 peindre();
 </script>
 </body>
