@@ -435,6 +435,20 @@ h2::after{content:"";position:absolute;left:0;bottom:-1.2mm;width:5mm;height:1px
   opacity:0;transition:opacity .3s ease,color .2s ease;pointer-events:none}
 .portrait.montre .ecoute{opacity:1}
 .portrait.sonne .ecoute{color:var(--jaune)}
+/* Son allumé : l'anneau pulse. C'est l'indicateur — pas besoin d'un
+   pictogramme de haut-parleur pour comprendre qu'il se passe quelque chose. */
+@keyframes ondeSon{
+  0%{box-shadow:0 0 0 0 rgba(234,179,8,.42),0 0 0 0 rgba(234,179,8,.22)}
+  70%{box-shadow:0 0 0 2.6mm rgba(234,179,8,0),0 0 0 5mm rgba(234,179,8,0)}
+  100%{box-shadow:0 0 0 0 rgba(234,179,8,0),0 0 0 0 rgba(234,179,8,0)}
+}
+.portrait.sonne::before{animation:ondeSon 1.6s ease-out infinite}
+.portrait{transform:translate(calc(var(--pointex,0) * 1px), calc(var(--pointey,0) * 1px));
+  transition:transform .05s linear}
+@media (prefers-reduced-motion: reduce){
+  .portrait.sonne::before{animation:none}
+  .portrait{transform:none}
+}
 .portrait:focus-visible{outline:2px solid var(--jaune);outline-offset:3mm}
 
 /* ── Les trois appels à l'action ───────────────────────────────────────── */
@@ -580,7 +594,7 @@ h2::after{content:"";position:absolute;left:0;bottom:-1.2mm;width:5mm;height:1px
             </video>
           </span>
           <span class="invite">Cliquez</span>
-          <span class="ecoute" aria-hidden="true">Survolez pour m’entendre</span>
+          <span class="ecoute" aria-hidden="true">Cliquez pour m’entendre</span>
         </button>
       </div>
 
@@ -978,42 +992,70 @@ h2::after{content:"";position:absolute;left:0;bottom:-1.2mm;width:5mm;height:1px
   if (sobre) poser(true);
   else setTimeout(function () { if (!b.dataset.touche) lancer(); }, 2000);
 
+  /* Le son est un interrupteur : un clic l'allume, un clic le coupe.
+     Avant, il s'allumait au survol et se coupait en partant — ça se déclenchait
+     par accident et l'état ne se retrouvait pas. */
+  var sonAllume = false;
+
+  var direEtat = function () {
+    if (!dit) return;
+    dit.textContent = sonAllume ? '🔊 Cliquez pour couper' : 'Cliquez pour m’entendre';
+  };
+
+  var basculerSon = function () {
+    if (!v) return false;
+    if (!b.classList.contains('parlant')) lancer();
+    sonAllume = !sonAllume;
+    v.muted = !sonAllume;
+    b.classList.toggle('sonne', sonAllume);
+    /* Un navigateur peut refuser d'allumer le son : on le vérifie au lieu de
+       le supposer, et on remet l'affichage d'accord avec la réalité. */
+    setTimeout(function () {
+      if (sonAllume && v.muted) {
+        sonAllume = false;
+        b.classList.remove('sonne');
+        if (dit) dit.textContent = 'Le son a été bloqué par le navigateur';
+        return;
+      }
+      direEtat();
+    }, 120);
+    return true;
+  };
+
   b.addEventListener('click', function () {
     b.dataset.touche = '1';
-    /* Un clic est un vrai geste : c'est le moment où le son passe à coup sûr. */
-    if (v && v.muted && b.classList.contains('parlant')) {
-      v.muted = false;
-      b.classList.add('sonne');
-      if (dit) dit.textContent = 'Le son est allumé';
-      return;
-    }
-    poser(!b.classList.contains('ouvert'));
+    if (!b.classList.contains('ouvert')) { poser(true); lancer(); direEtat(); return; }
+    basculerSon();
   });
+
+  /* Au clavier : la barre d'espace et Entrée déclenchent déjà le clic sur un
+     <button>, rien à ajouter. */
 
   var survol = window.matchMedia && window.matchMedia('(hover: hover)').matches;
   if (v && survol && !sobre) {
+    /* Le survol n'allume plus rien : il annonce seulement ce que fera le clic. */
     b.addEventListener('mouseenter', function () {
       if (!b.classList.contains('parlant')) lancer();
-      v.muted = false;
-      /* Certains navigateurs refusent d'allumer le son sans geste : on le
-         détecte au lieu de le supposer. */
-      setTimeout(function () {
-        if (v.muted || v.paused) {
-          v.muted = true;
-          if (v.paused) { var e = v.play(); if (e && e.catch) e.catch(function () {}); }
-          if (dit) dit.textContent = 'Cliquez pour m’entendre';
-        } else {
-          b.classList.add('sonne');
-          if (dit) dit.textContent = '🔊 Écoutez ce que je dis';
-        }
-      }, 120);
+      b.classList.add('montre');
+      direEtat();
     });
-    b.addEventListener('mouseleave', function () {
-      v.muted = true;
-      b.classList.remove('sonne');
-      if (dit) dit.textContent = 'Survolez pour m’entendre';
-    });
+    b.addEventListener('mouseleave', function () { direEtat(); });
+
+    /* L'anneau suit la souris : il s'incline légèrement vers elle. C'est ce
+       mouvement qui dit « je réagis », avant même qu'on ait cliqué. */
+    if (window.gsap) {
+      var ix = gsap.quickTo(b, '--pointex', { duration: .5, ease: 'power3.out' });
+      var iy = gsap.quickTo(b, '--pointey', { duration: .5, ease: 'power3.out' });
+      b.addEventListener('mousemove', function (e) {
+        var r = b.getBoundingClientRect();
+        ix(((e.clientX - r.left) / r.width - .5) * 8);
+        iy(((e.clientY - r.top) / r.height - .5) * 8);
+      });
+      b.addEventListener('mouseleave', function () { ix(0); iy(0); });
+    }
   }
+
+  direEtat();
 })();
 </script>
 </body>
