@@ -83,6 +83,14 @@ const carte = (v) => `<li class="v" data-r="${esc(v.route)}" data-fam="${esc(v.f
     <h3>${esc(v.titre)}</h3>
     <span class="meta">${esc(v.date)} · ${v.poids} Mo</span>
     <p class="dit"></p>
+    <p class="note"></p>
+    <div class="pourquoi" hidden>
+      <textarea class="quoi" rows="2" placeholder="Qu’est-ce qu’il faut refaire ? Une phrase suffit."></textarea>
+      <div class="pq-actes">
+        <button type="button" class="micro">Dicter</button>
+        <button type="button" class="ok">Enregistrer</button>
+      </div>
+    </div>
     <div class="actes">
       <button data-e="planifier" title="Envoyer dans la file de planification">À planifier</button>
       <button data-e="refaire" title="Celle-là a marché, en refaire une comme elle">À refaire</button>
@@ -139,6 +147,18 @@ h3{font-size:15.5px;font-weight:650;line-height:1.3;letter-spacing:-.012em;text-
 .meta{font-size:12.6px;color:var(--faible);font-variant-numeric:tabular-nums}
 .dit{font-size:12.8px;color:var(--turq);min-height:0}
 .dit:empty{display:none}
+.pourquoi{display:flex;flex-direction:column;gap:7px;margin-top:9px}
+.pourquoi textarea{width:100%;font:inherit;font-size:13.5px;line-height:1.45;color:var(--encre);
+  background:#0b0d14;border:1px solid var(--trait);border-radius:8px;padding:9px 10px;resize:vertical}
+.pourquoi textarea:focus{outline:0;border-color:var(--jaune)}
+.pq-actes{display:flex;gap:6px}
+.pq-actes button{flex:1;font:inherit;font-size:12.4px;font-weight:600;cursor:pointer;
+  border-radius:8px;min-height:40px;background:var(--carte2);border:1px solid var(--trait);color:var(--doux)}
+.pq-actes .micro.actif{background:#3a1220;border-color:#8a2440;color:#ffb3c4}
+.pq-actes .ok{background:#1d1706;border-color:#4a3d10;color:#e8c98a}
+.note{font-size:12.8px;line-height:1.5;color:#e8c98a;background:#1d1706;
+  border:1px solid #443814;border-radius:8px;padding:8px 10px;margin-top:7px}
+.note:empty{display:none}
 .actes{display:flex;gap:6px;margin-top:auto;padding-top:11px;flex-wrap:wrap}
 .actes button{flex:1;min-width:78px;font:inherit;font-size:12.6px;font-weight:600;cursor:pointer;
   background:var(--carte2);border:1px solid var(--trait);color:var(--doux);
@@ -202,6 +222,9 @@ li.v.e-abandon .actes button[data-e=abandon]{background:#241318;border-color:#4a
 
   const LIB = { planifier: 'à planifier', refaire: 'à refaire', abandon: 'abandonnée' };
 
+  const Reco = window.SpeechRecognition || window.webkitSpeechRecognition;
+  let reco = null;
+
   const peindre = () => {
     const c = { adecider: 0, planifier: 0, refaire: 0, abandon: 0, tout: 0 };
     document.querySelectorAll('li.v').forEach((li) => {
@@ -209,6 +232,11 @@ li.v.e-abandon .actes button[data-e=abandon]{background:#241318;border-color:#4a
       li.className = 'v' + (e ? ' e-' + e : '');
       const d = li.querySelector('.dit');
       d.textContent = e ? LIB[e] : '';
+      const n = (etat[li.dataset.r] || {}).note || '';
+      li.querySelector('.note').textContent = n;
+      /* Le champ ne s'ouvre que pour « à refaire » : ailleurs il encombrerait
+         une grille de cinquante cartes. */
+      li.querySelector('.pourquoi').hidden = !(e === 'refaire' && !n);
       c.tout++;
       if (e) c[e]++; else c.adecider++;
       const okFiltre = filtre === 'tout' || (filtre === 'adecider' ? !e : e === filtre);
@@ -225,6 +253,49 @@ li.v.e-abandon .actes button[data-e=abandon]{background:#241318;border-color:#4a
     document.getElementById('vide').hidden =
       [...document.querySelectorAll('li.v')].some((li) => !li.hidden);
   };
+
+  document.querySelectorAll('li.v').forEach((li) => {
+    const r = li.dataset.r;
+    const zone = li.querySelector('.pourquoi');
+    const txt = li.querySelector('.quoi');
+    const mic = li.querySelector('.micro');
+
+    li.querySelector('.ok').addEventListener('click', () => {
+      const v = txt.value.trim();
+      if (!v) { zone.hidden = true; return; }
+      etat[r] = Object.assign({}, etat[r], { note: v, maj: new Date().toISOString() });
+      peindre(); duNeuf = true; envoyer();
+    });
+
+    /* Ré-ouvrir en cliquant la note, pour corriger sans tout refaire. */
+    li.querySelector('.note').addEventListener('click', () => {
+      txt.value = (etat[r] || {}).note || '';
+      zone.hidden = false; txt.focus();
+    });
+
+    if (!Reco) { mic.hidden = true; return; }
+    mic.addEventListener('click', () => {
+      if (reco) { reco.stop(); return; }
+      reco = new Reco();
+      reco.lang = 'fr-FR'; reco.continuous = true; reco.interimResults = true;
+      let acquis = txt.value ? txt.value + ' ' : '';
+      reco.onresult = (e) => {
+        let vol = '';
+        for (let i = e.resultIndex; i < e.results.length; i++) {
+          const m = e.results[i][0].transcript;
+          if (e.results[i].isFinal) acquis += m + ' '; else vol += m;
+        }
+        txt.value = (acquis + vol).replace(/\s+/g, ' ').trim();
+      };
+      /* Un micro refusé doit se voir : un silence ressemble à un enregistrement. */
+      reco.onerror = (e) => {
+        mic.textContent = e.error === 'not-allowed' ? 'Micro refusé' : 'Coupé';
+        reco = null; mic.classList.remove('actif');
+      };
+      reco.onend = () => { reco = null; mic.classList.remove('actif'); mic.textContent = 'Dicter'; };
+      reco.start(); mic.classList.add('actif'); mic.textContent = 'J’écoute…';
+    });
+  });
 
   document.querySelectorAll('li.v .actes button').forEach((b) => {
     b.addEventListener('click', () => {
