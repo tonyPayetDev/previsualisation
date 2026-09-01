@@ -1,0 +1,1019 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>Tri des vidéos</title>
+<style>
+:root{--nuit:#0d0d13;--carte:#15161f;--carte2:#1b1d29;--trait:#262838;--encre:#eceef5;
+  --doux:#9599ad;--faible:#6b7089;--jaune:#eab308;--turq:#3dc4c2;--rouge:#f2606f;--violet:#8b5cf6}
+*{margin:0;padding:0;box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;background:var(--nuit)}
+body{background:var(--nuit);color:var(--encre);
+  font:400 15.5px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  padding:26px 16px calc(90px + env(safe-area-inset-bottom))}
+.w{max-width:1180px;margin-inline:auto}
+h1{font-size:clamp(26px,6vw,36px);line-height:1.06;font-weight:800;letter-spacing:-.03em}
+.sous{color:var(--doux);margin-top:9px;max-width:60ch;font-size:15.5px}
+
+.filtres{display:flex;flex-wrap:wrap;gap:8px;margin:22px 0 6px}
+.filtres button{font:inherit;font-size:13.5px;font-weight:600;cursor:pointer;
+  background:var(--carte);border:1px solid var(--trait);color:var(--doux);
+  border-radius:99px;padding:9px 15px;min-height:42px}
+.filtres button.on{background:var(--jaune);border-color:var(--jaune);color:#140f00}
+.filtres .n{opacity:.65;margin-left:6px;font-variant-numeric:tabular-nums}
+
+ul{list-style:none;display:grid;gap:14px;margin-top:18px;
+  grid-template-columns:repeat(auto-fill,minmax(260px,1fr))}
+li.v{background:var(--carte);border:1px solid var(--trait);border-radius:13px;
+  overflow:hidden;display:flex;flex-direction:column}
+li.v[hidden]{display:none}
+li.v.e-planifier{border-color:#1f7a4c}
+li.v.e-refaire{border-color:#4a3d10}
+li.v.e-abandon{opacity:.42}
+.apercu{position:relative;display:block;background:#000;aspect-ratio:9/16;max-height:270px;
+  overflow:hidden;text-decoration:none}
+.apercu img{width:100%;height:100%;object-fit:cover;display:block}
+.apercu .rien{position:absolute;inset:0;display:grid;place-items:center;color:var(--faible);font-size:13px}
+.apercu .dur{position:absolute;right:8px;bottom:8px;background:rgba(0,0,0,.72);
+  color:#fff;font:600 12px/1 ui-monospace,monospace;padding:5px 8px;border-radius:5px}
+.info{padding:13px 14px 14px;display:flex;flex-direction:column;gap:5px;flex:1}
+.fam{font:700 10.5px/1 ui-monospace,monospace;letter-spacing:.14em;text-transform:uppercase;color:var(--violet)}
+h3{font-size:15.5px;font-weight:650;line-height:1.3;letter-spacing:-.012em;text-wrap:balance}
+.meta{font-size:12.6px;color:var(--faible);font-variant-numeric:tabular-nums}
+.dit{font-size:12.8px;color:var(--turq);min-height:0}
+.dit:empty{display:none}
+.actes{display:flex;gap:6px;margin-top:auto;padding-top:11px;flex-wrap:wrap}
+.actes button{flex:1;min-width:78px;font:inherit;font-size:12.6px;font-weight:600;cursor:pointer;
+  background:var(--carte2);border:1px solid var(--trait);color:var(--doux);
+  border-radius:8px;padding:10px 6px;min-height:44px}
+.actes button:hover{border-color:#39406b;color:var(--encre)}
+li.v.e-planifier .actes button[data-e=planifier]{background:#0e2a1c;border-color:#1f7a4c;color:#7bebb0}
+li.v.e-refaire .actes button[data-e=refaire]{background:#1d1706;border-color:#4a3d10;color:#e8c98a}
+li.v.e-abandon .actes button[data-e=abandon]{background:#241318;border-color:#4a222b;color:#f3b9c0}
+
+.bandeau{position:fixed;left:0;right:0;bottom:0;background:#0a0b11;
+  border-top:1px solid var(--trait);padding:13px 16px calc(13px + env(safe-area-inset-bottom));
+  font-size:13.6px;color:var(--doux);display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.bandeau b{color:var(--encre)}
+.vide{color:var(--faible);padding:40px 0;text-align:center;font-size:15px}
+.vide[hidden]{display:none}
+</style>
+</head>
+<body>
+<div class="w">
+  <h1>Tri des vidéos</h1>
+  <p class="sous">53 vidéos sur previsualisation. Trois décisions par vidéo, et
+  ce que tu marques « à planifier » part dans la file. Tes choix sont enregistrés sur le
+  serveur — pas dans ce navigateur.</p>
+
+  <div class="filtres" id="filtres">
+    <button data-f="adecider" class="on">À décider<span class="n"></span></button>
+    <button data-f="planifier">À planifier<span class="n"></span></button>
+    <button data-f="refaire">À refaire<span class="n"></span></button>
+    <button data-f="abandon">Abandonnées<span class="n"></span></button>
+    <button data-f="tout">Tout<span class="n"></span></button>
+    <button data-fam="Autoboost">Autoboost</button><button data-fam="Autre">Autre</button><button data-fam="Client">Client</button><button data-fam="FoodBoost">FoodBoost</button><button data-fam="Journal IA">Journal IA</button><button data-fam="Écran scindé">Écran scindé</button>
+  </div>
+
+  <ul id="liste"><li class="v" data-r="autoboost-69-onboarding-client" data-fam="Autoboost">
+  <a class="apercu" href="/autoboost-69-onboarding-client/" target="_blank" rel="noopener">
+    <img src="vignettes/autoboost-69-onboarding-client.jpg" alt="" loading="lazy" width="300">
+    <span class="dur">30 s</span>
+  </a>
+  <div class="info">
+    <span class="fam">Autoboost</span>
+    <h3>autoboost 69 onboarding client</h3>
+    <span class="meta">2026-09-01 · 11.4 Mo</span>
+    <p class="dit"></p>
+    <div class="actes">
+      <button data-e="planifier" title="Envoyer dans la file de planification">À planifier</button>
+      <button data-e="refaire" title="Celle-là a marché, en refaire une comme elle">À refaire</button>
+      <button data-e="abandon" title="Ne plus la proposer">Abandon</button>
+    </div>
+  </div>
+</li><li class="v" data-r="feed-arbradelis" data-fam="FoodBoost">
+  <a class="apercu" href="/feed-arbradelis/" target="_blank" rel="noopener">
+    <img src="vignettes/feed-arbradelis.jpg" alt="" loading="lazy" width="300">
+    <span class="dur">9 s</span>
+  </a>
+  <div class="info">
+    <span class="fam">FoodBoost</span>
+    <h3>l'ArbraDelis' — feed généré depuis leur site</h3>
+    <span class="meta">2026-09-01 · 4.7 Mo</span>
+    <p class="dit"></p>
+    <div class="actes">
+      <button data-e="planifier" title="Envoyer dans la file de planification">À planifier</button>
+      <button data-e="refaire" title="Celle-là a marché, en refaire une comme elle">À refaire</button>
+      <button data-e="abandon" title="Ne plus la proposer">Abandon</button>
+    </div>
+  </div>
+</li><li class="v" data-r="feed-l-arbradelis" data-fam="FoodBoost">
+  <a class="apercu" href="/feed-l-arbradelis/" target="_blank" rel="noopener">
+    <img src="vignettes/feed-l-arbradelis.jpg" alt="" loading="lazy" width="300">
+    <span class="dur">9 s</span>
+  </a>
+  <div class="info">
+    <span class="fam">FoodBoost</span>
+    <h3>feed l arbradelis</h3>
+    <span class="meta">2026-09-01 · 4.1 Mo</span>
+    <p class="dit"></p>
+    <div class="actes">
+      <button data-e="planifier" title="Envoyer dans la file de planification">À planifier</button>
+      <button data-e="refaire" title="Celle-là a marché, en refaire une comme elle">À refaire</button>
+      <button data-e="abandon" title="Ne plus la proposer">Abandon</button>
+    </div>
+  </div>
+</li><li class="v" data-r="journal-ia-2026-09-01" data-fam="Journal IA">
+  <a class="apercu" href="/journal-ia-2026-09-01/" target="_blank" rel="noopener">
+    <img src="vignettes/journal-ia-2026-09-01.jpg" alt="" loading="lazy" width="300">
+    <span class="dur">1 min 20</span>
+  </a>
+  <div class="info">
+    <span class="fam">Journal IA</span>
+    <h3>Journal IA — Mar. 1 janvier 2026</h3>
+    <span class="meta">2026-09-01 · 10.9 Mo</span>
+    <p class="dit"></p>
+    <div class="actes">
+      <button data-e="planifier" title="Envoyer dans la file de planification">À planifier</button>
+      <button data-e="refaire" title="Celle-là a marché, en refaire une comme elle">À refaire</button>
+      <button data-e="abandon" title="Ne plus la proposer">Abandon</button>
+    </div>
+  </div>
+</li><li class="v" data-r="liste-3-ressources" data-fam="Autre">
+  <a class="apercu" href="/liste-3-ressources/" target="_blank" rel="noopener">
+    <img src="vignettes/liste-3-ressources.jpg" alt="" loading="lazy" width="300">
+    <span class="dur">25 s</span>
+  </a>
+  <div class="info">
+    <span class="fam">Autre</span>
+    <h3>liste 3 ressources</h3>
+    <span class="meta">2026-09-01 · 15.9 Mo</span>
+    <p class="dit"></p>
+    <div class="actes">
+      <button data-e="planifier" title="Envoyer dans la file de planification">À planifier</button>
+      <button data-e="refaire" title="Celle-là a marché, en refaire une comme elle">À refaire</button>
+      <button data-e="abandon" title="Ne plus la proposer">Abandon</button>
+    </div>
+  </div>
+</li><li class="v" data-r="split-facture" data-fam="Écran scindé">
+  <a class="apercu" href="/split-facture/" target="_blank" rel="noopener">
+    <img src="vignettes/split-facture.jpg" alt="" loading="lazy" width="300">
+    <span class="dur">28 s</span>
+  </a>
+  <div class="info">
+    <span class="fam">Écran scindé</span>
+    <h3>Facturation auto — écran scindé</h3>
+    <span class="meta">2026-09-01 · 8.8 Mo</span>
+    <p class="dit"></p>
+    <div class="actes">
+      <button data-e="planifier" title="Envoyer dans la file de planification">À planifier</button>
+      <button data-e="refaire" title="Celle-là a marché, en refaire une comme elle">À refaire</button>
+      <button data-e="abandon" title="Ne plus la proposer">Abandon</button>
+    </div>
+  </div>
+</li><li class="v" data-r="autoboost-68-autodm-instagram" data-fam="Autoboost">
+  <a class="apercu" href="/autoboost-68-autodm-instagram/" target="_blank" rel="noopener">
+    <img src="vignettes/autoboost-68-autodm-instagram.jpg" alt="" loading="lazy" width="300">
+    <span class="dur">31 s</span>
+  </a>
+  <div class="info">
+    <span class="fam">Autoboost</span>
+    <h3>autoboost 68 autodm instagram</h3>
+    <span class="meta">2026-08-31 · 13.3 Mo</span>
+    <p class="dit"></p>
+    <div class="actes">
+      <button data-e="planifier" title="Envoyer dans la file de planification">À planifier</button>
+      <button data-e="refaire" title="Celle-là a marché, en refaire une comme elle">À refaire</button>
+      <button data-e="abandon" title="Ne plus la proposer">Abandon</button>
+    </div>
+  </div>
+</li><li class="v" data-r="avant-apres-lunisson" data-fam="Client">
+  <a class="apercu" href="/avant-apres-lunisson/" target="_blank" rel="noopener">
+    <img src="vignettes/avant-apres-lunisson.jpg" alt="" loading="lazy" width="300">
+    <span class="dur">18 s</span>
+  </a>
+  <div class="info">
+    <span class="fam">Client</span>
+    <h3>Avant / Après — L’Unisson</h3>
+    <span class="meta">2026-08-31 · 2.5 Mo</span>
+    <p class="dit"></p>
+    <div class="actes">
+      <button data-e="planifier" title="Envoyer dans la file de planification">À planifier</button>
+      <button data-e="refaire" title="Celle-là a marché, en refaire une comme elle">À refaire</button>
+      <button data-e="abandon" title="Ne plus la proposer">Abandon</button>
+    </div>
+  </div>
+</li><li class="v" data-r="foodboost-beatsync" data-fam="FoodBoost">
+  <a class="apercu" href="/foodboost-beatsync/" target="_blank" rel="noopener">
+    <img src="vignettes/foodboost-beatsync.jpg" alt="" loading="lazy" width="300">
+    <span class="dur">19 s</span>
+  </a>
+  <div class="info">
+    <span class="fam">FoodBoost</span>
+    <h3>FoodBoost — vitrine beat-sync</h3>
+    <span class="meta">2026-08-31 · 13.2 Mo</span>
+    <p class="dit"></p>
+    <div class="actes">
+      <button data-e="planifier" title="Envoyer dans la file de planification">À planifier</button>
+      <button data-e="refaire" title="Celle-là a marché, en refaire une comme elle">À refaire</button>
+      <button data-e="abandon" title="Ne plus la proposer">Abandon</button>
+    </div>
+  </div>
+</li><li class="v" data-r="journal-ia-2026-08-31" data-fam="Journal IA">
+  <a class="apercu" href="/journal-ia-2026-08-31/" target="_blank" rel="noopener">
+    <img src="vignettes/journal-ia-2026-08-31.jpg" alt="" loading="lazy" width="300">
+    <span class="dur">1 min 17</span>
+  </a>
+  <div class="info">
+    <span class="fam">Journal IA</span>
+    <h3>Journal IA — Lun. 31 août 2026</h3>
+    <span class="meta">2026-08-31 · 10.7 Mo</span>
+    <p class="dit"></p>
+    <div class="actes">
+      <button data-e="planifier" title="Envoyer dans la file de planification">À planifier</button>
+      <button data-e="refaire" title="Celle-là a marché, en refaire une comme elle">À refaire</button>
+      <button data-e="abandon" title="Ne plus la proposer">Abandon</button>
+    </div>
+  </div>
+</li><li class="v" data-r="lunisson-scroll-avatar" data-fam="Client">
+  <a class="apercu" href="/lunisson-scroll-avatar/" target="_blank" rel="noopener">
+    <img src="vignettes/lunisson-scroll-avatar.jpg" alt="" loading="lazy" width="300">
+    <span class="dur">27 s</span>
+  </a>
+  <div class="info">
+    <span class="fam">Client</span>
+    <h3>L'Unisson — le site qui défile</h3>
+    <span class="meta">2026-08-31 · 7.4 Mo</span>
+    <p class="dit"></p>
+    <div class="actes">
+      <button data-e="planifier" title="Envoyer dans la file de planification">À planifier</button>
+      <button data-e="refaire" title="Celle-là a marché, en refaire une comme elle">À refaire</button>
+      <button data-e="abandon" title="Ne plus la proposer">Abandon</button>
+    </div>
+  </div>
+</li><li class="v" data-r="showcase-vitrines" data-fam="Autre">
+  <a class="apercu" href="/showcase-vitrines/" target="_blank" rel="noopener">
+    <img src="vignettes/showcase-vitrines.jpg" alt="" loading="lazy" width="300">
+    <span class="dur">19 s</span>
+  </a>
+  <div class="info">
+    <span class="fam">Autre</span>
+    <h3>Les vitrines de La Réunion, au scroll — VideoBoost</h3>
+    <span class="meta">2026-08-31 · 15.1 Mo</span>
+    <p class="dit"></p>
+    <div class="actes">
+      <button data-e="planifier" title="Envoyer dans la file de planification">À planifier</button>
+      <button data-e="refaire" title="Celle-là a marché, en refaire une comme elle">À refaire</button>
+      <button data-e="abandon" title="Ne plus la proposer">Abandon</button>
+    </div>
+  </div>
+</li><li class="v" data-r="split-artisan" data-fam="Écran scindé">
+  <a class="apercu" href="/split-artisan/" target="_blank" rel="noopener">
+    <img src="vignettes/split-artisan.jpg" alt="" loading="lazy" width="300">
+    <span class="dur">27 s</span>
+  </a>
+  <div class="info">
+    <span class="fam">Écran scindé</span>
+    <h3>Artisan en écran scindé</h3>
+    <span class="meta">2026-08-31 · 11.8 Mo</span>
+    <p class="dit"></p>
+    <div class="actes">
+      <button data-e="planifier" title="Envoyer dans la file de planification">À planifier</button>
+      <button data-e="refaire" title="Celle-là a marché, en refaire une comme elle">À refaire</button>
+      <button data-e="abandon" title="Ne plus la proposer">Abandon</button>
+    </div>
+  </div>
+</li><li class="v" data-r="split-avocat" data-fam="Écran scindé">
+  <a class="apercu" href="/split-avocat/" target="_blank" rel="noopener">
+    <img src="vignettes/split-avocat.jpg" alt="" loading="lazy" width="300">
+    <span class="dur">29 s</span>
+  </a>
+  <div class="info">
+    <span class="fam">Écran scindé</span>
+    <h3>Avocat en écran scindé</h3>
+    <span class="meta">2026-08-31 · 12.5 Mo</span>
+    <p class="dit"></p>
+    <div class="actes">
+      <button data-e="planifier" title="Envoyer dans la file de planification">À planifier</button>
+      <button data-e="refaire" title="Celle-là a marché, en refaire une comme elle">À refaire</button>
+      <button data-e="abandon" title="Ne plus la proposer">Abandon</button>
+    </div>
+  </div>
+</li><li class="v" data-r="split-beaute" data-fam="Écran scindé">
+  <a class="apercu" href="/split-beaute/" target="_blank" rel="noopener">
+    <img src="vignettes/split-beaute.jpg" alt="" loading="lazy" width="300">
+    <span class="dur">28 s</span>
+  </a>
+  <div class="info">
+    <span class="fam">Écran scindé</span>
+    <h3>Beauté en écran scindé</h3>
+    <span class="meta">2026-08-31 · 12.2 Mo</span>
+    <p class="dit"></p>
+    <div class="actes">
+      <button data-e="planifier" title="Envoyer dans la file de planification">À planifier</button>
+      <button data-e="refaire" title="Celle-là a marché, en refaire une comme elle">À refaire</button>
+      <button data-e="abandon" title="Ne plus la proposer">Abandon</button>
+    </div>
+  </div>
+</li><li class="v" data-r="split-event" data-fam="Écran scindé">
+  <a class="apercu" href="/split-event/" target="_blank" rel="noopener">
+    <img src="vignettes/split-event.jpg" alt="" loading="lazy" width="300">
+    <span class="dur">28 s</span>
+  </a>
+  <div class="info">
+    <span class="fam">Écran scindé</span>
+    <h3>Événementiel en écran scindé</h3>
+    <span class="meta">2026-08-31 · 12.3 Mo</span>
+    <p class="dit"></p>
+    <div class="actes">
+      <button data-e="planifier" title="Envoyer dans la file de planification">À planifier</button>
+      <button data-e="refaire" title="Celle-là a marché, en refaire une comme elle">À refaire</button>
+      <button data-e="abandon" title="Ne plus la proposer">Abandon</button>
+    </div>
+  </div>
+</li><li class="v" data-r="split-garage" data-fam="Écran scindé">
+  <a class="apercu" href="/split-garage/" target="_blank" rel="noopener">
+    <img src="vignettes/split-garage.jpg" alt="" loading="lazy" width="300">
+    <span class="dur">28 s</span>
+  </a>
+  <div class="info">
+    <span class="fam">Écran scindé</span>
+    <h3>Garage en écran scindé</h3>
+    <span class="meta">2026-08-31 · 12 Mo</span>
+    <p class="dit"></p>
+    <div class="actes">
+      <button data-e="planifier" title="Envoyer dans la file de planification">À planifier</button>
+      <button data-e="refaire" title="Celle-là a marché, en refaire une comme elle">À refaire</button>
+      <button data-e="abandon" title="Ne plus la proposer">Abandon</button>
+    </div>
+  </div>
+</li><li class="v" data-r="split-immo" data-fam="Écran scindé">
+  <a class="apercu" href="/split-immo/" target="_blank" rel="noopener">
+    <img src="vignettes/split-immo.jpg" alt="" loading="lazy" width="300">
+    <span class="dur">30 s</span>
+  </a>
+  <div class="info">
+    <span class="fam">Écran scindé</span>
+    <h3>Immobilier en écran scindé</h3>
+    <span class="meta">2026-08-31 · 12.3 Mo</span>
+    <p class="dit"></p>
+    <div class="actes">
+      <button data-e="planifier" title="Envoyer dans la file de planification">À planifier</button>
+      <button data-e="refaire" title="Celle-là a marché, en refaire une comme elle">À refaire</button>
+      <button data-e="abandon" title="Ne plus la proposer">Abandon</button>
+    </div>
+  </div>
+</li><li class="v" data-r="split-sante" data-fam="Écran scindé">
+  <a class="apercu" href="/split-sante/" target="_blank" rel="noopener">
+    <img src="vignettes/split-sante.jpg" alt="" loading="lazy" width="300">
+    <span class="dur">30 s</span>
+  </a>
+  <div class="info">
+    <span class="fam">Écran scindé</span>
+    <h3>Santé en écran scindé</h3>
+    <span class="meta">2026-08-31 · 12 Mo</span>
+    <p class="dit"></p>
+    <div class="actes">
+      <button data-e="planifier" title="Envoyer dans la file de planification">À planifier</button>
+      <button data-e="refaire" title="Celle-là a marché, en refaire une comme elle">À refaire</button>
+      <button data-e="abandon" title="Ne plus la proposer">Abandon</button>
+    </div>
+  </div>
+</li><li class="v" data-r="split-solaire" data-fam="Écran scindé">
+  <a class="apercu" href="/split-solaire/" target="_blank" rel="noopener">
+    <img src="vignettes/split-solaire.jpg" alt="" loading="lazy" width="300">
+    <span class="dur">31 s</span>
+  </a>
+  <div class="info">
+    <span class="fam">Écran scindé</span>
+    <h3>Solaire en écran scindé</h3>
+    <span class="meta">2026-08-31 · 12.6 Mo</span>
+    <p class="dit"></p>
+    <div class="actes">
+      <button data-e="planifier" title="Envoyer dans la file de planification">À planifier</button>
+      <button data-e="refaire" title="Celle-là a marché, en refaire une comme elle">À refaire</button>
+      <button data-e="abandon" title="Ne plus la proposer">Abandon</button>
+    </div>
+  </div>
+</li><li class="v" data-r="split-voyage" data-fam="Écran scindé">
+  <a class="apercu" href="/split-voyage/" target="_blank" rel="noopener">
+    <img src="vignettes/split-voyage.jpg" alt="" loading="lazy" width="300">
+    <span class="dur">29 s</span>
+  </a>
+  <div class="info">
+    <span class="fam">Écran scindé</span>
+    <h3>Voyage en écran scindé</h3>
+    <span class="meta">2026-08-31 · 12.3 Mo</span>
+    <p class="dit"></p>
+    <div class="actes">
+      <button data-e="planifier" title="Envoyer dans la file de planification">À planifier</button>
+      <button data-e="refaire" title="Celle-là a marché, en refaire une comme elle">À refaire</button>
+      <button data-e="abandon" title="Ne plus la proposer">Abandon</button>
+    </div>
+  </div>
+</li><li class="v" data-r="tuto-wan" data-fam="Autre">
+  <a class="apercu" href="/tuto-wan/" target="_blank" rel="noopener">
+    <img src="vignettes/tuto-wan.jpg" alt="" loading="lazy" width="300">
+    <span class="dur">39 s</span>
+  </a>
+  <div class="info">
+    <span class="fam">Autre</span>
+    <h3>Tuto — Wan 3.0 contre Seedance 2.5</h3>
+    <span class="meta">2026-08-31 · 6.9 Mo</span>
+    <p class="dit"></p>
+    <div class="actes">
+      <button data-e="planifier" title="Envoyer dans la file de planification">À planifier</button>
+      <button data-e="refaire" title="Celle-là a marché, en refaire une comme elle">À refaire</button>
+      <button data-e="abandon" title="Ne plus la proposer">Abandon</button>
+    </div>
+  </div>
+</li><li class="v" data-r="demo-papies" data-fam="Client">
+  <a class="apercu" href="/demo-papies/" target="_blank" rel="noopener">
+    <img src="vignettes/demo-papies.jpg" alt="" loading="lazy" width="300">
+    <span class="dur">13 s</span>
+  </a>
+  <div class="info">
+    <span class="fam">Client</span>
+    <h3>Les Papi'es — vidéo de démonstration</h3>
+    <span class="meta">2026-08-30 · 3.4 Mo</span>
+    <p class="dit"></p>
+    <div class="actes">
+      <button data-e="planifier" title="Envoyer dans la file de planification">À planifier</button>
+      <button data-e="refaire" title="Celle-là a marché, en refaire une comme elle">À refaire</button>
+      <button data-e="abandon" title="Ne plus la proposer">Abandon</button>
+    </div>
+  </div>
+</li><li class="v" data-r="foodboost-post-feed" data-fam="FoodBoost">
+  <a class="apercu" href="/foodboost-post-feed/" target="_blank" rel="noopener">
+    <img src="vignettes/foodboost-post-feed.jpg" alt="" loading="lazy" width="300">
+    <span class="dur">15 s</span>
+  </a>
+  <div class="info">
+    <span class="fam">FoodBoost</span>
+    <h3>FoodBoost — le post du feed généré</h3>
+    <span class="meta">2026-08-30 · 2.4 Mo</span>
+    <p class="dit"></p>
+    <div class="actes">
+      <button data-e="planifier" title="Envoyer dans la file de planification">À planifier</button>
+      <button data-e="refaire" title="Celle-là a marché, en refaire une comme elle">À refaire</button>
+      <button data-e="abandon" title="Ne plus la proposer">Abandon</button>
+    </div>
+  </div>
+</li><li class="v" data-r="journal-ia-2026-08-30" data-fam="Journal IA">
+  <a class="apercu" href="/journal-ia-2026-08-30/" target="_blank" rel="noopener">
+    <img src="vignettes/journal-ia-2026-08-30.jpg" alt="" loading="lazy" width="300">
+    <span class="dur">1 min 24</span>
+  </a>
+  <div class="info">
+    <span class="fam">Journal IA</span>
+    <h3>Journal IA — Dim. 30 août 2026</h3>
+    <span class="meta">2026-08-30 · 14.2 Mo</span>
+    <p class="dit"></p>
+    <div class="actes">
+      <button data-e="planifier" title="Envoyer dans la file de planification">À planifier</button>
+      <button data-e="refaire" title="Celle-là a marché, en refaire une comme elle">À refaire</button>
+      <button data-e="abandon" title="Ne plus la proposer">Abandon</button>
+    </div>
+  </div>
+</li><li class="v" data-r="split-resto" data-fam="Écran scindé">
+  <a class="apercu" href="/split-resto/" target="_blank" rel="noopener">
+    <img src="vignettes/split-resto.jpg" alt="" loading="lazy" width="300">
+    <span class="dur">32 s</span>
+  </a>
+  <div class="info">
+    <span class="fam">Écran scindé</span>
+    <h3>Resto en écran scindé</h3>
+    <span class="meta">2026-08-30 · 13.2 Mo</span>
+    <p class="dit"></p>
+    <div class="actes">
+      <button data-e="planifier" title="Envoyer dans la file de planification">À planifier</button>
+      <button data-e="refaire" title="Celle-là a marché, en refaire une comme elle">À refaire</button>
+      <button data-e="abandon" title="Ne plus la proposer">Abandon</button>
+    </div>
+  </div>
+</li><li class="v" data-r="journal-ia-2026-08-29" data-fam="Journal IA">
+  <a class="apercu" href="/journal-ia-2026-08-29/" target="_blank" rel="noopener">
+    <img src="vignettes/journal-ia-2026-08-29.jpg" alt="" loading="lazy" width="300">
+    <span class="dur">1 min 16</span>
+  </a>
+  <div class="info">
+    <span class="fam">Journal IA</span>
+    <h3>Journal IA — Sam. 29 août 2026</h3>
+    <span class="meta">2026-08-29 · 14.6 Mo</span>
+    <p class="dit"></p>
+    <div class="actes">
+      <button data-e="planifier" title="Envoyer dans la file de planification">À planifier</button>
+      <button data-e="refaire" title="Celle-là a marché, en refaire une comme elle">À refaire</button>
+      <button data-e="abandon" title="Ne plus la proposer">Abandon</button>
+    </div>
+  </div>
+</li><li class="v" data-r="pub-shortforge-soirees" data-fam="Autre">
+  <a class="apercu" href="/pub-shortforge-soirees/" target="_blank" rel="noopener">
+    <img src="vignettes/pub-shortforge-soirees.jpg" alt="" loading="lazy" width="300">
+    <span class="dur">39 s</span>
+  </a>
+  <div class="info">
+    <span class="fam">Autre</span>
+    <h3>Pub ShortForge — Récupère tes soirées</h3>
+    <span class="meta">2026-08-29 · 9.6 Mo</span>
+    <p class="dit"></p>
+    <div class="actes">
+      <button data-e="planifier" title="Envoyer dans la file de planification">À planifier</button>
+      <button data-e="refaire" title="Celle-là a marché, en refaire une comme elle">À refaire</button>
+      <button data-e="abandon" title="Ne plus la proposer">Abandon</button>
+    </div>
+  </div>
+</li><li class="v" data-r="top3-objections-3mots" data-fam="Autre">
+  <a class="apercu" href="/top3-objections-3mots/" target="_blank" rel="noopener">
+    <img src="vignettes/top3-objections-3mots.jpg" alt="" loading="lazy" width="300">
+    <span class="dur">43 s</span>
+  </a>
+  <div class="info">
+    <span class="fam">Autre</span>
+    <h3>Top 3 objections — sous-titres 3 mots</h3>
+    <span class="meta">2026-08-29 · 13.2 Mo</span>
+    <p class="dit"></p>
+    <div class="actes">
+      <button data-e="planifier" title="Envoyer dans la file de planification">À planifier</button>
+      <button data-e="refaire" title="Celle-là a marché, en refaire une comme elle">À refaire</button>
+      <button data-e="abandon" title="Ne plus la proposer">Abandon</button>
+    </div>
+  </div>
+</li><li class="v" data-r="tuto-artisan-metro" data-fam="Autre">
+  <a class="apercu" href="/tuto-artisan-metro/" target="_blank" rel="noopener">
+    <img src="vignettes/tuto-artisan-metro.jpg" alt="" loading="lazy" width="300">
+    <span class="dur">1 min 01</span>
+  </a>
+  <div class="info">
+    <span class="fam">Autre</span>
+    <h3>Tuto artisan — hook métro</h3>
+    <span class="meta">2026-08-29 · 14.1 Mo</span>
+    <p class="dit"></p>
+    <div class="actes">
+      <button data-e="planifier" title="Envoyer dans la file de planification">À planifier</button>
+      <button data-e="refaire" title="Celle-là a marché, en refaire une comme elle">À refaire</button>
+      <button data-e="abandon" title="Ne plus la proposer">Abandon</button>
+    </div>
+  </div>
+</li><li class="v" data-r="autoboost-moteur-split-v2" data-fam="Autoboost">
+  <a class="apercu" href="/autoboost-moteur-split-v2/" target="_blank" rel="noopener">
+    <img src="vignettes/autoboost-moteur-split-v2.jpg" alt="" loading="lazy" width="300">
+    <span class="dur">27 s</span>
+  </a>
+  <div class="info">
+    <span class="fam">Autoboost</span>
+    <h3>MOTEUR — écran scindé, synchro corrigée</h3>
+    <span class="meta">2026-08-28 · 10.5 Mo</span>
+    <p class="dit"></p>
+    <div class="actes">
+      <button data-e="planifier" title="Envoyer dans la file de planification">À planifier</button>
+      <button data-e="refaire" title="Celle-là a marché, en refaire une comme elle">À refaire</button>
+      <button data-e="abandon" title="Ne plus la proposer">Abandon</button>
+    </div>
+  </div>
+</li><li class="v" data-r="befresh-montage-bar" data-fam="Autre">
+  <a class="apercu" href="/befresh-montage-bar/" target="_blank" rel="noopener">
+    <img src="vignettes/befresh-montage-bar.jpg" alt="" loading="lazy" width="300">
+    <span class="dur">17 s</span>
+  </a>
+  <div class="info">
+    <span class="fam">Autre</span>
+    <h3>BeFresh — montage bar au beat</h3>
+    <span class="meta">2026-08-28 · 5.7 Mo</span>
+    <p class="dit"></p>
+    <div class="actes">
+      <button data-e="planifier" title="Envoyer dans la file de planification">À planifier</button>
+      <button data-e="refaire" title="Celle-là a marché, en refaire une comme elle">À refaire</button>
+      <button data-e="abandon" title="Ne plus la proposer">Abandon</button>
+    </div>
+  </div>
+</li><li class="v" data-r="befresh-montage-q3" data-fam="Autre">
+  <a class="apercu" href="/befresh-montage-q3/" target="_blank" rel="noopener">
+    <img src="vignettes/befresh-montage-q3.jpg" alt="" loading="lazy" width="300">
+    <span class="dur">16 s</span>
+  </a>
+  <div class="info">
+    <span class="fam">Autre</span>
+    <h3>BeFresh — montage bar, clips animés</h3>
+    <span class="meta">2026-08-28 · 6.6 Mo</span>
+    <p class="dit"></p>
+    <div class="actes">
+      <button data-e="planifier" title="Envoyer dans la file de planification">À planifier</button>
+      <button data-e="refaire" title="Celle-là a marché, en refaire une comme elle">À refaire</button>
+      <button data-e="abandon" title="Ne plus la proposer">Abandon</button>
+    </div>
+  </div>
+</li><li class="v" data-r="autoboost-67-journal-ia" data-fam="Autoboost">
+  <a class="apercu" href="/autoboost-67-journal-ia/" target="_blank" rel="noopener">
+    <img src="vignettes/autoboost-67-journal-ia.jpg" alt="" loading="lazy" width="300">
+    <span class="dur">34 s</span>
+  </a>
+  <div class="info">
+    <span class="fam">Autoboost</span>
+    <h3>autoboost 67 journal ia</h3>
+    <span class="meta">2026-08-27 · 14.4 Mo</span>
+    <p class="dit"></p>
+    <div class="actes">
+      <button data-e="planifier" title="Envoyer dans la file de planification">À planifier</button>
+      <button data-e="refaire" title="Celle-là a marché, en refaire une comme elle">À refaire</button>
+      <button data-e="abandon" title="Ne plus la proposer">Abandon</button>
+    </div>
+  </div>
+</li><li class="v" data-r="journal-ia-2026-08-27" data-fam="Journal IA">
+  <a class="apercu" href="/journal-ia-2026-08-27/" target="_blank" rel="noopener">
+    <img src="vignettes/journal-ia-2026-08-27.jpg" alt="" loading="lazy" width="300">
+    <span class="dur">1 min 08</span>
+  </a>
+  <div class="info">
+    <span class="fam">Journal IA</span>
+    <h3>Journal IA — Jeu. 27 août 2026</h3>
+    <span class="meta">2026-08-27 · 11.9 Mo</span>
+    <p class="dit"></p>
+    <div class="actes">
+      <button data-e="planifier" title="Envoyer dans la file de planification">À planifier</button>
+      <button data-e="refaire" title="Celle-là a marché, en refaire une comme elle">À refaire</button>
+      <button data-e="abandon" title="Ne plus la proposer">Abandon</button>
+    </div>
+  </div>
+</li><li class="v" data-r="split-prompts-v2" data-fam="Écran scindé">
+  <a class="apercu" href="/split-prompts-v2/" target="_blank" rel="noopener">
+    <img src="vignettes/split-prompts-v2.jpg" alt="" loading="lazy" width="300">
+    <span class="dur">27 s</span>
+  </a>
+  <div class="info">
+    <span class="fam">Écran scindé</span>
+    <h3>Split-prompts v2 — vrai site + nouvel avatar</h3>
+    <span class="meta">2026-08-27 · 7.1 Mo</span>
+    <p class="dit"></p>
+    <div class="actes">
+      <button data-e="planifier" title="Envoyer dans la file de planification">À planifier</button>
+      <button data-e="refaire" title="Celle-là a marché, en refaire une comme elle">À refaire</button>
+      <button data-e="abandon" title="Ne plus la proposer">Abandon</button>
+    </div>
+  </div>
+</li><li class="v" data-r="split-prompts-v3" data-fam="Écran scindé">
+  <a class="apercu" href="/split-prompts-v3/" target="_blank" rel="noopener">
+    <img src="vignettes/split-prompts-v3.jpg" alt="" loading="lazy" width="300">
+    <span class="dur">27 s</span>
+  </a>
+  <div class="info">
+    <span class="fam">Écran scindé</span>
+    <h3>Split-prompts v3 — suspense, explication, révélation, CTA</h3>
+    <span class="meta">2026-08-27 · 4.7 Mo</span>
+    <p class="dit"></p>
+    <div class="actes">
+      <button data-e="planifier" title="Envoyer dans la file de planification">À planifier</button>
+      <button data-e="refaire" title="Celle-là a marché, en refaire une comme elle">À refaire</button>
+      <button data-e="abandon" title="Ne plus la proposer">Abandon</button>
+    </div>
+  </div>
+</li><li class="v" data-r="split-prompts-v4" data-fam="Écran scindé">
+  <a class="apercu" href="/split-prompts-v4/" target="_blank" rel="noopener">
+    <img src="vignettes/split-prompts-v4.jpg" alt="" loading="lazy" width="300">
+    <span class="dur">27 s</span>
+  </a>
+  <div class="info">
+    <span class="fam">Écran scindé</span>
+    <h3>Split-prompts v4 — le split-screen de la référence</h3>
+    <span class="meta">2026-08-27 · 7.1 Mo</span>
+    <p class="dit"></p>
+    <div class="actes">
+      <button data-e="planifier" title="Envoyer dans la file de planification">À planifier</button>
+      <button data-e="refaire" title="Celle-là a marché, en refaire une comme elle">À refaire</button>
+      <button data-e="abandon" title="Ne plus la proposer">Abandon</button>
+    </div>
+  </div>
+</li><li class="v" data-r="split-prompts-v5" data-fam="Écran scindé">
+  <a class="apercu" href="/split-prompts-v5/" target="_blank" rel="noopener">
+    <img src="vignettes/split-prompts-v5.jpg" alt="" loading="lazy" width="300">
+    <span class="dur">27 s</span>
+  </a>
+  <div class="info">
+    <span class="fam">Écran scindé</span>
+    <h3>Split-prompts v5 — ouverture motion néon</h3>
+    <span class="meta">2026-08-27 · 6.2 Mo</span>
+    <p class="dit"></p>
+    <div class="actes">
+      <button data-e="planifier" title="Envoyer dans la file de planification">À planifier</button>
+      <button data-e="refaire" title="Celle-là a marché, en refaire une comme elle">À refaire</button>
+      <button data-e="abandon" title="Ne plus la proposer">Abandon</button>
+    </div>
+  </div>
+</li><li class="v" data-r="veille-nepal-automatisation" data-fam="Autre">
+  <a class="apercu" href="/veille-nepal-automatisation/" target="_blank" rel="noopener">
+    <img src="vignettes/veille-nepal-automatisation.jpg" alt="" loading="lazy" width="300">
+    <span class="dur">1 min 50</span>
+  </a>
+  <div class="info">
+    <span class="fam">Autre</span>
+    <h3>Une heure sur une vallée</h3>
+    <span class="meta">2026-08-27 · 12.2 Mo</span>
+    <p class="dit"></p>
+    <div class="actes">
+      <button data-e="planifier" title="Envoyer dans la file de planification">À planifier</button>
+      <button data-e="refaire" title="Celle-là a marché, en refaire une comme elle">À refaire</button>
+      <button data-e="abandon" title="Ne plus la proposer">Abandon</button>
+    </div>
+  </div>
+</li><li class="v" data-r="autoboost-etude-restaurateurs" data-fam="Autoboost">
+  <a class="apercu" href="/autoboost-etude-restaurateurs/" target="_blank" rel="noopener">
+    <img src="vignettes/autoboost-etude-restaurateurs.jpg" alt="" loading="lazy" width="300">
+    <span class="dur">32 s</span>
+  </a>
+  <div class="info">
+    <span class="fam">Autoboost</span>
+    <h3>42 concurrents, zéro qui fait ça</h3>
+    <span class="meta">2026-08-26 · 19.1 Mo</span>
+    <p class="dit"></p>
+    <div class="actes">
+      <button data-e="planifier" title="Envoyer dans la file de planification">À planifier</button>
+      <button data-e="refaire" title="Celle-là a marché, en refaire une comme elle">À refaire</button>
+      <button data-e="abandon" title="Ne plus la proposer">Abandon</button>
+    </div>
+  </div>
+</li><li class="v" data-r="autoboost-moteur-split" data-fam="Autoboost">
+  <a class="apercu" href="/autoboost-moteur-split/" target="_blank" rel="noopener">
+    <img src="vignettes/autoboost-moteur-split.jpg" alt="" loading="lazy" width="300">
+    <span class="dur">26 s</span>
+  </a>
+  <div class="info">
+    <span class="fam">Autoboost</span>
+    <h3>MOTEUR, écran scindé</h3>
+    <span class="meta">2026-08-26 · 10.6 Mo</span>
+    <p class="dit"></p>
+    <div class="actes">
+      <button data-e="planifier" title="Envoyer dans la file de planification">À planifier</button>
+      <button data-e="refaire" title="Celle-là a marché, en refaire une comme elle">À refaire</button>
+      <button data-e="abandon" title="Ne plus la proposer">Abandon</button>
+    </div>
+  </div>
+</li><li class="v" data-r="journal-ia-2026-08-26" data-fam="Journal IA">
+  <a class="apercu" href="/journal-ia-2026-08-26/" target="_blank" rel="noopener">
+    <img src="vignettes/journal-ia-2026-08-26.jpg" alt="" loading="lazy" width="300">
+    <span class="dur">1 min 08</span>
+  </a>
+  <div class="info">
+    <span class="fam">Journal IA</span>
+    <h3>Journal IA — Mer. 26 août 2026</h3>
+    <span class="meta">2026-08-26 · 12 Mo</span>
+    <p class="dit"></p>
+    <div class="actes">
+      <button data-e="planifier" title="Envoyer dans la file de planification">À planifier</button>
+      <button data-e="refaire" title="Celle-là a marché, en refaire une comme elle">À refaire</button>
+      <button data-e="abandon" title="Ne plus la proposer">Abandon</button>
+    </div>
+  </div>
+</li><li class="v" data-r="split-prompts-cale" data-fam="Écran scindé">
+  <a class="apercu" href="/split-prompts-cale/" target="_blank" rel="noopener">
+    <img src="vignettes/split-prompts-cale.jpg" alt="" loading="lazy" width="300">
+    <span class="dur">27 s</span>
+  </a>
+  <div class="info">
+    <span class="fam">Écran scindé</span>
+    <h3>Split-prompts — recalé + bruitages</h3>
+    <span class="meta">2026-08-26 · 4.1 Mo</span>
+    <p class="dit"></p>
+    <div class="actes">
+      <button data-e="planifier" title="Envoyer dans la file de planification">À planifier</button>
+      <button data-e="refaire" title="Celle-là a marché, en refaire une comme elle">À refaire</button>
+      <button data-e="abandon" title="Ne plus la proposer">Abandon</button>
+    </div>
+  </div>
+</li><li class="v" data-r="tuto-chante-jamais-parti" data-fam="Autre">
+  <a class="apercu" href="/tuto-chante-jamais-parti/" target="_blank" rel="noopener">
+    <img src="vignettes/tuto-chante-jamais-parti.jpg" alt="" loading="lazy" width="300">
+    <span class="dur">45 s</span>
+  </a>
+  <div class="info">
+    <span class="fam">Autre</span>
+    <h3>Tuto chanté « Jamais parti »</h3>
+    <span class="meta">2026-08-26 · 6 Mo</span>
+    <p class="dit"></p>
+    <div class="actes">
+      <button data-e="planifier" title="Envoyer dans la file de planification">À planifier</button>
+      <button data-e="refaire" title="Celle-là a marché, en refaire une comme elle">À refaire</button>
+      <button data-e="abandon" title="Ne plus la proposer">Abandon</button>
+    </div>
+  </div>
+</li><li class="v" data-r="autoboost-65-avis-clients-linkedin" data-fam="Autoboost">
+  <a class="apercu" href="/autoboost-65-avis-clients-linkedin/" target="_blank" rel="noopener">
+    <img src="vignettes/autoboost-65-avis-clients-linkedin.jpg" alt="" loading="lazy" width="300">
+    <span class="dur">34 s</span>
+  </a>
+  <div class="info">
+    <span class="fam">Autoboost</span>
+    <h3>autoboost 65 avis clients linkedin</h3>
+    <span class="meta">2026-08-25 · 14 Mo</span>
+    <p class="dit"></p>
+    <div class="actes">
+      <button data-e="planifier" title="Envoyer dans la file de planification">À planifier</button>
+      <button data-e="refaire" title="Celle-là a marché, en refaire une comme elle">À refaire</button>
+      <button data-e="abandon" title="Ne plus la proposer">Abandon</button>
+    </div>
+  </div>
+</li><li class="v" data-r="autoboost-66-chatgpt-moteur-n8n" data-fam="Autoboost">
+  <a class="apercu" href="/autoboost-66-chatgpt-moteur-n8n/" target="_blank" rel="noopener">
+    <img src="vignettes/autoboost-66-chatgpt-moteur-n8n.jpg" alt="" loading="lazy" width="300">
+    <span class="dur">31 s</span>
+  </a>
+  <div class="info">
+    <span class="fam">Autoboost</span>
+    <h3>autoboost 66 chatgpt moteur n8n</h3>
+    <span class="meta">2026-08-25 · 19.5 Mo</span>
+    <p class="dit"></p>
+    <div class="actes">
+      <button data-e="planifier" title="Envoyer dans la file de planification">À planifier</button>
+      <button data-e="refaire" title="Celle-là a marché, en refaire une comme elle">À refaire</button>
+      <button data-e="abandon" title="Ne plus la proposer">Abandon</button>
+    </div>
+  </div>
+</li><li class="v" data-r="client-creperie-saintgeorges" data-fam="Client">
+  <a class="apercu" href="/client-creperie-saintgeorges/" target="_blank" rel="noopener">
+    <img src="vignettes/client-creperie-saintgeorges.jpg" alt="" loading="lazy" width="300">
+    <span class="dur">21 s</span>
+  </a>
+  <div class="info">
+    <span class="fam">Client</span>
+    <h3>Crêperie Saint Georges — Saint-Denis</h3>
+    <span class="meta">2026-08-25 · 2.7 Mo</span>
+    <p class="dit"></p>
+    <div class="actes">
+      <button data-e="planifier" title="Envoyer dans la file de planification">À planifier</button>
+      <button data-e="refaire" title="Celle-là a marché, en refaire une comme elle">À refaire</button>
+      <button data-e="abandon" title="Ne plus la proposer">Abandon</button>
+    </div>
+  </div>
+</li><li class="v" data-r="emplois-ia" data-fam="Autre">
+  <a class="apercu" href="/emplois-ia/" target="_blank" rel="noopener">
+    <img src="vignettes/emplois-ia.jpg" alt="" loading="lazy" width="300">
+    <span class="dur">40 s</span>
+  </a>
+  <div class="info">
+    <span class="fam">Autre</span>
+    <h3>L'infographie sans source — 24 s</h3>
+    <span class="meta">2026-08-25 · 1.5 Mo</span>
+    <p class="dit"></p>
+    <div class="actes">
+      <button data-e="planifier" title="Envoyer dans la file de planification">À planifier</button>
+      <button data-e="refaire" title="Celle-là a marché, en refaire une comme elle">À refaire</button>
+      <button data-e="abandon" title="Ne plus la proposer">Abandon</button>
+    </div>
+  </div>
+</li><li class="v" data-r="journal-ia-2026-08-25" data-fam="Journal IA">
+  <a class="apercu" href="/journal-ia-2026-08-25/" target="_blank" rel="noopener">
+    <img src="vignettes/journal-ia-2026-08-25.jpg" alt="" loading="lazy" width="300">
+    <span class="dur">1 min 09</span>
+  </a>
+  <div class="info">
+    <span class="fam">Journal IA</span>
+    <h3>Journal IA — Mar. 25 août 2026</h3>
+    <span class="meta">2026-08-25 · 12 Mo</span>
+    <p class="dit"></p>
+    <div class="actes">
+      <button data-e="planifier" title="Envoyer dans la file de planification">À planifier</button>
+      <button data-e="refaire" title="Celle-là a marché, en refaire une comme elle">À refaire</button>
+      <button data-e="abandon" title="Ne plus la proposer">Abandon</button>
+    </div>
+  </div>
+</li><li class="v" data-r="koytcha-video" data-fam="Autre">
+  <a class="apercu" href="/koytcha-video/" target="_blank" rel="noopener">
+    <img src="vignettes/koytcha-video.jpg" alt="" loading="lazy" width="300">
+    <span class="dur">28 s</span>
+  </a>
+  <div class="info">
+    <span class="fam">Autre</span>
+    <h3>Koytcha Immo — vidéo verticale</h3>
+    <span class="meta">2026-08-25 · 12.2 Mo</span>
+    <p class="dit"></p>
+    <div class="actes">
+      <button data-e="planifier" title="Envoyer dans la file de planification">À planifier</button>
+      <button data-e="refaire" title="Celle-là a marché, en refaire une comme elle">À refaire</button>
+      <button data-e="abandon" title="Ne plus la proposer">Abandon</button>
+    </div>
+  </div>
+</li><li class="v" data-r="mrdonuts-foodboost" data-fam="Autre">
+  <a class="apercu" href="/mrdonuts-foodboost/" target="_blank" rel="noopener">
+    <img src="vignettes/mrdonuts-foodboost.jpg" alt="" loading="lazy" width="300">
+    <span class="dur">13 s</span>
+  </a>
+  <div class="info">
+    <span class="fam">Autre</span>
+    <h3>MR DONUTS — sous-titres FoodBoost</h3>
+    <span class="meta">2026-08-25 · 4.7 Mo</span>
+    <p class="dit"></p>
+    <div class="actes">
+      <button data-e="planifier" title="Envoyer dans la file de planification">À planifier</button>
+      <button data-e="refaire" title="Celle-là a marché, en refaire une comme elle">À refaire</button>
+      <button data-e="abandon" title="Ne plus la proposer">Abandon</button>
+    </div>
+  </div>
+</li><li class="v" data-r="journal-ia-2026-08-23" data-fam="Journal IA">
+  <a class="apercu" href="/journal-ia-2026-08-23/" target="_blank" rel="noopener">
+    <img src="vignettes/journal-ia-2026-08-23.jpg" alt="" loading="lazy" width="300">
+    <span class="dur">1 min 09</span>
+  </a>
+  <div class="info">
+    <span class="fam">Journal IA</span>
+    <h3>Journal IA — Dim. 23 août 2026</h3>
+    <span class="meta">2026-08-23 · 12 Mo</span>
+    <p class="dit"></p>
+    <div class="actes">
+      <button data-e="planifier" title="Envoyer dans la file de planification">À planifier</button>
+      <button data-e="refaire" title="Celle-là a marché, en refaire une comme elle">À refaire</button>
+      <button data-e="abandon" title="Ne plus la proposer">Abandon</button>
+    </div>
+  </div>
+</li></ul>
+  <p class="vide" id="vide" hidden>Rien dans cette vue.</p>
+</div>
+
+<div class="bandeau" id="bandeau">Chargement de tes décisions…</div>
+
+<script>
+(() => {
+  const URL_ETAT = 'https://n7n.automatisationboost.com/webhook/videos-tri';
+  let etat = {}, duNeuf = false, enVol = false, filtre = 'adecider', fam = null;
+
+  /* On n'annule jamais un envoi en cours : on lève un drapeau et on renvoie
+     après. Une minuterie annulée a déjà fait perdre une décision ailleurs. */
+  const envoyer = async () => {
+    if (enVol || !duNeuf) return;
+    enVol = true; duNeuf = false;
+    const b = document.getElementById('bandeau');
+    b.textContent = 'Enregistrement…';
+    try {
+      await fetch(URL_ETAT, { method: 'POST', headers: { 'Content-Type': 'application/json' },
+                              body: JSON.stringify(etat) });
+      b.innerHTML = '<b>Enregistré.</b> Tes décisions sont sur le serveur.';
+    } catch (e) {
+      duNeuf = true;
+      b.textContent = 'Enregistrement impossible — je réessaie.';
+    } finally { enVol = false; if (duNeuf) setTimeout(envoyer, 1200); }
+  };
+
+  const LIB = { planifier: 'à planifier', refaire: 'à refaire', abandon: 'abandonnée' };
+
+  const peindre = () => {
+    const c = { adecider: 0, planifier: 0, refaire: 0, abandon: 0, tout: 0 };
+    document.querySelectorAll('li.v').forEach((li) => {
+      const e = (etat[li.dataset.r] || {}).etat || '';
+      li.className = 'v' + (e ? ' e-' + e : '');
+      const d = li.querySelector('.dit');
+      d.textContent = e ? LIB[e] : '';
+      c.tout++;
+      if (e) c[e]++; else c.adecider++;
+      const okFiltre = filtre === 'tout' || (filtre === 'adecider' ? !e : e === filtre);
+      const okFam = !fam || li.dataset.fam === fam;
+      li.hidden = !(okFiltre && okFam);
+    });
+    document.querySelectorAll('.filtres button[data-f]').forEach((b) => {
+      const n = b.querySelector('.n');
+      if (n) n.textContent = c[b.dataset.f];
+      b.classList.toggle('on', !fam && b.dataset.f === filtre);
+    });
+    document.querySelectorAll('.filtres button[data-fam]').forEach((b) =>
+      b.classList.toggle('on', fam === b.dataset.fam));
+    document.getElementById('vide').hidden =
+      [...document.querySelectorAll('li.v')].some((li) => !li.hidden);
+  };
+
+  document.querySelectorAll('li.v .actes button').forEach((b) => {
+    b.addEventListener('click', () => {
+      const r = b.closest('li.v').dataset.r;
+      const avant = (etat[r] || {}).etat;
+      /* Ré-appuyer sur la même décision l'annule : sinon une erreur de doigt
+         est irréversible sans recharger. */
+      if (avant === b.dataset.e) delete etat[r];
+      else etat[r] = { etat: b.dataset.e, maj: new Date().toISOString() };
+      peindre(); duNeuf = true; envoyer();
+    });
+  });
+
+  document.querySelectorAll('.filtres button').forEach((b) => {
+    b.addEventListener('click', () => {
+      if (b.dataset.fam) fam = (fam === b.dataset.fam) ? null : b.dataset.fam;
+      else { filtre = b.dataset.f; fam = null; }
+      peindre();
+    });
+  });
+
+  (async () => {
+    try {
+      const j = await (await fetch(URL_ETAT + '?t=' + Date.now())).json();
+      const d = typeof j.donnees === 'string' ? JSON.parse(j.donnees || '{}') : (j.donnees || {});
+      etat = d && typeof d === 'object' ? d : {};
+      document.getElementById('bandeau').innerHTML =
+        'Décisions enregistrées côté serveur · dernière écriture : <b>' +
+        (j.maj ? new Date(j.maj).toLocaleString('fr-FR') : 'jamais') + '</b>';
+    } catch (e) {
+      document.getElementById('bandeau').textContent =
+        'Impossible de lire tes décisions — la page part de zéro, ne clique pas encore.';
+    }
+    peindre();
+  })();
+})();
+</script>
+</body>
+</html>
