@@ -321,6 +321,13 @@ h2::after{content:"";position:absolute;left:0;bottom:-1.2mm;width:5mm;height:1px
   opacity:0;transition:opacity .35s ease;pointer-events:none}
 .portrait.parlant .parle{opacity:1}
 .portrait.ouvert .invite{opacity:0}
+.portrait .ecoute{position:absolute;left:50%;top:calc(100% + 2.2mm);
+  transform:translateX(-50%);width:38mm;text-align:center;line-height:1.35;
+  font-size:6.6pt;letter-spacing:.08em;
+  text-transform:uppercase;font-weight:700;color:var(--attenue);
+  opacity:0;transition:opacity .3s ease,color .2s ease;pointer-events:none}
+.portrait.montre .ecoute{opacity:1}
+.portrait.sonne .ecoute{color:var(--jaune)}
 .portrait:focus-visible{outline:2px solid var(--jaune);outline-offset:3mm}
 
 /* ── Les trois appels à l'action ───────────────────────────────────────── */
@@ -344,7 +351,7 @@ h2::after{content:"";position:absolute;left:0;bottom:-1.2mm;width:5mm;height:1px
 @media print{
   /* Sur papier, la photo est toujours là et l'anneau ne tourne pas. */
   .portrait img{opacity:1!important;transform:none!important}
-  .portrait .invite,.portrait .parle{display:none}
+  .portrait .invite,.portrait .parle,.portrait .ecoute{display:none}
   .portrait::before{animation:none;background:#999}
   .actions a{background:none!important;color:#111!important;border-color:#bbb!important}
   .actions a.wa svg{fill:#111!important}
@@ -433,6 +440,7 @@ h2::after{content:"";position:absolute;left:0;bottom:-1.2mm;width:5mm;height:1px
             </video>
           </span>
           <span class="invite">Cliquez</span>
+          <span class="ecoute" aria-hidden="true">Survolez pour m’entendre</span>
         </button>
       </div>
 
@@ -640,6 +648,8 @@ h2::after{content:"";position:absolute;left:0;bottom:-1.2mm;width:5mm;height:1px
 (function () {
   var b = document.querySelector('.portrait');
   if (!b) return;
+  var v = b.querySelector('.parle');
+  var dit = b.querySelector('.ecoute');
 
   var poser = function (ouvert) {
     b.classList.toggle('ouvert', ouvert);
@@ -649,36 +659,58 @@ h2::after{content:"";position:absolute;left:0;bottom:-1.2mm;width:5mm;height:1px
       : 'Afficher la photo de Tony Payet');
   };
 
-  /* Elle s'ouvre seule, comme si on avait cliqué — sauf si le visiteur a
-     demandé moins d'animation, auquel cas elle est là tout de suite. */
-  var sobre = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var sobre = window.matchMedia
+    && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* La vidéo démarre muette : c'est la seule lecture automatique que les
+     navigateurs laissent passer. Le son viendra au survol. */
+  var lancer = function () {
+    poser(true);
+    if (!v || sobre) return;
+    v.muted = true;
+    b.classList.add('parlant', 'montre');
+    var e = v.play();
+    if (e && e.catch) e.catch(function () { b.classList.remove('parlant'); });
+  };
+
   if (sobre) poser(true);
-  else setTimeout(function () { if (!b.dataset.touche) poser(true); }, 2000);
+  else setTimeout(function () { if (!b.dataset.touche) lancer(); }, 2000);
 
   b.addEventListener('click', function () {
     b.dataset.touche = '1';
+    /* Un clic est un vrai geste : c'est le moment où le son passe à coup sûr. */
+    if (v && v.muted && b.classList.contains('parlant')) {
+      v.muted = false;
+      b.classList.add('sonne');
+      if (dit) dit.textContent = 'Le son est allumé';
+      return;
+    }
     poser(!b.classList.contains('ouvert'));
   });
 
-  /* L'avatar ne se déclenche qu'au survol réel : sur un écran tactile il n'y a
-     pas de survol, et le clic sert déjà à révéler la photo. */
-  var v = b.querySelector('.parle');
-  if (v && !sobre && window.matchMedia && window.matchMedia('(hover: hover)').matches) {
-    var entre = function () {
-      poser(true);
-      b.classList.add('parlant');
-      var essai = v.play();
-      if (essai && essai.catch) essai.catch(function () { b.classList.remove('parlant'); });
-    };
-    var sort = function () {
-      b.classList.remove('parlant');
-      v.pause();
-      v.currentTime = 0;
-    };
-    b.addEventListener('mouseenter', entre);
-    b.addEventListener('mouseleave', sort);
-    b.addEventListener('focus', entre);
-    b.addEventListener('blur', sort);
+  var survol = window.matchMedia && window.matchMedia('(hover: hover)').matches;
+  if (v && survol && !sobre) {
+    b.addEventListener('mouseenter', function () {
+      if (!b.classList.contains('parlant')) lancer();
+      v.muted = false;
+      /* Certains navigateurs refusent d'allumer le son sans geste : on le
+         détecte au lieu de le supposer. */
+      setTimeout(function () {
+        if (v.muted || v.paused) {
+          v.muted = true;
+          if (v.paused) { var e = v.play(); if (e && e.catch) e.catch(function () {}); }
+          if (dit) dit.textContent = 'Cliquez pour m’entendre';
+        } else {
+          b.classList.add('sonne');
+          if (dit) dit.textContent = '🔊 Écoutez ce que je dis';
+        }
+      }, 120);
+    });
+    b.addEventListener('mouseleave', function () {
+      v.muted = true;
+      b.classList.remove('sonne');
+      if (dit) dit.textContent = 'Survolez pour m’entendre';
+    });
   }
 })();
 </script>
