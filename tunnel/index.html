@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Le tunnel, étage par étage</title>
+<meta name="robots" content="noindex,nofollow">
+<style>
+/* Charte AutomationBoost : nuit #0d0d13, jaune #eab308, violet #8b5cf6,
+   turquoise #3dc4c2. Deux couleurs sémantiques distinctes de l'accent :
+   ce qui est construit (turquoise) et ce qui tourne vraiment (jaune). */
+:root{
+  --nuit:#0d0d13; --carte:#15161f; --carte2:#1c1e29; --trait:#262838;
+  --encre:#eceef5; --doux:#9599ad; --faible:#6b7089;
+  --bati:#3dc4c2; --tourne:#eab308; --alerte:#f2606f; --violet:#8b5cf6;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;background:var(--nuit)}
+body{background:var(--nuit);color:var(--encre);
+  font:400 16px/1.62 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  padding:30px 16px calc(60px + env(safe-area-inset-bottom))}
+.w{max-width:760px;margin-inline:auto}
+::selection{background:var(--tourne);color:#140f00}
+
+header{padding-bottom:24px;border-bottom:1px solid var(--trait);display:flex;flex-direction:column;gap:11px}
+.eb{font:600 11.5px/1 ui-monospace,monospace;letter-spacing:.22em;text-transform:uppercase;color:var(--faible)}
+h1{font-size:clamp(29px,7.5vw,42px);line-height:1.05;font-weight:800;letter-spacing:-.033em;text-wrap:balance}
+.sous{color:var(--doux);font-size:16.5px;line-height:1.6;max-width:58ch}
+.sous b{color:var(--encre);font-weight:600}
+
+.bilan{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin:22px 0 6px}
+.kpi{background:var(--carte);border:1px solid var(--trait);border-radius:12px;padding:16px 17px}
+.kpi .n{font:800 34px/1 ui-monospace,monospace;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.kpi.b .n{color:var(--bati)} .kpi.t .n{color:var(--tourne)}
+.kpi .l{font-size:13.2px;color:var(--doux);margin-top:6px;line-height:1.45}
+
+.legende{display:flex;flex-wrap:wrap;gap:15px;margin:18px 0 4px;font-size:13px;color:var(--doux)}
+.legende span{display:flex;align-items:center;gap:7px}
+.legende i{width:11px;height:11px;border-radius:3px;display:block}
+.legende i.b{background:var(--bati)} .legende i.t{background:var(--tourne)}
+
+ol.etages{list-style:none;counter-reset:e;margin-top:8px}
+li.etage{counter-increment:e;position:relative;padding:20px 0 20px 44px;border-bottom:1px solid var(--trait)}
+li.etage::before{content:counter(e);position:absolute;left:0;top:22px;
+  width:29px;height:29px;border-radius:9px;background:var(--carte2);border:1px solid var(--trait);
+  color:var(--doux);font:700 13px/27px ui-monospace,monospace;text-align:center}
+li.etage::after{content:"";position:absolute;left:14px;top:53px;bottom:-1px;width:1px;background:var(--trait)}
+li.etage:last-child::after{display:none}
+li.etage.bloc::before{background:#2a1116;border-color:#5a2530;color:var(--alerte)}
+
+.tete{display:flex;align-items:baseline;gap:11px;flex-wrap:wrap}
+h2{font-size:18.5px;font-weight:650;letter-spacing:-.017em;line-height:1.28;text-wrap:balance}
+.tag{font:600 11.5px/1 ui-monospace,monospace;letter-spacing:.13em;text-transform:uppercase;
+  padding:5px 9px;border-radius:5px;white-space:nowrap}
+.tag.ok{background:#0f2020;color:var(--bati);border:1px solid #1f4a49}
+.tag.ko{background:#2a1116;color:var(--alerte);border:1px solid #5a2530}
+.tag.att{background:#211a05;color:var(--tourne);border:1px solid #4a3d10}
+.quoi{color:var(--doux);font-size:14.8px;line-height:1.58;margin-top:8px;max-width:62ch}
+.mesure{font:400 13.2px/1.55 ui-monospace,monospace;color:var(--faible);margin-top:8px;
+  padding-left:11px;border-left:2px solid var(--trait)}
+
+.barres{display:flex;flex-direction:column;gap:7px;margin-top:13px;max-width:460px}
+.b{display:grid;grid-template-columns:64px 1fr 42px;align-items:center;gap:10px}
+.b .k{font:600 11.5px/1 ui-monospace,monospace;letter-spacing:.1em;text-transform:uppercase;color:var(--faible)}
+.b .p{height:8px;background:#1a1c28;border-radius:99px;overflow:hidden}
+.b .p i{display:block;height:100%;border-radius:99px}
+.b.bati .p i{background:var(--bati)} .b.tourne .p i{background:var(--tourne)}
+.b .v{font:600 13px/1 ui-monospace,monospace;text-align:right;font-variant-numeric:tabular-nums}
+.b.bati .v{color:var(--bati)} .b.tourne .v{color:var(--tourne)}
+
+.pq{background:#2a1116;border:1px solid #5a2530;border-radius:10px;padding:13px 15px;margin-top:13px;
+  font-size:14.6px;line-height:1.58;color:#f3b9c0}
+.pq b{color:#fff}
+.para{background:var(--carte);border:1px solid var(--trait);border-left:2px solid var(--violet);
+  border-radius:0 11px 11px 0;padding:16px 18px;margin:26px 0 0}
+.para h3{font-size:16.5px;font-weight:650;margin-bottom:7px}
+.para p{color:var(--doux);font-size:14.8px;line-height:1.58}
+
+.fin{margin-top:34px;padding-top:22px;border-top:1px solid var(--trait)}
+.fin h3{font-size:20px;font-weight:750;letter-spacing:-.02em;margin-bottom:12px}
+ol.actions{list-style:none;counter-reset:a;display:flex;flex-direction:column;gap:13px}
+ol.actions li{counter-increment:a;display:grid;grid-template-columns:27px 1fr;gap:13px;align-items:start}
+ol.actions li::before{content:counter(a);width:27px;height:27px;border-radius:8px;
+  background:#211a05;color:var(--tourne);border:1px solid #4a3d10;
+  font:700 12px/25px ui-monospace,monospace;text-align:center}
+ol.actions b{display:block;font-size:15.8px;font-weight:650;letter-spacing:-.01em}
+ol.actions span{display:block;color:var(--doux);font-size:14.4px;line-height:1.55;margin-top:3px}
+.note{margin-top:28px;padding-top:18px;border-top:1px solid var(--trait);
+  color:var(--faible);font-size:13.2px;line-height:1.65}
+@media (prefers-reduced-motion:no-preference){.b .p i{transition:width .5s cubic-bezier(.2,.8,.3,1)}}
+</style>
+</head>
+<body>
+<div class="w">
+
+<header>
+  <div class="eb">Relevé du 1<sup>er</sup> septembre 2026</div>
+  <h1>Le tunnel, étage par étage</h1>
+  <p class="sous">Dix étages, du premier post jusqu'au client qui signe.
+  <b>Presque tout est construit. Presque rien ne tourne.</b> Les quatre blocages
+  sont marqués en rouge — et trois d'entre eux ne sont pas des problèmes techniques.</p>
+</header>
+
+<div class="bilan">
+  <div class="kpi b"><div class="n">82&#8202;%</div>
+    <div class="l">de la machine est construite</div></div>
+  <div class="kpi t"><div class="n">21&#8202;%</div>
+    <div class="l">tourne réellement aujourd'hui</div></div>
+</div>
+
+<div class="legende">
+  <span><i class="b"></i> construit — mon estimation</span>
+  <span><i class="t"></i> tourne vraiment — mesuré</span>
+</div>
+
+<ol class="etages">
+
+  <li class="etage">
+    <div class="tete"><h2>Publier du contenu</h2><span class="tag ok">tourne</span></div>
+    <p class="quoi">Vidéos programmées sur TikTok, Instagram, YouTube, Facebook et LinkedIn
+    via Blotato, alimentées par les pipelines vidéo.</p>
+    <p class="mesure">144 posts publiés du 21/08 au 01/09 · 5 réseaux · 7 encore programmés</p>
+    <div class="barres">
+      <div class="b bati"><span class="k">construit</span><span class="p"><i style="width:95%"></i></span><span class="v">95%</span></div>
+      <div class="b tourne"><span class="k">tourne</span><span class="p"><i style="width:90%"></i></span><span class="v">90%</span></div>
+    </div>
+    <div class="pq"><b>Incident refermé, mais à connaître :</b> 99 posts ont échoué entre le 21
+    et le 28/08 — 91 en « Failed to fetch media URL: 403 » (Cloudflare bloque les URL de
+    prévisualisation pour Blotato, il faut envoyer le fichier), et 8 parce que
+    <b>le compte LinkedIn a expiré</b>. Zéro échec depuis le 29/08.</div>
+  </li>
+
+  <li class="etage bloc">
+    <div class="tete"><h2>Faire commenter le mot-clé</h2><span class="tag ko">bloqué</span></div>
+    <p class="quoi">Toute la mécanique de capture démarre par un commentaire : « commente le mot
+    RESTO » et le robot envoie la ressource en message privé.</p>
+    <p class="mesure">60 relevés consécutifs · 0 commentaire à traiter · aucun DM déclenché</p>
+    <div class="barres">
+      <div class="b bati"><span class="k">construit</span><span class="p"><i style="width:100%"></i></span><span class="v">100%</span></div>
+      <div class="b tourne"><span class="k">tourne</span><span class="p"><i style="width:2%"></i></span><span class="v">0%</span></div>
+    </div>
+    <div class="pq"><b>Blocage n°1 — la porte d'entrée est fermée.</b> J'ai vérifié que ce n'est
+    pas le filtre qui rejette à tort : le lecteur de commentaires ne remonte rien du tout, 60 fois
+    sur 60. Personne ne commente. Tant que ce chiffre est à zéro, les étages 3 et 4 sont
+    des tuyaux vides, quelle que soit leur qualité.</div>
+  </li>
+
+  <li class="etage">
+    <div class="tete"><h2>Le robot répond en privé</h2><span class="tag att">prêt, jamais sollicité</span></div>
+    <p class="quoi">Le workflow lit les commentaires toutes les 10 minutes, reconnaît le mot-clé,
+    et envoie le lien de la ressource correspondante.</p>
+    <p class="mesure">actif · 67 ressources associées à un mot-clé · 0 envoi faute d'entrée</p>
+    <div class="barres">
+      <div class="b bati"><span class="k">construit</span><span class="p"><i style="width:95%"></i></span><span class="v">95%</span></div>
+      <div class="b tourne"><span class="k">tourne</span><span class="p"><i style="width:2%"></i></span><span class="v">0%</span></div>
+    </div>
+  </li>
+
+  <li class="etage">
+    <div class="tete"><h2>La page ressource capture</h2><span class="tag ok">tourne</span></div>
+    <p class="quoi">248 pages de ressources, chacune avec une fenêtre qui demande prénom et email
+    avant de donner le contenu.</p>
+    <p class="mesure">4 saisies réelles du 18 au 30/08 · 2 venaient du navigateur interne de TikTok</p>
+    <div class="barres">
+      <div class="b bati"><span class="k">construit</span><span class="p"><i style="width:95%"></i></span><span class="v">95%</span></div>
+      <div class="b tourne"><span class="k">tourne</span><span class="p"><i style="width:35%"></i></span><span class="v">35%</span></div>
+    </div>
+    <p class="quoi">C'est le seul étage qui prouve que le contenu fonctionne : des gens arrivent
+    de TikTok jusqu'à un formulaire, sans passer par le commentaire.</p>
+  </li>
+
+  <li class="etage">
+    <div class="tete"><h2>L'envoi automatique de la ressource</h2><span class="tag ok">réparé le 29/08</span></div>
+    <p class="quoi">Le formulaire enregistre le lead puis envoie le lien par email.</p>
+    <p class="mesure">réparé le 29/08 — avant, l'envoi ne partait jamais</p>
+    <div class="barres">
+      <div class="b bati"><span class="k">construit</span><span class="p"><i style="width:85%"></i></span><span class="v">85%</span></div>
+      <div class="b tourne"><span class="k">tourne</span><span class="p"><i style="width:80%"></i></span><span class="v">80%</span></div>
+    </div>
+    <div class="pq">Il manque encore un aiguillage : une <b>demande d'audit</b> reçoit le mail
+    « votre ressource est prête » avec un bouton vers la page d'accueil. Ce n'est pas une réponse
+    à quelqu'un qui veut te parler.</div>
+  </li>
+
+  <li class="etage">
+    <div class="tete"><h2>L'audit qualifiant</h2><span class="tag att">construit, pas encore en production</span></div>
+    <p class="quoi">Sept questions fermées, un diagnostic automatique, un mail pour toi avec l'offre
+    à proposer et ta phrase d'ouverture, et un brouillon de proposition prêt à relire.</p>
+    <p class="mesure">testé de bout en bout · vit sur prévisualisation, pas sur automatisationboost.com</p>
+    <div class="barres">
+      <div class="b bati"><span class="k">construit</span><span class="p"><i style="width:100%"></i></span><span class="v">100%</span></div>
+      <div class="b tourne"><span class="k">tourne</span><span class="p"><i style="width:2%"></i></span><span class="v">0%</span></div>
+    </div>
+  </li>
+
+  <li class="etage bloc">
+    <div class="tete"><h2>Reprendre la main sur un lead</h2><span class="tag ko">bloqué</span></div>
+    <p class="quoi">Quelqu'un lève la main. Quelqu'un doit lui répondre. Aujourd'hui c'est toi,
+    et rien ne t'y oblige.</p>
+    <p class="mesure">3 personnes sur 4 n'ont jamais eu de réponse · dont une demande d'audit explicite</p>
+    <div class="barres">
+      <div class="b bati"><span class="k">construit</span><span class="p"><i style="width:25%"></i></span><span class="v">25%</span></div>
+      <div class="b tourne"><span class="k">tourne</span><span class="p"><i style="width:20%"></i></span><span class="v">20%</span></div>
+    </div>
+    <div class="pq"><b>Blocage n°2 — le trou le plus cher du tunnel.</b> Le récap automatique t'a
+    prévenu le 19 et le 28 août. Il arrive tous les trois jours, dans une boîte déjà pleine, et
+    ne réclame rien. Il n'existe aucune alerte quand un lead reste sans réponse.</div>
+  </li>
+
+  <li class="etage bloc">
+    <div class="tete"><h2>L'appel</h2><span class="tag ko">bloqué</span></div>
+    <p class="quoi">637 numéros avec leur script mot à mot, un mode qui enchaîne les fiches, et un
+    message WhatsApp déjà écrit quand personne ne décroche.</p>
+    <p class="mesure">2 appels enregistrés depuis le 28/08 · 260 numéros joignables sur WhatsApp</p>
+    <div class="barres">
+      <div class="b bati"><span class="k">construit</span><span class="p"><i style="width:100%"></i></span><span class="v">100%</span></div>
+      <div class="b tourne"><span class="k">tourne</span><span class="p"><i style="width:3%"></i></span><span class="v">3%</span></div>
+    </div>
+    <div class="pq"><b>Blocage n°3 — l'outil est fini, il n'est pas utilisé.</b> C'est l'étage avec
+    le meilleur taux de conversion de tout le tunnel et le plus faible taux d'usage. Aucune ligne de
+    code ne réglera celui-là.</div>
+  </li>
+
+  <li class="etage">
+    <div class="tete"><h2>La proposition</h2><span class="tag att">prêt, jamais sollicité</span></div>
+    <p class="quoi">Le brouillon part automatiquement dans ta boîte avec le diagnostic, l'offre qui
+    correspond et ce qu'elle contient. Tu relis, tu envoies.</p>
+    <p class="mesure">brouillon opérationnel · bouton « Choisir un créneau » vers Calendly</p>
+    <div class="barres">
+      <div class="b bati"><span class="k">construit</span><span class="p"><i style="width:95%"></i></span><span class="v">95%</span></div>
+      <div class="b tourne"><span class="k">tourne</span><span class="p"><i style="width:2%"></i></span><span class="v">0%</span></div>
+    </div>
+  </li>
+
+  <li class="etage bloc">
+    <div class="tete"><h2>Signer, puis suivre</h2><span class="tag ko">n'existe pas</span></div>
+    <p class="quoi">Après la proposition : la relance, la signature, l'acompte, le suivi du client.</p>
+    <p class="mesure">aucun outil, aucune trace, aucune relance automatique</p>
+    <div class="barres">
+      <div class="b bati"><span class="k">construit</span><span class="p"><i style="width:2%"></i></span><span class="v">0%</span></div>
+      <div class="b tourne"><span class="k">tourne</span><span class="p"><i style="width:2%"></i></span><span class="v">0%</span></div>
+    </div>
+    <div class="pq"><b>Blocage n°4 — la sortie du tunnel n'est pas construite.</b> Un devis envoyé
+    et jamais relancé, c'est un devis perdu. Rien n'enregistre qui a dit oui, qui a dit
+    « rappelez-moi en octobre », ni qui n'a jamais répondu.</div>
+  </li>
+
+</ol>
+
+<div class="para">
+  <h3>En parallèle : la prospection par email à froid</h3>
+  <p>Elle ne passe pas par le contenu — elle attaque directement une liste. Elle tourne tous les
+  matins à 4 h, mais <b>elle échoue plus d'une fois sur deux</b> : 8 exécutions en erreur sur 14,
+  toutes bloquées au même endroit, la génération des emails (quota OpenAI atteint les 23, 24 et
+  25/08, format de sortie invalide le 28). Construit à 90 %, en état de marche 43 % du temps.</p>
+</div>
+
+<div class="fin">
+  <h3>Ce qui débloquerait le plus, dans l'ordre</h3>
+  <ol class="actions">
+    <li><b>Répondre aux trois qui attendent</b>
+      <span>Zéro construction. Le seul étage où des gens réels attendent déjà, dont un qui a
+      demandé un audit. C'est le geste au rendement le plus élevé du tunnel.</span></li>
+    <li><b>Appeler quarante-cinq minutes par jour</b>
+      <span>L'outil est fini à 100 % et utilisé à 3 %. Passer à trente appels par semaine ferait
+      plus que n'importe quelle vidéo supplémentaire.</span></li>
+    <li><b>Une alerte quand un lead reste sans réponse 24 h</b>
+      <span>Le récap tous les trois jours n'a pas suffi — deux fois. Une alerte qui réclame,
+      pas un rapport qui informe.</span></li>
+    <li><b>Poser l'audit sur le vrai site</b>
+      <span>Le formulaire, la proposition et le lien Calendly sont finis — mais tout ça vit sur
+      prévisualisation. Tant que ce n'est pas sur automatisationboost.com, ça ne capte personne.</span></li>
+    <li><b>Arrêter de demander un commentaire</b>
+      <span>Zéro en soixante relevés. Les quatre personnes qui ont laissé leur adresse sont
+      passées par un lien, pas par un commentaire. Le lien en bio marche, le commentaire non.</span></li>
+  </ol>
+</div>
+
+<p class="note">Les pourcentages « tourne » sont mesurés : exécutions n8n, journal d'appels,
+historique Blotato, exécutions du formulaire. Les pourcentages « construit » sont mon estimation
+de ce qu'il reste à faire pour que l'étage soit complet — c'est un jugement, pas une mesure.
+Les deux blocages du haut et du bas du tunnel ne sont pas techniques : la machine attend
+quelqu'un.</p>
+
+</div>
+</body>
+</html>
