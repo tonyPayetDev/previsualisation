@@ -130,6 +130,7 @@ ul{list-style:none}
   <span><b id="c-rep">0</b> sans réponse</span>
   <span class="relancer"><b id="c-relance">0</b> à relancer</span>
   <span><b id="c-refus">0</b> non</span>
+  <span><b id="c-surplace">0</b> à voir sur place</span>
   <span><b id="c-reste">15</b> restants</span>
   <button type="button" id="copier">Copier le bilan</button>
 </div>
@@ -1754,17 +1755,20 @@ toi, c'est la donnée. Passe au suivant.</p>
   }
 
   function compter() {
-    var fait = 0, rep = 0, rel = 0, ref = 0;
+    var fait = 0, rep = 0, rel = 0, ref = 0, sp = 0;
     Object.keys(etat).forEach(function (k) {
       if (etat[k].e === 'appele') fait++;
       if (etat[k].e === 'repondu') rep++;
       if (etat[k].e === 'rappeler') rel++;
+      if (etat[k].e === 'surplace') sp++;
       if (etat[k].e === 'refus') ref++;
     });
     var tot = document.querySelectorAll('.suivi').length;
     document.getElementById('c-fait').textContent = fait;
     document.getElementById('c-rep').textContent = rep;
     document.getElementById('c-relance').textContent = rel;
+    var elSp = document.getElementById('c-surplace');
+    if (elSp) elSp.textContent = sp;
     document.getElementById('c-refus').textContent = ref;
     document.getElementById('c-reste').textContent = tot - fait - rep - rel - ref;
   }

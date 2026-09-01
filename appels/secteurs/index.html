@@ -80,6 +80,9 @@
   border-radius:10px;padding:11px 12px;resize:vertical}
 .note-txt:focus{outline:0;border-color:#4b3a7a}
 .note-aide{font-size:12.5px;color:var(--gris);line-height:1.5}
+
+.rang.trois{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.rang.trois .surplace{grid-column:1/-1;border-color:#4a3d10;background:#1d1706;color:#e8c98a}
 </style></head>
 <body>
 <header><a class="retour" href="../">‹ feuille restaurants</a><div class="cpt" id="cpt"></div></header>
@@ -279,8 +282,9 @@
       +reste.map(x=>'<p><b>'+x[0]+'</b>'+x[1]+'</p>').join('')+'</details>';
     pi.innerHTML='<a class="tel" href="tel:'+l.tel.replace(/[^+0-9]/g,'')+'"><small>appeler</small>'+l.tel+'</a>'
       +blocWa(l,false)
-      +'<div class="rang"><button data-q="repondu">Pas d\u00e9croch\u00e9</button>'
-      +'<button class="parle" data-q="appele">J\u2019ai parl\u00e9</button></div>'
+      +'<div class="rang trois"><button data-q="repondu">Pas d\u00e9croch\u00e9</button>'
+      +'<button class="parle" data-q="appele">J\u2019ai parl\u00e9</button>'
+      +'<button class="surplace" data-q="surplace">\u00c0 voir sur place</button></div>'
       +blocNote()+'<div class="note">Deux boutons, et on passe au suivant.</div>';
     brancherNote(pi);
     pi.querySelectorAll('button:not(.micro)').forEach(b=>b.onclick=()=>{
