@@ -105,6 +105,25 @@ ul{list-style:none}
 .note{margin-top:30px;border-left:2px solid var(--ligne);padding-left:15px;
   color:var(--gris);font-size:13.5px}
 .note b{color:var(--blanc)}
+
+/* --- porte d'entrée vers les sessions d'appel --- */
+.demarrer{background:linear-gradient(160deg,#181d27,#141821);border:1px solid #2b3341;
+  border-radius:14px;padding:16px 16px 14px;margin:18px 0 4px}
+.demarrer h2{margin:0 0 6px;color:var(--chaud)}
+.demarrer .d{color:var(--gris);font-size:13.5px;line-height:1.5;max-width:52ch}
+.demarrer .files{display:flex;flex-direction:column;gap:9px;margin-top:13px}
+.demarrer a.f{display:flex;align-items:center;gap:13px;text-decoration:none;
+  background:#10141c;border:1px solid var(--ligne);border-radius:11px;
+  padding:13px 14px;min-height:56px;color:var(--blanc)}
+.demarrer a.f:hover{border-color:#3a4457}
+.demarrer a.f .n{flex:0 0 auto;min-width:42px;height:34px;border-radius:8px;
+  background:#1d2531;color:var(--chaud);display:grid;place-items:center;
+  font-weight:800;font-size:15px;font-variant-numeric:tabular-nums;padding:0 7px}
+.demarrer a.f.sec .n{color:#7FB2E8}
+.demarrer a.f .t{flex:1;min-width:0}
+.demarrer a.f .t b{display:block;font-size:15px;font-weight:650;letter-spacing:-.01em}
+.demarrer a.f .t span{display:block;color:var(--gris);font-size:12.5px;margin-top:1px}
+.demarrer a.f .fl{color:var(--gris);font-size:19px;line-height:1}
 </style></head><body><div class="wrap">
 <div class="compteur" id="compteur">
   <span><b id="c-fait">0</b> appelés</span>
@@ -116,6 +135,28 @@ ul{list-style:none}
 </div>
 <p class="sur">Prospection restaurants · La Réunion</p>
 <h1>Feuille d'appel</h1>
+<section class="demarrer">
+  <h2>Enchaîner les appels</h2>
+  <p class="d">Un numéro à la fois, plein écran, avec la phrase d'ouverture à lire
+  mot pour mot. Tu appuies pour appeler, puis <b>Pas décroché</b> ou <b>J'ai parlé</b>,
+  et le suivant arrive. Rien à noter pendant l'appel. L'avancement est gardé sur le
+  serveur : tu peux reprendre sur un autre téléphone.</p>
+  <div class="files">
+    <a class="f" href="mode/">
+      <span class="n" id="n-resto">26</span>
+      <span class="t"><b>Restaurants et boulangeries</b>
+      <span>3 échauffements d'abord, puis les 11 qui attendent ton appel</span></span>
+      <span class="fl">›</span>
+    </a>
+    <a class="f sec" href="secteurs/">
+      <span class="n" id="n-sect">611</span>
+      <span class="t"><b>Les autres secteurs</b>
+      <span>Instituts, garages, hôtels, commerces — la file à prendre quand un restaurant ne décroche pas</span></span>
+      <span class="fl">›</span>
+    </a>
+  </div>
+</section>
+
 <div class="bilan">
     <h3>Tes appels du 25/08</h3>
     <p class="d">Ce qui reste à faire, classé par ce qui rapporte le plus vite.</p>
@@ -1783,4 +1824,30 @@ toi, c'est la donnée. Passe au suivant.</p>
   compter();
 })();
 </script>
-</div></body></html>
+</div>
+<script>
+(function () {
+  var URL = 'https://n7n.automatisationboost.com/webhook/appels-journal';
+  var jour = new Date().toISOString().slice(0, 10);
+  function reste(el, tot, ids) {
+    var n = tot - ids.filter(function (id) { return fait[id]; }).length;
+    el.textContent = n > 0 ? n : '0';
+    if (n <= 0) el.textContent = '✓';
+  }
+  var fait = {};
+  fetch(URL + '?t=' + Date.now()).then(function (r) { return r.json(); }).then(function (j) {
+    var d = typeof j.donnees === 'string' ? JSON.parse(j.donnees || '{}') : (j.donnees || {});
+    Object.keys(d || {}).forEach(function (k) { if (d[k] && d[k].date === jour) fait[k] = 1; });
+    return Promise.all([
+      fetch('mode/leads.json?t=' + Date.now()).then(function (r) { return r.json(); }),
+      fetch('secteurs/leads.json?t=' + Date.now()).then(function (r) { return r.json(); })
+    ]);
+  }).then(function (x) {
+    reste(document.getElementById('n-resto'), x[0].leads.length,
+      x[0].leads.map(function (l) { return l.id; }));
+    reste(document.getElementById('n-sect'), x[1].leads.length,
+      x[1].leads.map(function (l) { return l.id; }));
+  }).catch(function () { /* le total affiché en dur reste juste */ });
+})();
+</script>
+</body></html>
