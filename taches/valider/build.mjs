@@ -44,6 +44,18 @@ const carte = (t) => `
     ${t.lien ? `<a class="lien" href="${esc(t.lien)}" target="_blank" rel="noopener">Voir le résultat ↗</a>` : ''}
     <div class="actes"></div>
     <p class="dit"></p>
+    <div class="msg">
+      <button type="button" class="msg-ouvrir">Dire ce qui ne va pas</button>
+      <div class="msg-zone" hidden>
+        <textarea class="msg-txt" rows="3"
+          placeholder="Ce qui cloche, en une phrase. Je le lis au prochain passage."></textarea>
+        <div class="msg-actes">
+          <button type="button" class="msg-ok oui">Enregistrer</button>
+          <button type="button" class="msg-annul">Annuler</button>
+        </div>
+      </div>
+      <p class="msg-vu"></p>
+    </div>
   </li>`;
 
 fs.writeFileSync(`${D}/index.html`, `<!doctype html>
@@ -90,6 +102,18 @@ fs.writeFileSync(`${D}/index.html`, `<!doctype html>
   button:active{transform:translateY(1px)}
   button.oui{border-color:#1f6f52;background:#123024;color:#8ff0c4}
   button.non{border-color:#6f2626;background:#2b1414;color:#f4a3a3}
+  .msg{margin-top:10px}
+  .msg-ouvrir{background:none;border:0;color:var(--gris);font:inherit;font-size:13px;
+    text-decoration:underline;text-underline-offset:3px;cursor:pointer;padding:11px 0;min-height:44px}
+  .msg-ouvrir:hover{color:var(--blanc)}
+  .msg-zone{display:flex;flex-direction:column;gap:9px;margin-top:2px}
+  .msg-txt{width:100%;font:inherit;font-size:15px;line-height:1.5;color:var(--blanc);
+    background:#0a0d12;border:1px solid var(--ligne);border-radius:9px;padding:11px 12px;resize:vertical}
+  .msg-txt:focus{outline:0;border-color:#3f4a5f}
+  .msg-actes{display:flex;gap:8px}
+  .msg-vu{font-size:13.5px;line-height:1.55;color:#e8c98a;background:#1d1706;
+    border:1px solid #443814;border-radius:9px;padding:11px 13px;margin-top:9px}
+  .msg-vu:empty{display:none}
   .dit{font-size:13px;color:var(--gris);margin-top:9px;min-height:0}
   .dit:empty{display:none}
   .bandeau{position:fixed;left:0;right:0;bottom:0;background:#0b0e13;border-top:1px solid var(--ligne);
@@ -142,15 +166,47 @@ fs.writeFileSync(`${D}/index.html`, `<!doctype html>
         b.onclick = () => decider(id, vers);
         zone.appendChild(b);
       }
+      const m = etat[id] && etat[id].message;
+      li.querySelector('.msg-vu').textContent = m ? 'Ce que tu as noté : ' + m : '';
+      li.querySelector('.msg-ouvrir').textContent =
+        m ? 'Modifier ce que tu as noté' : 'Dire ce qui ne va pas';
       const d = li.querySelector('.dit');
       d.textContent = etat[id] && etat[id].maj
         ? 'Ta décision : ' + lib[0].toLowerCase() + ' — ' + new Date(etat[id].maj).toLocaleString('fr-FR')
         : '';
     });
+    document.querySelectorAll('.t').forEach((li) => {
+      if (li.dataset.msgPret) return;
+      li.dataset.msgPret = '1';
+      const id = li.dataset.id;
+      const zone = li.querySelector('.msg-zone');
+      const txt = li.querySelector('.msg-txt');
+      li.querySelector('.msg-ouvrir').onclick = () => {
+        txt.value = (etat[id] && etat[id].message) || '';
+        zone.hidden = false;
+        txt.focus();
+      };
+      li.querySelector('.msg-annul').onclick = () => { zone.hidden = true; };
+      li.querySelector('.msg-ok').onclick = () => {
+        zone.hidden = true;
+        noter(id, txt.value.trim());
+      };
+    });
+
     document.getElementById('compte').innerHTML =
       '<span class="pill"><b>' + aValider + '</b> à valider</span>' +
       '<span class="pill"><b>' + enCours + '</b> en cours</span>' +
       '<span class="pill"><b>' + aTonAvis + '</b> à ton avis</span>';
+  };
+
+  const noter = (id, texte) => {
+    const p = etat[id] || {};
+    const defaut = document.querySelector('.t[data-id="' + id + '"]').dataset.defaut;
+    etat[id] = { etat: p.etat || defaut, maj: p.maj || new Date().toISOString(),
+                 message: texte, messageMaj: new Date().toISOString() };
+    peindre();
+    duNeuf = true;
+    envoyer();
   };
 
   const decider = (id, vers) => {

@@ -42,6 +42,18 @@
   button:active{transform:translateY(1px)}
   button.oui{border-color:#1f6f52;background:#123024;color:#8ff0c4}
   button.non{border-color:#6f2626;background:#2b1414;color:#f4a3a3}
+  .msg{margin-top:10px}
+  .msg-ouvrir{background:none;border:0;color:var(--gris);font:inherit;font-size:13px;
+    text-decoration:underline;text-underline-offset:3px;cursor:pointer;padding:11px 0;min-height:44px}
+  .msg-ouvrir:hover{color:var(--blanc)}
+  .msg-zone{display:flex;flex-direction:column;gap:9px;margin-top:2px}
+  .msg-txt{width:100%;font:inherit;font-size:15px;line-height:1.5;color:var(--blanc);
+    background:#0a0d12;border:1px solid var(--ligne);border-radius:9px;padding:11px 12px;resize:vertical}
+  .msg-txt:focus{outline:0;border-color:#3f4a5f}
+  .msg-actes{display:flex;gap:8px}
+  .msg-vu{font-size:13.5px;line-height:1.55;color:#e8c98a;background:#1d1706;
+    border:1px solid #443814;border-radius:9px;padding:11px 13px;margin-top:9px}
+  .msg-vu:empty{display:none}
   .dit{font-size:13px;color:var(--gris);margin-top:9px;min-height:0}
   .dit:empty{display:none}
   .bandeau{position:fixed;left:0;right:0;bottom:0;background:#0b0e13;border-top:1px solid var(--ligne);
@@ -69,6 +81,18 @@
     <a class="lien" href="https://previsualisation.automatisationboost.com/demo-unisson/" target="_blank" rel="noopener">Voir le résultat ↗</a>
     <div class="actes"></div>
     <p class="dit"></p>
+    <div class="msg">
+      <button type="button" class="msg-ouvrir">Dire ce qui ne va pas</button>
+      <div class="msg-zone" hidden>
+        <textarea class="msg-txt" rows="3"
+          placeholder="Ce qui cloche, en une phrase. Je le lis au prochain passage."></textarea>
+        <div class="msg-actes">
+          <button type="button" class="msg-ok oui">Enregistrer</button>
+          <button type="button" class="msg-annul">Annuler</button>
+        </div>
+      </div>
+      <p class="msg-vu"></p>
+    </div>
   </li>
   <li class="t" data-id="recharge-wavespeed" data-defaut="attente-toi">
     <div class="haut">
@@ -82,6 +106,18 @@
     
     <div class="actes"></div>
     <p class="dit"></p>
+    <div class="msg">
+      <button type="button" class="msg-ouvrir">Dire ce qui ne va pas</button>
+      <div class="msg-zone" hidden>
+        <textarea class="msg-txt" rows="3"
+          placeholder="Ce qui cloche, en une phrase. Je le lis au prochain passage."></textarea>
+        <div class="msg-actes">
+          <button type="button" class="msg-ok oui">Enregistrer</button>
+          <button type="button" class="msg-annul">Annuler</button>
+        </div>
+      </div>
+      <p class="msg-vu"></p>
+    </div>
   </li>
   <li class="t" data-id="rappel-unisson" data-defaut="attente-toi">
     <div class="haut">
@@ -95,6 +131,18 @@
     
     <div class="actes"></div>
     <p class="dit"></p>
+    <div class="msg">
+      <button type="button" class="msg-ouvrir">Dire ce qui ne va pas</button>
+      <div class="msg-zone" hidden>
+        <textarea class="msg-txt" rows="3"
+          placeholder="Ce qui cloche, en une phrase. Je le lis au prochain passage."></textarea>
+        <div class="msg-actes">
+          <button type="button" class="msg-ok oui">Enregistrer</button>
+          <button type="button" class="msg-annul">Annuler</button>
+        </div>
+      </div>
+      <p class="msg-vu"></p>
+    </div>
   </li>
   <li class="t" data-id="50-emails-secteur-2" data-defaut="propose">
     <div class="haut">
@@ -108,6 +156,18 @@
     
     <div class="actes"></div>
     <p class="dit"></p>
+    <div class="msg">
+      <button type="button" class="msg-ouvrir">Dire ce qui ne va pas</button>
+      <div class="msg-zone" hidden>
+        <textarea class="msg-txt" rows="3"
+          placeholder="Ce qui cloche, en une phrase. Je le lis au prochain passage."></textarea>
+        <div class="msg-actes">
+          <button type="button" class="msg-ok oui">Enregistrer</button>
+          <button type="button" class="msg-annul">Annuler</button>
+        </div>
+      </div>
+      <p class="msg-vu"></p>
+    </div>
   </li>
   <li class="t" data-id="pubs-douleur" data-defaut="propose">
     <div class="haut">
@@ -121,6 +181,18 @@
     <a class="lien" href="https://previsualisation.automatisationboost.com/pubs-douleur/" target="_blank" rel="noopener">Voir le résultat ↗</a>
     <div class="actes"></div>
     <p class="dit"></p>
+    <div class="msg">
+      <button type="button" class="msg-ouvrir">Dire ce qui ne va pas</button>
+      <div class="msg-zone" hidden>
+        <textarea class="msg-txt" rows="3"
+          placeholder="Ce qui cloche, en une phrase. Je le lis au prochain passage."></textarea>
+        <div class="msg-actes">
+          <button type="button" class="msg-ok oui">Enregistrer</button>
+          <button type="button" class="msg-annul">Annuler</button>
+        </div>
+      </div>
+      <p class="msg-vu"></p>
+    </div>
   </li>
   <li class="t" data-id="comparer-chrissansfiltre" data-defaut="fait">
     <div class="haut">
@@ -134,6 +206,18 @@
     <a class="lien" href="https://previsualisation.automatisationboost.com/comparer-chrissansfiltre/" target="_blank" rel="noopener">Voir le résultat ↗</a>
     <div class="actes"></div>
     <p class="dit"></p>
+    <div class="msg">
+      <button type="button" class="msg-ouvrir">Dire ce qui ne va pas</button>
+      <div class="msg-zone" hidden>
+        <textarea class="msg-txt" rows="3"
+          placeholder="Ce qui cloche, en une phrase. Je le lis au prochain passage."></textarea>
+        <div class="msg-actes">
+          <button type="button" class="msg-ok oui">Enregistrer</button>
+          <button type="button" class="msg-annul">Annuler</button>
+        </div>
+      </div>
+      <p class="msg-vu"></p>
+    </div>
   </li>
   <li class="t" data-id="cta-sans-ressource" data-defaut="propose">
     <div class="haut">
@@ -147,6 +231,18 @@
     <a class="lien" href="https://previsualisation.automatisationboost.com/cta-portes/" target="_blank" rel="noopener">Voir le résultat ↗</a>
     <div class="actes"></div>
     <p class="dit"></p>
+    <div class="msg">
+      <button type="button" class="msg-ouvrir">Dire ce qui ne va pas</button>
+      <div class="msg-zone" hidden>
+        <textarea class="msg-txt" rows="3"
+          placeholder="Ce qui cloche, en une phrase. Je le lis au prochain passage."></textarea>
+        <div class="msg-actes">
+          <button type="button" class="msg-ok oui">Enregistrer</button>
+          <button type="button" class="msg-annul">Annuler</button>
+        </div>
+      </div>
+      <p class="msg-vu"></p>
+    </div>
   </li>
   <li class="t" data-id="workflow-gpt-image-2" data-defaut="fait">
     <div class="haut">
@@ -160,6 +256,18 @@
     
     <div class="actes"></div>
     <p class="dit"></p>
+    <div class="msg">
+      <button type="button" class="msg-ouvrir">Dire ce qui ne va pas</button>
+      <div class="msg-zone" hidden>
+        <textarea class="msg-txt" rows="3"
+          placeholder="Ce qui cloche, en une phrase. Je le lis au prochain passage."></textarea>
+        <div class="msg-actes">
+          <button type="button" class="msg-ok oui">Enregistrer</button>
+          <button type="button" class="msg-annul">Annuler</button>
+        </div>
+      </div>
+      <p class="msg-vu"></p>
+    </div>
   </li>
   <li class="t" data-id="presets-feed" data-defaut="attente-toi">
     <div class="haut">
@@ -173,6 +281,18 @@
     
     <div class="actes"></div>
     <p class="dit"></p>
+    <div class="msg">
+      <button type="button" class="msg-ouvrir">Dire ce qui ne va pas</button>
+      <div class="msg-zone" hidden>
+        <textarea class="msg-txt" rows="3"
+          placeholder="Ce qui cloche, en une phrase. Je le lis au prochain passage."></textarea>
+        <div class="msg-actes">
+          <button type="button" class="msg-ok oui">Enregistrer</button>
+          <button type="button" class="msg-annul">Annuler</button>
+        </div>
+      </div>
+      <p class="msg-vu"></p>
+    </div>
   </li>
   <li class="t" data-id="musetalk-vps" data-defaut="propose">
     <div class="haut">
@@ -186,6 +306,18 @@
     
     <div class="actes"></div>
     <p class="dit"></p>
+    <div class="msg">
+      <button type="button" class="msg-ouvrir">Dire ce qui ne va pas</button>
+      <div class="msg-zone" hidden>
+        <textarea class="msg-txt" rows="3"
+          placeholder="Ce qui cloche, en une phrase. Je le lis au prochain passage."></textarea>
+        <div class="msg-actes">
+          <button type="button" class="msg-ok oui">Enregistrer</button>
+          <button type="button" class="msg-annul">Annuler</button>
+        </div>
+      </div>
+      <p class="msg-vu"></p>
+    </div>
   </li>
   <li class="t" data-id="son-demo-unisson" data-defaut="fait">
     <div class="haut">
@@ -199,6 +331,18 @@
     <a class="lien" href="https://previsualisation.automatisationboost.com/demo-unisson/" target="_blank" rel="noopener">Voir le résultat ↗</a>
     <div class="actes"></div>
     <p class="dit"></p>
+    <div class="msg">
+      <button type="button" class="msg-ouvrir">Dire ce qui ne va pas</button>
+      <div class="msg-zone" hidden>
+        <textarea class="msg-txt" rows="3"
+          placeholder="Ce qui cloche, en une phrase. Je le lis au prochain passage."></textarea>
+        <div class="msg-actes">
+          <button type="button" class="msg-ok oui">Enregistrer</button>
+          <button type="button" class="msg-annul">Annuler</button>
+        </div>
+      </div>
+      <p class="msg-vu"></p>
+    </div>
   </li>
   <li class="t" data-id="avatar-plus-grand" data-defaut="fait">
     <div class="haut">
@@ -212,6 +356,18 @@
     <a class="lien" href="https://previsualisation.automatisationboost.com/client-reunion-renouvelables/" target="_blank" rel="noopener">Voir le résultat ↗</a>
     <div class="actes"></div>
     <p class="dit"></p>
+    <div class="msg">
+      <button type="button" class="msg-ouvrir">Dire ce qui ne va pas</button>
+      <div class="msg-zone" hidden>
+        <textarea class="msg-txt" rows="3"
+          placeholder="Ce qui cloche, en une phrase. Je le lis au prochain passage."></textarea>
+        <div class="msg-actes">
+          <button type="button" class="msg-ok oui">Enregistrer</button>
+          <button type="button" class="msg-annul">Annuler</button>
+        </div>
+      </div>
+      <p class="msg-vu"></p>
+    </div>
   </li>
   <li class="t" data-id="motion-creperie" data-defaut="fait">
     <div class="haut">
@@ -225,6 +381,18 @@
     <a class="lien" href="https://previsualisation.automatisationboost.com/client-creperie-saintgeorges/" target="_blank" rel="noopener">Voir le résultat ↗</a>
     <div class="actes"></div>
     <p class="dit"></p>
+    <div class="msg">
+      <button type="button" class="msg-ouvrir">Dire ce qui ne va pas</button>
+      <div class="msg-zone" hidden>
+        <textarea class="msg-txt" rows="3"
+          placeholder="Ce qui cloche, en une phrase. Je le lis au prochain passage."></textarea>
+        <div class="msg-actes">
+          <button type="button" class="msg-ok oui">Enregistrer</button>
+          <button type="button" class="msg-annul">Annuler</button>
+        </div>
+      </div>
+      <p class="msg-vu"></p>
+    </div>
   </li>
   <li class="t" data-id="pubs-en-ligne" data-defaut="fait">
     <div class="haut">
@@ -238,6 +406,18 @@
     
     <div class="actes"></div>
     <p class="dit"></p>
+    <div class="msg">
+      <button type="button" class="msg-ouvrir">Dire ce qui ne va pas</button>
+      <div class="msg-zone" hidden>
+        <textarea class="msg-txt" rows="3"
+          placeholder="Ce qui cloche, en une phrase. Je le lis au prochain passage."></textarea>
+        <div class="msg-actes">
+          <button type="button" class="msg-ok oui">Enregistrer</button>
+          <button type="button" class="msg-annul">Annuler</button>
+        </div>
+      </div>
+      <p class="msg-vu"></p>
+    </div>
   </li>
   <li class="t" data-id="formulaire-demo-resto" data-defaut="fait">
     <div class="haut">
@@ -251,6 +431,18 @@
     <a class="lien" href="https://n7n.automatisationboost.com/form/481d9cd4-caf9-4fdc-a58f-e1c816b133bc" target="_blank" rel="noopener">Voir le résultat ↗</a>
     <div class="actes"></div>
     <p class="dit"></p>
+    <div class="msg">
+      <button type="button" class="msg-ouvrir">Dire ce qui ne va pas</button>
+      <div class="msg-zone" hidden>
+        <textarea class="msg-txt" rows="3"
+          placeholder="Ce qui cloche, en une phrase. Je le lis au prochain passage."></textarea>
+        <div class="msg-actes">
+          <button type="button" class="msg-ok oui">Enregistrer</button>
+          <button type="button" class="msg-annul">Annuler</button>
+        </div>
+      </div>
+      <p class="msg-vu"></p>
+    </div>
   </li>
   <li class="t" data-id="carrousel-preuves" data-defaut="fait">
     <div class="haut">
@@ -264,6 +456,18 @@
     <a class="lien" href="https://previsualisation.automatisationboost.com/pub-carrousel/" target="_blank" rel="noopener">Voir le résultat ↗</a>
     <div class="actes"></div>
     <p class="dit"></p>
+    <div class="msg">
+      <button type="button" class="msg-ouvrir">Dire ce qui ne va pas</button>
+      <div class="msg-zone" hidden>
+        <textarea class="msg-txt" rows="3"
+          placeholder="Ce qui cloche, en une phrase. Je le lis au prochain passage."></textarea>
+        <div class="msg-actes">
+          <button type="button" class="msg-ok oui">Enregistrer</button>
+          <button type="button" class="msg-annul">Annuler</button>
+        </div>
+      </div>
+      <p class="msg-vu"></p>
+    </div>
   </li>
   <li class="t" data-id="video-virale" data-defaut="fait">
     <div class="haut">
@@ -277,6 +481,18 @@
     <a class="lien" href="https://previsualisation.automatisationboost.com/analyse-virale/" target="_blank" rel="noopener">Voir le résultat ↗</a>
     <div class="actes"></div>
     <p class="dit"></p>
+    <div class="msg">
+      <button type="button" class="msg-ouvrir">Dire ce qui ne va pas</button>
+      <div class="msg-zone" hidden>
+        <textarea class="msg-txt" rows="3"
+          placeholder="Ce qui cloche, en une phrase. Je le lis au prochain passage."></textarea>
+        <div class="msg-actes">
+          <button type="button" class="msg-ok oui">Enregistrer</button>
+          <button type="button" class="msg-annul">Annuler</button>
+        </div>
+      </div>
+      <p class="msg-vu"></p>
+    </div>
   </li>
   <li class="t" data-id="befresh-feed" data-defaut="fait">
     <div class="haut">
@@ -290,6 +506,18 @@
     <a class="lien" href="https://previsualisation.automatisationboost.com/befresh-feed/" target="_blank" rel="noopener">Voir le résultat ↗</a>
     <div class="actes"></div>
     <p class="dit"></p>
+    <div class="msg">
+      <button type="button" class="msg-ouvrir">Dire ce qui ne va pas</button>
+      <div class="msg-zone" hidden>
+        <textarea class="msg-txt" rows="3"
+          placeholder="Ce qui cloche, en une phrase. Je le lis au prochain passage."></textarea>
+        <div class="msg-actes">
+          <button type="button" class="msg-ok oui">Enregistrer</button>
+          <button type="button" class="msg-annul">Annuler</button>
+        </div>
+      </div>
+      <p class="msg-vu"></p>
+    </div>
   </li>
   <li class="t" data-id="shortforge-promesse" data-defaut="fait">
     <div class="haut">
@@ -303,6 +531,18 @@
     <a class="lien" href="https://videoboost.automatisationboost.com/vente.html" target="_blank" rel="noopener">Voir le résultat ↗</a>
     <div class="actes"></div>
     <p class="dit"></p>
+    <div class="msg">
+      <button type="button" class="msg-ouvrir">Dire ce qui ne va pas</button>
+      <div class="msg-zone" hidden>
+        <textarea class="msg-txt" rows="3"
+          placeholder="Ce qui cloche, en une phrase. Je le lis au prochain passage."></textarea>
+        <div class="msg-actes">
+          <button type="button" class="msg-ok oui">Enregistrer</button>
+          <button type="button" class="msg-annul">Annuler</button>
+        </div>
+      </div>
+      <p class="msg-vu"></p>
+    </div>
   </li>
   <li class="t" data-id="carrousel-pub" data-defaut="fait">
     <div class="haut">
@@ -316,6 +556,18 @@
     <a class="lien" href="https://www.facebook.com/adsmanager/manage/ads/edit?act=1576379627158917&amp;selected_ad_ids=52551203975867" target="_blank" rel="noopener">Voir le résultat ↗</a>
     <div class="actes"></div>
     <p class="dit"></p>
+    <div class="msg">
+      <button type="button" class="msg-ouvrir">Dire ce qui ne va pas</button>
+      <div class="msg-zone" hidden>
+        <textarea class="msg-txt" rows="3"
+          placeholder="Ce qui cloche, en une phrase. Je le lis au prochain passage."></textarea>
+        <div class="msg-actes">
+          <button type="button" class="msg-ok oui">Enregistrer</button>
+          <button type="button" class="msg-annul">Annuler</button>
+        </div>
+      </div>
+      <p class="msg-vu"></p>
+    </div>
   </li>
   <li class="t" data-id="landing-foodboost" data-defaut="fait">
     <div class="haut">
@@ -329,6 +581,18 @@
     <a class="lien" href="https://previsualisation.automatisationboost.com/foodboost-landing/" target="_blank" rel="noopener">Voir le résultat ↗</a>
     <div class="actes"></div>
     <p class="dit"></p>
+    <div class="msg">
+      <button type="button" class="msg-ouvrir">Dire ce qui ne va pas</button>
+      <div class="msg-zone" hidden>
+        <textarea class="msg-txt" rows="3"
+          placeholder="Ce qui cloche, en une phrase. Je le lis au prochain passage."></textarea>
+        <div class="msg-actes">
+          <button type="button" class="msg-ok oui">Enregistrer</button>
+          <button type="button" class="msg-annul">Annuler</button>
+        </div>
+      </div>
+      <p class="msg-vu"></p>
+    </div>
   </li>
   <li class="t" data-id="demo-video-papies" data-defaut="propose">
     <div class="haut">
@@ -342,6 +606,18 @@
     <a class="lien" href="https://previsualisation.automatisationboost.com/demo-papies/" target="_blank" rel="noopener">Voir le résultat ↗</a>
     <div class="actes"></div>
     <p class="dit"></p>
+    <div class="msg">
+      <button type="button" class="msg-ouvrir">Dire ce qui ne va pas</button>
+      <div class="msg-zone" hidden>
+        <textarea class="msg-txt" rows="3"
+          placeholder="Ce qui cloche, en une phrase. Je le lis au prochain passage."></textarea>
+        <div class="msg-actes">
+          <button type="button" class="msg-ok oui">Enregistrer</button>
+          <button type="button" class="msg-annul">Annuler</button>
+        </div>
+      </div>
+      <p class="msg-vu"></p>
+    </div>
   </li>
   <li class="t" data-id="post-video-feed-lookbook" data-defaut="propose">
     <div class="haut">
@@ -355,6 +631,18 @@
     <a class="lien" href="https://previsualisation.automatisationboost.com/foodboost-post-feed/" target="_blank" rel="noopener">Voir le résultat ↗</a>
     <div class="actes"></div>
     <p class="dit"></p>
+    <div class="msg">
+      <button type="button" class="msg-ouvrir">Dire ce qui ne va pas</button>
+      <div class="msg-zone" hidden>
+        <textarea class="msg-txt" rows="3"
+          placeholder="Ce qui cloche, en une phrase. Je le lis au prochain passage."></textarea>
+        <div class="msg-actes">
+          <button type="button" class="msg-ok oui">Enregistrer</button>
+          <button type="button" class="msg-annul">Annuler</button>
+        </div>
+      </div>
+      <p class="msg-vu"></p>
+    </div>
   </li>
   <li class="t" data-id="echappee-email-demo" data-defaut="propose">
     <div class="haut">
@@ -368,6 +656,18 @@
     <a class="lien" href="https://previsualisation.automatisationboost.com/demo-feed-email/" target="_blank" rel="noopener">Voir le résultat ↗</a>
     <div class="actes"></div>
     <p class="dit"></p>
+    <div class="msg">
+      <button type="button" class="msg-ouvrir">Dire ce qui ne va pas</button>
+      <div class="msg-zone" hidden>
+        <textarea class="msg-txt" rows="3"
+          placeholder="Ce qui cloche, en une phrase. Je le lis au prochain passage."></textarea>
+        <div class="msg-actes">
+          <button type="button" class="msg-ok oui">Enregistrer</button>
+          <button type="button" class="msg-annul">Annuler</button>
+        </div>
+      </div>
+      <p class="msg-vu"></p>
+    </div>
   </li>
   <li class="t" data-id="menage-workflows-resto" data-defaut="attente-toi">
     <div class="haut">
@@ -381,6 +681,18 @@
     
     <div class="actes"></div>
     <p class="dit"></p>
+    <div class="msg">
+      <button type="button" class="msg-ouvrir">Dire ce qui ne va pas</button>
+      <div class="msg-zone" hidden>
+        <textarea class="msg-txt" rows="3"
+          placeholder="Ce qui cloche, en une phrase. Je le lis au prochain passage."></textarea>
+        <div class="msg-actes">
+          <button type="button" class="msg-ok oui">Enregistrer</button>
+          <button type="button" class="msg-annul">Annuler</button>
+        </div>
+      </div>
+      <p class="msg-vu"></p>
+    </div>
   </li>
   <li class="t" data-id="tuto-wan-moins-cher" data-defaut="propose">
     <div class="haut">
@@ -394,6 +706,318 @@
     <a class="lien" href="https://previsualisation.automatisationboost.com/tuto-wan/" target="_blank" rel="noopener">Voir le résultat ↗</a>
     <div class="actes"></div>
     <p class="dit"></p>
+    <div class="msg">
+      <button type="button" class="msg-ouvrir">Dire ce qui ne va pas</button>
+      <div class="msg-zone" hidden>
+        <textarea class="msg-txt" rows="3"
+          placeholder="Ce qui cloche, en une phrase. Je le lis au prochain passage."></textarea>
+        <div class="msg-actes">
+          <button type="button" class="msg-ok oui">Enregistrer</button>
+          <button type="button" class="msg-annul">Annuler</button>
+        </div>
+      </div>
+      <p class="msg-vu"></p>
+    </div>
+  </li>
+  <li class="t" data-id="oxygene-event" data-defaut="fait">
+    <div class="haut">
+      <span class="etat"></span>
+      <h3>Aperçu vidéo pour Oxygène Event</h3>
+    </div>
+    <p class="pq">Ils ont dit au téléphone qu’ils avaient déjà quelqu’un. Leur fiche dit « pas de relance commerciale » — mais leur montrer du travail récent coûte zéro et sert le jour où leur prestataire les lâche.</p>
+    <p class="fi"><b>Fini quand :</b> Une page qui montre le site BLOOM déjà livré et une vidéo de 18 s montée sur LEURS vraies photos, en ligne sur previsualisation. Rien envoyé de mon côté.</p>
+    <p class="co"><b>Coût :</b> 0 € — composition HTML et ffmpeg, aucun appel payant</p>
+    <p class="no">Six photos récupérées sur leur second site. Leur domaine principal ne résout plus en DNS.</p>
+    <a class="lien" href="https://previsualisation.automatisationboost.com/oxygene-event/" target="_blank" rel="noopener">Voir le résultat ↗</a>
+    <div class="actes"></div>
+    <p class="dit"></p>
+    <div class="msg">
+      <button type="button" class="msg-ouvrir">Dire ce qui ne va pas</button>
+      <div class="msg-zone" hidden>
+        <textarea class="msg-txt" rows="3"
+          placeholder="Ce qui cloche, en une phrase. Je le lis au prochain passage."></textarea>
+        <div class="msg-actes">
+          <button type="button" class="msg-ok oui">Enregistrer</button>
+          <button type="button" class="msg-annul">Annuler</button>
+        </div>
+      </div>
+      <p class="msg-vu"></p>
+    </div>
+  </li>
+  <li class="t" data-id="porte-appels" data-defaut="fait">
+    <div class="haut">
+      <span class="etat"></span>
+      <h3>Le mode « enchaîner les appels », enfin accessible</h3>
+    </div>
+    <p class="pq">Le mode existait depuis le 28/08 avec les scripts et 637 numéros, et aucun lien n’y menait. Deux appels enregistrés en tout.</p>
+    <p class="fi"><b>Fini quand :</b> Une porte d’entrée en haut de la feuille d’appel, les échauffements remis en tête de file, et un message WhatsApp déjà écrit proposé quand personne ne décroche sur un mobile.</p>
+    <p class="co"><b>Coût :</b> 0 €</p>
+    <p class="no">260 des 637 numéros sont des mobiles, donc joignables sur WhatsApp.</p>
+    <a class="lien" href="https://previsualisation.automatisationboost.com/appels/" target="_blank" rel="noopener">Voir le résultat ↗</a>
+    <div class="actes"></div>
+    <p class="dit"></p>
+    <div class="msg">
+      <button type="button" class="msg-ouvrir">Dire ce qui ne va pas</button>
+      <div class="msg-zone" hidden>
+        <textarea class="msg-txt" rows="3"
+          placeholder="Ce qui cloche, en une phrase. Je le lis au prochain passage."></textarea>
+        <div class="msg-actes">
+          <button type="button" class="msg-ok oui">Enregistrer</button>
+          <button type="button" class="msg-annul">Annuler</button>
+        </div>
+      </div>
+      <p class="msg-vu"></p>
+    </div>
+  </li>
+  <li class="t" data-id="formulaire-audit" data-defaut="fait">
+    <div class="haut">
+      <span class="etat"></span>
+      <h3>Le formulaire d’audit qui qualifie vraiment</h3>
+    </div>
+    <p class="pq">L’ancien formulaire est un champ libre avec 10 caractères minimum. Le 27/08 un prospect a écrit « Réacteur contenu » — 16 caractères, rien à exploiter.</p>
+    <p class="fi"><b>Fini quand :</b> Sept questions fermées, une analyse qui sort le trou principal et l’offre qui va avec, un mail pour toi avec ta phrase d’ouverture, un accusé pour lui, et un brouillon de proposition prêt à relire dans ta boîte.</p>
+    <p class="co"><b>Coût :</b> 0 € — analyse déterministe, aucun appel de modèle</p>
+    <p class="no">Testé de bout en bout. Il reste à le poser sur automatisationboost.com, et à créer le cal.com.</p>
+    <a class="lien" href="https://previsualisation.automatisationboost.com/audit/" target="_blank" rel="noopener">Voir le résultat ↗</a>
+    <div class="actes"></div>
+    <p class="dit"></p>
+    <div class="msg">
+      <button type="button" class="msg-ouvrir">Dire ce qui ne va pas</button>
+      <div class="msg-zone" hidden>
+        <textarea class="msg-txt" rows="3"
+          placeholder="Ce qui cloche, en une phrase. Je le lis au prochain passage."></textarea>
+        <div class="msg-actes">
+          <button type="button" class="msg-ok oui">Enregistrer</button>
+          <button type="button" class="msg-annul">Annuler</button>
+        </div>
+      </div>
+      <p class="msg-vu"></p>
+    </div>
+  </li>
+  <li class="t" data-id="stagiaire-repare" data-defaut="fait">
+    <div class="haut">
+      <span class="etat"></span>
+      <h3>Le stagiaire gratuit remis en marche</h3>
+    </div>
+    <p class="pq">Le modèle gratuit qu’il utilisait a été retiré du catalogue OpenCode. Chaque réveil échouait en silence : 16 fois sur 16 le 01/09, 14 la veille.</p>
+    <p class="fi"><b>Fini quand :</b> La boucle bascule sur un modèle gratuit testé et juste, et un vrai passage a tourné derrière — un site corrigé, la tâche cochée, le journal écrit.</p>
+    <p class="co"><b>Coût :</b> 0 €</p>
+    <p class="no">Sur cinq modèles gratuits testés, un seul est à la fois rapide et juste. Un autre rend du code crédible et faux.</p>
+    
+    <div class="actes"></div>
+    <p class="dit"></p>
+    <div class="msg">
+      <button type="button" class="msg-ouvrir">Dire ce qui ne va pas</button>
+      <div class="msg-zone" hidden>
+        <textarea class="msg-txt" rows="3"
+          placeholder="Ce qui cloche, en une phrase. Je le lis au prochain passage."></textarea>
+        <div class="msg-actes">
+          <button type="button" class="msg-ok oui">Enregistrer</button>
+          <button type="button" class="msg-annul">Annuler</button>
+        </div>
+      </div>
+      <p class="msg-vu"></p>
+    </div>
+  </li>
+  <li class="t" data-id="repondre-3-leads" data-defaut="propose">
+    <div class="haut">
+      <span class="etat"></span>
+      <h3>Répondre aux trois qui n’ont jamais eu de réponse</h3>
+    </div>
+    <p class="pq">Jonathan le 18/08, Brice deux fois le 27/08 — dont une demande d’audit explicite. Le récap automatique t’a prévenu le 19 et le 28. Aucune réponse n’est jamais partie.</p>
+    <p class="fi"><b>Fini quand :</b> Trois brouillons prêts dans ta boîte, un par personne, qui reconnaissent le retard sans s’excuser trois fois et posent une question simple. Tu relis et tu envoies — je n’envoie rien.</p>
+    <p class="co"><b>Coût :</b> 0 €</p>
+    <p class="no">Le quatrième, John, est une agence d’automatisation qui te démarche par ton propre formulaire : à ignorer.</p>
+    
+    <div class="actes"></div>
+    <p class="dit"></p>
+    <div class="msg">
+      <button type="button" class="msg-ouvrir">Dire ce qui ne va pas</button>
+      <div class="msg-zone" hidden>
+        <textarea class="msg-txt" rows="3"
+          placeholder="Ce qui cloche, en une phrase. Je le lis au prochain passage."></textarea>
+        <div class="msg-actes">
+          <button type="button" class="msg-ok oui">Enregistrer</button>
+          <button type="button" class="msg-annul">Annuler</button>
+        </div>
+      </div>
+      <p class="msg-vu"></p>
+    </div>
+  </li>
+  <li class="t" data-id="aiguillage-audit" data-defaut="propose">
+    <div class="haut">
+      <span class="etat"></span>
+      <h3>Ne plus répondre à une demande d’audit par un lien vers ta page d’accueil</h3>
+    </div>
+    <p class="pq">Le workflow réparé le 29/08 n’a aucun aiguillage : une demande d’audit reçoit le mail « Votre ressource est prête » avec un bouton vers « / ».</p>
+    <p class="fi"><b>Fini quand :</b> Deux branches selon la provenance : la ressource garde son mail, la demande d’audit part sur une réponse qui propose un créneau et donne ton numéro.</p>
+    <p class="co"><b>Coût :</b> 0 €</p>
+    <p class="no">Une demi-heure. Le nouveau formulaire d’audit ne passe pas par ce workflow, mais l’ancien bouton de la page d’accueil, si.</p>
+    
+    <div class="actes"></div>
+    <p class="dit"></p>
+    <div class="msg">
+      <button type="button" class="msg-ouvrir">Dire ce qui ne va pas</button>
+      <div class="msg-zone" hidden>
+        <textarea class="msg-txt" rows="3"
+          placeholder="Ce qui cloche, en une phrase. Je le lis au prochain passage."></textarea>
+        <div class="msg-actes">
+          <button type="button" class="msg-ok oui">Enregistrer</button>
+          <button type="button" class="msg-annul">Annuler</button>
+        </div>
+      </div>
+      <p class="msg-vu"></p>
+    </div>
+  </li>
+  <li class="t" data-id="audit-sur-le-site" data-defaut="propose">
+    <div class="haut">
+      <span class="etat"></span>
+      <h3>Poser le formulaire d’audit sur automatisationboost.com</h3>
+    </div>
+    <p class="pq">Il est prêt et testé, mais il vit sur previsualisation. Tant qu’il n’est pas sur ton vrai site, il ne capte personne.</p>
+    <p class="fi"><b>Fini quand :</b> Le bloc audit de ta page d’accueil remplacé par les sept questions, en gardant ta charte, et une vérification que le premier envoi arrive bien jusqu’au brouillon.</p>
+    <p class="co"><b>Coût :</b> 0 €</p>
+    <p class="no">Changement visible par tes visiteurs — j’attends ton feu vert, je n’y touche pas seul.</p>
+    
+    <div class="actes"></div>
+    <p class="dit"></p>
+    <div class="msg">
+      <button type="button" class="msg-ouvrir">Dire ce qui ne va pas</button>
+      <div class="msg-zone" hidden>
+        <textarea class="msg-txt" rows="3"
+          placeholder="Ce qui cloche, en une phrase. Je le lis au prochain passage."></textarea>
+        <div class="msg-actes">
+          <button type="button" class="msg-ok oui">Enregistrer</button>
+          <button type="button" class="msg-annul">Annuler</button>
+        </div>
+      </div>
+      <p class="msg-vu"></p>
+    </div>
+  </li>
+  <li class="t" data-id="cv-pdf-a-reparer" data-defaut="propose">
+    <div class="haut">
+      <span class="etat"></span>
+      <h3>Le CV en PDF : deux liens morts et trois fois « Make »</h3>
+    </div>
+    <p class="pq">Deux des trois liens de portfolio ne répondent pas, le mot « Make » apparaît trois fois alors que tu ne veux plus le citer, et le fichier pèse 4,18 Mo — certaines boîtes mail le rejettent.</p>
+    <p class="fi"><b>Fini quand :</b> Un PDF sous 2 Mo, sans mention de Make, avec trois liens qui répondent tous en 200.</p>
+    <p class="co"><b>Coût :</b> 0 €</p>
+    <p class="no">La refonte de la mise en page attend toujours la photo dont tu m’avais parlé.</p>
+    
+    <div class="actes"></div>
+    <p class="dit"></p>
+    <div class="msg">
+      <button type="button" class="msg-ouvrir">Dire ce qui ne va pas</button>
+      <div class="msg-zone" hidden>
+        <textarea class="msg-txt" rows="3"
+          placeholder="Ce qui cloche, en une phrase. Je le lis au prochain passage."></textarea>
+        <div class="msg-actes">
+          <button type="button" class="msg-ok oui">Enregistrer</button>
+          <button type="button" class="msg-annul">Annuler</button>
+        </div>
+      </div>
+      <p class="msg-vu"></p>
+    </div>
+  </li>
+  <li class="t" data-id="tonypayet-403" data-defaut="propose">
+    <div class="haut">
+      <span class="etat"></span>
+      <h3>tonypayet.com renvoie une erreur, et il est dans ta signature</h3>
+    </div>
+    <p class="pq">Le domaine répond 403 pour tout le monde. Il part au bas de chaque email que tu envoies, y compris aux prospects et aux recruteurs.</p>
+    <p class="fi"><b>Fini quand :</b> Soit le domaine répond, soit il sort de ta signature. Vérifié en HTTP depuis l’extérieur.</p>
+    <p class="co"><b>Coût :</b> 0 € si c’est une redirection ; à voir si l’hébergement est en cause</p>
+    
+    
+    <div class="actes"></div>
+    <p class="dit"></p>
+    <div class="msg">
+      <button type="button" class="msg-ouvrir">Dire ce qui ne va pas</button>
+      <div class="msg-zone" hidden>
+        <textarea class="msg-txt" rows="3"
+          placeholder="Ce qui cloche, en une phrase. Je le lis au prochain passage."></textarea>
+        <div class="msg-actes">
+          <button type="button" class="msg-ok oui">Enregistrer</button>
+          <button type="button" class="msg-annul">Annuler</button>
+        </div>
+      </div>
+      <p class="msg-vu"></p>
+    </div>
+  </li>
+  <li class="t" data-id="cal-com-rdv" data-defaut="attente-toi">
+    <div class="haut">
+      <span class="etat"></span>
+      <h3>Créer ton lien de prise de rendez-vous</h3>
+    </div>
+    <p class="pq">Le mail de proposition est prêt, mais tu n’as aucun lien de réservation. Il bascule pour l’instant sur « appelez-moi », ce qui remet la friction sur le prospect.</p>
+    <p class="fi"><b>Fini quand :</b> Un compte cal.com gratuit avec un créneau de 15 min, et le lien donné — une seule ligne à changer et le bouton devient « Choisir un créneau ».</p>
+    <p class="co"><b>Coût :</b> 0 € — la formule gratuite suffit</p>
+    
+    
+    <div class="actes"></div>
+    <p class="dit"></p>
+    <div class="msg">
+      <button type="button" class="msg-ouvrir">Dire ce qui ne va pas</button>
+      <div class="msg-zone" hidden>
+        <textarea class="msg-txt" rows="3"
+          placeholder="Ce qui cloche, en une phrase. Je le lis au prochain passage."></textarea>
+        <div class="msg-actes">
+          <button type="button" class="msg-ok oui">Enregistrer</button>
+          <button type="button" class="msg-annul">Annuler</button>
+        </div>
+      </div>
+      <p class="msg-vu"></p>
+    </div>
+  </li>
+  <li class="t" data-id="nettoyer-tests-audit" data-defaut="attente-toi">
+    <div class="haut">
+      <span class="etat"></span>
+      <h3>Supprimer mes deux brouillons et trois lignes de test</h3>
+    </div>
+    <p class="pq">J’ai testé le formulaire d’audit en vrai. Les brouillons te sont adressés à toi-même — ne les envoie pas par réflexe.</p>
+    <p class="fi"><b>Fini quand :</b> Les deux brouillons « Votre audit — … » à la corbeille, et les lignes Sandrine et « Tony (test audit) » supprimées dans la table n8n.</p>
+    <p class="co"><b>Coût :</b> 0 €</p>
+    <p class="no">Je n’ai ni le droit de supprimer dans ta boîte, ni l’API pour supprimer une ligne de table (405).</p>
+    
+    <div class="actes"></div>
+    <p class="dit"></p>
+    <div class="msg">
+      <button type="button" class="msg-ouvrir">Dire ce qui ne va pas</button>
+      <div class="msg-zone" hidden>
+        <textarea class="msg-txt" rows="3"
+          placeholder="Ce qui cloche, en une phrase. Je le lis au prochain passage."></textarea>
+        <div class="msg-actes">
+          <button type="button" class="msg-ok oui">Enregistrer</button>
+          <button type="button" class="msg-annul">Annuler</button>
+        </div>
+      </div>
+      <p class="msg-vu"></p>
+    </div>
+  </li>
+  <li class="t" data-id="video-style-montre" data-defaut="attente-toi">
+    <div class="haut">
+      <span class="etat"></span>
+      <h3>La première vidéo dans le style que tu m’as montré</h3>
+    </div>
+    <p class="pq">Deux références envoyées : les trois reels du 31/08, et le micro-trottoir du 01/09 — plan unique de 10 s, perche micro dans le cadre, lumière de fin de journée.</p>
+    <p class="fi"><b>Fini quand :</b> Une vidéo verticale qui reprend le format micro-trottoir en ouverture, sur un sujet à toi, en ligne sur previsualisation.</p>
+    <p class="co"><b>Coût :</b> à chiffrer selon la méthode retenue</p>
+    <p class="no">Bloqué sur un point : la vidéo vient du compte « humian », qui est dans ton registre des refus depuis le 15/08 (« tout sauf humian »). Confirme que tu lèves ce refus et je lance.</p>
+    
+    <div class="actes"></div>
+    <p class="dit"></p>
+    <div class="msg">
+      <button type="button" class="msg-ouvrir">Dire ce qui ne va pas</button>
+      <div class="msg-zone" hidden>
+        <textarea class="msg-txt" rows="3"
+          placeholder="Ce qui cloche, en une phrase. Je le lis au prochain passage."></textarea>
+        <div class="msg-actes">
+          <button type="button" class="msg-ok oui">Enregistrer</button>
+          <button type="button" class="msg-annul">Annuler</button>
+        </div>
+      </div>
+      <p class="msg-vu"></p>
+    </div>
   </li></ul>
 </div>
 <div class="bandeau" id="bandeau">Chargement de tes décisions…</div>
@@ -432,15 +1056,47 @@
         b.onclick = () => decider(id, vers);
         zone.appendChild(b);
       }
+      const m = etat[id] && etat[id].message;
+      li.querySelector('.msg-vu').textContent = m ? 'Ce que tu as noté : ' + m : '';
+      li.querySelector('.msg-ouvrir').textContent =
+        m ? 'Modifier ce que tu as noté' : 'Dire ce qui ne va pas';
       const d = li.querySelector('.dit');
       d.textContent = etat[id] && etat[id].maj
         ? 'Ta décision : ' + lib[0].toLowerCase() + ' — ' + new Date(etat[id].maj).toLocaleString('fr-FR')
         : '';
     });
+    document.querySelectorAll('.t').forEach((li) => {
+      if (li.dataset.msgPret) return;
+      li.dataset.msgPret = '1';
+      const id = li.dataset.id;
+      const zone = li.querySelector('.msg-zone');
+      const txt = li.querySelector('.msg-txt');
+      li.querySelector('.msg-ouvrir').onclick = () => {
+        txt.value = (etat[id] && etat[id].message) || '';
+        zone.hidden = false;
+        txt.focus();
+      };
+      li.querySelector('.msg-annul').onclick = () => { zone.hidden = true; };
+      li.querySelector('.msg-ok').onclick = () => {
+        zone.hidden = true;
+        noter(id, txt.value.trim());
+      };
+    });
+
     document.getElementById('compte').innerHTML =
       '<span class="pill"><b>' + aValider + '</b> à valider</span>' +
       '<span class="pill"><b>' + enCours + '</b> en cours</span>' +
       '<span class="pill"><b>' + aTonAvis + '</b> à ton avis</span>';
+  };
+
+  const noter = (id, texte) => {
+    const p = etat[id] || {};
+    const defaut = document.querySelector('.t[data-id="' + id + '"]').dataset.defaut;
+    etat[id] = { etat: p.etat || defaut, maj: p.maj || new Date().toISOString(),
+                 message: texte, messageMaj: new Date().toISOString() };
+    peindre();
+    duNeuf = true;
+    envoyer();
   };
 
   const decider = (id, vers) => {
