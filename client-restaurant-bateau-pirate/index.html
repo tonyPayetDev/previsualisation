@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#1A1008" />
   <title>Restaurant Bateau Pirate - Snack &amp; Livraison à Bois de Nèfles Saint Paul</title>
   <meta name="description" content="Découvrez le Restaurant Bateau Pirate à Bois de Nèfles Saint Paul : commande en ligne, livraison, espace familial et terrasse avec vue imprenable. Réservez maintenant !" />
   <meta name="keywords" content="restaurant bateau pirate, bois de nèfles, saint paul, réunion, snack, livraison, burger, panini, tacos, wok, terrasse, soirée privée, cocktails" />
@@ -45,6 +46,11 @@
       "latitude": "-20.9818",
       "longitude": "55.3625"
     },
+    "openingHoursSpecification": [
+      { "@type": "OpeningHoursSpecification", "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday"], "opens": "11:00", "closes": "14:30" },
+      { "@type": "OpeningHoursSpecification", "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday"], "opens": "18:00", "closes": "22:00" },
+      { "@type": "OpeningHoursSpecification", "dayOfWeek": ["Saturday","Sunday"], "opens": "11:00", "closes": "22:30" }
+    ],
     "servesCuisine": ["Burgers", "Paninis", "Tacos", "Wok", "Kebab", "Cocktails"],
     "hasMenu": "https://www.bateaupirate.fr/#commande",
     "priceRange": "€€",
@@ -56,17 +62,59 @@
   }
   </script>
 
+  <link rel="preload" as="image" href="assets/images/hero.jpg" fetchpriority="high" />
   <link rel="stylesheet" href="assets/css/style.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
 
-  <style>
-    body { font-family: 'Inter', 'Segoe UI', sans-serif; }
-    .hero h1, h2 { font-family: 'Playfair Display', Georgia, serif; }
-  </style>
+  <script>
+    /* On ne masque les elements a reveler que si l'animation va reellement
+       tourner. Sans JS, sans GSAP ou en mouvement reduit, la page reste
+       entierement lisible. Filet de securite : 1,6 s puis on demasque. */
+    (function () {
+      var reduit = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (reduit) return;
+      var r = document.documentElement;
+      r.classList.add('anim-ready');
+      setTimeout(function () {
+        if (!r.classList.contains('anim-lancee')) r.classList.remove('anim-ready');
+      }, 1600);
+    })();
+  </script>
 </head>
 <body>
+
+  <a class="saut-contenu" href="#accueil">Aller au contenu</a>
+
+  <!-- ==============================
+       JEU D'ICONES (SVG en ligne)
+  ================================ -->
+  <svg width="0" height="0" aria-hidden="true" focusable="false" style="position:absolute">
+    <defs>
+      <symbol id="i-boussole" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m15.5 8.5-2 5-5 2 2-5z"/></symbol>
+      <symbol id="i-couverts" viewBox="0 0 24 24"><path d="M6 2v7a2 2 0 0 0 4 0V2M8 9v13M17.5 2c-1.5 1.5-2 3-2 5.5 0 2 .8 3 2 3.5V22"/></symbol>
+      <symbol id="i-verre" viewBox="0 0 24 24"><path d="M4 4h16l-8 8zM12 12v7M8 21h8M17 6l3-3"/></symbol>
+      <symbol id="i-gouvernail" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/><path d="M12 3v6M12 15v6M3 12h6M15 12h6M5.6 5.6 9.9 9.9M14.1 14.1l4.3 4.3M18.4 5.6 14.1 9.9M9.9 14.1l-4.3 4.3"/></symbol>
+      <symbol id="i-note" viewBox="0 0 24 24"><path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/></symbol>
+      <symbol id="i-ancre" viewBox="0 0 24 24"><circle cx="12" cy="5" r="2.6"/><path d="M12 7.6V22M7 11h10M4 15a8 8 0 0 0 16 0"/></symbol>
+      <symbol id="i-tel" viewBox="0 0 24 24"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></symbol>
+      <symbol id="i-agenda" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></symbol>
+      <symbol id="i-pin" viewBox="0 0 24 24"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></symbol>
+      <symbol id="i-horloge" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.2 1.9"/></symbol>
+      <symbol id="i-courrier" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2.5 6 9.5 7 9.5-7"/></symbol>
+      <symbol id="i-fb" viewBox="0 0 24 24"><path d="M14 8.5h2.6V5.2h-2.9C10.5 5.2 9.6 7 9.6 9v1.9H7.4v3.4h2.2v8.5h3.6v-8.5h2.6l.5-3.4h-3.1V9.3c0-.6.3-.8.8-.8z"/></symbol>
+      <symbol id="i-ig" viewBox="0 0 24 24"><rect x="3.2" y="3.2" width="17.6" height="17.6" rx="5.2"/><circle cx="12" cy="12" r="4.1"/><circle cx="17.1" cy="6.9" r="1.15" fill="currentColor" stroke="none"/></symbol>
+      <symbol id="i-soleil" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></symbol>
+      <symbol id="i-sourire" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8.5 14.5a4.5 4.5 0 0 0 7 0"/><path d="M9 9.5h.01M15 9.5h.01"/></symbol>
+      <symbol id="i-fete" viewBox="0 0 24 24"><path d="M3 21 8.5 8.5 15.5 15.5z"/><path d="M14 3.5c.9.9.9 2.4 0 3.3M18 2c1.8 1.8 1.8 4.7 0 6.5M11.5 10.5 21 21"/></symbol>
+      <symbol id="i-ticket" viewBox="0 0 24 24"><path d="M4 6h16v3.5a2.5 2.5 0 0 0 0 5V18H4v-3.5a2.5 2.5 0 0 0 0-5z"/><path d="M13 6v2M13 11v2M13 16v2"/></symbol>
+      <symbol id="i-coche" viewBox="0 0 24 24"><path d="m4 12.5 5 5L20 6.5"/></symbol>
+      <symbol id="i-fleche-bas" viewBox="0 0 24 24"><path d="M12 4v15M6 13.5 12 20l6-6.5"/></symbol>
+      <symbol id="i-fleche-haut" viewBox="0 0 24 24"><path d="M12 20V5M6 10.5 12 4l6 6.5"/></symbol>
+      <symbol id="i-lien" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+    </defs>
+  </svg>
 
   <!-- ==============================
        NAVIGATION
@@ -74,14 +122,18 @@
   <nav class="navbar" role="navigation" aria-label="Navigation principale">
     <div class="nav-container">
       <a href="#accueil" class="nav-logo" aria-label="Bateau Pirate - Accueil">
-        <span class="nav-logo-icon" aria-hidden="true">⚓</span>
-        <div class="nav-logo-text">
+        <span class="hublot nav-medaillon" aria-hidden="true">
+          <span class="hublot-verre"><img src="assets/images/logo-bateau-pirate.jpg" alt="" width="400" height="400" /></span>
+          <i class="rivet" style="--a:0deg"></i><i class="rivet" style="--a:90deg"></i>
+          <i class="rivet" style="--a:180deg"></i><i class="rivet" style="--a:270deg"></i>
+        </span>
+        <span class="nav-logo-text">
           <span class="name">Bateau Pirate</span>
           <span class="tagline">Bois de Nèfles · Saint Paul</span>
-        </div>
+        </span>
       </a>
 
-      <ul class="nav-links" role="list">
+      <ul class="nav-links" id="menu-principal" role="list">
         <li><a href="#cadre">Notre Cadre</a></li>
         <li><a href="#cuisine">Cuisine</a></li>
         <li><a href="#soirees-privees">Privatisation</a></li>
@@ -90,129 +142,160 @@
         <li><a href="#commande" class="nav-cta">Commander</a></li>
       </ul>
 
-      <a href="tel:+262262125273" class="nav-phone" aria-label="Appeler le restaurant">
-        <span aria-hidden="true">📞</span>
-        +262 262 125 273
-      </a>
+      <div class="nav-droite">
+        <span class="pastille" id="pastille-etat" hidden>
+          <span class="point" aria-hidden="true"></span>
+          <span class="libelle" id="pastille-libelle"></span>
+        </span>
 
-      <button class="hamburger" aria-label="Ouvrir le menu" aria-expanded="false">
-        <span></span>
-        <span></span>
-        <span></span>
-      </button>
+        <a href="tel:+262262125273" class="nav-phone" aria-label="Appeler le restaurant au +262 262 12 52 73">
+          <svg class="ico" aria-hidden="true"><use href="#i-tel"/></svg>
+          +262 262 12 52 73
+        </a>
+
+        <button class="hamburger" type="button" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="menu-principal">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
     </div>
   </nav>
 
   <!-- ==============================
        HERO
   ================================ -->
+  <main id="contenu">
   <section id="accueil" class="hero" aria-label="Présentation du restaurant">
-    <div class="hero-bg" role="img" aria-label="Ambiance musicale au Restaurant Bateau Pirate"></div>
+    <div class="hero-bg" role="img" aria-label="Le Restaurant Bateau Pirate à la tombée du jour, terrasse éclairée sur la route du Maïdo"></div>
     <div class="hero-overlay" aria-hidden="true"></div>
 
-    <div class="hero-content">
-      <div class="hero-badge" aria-label="Localisation">📍 Bois de Nèfles · Saint Paul · La Réunion</div>
+    <div class="hero-grid">
+      <div class="hero-copy">
+        <p class="hero-badge fx" data-fx="1">
+          <svg class="ico" aria-hidden="true"><use href="#i-pin"/></svg>
+          Bois de Nèfles · Saint Paul · La Réunion
+        </p>
 
-      <h1>
-        <span class="highlight">Restaurant Bateau Pirate</span><br />
-        Snack &amp; Livraison à<br />Bois de Nèfles Saint Paul
-      </h1>
+        <h1>
+          <span class="highlight fx" data-fx="2">Restaurant Bateau Pirate</span>
+          <span class="lieu fx" data-fx="3">Snack &amp; Livraison à Bois de Nèfles Saint Paul</span>
+        </h1>
 
-      <p class="hero-desc">
-        Un cadre chaleureux et familial sur la route du Maïdo. Cuisine généreuse,
-        cocktails créatifs, terrasse avec couchers de soleil et soirées animées.
-      </p>
+        <p class="hero-desc fx" data-fx="4">
+          Un cadre chaleureux et familial sur la route du Maïdo. Cuisine généreuse,
+          cocktails créatifs, terrasse avec couchers de soleil et soirées animées.
+        </p>
 
-      <div class="hero-actions">
-        <a href="#commande" class="btn btn-primary btn-lg">
-          <span aria-hidden="true">🍽️</span> Voir le menu &amp; Commander
-        </a>
-        <a href="#commande" class="btn btn-secondary btn-lg">
-          <span aria-hidden="true">📅</span> Réserver ma table
-        </a>
+        <p class="hero-etat fx" data-fx="5" id="hero-etat" aria-live="polite"></p>
+
+        <div class="hero-actions fx" data-fx="6">
+          <a href="#commande" class="btn btn-primary btn-lg">
+            <svg class="ico" aria-hidden="true"><use href="#i-couverts"/></svg>
+            Voir le menu &amp; Commander
+          </a>
+          <a href="#commande" class="btn btn-secondary btn-lg">
+            <svg class="ico" aria-hidden="true"><use href="#i-agenda"/></svg>
+            Réserver ma table
+          </a>
+        </div>
+
+        <div class="hero-services fx" data-fx="7" role="list" aria-label="Modes de service disponibles">
+          <div class="service-badge" role="listitem">
+            <img
+              src="assets/images/logo-sur-place.png"
+              alt=""
+              width="50"
+              height="50"
+              loading="eager"
+              onerror="this.style.display='none';this.parentElement.querySelector('.service-icon').style.display='block'"
+            />
+            <span class="service-icon" style="display:none" aria-hidden="true">🪑</span>
+            <span>Sur place</span>
+          </div>
+          <div class="service-badge" role="listitem">
+            <img
+              src="assets/images/logo-a-emporter.png"
+              alt=""
+              width="50"
+              height="50"
+              loading="eager"
+              onerror="this.style.display='none';this.parentElement.querySelector('.service-icon').style.display='block'"
+            />
+            <span class="service-icon" style="display:none" aria-hidden="true">🥡</span>
+            <span>À emporter</span>
+          </div>
+          <div class="service-badge" role="listitem">
+            <img
+              src="assets/images/logo-livraison.png"
+              alt=""
+              width="50"
+              height="50"
+              loading="eager"
+              onerror="this.style.display='none';this.parentElement.querySelector('.service-icon').style.display='block'"
+            />
+            <span class="service-icon" style="display:none" aria-hidden="true">🛵</span>
+            <span>Livraison</span>
+          </div>
+        </div>
       </div>
 
-      <div class="hero-services" role="list" aria-label="Modes de service disponibles">
-        <div class="service-badge" role="listitem">
-          <img
-            src="assets/images/logo-sur-place.png"
-            alt="Sur place"
-            width="50"
-            height="50"
-            loading="eager"
-            onerror="this.style.display='none';this.parentElement.querySelector('.service-icon').style.display='block'"
-          />
-          <span class="service-icon" style="display:none" aria-hidden="true">🪑</span>
-          <span>Sur place</span>
-        </div>
-        <div class="service-badge" role="listitem">
-          <img
-            src="assets/images/logo-a-emporter.png"
-            alt="À emporter"
-            width="50"
-            height="50"
-            loading="eager"
-            onerror="this.style.display='none';this.parentElement.querySelector('.service-icon').style.display='block'"
-          />
-          <span class="service-icon" style="display:none" aria-hidden="true">🥡</span>
-          <span>À emporter</span>
-        </div>
-        <div class="service-badge" role="listitem">
-          <img
-            src="assets/images/logo-livraison.png"
-            alt="Livraison"
-            width="50"
-            height="50"
-            loading="eager"
-            onerror="this.style.display='none';this.parentElement.querySelector('.service-icon').style.display='block'"
-          />
-          <span class="service-icon" style="display:none" aria-hidden="true">🛵</span>
-          <span>Livraison</span>
+      <!-- Le hublot : anneau de laiton en rotation, vues du restaurant -->
+      <div class="hero-hublot-zone fx" data-fx="8">
+        <div class="hublot hero-hublot" id="hublot-hero">
+          <span class="hublot-verre">
+            <img src="assets/images/terrasse.jpg" alt="La terrasse du Bateau Pirate au coucher du soleil, vue sur le littoral depuis la route du Maïdo" data-legende="La terrasse" class="visible" width="1536" height="1024" />
+            <img src="assets/images/ambiance.jpg" alt="Deux verres qui trinquent devant un coucher de soleil réunionnais" data-legende="L'apéro" width="1024" height="683" loading="lazy" />
+            <img src="assets/images/bar.jpg" alt="Groupe de convives déguisés attablés lors d'une soirée à thème" data-legende="Les soirées" width="1024" height="659" loading="lazy" />
+            <img src="assets/images/cuisine.jpg" alt="Assiette servie au Bateau Pirate : filet en sauce, frites maison et salade" data-legende="L'assiette" width="1024" height="729" loading="lazy" />
+          </span>
+          <i class="rivet" style="--a:0deg"></i><i class="rivet" style="--a:45deg"></i>
+          <i class="rivet" style="--a:90deg"></i><i class="rivet" style="--a:135deg"></i>
+          <i class="rivet" style="--a:180deg"></i><i class="rivet" style="--a:225deg"></i>
+          <i class="rivet" style="--a:270deg"></i><i class="rivet" style="--a:315deg"></i>
+          <span class="hublot-legende" id="hublot-legende">La terrasse</span>
         </div>
       </div>
     </div>
 
     <div class="scroll-indicator" aria-hidden="true">
-      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>
+      <svg class="ico"><use href="#i-fleche-bas"/></svg>
       Découvrir
     </div>
   </section>
 
   <!-- ==============================
-       SECTION 1 — Notre cadre agréable
+       01 — Notre cadre agréable
   ================================ -->
-  <section id="cadre" class="section section-dark" aria-labelledby="titre-cadre">
-    <div class="section-inner">
-      <div class="section-split">
-        <div class="section-image-wrap fade-in-left">
-          <img
-            src="assets/images/terrasse.jpg"
-            data-src="assets/images/terrasse.jpg"
-            alt="Terrasse du Restaurant Bateau Pirate avec vue sur les couchers de soleil à Bois de Nèfles Saint Paul"
-            width="800"
-            height="533"
-            loading="lazy"
-          />
-          <div class="section-frame" aria-hidden="true"></div>
+  <section id="cadre" class="chapitre fond-nuit" aria-labelledby="titre-cadre">
+    <div class="chapitre-inner">
+      <div class="chapitre-grid">
+        <div class="chapitre-media">
+          <figure class="cadre-photo fx" data-media>
+            <img
+              src="assets/images/terrasse.jpg"
+              alt="Terrasse du Restaurant Bateau Pirate avec vue sur les couchers de soleil à Bois de Nèfles Saint Paul"
+              width="1536" height="1024" loading="lazy" decoding="async"
+            />
+            <span class="cadre-lisere" aria-hidden="true"></span>
+          </figure>
         </div>
 
-        <div class="section-text fade-in-right">
-          <span class="section-number" aria-hidden="true">01</span>
-          <h2 id="titre-cadre">
-            Notre <span class="accent">cadre agréable</span>
-          </h2>
-          <div class="section-divider" aria-hidden="true"></div>
-          <p>
+        <div class="chapitre-corps">
+          <span class="chiffre-fantome" aria-hidden="true">01</span>
+          <span class="sourcil fx">Le cadre</span>
+          <h2 id="titre-cadre" class="fx">Notre <span class="accent">cadre agréable</span></h2>
+          <span class="filet fx" aria-hidden="true"></span>
+          <p class="fx">
             Profitez de la <strong>terrasse ouverte</strong> et des jolis couchers de soleil,
             en découvrant nos cocktails création. Nichés sur la route du Maïdo à Bois de Nèfles,
             nous vous offrons un panorama exceptionnel dans une atmosphère détendue et conviviale.
           </p>
-          <p>
+          <p class="fx">
             Un espace conçu pour se ressourcer, partager un moment privilégié
             et laisser le temps s'écouler doucement, entre nature et gourmandise.
           </p>
-          <a href="#commande" class="btn btn-primary">
-            <span aria-hidden="true">🌅</span> Découvrez notre cadre agréable
+          <a href="#commande" class="btn btn-primary fx">
+            <svg class="ico" aria-hidden="true"><use href="#i-soleil"/></svg>
+            Découvrez notre cadre agréable
           </a>
         </div>
       </div>
@@ -220,49 +303,49 @@
   </section>
 
   <!-- ==============================
-       SECTION 2 — Notre cuisine gourmande
+       02 — Notre cuisine gourmande
   ================================ -->
-  <section id="cuisine" class="section section-medium" aria-labelledby="titre-cuisine">
-    <div class="section-inner">
-      <div class="section-split reverse">
-        <div class="section-image-wrap fade-in-right">
-          <img
-            src="assets/images/cuisine.jpg"
-            data-src="assets/images/cuisine.jpg"
-            alt="Cuisine généreuse et variée du Restaurant Bateau Pirate : burgers, tacos, paninis et woks"
-            width="800"
-            height="533"
-            loading="lazy"
-          />
-          <div class="section-frame" aria-hidden="true"></div>
+  <section id="cuisine" class="chapitre chapitre--inverse fond-brun" aria-labelledby="titre-cuisine">
+    <div class="chapitre-inner">
+      <div class="chapitre-grid">
+        <div class="chapitre-media">
+          <figure class="cadre-photo fx" data-media>
+            <img
+              src="assets/images/cuisine.jpg"
+              alt="Assiette du Restaurant Bateau Pirate : filet de poisson en sauce, frites maison et salade fraîche"
+              width="1024" height="729" loading="lazy" decoding="async"
+            />
+            <span class="cadre-lisere" aria-hidden="true"></span>
+          </figure>
         </div>
 
-        <div class="section-text fade-in-left">
-          <span class="section-number" aria-hidden="true">02</span>
-          <h2 id="titre-cuisine">
-            Notre <span class="accent">cuisine gourmande</span>
-          </h2>
-          <div class="section-divider" aria-hidden="true"></div>
-          <p>
+        <div class="chapitre-corps">
+          <span class="chiffre-fantome" aria-hidden="true">02</span>
+          <span class="sourcil fx">La cuisine</span>
+          <h2 id="titre-cuisine" class="fx">Notre <span class="accent">cuisine gourmande</span></h2>
+          <span class="filet fx" aria-hidden="true"></span>
+          <p class="fx">
             Savourez une <strong>cuisine variée et généreuse</strong> dans une ambiance conviviale.
             Nos paninis moelleux, burgers maison juteux, tacos généreux, woks personnalisables
             et kebabs authentiques raviront toutes les envies.
           </p>
-          <p>
+          <p class="fx">
             Des produits frais sélectionnés avec soin pour vous offrir le meilleur de la street food
             réunionnaise dans un cadre unique. Commandez sur place, à emporter ou en livraison.
           </p>
 
-          <div style="display:flex; gap: 1rem; flex-wrap: wrap; margin: 0.5rem 0;">
-            <span style="background:rgba(197,154,37,0.12); border:1px solid rgba(197,154,37,0.3); padding:0.3rem 0.8rem; border-radius:50px; font-size:0.82rem; color:var(--or);">🍔 Burgers</span>
-            <span style="background:rgba(197,154,37,0.12); border:1px solid rgba(197,154,37,0.3); padding:0.3rem 0.8rem; border-radius:50px; font-size:0.82rem; color:var(--or);">🌮 Tacos</span>
-            <span style="background:rgba(197,154,37,0.12); border:1px solid rgba(197,154,37,0.3); padding:0.3rem 0.8rem; border-radius:50px; font-size:0.82rem; color:var(--or);">🥙 Paninis</span>
-            <span style="background:rgba(197,154,37,0.12); border:1px solid rgba(197,154,37,0.3); padding:0.3rem 0.8rem; border-radius:50px; font-size:0.82rem; color:var(--or);">🥘 Woks</span>
-            <span style="background:rgba(197,154,37,0.12); border:1px solid rgba(197,154,37,0.3); padding:0.3rem 0.8rem; border-radius:50px; font-size:0.82rem; color:var(--or);">🫕 Tapas</span>
-          </div>
+          <ul class="jetons fx" role="list">
+            <li class="jeton">Burgers</li>
+            <li class="jeton">Tacos</li>
+            <li class="jeton">Paninis</li>
+            <li class="jeton">Woks</li>
+            <li class="jeton">Kebabs</li>
+            <li class="jeton">Tapas</li>
+          </ul>
 
-          <a href="#commande" class="btn btn-primary">
-            <span aria-hidden="true">🍴</span> Explorez notre cuisine gourmande
+          <a href="#commande" class="btn btn-primary fx">
+            <svg class="ico" aria-hidden="true"><use href="#i-couverts"/></svg>
+            Explorez notre cuisine gourmande
           </a>
         </div>
       </div>
@@ -270,56 +353,47 @@
   </section>
 
   <!-- ==============================
-       SECTION 3 — Vos soirées privatisées
+       03 — Vos soirées privatisées
   ================================ -->
-  <section id="soirees-privees" class="section section-accent" aria-labelledby="titre-privatisation">
-    <div class="section-inner">
-      <div class="section-split">
-        <div class="section-image-wrap fade-in-left">
-          <img
-            src="assets/images/soiree-privee.jpg"
-            data-src="assets/images/soiree-privee.jpg"
-            alt="Espace privatisé pour mariage et anniversaire au Restaurant Bateau Pirate"
-            width="800"
-            height="533"
-            loading="lazy"
-          />
-          <div class="section-frame" aria-hidden="true"></div>
+  <section id="soirees-privees" class="chapitre fond-braise" aria-labelledby="titre-privatisation">
+    <div class="chapitre-inner">
+      <div class="chapitre-grid">
+        <div class="chapitre-media">
+          <figure class="cadre-photo fx" data-media>
+            <img
+              src="assets/images/bar.jpg"
+              alt="Tablée de convives déguisés célébrant une occasion au Restaurant Bateau Pirate"
+              width="1024" height="659" loading="lazy" decoding="async"
+            />
+            <span class="cadre-lisere" aria-hidden="true"></span>
+          </figure>
         </div>
 
-        <div class="section-text fade-in-right">
-          <span class="section-number" aria-hidden="true">03</span>
-          <h2 id="titre-privatisation">
-            Vos <span class="accent">soirées privatisées</span>
-          </h2>
-          <div class="section-divider" aria-hidden="true"></div>
-          <p>
+        <div class="chapitre-corps">
+          <span class="chiffre-fantome" aria-hidden="true">03</span>
+          <span class="sourcil fx">La privatisation</span>
+          <h2 id="titre-privatisation" class="fx">Vos <span class="accent">soirées privatisées</span></h2>
+          <span class="filet fx" aria-hidden="true"></span>
+          <p class="fx">
             Créez votre <strong>moment privilégié avec vos proches</strong> pour une occasion spéciale.
             Mariage, anniversaire, baptême, fête d'entreprise… nous mettons tout en œuvre pour que
             votre événement soit inoubliable.
           </p>
-          <p>
+          <p class="fx">
             Notre équipe vous accompagne dans l'organisation de A à Z : décoration, menu personnalisé,
             animation musicale et accueil chaleureux dans un cadre exceptionnel.
           </p>
 
-          <ul style="list-style:none; display:flex; flex-direction:column; gap:0.6rem; margin: 0.25rem 0;">
-            <li style="display:flex; align-items:center; gap:0.6rem; color:rgba(255,255,255,0.8); font-size:0.9rem;">
-              <span style="color:var(--or)" aria-hidden="true">✓</span> Mariages &amp; cérémonies
-            </li>
-            <li style="display:flex; align-items:center; gap:0.6rem; color:rgba(255,255,255,0.8); font-size:0.9rem;">
-              <span style="color:var(--or)" aria-hidden="true">✓</span> Anniversaires &amp; fêtes familiales
-            </li>
-            <li style="display:flex; align-items:center; gap:0.6rem; color:rgba(255,255,255,0.8); font-size:0.9rem;">
-              <span style="color:var(--or)" aria-hidden="true">✓</span> Événements d'entreprise &amp; team building
-            </li>
-            <li style="display:flex; align-items:center; gap:0.6rem; color:rgba(255,255,255,0.8); font-size:0.9rem;">
-              <span style="color:var(--or)" aria-hidden="true">✓</span> Menus personnalisés sur demande
-            </li>
+          <ul class="liste-cochee fx" role="list">
+            <li><svg class="ico" aria-hidden="true"><use href="#i-coche"/></svg> Mariages &amp; cérémonies</li>
+            <li><svg class="ico" aria-hidden="true"><use href="#i-coche"/></svg> Anniversaires &amp; fêtes familiales</li>
+            <li><svg class="ico" aria-hidden="true"><use href="#i-coche"/></svg> Événements d'entreprise &amp; team building</li>
+            <li><svg class="ico" aria-hidden="true"><use href="#i-coche"/></svg> Menus personnalisés sur demande</li>
           </ul>
 
-          <a href="#commande" class="btn btn-secondary">
-            <span aria-hidden="true">🎊</span> Organisez votre soirée privée
+          <a href="#commande" class="btn btn-secondary fx">
+            <svg class="ico" aria-hidden="true"><use href="#i-fete"/></svg>
+            Organisez votre soirée privée
           </a>
         </div>
       </div>
@@ -327,41 +401,40 @@
   </section>
 
   <!-- ==============================
-       SECTION 4 — Notre ambiance chaleureuse
+       04 — Notre ambiance chaleureuse
   ================================ -->
-  <section id="ambiance" class="section section-dark" aria-labelledby="titre-ambiance">
-    <div class="section-inner">
-      <div class="section-split reverse">
-        <div class="section-image-wrap fade-in-right">
-          <img
-            src="assets/images/ambiance.jpg"
-            data-src="assets/images/ambiance.jpg"
-            alt="Ambiance chaleureuse et conviviale au Restaurant Bateau Pirate à Saint Paul Réunion"
-            width="800"
-            height="533"
-            loading="lazy"
-          />
-          <div class="section-frame" aria-hidden="true"></div>
+  <section id="ambiance" class="chapitre chapitre--inverse fond-nuit" aria-labelledby="titre-ambiance">
+    <div class="chapitre-inner">
+      <div class="chapitre-grid">
+        <div class="chapitre-media">
+          <figure class="cadre-photo fx" data-media>
+            <img
+              src="assets/images/ambiance.jpg"
+              alt="Deux verres qui trinquent devant le coucher de soleil, au Restaurant Bateau Pirate"
+              width="1024" height="683" loading="lazy" decoding="async"
+            />
+            <span class="cadre-lisere" aria-hidden="true"></span>
+          </figure>
         </div>
 
-        <div class="section-text fade-in-left">
-          <span class="section-number" aria-hidden="true">04</span>
-          <h2 id="titre-ambiance">
-            Notre <span class="accent">ambiance chaleureuse</span>
-          </h2>
-          <div class="section-divider" aria-hidden="true"></div>
-          <p>
+        <div class="chapitre-corps">
+          <span class="chiffre-fantome" aria-hidden="true">04</span>
+          <span class="sourcil fx">L'ambiance</span>
+          <h2 id="titre-ambiance" class="fx">Notre <span class="accent">ambiance chaleureuse</span></h2>
+          <span class="filet fx" aria-hidden="true"></span>
+          <p class="fx">
             Passez un <strong>moment de détente dans le rire et la bonne humeur</strong>.
             L'accueil familial du Bateau Pirate est notre marque de fabrique.
             Ici, tout le monde se sent comme à la maison.
           </p>
-          <p>
+          <p class="fx">
             Une équipe souriante, un service attentionné et une atmosphère décontractée
             font du Bateau Pirate votre lieu de vie préféré à Bois de Nèfles.
             L'endroit idéal pour souffler et profiter de la vie réunionnaise.
           </p>
-          <a href="#commande" class="btn btn-primary">
-            <span aria-hidden="true">😊</span> Vivez notre ambiance chaleureuse
+          <a href="#commande" class="btn btn-primary fx">
+            <svg class="ico" aria-hidden="true"><use href="#i-sourire"/></svg>
+            Vivez notre ambiance chaleureuse
           </a>
         </div>
       </div>
@@ -369,48 +442,47 @@
   </section>
 
   <!-- ==============================
-       SECTION 5 — Notre coin bar
+       05 — Notre coin bar
   ================================ -->
-  <section id="bar" class="section section-medium" aria-labelledby="titre-bar">
-    <div class="section-inner">
-      <div class="section-split">
-        <div class="section-image-wrap fade-in-left">
-          <img
-            src="assets/images/bar.jpg"
-            data-src="assets/images/bar.jpg"
-            alt="Coin bar du Restaurant Bateau Pirate avec cocktails originaux à Bois de Nèfles"
-            width="800"
-            height="533"
-            loading="lazy"
-          />
-          <div class="section-frame" aria-hidden="true"></div>
+  <section id="bar" class="chapitre fond-brun" aria-labelledby="titre-bar">
+    <div class="chapitre-inner">
+      <div class="chapitre-grid">
+        <div class="chapitre-media">
+          <figure class="cadre-photo fx" data-media>
+            <img
+              src="assets/images/soiree-privee.jpg"
+              alt="Étagère du bar du Restaurant Bateau Pirate : rhums, whiskies et spiritueux alignés"
+              width="1024" height="683" loading="lazy" decoding="async"
+            />
+            <span class="cadre-lisere" aria-hidden="true"></span>
+          </figure>
         </div>
 
-        <div class="section-text fade-in-right">
-          <span class="section-number" aria-hidden="true">05</span>
-          <h2 id="titre-bar">
-            Notre <span class="accent">coin bar</span>
-          </h2>
-          <div class="section-divider" aria-hidden="true"></div>
-          <p>
+        <div class="chapitre-corps">
+          <span class="chiffre-fantome" aria-hidden="true">05</span>
+          <span class="sourcil fx">Le bar</span>
+          <h2 id="titre-bar" class="fx">Notre <span class="accent">coin bar</span></h2>
+          <span class="filet fx" aria-hidden="true"></span>
+          <p class="fx">
             Venez goûter nos <strong>cocktails originaux</strong>, imaginés par nos barmen passionnés.
             Des créations uniques aux saveurs locales et exotiques, conçues pour ravir
             vos papilles à chaque gorgée.
           </p>
-          <p>
+          <p class="fx">
             Rhums arrangés maison, cocktails sans alcool élaborés et surprises du moment…
             notre bar est un espace de découverte et de partage, à apprécier seul, en couple
             ou entre amis au coucher du soleil.
           </p>
 
-          <div style="display:flex; gap: 1rem; flex-wrap: wrap; margin: 0.5rem 0;">
-            <span style="background:rgba(126,66,21,0.2); border:1px solid rgba(126,66,21,0.5); padding:0.3rem 0.8rem; border-radius:50px; font-size:0.82rem; color:#d4956a;">🍹 Cocktails création</span>
-            <span style="background:rgba(126,66,21,0.2); border:1px solid rgba(126,66,21,0.5); padding:0.3rem 0.8rem; border-radius:50px; font-size:0.82rem; color:#d4956a;">🍶 Rhums arrangés</span>
-            <span style="background:rgba(126,66,21,0.2); border:1px solid rgba(126,66,21,0.5); padding:0.3rem 0.8rem; border-radius:50px; font-size:0.82rem; color:#d4956a;">🥤 Sans alcool</span>
-          </div>
+          <ul class="jetons fx" role="list">
+            <li class="jeton jeton--brun">Cocktails création</li>
+            <li class="jeton jeton--brun">Rhums arrangés</li>
+            <li class="jeton jeton--brun">Sans alcool</li>
+          </ul>
 
-          <a href="#commande" class="btn btn-primary">
-            <span aria-hidden="true">🍸</span> Découvrez notre coin bar
+          <a href="#commande" class="btn btn-primary fx">
+            <svg class="ico" aria-hidden="true"><use href="#i-verre"/></svg>
+            Découvrez notre coin bar
           </a>
         </div>
       </div>
@@ -418,60 +490,55 @@
   </section>
 
   <!-- ==============================
-       SECTION 6 — Nos soirées animées
+       06 — Nos soirées animées
   ================================ -->
-  <section id="soirees" class="section section-dark" aria-labelledby="titre-soirees">
-    <div class="section-inner">
-      <div class="section-split reverse">
-        <div class="section-image-wrap fade-in-right">
-          <img
-            src="assets/images/concert.jpg"
-            data-src="assets/images/concert.jpg"
-            alt="Soirée concert animée au Restaurant Bateau Pirate à Bois de Nèfles Saint Paul"
-            width="800"
-            height="533"
-            loading="lazy"
-          />
-          <div class="section-frame" aria-hidden="true"></div>
+  <section id="soirees" class="chapitre chapitre--inverse fond-nuit" aria-labelledby="titre-soirees">
+    <div class="chapitre-inner">
+      <div class="chapitre-grid">
+        <div class="chapitre-media">
+          <div class="mur-affiches fx" data-media role="group" aria-label="Affiches de soirées du Restaurant Bateau Pirate">
+            <figure class="affiche affiche--1">
+              <img src="assets/images/concert.jpg" alt="Affiche d'une soirée Reggae Vibes, Old Tubes et Seggae Music au Bateau Pirate, sunset apéro à partir de 17h30" width="366" height="206" loading="lazy" decoding="async" />
+              <figcaption>Soirée reggae</figcaption>
+            </figure>
+            <figure class="affiche affiche--2">
+              <img src="assets/images/indie.png" alt="Affiche d'une soirée Latino Fever SBK — salsa, bachata, kizomba — au Bateau Pirate" width="1920" height="1080" loading="lazy" decoding="async" />
+              <figcaption>Soirée latino</figcaption>
+            </figure>
+          </div>
         </div>
 
-        <div class="section-text fade-in-left">
-          <span class="section-number" aria-hidden="true">06</span>
-          <h2 id="titre-soirees">
-            Nos <span class="accent">soirées animées</span>
-          </h2>
-          <div class="section-divider" aria-hidden="true"></div>
-          <p>
+        <div class="chapitre-corps">
+          <span class="chiffre-fantome" aria-hidden="true">06</span>
+          <span class="sourcil fx">Les soirées</span>
+          <h2 id="titre-soirees" class="fx">Nos <span class="accent">soirées animées</span></h2>
+          <span class="filet fx" aria-hidden="true"></span>
+          <p class="fx">
             Profitez de <strong>soirées à thèmes régulièrement organisées</strong> pour pimenter
             vos semaines et créer des souvenirs mémorables avec vos proches.
           </p>
-          <p>
+          <p class="fx">
             Concerts live, retransmissions d'événements sportifs, soirée St Patrick, Saint-Valentin,
             Halloween, Carnaval… Le Bateau Pirate vous promet une programmation riche et variée
             tout au long de l'année.
           </p>
 
-          <ul style="list-style:none; display:flex; flex-direction:column; gap:0.6rem; margin: 0.25rem 0;">
-            <li style="display:flex; align-items:center; gap:0.6rem; color:rgba(255,255,255,0.8); font-size:0.9rem;">
-              <span style="color:var(--or)" aria-hidden="true">🎵</span> Concerts &amp; artistes locaux
-            </li>
-            <li style="display:flex; align-items:center; gap:0.6rem; color:rgba(255,255,255,0.8); font-size:0.9rem;">
-              <span style="color:var(--or)" aria-hidden="true">⚽</span> Retransmissions sportives
-            </li>
-            <li style="display:flex; align-items:center; gap:0.6rem; color:rgba(255,255,255,0.8); font-size:0.9rem;">
-              <span style="color:var(--or)" aria-hidden="true">🍀</span> St Patrick, Halloween, Carnaval…
-            </li>
-            <li style="display:flex; align-items:center; gap:0.6rem; color:rgba(255,255,255,0.8); font-size:0.9rem;">
-              <span style="color:var(--or)" aria-hidden="true">💃</span> Soirées dansantes &amp; DJ sets
-            </li>
+          <ul class="liste-cochee fx" role="list">
+            <li><svg class="ico" aria-hidden="true"><use href="#i-note"/></svg> Concerts &amp; artistes locaux</li>
+            <li><svg class="ico" aria-hidden="true"><use href="#i-ticket"/></svg> Retransmissions sportives</li>
+            <li><svg class="ico" aria-hidden="true"><use href="#i-fete"/></svg> St Patrick, Halloween, Carnaval…</li>
+            <li><svg class="ico" aria-hidden="true"><use href="#i-note"/></svg> Soirées dansantes &amp; DJ sets</li>
           </ul>
 
-          <div style="display:flex; gap: 1rem; flex-wrap:wrap;">
+          <div class="hero-actions fx" style="margin-top:0">
             <a href="https://www.facebook.com/bateaupirate" target="_blank" rel="noopener noreferrer" class="btn btn-outline">
-              <span aria-hidden="true">📅</span> Voir le programme
+              <svg class="ico" aria-hidden="true"><use href="#i-fb"/></svg>
+              Voir le programme
+              <span class="visuellement-masque">(nouvelle fenêtre)</span>
             </a>
             <a href="#commande" class="btn btn-secondary">
-              <span aria-hidden="true">🎟️</span> Participez à nos soirées animées
+              <svg class="ico" aria-hidden="true"><use href="#i-ticket"/></svg>
+              Participez à nos soirées animées
             </a>
           </div>
         </div>
@@ -480,36 +547,42 @@
   </section>
 
   <!-- ==============================
-       SECTION 7 — Commandez et Réservez
+       COMMANDER & RÉSERVER
   ================================ -->
   <section id="commande" class="section-commande" aria-labelledby="titre-commande">
     <div class="commande-inner">
-      <div class="fade-in">
-        <p class="subtitle">En ligne · Par téléphone · Sur place</p>
-        <h2 id="titre-commande">Commandez &amp; Réservez</h2>
-        <div class="pirate-separator" aria-hidden="true"><span>⚓</span></div>
-        <p>
-          Consultez notre menu complet et commandez directement en ligne.
-          Réservez votre table en avance pour garantir votre place et profiter
-          pleinement de votre expérience au Bateau Pirate.
-        </p>
-
-        <div class="commande-actions">
-          <a href="tel:+262262125273" class="btn btn-primary btn-lg" data-action="menu">
-            <span aria-hidden="true">🍽️</span> Voir le menu &amp; commander
-          </a>
-          <a href="tel:+262262125273" class="btn btn-secondary btn-lg" data-action="reservation">
-            <span aria-hidden="true">📅</span> Réserver votre table
-          </a>
-          <a href="tel:+262262125273" class="btn btn-outline btn-lg" aria-label="Appeler le restaurant au +262 262 125 273">
-            <span aria-hidden="true">📞</span> +262 262 125 273
-          </a>
-        </div>
-
-        <p style="margin-top:2rem; font-size:0.85rem; color:rgba(255,255,255,0.4);">
-          Livraison disponible · À emporter · Sur place
-        </p>
+      <div class="hublot commande-hublot fx" aria-hidden="true">
+        <span class="hublot-verre"><img src="assets/images/logo-bateau-pirate.jpg" alt="" width="400" height="400" loading="lazy" /></span>
+        <i class="rivet" style="--a:0deg"></i><i class="rivet" style="--a:60deg"></i>
+        <i class="rivet" style="--a:120deg"></i><i class="rivet" style="--a:180deg"></i>
+        <i class="rivet" style="--a:240deg"></i><i class="rivet" style="--a:300deg"></i>
       </div>
+
+      <p class="sourcil sourcil--long fx">En ligne · Par téléphone · Sur place</p>
+      <h2 id="titre-commande" class="fx">Commandez &amp; Réservez</h2>
+      <div class="separateur-pirate fx" aria-hidden="true"><svg class="ico"><use href="#i-ancre"/></svg></div>
+      <p class="fx">
+        Consultez notre menu complet et commandez directement en ligne.
+        Réservez votre table en avance pour garantir votre place et profiter
+        pleinement de votre expérience au Bateau Pirate.
+      </p>
+
+      <div class="commande-actions fx">
+        <a href="tel:+262262125273" class="btn btn-primary btn-lg" data-action="menu">
+          <svg class="ico" aria-hidden="true"><use href="#i-couverts"/></svg>
+          Voir le menu &amp; commander
+        </a>
+        <a href="tel:+262262125273" class="btn btn-secondary btn-lg" data-action="reservation">
+          <svg class="ico" aria-hidden="true"><use href="#i-agenda"/></svg>
+          Réserver votre table
+        </a>
+        <a href="tel:+262262125273" class="btn btn-outline btn-lg" aria-label="Appeler le restaurant au +262 262 12 52 73">
+          <svg class="ico" aria-hidden="true"><use href="#i-tel"/></svg>
+          +262 262 12 52 73
+        </a>
+      </div>
+
+      <p class="commande-note fx">Livraison disponible · À emporter · Sur place</p>
     </div>
   </section>
 
@@ -517,112 +590,127 @@
        INFOS PRATIQUES
   ================================ -->
   <section class="section-infos" aria-labelledby="titre-infos">
-    <div class="section-inner">
-      <div class="section-title-center fade-in">
-        <div class="tag">Informations</div>
-        <h2 id="titre-infos">Infos pratiques</h2>
-        <p>Tout ce que vous devez savoir pour nous trouver et nous contacter</p>
+    <div class="chapitre-inner">
+      <div class="titre-centre">
+        <span class="sourcil fx">Informations</span>
+        <h2 id="titre-infos" class="fx">Infos pratiques</h2>
+        <p class="fx">Tout ce que vous devez savoir pour nous trouver et nous contacter</p>
       </div>
 
       <div class="infos-grid">
-        <div class="info-card fade-in">
-          <div class="icon" aria-hidden="true">📍</div>
-          <h3>Notre adresse</h3>
+        <div class="info-card fx">
+          <div class="tete">
+            <svg class="ico" aria-hidden="true"><use href="#i-pin"/></svg>
+            <h3>Notre adresse</h3>
+          </div>
           <p>
             Route du Maïdo<br />
             Bois de Nèfles Saint Paul<br />
             97460 La Réunion
           </p>
-          <a
-            href="https://www.google.com/maps/search/Restaurant+Bateau+Pirate+Bois+de+Nefles+Saint+Paul+Reunion"
-            target="_blank"
-            rel="noopener noreferrer"
-            style="display:inline-block; margin-top:0.75rem; color:var(--or); font-size:0.85rem; font-weight:600;"
-          >
-            Voir sur Google Maps →
-          </a>
-        </div>
-
-        <div class="info-card fade-in">
-          <div class="icon" aria-hidden="true">🕐</div>
-          <h3>Horaires d'ouverture</h3>
-          <p>
-            <strong style="color:rgba(255,255,255,0.9);">Lundi – Vendredi</strong><br />
-            11h00 – 14h30 · 18h00 – 22h00<br /><br />
-            <strong style="color:rgba(255,255,255,0.9);">Samedi – Dimanche</strong><br />
-            11h00 – 22h30<br /><br />
-            <span style="color:var(--or); font-size:0.82rem;">Soirées jusqu'à tard selon programme</span>
+          <p style="margin-top:.9rem">
+            <a
+              class="lien-or"
+              href="https://www.google.com/maps/search/Restaurant+Bateau+Pirate+Bois+de+Nefles+Saint+Paul+Reunion"
+              target="_blank"
+              rel="noopener noreferrer"
+            >Voir sur Google Maps <svg class="ico" aria-hidden="true"><use href="#i-lien"/></svg><span class="visuellement-masque">(nouvelle fenêtre)</span></a>
           </p>
         </div>
 
-        <div class="info-card fade-in">
-          <div class="icon" aria-hidden="true">📬</div>
-          <h3>Nous contacter</h3>
-          <p>
-            <a href="tel:+262262125273" style="color:var(--or); font-weight:600;">
-              📞 +262 262 125 273
-            </a><br /><br />
+        <div class="info-card fx">
+          <div class="tete">
+            <svg class="ico" aria-hidden="true"><use href="#i-horloge"/></svg>
+            <h3>Horaires d'ouverture</h3>
+          </div>
+          <ul class="horaires" role="list">
+            <li data-jours="1,2,3,4,5">
+              <span class="jours">Lundi – Vendredi</span>
+              <span class="heures">11h00 – 14h30<br />18h00 – 22h00</span>
+            </li>
+            <li data-jours="6,0">
+              <span class="jours">Samedi – Dimanche</span>
+              <span class="heures">11h00 – 22h30</span>
+            </li>
+          </ul>
+          <p style="margin-top:.9rem; color:var(--or-clair); font-size:.85rem;">
+            Soirées jusqu'à tard selon programme
+          </p>
+        </div>
+
+        <div class="info-card fx">
+          <div class="tete">
+            <svg class="ico" aria-hidden="true"><use href="#i-courrier"/></svg>
+            <h3>Nous contacter</h3>
+          </div>
+          <div class="contact-liste">
+            <a class="lien-or" href="tel:+262262125273">
+              <svg class="ico" aria-hidden="true"><use href="#i-tel"/></svg> +262 262 12 52 73
+            </a>
             <a href="mailto:bateaupirate974@gmail.com">
-              ✉️ bateaupirate974@gmail.com
-            </a><br /><br />
-            <span style="font-size:0.85rem;">
-              <a href="https://www.facebook.com/bateaupirate" target="_blank" rel="noopener noreferrer" style="color:rgba(255,255,255,0.7);">
-                📘 Facebook
+              <svg class="ico" aria-hidden="true"><use href="#i-courrier"/></svg> bateaupirate974@gmail.com
+            </a>
+            <div class="reseaux">
+              <a class="reseau" href="https://www.facebook.com/bateaupirate" target="_blank" rel="noopener noreferrer" aria-label="Notre page Facebook (nouvelle fenêtre)">
+                <svg class="ico ico--plein"><use href="#i-fb"/></svg>
               </a>
-              &nbsp;·&nbsp;
-              <a href="https://www.instagram.com/bateaupirate974" target="_blank" rel="noopener noreferrer" style="color:rgba(255,255,255,0.7);">
-                📷 Instagram
+              <a class="reseau" href="https://www.instagram.com/bateaupirate974" target="_blank" rel="noopener noreferrer" aria-label="Notre compte Instagram (nouvelle fenêtre)">
+                <svg class="ico"><use href="#i-ig"/></svg>
               </a>
-            </span>
-          </p>
+              <a class="reseau" href="mailto:bateaupirate974@gmail.com" aria-label="Nous envoyer un email">
+                <svg class="ico"><use href="#i-courrier"/></svg>
+              </a>
+              <a class="reseau" href="tel:+262262125273" aria-label="Nous appeler">
+                <svg class="ico"><use href="#i-tel"/></svg>
+              </a>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   </section>
+  </main>
 
   <!-- ==============================
-       FOOTER
+       PIED DE PAGE
   ================================ -->
   <footer>
     <div class="footer-top">
-      <div class="footer-brand">
-        <p class="brand-name">⚓ Bateau Pirate</p>
-        <p class="brand-sub">Restaurant · Snack · Bar · La Réunion</p>
+      <div class="footer-marque">
+        <div class="marque-tete">
+          <span class="hublot footer-medaillon" aria-hidden="true">
+            <span class="hublot-verre"><img src="assets/images/logo-bateau-pirate.jpg" alt="" width="400" height="400" loading="lazy" /></span>
+            <i class="rivet" style="--a:0deg"></i><i class="rivet" style="--a:90deg"></i>
+            <i class="rivet" style="--a:180deg"></i><i class="rivet" style="--a:270deg"></i>
+          </span>
+          <span>
+            <span class="marque-nom">Bateau Pirate</span><br />
+            <span class="marque-sous">Restaurant · Snack · Bar · La Réunion</span>
+          </span>
+        </div>
         <p>
           Un lieu de vie chaleureux sur la route du Maïdo à Bois de Nèfles Saint Paul.
           Cuisine généreuse, cocktails créatifs, soirées animées et accueil familial.
         </p>
-        <div class="social-links" aria-label="Nos réseaux sociaux">
-          <a
-            href="https://www.facebook.com/bateaupirate"
-            class="social-link"
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="Notre page Facebook"
-          >📘</a>
-          <a
-            href="https://www.instagram.com/bateaupirate974"
-            class="social-link"
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="Notre compte Instagram"
-          >📷</a>
-          <a
-            href="mailto:bateaupirate974@gmail.com"
-            class="social-link"
-            aria-label="Nous envoyer un email"
-          >✉️</a>
-          <a
-            href="tel:+262262125273"
-            class="social-link"
-            aria-label="Nous appeler"
-          >📞</a>
+        <div class="reseaux" aria-label="Nos réseaux sociaux">
+          <a class="reseau" href="https://www.facebook.com/bateaupirate" target="_blank" rel="noopener noreferrer" aria-label="Notre page Facebook (nouvelle fenêtre)">
+            <svg class="ico ico--plein"><use href="#i-fb"/></svg>
+          </a>
+          <a class="reseau" href="https://www.instagram.com/bateaupirate974" target="_blank" rel="noopener noreferrer" aria-label="Notre compte Instagram (nouvelle fenêtre)">
+            <svg class="ico"><use href="#i-ig"/></svg>
+          </a>
+          <a class="reseau" href="mailto:bateaupirate974@gmail.com" aria-label="Nous envoyer un email">
+            <svg class="ico"><use href="#i-courrier"/></svg>
+          </a>
+          <a class="reseau" href="tel:+262262125273" aria-label="Nous appeler">
+            <svg class="ico"><use href="#i-tel"/></svg>
+          </a>
         </div>
       </div>
 
       <div class="footer-col">
         <h4>Navigation</h4>
-        <ul>
+        <ul role="list">
           <li><a href="#cadre">Notre cadre agréable</a></li>
           <li><a href="#cuisine">Notre cuisine gourmande</a></li>
           <li><a href="#soirees-privees">Soirées privatisées</a></li>
@@ -636,23 +724,24 @@
       <div class="footer-col">
         <h4>Contact</h4>
         <div class="contact-item">
-          <span class="ci-icon" aria-hidden="true">📍</span>
+          <svg class="ico" aria-hidden="true"><use href="#i-pin"/></svg>
           <span>Route du Maïdo, Bois de Nèfles Saint Paul, 97460 La Réunion</span>
         </div>
         <div class="contact-item">
-          <span class="ci-icon" aria-hidden="true">📞</span>
-          <a href="tel:+262262125273">+262 262 125 273</a>
+          <svg class="ico" aria-hidden="true"><use href="#i-tel"/></svg>
+          <a href="tel:+262262125273">+262 262 12 52 73</a>
         </div>
         <div class="contact-item">
-          <span class="ci-icon" aria-hidden="true">✉️</span>
+          <svg class="ico" aria-hidden="true"><use href="#i-courrier"/></svg>
           <a href="mailto:bateaupirate974@gmail.com">bateaupirate974@gmail.com</a>
         </div>
-        <div class="contact-item" style="margin-top:1rem;">
-          <span class="ci-icon" aria-hidden="true">🕐</span>
-          <span>Lun–Ven 11h–22h<br />Sam–Dim 11h–22h30</span>
+        <div class="contact-item">
+          <svg class="ico" aria-hidden="true"><use href="#i-horloge"/></svg>
+          <span>Lun–Ven 11h–14h30 · 18h–22h<br />Sam–Dim 11h–22h30</span>
         </div>
-        <div style="margin-top: 1.25rem;">
-          <a href="#commande" class="btn btn-primary" style="width:100%; justify-content:center;">
+        <div style="margin-top:1.2rem; width:100%;">
+          <a href="#commande" class="btn btn-primary btn-bloc">
+            <svg class="ico" aria-hidden="true"><use href="#i-agenda"/></svg>
             Réserver maintenant
           </a>
         </div>
@@ -661,18 +750,27 @@
 
     <div class="footer-bottom">
       <p>
-        &copy; <span id="year"></span> Restaurant Bateau Pirate · Tous droits réservés ·
+        &copy; <span id="year">2026</span> Restaurant Bateau Pirate · Tous droits réservés ·
         Bois de Nèfles Saint Paul, La Réunion
       </p>
       <a href="#accueil" aria-label="Retour en haut de page">
-        Retour en haut ↑
+        Retour en haut <svg class="ico" aria-hidden="true"><use href="#i-fleche-haut"/></svg>
       </a>
     </div>
   </footer>
 
+  <!-- Barre d'action permanente sur mobile -->
+  <div class="barre-mobile" id="barre-mobile" aria-label="Actions rapides">
+    <a href="tel:+262262125273" class="btn btn-outline">
+      <svg class="ico" aria-hidden="true"><use href="#i-tel"/></svg> Appeler
+    </a>
+    <a href="#commande" class="btn btn-primary">
+      <svg class="ico" aria-hidden="true"><use href="#i-agenda"/></svg> Réserver
+    </a>
+  </div>
+
+  <script src="assets/js/gsap.min.js" defer></script>
+  <script src="assets/js/ScrollTrigger.min.js" defer></script>
   <script src="assets/js/main.js" defer></script>
-  <script>
-    document.getElementById('year').textContent = new Date().getFullYear();
-  </script>
 </body>
 </html>
