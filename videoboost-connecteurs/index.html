@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prévisualisation — VideoBoost · 4 connecteurs Claude</title>
+<style>
+  :root{ --bg:#0a0a0f; --panel:#111117; --border:#242430; --chartreuse:#e8f800;
+         --creme:#f9f7f3; --rouge:#d24b3e; --text:#f2f2f5; --muted:#9a9aa8; }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+    padding:2rem 1rem 4rem}
+  .wrap{max-width:480px;margin:0 auto}
+  a.back{color:var(--muted);font-size:.8rem;text-decoration:none;display:inline-block;margin-bottom:1rem}
+  a.back:hover{color:var(--chartreuse)}
+  header{text-align:center;margin-bottom:2rem}
+  header h1{font-size:1.4rem;margin:0 0 .3rem;color:var(--chartreuse)}
+  header p{color:var(--muted);font-size:.85rem;margin:0}
+  .card{background:var(--panel);border:1px solid var(--border);border-radius:16px;
+    overflow:hidden;box-shadow:0 20px 60px -20px rgba(232,248,0,.18);margin-bottom:1.5rem}
+  .card-head{padding:1rem 1.2rem .8rem;display:flex;justify-content:space-between;
+    align-items:center;gap:.5rem}
+  .card-head h2{font-size:1rem;margin:0;font-weight:600}
+  .badge{font-size:.7rem;font-weight:600;padding:.25rem .6rem;border-radius:999px;
+    background:rgba(232,248,0,.12);color:var(--chartreuse);
+    border:1px solid rgba(232,248,0,.3);white-space:nowrap}
+  video{display:block;width:100%;aspect-ratio:9/16;background:#000}
+  .meta{padding:1rem 1.2rem 1.3rem;border-top:1px solid var(--border);
+    font-size:.8rem;color:#c9c9d4;line-height:1.7}
+  .meta b{color:var(--chartreuse)}
+  .plans{padding:0 1.2rem 1.4rem;font-size:.75rem;color:#c9c9d4;line-height:1.6}
+  .plans table{width:100%;border-collapse:collapse}
+  .plans th{text-align:left;color:var(--muted);font-weight:600;
+    padding:.3rem .4rem .3rem 0;border-bottom:1px solid var(--border)}
+  .plans td{padding:.3rem .4rem .3rem 0;border-bottom:1px solid rgba(36,36,48,.5);
+    font-variant-numeric:tabular-nums}
+  .plans td:first-child{color:var(--chartreuse)}
+  .note{padding:0 1.2rem 1.4rem;font-size:.75rem;color:var(--muted);line-height:1.65}
+  .note b{color:#c9c9d4}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="../">← toutes les prévisualisations</a>
+
+  <header>
+    <h1>4 connecteurs Claude</h1>
+    <p>Premier essai du format VideoBoost — maquette en haut, toi en bas</p>
+  </header>
+
+  <div class="card">
+    <div class="card-head">
+      <h2>Maquette d'app + face caméra</h2>
+      <span class="badge">46,9 s · 9:16</span>
+    </div>
+    <video src="video.mp4" controls playsinline preload="metadata"></video>
+
+    <div class="meta">
+      Format repris des <b>4 vidéos de référence</b> transmises le 01/09, avec les valeurs
+      mesurées dessus : couture au <b>milieu exact</b>, légende chartreuse
+      <b>#e8f800</b> à cheval sur la couture, un seul élément lisible par plan dans le
+      panneau du haut, le reste réduit à des barres grises.<br><br>
+      Voix clonée, vérifiée segment par segment au <b>F0 (113-127 Hz)</b> — un HTTP 200 du
+      webhook ne prouve pas que c'est la bonne voix.
+    </div>
+
+    <div class="plans">
+      <table>
+        <tr><th>temps</th><th>ce qui est à l'écran</th></tr>
+        <tr><td>0,4 → 3,7</td><td>fenêtre Claude vide, le curseur descend et clique</td></tr>
+        <tr><td>3,8 → 8,6</td><td>« 10 % de l'outil utilisé »</td></tr>
+        <tr><td>8,7 → 18,9</td><td>Perplexity — résultats qui montent, 10× moins de tokens</td></tr>
+        <tr><td>19,0 → 26,9</td><td>Firecrawl — prix extraits d'un site concurrent</td></tr>
+        <tr><td>27,0 → 34,8</td><td>Playwright — un formulaire se remplit tout seul</td></tr>
+        <tr><td>34,9 → 40,1</td><td>Composio — le hub se branche à dix applications</td></tr>
+        <tr><td>40,3 → 46,6</td><td>CTA dessiné comme le champ commentaire du réseau</td></tr>
+      </table>
+    </div>
+
+    <div class="note">
+      <b>Ce qui n'est pas au niveau des références :</b> elles sont filmées d'une seule
+      traite, ici c'est un assemblage de 11 plans tirés de 6 clips de la banque. Chaque
+      plan tient dans une plage de lèvres actives, mais la banque n'offre que ~29,5 s
+      exploitables pour 46,9 s de voix — donc des reprises, atténuées en changeant le
+      cadrage vertical. Un vrai plan face caméra d'une minute lèverait la contrainte.
+      <br><br>
+      <b>Mot-clé CTA :</b> CONNECTEURS. L'automation Blotato n'est pas encore câblée.
+      Rien n'est programmé sur les réseaux.
+    </div>
+  </div>
+</div>
+</body>
+</html>
