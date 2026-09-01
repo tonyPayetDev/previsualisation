@@ -496,10 +496,22 @@ document.getElementById('planifier').addEventListener('click', () => {
     format: 'reel 9:16', hashtags: calculerTags(), publie: false };
   const televersees = sortie.photos.filter((p) => p.startsWith('data:')).length;
   sortie.photos = sortie.photos.map((p) => p.startsWith('data:') ? '(photo téléversée)' : p);
+  /* On signale sans bloquer : la fenêtre s ouvre même si le réseau tombe. */
+  try {
+    fetch('https://n7n.automatisationboost.com/webhook/feed-planifier', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, keepalive: true,
+      body: JSON.stringify({
+        client: new URLSearchParams(location.search).get('client') || '',
+        nom: E.nom, ville: E.ville, famille: E.famille, modifs,
+        photos: sortie.photos, destination: sortie.destination,
+      }),
+    }).catch(function () {});
+  } catch (e) {}
+
   document.getElementById('dlg-p').textContent =
     televersees
       ? televersees + ' photo(s) que tu as envoyée(s) ne sont pas encore transmissibles : le lien vers le rendu n\'est pas branché. Voici la composition telle qu\'elle serait envoyée.'
-      : 'Voici la composition, prête à être rendue puis planifiée. Le lien vers le moteur de rendu n\'est pas encore branché : rien n\'est parti.';
+      : 'Tony vient d\'être prévenu que tu es arrivé au bout, avec cette composition. Rien n\'a été publié : la mise en ligne se fait après son passage.';
   document.getElementById('dlg-json').textContent = JSON.stringify(sortie, null, 2);
   dlg.showModal();
 });
