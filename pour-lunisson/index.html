@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>L'Unisson — ce que ça donnerait</title>
+<meta name="robots" content="noindex,nofollow">
+<meta property="og:title" content="L'Unisson — ce que ça donnerait">
+<meta property="og:description" content="La vidéo et la maquette du site, faites avec vos propres photos.">
+<style>
+/* Fond chaud plutôt que la charte technique : la page est lue par un
+   restaurateur au comptoir, pas par un développeur. */
+:root{
+  --nuit:#12100e; --carte:#1b1815; --trait:#2c2721;
+  --encre:#f4f0ea; --doux:#a89e92; --faible:#7d7365;
+  --or:#e8b04b; --brique:#c8643c;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;background:var(--nuit)}
+body{background:var(--nuit);color:var(--encre);
+  font:400 17px/1.62 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  padding:34px 18px calc(56px + env(safe-area-inset-bottom))}
+.w{max-width:620px;margin-inline:auto;display:flex;flex-direction:column;gap:0}
+::selection{background:var(--or);color:#1a1206}
+
+header{display:flex;flex-direction:column;gap:12px;padding-bottom:28px}
+.lieu{font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--faible);font-weight:600}
+h1{font-size:clamp(31px,8vw,44px);line-height:1.04;font-weight:800;letter-spacing:-.032em;text-wrap:balance}
+.intro{color:var(--doux);font-size:17px;line-height:1.62;max-width:46ch}
+
+.piece{border-top:1px solid var(--trait);padding:28px 0;display:flex;flex-direction:column;gap:13px}
+.chapeau{display:flex;align-items:baseline;gap:11px;flex-wrap:wrap}
+h2{font-size:23px;font-weight:700;letter-spacing:-.022em}
+.detail{font-size:13.5px;color:var(--faible)}
+.quoi{color:var(--doux);font-size:16px;line-height:1.58;max-width:46ch}
+
+video{width:100%;border-radius:15px;border:1px solid var(--trait);display:block;background:#000}
+.vignette{display:block;border-radius:15px;border:1px solid var(--trait);overflow:hidden;
+  text-decoration:none;background:var(--carte);padding:26px 24px;
+  transition:border-color .18s,transform .18s cubic-bezier(.2,.8,.3,1)}
+.vignette:hover{border-color:var(--or);transform:translateY(-2px)}
+.vignette .t{font-size:17px;font-weight:650;color:var(--encre)}
+.vignette .f{font-size:14.5px;color:var(--or);margin-top:7px;font-weight:600}
+
+.bouton{display:flex;align-items:center;justify-content:center;gap:9px;
+  background:var(--or);color:#1a1206;font-size:17px;font-weight:700;text-decoration:none;
+  border-radius:13px;min-height:56px;padding:0 20px;
+  transition:transform .18s cubic-bezier(.2,.8,.3,1),background .18s}
+.bouton:hover{transform:translateY(-1px);background:#f2be5e}
+.bouton.sobre{background:none;border:1px solid var(--trait);color:var(--encre);font-weight:600}
+.bouton.sobre:hover{border-color:var(--or);background:rgba(232,176,75,.07)}
+
+.fin{border-top:1px solid var(--trait);padding-top:28px;margin-top:8px;
+  display:flex;flex-direction:column;gap:13px}
+.fin p{color:var(--doux);font-size:16px;line-height:1.6;max-width:44ch}
+.fin .sign{font-size:15px;color:var(--encre);font-weight:650;margin-top:4px}
+.fin .sous{font-size:13.5px;color:var(--faible)}
+.note{color:var(--faible);font-size:13.2px;line-height:1.6;margin-top:26px;
+  padding-top:18px;border-top:1px solid var(--trait)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="w">
+
+<header>
+  <div class="lieu">Saint-Denis · La Réunion</div>
+  <h1>L'Unisson, voilà ce que ça donnerait.</h1>
+  <p class="intro">Vous m'aviez demandé de vous montrer à quoi ressemblerait votre site, et une vidéo. Les voilà — faits avec vos propres photos, rien d'autre.</p>
+</header>
+
+<section class="piece">
+  <div class="chapeau"><h2>La vidéo</h2><span class="detail">27 secondes, au format des réseaux</span></div>
+  <p class="quoi">Vos plats, vos salles, votre nom. Elle est prête à être publiée telle quelle.</p>
+  <video controls playsinline preload="metadata" poster="assets/poster.jpg" src="https://previsualisation.automatisationboost.com/lunisson-scroll-avatar/video.mp4"></video>
+</section>
+<section class="piece">
+  <div class="chapeau"><h2>La maquette du site</h2><span class="detail">à ouvrir sur votre téléphone</span></div>
+  <p class="quoi">La page telle qu'un client la verrait : la carte, les horaires, le bouton pour appeler, l'itinéraire.</p>
+  <a class="vignette" href="https://previsualisation.automatisationboost.com/client-lunisson-scroll/" target="_blank" rel="noopener">
+       <span class="t">Ouvrir la maquette</span>
+       <span class="f">previsualisation.automatisationboost.com/client-lunisson-scroll/ &#8599;</span>
+     </a>
+</section>
+
+<div class="fin">
+  <p>Si ça vous parle, on en discute cinq minutes — et si ça ne vous parle pas,
+  dites-le-moi franchement, ça ne me vexera pas.</p>
+  <a class="bouton" href="tel:+262692417749">Appeler Tony — 06 92 41 77 49</a>
+  <a class="bouton sobre" href="https://calendly.com/tony-payet-professionnel/nouvelle-reunion"
+     target="_blank" rel="noopener">Ou choisir un créneau</a>
+  <div class="sign">Tony Payet</div>
+  <div class="sous">AutomatisationBoost · La Réunion</div>
+</div>
+
+<p class="note">Cette page n'est pas publique et n'est référencée nulle part —
+elle a été faite pour vous. Les photos utilisées sont les vôtres&nbsp;;
+dites-le-moi si vous préférez que je retire quoi que ce soit.</p>
+
+</div>
+</body>
+</html>
