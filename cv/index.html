@@ -290,6 +290,45 @@ h2::after{content:"";position:absolute;left:0;bottom:-1.2mm;width:5mm;height:1px
     -webkit-print-color-adjust:exact;print-color-adjust:exact}
   .decor svg{opacity:.05}
 }
+
+/* ── Photo en heptagone + maille de nœuds (identité Kubernetes) ──────────
+   La maille reprend le vocabulaire « nœud » déjà présent dans la page. Elle
+   est masquée à l'impression : sur papier elle devient du gris sale. */
+.identite{display:grid;grid-template-columns:1fr auto;gap:8mm;align-items:start}
+.portrait{position:relative;width:34mm;height:34mm;flex:0 0 auto}
+.portrait img{width:100%;height:100%;object-fit:cover;display:block;
+  clip-path:polygon(50.00% 0.00%, 89.09% 18.83%, 98.75% 61.13%, 71.69% 95.05%, 28.31% 95.05%, 1.25% 61.13%, 10.91% 18.83%);
+  filter:contrast(1.06) saturate(.96)}
+.portrait .cadre{position:absolute;inset:-1.1mm;clip-path:polygon(50.00% 0.00%, 89.09% 18.83%, 98.75% 61.13%, 71.69% 95.05%, 28.31% 95.05%, 1.25% 61.13%, 10.91% 18.83%);
+  background:linear-gradient(150deg,var(--jaune),var(--violet) 70%);z-index:-1;opacity:.85}
+.portrait .maille{position:absolute;inset:-6mm;z-index:-2;opacity:.5;pointer-events:none}
+.portrait .maille circle{fill:var(--jaune)}
+.portrait .maille line{stroke:var(--violet);stroke-width:.5}
+
+/* ── Les trois appels à l'action ───────────────────────────────────────── */
+.actions{display:flex;flex-wrap:wrap;gap:2.4mm;margin-top:4.4mm}
+.actions a{display:inline-flex;align-items:center;gap:2mm;text-decoration:none;
+  padding:2.2mm 4mm;border-radius:2mm;font-size:8.8pt;font-weight:600;
+  border:1px solid var(--bord);color:var(--corps);background:rgba(255,255,255,.03);
+  transition:border-color .16s,color .16s,background .16s}
+.actions a:hover{border-color:var(--jaune);color:var(--blanc);background:rgba(255,230,0,.07)}
+.actions a.premier{background:var(--jaune);border-color:var(--jaune);color:#111;font-weight:700}
+.actions a.premier:hover{background:#fff;border-color:#fff;color:#111}
+.actions a .pt{font-size:10pt;line-height:1}
+
+@media screen{
+  .actions a{min-height:44px;padding-top:0;padding-bottom:0}
+}
+@media print{
+  .portrait .maille{display:none}
+  .portrait .cadre{background:#999;opacity:1}
+  .actions a{background:none!important;color:#111!important;border-color:#bbb!important}
+  .actions a.premier{background:none!important;font-weight:700}
+}
+@media (max-width:720px){
+  .identite{grid-template-columns:1fr}
+  .portrait{width:28mm;height:28mm;order:-1}
+}
 </style>
 </head>
 <body>
@@ -344,14 +383,42 @@ h2::after{content:"";position:absolute;left:0;bottom:-1.2mm;width:5mm;height:1px
   <div class="dedans">
 
     <header>
-      <h1>Tony PAYET</h1>
-      <p class="metier">Développeur full-stack · Automatisation &amp; IA appliquée</p>
-      <span class="dispo">Freelance — full télétravail</span>
-      <div class="coord">
-        <span><b>Saint-Denis</b>, La Réunion — UTC+4</span>
-        <a href="mailto:tony.payet.professionnel@gmail.com">tony.payet.professionnel@gmail.com</a>
-        <a href="https://tony.automatisationboost.com">tony.automatisationboost.com</a>
-        <span>10 ans d'expérience</span>
+      <div class="identite">
+        <div>
+          <h1>Tony PAYET</h1>
+          <p class="metier">Développeur full-stack · Automatisation &amp; IA appliquée</p>
+          <span class="dispo">Freelance — full télétravail</span>
+          <div class="coord">
+            <span><b>Saint-Denis</b>, La Réunion — UTC+4</span>
+            <span>10 ans d'expérience</span>
+          </div>
+        </div>
+        <div class="portrait">
+          <svg class="maille" viewBox="0 0 120 120" aria-hidden="true">
+          <line x1="14" y1="26" x2="46" y2="8"/><line x1="46" y1="8" x2="96" y2="24"/>
+          <line x1="96" y1="24" x2="110" y2="70"/><line x1="110" y1="70" x2="78" y2="112"/>
+          <line x1="78" y1="112" x2="30" y2="106"/><line x1="30" y1="106" x2="8" y2="66"/>
+          <line x1="8" y1="66" x2="14" y2="26"/><line x1="14" y1="26" x2="60" y2="60"/>
+          <line x1="96" y1="24" x2="60" y2="60"/><line x1="78" y1="112" x2="60" y2="60"/>
+          <circle cx="14" cy="26" r="2.4"/><circle cx="46" cy="8" r="2"/>
+          <circle cx="96" cy="24" r="2.4"/><circle cx="110" cy="70" r="2"/>
+          <circle cx="78" cy="112" r="2.4"/><circle cx="30" cy="106" r="2"/>
+          <circle cx="8" cy="66" r="2.4"/>
+        </svg>
+          <span class="cadre"></span>
+          <img src="assets/tony.jpg" width="560" height="560"
+               alt="Portrait de Tony Payet" loading="eager">
+        </div>
+      </div>
+
+      <div class="actions">
+        <a class="premier" href="tel:+262692417749" data-suivi="telephone">
+          <span class="pt" aria-hidden="true">&#9742;</span>06 92 41 77 49</a>
+        <a href="mailto:tony.payet.professionnel@gmail.com" data-suivi="email">
+          <span class="pt" aria-hidden="true">&#9993;</span>tony.payet.professionnel@gmail.com</a>
+        <a href="https://tony.automatisationboost.com" target="_blank" rel="noopener"
+           data-suivi="site">
+          <span class="pt" aria-hidden="true">&#8599;</span>tony.automatisationboost.com</a>
       </div>
     </header>
 
@@ -508,5 +575,28 @@ h2::after{content:"";position:absolute;left:0;bottom:-1.2mm;width:5mm;height:1px
 
   </div>
 </div>
+
+<script>
+(function () {
+  var URL = 'https://n7n.automatisationboost.com/webhook/cv-clic';
+  document.querySelectorAll('[data-suivi]').forEach(function (a) {
+    a.addEventListener('click', function () {
+      try {
+        fetch(URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          keepalive: true,
+          body: JSON.stringify({
+            quoi: a.dataset.suivi,
+            page: location.pathname,
+            source: document.referrer || '',
+            date: new Date().toISOString()
+          })
+        }).catch(function () {});
+      } catch (e) { /* le clic passe avant tout : on n'empêche jamais l'appel */ }
+    });
+  });
+})();
+</script>
 </body>
 </html>
