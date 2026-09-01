@@ -5,161 +5,230 @@
 
 'use strict';
 
-// =============================================
-// HEADER SCROLL
-// =============================================
+/* =============================================
+   PRÉFÉRENCE DE MOUVEMENT
+   Une seule source de vérité, consultée par tout le fichier.
+   ============================================= */
+const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+const prefersReducedMotion = () => motionQuery.matches;
+const scrollBehavior = () => (prefersReducedMotion() ? 'auto' : 'smooth');
+
+/* =============================================
+   HEADER AU SCROLL
+   ============================================= */
 const header = document.querySelector('.site-header');
 
-function handleHeaderScroll() {
-  if (window.scrollY > 60) {
-    header.classList.add('scrolled');
-  } else {
-    header.classList.remove('scrolled');
-  }
+if (header) {
+  const handleHeaderScroll = () => {
+    header.classList.toggle('scrolled', window.scrollY > 60);
+  };
+  window.addEventListener('scroll', handleHeaderScroll, { passive: true });
+  handleHeaderScroll();
 }
 
-window.addEventListener('scroll', handleHeaderScroll, { passive: true });
-
-// =============================================
-// NAVIGATION MOBILE
-// =============================================
+/* =============================================
+   NAVIGATION MOBILE
+   ============================================= */
 const hamburger = document.querySelector('.hamburger');
 const mainNav = document.querySelector('.main-nav');
 
 if (hamburger && mainNav) {
+  const setNav = (open) => {
+    hamburger.classList.toggle('active', open);
+    mainNav.classList.toggle('open', open);
+    hamburger.setAttribute('aria-expanded', open ? 'true' : 'false');
+    hamburger.setAttribute('aria-label', open ? 'Fermer le menu' : 'Ouvrir le menu');
+  };
+
   hamburger.addEventListener('click', () => {
-    hamburger.classList.toggle('active');
-    mainNav.classList.toggle('open');
-    hamburger.setAttribute('aria-expanded',
-      hamburger.classList.contains('active') ? 'true' : 'false'
-    );
+    setNav(!hamburger.classList.contains('active'));
   });
 
-  // Close on nav link click
-  mainNav.querySelectorAll('a').forEach(link => {
-    link.addEventListener('click', () => {
-      hamburger.classList.remove('active');
-      mainNav.classList.remove('open');
-      hamburger.setAttribute('aria-expanded', 'false');
-    });
+  mainNav.querySelectorAll('a').forEach((link) => {
+    link.addEventListener('click', () => setNav(false));
   });
 
-  // Close on outside click
   document.addEventListener('click', (e) => {
-    if (!header.contains(e.target)) {
-      hamburger.classList.remove('active');
-      mainNav.classList.remove('open');
+    if (header && !header.contains(e.target)) setNav(false);
+  });
+
+  // Échap ferme le menu et rend le focus au bouton
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && hamburger.classList.contains('active')) {
+      setNav(false);
+      hamburger.focus();
     }
   });
 }
 
-// =============================================
-// SCROLL TO TOP
-// =============================================
+/* =============================================
+   RETOUR EN HAUT
+   ============================================= */
 const scrollTopBtn = document.querySelector('.scroll-top');
 
 if (scrollTopBtn) {
   window.addEventListener('scroll', () => {
-    if (window.scrollY > 400) {
-      scrollTopBtn.classList.add('visible');
-    } else {
-      scrollTopBtn.classList.remove('visible');
-    }
+    scrollTopBtn.classList.toggle('visible', window.scrollY > 400);
   }, { passive: true });
 
   scrollTopBtn.addEventListener('click', () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: scrollBehavior() });
   });
 }
 
-// =============================================
-// INTERSECTION OBSERVER - FADE IN ANIMATIONS
-// =============================================
+/* =============================================
+   APPARITIONS AU SCROLL
+   Neutralisées si l'utilisateur demande moins de mouvement.
+   ============================================= */
 const fadeElements = document.querySelectorAll('.fade-in');
 
-if (fadeElements.length > 0 && 'IntersectionObserver' in window) {
-  const observer = new IntersectionObserver(
-    (entries) => {
-      entries.forEach(entry => {
+if (fadeElements.length) {
+  if (prefersReducedMotion() || !('IntersectionObserver' in window)) {
+    fadeElements.forEach((el) => el.classList.add('visible'));
+  } else {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
         if (entry.isIntersecting) {
           entry.target.classList.add('visible');
           observer.unobserve(entry.target);
         }
       });
-    },
-    {
-      threshold: 0.12,
-      rootMargin: '0px 0px -40px 0px'
-    }
-  );
+    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
 
-  fadeElements.forEach(el => observer.observe(el));
-} else {
-  // Fallback: show all
-  fadeElements.forEach(el => el.classList.add('visible'));
+    fadeElements.forEach((el) => observer.observe(el));
+  }
 }
 
-// =============================================
-// CONTACT FORM
-// =============================================
+/* =============================================
+   FORMULAIRE DE CONTACT
+   Aucun serveur n'est branché sur ce site : le formulaire compose
+   un message pour infos@sphb.re dans la messagerie du visiteur.
+   Il n'annonce donc jamais un envoi qui n'a pas eu lieu.
+   ============================================= */
 const contactForm = document.getElementById('contact-form');
 
 if (contactForm) {
+  const statusEl = document.getElementById('form-status');
+  const DESTINATAIRE = 'infos@sphb.re';
+
+  const rules = {
+    prenom:    (v) => (v.trim().length >= 2 ? '' : 'Indiquez votre prénom (2 caractères minimum).'),
+    nom:       (v) => (v.trim().length >= 2 ? '' : 'Indiquez votre nom (2 caractères minimum).'),
+    email:     (v) => (/^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i.test(v.trim()) ? '' : 'Indiquez une adresse email valide, par exemple nom@exemple.re.'),
+    telephone: (v) => (v.trim() === '' || /^[+0-9\s().-]{6,}$/.test(v.trim()) ? '' : 'Ce numéro de téléphone semble incomplet.'),
+    sujet:     (v) => (v ? '' : 'Choisissez un sujet dans la liste.'),
+    message:   (v) => (v.trim().length >= 10 ? '' : 'Détaillez votre demande en quelques mots (10 caractères minimum).')
+  };
+
+  const showError = (field, msg) => {
+    const errEl = document.getElementById('err-' + field.id);
+    if (msg) {
+      field.setAttribute('aria-invalid', 'true');
+      if (errEl) { errEl.textContent = msg; errEl.classList.add('show'); }
+    } else {
+      field.removeAttribute('aria-invalid');
+      if (errEl) { errEl.textContent = ''; errEl.classList.remove('show'); }
+    }
+  };
+
+  const validateField = (field) => {
+    const rule = rules[field.id];
+    if (!rule) return true;
+    const msg = rule(field.value);
+    showError(field, msg);
+    return msg === '';
+  };
+
+  Object.keys(rules).forEach((id) => {
+    const field = document.getElementById(id);
+    if (!field) return;
+    field.addEventListener('blur', () => validateField(field));
+    field.addEventListener('input', () => {
+      if (field.getAttribute('aria-invalid') === 'true') validateField(field);
+    });
+    field.addEventListener('change', () => {
+      if (field.tagName === 'SELECT') validateField(field);
+    });
+  });
+
   contactForm.addEventListener('submit', (e) => {
     e.preventDefault();
 
-    const btn = contactForm.querySelector('[type="submit"]');
-    const originalText = btn.innerHTML;
+    let firstInvalid = null;
+    Object.keys(rules).forEach((id) => {
+      const field = document.getElementById(id);
+      if (field && !validateField(field) && !firstInvalid) firstInvalid = field;
+    });
 
-    btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48 2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48 2.83-2.83"/></svg> Envoi en cours...';
-    btn.disabled = true;
+    if (firstInvalid) {
+      if (statusEl) {
+        statusEl.textContent = 'Le formulaire comporte des champs à corriger.';
+        statusEl.classList.add('error');
+      }
+      firstInvalid.focus();
+      return;
+    }
 
-    setTimeout(() => {
-      btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Message envoyé !';
-      btn.style.background = '#16a34a';
+    const val = (id) => (document.getElementById(id) || {}).value || '';
+    const sujet = val('sujet');
+    const corps = [
+      'Prénom : ' + val('prenom'),
+      'Nom : ' + val('nom'),
+      'Email : ' + val('email'),
+      'Téléphone : ' + (val('telephone').trim() || 'non renseigné'),
+      'Sujet : ' + sujet,
+      '',
+      val('message')
+    ].join('\n');
 
-      setTimeout(() => {
-        btn.innerHTML = originalText;
-        btn.disabled = false;
-        btn.style.background = '';
-        contactForm.reset();
-      }, 3500);
-    }, 1200);
+    const href = 'mailto:' + DESTINATAIRE +
+      '?subject=' + encodeURIComponent('[Site SPHB] ' + sujet) +
+      '&body=' + encodeURIComponent(corps);
+
+    if (statusEl) {
+      statusEl.classList.remove('error');
+      statusEl.textContent = 'Votre messagerie s’ouvre avec le message pré-rempli. Si rien ne se passe, écrivez directement à ' + DESTINATAIRE + '.';
+    }
+
+    window.location.href = href;
   });
 }
 
-// =============================================
-// SMOOTH ANCHOR SCROLL (offset for fixed header)
-// =============================================
-document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+/* =============================================
+   ANCRES INTERNES
+   ============================================= */
+document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
   anchor.addEventListener('click', (e) => {
-    const target = document.querySelector(anchor.getAttribute('href'));
-    if (target) {
-      e.preventDefault();
-      const offsetTop = target.getBoundingClientRect().top + window.scrollY - 96;
-      window.scrollTo({ top: offsetTop, behavior: 'smooth' });
-    }
+    const href = anchor.getAttribute('href');
+    if (!href || href === '#') return;
+    const target = document.querySelector(href);
+    if (!target) return;
+
+    e.preventDefault();
+    const offsetTop = target.getBoundingClientRect().top + window.scrollY - 96;
+    window.scrollTo({ top: offsetTop, behavior: scrollBehavior() });
+
+    // Le focus suit le scroll, sinon la navigation au clavier reste en haut de page
+    target.setAttribute('tabindex', '-1');
+    target.focus({ preventScroll: true });
   });
 });
 
-// =============================================
-// COUNTER ANIMATION
-// =============================================
+/* =============================================
+   COMPTEURS
+   ============================================= */
 function animateCounter(el, target, duration = 1800) {
-  const start = 0;
-  const startTime = performance.now();
-  const isFloat = String(target).includes('.');
   const suffix = el.dataset.suffix || '';
+  const isFloat = String(target).includes('.');
+  const startTime = performance.now();
 
   function update(currentTime) {
-    const elapsed = currentTime - startTime;
-    const progress = Math.min(elapsed / duration, 1);
-    const eased = 1 - Math.pow(1 - progress, 3); // cubic ease-out
-    const current = start + (target - start) * eased;
-
+    const progress = Math.min((currentTime - startTime) / duration, 1);
+    const eased = 1 - Math.pow(1 - progress, 3);
+    const current = target * eased;
     el.textContent = (isFloat ? current.toFixed(1) : Math.floor(current)) + suffix;
-
     if (progress < 1) requestAnimationFrame(update);
+    else el.textContent = target + suffix;
   }
 
   requestAnimationFrame(update);
@@ -167,38 +236,23 @@ function animateCounter(el, target, duration = 1800) {
 
 const statNumbers = document.querySelectorAll('.stat-number[data-count]');
 
-if (statNumbers.length > 0 && 'IntersectionObserver' in window) {
-  const counterObserver = new IntersectionObserver(
-    (entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          const el = entry.target;
-          animateCounter(el, parseFloat(el.dataset.count));
-          counterObserver.unobserve(el);
-        }
-      });
-    },
-    { threshold: 0.5 }
-  );
+if (statNumbers.length) {
+  const settle = (el) => {
+    el.textContent = el.dataset.count + (el.dataset.suffix || '');
+  };
 
-  statNumbers.forEach(el => counterObserver.observe(el));
-}
-
-// =============================================
-// LAZY LOADING FALLBACK (for browsers without native support)
-// =============================================
-if (!('loading' in HTMLImageElement.prototype)) {
-  const lazyImages = document.querySelectorAll('img[loading="lazy"]');
-  if ('IntersectionObserver' in window) {
-    const imageObserver = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          const img = entry.target;
-          if (img.dataset.src) img.src = img.dataset.src;
-          imageObserver.unobserve(img);
-        }
+  if (prefersReducedMotion() || !('IntersectionObserver' in window)) {
+    statNumbers.forEach(settle);
+  } else {
+    const counterObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        const el = entry.target;
+        animateCounter(el, parseFloat(el.dataset.count));
+        counterObserver.unobserve(el);
       });
-    });
-    lazyImages.forEach(img => imageObserver.observe(img));
+    }, { threshold: 0.5 });
+
+    statNumbers.forEach((el) => counterObserver.observe(el));
   }
 }

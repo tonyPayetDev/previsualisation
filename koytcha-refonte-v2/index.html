@@ -290,9 +290,12 @@ h2.tt i{font-style:italic}
    Le masque vient du canal alpha du PNG blanc — pas besoin de tracé vectoriel.
    Le balayage se déclenche à l'entrée dans la section : la peinture se pose
    de gauche à droite, elle n'apparaît pas d'un bloc. */
-.pinceau{position:absolute;left:0;right:0;bottom:clamp(28px,6vw,80px);
+/* Sélecteur plus fort que `.revele>*{position:relative}`, qui existe déjà plus
+   bas et remettait la marque DANS LE FLUX : elle se plantait en haut de la
+   section, poussait le texte et rallongeait le bloc de 260 px. */
+.revele .pinceau{position:absolute;left:0;right:0;bottom:clamp(30px,7vw,90px);
   z-index:0;display:grid;place-items:center;pointer-events:none}
-.pinceau .fenetre{width:min(1080px,88vw);aspect-ratio:300/72;
+.pinceau .fenetre{width:min(860px,72vw);aspect-ratio:300/72;
   -webkit-mask:url(assets/logo-blanc.png) center/contain no-repeat;
   mask:url(assets/logo-blanc.png) center/contain no-repeat;
   filter:url(#brosse);
@@ -321,6 +324,9 @@ h2.tt i{font-style:italic}
    AUSSI en fonçant le texte — lever le voile sans ça rendrait la section
    jolie et illisible. */
 .revele:hover .derriere::after{opacity:.30}
+/* Le filigrane de bas de section répétait le logo à trente centimètres de la
+   marque en fenêtre. Un seul des deux doit rester. */
+.revele .filigrane,.revele .marque-bas{display:none}
 .revele:hover .corps p,.revele:hover .pilier p,.revele:hover .fin-txt{color:var(--noir)}
 .revele .corps p,.revele .pilier p,.revele .fin-txt{transition:color .85s var(--ease)}
 .revele>*{position:relative;z-index:1}
