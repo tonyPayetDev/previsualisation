@@ -257,7 +257,7 @@ h2.tt i{font-style:italic}
 .carte{text-decoration:none;display:block;group:card}
 .carte .vue{position:relative;overflow:hidden;aspect-ratio:4/3;background:var(--sourd)}
 .carte .vue img{width:100%;height:100%;object-fit:cover;transition:transform 1.1s var(--ease)}
-.carte:hover .vue img{transform:scale(1.05)}
+
 .ville{position:absolute;top:14px;left:14px;background:rgba(20,20,20,.78);color:#fff;
   font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;padding:7px 12px;backdrop-filter:blur(4px)}
 .carte h3{font-family:var(--serif);font-weight:400;font-size:22px;margin:20px 0 8px;letter-spacing:-.01em}
@@ -644,6 +644,7 @@ footer a:hover{color:var(--magenta)}
   html{scroll-behavior:auto}
   .monte{opacity:1;transform:none;transition:none}
   .bati,.final .fond{transform:none !important}
+  .bati img,.carte .vue img,.realisations figure img,.final .fond img,.vivre-ill img{animation:none !important}
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
@@ -798,6 +799,37 @@ footer a:hover{color:var(--magenta)}
 .final .teinte{background:linear-gradient(90deg,
   rgba(12,12,14,.80) 0%,rgba(12,12,14,.66) 30%,
   rgba(12,12,14,.28) 58%,rgba(12,12,14,.08) 100%)}
+
+/* ── Ken Burns : les photos ne sont jamais tout à fait immobiles ────────
+   Deux courses opposées, alternées d'une image à l'autre, pour que deux
+   photos voisines ne dérivent pas dans le même sens. Durées longues et
+   volontairement non multiples : rien ne se resynchronise à l'œil. */
+@keyframes kb-a{from{transform:scale(1.05) translate3d(0,0,0)}
+                 to{transform:scale(1.13) translate3d(-1.6%,-1.3%,0)}}
+@keyframes kb-b{from{transform:scale(1.12) translate3d(1.4%,1.0%,0)}
+                 to{transform:scale(1.04) translate3d(0,0,0)}}
+.bati img{animation:kb-a 26s ease-in-out infinite alternate}
+.bati img:nth-of-type(2){animation-name:kb-b;animation-duration:31s}
+.bati img:nth-of-type(3){animation-duration:23s;animation-delay:-6s}
+.carte .vue img{animation:kb-a 22s ease-in-out infinite alternate}
+.cartes .carte:nth-child(2n) .vue img{animation-name:kb-b;animation-duration:27s}
+.realisations figure img{animation:kb-b 24s ease-in-out infinite alternate}
+.realisations figure:nth-child(2n) img{animation-name:kb-a;animation-duration:29s}
+.final .fond img{animation:kb-a 34s ease-in-out infinite alternate}
+/* Au survol, la dérive se fige : le geste de l'utilisateur reprend la main. */
+.carte:hover .vue img,.realisations figure:hover img{animation-play-state:paused}
+
+/* ── Reflet : le miroir du carrousel, en discret, sous les autres images.
+   Le dégradé ne laisse voir que le dernier dixième — au-delà ça fait
+   vitrine de magasin. La marge basse empêche le reflet de mordre sur le
+   texte : le reflet est peint hors du flux, il ne pousse rien. */
+.carte .vue{-webkit-box-reflect:below 8px linear-gradient(transparent 94%,rgba(0,0,0,.16));margin-bottom:30px}
+.carte h3{margin-top:10px}
+.realisations figure img{-webkit-box-reflect:below 5px linear-gradient(transparent 94%,rgba(0,0,0,.15));margin-bottom:18px}
+.realisations figcaption{margin-top:0}
+.realisations a{color:inherit;text-decoration:none}
+.realisations figcaption a:hover{color:var(--magenta)}
+
 </style>
 
 <style id="polices-koytcha">
@@ -846,7 +878,7 @@ footer a:hover{color:var(--magenta)}
 
 <nav class="nav" id="nav">
   <div class="wrap">
-    <a class="logo" href="#">
+    <a class="logo" href="https://koytchaimmo.re/" target="_blank" rel="noopener">
       <img class="l-clair" src="assets/logo-blanc.png" alt="Koytcha Immo">
       <img class="l-sombre" src="assets/logo.png" alt="Koytcha Immo">
     </a>
@@ -923,11 +955,11 @@ footer a:hover{color:var(--magenta)}
             Koytcha Immo vous accompagne et vous délivre toutes les clés pour réussir votre
             investissement. Découvrez sans plus attendre nos opportunités exclusives du moment&nbsp;!</p>
       </div>
-      <a class="lien-fleche" href="#">Découvrir tous nos biens
+      <a class="lien-fleche" href="https://koytchaimmo.re/recherche/" target="_blank" rel="noopener">Découvrir tous nos biens
         <svg width="20" height="11" viewBox="0 0 20 11" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M0 5.5h18M13.5 1l4.5 4.5-4.5 4.5"/></svg></a>
     </div>
     <div class="cartes">
-      <a class="carte monte" href="#">
+      <a class="carte monte" href="https://koytchaimmo.re/nos-programmes/" target="_blank" rel="noopener">
         <div class="vue"><span class="ville">Écocité Ouest</span>
           <img src="../koytchaimmo-refonte/assets/alpha1-net.webp" alt="Cambaie Park, Saint-Paul" loading="lazy"></div>
         <h3>Cambaie Park</h3>
@@ -935,15 +967,15 @@ footer a:hover{color:var(--magenta)}
         <span class="dec">Découvrir
           <svg width="16" height="9" viewBox="0 0 20 11" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M0 5.5h18M13.5 1l4.5 4.5-4.5 4.5"/></svg></span>
       </a>
-      <a class="carte monte" href="#">
+      <a class="carte monte" href="https://koytchaimmo.re/programmes/ze-bureu-2/" target="_blank" rel="noopener">
         <div class="vue"><span class="ville">L’Éperon</span>
-          <img src="assets/programmes/w4.jpg" alt="Grand Prado, Sainte-Marie" loading="lazy"></div>
+          <img src="assets/programmes/w4.jpg" alt="Ze Bure@u 2" loading="lazy"></div>
         <h3>Ze Bure@u 2</h3>
         <p>La signature Koytcha Immo sur l’Éperon.</p>
         <span class="dec">Découvrir
           <svg width="16" height="9" viewBox="0 0 20 11" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M0 5.5h18M13.5 1l4.5 4.5-4.5 4.5"/></svg></span>
       </a>
-      <a class="carte monte" href="#">
+      <a class="carte monte" href="https://koytchaimmo.re/nos-programmes/" target="_blank" rel="noopener">
         <div class="vue"><span class="ville">La Possession</span>
           <img src="../koytchaimmo-refonte/assets/drone-net.webp" alt="ZE Lokal, La Possession" loading="lazy"></div>
         <h3>Ze Lokal</h3>
@@ -1003,16 +1035,16 @@ footer a:hover{color:var(--magenta)}
             <figcaption>Ze Bure@u 1</figcaption>
           </figure>
           <figure>
-            <img src="assets/programmes/w4.jpg" alt="Ze Bure@u 2" loading="lazy">
-            <figcaption>Ze Bure@u 2</figcaption>
+            <a href="https://koytchaimmo.re/programmes/ze-bureu-2/" target="_blank" rel="noopener"><img src="assets/programmes/w4.jpg" alt="Ze Bure@u 2" loading="lazy"></a>
+            <figcaption><a href="https://koytchaimmo.re/programmes/ze-bureu-2/" target="_blank" rel="noopener">Ze Bure@u 2</a></figcaption>
           </figure>
           <figure data-a-confirmer="1">
-            <img src="assets/programmes/w2.jpg" alt="Kerval" loading="lazy">
-            <figcaption>Kerval</figcaption>
+            <a href="https://koytchaimmo.re/programmes/le-kerval/" target="_blank" rel="noopener"><img src="assets/programmes/w2.jpg" alt="Kerval" loading="lazy"></a>
+            <figcaption><a href="https://koytchaimmo.re/programmes/le-kerval/" target="_blank" rel="noopener">Kerval</a></figcaption>
           </figure>
           <figure data-a-confirmer="1">
-            <img src="assets/programmes/w3.jpg" alt="Espace Turquoise" loading="lazy">
-            <figcaption>Espace Turquoise</figcaption>
+            <a href="https://koytchaimmo.re/programmes/espace-turquoise/" target="_blank" rel="noopener"><img src="assets/programmes/w3.jpg" alt="Espace Turquoise" loading="lazy"></a>
+            <figcaption><a href="https://koytchaimmo.re/programmes/espace-turquoise/" target="_blank" rel="noopener">Espace Turquoise</a></figcaption>
           </figure>
           <figure data-a-confirmer="1">
             <img src="assets/programmes/w1.jpg" alt="Villas La Marine 2" loading="lazy">
@@ -1062,12 +1094,13 @@ footer a:hover{color:var(--magenta)}
   <div class="wrap">
     <div class="pied">
       <div class="bas-logo">
-        <a class="logo" href="#"><img class="l-clair" src="assets/logo-blanc.png" alt="Koytcha Immo"></a>
+        <a class="logo" href="https://koytchaimmo.re/" target="_blank" rel="noopener"><img class="l-clair" src="assets/logo-blanc.png" alt="Koytcha Immo"></a>
         <p>Conseil &amp; expertise en immobilier à La Réunion depuis 2004.</p>
         <div class="reseaux">
-          <a href="#" aria-label="Facebook"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M14 9h3V6h-3c-2.2 0-4 1.8-4 4v2H8v3h2v7h3v-7h3l1-3h-4v-2c0-.6.4-1 1-1z"/></svg></a>
-          <a href="#" aria-label="Instagram"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r=".6" fill="currentColor"/></svg></a>
-          <a href="#" aria-label="LinkedIn"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M5 4a2 2 0 100 4 2 2 0 000-4zM3.5 9.5h3V21h-3zM10 9.5h2.9v1.6c.5-.9 1.6-1.8 3.3-1.8 3 0 3.8 1.8 3.8 4.6V21h-3v-6c0-1.5-.5-2.5-1.9-2.5-1 0-1.7.7-2 1.4-.1.2-.1.6-.1.9V21h-3z"/></svg></a>
+          <a href="https://www.facebook.com/Koytchaimmo" target="_blank" rel="noopener" aria-label="Facebook"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M14 9h3V6h-3c-2.2 0-4 1.8-4 4v2H8v3h2v7h3v-7h3l1-3h-4v-2c0-.6.4-1 1-1z"/></svg></a>
+          <a href="https://www.instagram.com/koytchaimmo/" target="_blank" rel="noopener" aria-label="Instagram"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r=".6" fill="currentColor"/></svg></a>
+          
+          <a href="https://linkedin.com/company/16168910/" target="_blank" rel="noopener" aria-label="LinkedIn"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M5 4a2 2 0 100 4 2 2 0 000-4zM3.5 9.5h3V21h-3zM10 9.5h2.9v1.6c.5-.9 1.6-1.8 3.3-1.8 3 0 3.8 1.8 3.8 4.6V21h-3v-6c0-1.5-.5-2.5-1.9-2.5-1 0-1.7.7-2 1.4-.1.2-.1.6-.1.9V21h-3z"/></svg></a>
         </div>
       </div>
       <div>
@@ -1092,7 +1125,7 @@ footer a:hover{color:var(--magenta)}
     </div>
     <div class="tout-en-bas">
       <span>© 2026 Koytcha Immo. Tous droits réservés.</span>
-      <span><a href="#">Mentions légales</a> &nbsp;·&nbsp; <a href="#">Politique de confidentialité</a></span>
+      <span><a href="https://koytchaimmo.re/mentions/" target="_blank" rel="noopener">Mentions légales</a> &nbsp;·&nbsp; <a href="#">Politique de confidentialité</a></span>
     </div>
   </div>
 </footer>
