@@ -1,0 +1,343 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Tri des clips</title>
+<style>
+/* ─────────────────────────────────────────────────────────────────────────
+   Une décision toutes les deux secondes. Tout ce qui coûte du temps est
+   supprimé : aucune animation de transition entre deux clips, aucun fondu,
+   aucun effet au clic. Les trois clips suivants sont déjà décodés quand on
+   valide, sinon l'attente réseau casse la cadence — c'est le point critique.
+   ───────────────────────────────────────────────────────────────────── */
+:root{
+  --noir:#08080b; --carte:#121218; --trait:#23232c;
+  --poubelle:#e0483b; --debut:#2ea86a; --fin:#3b7fe0; --garder:#e0a020;
+  --voix:#e0483b; --doux:#8f8c9a;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden}
+body{background:var(--noir);color:#f2f0f5;
+  font-family:system-ui,-apple-system,"Segoe UI",sans-serif;font-size:15px;
+  display:flex;flex-direction:column;-webkit-font-smoothing:antialiased}
+:focus-visible{outline:2px solid #fff;outline-offset:2px}
+
+/* ── Haut : compteur et progression ─────────────────────────────────────── */
+.haut{flex:0 0 auto;padding:10px 14px 8px}
+.ligne{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.compteur{font-size:19px;font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap}
+.compteur small{font-size:13px;color:var(--doux);font-weight:400}
+.outils{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+.outils button{padding:6px 11px;border-radius:8px;border:1px solid var(--trait);
+  background:var(--carte);color:#f2f0f5;font:inherit;font-size:12.5px;cursor:pointer}
+.outils button:hover{border-color:#555}
+.jauge{height:4px;background:#1b1b22;border-radius:2px;margin-top:8px;overflow:hidden}
+.jauge i{display:block;height:100%;background:#fff;width:0}
+.titre{font-size:12px;color:var(--doux);margin-top:6px;white-space:nowrap;
+  overflow:hidden;text-overflow:ellipsis}
+
+/* ── Le clip ────────────────────────────────────────────────────────────── */
+.scene{flex:1 1 auto;position:relative;display:flex;align-items:center;
+  justify-content:center;min-height:0;padding:4px 0}
+video{max-height:100%;max-width:100%;aspect-ratio:9/16;background:#000;
+  border-radius:12px;display:block;object-fit:contain}
+.badge{position:absolute;top:12px;left:50%;transform:translateX(-50%);
+  background:var(--voix);color:#fff;font-weight:700;font-size:13px;
+  letter-spacing:.08em;padding:6px 14px;border-radius:999px;display:none}
+.badge.on{display:block}
+.son{position:absolute;right:14px;bottom:14px;width:44px;height:44px;border-radius:50%;
+  border:1px solid var(--trait);background:rgba(8,8,11,.75);color:#fff;
+  font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.fin{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;
+  justify-content:center;gap:14px;text-align:center;padding:20px}
+.fin.on{display:flex}
+.fin h2{font-size:26px}
+.fin p{color:var(--doux);max-width:40ch}
+
+/* ── Étiquettes rapides : elles remplacent la frappe ────────────────────── */
+.tags{flex:0 0 auto;display:flex;gap:5px;flex-wrap:wrap;padding:6px 14px 0}
+.tags button{padding:5px 10px;border-radius:999px;border:1px solid var(--trait);
+  background:var(--carte);color:var(--doux);font:inherit;font-size:12px;cursor:pointer}
+.tags button.on{border-color:#fff;color:#fff;background:#22222b}
+.tags button b{color:#6f6c7a;font-weight:700;margin-right:5px}
+.tags button.on b{color:#fff}
+.note{flex:0 0 auto;padding:6px 14px 0}
+.note input{width:100%;padding:8px 11px;border-radius:8px;border:1px solid var(--trait);
+  background:var(--carte);color:#f2f0f5;font:inherit;font-size:13px}
+.note input::placeholder{color:#5d5a68}
+
+/* ── Bas : les quatre décisions ─────────────────────────────────────────── */
+.actions{flex:0 0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:6px;
+  padding:8px 14px calc(10px + env(safe-area-inset-bottom))}
+.actions button{padding:13px 6px;border-radius:12px;border:2px solid;background:var(--carte);
+  color:#fff;font:inherit;cursor:pointer;display:flex;flex-direction:column;
+  align-items:center;gap:3px;line-height:1.25}
+.actions .k{font-size:17px;font-weight:700}
+.actions .l{font-size:11px;letter-spacing:.04em;opacity:.85;text-align:center}
+#bPoubelle{border-color:var(--poubelle)} #bPoubelle .k{color:var(--poubelle)}
+#bDebut{border-color:var(--debut)}       #bDebut .k{color:var(--debut)}
+#bFin{border-color:var(--fin)}           #bFin .k{color:var(--fin)}
+#bGarder{border-color:var(--garder)}     #bGarder .k{color:var(--garder)}
+
+.depot{position:fixed;inset:0;background:var(--noir);display:none;
+  flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:24px;z-index:20}
+.depot.on{display:flex}
+.depot .zone{border:2px dashed var(--trait);border-radius:16px;padding:44px 30px;
+  text-align:center;color:var(--doux);max-width:460px}
+.depot .zone b{color:#fff;display:block;margin-bottom:8px;font-size:17px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<div class="haut">
+  <div class="ligne">
+    <div class="compteur"><span id="fait">0</span> / <span id="tot">0</span>
+      <small id="restant"></small></div>
+    <div class="outils">
+      <button id="oExport">Exporter</button>
+      <button id="oImport">Importer</button>
+      <button id="oReset">Reset</button>
+    </div>
+  </div>
+  <div class="jauge"><i id="jauge"></i></div>
+  <div class="titre" id="titre"></div>
+</div>
+
+<div class="scene">
+  <video id="v" playsinline muted loop preload="auto"></video>
+  <div class="badge" id="badgeVoix">VOIX À COUPER</div>
+  <button class="son" id="bSon" title="Son (M)">🔇</button>
+  <div class="fin" id="ecranFin">
+    <h2>Tri terminé.</h2>
+    <p>Tous les clips sont passés. Exporte le résultat, ou appuie sur Z pour revenir en arrière.</p>
+    <button id="finExport" style="padding:11px 20px;border-radius:10px;border:1px solid var(--trait);background:var(--carte);color:#fff;font:inherit;cursor:pointer">Exporter le tri</button>
+  </div>
+</div>
+
+<div class="tags" id="tags"></div>
+<div class="note"><input id="note" placeholder="Note libre (T pour écrire, Échap pour sortir) — ce qu'on voit, pour retrouver le clip plus tard"></div>
+
+<div class="actions">
+  <button id="bPoubelle"><span class="k">←</span><span class="l">POUBELLE</span></button>
+  <button id="bDebut"><span class="k">↑</span><span class="l">HOOK DÉBUT</span></button>
+  <button id="bFin"><span class="k">↓</span><span class="l">HOOK FIN</span></button>
+  <button id="bGarder"><span class="k">→</span><span class="l">GARDER</span></button>
+</div>
+
+<div class="depot" id="depot">
+  <div class="zone" id="zone">
+    <b>clips.json introuvable</b>
+    Dépose le fichier ici, ou clique pour le choisir.<br>
+    Format : [{ "id", "url", "date" }]
+  </div>
+  <input type="file" id="fJson" accept="application/json" hidden>
+</div>
+<input type="file" id="fImport" accept="application/json" hidden>
+
+<script>
+(function(){
+  var CLE = 'tri_clips';
+  /* Étiquettes : elles servent à ce que l'IA retrouve le bon plan plus tard —
+     un hook de début ne se choisit pas pareil qu'un fond de b-roll. Frappées
+     au chiffre, elles coûtent une touche au lieu d'une phrase. */
+  var TAGS = ['visage','voiture','ville','nature','écran','action','lent','b-roll'];
+
+  var clips = [], deci = {}, i = 0, voix = false, tags = {}, son = false;
+  var v = document.getElementById('v'), note = document.getElementById('note');
+  var precharge = [];
+
+  function lire(){ try { return JSON.parse(localStorage.getItem(CLE)) || {}; } catch(e){ return {}; } }
+  function ecrire(){ try { localStorage.setItem(CLE, JSON.stringify(deci)); } catch(e){} }
+
+  function premierNonTrie(){
+    for (var k = 0; k < clips.length; k++) if (!deci[clips[k].id]) return k;
+    return clips.length;
+  }
+
+  /* Le préchargement est ce qui tient la cadence : sans lui, chaque décision
+     attend le réseau. Trois clips d'avance suffisent et ne saturent pas. */
+  function prechargerSuite(){
+    precharge.forEach(function(e){ e.src = ''; });
+    precharge = [];
+    for (var k = i + 1; k <= i + 3 && k < clips.length; k++){
+      var p = document.createElement('video');
+      p.preload = 'auto'; p.muted = true; p.src = clips[k].url;
+      precharge.push(p);
+    }
+  }
+
+  function majTags(){
+    var z = document.getElementById('tags');
+    z.innerHTML = '';
+    TAGS.forEach(function(t, n){
+      var b = document.createElement('button');
+      b.innerHTML = '<b>' + (n + 1) + '</b>' + t;
+      if (tags[t]) b.className = 'on';
+      b.addEventListener('click', function(){ basculeTag(t); });
+      z.appendChild(b);
+    });
+  }
+  function basculeTag(t){ tags[t] = !tags[t]; if (!tags[t]) delete tags[t]; majTags(); }
+
+  function afficher(){
+    var n = Object.keys(deci).length;
+    document.getElementById('fait').textContent = n;
+    document.getElementById('tot').textContent = clips.length;
+    document.getElementById('jauge').style.width = (clips.length ? n / clips.length * 100 : 0) + '%';
+    document.getElementById('restant').textContent = clips.length ? '· ' + (clips.length - n) + ' restants' : '';
+
+    if (i >= clips.length){
+      document.getElementById('ecranFin').classList.add('on');
+      v.style.display = 'none';
+      document.getElementById('titre').textContent = '';
+      return;
+    }
+    document.getElementById('ecranFin').classList.remove('on');
+    v.style.display = '';
+    var c = clips[i];
+    if (v.src !== c.url){ v.src = c.url; v.load(); }
+    v.muted = !son;
+    v.play().catch(function(){});
+    document.getElementById('titre').textContent = (i + 1) + '. ' + (c.titre || c.id);
+    voix = false; tags = {}; note.value = '';
+    document.getElementById('badgeVoix').classList.remove('on');
+    majTags();
+    prechargerSuite();
+  }
+
+  function decider(role){
+    if (i >= clips.length) return;
+    var c = clips[i];
+    deci[c.id] = { id: c.id, url: c.url, role: role, couper_voix: voix,
+      tags: Object.keys(tags), note: note.value.trim(), ordre: i };
+    ecrire();
+    i++;
+    afficher();
+  }
+
+  function annuler(){
+    /* On revient au dernier clip DÉCIDÉ, pas simplement au précédent : si on a
+       repris une session, les clips d'avant sont déjà tries et les rouvrir un
+       par un ferait perdre le fil. */
+    var k = i - 1;
+    while (k >= 0 && !deci[clips[k].id]) k--;
+    if (k < 0) return;
+    delete deci[clips[k].id];
+    ecrire(); i = k; afficher();
+  }
+
+  document.addEventListener('keydown', function(e){
+    if (document.activeElement === note){
+      if (e.key === 'Escape' || e.key === 'Enter'){ note.blur(); e.preventDefault(); }
+      return;                       /* la frappe appartient au champ */
+    }
+    var k = e.key;
+    if (k === 'ArrowLeft')  { decider('POUBELLE');   e.preventDefault(); }
+    else if (k === 'ArrowUp')    { decider('HOOK_DEBUT'); e.preventDefault(); }
+    else if (k === 'ArrowDown')  { decider('HOOK_FIN');   e.preventDefault(); }
+    else if (k === 'ArrowRight') { decider('GARDER');     e.preventDefault(); }
+    else if (k === 'v' || k === 'V'){
+      voix = !voix; document.getElementById('badgeVoix').classList.toggle('on', voix);
+    }
+    else if (k === 'z' || k === 'Z') annuler();
+    else if (k === ' '){ if (v.paused) v.play(); else v.pause(); e.preventDefault(); }
+    else if (k === 'r' || k === 'R'){ v.currentTime = 0; v.play().catch(function(){}); }
+    else if (k === 'm' || k === 'M') basculerSon();
+    else if (k === 't' || k === 'T'){ note.focus(); e.preventDefault(); }
+    else if (k >= '1' && k <= '8'){ var t = TAGS[+k - 1]; if (t) basculeTag(t); }
+  });
+
+  function basculerSon(){
+    son = !son; v.muted = !son;
+    document.getElementById('bSon').textContent = son ? '🔊' : '🔇';
+  }
+  document.getElementById('bSon').addEventListener('click', basculerSon);
+
+  document.getElementById('bPoubelle').addEventListener('click', function(){ decider('POUBELLE'); });
+  document.getElementById('bDebut').addEventListener('click', function(){ decider('HOOK_DEBUT'); });
+  document.getElementById('bFin').addEventListener('click', function(){ decider('HOOK_FIN'); });
+  document.getElementById('bGarder').addEventListener('click', function(){ decider('GARDER'); });
+
+  /* Glissé tactile. Seuil à 45 px pour ne pas déclencher sur un simple appui,
+     et l'axe dominant décide — sinon un geste en diagonale range au hasard. */
+  var x0 = null, y0 = null;
+  document.querySelector('.scene').addEventListener('touchstart', function(e){
+    x0 = e.touches[0].clientX; y0 = e.touches[0].clientY;
+  }, { passive: true });
+  document.querySelector('.scene').addEventListener('touchend', function(e){
+    if (x0 === null) return;
+    var dx = e.changedTouches[0].clientX - x0, dy = e.changedTouches[0].clientY - y0;
+    x0 = null;
+    if (Math.abs(dx) < 45 && Math.abs(dy) < 45) return;
+    if (Math.abs(dx) > Math.abs(dy)) decider(dx < 0 ? 'POUBELLE' : 'GARDER');
+    else decider(dy < 0 ? 'HOOK_DEBUT' : 'HOOK_FIN');
+  }, { passive: true });
+
+  function exporter(){
+    var out = Object.values(deci)
+      .filter(function(d){ return d.role !== 'POUBELLE'; })
+      .sort(function(a, b){ return a.ordre - b.ordre; })
+      .map(function(d){ return { id: d.id, url: d.url, role: d.role,
+        couper_voix: d.couper_voix, tags: d.tags || [], note: d.note || '' }; });
+    var b = new Blob([JSON.stringify(out, null, 2)], { type: 'application/json' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(b); a.download = 'tri_resultat.json';
+    document.body.appendChild(a); a.click();
+    setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); }, 800);
+  }
+  document.getElementById('oExport').addEventListener('click', exporter);
+  document.getElementById('finExport').addEventListener('click', exporter);
+
+  document.getElementById('oImport').addEventListener('click', function(){
+    document.getElementById('fImport').click();
+  });
+  document.getElementById('fImport').addEventListener('change', function(e){
+    var f = e.target.files[0]; if (!f) return;
+    f.text().then(function(t){
+      try {
+        var l = JSON.parse(t);
+        l.forEach(function(d, n){
+          deci[d.id] = { id: d.id, url: d.url, role: d.role,
+            couper_voix: !!d.couper_voix, tags: d.tags || [], note: d.note || '', ordre: n };
+        });
+        ecrire(); i = premierNonTrie(); afficher();
+      } catch(err){ alert('Fichier illisible : ' + err.message); }
+    });
+  });
+
+  document.getElementById('oReset').addEventListener('click', function(){
+    if (!confirm('Effacer tout le tri ? Cette action est définitive.')) return;
+    deci = {}; try { localStorage.removeItem(CLE); } catch(e){}
+    i = 0; afficher();
+  });
+
+  function demarrer(l){
+    clips = l.filter(function(c){ return c && c.id && c.url; });
+    deci = lire();
+    i = premierNonTrie();
+    document.getElementById('depot').classList.remove('on');
+    afficher();
+  }
+
+  /* clips.json à côté ; sinon on demande le fichier. */
+  fetch('clips.json').then(function(r){
+    if (!r.ok) throw new Error('absent');
+    return r.json();
+  }).then(demarrer).catch(function(){
+    document.getElementById('depot').classList.add('on');
+  });
+
+  var zone = document.getElementById('zone'), fJson = document.getElementById('fJson');
+  zone.addEventListener('click', function(){ fJson.click(); });
+  fJson.addEventListener('change', function(e){
+    var f = e.target.files[0]; if (!f) return;
+    f.text().then(function(t){ try { demarrer(JSON.parse(t)); } catch(err){ alert('JSON illisible'); } });
+  });
+  ['dragover','drop'].forEach(function(ev){
+    document.getElementById('depot').addEventListener(ev, function(e){ e.preventDefault(); });
+  });
+  document.getElementById('depot').addEventListener('drop', function(e){
+    var f = e.dataTransfer.files[0]; if (!f) return;
+    f.text().then(function(t){ try { demarrer(JSON.parse(t)); } catch(err){ alert('JSON illisible'); } });
+  });
+})();
+</script>
