@@ -724,9 +724,32 @@ footer{padding:40px 0 64px; border-top:1px solid var(--trait); color:var(--doux)
     }, 3200);
   }
 
+  /* Deux façons d'enregistrer, parce que la page vit à deux endroits.
+     Sur un site normal, un lien blob suffit. Dans le lecteur d'artefacts,
+     ce lien est inerte : c'est la capacité `downloads` qui remet le
+     fichier au visiteur, après confirmation. On demande la capacité, et
+     on retombe sur le lien si elle n'est pas là. */
+  var sauveur = null;
+  if (window.claude && typeof window.claude.use === 'function'){
+    window.claude.use('downloads').then(function(d){ sauveur = d; }, function(){});
+  }
+
   document.getElementById('telecharger').addEventListener('click', function(){
     var nom = 'family-arena-audit-' + new Date().toISOString().slice(0,10) + '.txt';
-    var b = new Blob([compteRendu()], { type:'text/plain;charset=utf-8' });
+    var texte = compteRendu();
+    if (sauveur){
+      sauveur.save({ filename: nom, data: texte }).then(
+        function(){ signaler('Fichier ' + nom + ' enregistré.'); },
+        function(e){
+          /* Le visiteur peut refuser : ce n'est pas une panne, on ne
+             réessaie pas et on lui laisse la copie comme porte de sortie. */
+          signaler(e && e.code === 'declined'
+            ? 'Enregistrement annulé — le bouton « Copier » reste disponible.'
+            : 'Enregistrement indisponible ici — utilisez « Copier ».');
+        });
+      return;
+    }
+    var b = new Blob([texte], { type:'text/plain;charset=utf-8' });
     var a = document.createElement('a');
     a.href = URL.createObjectURL(b); a.download = nom;
     document.body.appendChild(a); a.click();
