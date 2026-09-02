@@ -331,12 +331,19 @@ a{color:inherit}
   }
 
   var courante = -1;
+  /* Le recadrage mobile ne peut pas être centré. Le cadrage vidéo garde le
+     sujet dans la moitié droite — c'est voulu, ça libère la gauche pour le
+     texte. Sur un écran étroit, un « cover » centré coupe donc exactement
+     le personnage. On décale la fenêtre vers la droite de la source pour
+     le ramener, en le laissant légèrement à gauche du centre de l'écran. */
+  function ancre(){ return toile.clientWidth < 820 ? .70 : .5; }
+
   function dessiner(im){
     if (!im) return;
     var cw = toile.width, ch = toile.height;
     var e = Math.max(cw / im.naturalWidth, ch / im.naturalHeight);
     var w = im.naturalWidth * e, h = im.naturalHeight * e;
-    ctx.drawImage(im, (cw - w) / 2, (ch - h) / 2, w, h);
+    ctx.drawImage(im, (cw - w) * ancre(), (ch - h) / 2, w, h);
   }
 
   function avancement(){
