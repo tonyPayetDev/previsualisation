@@ -90,7 +90,10 @@ img{max-width:100%;display:block}
    boîte de recherche qui dépasse volontairement sous l'en-tête — défaut
    constaté à la capture pleine page, invisible sur un écran seul. */
 .cadre{position:absolute;inset:0;overflow:hidden}
-.bati{position:absolute;inset:-9% -9%;will-change:transform;
+/* Pas de `will-change` ici : .bati ne bouge pas (animation:none), ce sont ses
+   images qui derivent. La ligne promouvait en permanence une couche plein
+   ecran pour un element qui n'anime rien. */
+.bati{position:absolute;inset:-9% -9%;
   animation:none}
 /* 38 s aller, 38 s retour : assez lent pour qu on ne voie jamais le mouvement
    commencer ni finir. En dessous de ~25 s ca devient un effet, au-dessus de
@@ -824,6 +827,10 @@ footer a:hover{color:var(--magenta)}
 /* Hors champ, on coupe : douze images qui dérivent en même temps derrière
    l'écran, c'est douze calques repeints pour personne. */
 .fige,.fige img{animation-play-state:paused !important}
+/* Le balayage de la derniere section vit dans un ::after : sans cette ligne
+   il tournait en boucle du haut de la page jusqu'en bas, releve a chaque
+   position par `document.getAnimations()`. */
+.fige::after,.fige::before{animation-play-state:paused !important}
 
 /* ── Reflet : le miroir du carrousel, en discret, sous les autres images.
    Le dégradé ne laisse voir que le dernier dixième — au-delà ça fait
@@ -834,9 +841,16 @@ footer a:hover{color:var(--magenta)}
 .realisations figure img{-webkit-box-reflect:below 5px linear-gradient(transparent 94%,rgba(0,0,0,.15));margin-bottom:18px}
 .realisations figcaption{margin-top:0}
 .realisations a{color:inherit;text-decoration:none}
-/* Le navigateur saute la mise en page des sections encore hors champ.
-   La taille annoncée évite que la barre de défilement saute. */
-#accompagne,#philosophie{content-visibility:auto;contain-intrinsic-size:auto 1200px}
+/* Les `sizes` des photos de programmes annoncent la largeur AFFICHEE, pas la
+   largeur de mise en page : le Ken Burns pousse l'image a 112 % de sa boite.
+   Carrousel 77 vw -> 86 vw annonces ; carte 90 vw -> 100 vw. Sans cette marge
+   le navigateur choisit le fichier du dessous et l'image redevient molle. */
+/* `content-visibility:auto` a ete pose ici puis RETIRE. Il faisait bien ce
+   qu'on lui demandait — sauter la mise en page des sections hors champ —
+   mais il sautait aussi le chargement des photos qu'elles contiennent.
+   Mesure a l'arrivee dans #accompagne (saut instantane, echantillon a 0 ms) :
+   1 vignette sur 5 peinte au lieu de 5. La bande de realisations est
+   precisement ce qu'on voit en premier en arrivant : elle arrivait vide. */
 .realisations figcaption a:hover{color:var(--magenta)}
 
 </style>
@@ -978,7 +992,9 @@ footer a:hover{color:var(--magenta)}
       </a>
       <a class="carte monte" href="https://koytchaimmo.re/programmes/ze-bureu-2/" target="_blank" rel="noopener">
         <div class="vue"><span class="ville">L’Éperon</span>
-          <img src="assets/programmes/w4.jpg" alt="Ze Bure@u 2" loading="lazy"></div>
+          <img src="assets/programmes/w4-1200.webp"
+               srcset="assets/programmes/w4-600.webp 600w, assets/programmes/w4-1200.webp 1200w"
+               sizes="(max-width:900px) 100vw, 31vw" alt="Ze Bure@u 2" loading="lazy"></div>
         <h3>Ze Bure@u 2</h3>
         <p>La signature Koytcha Immo sur l’Éperon.</p>
         <span class="dec">Découvrir
@@ -1040,23 +1056,33 @@ footer a:hover{color:var(--magenta)}
              photo. Les trois autres attendent sa confirmation. -->
         <div class="realisations">
           <figure>
-            <img src="assets/programmes/w5.jpg" alt="Ze Bure@u 1" loading="lazy">
+            <img src="assets/programmes/w5-1200.webp"
+                 srcset="assets/programmes/w5-600.webp 600w, assets/programmes/w5-1200.webp 1200w"
+                 sizes="(max-width:900px) 86vw, 20vw" alt="Ze Bure@u 1" loading="lazy">
             <figcaption>Ze Bure@u 1</figcaption>
           </figure>
           <figure>
-            <a href="https://koytchaimmo.re/programmes/ze-bureu-2/" target="_blank" rel="noopener"><img src="assets/programmes/w4.jpg" alt="Ze Bure@u 2" loading="lazy"></a>
+            <a href="https://koytchaimmo.re/programmes/ze-bureu-2/" target="_blank" rel="noopener"><img src="assets/programmes/w4-1200.webp"
+                 srcset="assets/programmes/w4-600.webp 600w, assets/programmes/w4-1200.webp 1200w"
+                 sizes="(max-width:900px) 86vw, 20vw" alt="Ze Bure@u 2" loading="lazy"></a>
             <figcaption><a href="https://koytchaimmo.re/programmes/ze-bureu-2/" target="_blank" rel="noopener">Ze Bure@u 2</a></figcaption>
           </figure>
           <figure data-a-confirmer="1">
-            <a href="https://koytchaimmo.re/programmes/le-kerval/" target="_blank" rel="noopener"><img src="assets/programmes/w2.jpg" alt="Kerval" loading="lazy"></a>
+            <a href="https://koytchaimmo.re/programmes/le-kerval/" target="_blank" rel="noopener"><img src="assets/programmes/w2-1200.webp"
+                 srcset="assets/programmes/w2-600.webp 600w, assets/programmes/w2-1200.webp 1200w"
+                 sizes="(max-width:900px) 86vw, 20vw" alt="Kerval" loading="lazy"></a>
             <figcaption><a href="https://koytchaimmo.re/programmes/le-kerval/" target="_blank" rel="noopener">Kerval</a></figcaption>
           </figure>
           <figure data-a-confirmer="1">
-            <a href="https://koytchaimmo.re/programmes/espace-turquoise/" target="_blank" rel="noopener"><img src="assets/programmes/w3.jpg" alt="Espace Turquoise" loading="lazy"></a>
+            <a href="https://koytchaimmo.re/programmes/espace-turquoise/" target="_blank" rel="noopener"><img src="assets/programmes/w3-1200.webp"
+                 srcset="assets/programmes/w3-600.webp 600w, assets/programmes/w3-1200.webp 1200w"
+                 sizes="(max-width:900px) 86vw, 20vw" alt="Espace Turquoise" loading="lazy"></a>
             <figcaption><a href="https://koytchaimmo.re/programmes/espace-turquoise/" target="_blank" rel="noopener">Espace Turquoise</a></figcaption>
           </figure>
           <figure data-a-confirmer="1">
-            <img src="assets/programmes/w1.jpg" alt="Villas La Marine 2" loading="lazy">
+            <img src="assets/programmes/w1-1200.webp"
+                 srcset="assets/programmes/w1-600.webp 600w, assets/programmes/w1-1200.webp 1200w"
+                 sizes="(max-width:900px) 86vw, 20vw" alt="Villas La Marine 2" loading="lazy">
             <figcaption>Villas La Marine 2</figcaption>
           </figure>
         </div>
@@ -1220,11 +1246,25 @@ footer a:hover{color:var(--magenta)}
     [].forEach.call(h.querySelectorAll('.mot'), function(m,i){ m.style.setProperty('--dm',(i*62)+'ms'); });
   });
 
+  /* ── L'en-tete continuait de travailler onze ecrans plus bas ────────────
+     Sonde `document.getAnimations()` a chaque position de la page : `kb-diapo`
+     — une image plein ecran qui se deplace — repartait toutes les 6,5 s meme
+     tout en bas, et le mot du titre changeait toutes les 2,9 s pour personne.
+     Les deux effets sont conserves a l'identique ; on suspend seulement leur
+     horloge tant que la scene est hors champ, et elle reprend en remontant. */
+  var scene = document.querySelector('.scene');
+  var sceneVue = true;
+  if (scene && 'IntersectionObserver' in window) {
+    new IntersectionObserver(function(es){ sceneVue = es[0].isIntersecting; },
+                             { threshold: 0 }).observe(scene);
+  }
+
   /* Les trois fonds de l en-tete se succedent. */
   var fonds = [].slice.call(document.querySelectorAll('#bati img'));
   if (fonds.length > 1 && !reduit) {
     var iF = 0;
     setInterval(function(){
+      if (!sceneVue) return;
       fonds[iF].classList.remove('on');
       iF = (iF + 1) % fonds.length;
       fonds[iF].classList.add('on');
@@ -1239,6 +1279,7 @@ footer a:hover{color:var(--magenta)}
     if (mots.length > 1) {
       var iMot = 0, dedans = roule.querySelector('span');
       setInterval(function(){
+        if (!sceneVue) return;
         iMot = (iMot + 1) % mots.length;
         roule.classList.add('part');
         setTimeout(function(){
@@ -1316,12 +1357,37 @@ footer a:hover{color:var(--magenta)}
   /* Fige les photos qui sortent du champ : le Ken Burns ne coûte plus rien
      quand personne ne le regarde. Le seuil à 0 suffit — dès qu'un pixel de
      la section est visible, on relance. */
-  var anime = [].slice.call(document.querySelectorAll('.piste, .cartes .carte, .realisations figure, .final .fond'));
+  var anime = [].slice.call(document.querySelectorAll('.scene, .piste, .cartes .carte, .realisations figure, .final .fond, .final .teinte'));
   if (anime.length && 'IntersectionObserver' in window) {
     var veille = new IntersectionObserver(function(es){
       es.forEach(function(e){ e.target.classList.toggle('fige', !e.isIntersecting); });
     }, { rootMargin: '120px' });
     anime.forEach(function(el){ veille.observe(el); });
+  }
+
+  /* ── Le carrousel arrivait a moitie vide ───────────────────────────────
+     Mesure en 390x844 : a l'arrivee dans la section, 2 vignettes sur 5 etaient
+     peintes — et les trois autres ne se chargeaient JAMAIS, meme apres 3 s.
+     `loading="lazy"` ne reclame que ce qui approche de l'ecran ; dans un
+     defilement horizontal, les vignettes 3 a 5 attendent a droite, hors champ,
+     et n'y entrent qu'au moment ou le doigt glisse. On repasse la bande en
+     chargement immediat des que la section approche a 600 px : rien n'est
+     telecharge pour qui ne descend pas jusque-la, et tout est peint pour qui
+     y arrive. */
+  var bande = document.querySelector('.realisations');
+  if (bande && 'IntersectionObserver' in window) {
+    var chauffe = new IntersectionObserver(function(es){
+      if (!es.some(function(e){ return e.isIntersecting; })) return;
+      chauffe.disconnect();
+      [].forEach.call(bande.querySelectorAll('img'), function(im){
+        if (im.complete && im.naturalWidth) return;
+        im.loading = 'eager';
+        /* Repasser `loading` a eager suffit sur Chrome ; ailleurs c'est la
+           reaffectation de srcset qui relance la selection, donc le telechargement. */
+        if (im.srcset) im.srcset = im.srcset;
+      });
+    }, { rootMargin: '600px 0px' });
+    chauffe.observe(bande);
   }
 
   /* Les deux onglets du module de recherche. */
