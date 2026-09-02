@@ -1,0 +1,773 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Family Arena — Dossier de rendez-vous</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Public+Sans:ital,wght@0,400;0,500;0,700;1,400&display=swap">
+
+<style>
+/* ── Palette : encre indigo profond, papier chaud, un seul accent.
+   Les couleurs sémantiques (critique / attention / acquis) sont distinctes
+   de l'accent : elles portent une information, pas une identité. ───────── */
+:root{
+  --papier:#f7f5f3; --carte:#ffffff; --encre:#1b1a2e; --doux:#5c5a6e;
+  --trait:#e3dfe4; --trait-fort:#cfc9d4;
+  --accent:#3d34a8; --accent-doux:#eeecfb;
+  --crit:#b3261e; --crit-fond:#fdeceb;
+  --att:#9a5b00;  --att-fond:#fdf3e4;
+  --ok:#1c6b48;   --ok-fond:#e9f5ef;
+  --ombre:0 1px 2px rgba(27,26,46,.05), 0 8px 24px -12px rgba(27,26,46,.18);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --papier:#131320; --carte:#1c1b2b; --encre:#eceaf4; --doux:#a09db4;
+    --trait:#2e2c40; --trait-fort:#413e55;
+    --accent:#a99cff; --accent-doux:#232141;
+    --crit:#ff9b93; --crit-fond:#3a1f1e;
+    --att:#f0bd6a;  --att-fond:#38290f;
+    --ok:#7fd8ab;   --ok-fond:#12301f;
+    --ombre:0 1px 2px rgba(0,0,0,.3), 0 8px 24px -12px rgba(0,0,0,.6);
+  }
+}
+:root[data-theme="dark"]{
+  --papier:#131320; --carte:#1c1b2b; --encre:#eceaf4; --doux:#a09db4;
+  --trait:#2e2c40; --trait-fort:#413e55;
+  --accent:#a99cff; --accent-doux:#232141;
+  --crit:#ff9b93; --crit-fond:#3a1f1e;
+  --att:#f0bd6a;  --att-fond:#38290f;
+  --ok:#7fd8ab;   --ok-fond:#12301f;
+  --ombre:0 1px 2px rgba(0,0,0,.3), 0 8px 24px -12px rgba(0,0,0,.6);
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--papier); color:var(--encre);
+  font-family:"Public Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  font-size:16px; line-height:1.6; -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,h4{font-family:"Bricolage Grotesque","Public Sans",system-ui,sans-serif;
+  font-weight:800; letter-spacing:-.02em; text-wrap:balance; margin:0}
+a{color:var(--accent)}
+:focus-visible{outline:2px solid var(--accent); outline-offset:3px; border-radius:3px}
+
+.enveloppe{max-width:1080px; margin:0 auto; padding:0 20px}
+.prose{max-width:68ch}
+
+/* ── Barre de navigation collante : en rendez-vous, on saute de section ── */
+.barre{position:sticky; top:0; z-index:40; background:color-mix(in srgb,var(--papier) 92%,transparent);
+  backdrop-filter:saturate(1.4) blur(10px); border-bottom:1px solid var(--trait)}
+.barre .enveloppe{display:flex; align-items:center; gap:18px; height:54px; overflow-x:auto; scrollbar-width:none}
+.barre .enveloppe::-webkit-scrollbar{display:none}
+.barre b{font-family:"Bricolage Grotesque",sans-serif; font-weight:800; font-size:15px; white-space:nowrap}
+.barre nav{display:flex; gap:4px; margin-left:auto}
+.barre a{display:block; padding:6px 11px; border-radius:8px; font-size:14px; font-weight:500;
+  color:var(--doux); text-decoration:none; white-space:nowrap}
+.barre a:hover{background:var(--accent-doux); color:var(--accent)}
+
+/* ── En-tête ─────────────────────────────────────────────────────────── */
+header{padding:56px 0 40px}
+.oeil{font-size:12.5px; font-weight:700; letter-spacing:.16em; text-transform:uppercase; color:var(--accent)}
+h1{font-size:clamp(34px,6vw,58px); line-height:1.03; margin:14px 0 18px}
+.chapo{font-size:clamp(17px,2.2vw,20px); color:var(--doux); max-width:60ch}
+
+/* Les quatre chiffres qui ouvrent la conversation */
+.chiffres{display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:12px; margin:34px 0 8px}
+.chiffre{background:var(--carte); border:1px solid var(--trait); border-radius:14px; padding:16px 18px; box-shadow:var(--ombre)}
+.chiffre .v{font-family:"Bricolage Grotesque",sans-serif; font-weight:800; font-size:30px;
+  line-height:1.1; font-variant-numeric:tabular-nums; letter-spacing:-.03em}
+.chiffre .l{font-size:13.5px; color:var(--doux); margin-top:5px}
+
+section{padding:44px 0; border-top:1px solid var(--trait)}
+h2{font-size:clamp(25px,3.6vw,36px); line-height:1.12}
+.sous{color:var(--doux); margin:12px 0 0; max-width:66ch}
+h3{font-size:20px; margin:30px 0 10px}
+
+/* ── Constats : la gravité se lit à la forme, pas seulement au mot ───── */
+.constat{background:var(--carte); border:1px solid var(--trait); border-left:4px solid var(--trait-fort);
+  border-radius:0 12px 12px 0; padding:16px 18px; margin:12px 0; box-shadow:var(--ombre)}
+.constat.crit{border-left-color:var(--crit)}
+.constat.att{border-left-color:var(--att)}
+.constat h4{font-size:16.5px; font-weight:700; display:flex; gap:10px; align-items:baseline; flex-wrap:wrap}
+.puce{font-size:11px; font-weight:700; letter-spacing:.08em; text-transform:uppercase;
+  padding:3px 8px; border-radius:100px; white-space:nowrap}
+.puce.crit{background:var(--crit-fond); color:var(--crit)}
+.puce.att{background:var(--att-fond); color:var(--att)}
+.puce.ok{background:var(--ok-fond); color:var(--ok)}
+.constat p{margin:9px 0 0; font-size:15px; color:var(--doux)}
+.constat .preuve{margin-top:10px; font-size:13.5px; color:var(--doux);
+  border-top:1px dashed var(--trait); padding-top:9px}
+.constat .preuve b{color:var(--encre); font-weight:600}
+
+.acquis{background:var(--ok-fond); border:1px solid color-mix(in srgb,var(--ok) 28%,transparent);
+  border-radius:12px; padding:16px 18px; margin:16px 0}
+.acquis ul{margin:10px 0 0; padding-left:18px; font-size:15px}
+.acquis li{margin:5px 0}
+
+/* ── Tableaux : ils débordent dans leur propre boîte, jamais la page ─── */
+.tableau{overflow-x:auto; border:1px solid var(--trait); border-radius:12px; background:var(--carte); margin:16px 0}
+table{border-collapse:collapse; width:100%; min-width:520px; font-size:14.5px}
+th,td{text-align:left; padding:11px 14px; border-bottom:1px solid var(--trait); vertical-align:top}
+th{font-size:12px; letter-spacing:.07em; text-transform:uppercase; color:var(--doux); font-weight:700; white-space:nowrap}
+tr:last-child td{border-bottom:none}
+td.n{text-align:right; font-variant-numeric:tabular-nums; white-space:nowrap; font-weight:600}
+
+/* ── Offres : elles se comparent, donc elles sont côte à côte ────────── */
+.offres{display:grid; grid-template-columns:repeat(auto-fit,minmax(258px,1fr)); gap:16px; margin-top:26px}
+.offre{background:var(--carte); border:1px solid var(--trait); border-radius:16px; padding:20px;
+  display:flex; flex-direction:column; box-shadow:var(--ombre)}
+.offre.phare{border-color:var(--accent); box-shadow:0 0 0 1px var(--accent), var(--ombre)}
+.offre .rang{font-size:12px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--accent)}
+.offre h3{font-size:19px; margin:8px 0 4px}
+.offre .prix{font-family:"Bricolage Grotesque",sans-serif; font-weight:800; font-size:27px;
+  letter-spacing:-.02em; font-variant-numeric:tabular-nums; margin:12px 0 2px}
+.offre .duree{font-size:13px; color:var(--doux)}
+.offre ul{margin:14px 0 0; padding-left:0; list-style:none; font-size:14.5px; flex:1}
+.offre li{padding:6px 0 6px 22px; position:relative; border-top:1px solid var(--trait)}
+.offre li:first-child{border-top:none}
+.offre li::before{content:"→"; position:absolute; left:0; color:var(--accent); font-weight:700}
+.offre .pour{margin-top:14px; padding-top:12px; border-top:1px dashed var(--trait);
+  font-size:13.5px; color:var(--doux)}
+
+/* ── Formulaire d'audit ──────────────────────────────────────────────── */
+.q{background:var(--carte); border:1px solid var(--trait); border-radius:14px; padding:18px; margin:14px 0; box-shadow:var(--ombre)}
+.q > label.titre{display:block; font-weight:700; font-size:16px; margin-bottom:4px}
+.q .aide{font-size:13.5px; color:var(--doux); margin-bottom:12px}
+.choix{display:flex; flex-wrap:wrap; gap:8px}
+.choix label{display:inline-flex; align-items:center; gap:7px; padding:8px 13px; border:1px solid var(--trait-fort);
+  border-radius:100px; cursor:pointer; font-size:14.5px; background:var(--papier); user-select:none}
+.choix input{accent-color:var(--accent); margin:0}
+.choix label:has(input:checked){border-color:var(--accent); background:var(--accent-doux); color:var(--accent); font-weight:600}
+textarea{width:100%; min-height:74px; padding:11px 13px; border:1px solid var(--trait-fort); border-radius:10px;
+  background:var(--papier); color:var(--encre); font:inherit; font-size:14.5px; resize:vertical}
+
+/* ── Chiffrage : c'est le résultat, il doit se distinguer ────────────── */
+.resultat{position:sticky; bottom:14px; background:var(--carte); border:2px solid var(--accent);
+  border-radius:18px; padding:22px; margin-top:26px; box-shadow:0 12px 40px -12px rgba(61,52,168,.4)}
+.resultat .haut{display:flex; flex-wrap:wrap; align-items:baseline; gap:6px 16px}
+.resultat .montant{font-family:"Bricolage Grotesque",sans-serif; font-weight:800;
+  font-size:clamp(30px,5vw,42px); letter-spacing:-.03em; font-variant-numeric:tabular-nums; color:var(--accent)}
+.resultat .form{font-size:15px; font-weight:600}
+.resultat .detail{margin-top:14px; font-size:14px; color:var(--doux)}
+.resultat ul{margin:8px 0 0; padding-left:18px; font-size:14px}
+.resultat li{margin:4px 0}
+.bloque{color:var(--crit); font-weight:600}
+
+.note{background:var(--accent-doux); border-radius:12px; padding:15px 18px; margin:20px 0;
+  font-size:14.5px; border:1px solid color-mix(in srgb,var(--accent) 22%,transparent)}
+.note b{font-weight:700}
+
+footer{padding:40px 0 64px; border-top:1px solid var(--trait); color:var(--doux); font-size:14px}
+.bouton{display:inline-block; margin-top:12px; padding:9px 16px; border:1px solid var(--trait-fort);
+  border-radius:10px; background:var(--carte); color:var(--encre); font:inherit; font-size:14px;
+  font-weight:600; cursor:pointer}
+.bouton:hover{border-color:var(--accent); color:var(--accent)}
+.actions{display:flex; flex-wrap:wrap; gap:9px; margin-top:18px; padding-top:16px; border-top:1px solid var(--trait)}
+.bouton{margin-top:0; text-decoration:none; text-align:center}
+.bouton.primaire{background:var(--accent); border-color:var(--accent); color:#fff}
+.bouton.primaire:hover{color:#fff; opacity:.9}
+.bouton.discret{color:var(--doux); border-style:dashed}
+.sauvegarde{margin:12px 0 0; font-size:13px; color:var(--doux)}
+.sauvegarde.ok{color:var(--ok); font-weight:600}
+@media (prefers-reduced-motion:reduce){*{animation:none!important; transition:none!important}}
+</style>
+
+<div class="barre"><div class="enveloppe">
+  <b>Family Arena</b>
+  <nav>
+    <a href="#audit">Audit</a>
+    <a href="#offres">Offres</a>
+    <a href="#formulaire">Formulaire</a>
+    <a href="#chiffrage">Chiffrage</a>
+  </nav>
+</div></div>
+
+<div class="enveloppe">
+
+<header>
+  <div class="oeil">Dossier de rendez-vous · relevé du 20 août 2026</div>
+  <h1>Tout est déjà là.<br>Rien ne mène à un panier.</h1>
+  <p class="chapo">Family Arena a l’audience, la réputation et les offres. Ce qui manque, c’est
+  le chemin entre les trois. Ce dossier ne liste pas des défauts techniques : il liste ce qui
+  empêche une visite de devenir une réservation.</p>
+
+  <div class="chiffres">
+    <div class="chiffre"><div class="v">4,3 ★</div><div class="l">sur 423 avis Google — mieux que Bowling City (3,7 ★)</div></div>
+    <div class="chiffre"><div class="v">0</div><div class="l">formulaire sur les 13 pages du site</div></div>
+    <div class="chiffre"><div class="v">0</div><div class="l">fois le mot « anniversaire » — 3ᵉ mot le plus cité par leurs clients</div></div>
+    <div class="chiffre"><div class="v">4,09 Mo</div><div class="l">la page d’accueil sur mobile, dont 0 image en WebP</div></div>
+  </div>
+</header>
+
+<section id="audit">
+  <h2>Ce que j’ai mesuré sur familyarena.re</h2>
+  <p class="sous">Crawl des 13 pages du sitemap, rendu mobile 390×844 sous Chromium, en-têtes HTTP,
+  données structurées, consentement cookies. Chaque constat ci-dessous est vérifiable devant eux,
+  en direct, depuis un téléphone.</p>
+
+  <div class="acquis">
+    <strong>D’abord ce qui va bien — et il faut le dire, c’est vrai.</strong>
+    <ul>
+      <li>Serveur rapide : temps de réponse mesuré entre <b>57 et 168 ms</b>, WP Rocket actif.</li>
+      <li>HTTPS propre, redirections correctes, aucun contenu mixte.</li>
+      <li>Stabilité visuelle excellente sur mobile (CLS 0,005) — rien ne saute pendant le chargement.</li>
+      <li>Consentement cookies rigoureux : Google Analytics ne part qu’après acceptation. Plus sérieux que la plupart des TPE.</li>
+      <li>Fiche Google entretenue, avis auxquels ils répondent, 5 701 abonnés Instagram, 77 publications par mois.</li>
+    </ul>
+  </div>
+
+  <h3>A · On ne peut rien réserver, et on ne peut pas les écrire</h3>
+  <div class="constat crit">
+    <h4><span class="puce crit">Critique</span> Aucun chemin vers une réservation</h4>
+    <p>Sur les 61 liens de la page d’accueil, aucun ne contient « réserver », « booking » ou
+    « billetterie ». Le seul lien transactionnel est « Bons cadeaux ».</p>
+    <div class="preuve"><b>Preuve :</b> extraction complète du DOM. Et <b>zéro formulaire</b> sur
+    tout le site, page Contact comprise — <b>zéro adresse e-mail cliquable</b> sur les 13 pages.</div>
+  </div>
+  <div class="constat crit">
+    <h4><span class="puce crit">Critique</span> La seule adresse e-mail publiée n’existe pas</h4>
+    <p>Les mentions légales indiquent <code>contact@vrfamilyreunion.responsabilité</code> — un
+    remplacement automatique raté qui a mangé le nom de domaine.</p>
+    <div class="preuve"><b>Traduction :</b> une demande d’anniversaire ou de séminaire le soir ou
+    le week-end n’a aucun endroit où atterrir. Elle est perdue, sans trace.</div>
+  </div>
+
+  <h3>B · Ils ont déjà un moteur de réservation — bridé sur les cartes cadeaux</h3>
+  <div class="constat crit">
+    <h4><span class="puce crit">Critique</span> Le point le plus important du dossier</h4>
+    <p>Le site ne renvoie vers leur compte <b>elloha</b> qu’une seule fois, avec le paramètre
+    <code>onlyGifts=1</code> — filtré sur les cartes cadeaux. Sans ce filtre, la même adresse
+    n’affiche <b>aucune activité réservable</b> : un sélecteur de date vide.</p>
+    <div class="preuve">Leur propre description elloha dit pourtant : « Réserver votre session, vos
+    bons cadeaux directement dans le menu déroulant ». <b>L’outil est payé, installé, et ne vend
+    que des cartes cadeaux.</b> C’est une configuration, pas un développement.</div>
+  </div>
+
+  <h3>C · Quatre domaines, et le meilleur contenu est sur les mauvais</h3>
+  <div class="tableau"><table>
+    <thead><tr><th>Domaine</th><th>Réservation</th><th>Restauration</th><th>Anniversaires / groupes</th></tr></thead>
+    <tbody>
+      <tr><td><b>familyarena.re</b><br><span style="color:var(--doux)">le site principal</span></td>
+        <td>Cartes cadeaux seulement</td><td>Non</td><td>Non</td></tr>
+      <tr><td>vrfamilyreunion.re</td><td colspan="3" style="color:var(--doux)">Redirige vers le principal — c’est correct</td></tr>
+      <tr><td><b>karafamily.re</b></td><td>Oui</td><td>Oui</td><td><b>Kara’Niversaire</b>, EVJG, Small/Big Box, BBQ</td></tr>
+      <tr><td><b>iquiz-family.re</b></td><td>Oui</td><td>Oui</td><td><b>Team building</b>, EVJF/EVG, tarifs 2-4 / 5-6 / 7-12 joueurs</td></tr>
+    </tbody>
+  </table></div>
+  <div class="constat att">
+    <h4><span class="puce att">Attention</span> Les satellites ne renvoient jamais au principal</h4>
+    <p>Zéro lien retour. Quatre vitrines qui se font concurrence, aucune autorité partagée. Et
+    <code>iquiz-family.re</code> pointe vers la <b>bonne</b> page Facebook, alors que le site
+    principal pointe encore vers l’ancienne, <code>vrfamilyreunion</code>.</p>
+    <div class="preuve"><b>Adresse écrite de quatre façons différentes</b> : « Pierrefond » sur
+    karafamily, « Saint-Pierre » sur le principal, « rue point du bois » sur Google, siège à
+    Saint-Joseph dans les mentions légales. C’est exactement ce qui casse le référencement local.</div>
+  </div>
+
+  <div class="note"><b>La phrase à leur dire :</b> « Vous avez déjà construit la réservation en
+  ligne, les offres anniversaire, le team building et la carte du restaurant. Elles sont juste sur
+  deux sites que personne ne trouve, et votre site principal n’y renvoie presque pas. »</div>
+
+  <h3>D · La preuve sociale est au mauvais endroit</h3>
+  <div class="constat crit">
+    <h4><span class="puce crit">Critique</span> Quatre faux témoignages « Lorem ipsum » en ligne</h4>
+    <p>La section « Ils parlent de nous » affiche quatre textes <i>Lorem ipsum dolor sit amet…</i>
+    signés « John Doe, Designer ». La section « Ils nous ont fait confiance » est <b>entièrement
+    vide</b> — un bloc bleu sans un seul logo.</p>
+    <div class="preuve">Ils ont <b>une meilleure note que la référence du secteur</b> (4,3 ★ / 423 avis
+    contre 3,7 ★ / 511 pour Bowling City) et ils affichent du faux texte à la place. Capture d’écran
+    disponible, prise le 20/08/2026.</div>
+  </div>
+
+  <h3>E · Le site ne parle pas de ce qu’ils vendent</h3>
+  <div class="tableau"><table>
+    <thead><tr><th>Mot recherché par leurs clients</th><th class="n">Occurrences sur le site</th><th>Alors que…</th></tr></thead>
+    <tbody>
+      <tr><td><b>anniversaire</b></td><td class="n">0</td><td>3ᵉ mot le plus cité dans leurs 423 avis (17 fois)</td></tr>
+      <tr><td><b>restaurant</b>, burger, pizza, cocktail</td><td class="n">0</td><td>leur bio Instagram dit « bar 🍻 restaurant 🍕🍔 »</td></tr>
+      <tr><td><b>séminaire</b>, team building, comité d’entreprise</td><td class="n">0</td><td>la page « Pros » existe mais n’emploie aucun de ces mots</td></tr>
+      <tr><td>EVJF / EVG</td><td class="n">0</td><td>l’offre existe sur les deux satellites</td></tr>
+      <tr><td><b>instagram</b></td><td class="n">0</td><td>5 701 abonnés, aucun lien vers eux depuis le site</td></tr>
+      <tr><td>newsletter</td><td class="n">0</td><td>aucune capture d’e-mail, donc aucune base clients</td></tr>
+      <tr><td><b>ARENA SHOW</b></td><td class="n">0</td><td>plateau XXL le 13 décembre, billetterie ouverte sur monticket.re</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>F · Le site date, et ça se voit dans le code</h3>
+  <div class="constat att">
+    <h4><span class="puce att">Attention</span> Dernières modifications : 2020 à 2024</h4>
+    <p>Le <code>&lt;h1&gt;</code> de l’accueil est <i>« VR Family devient Family Arena »</i> — une
+    annonce de changement de nom sert de titre principal. Le <code>&lt;title&gt;</code> fait
+    20 caractères sur 60 disponibles : ni « réalité virtuelle », ni « Saint-Pierre », ni
+    « karaoké », ni « anniversaire ».</p>
+    <div class="preuve">Les <b>mentions légales décrivent un autre site</b> (« Notre site Web est
+    vrfamilyreunion.re », copyright 2018) et il y manque le <b>SIRET, le capital social et le
+    numéro de TVA</b> — obligatoires pour une SARL.</div>
+  </div>
+
+  <h3>G · Référencement local : la brique manquante</h3>
+  <div class="constat att">
+    <h4><span class="puce att">Attention</span> Aucune donnée structurée <code>LocalBusiness</code></h4>
+    <p>Leurs horaires (deux grilles complètes), leur adresse, leur téléphone, leur note et leurs
+    tarifs existent en texte mais ne sont lisibles par aucun moteur. Ils ne peuvent pas apparaître
+    en résultat enrichi sur « que faire à Saint-Pierre » ou « ouvert maintenant ».</p>
+    <div class="preuve">Tout le contenu nécessaire est <b>déjà écrit sur le site</b>. C’est du
+    balisage, pas de la rédaction.</div>
+  </div>
+
+  <h3>H · Performance : correcte, sauf le poids</h3>
+  <div class="tableau"><table>
+    <thead><tr><th>Page</th><th class="n">Réponse</th><th class="n">Affichage</th><th class="n">Poids</th><th class="n">Requêtes</th></tr></thead>
+    <tbody>
+      <tr><td><b>Accueil</b></td><td class="n">90 ms</td><td class="n">2 147 ms</td><td class="n" style="color:var(--crit)">4,09 Mo</td><td class="n">73</td></tr>
+      <tr><td>Tarifs</td><td class="n">93 ms</td><td class="n">1 145 ms</td><td class="n">0,88 Mo</td><td class="n">55</td></tr>
+      <tr><td>Contact</td><td class="n">118 ms</td><td class="n">1 240 ms</td><td class="n">0,97 Mo</td><td class="n">56</td></tr>
+    </tbody>
+  </table></div>
+  <div class="constat att">
+    <h4><span class="puce att">Attention</span> 44 feuilles de style, 0 image en WebP</h4>
+    <p>Empilement Elementor + Elementor Pro + Ultimate Elementor + JetEngine + JetTabs + Astra
+    Addon. <b>138 images sur 164 (84 %) n’ont pas d’attribut <code>alt</code></b> — 28 sur 28 dans
+    la galerie, 34 sur 34 sur les tarifs.</p>
+    <div class="preuve">Mesuré <b>sans bridage réseau</b>. Sur la 4G réunionnaise, 4 Mo ne
+    s’affichent pas en 2 secondes. Et <b>12 cibles tactiles sur 53</b> font moins de 44 px.</div>
+  </div>
+
+  <h3>I · Mesure publicitaire : à moitié câblée</h3>
+  <div class="constat crit">
+    <h4><span class="puce crit">Critique</span> Le pixel Meta est annoncé mais absent</h4>
+    <p>Le bandeau cookies déclare le pixel Facebook. Il n’est pas installé : <code>fbq</code> reste
+    indéfini avant et après consentement, aucune requête vers facebook.net.</p>
+    <div class="preuve"><b>Conséquence directe :</b> impossible de recibler leurs visiteurs, et
+    impossible de mesurer la moindre conversion. <b>Toute publicité lancée aujourd’hui serait
+    pilotée à l’aveugle.</b></div>
+  </div>
+</section>
+
+<section id="offres">
+  <h2>Quatre façons de les accompagner</h2>
+  <p class="sous">L’ordre n’est pas décoratif : le palier 1 doit précéder les autres. Faire de la
+  vidéo ou de la publicité avant que la réservation existe, c’est amener du monde devant une porte
+  fermée. Les montants ci-dessous sont des <b>fourchettes de travail</b> — à ajuster après le
+  formulaire plus bas.</p>
+
+  <div class="offres">
+    <div class="offre">
+      <div class="rang">Formule 1 · Déblocage</div>
+      <h3>Rendre la vente possible</h3>
+      <div class="prix">900 – 1 400 €</div>
+      <div class="duree">1 à 2 semaines</div>
+      <ul>
+        <li>Activation de la réservation d’activités sur leur elloha existant</li>
+        <li>Bouton « Réserver » en haut de chaque page</li>
+        <li>Formulaire de contact + formulaire groupes, et adresse e-mail réparée</li>
+        <li>Les vrais avis Google à la place du Lorem ipsum</li>
+        <li>Mentions légales conformes (SIRET, capital, TVA)</li>
+      </ul>
+      <div class="pour">Le minimum honnête. Sans ça, rien d’autre ne sert.</div>
+    </div>
+
+    <div class="offre phare">
+      <div class="rang">Formule 2 · Recommandée</div>
+      <h3>Déblocage + les pages qui vendent</h3>
+      <div class="prix">2 200 – 3 000 €</div>
+      <div class="duree">3 à 5 semaines</div>
+      <ul>
+        <li>Tout le contenu de la formule 1</li>
+        <li>Page « Anniversaires » — le 3ᵉ mot le plus cité par leurs clients, absent du site</li>
+        <li>Page « Entreprises / séminaires / team building »</li>
+        <li>Rapatriement du karaoké, de l’iQuiz et de la restauration depuis les satellites</li>
+        <li>Données structurées : établissement, horaires, FAQ, événements</li>
+        <li>Nom, adresse et téléphone harmonisés sur les 4 domaines et sur Google</li>
+        <li>Poids de l’accueil divisé, images en WebP, attributs <code>alt</code></li>
+      </ul>
+      <div class="pour">C’est le périmètre qui change réellement leur chiffre d’affaires.</div>
+    </div>
+
+    <div class="offre">
+      <div class="rang">Formule 3 · Complète</div>
+      <h3>+ les trois automatisations</h3>
+      <div class="prix">3 500 – 5 500 €</div>
+      <div class="duree">6 à 10 semaines</div>
+      <ul>
+        <li>Tout le contenu de la formule 2</li>
+        <li>Collecte automatique d’avis Google, avec routage des mécontents en privé</li>
+        <li>Capture et relance des demandes groupes / anniversaires / entreprises</li>
+        <li>Confirmation et rappel de réservation branchés sur elloha</li>
+        <li>Installation du pixel Meta et mise en place de la mesure</li>
+        <li>Constitution de leur première base clients</li>
+      </ul>
+      <div class="pour">Pour un dirigeant qui veut arrêter de répondre au téléphone.</div>
+    </div>
+
+    <div class="offre">
+      <div class="rang">Formule 4 · En régie</div>
+      <h3>Accompagnement au code</h3>
+      <div class="prix">450 – 550 € / jour</div>
+      <div class="duree">ou 600 – 900 € / mois en suivi</div>
+      <ul>
+        <li>Ils ont déjà un prestataire ou un développeur interne</li>
+        <li>Vous intervenez sur leur WordPress, leurs automatisations, leur mesure</li>
+        <li>Facturation à la journée engagée, ou forfait mensuel de maintien</li>
+        <li>Vidéo verticale et publicité locale en option, une fois le palier 1 encaissé</li>
+      </ul>
+      <div class="pour">La porte de sortie si le budget bloque : on commence petit, on prouve.</div>
+    </div>
+  </div>
+
+  <div class="note"><b>Ce qu’il ne faut surtout pas leur proposer :</b> automatiser la publication
+  sur les réseaux. Ils publient déjà <b>2,55 fois par jour, 77 fois par mois</b>, pour une médiane
+  de <b>1 like</b>. Le problème n’est pas le volume — ils travaillent déjà plus que tout le
+  secteur. Leur vendre plus de publication reviendrait à industrialiser le problème.</div>
+</section>
+
+<section id="formulaire">
+  <h2>Formulaire d’audit — à remplir avec eux</h2>
+  <p class="sous">Neuf questions qui déterminent le périmètre réel et le prix. Le chiffrage en bas
+  se recalcule à chaque réponse. Vos réponses restent sur cet appareil.</p>
+
+  <form id="audit">
+    <div class="q">
+      <label class="titre">1. Qui peut activer la réservation d’activités sur elloha ?</label>
+      <div class="aide">C’est le verrou n°1. Le compte est payé et configuré cartes cadeaux uniquement.</div>
+      <div class="choix" data-q="elloha">
+        <label><input type="radio" name="elloha" value="0"> Eux, ils ont la main</label>
+        <label><input type="radio" name="elloha" value="1"> Un prestataire externe</label>
+        <label><input type="radio" name="elloha" value="2"> Personne ne sait</label>
+      </div>
+    </div>
+
+    <div class="q">
+      <label class="titre">2. Avez-vous les accès administrateur du WordPress ?</label>
+      <div class="aide">Sans accès, tout passe par un intermédiaire et le délai double.</div>
+      <div class="choix" data-q="wp">
+        <label><input type="radio" name="wp" value="0"> Oui, accès complet</label>
+        <label><input type="radio" name="wp" value="1"> Accès limité</label>
+        <label><input type="radio" name="wp" value="2"> Aucun accès</label>
+      </div>
+    </div>
+
+    <div class="q">
+      <label class="titre">3. Les formules anniversaires et groupes sont-elles écrites et tarifées ?</label>
+      <div class="aide">C’est le seul vrai prérequis qui vient d’eux. Sans les prix, la page ne peut pas se faire.</div>
+      <div class="choix" data-q="formules">
+        <label><input type="radio" name="formules" value="0"> Oui, tout est prêt</label>
+        <label><input type="radio" name="formules" value="1"> Partiellement</label>
+        <label><input type="radio" name="formules" value="2"> Rien d’écrit</label>
+      </div>
+    </div>
+
+    <div class="q">
+      <label class="titre">4. Que fait-on des quatre domaines ?</label>
+      <div class="choix" data-q="domaines">
+        <label><input type="radio" name="domaines" value="0"> On les laisse, on lie proprement</label>
+        <label><input type="radio" name="domaines" value="1"> On rapatrie le contenu sur le principal</label>
+        <label><input type="radio" name="domaines" value="2"> On refond tout en un seul site</label>
+      </div>
+    </div>
+
+    <div class="q">
+      <label class="titre">5. Qui traitera les demandes entrantes ?</label>
+      <div class="aide">Une automatisation qui alerte une personne qui ne répond pas ne sert à rien.</div>
+      <div class="choix" data-q="humain">
+        <label><input type="radio" name="humain" value="0"> Une personne identifiée</label>
+        <label><input type="radio" name="humain" value="1"> L’équipe, sans responsable</label>
+        <label><input type="radio" name="humain" value="2"> Pas encore décidé</label>
+      </div>
+    </div>
+
+    <div class="q">
+      <label class="titre">6. Avez-vous les droits de gestion sur la fiche Google ?</label>
+      <div class="aide">Nécessaire pour la collecte d’avis et pour renommer « FAMILY Arena (by Vr Family) ».</div>
+      <div class="choix" data-q="google">
+        <label><input type="radio" name="google" value="0"> Oui</label>
+        <label><input type="radio" name="google" value="1"> À récupérer</label>
+        <label><input type="radio" name="google" value="2"> Non / inconnu</label>
+      </div>
+    </div>
+
+    <div class="q">
+      <label class="titre">7. Quelles automatisations les intéressent ?</label>
+      <div class="choix" data-q="autos">
+        <label><input type="checkbox" name="autos" value="1"> Avis Google automatiques</label>
+        <label><input type="checkbox" name="autos" value="1"> Demandes groupes et relances</label>
+        <label><input type="checkbox" name="autos" value="1"> Confirmation et rappel de réservation</label>
+      </div>
+    </div>
+
+    <div class="q">
+      <label class="titre">8. Veulent-ils de la vidéo et de la publicité locale ?</label>
+      <div class="aide">À ne lancer qu’une fois la réservation en ligne active — sinon on paie pour du bruit.</div>
+      <div class="choix" data-q="ampli">
+        <label><input type="radio" name="ampli" value="0"> Pas pour l’instant</label>
+        <label><input type="radio" name="ampli" value="1"> Oui, plus tard</label>
+        <label><input type="radio" name="ampli" value="2"> Oui, tout de suite</label>
+      </div>
+    </div>
+
+    <div class="q">
+      <label class="titre">9. Quel délai ont-ils en tête ?</label>
+      <div class="aide">L’ARENA SHOW est le 13 décembre. C’est une échéance réelle, et un argument.</div>
+      <div class="choix" data-q="delai">
+        <label><input type="radio" name="delai" value="1"> Avant le 13 décembre</label>
+        <label><input type="radio" name="delai" value="0"> Pas de contrainte</label>
+        <label><input type="radio" name="delai" value="2"> Le plus vite possible</label>
+      </div>
+    </div>
+
+    <div class="q">
+      <label class="titre">Notes prises pendant le rendez-vous</label>
+      <textarea id="notes" placeholder="Ce qu’ils disent, leurs objections, les chiffres qu’ils donnent…"></textarea>
+    </div>
+  </form>
+</section>
+
+<section id="chiffrage">
+  <h2>Chiffrage</h2>
+  <p class="sous">Calculé depuis vos réponses. C’est une <b>base de discussion</b>, pas un devis :
+  la fourchette s’élargit tant que des inconnues subsistent.</p>
+
+  <div class="resultat" id="resultat">
+    <div class="haut">
+      <span class="montant" id="montant">—</span>
+      <span class="form" id="formule">Répondez au formulaire pour obtenir une fourchette</span>
+    </div>
+    <div class="detail" id="detail"></div>
+    <div class="actions">
+      <button type="button" class="bouton primaire" id="telecharger">Télécharger le compte rendu</button>
+      <button type="button" class="bouton" id="copier">Copier</button>
+      <a class="bouton" id="mail" href="#">Préparer l’e-mail</a>
+      <button type="button" class="bouton discret" id="raz">Effacer</button>
+    </div>
+    <p class="sauvegarde" id="sauvegarde">Vos réponses sont enregistrées sur cet appareil au fil de la saisie.</p>
+  </div>
+
+  <div class="note" style="margin-top:26px"><b>Le seul chiffre à ne jamais promettre :</b> un
+  résultat. Tout ce dossier mesure des causes, pas des effets. La bonne formulation en rendez-vous
+  est « voilà ce qui vous empêche d’encaisser, et voilà ce qu’on mesure dans 60 jours » — nombre
+  d’avis, demandes captées, réservations en ligne. Jamais un pourcentage de chiffre d’affaires.</div>
+</section>
+
+<footer>
+  <div class="enveloppe" style="padding:0">
+    Relevé du 20 août 2026 sur familyarena.re, karafamily.re, iquiz-family.re, la fiche Google
+    Business Profile et le compte Instagram public. Deux corrections intégrées après le premier
+    dossier du 19 août : le ratio de commentaires annoncé était faux (les 25 commentaires venaient
+    tous d’un seul jeu concours), et la moyenne de likes est trompeuse — <b>la médiane est de 1</b>,
+    c’est le chiffre honnête.
+  </div>
+</footer>
+
+</div>
+
+<script>
+(function(){
+  var CLE = 'family-arena-audit-v1';
+  var form = document.getElementById('audit');
+  var montant = document.getElementById('montant');
+  var formule = document.getElementById('formule');
+  var detail = document.getElementById('detail');
+  var notes = document.getElementById('notes');
+
+  /* Les fourchettes de base, par formule. Elles viennent des cartes ci-dessus :
+     le calcul ne doit jamais contredire ce qui est affiché plus haut. */
+  var FORMULES = [
+    { nom:'Formule 1 — Rendre la vente possible', bas:900,  haut:1400 },
+    { nom:'Formule 2 — Déblocage + pages qui vendent', bas:2200, haut:3000 },
+    { nom:'Formule 3 — Complète, avec les automatisations', bas:3500, haut:5500 }
+  ];
+
+  function lire(nom){
+    var e = form.querySelector('input[name="'+nom+'"]:checked');
+    return e ? parseInt(e.value, 10) : null;
+  }
+
+  function calculer(){
+    var elloha = lire('elloha'), wp = lire('wp'), formules = lire('formules');
+    var domaines = lire('domaines'), humain = lire('humain'), google = lire('google');
+    var ampli = lire('ampli'), delai = lire('delai');
+    var autos = form.querySelectorAll('input[name="autos"]:checked').length;
+
+    var repondu = [elloha,wp,formules,domaines,humain,google,ampli,delai]
+      .filter(function(v){ return v !== null; }).length;
+
+    if (repondu === 0){
+      montant.textContent = '—';
+      formule.textContent = 'Répondez au formulaire pour obtenir une fourchette';
+      detail.innerHTML = '';
+      return;
+    }
+
+    /* Le choix de formule suit le périmètre demandé, pas le budget espéré. */
+    var idx = 0;
+    if (domaines !== null && domaines >= 1) idx = 1;
+    if (autos >= 1) idx = 2;
+    if (ampli === 2) idx = 2;
+    var f = FORMULES[idx];
+    var bas = f.bas, haut = f.haut;
+
+    var alertes = [], bloqueurs = [];
+
+    /* Chaque inconnue élargit la fourchette vers le haut : on ne rétrécit
+       jamais un prix sur une information qu'on n'a pas. */
+    if (elloha === 1){ haut += 300; alertes.push('Passer par leur prestataire elloha ajoute des allers-retours.'); }
+    if (elloha === 2){ haut += 600; bloqueurs.push('Personne ne sait qui gère elloha — à identifier avant toute promesse de délai.'); }
+    if (wp === 1){ haut += 250; alertes.push('Accès WordPress limité : prévoir des interventions accompagnées.'); }
+    if (wp === 2){ haut += 700; bloqueurs.push('Aucun accès WordPress — rien ne peut commencer tant qu’il n’est pas obtenu.'); }
+    if (formules === 1){ haut += 200; alertes.push('Formules partielles : il faudra les cadrer avec eux.'); }
+    if (formules === 2){ haut += 500; bloqueurs.push('Aucune formule tarifée — la page Anniversaires ne peut pas se faire sans eux.'); }
+    if (domaines === 2){ bas += 1200; haut += 2500; alertes.push('Refonte en un seul site : c’est un autre métier que la correction, et un autre budget.'); }
+    if (humain !== null && humain >= 1){ alertes.push('Sans personne identifiée pour traiter les demandes, les automatisations tourneront à vide.'); }
+    if (google === 1){ haut += 150; alertes.push('Droits Google à récupérer avant la collecte d’avis.'); }
+    if (google === 2){ bloqueurs.push('Sans la fiche Google, l’automatisation d’avis est impossible.'); }
+    if (autos > 0){ bas += (autos - 1) * 250; haut += (autos - 1) * 450; }
+    if (ampli === 1){ alertes.push('Vidéo et publicité à chiffrer à part, une fois le palier 1 encaissé.'); }
+    if (ampli === 2){ haut += 900; alertes.push('Publicité tout de suite : refuser tant que la réservation en ligne n’existe pas.'); }
+    if (delai === 2){ bas = Math.round(bas * 1.15); haut = Math.round(haut * 1.2); alertes.push('Délai serré : majoration d’urgence intégrée.'); }
+    if (delai === 1){ alertes.push('Échéance ARENA SHOW du 13 décembre — argument de calendrier à utiliser.'); }
+
+    var arrondi = function(n){ return Math.round(n / 50) * 50; };
+    bas = arrondi(bas); haut = arrondi(haut);
+
+    montant.textContent = bas.toLocaleString('fr-FR') + ' – ' + haut.toLocaleString('fr-FR') + ' €';
+    formule.textContent = f.nom;
+
+    var html = '';
+    if (repondu < 8) html += '<p><b>' + repondu + ' réponses sur 8.</b> La fourchette se resserrera à mesure que vous remplissez.</p>';
+    if (bloqueurs.length){
+      html += '<p class="bloque">À lever avant de s’engager sur un délai :</p><ul>';
+      bloqueurs.forEach(function(b){ html += '<li class="bloque">' + b + '</li>'; });
+      html += '</ul>';
+    }
+    if (alertes.length){
+      html += '<p>Points à intégrer dans la proposition :</p><ul>';
+      alertes.forEach(function(a){ html += '<li>' + a + '</li>'; });
+      html += '</ul>';
+    }
+    if (!bloqueurs.length && !alertes.length) html += '<p>Aucun blocage détecté : périmètre net, chiffrage ferme possible.</p>';
+    detail.innerHTML = html;
+  }
+
+  function sauver(){
+    try{
+      var d = { notes: notes.value, radios:{}, autos:[] };
+      form.querySelectorAll('input[type="radio"]:checked').forEach(function(e){ d.radios[e.name] = e.value; });
+      form.querySelectorAll('input[name="autos"]').forEach(function(e,i){ if(e.checked) d.autos.push(i); });
+      localStorage.setItem(CLE, JSON.stringify(d));
+    }catch(e){ /* navigation privée, stockage bloqué : la page marche quand même */ }
+  }
+
+  function restaurer(){
+    try{
+      var brut = localStorage.getItem(CLE);
+      if (!brut) return;
+      var d = JSON.parse(brut);
+      Object.keys(d.radios || {}).forEach(function(n){
+        var e = form.querySelector('input[name="'+n+'"][value="'+d.radios[n]+'"]');
+        if (e) e.checked = true;
+      });
+      var boites = form.querySelectorAll('input[name="autos"]');
+      (d.autos || []).forEach(function(i){ if (boites[i]) boites[i].checked = true; });
+      if (d.notes) notes.value = d.notes;
+    }catch(e){ /* données illisibles : on repart d'une page vierge */ }
+  }
+
+  /* ── Le compte rendu : ce qui sort de la page ──────────────────────────
+     Les réponses ne doivent pas rester prisonnières du navigateur. Trois
+     sorties, et aucune n'envoie quoi que ce soit toute seule : le fichier,
+     le presse-papier, et un e-mail pré-rempli que Tony expédie lui-même. */
+  var LIBELLES = {
+    elloha:['Qui peut activer la réservation elloha',['Eux, ils ont la main','Un prestataire externe','Personne ne sait']],
+    wp:['Accès administrateur WordPress',['Accès complet','Accès limité','Aucun accès']],
+    formules:['Formules anniversaires et groupes',['Écrites et tarifées','Partielles','Rien d’écrit']],
+    domaines:['Que fait-on des quatre domaines',['Les laisser, lier proprement','Rapatrier sur le principal','Refondre en un seul site']],
+    humain:['Qui traite les demandes entrantes',['Une personne identifiée','L’équipe, sans responsable','Pas encore décidé']],
+    google:['Droits sur la fiche Google',['Oui','À récupérer','Non / inconnu']],
+    ampli:['Vidéo et publicité locale',['Pas pour l’instant','Oui, plus tard','Oui, tout de suite']],
+    delai:['Délai souhaité',['Avant le 13 décembre','Pas de contrainte','Le plus vite possible']]
+  };
+  /* Le tableau des délais est dans l'ordre des valeurs 0,1,2 du formulaire,
+     qui n'est pas l'ordre d'affichage : value 1 = avant le 13 décembre. */
+  LIBELLES.delai[1] = ['Pas de contrainte','Avant le 13 décembre','Le plus vite possible'];
+
+  function compteRendu(){
+    var d = new Date();
+    var t = 'FAMILY ARENA — audit de rendez-vous\n';
+    t += 'Rempli le ' + d.toLocaleDateString('fr-FR') + ' à ' + d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}) + '\n';
+    t += '========================================\n\n';
+    t += 'CHIFFRAGE : ' + montant.textContent + '\n';
+    t += formule.textContent + '\n\n';
+    t += 'RÉPONSES\n--------\n';
+    Object.keys(LIBELLES).forEach(function(n){
+      var v = lire(n);
+      t += '· ' + LIBELLES[n][0] + ' : ' + (v === null ? '(sans réponse)' : LIBELLES[n][1][v]) + '\n';
+    });
+    var a = [];
+    form.querySelectorAll('input[name="autos"]:checked').forEach(function(e){
+      a.push(e.parentNode.textContent.trim());
+    });
+    t += '· Automatisations retenues : ' + (a.length ? a.join(', ') : 'aucune') + '\n';
+    var txt = detail.textContent.replace(/\s+/g,' ').trim();
+    if (txt) t += '\nÀ RETENIR\n---------\n' + txt + '\n';
+    if (notes.value.trim()) t += '\nNOTES DU RENDEZ-VOUS\n--------------------\n' + notes.value.trim() + '\n';
+    t += '\n--\nDossier complet : ' + location.href + '\n';
+    return t;
+  }
+
+  function signaler(msg){
+    var s = document.getElementById('sauvegarde');
+    s.textContent = msg; s.classList.add('ok');
+    setTimeout(function(){
+      s.textContent = 'Vos réponses sont enregistrées sur cet appareil au fil de la saisie.';
+      s.classList.remove('ok');
+    }, 3200);
+  }
+
+  document.getElementById('telecharger').addEventListener('click', function(){
+    var nom = 'family-arena-audit-' + new Date().toISOString().slice(0,10) + '.txt';
+    var b = new Blob([compteRendu()], { type:'text/plain;charset=utf-8' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(b); a.download = nom;
+    document.body.appendChild(a); a.click();
+    setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+    signaler('Fichier ' + nom + ' enregistré.');
+  });
+
+  document.getElementById('copier').addEventListener('click', function(){
+    var t = compteRendu();
+    var fini = function(){ signaler('Compte rendu copié — collez-le où vous voulez.'); };
+    if (navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(t).then(fini, function(){ replier(t, fini); });
+    } else { replier(t, fini); }
+  });
+  /* Sur un téléphone sans presse-papier accessible, on retombe sur une
+     sélection manuelle plutôt que d'échouer en silence. */
+  function replier(t, fini){
+    var z = document.createElement('textarea');
+    z.value = t; z.style.position='fixed'; z.style.opacity='0';
+    document.body.appendChild(z); z.select();
+    try { document.execCommand('copy'); fini(); }
+    catch(e){ signaler('Copie impossible sur cet appareil — utilisez le téléchargement.'); }
+    z.remove();
+  }
+
+  function majMail(){
+    var lien = document.getElementById('mail');
+    var suj = 'Family Arena — audit et chiffrage (' + montant.textContent + ')';
+    lien.href = 'mailto:?subject=' + encodeURIComponent(suj) + '&body=' + encodeURIComponent(compteRendu());
+  }
+
+  form.addEventListener('change', function(){ calculer(); sauver(); majMail(); });
+  notes.addEventListener('input', function(){ sauver(); majMail(); });
+  document.getElementById('raz').addEventListener('click', function(){
+    form.reset(); notes.value = '';
+    try{ localStorage.removeItem(CLE); }catch(e){}
+    calculer();
+  });
+
+  restaurer();
+  calculer();
+  majMail();
+})();
+</script>
