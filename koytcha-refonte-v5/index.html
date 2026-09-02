@@ -91,7 +91,7 @@ img{max-width:100%;display:block}
    constaté à la capture pleine page, invisible sur un écran seul. */
 .cadre{position:absolute;inset:0;overflow:hidden}
 .bati{position:absolute;inset:-9% -9%;will-change:transform;
-  animation:kenburns 38s ease-in-out infinite alternate}
+  animation:none}
 /* 38 s aller, 38 s retour : assez lent pour qu on ne voie jamais le mouvement
    commencer ni finir. En dessous de ~25 s ca devient un effet, au-dessus de
    ~50 s ca ne se percoit plus du tout. */
@@ -806,11 +806,14 @@ footer a:hover{color:var(--magenta)}
    volontairement non multiples : rien ne se resynchronise à l'œil. */
 @keyframes kb-a{from{transform:scale(1.05) translate3d(0,0,0)}
                  to{transform:scale(1.13) translate3d(-1.6%,-1.3%,0)}}
+@keyframes kb-diapo{from{transform:scale(1.015) translate3d(0,0,0)}
+                     to{transform:scale(1.115) translate3d(-2.0%,-1.5%,0)}}
 @keyframes kb-b{from{transform:scale(1.12) translate3d(1.4%,1.0%,0)}
                  to{transform:scale(1.04) translate3d(0,0,0)}}
-.bati img{animation:kb-a 26s ease-in-out infinite alternate}
-.bati img:nth-of-type(2){animation-name:kb-b;animation-duration:31s}
-.bati img:nth-of-type(3){animation-duration:23s;animation-delay:-6s}
+/* Portée par .on : elle repart à zéro à chaque diapo, donc on voit la course
+   entière au lieu d'un dix-septième. Une seule animation au lieu de quatre. */
+.bati img{animation:none}
+.bati img.on{animation:kb-diapo 8.4s ease-out both}
 .carte .vue img{animation:kb-a 22s ease-in-out infinite alternate}
 .cartes .carte:nth-child(2n) .vue img{animation-name:kb-b;animation-duration:27s}
 .realisations figure img{animation:kb-b 24s ease-in-out infinite alternate}
@@ -818,6 +821,9 @@ footer a:hover{color:var(--magenta)}
 .final .fond img{animation:kb-a 34s ease-in-out infinite alternate}
 /* Au survol, la dérive se fige : le geste de l'utilisateur reprend la main. */
 .carte:hover .vue img,.realisations figure:hover img{animation-play-state:paused}
+/* Hors champ, on coupe : douze images qui dérivent en même temps derrière
+   l'écran, c'est douze calques repeints pour personne. */
+.fige,.fige img{animation-play-state:paused !important}
 
 /* ── Reflet : le miroir du carrousel, en discret, sous les autres images.
    Le dégradé ne laisse voir que le dernier dixième — au-delà ça fait
@@ -828,6 +834,9 @@ footer a:hover{color:var(--magenta)}
 .realisations figure img{-webkit-box-reflect:below 5px linear-gradient(transparent 94%,rgba(0,0,0,.15));margin-bottom:18px}
 .realisations figcaption{margin-top:0}
 .realisations a{color:inherit;text-decoration:none}
+/* Le navigateur saute la mise en page des sections encore hors champ.
+   La taille annoncée évite que la barre de défilement saute. */
+#accompagne,#philosophie{content-visibility:auto;contain-intrinsic-size:auto 1200px}
 .realisations figcaption a:hover{color:var(--magenta)}
 
 </style>
@@ -1130,7 +1139,6 @@ footer a:hover{color:var(--magenta)}
   </div>
 </footer>
 
-<script src="coverflow.js"></script>
 <script>
 (function(){
   var reduit = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -1304,9 +1312,16 @@ footer a:hover{color:var(--magenta)}
     }, { threshold: .4 }).observe(cine);
   }
 
-  /* Carrousel de biens. */
-  if (window.Coverflow && document.getElementById('cf')) {
-    window.Coverflow.creer(document.getElementById('cf'), { auto: reduit ? 0 : 4200 });
+
+  /* Fige les photos qui sortent du champ : le Ken Burns ne coûte plus rien
+     quand personne ne le regarde. Le seuil à 0 suffit — dès qu'un pixel de
+     la section est visible, on relance. */
+  var anime = [].slice.call(document.querySelectorAll('.piste, .cartes .carte, .realisations figure, .final .fond'));
+  if (anime.length && 'IntersectionObserver' in window) {
+    var veille = new IntersectionObserver(function(es){
+      es.forEach(function(e){ e.target.classList.toggle('fige', !e.isIntersecting); });
+    }, { rootMargin: '120px' });
+    anime.forEach(function(el){ veille.observe(el); });
   }
 
   /* Les deux onglets du module de recherche. */
