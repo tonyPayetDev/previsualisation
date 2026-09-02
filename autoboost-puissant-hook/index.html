@@ -1,0 +1,54 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Autoboost « Puissant » — test du hook visuel</title>
+<style>
+:root{--bg:#0c0c10;--carte:#17171d;--trait:#2a2a33;--or:#eab308;--doux:#9a97a3}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:#fff;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;
+  line-height:1.6;padding:32px 20px 64px;display:flex;flex-direction:column;align-items:center}
+h1{font-size:clamp(24px,4.6vw,34px);letter-spacing:-.02em;text-align:center}
+h1 em{font-style:normal;color:var(--or)}
+p.s{color:var(--doux);text-align:center;max-width:56ch;margin:10px 0 26px;font-size:15px}
+.duo{display:flex;gap:18px;flex-wrap:wrap;justify-content:center;width:100%}
+figure{flex:1 1 300px;max-width:340px}
+figcaption{font-size:13px;color:var(--doux);margin-top:8px;text-align:center}
+figcaption b{color:#fff}
+video{width:100%;border-radius:16px;display:block;box-shadow:0 20px 50px -18px rgba(0,0,0,.9)}
+.notes{max-width:620px;margin-top:34px;background:var(--carte);border:1px solid var(--trait);
+  border-radius:14px;padding:20px 22px}
+.notes h2{font-size:13px;color:var(--or);letter-spacing:.11em;text-transform:uppercase;margin-bottom:12px}
+.notes li{margin:9px 0 9px 18px;font-size:15px;color:#cbc7d2}
+.notes b{color:#fff}
+</style>
+<h1>Test : un <em>hook visuel</em> en ouverture</h1>
+<p class="s">Une seule variable change — les 2,3 premières secondes. Le reste de la vidéo est
+identique à l’originale, au montage près.</p>
+<div class="duo">
+  <figure>
+    <video src="video.mp4" controls playsinline poster="cover.jpg"></video>
+    <figcaption><b>Avec hook</b> — 18,2 s</figcaption>
+  </figure>
+  <figure>
+    <video src="../autoboost-puissant/video.mp4" controls playsinline></video>
+    <figcaption><b>Originale</b> — 15,8 s</figcaption>
+  </figure>
+</div>
+<div class="notes">
+  <h2>Ce qui a été fait, et pourquoi</h2>
+  <ul>
+    <li>Le hook vient du clip Higgsfield <b>« Métro — tu viens du futur »</b> : un wagon banal,
+    puis une silhouette en combinaison argentée apparaît à côté de toi vers 1,6 s.</li>
+    <li><b>J’ai écarté le clip voiture.</b> La Seat blanche n’a aucun rapport avec le propos, et
+    le clip « route cocotiers » <b>duplique l’ouverture existante</b> — même route, même geste.
+    Un hook qui ressemble à la suite n’en est pas un.</li>
+    <li>Ce qui fait le hook ici, c’est le <b>contraste</b> : intérieur froid et fermé, puis coupe
+    franche sur le plein soleil. Le raccord tombe à 2,33 s.</li>
+    <li>Le clip source est en 720×1280, remonté en 1080×1920 — un léger adoucissement est
+    visible sur les 2 premières secondes. Une génération native en 1080 le supprimerait.</li>
+    <li>La vidéo n’était <b>pas au format écran scindé</b>, et je ne l’ai pas convertie :
+    ça aurait changé deux choses à la fois et le test n’aurait plus rien prouvé.</li>
+    <li><b>Rien n’a été programmé</b> sur aucun réseau.</li>
+  </ul>
+</div>
