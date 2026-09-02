@@ -1,0 +1,345 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Family Arena — les trois process à automatiser</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Public+Sans:wght@400;500;700&display=swap">
+
+<style>
+/* Même système que le dossier de rendez-vous : on ouvre les deux pages dans
+   la même conversation, elles ne doivent pas se contredire à l'œil. */
+:root{
+  --papier:#f7f5f3; --carte:#ffffff; --encre:#1b1a2e; --doux:#5c5a6e;
+  --trait:#e3dfe4; --trait-fort:#cfc9d4;
+  --accent:#3d34a8; --accent-doux:#eeecfb;
+  --casse:#b3261e; --casse-fond:#fdeceb;
+  --ok:#1c6b48; --ok-fond:#e9f5ef;
+  --att:#9a5b00; --att-fond:#fdf3e4;
+  --ombre:0 1px 2px rgba(27,26,46,.05), 0 8px 24px -12px rgba(27,26,46,.18);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --papier:#131320; --carte:#1c1b2b; --encre:#eceaf4; --doux:#a09db4;
+    --trait:#2e2c40; --trait-fort:#413e55;
+    --accent:#a99cff; --accent-doux:#232141;
+    --casse:#ff9b93; --casse-fond:#3a1f1e;
+    --ok:#7fd8ab; --ok-fond:#12301f;
+    --att:#f0bd6a; --att-fond:#38290f;
+    --ombre:0 1px 2px rgba(0,0,0,.3), 0 8px 24px -12px rgba(0,0,0,.6);
+  }
+}
+:root[data-theme="dark"]{
+  --papier:#131320; --carte:#1c1b2b; --encre:#eceaf4; --doux:#a09db4;
+  --trait:#2e2c40; --trait-fort:#413e55;
+  --accent:#a99cff; --accent-doux:#232141;
+  --casse:#ff9b93; --casse-fond:#3a1f1e;
+  --ok:#7fd8ab; --ok-fond:#12301f;
+  --att:#f0bd6a; --att-fond:#38290f;
+  --ombre:0 1px 2px rgba(0,0,0,.3), 0 8px 24px -12px rgba(0,0,0,.6);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--papier);color:var(--encre);font-family:"Public Sans",system-ui,sans-serif;
+  font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:"Bricolage Grotesque","Public Sans",sans-serif;font-weight:800;
+  letter-spacing:-.02em;text-wrap:balance}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px}
+.env{max-width:1000px;margin:0 auto;padding:0 20px}
+
+header{padding:52px 0 30px}
+.oeil{font-size:12.5px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--accent)}
+h1{font-size:clamp(31px,5.6vw,52px);line-height:1.05;margin:14px 0 16px}
+.chapo{color:var(--doux);font-size:clamp(16px,2vw,19px);max-width:62ch}
+
+/* ── Les onglets : un process à la fois, c'est ainsi qu'on le raconte ─── */
+.onglets{display:flex;gap:8px;flex-wrap:wrap;margin:34px 0 0}
+.onglets button{flex:1 1 220px;text-align:left;padding:14px 16px;border-radius:14px;cursor:pointer;
+  background:var(--carte);border:1px solid var(--trait);color:var(--encre);font:inherit;
+  transition:border-color .18s,transform .18s}
+.onglets button:hover{transform:translateY(-2px)}
+.onglets button[aria-selected="true"]{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.onglets .n{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:13px;color:var(--accent);
+  letter-spacing:.1em}
+.onglets .t{display:block;font-weight:700;font-size:15.5px;margin-top:4px;line-height:1.3}
+.onglets .d{display:block;font-size:13px;color:var(--doux);margin-top:3px}
+
+.panneau{margin:24px 0 0}
+.panneau[hidden]{display:none}
+
+/* ── Le circuit : aujourd'hui cassé, demain continu ───────────────────── */
+.bande{background:var(--carte);border:1px solid var(--trait);border-radius:18px;padding:22px;
+  margin:16px 0;box-shadow:var(--ombre)}
+.bande > h3{font-size:14px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:16px;
+  display:flex;align-items:center;gap:9px}
+.bande.avant > h3{color:var(--casse)}
+.bande.apres > h3{color:var(--ok)}
+.pastille{width:9px;height:9px;border-radius:50%;display:inline-block}
+.bande.avant .pastille{background:var(--casse)}
+.bande.apres .pastille{background:var(--ok)}
+
+.flux{display:flex;align-items:stretch;gap:0;overflow-x:auto;padding-bottom:6px;scrollbar-width:thin}
+.etape{flex:0 0 auto;min-width:132px;max-width:190px;padding:13px 14px;border-radius:12px;
+  border:1px solid var(--trait);background:var(--papier);font-size:13.5px;line-height:1.45}
+.etape b{display:block;font-size:13px;font-weight:700;margin-bottom:4px}
+.bande.avant .etape.mort{border-color:var(--casse);background:var(--casse-fond);color:var(--casse)}
+.bande.apres .etape.neuf{border-color:var(--ok);background:var(--ok-fond)}
+.lien{flex:0 0 auto;align-self:center;width:30px;height:2px;background:var(--trait-fort);position:relative}
+.lien::after{content:"";position:absolute;right:-1px;top:-3px;border:4px solid transparent;
+  border-left-color:var(--trait-fort)}
+.lien.rompu{background:repeating-linear-gradient(90deg,var(--casse) 0 4px,transparent 4px 8px)}
+.lien.rompu::after{border-left-color:transparent}
+/* Le point qui circule : il ne parcourt QUE le circuit réparé. */
+.bande.apres .lien::before{content:"";position:absolute;top:-2px;left:0;width:6px;height:6px;
+  border-radius:50%;background:var(--ok);animation:file 2.4s linear infinite}
+@keyframes file{0%{left:0;opacity:0}18%{opacity:1}82%{opacity:1}100%{left:26px;opacity:0}}
+@media (prefers-reduced-motion:reduce){.bande.apres .lien::before{animation:none;left:12px}}
+
+.detail{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin-top:18px}
+.bloc{background:var(--carte);border:1px solid var(--trait);border-radius:14px;padding:17px 18px}
+.bloc h4{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--doux);margin-bottom:8px}
+.bloc p{font-size:14.5px}
+.bloc b{font-weight:700}
+.bloc.eux{border-left:3px solid var(--accent)}
+
+.mesure{background:var(--accent-doux);border:1px solid color-mix(in srgb,var(--accent) 22%,transparent);
+  border-radius:14px;padding:16px 18px;margin-top:14px;font-size:14.5px}
+.mesure b{font-weight:700}
+
+section.ecarte{margin:52px 0 0;padding-top:34px;border-top:1px solid var(--trait)}
+section.ecarte h2{font-size:clamp(22px,3.4vw,30px)}
+section.ecarte > p{color:var(--doux);margin:10px 0 20px;max-width:62ch}
+.ecartes{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px}
+.ec{background:var(--carte);border:1px solid var(--trait);border-radius:14px;padding:17px 18px}
+.ec .v{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+  padding:3px 9px;border-radius:100px;display:inline-block;margin-bottom:9px}
+.ec.non .v{background:var(--casse-fond);color:var(--casse)}
+.ec.plus-tard .v{background:var(--att-fond);color:var(--att)}
+.ec h3{font-size:16.5px;margin-bottom:7px}
+.ec p{font-size:14px;color:var(--doux)}
+footer{padding:40px 0 64px;color:var(--doux);font-size:13.5px;border-top:1px solid var(--trait);margin-top:44px}
+</style>
+
+<div class="env">
+<header>
+  <div class="oeil">Family Arena · à ouvrir devant eux</div>
+  <h1>Trois circuits.<br>Deux sont coupés, un n’existe pas.</h1>
+  <p class="chapo">Chaque process est montré deux fois : ce qui se passe chez eux aujourd’hui,
+  et ce que ça devient une fois branché. Les traits rouges sont les endroits où une demande
+  se perd.</p>
+
+  <div class="onglets" role="tablist">
+    <button role="tab" id="o1" aria-controls="p1" aria-selected="true">
+      <span class="n">PROCESS 1</span>
+      <span class="t">Les avis Google</span>
+      <span class="d">Le plus rapide — aucun prérequis technique</span>
+    </button>
+    <button role="tab" id="o2" aria-controls="p2" aria-selected="false">
+      <span class="n">PROCESS 2</span>
+      <span class="t">Les demandes groupes et anniversaires</span>
+      <span class="d">Le plus rentable — panier le plus élevé</span>
+    </button>
+    <button role="tab" id="o3" aria-controls="p3" aria-selected="false">
+      <span class="n">PROCESS 3</span>
+      <span class="t">Confirmation et rappel de réservation</span>
+      <span class="d">Bloqué tant qu’elloha n’est pas activé</span>
+    </button>
+  </div>
+</header>
+
+<!-- ── PROCESS 1 ────────────────────────────────────────────────────── -->
+<div class="panneau" id="p1" role="tabpanel" aria-labelledby="o1">
+  <div class="bande avant">
+    <h3><span class="pastille"></span>Aujourd’hui</h3>
+    <div class="flux">
+      <div class="etape"><b>Le client vient</b>Il passe une bonne soirée</div>
+      <div class="lien rompu"></div>
+      <div class="etape"><b>Il repart</b>Personne ne lui demande rien</div>
+      <div class="lien rompu"></div>
+      <div class="etape mort"><b>Aucun avis</b>Sauf s’il y pense tout seul</div>
+    </div>
+    <div class="detail">
+      <div class="bloc"><h4>Ce que ça coûte</h4><p>Ils ont <b>4,3 ★ sur 423 avis</b> — mieux que
+      Bowling City (3,7 ★ sur 511). Mais les avis arrivent au compte-gouttes : un il y a une
+      semaine, un il y a deux semaines, pour des centaines de visiteurs.</p></div>
+      <div class="bloc"><h4>Pourquoi ça compte</h4><p>L’avis Google est le <b>premier facteur de
+      décision</b> pour une sortie en famille, et un facteur direct de classement local.</p></div>
+    </div>
+  </div>
+
+  <div class="bande apres">
+    <h3><span class="pastille"></span>Une fois branché</h3>
+    <div class="flux">
+      <div class="etape"><b>Le client vient</b>QR code sur la table ou le ticket</div>
+      <div class="lien"></div>
+      <div class="etape neuf"><b>Il note</b>Une page de collecte, deux secondes</div>
+      <div class="lien"></div>
+      <div class="etape neuf"><b>4–5 ★</b>Envoyé vers l’avis Google</div>
+      <div class="lien"></div>
+      <div class="etape neuf"><b>1–3 ★</b>Formulaire privé, alerte immédiate au responsable</div>
+      <div class="lien"></div>
+      <div class="etape neuf"><b>J+1</b>Relance unique si on a son contact</div>
+    </div>
+    <div class="detail">
+      <div class="bloc eux"><h4>Ce qu’il faut de leur part</h4><p>Les droits sur la fiche Google
+      Business Profile. Poser des QR codes en salle. <b>Une personne</b> qui accepte de recevoir
+      les alertes d’avis négatifs. Rien d’autre.</p></div>
+      <div class="bloc"><h4>Délai</h4><p>Court. <b>Aucun prérequis côté site</b> — ça fonctionne
+      même si rien d’autre n’est touché. C’est pour ça que c’est le premier.</p></div>
+    </div>
+    <div class="mesure"><b>Ce qu’on mesure à 60 jours :</b> le nombre d’avis avant et après, et
+    l’évolution de la note. Le repère est parlant — Bowling City a 88 avis de plus avec une note
+    plus basse. <b>Aucun chiffre promis d’avance.</b></div>
+  </div>
+</div>
+
+<!-- ── PROCESS 2 ────────────────────────────────────────────────────── -->
+<div class="panneau" id="p2" role="tabpanel" aria-labelledby="o2" hidden>
+  <div class="bande avant">
+    <h3><span class="pastille"></span>Aujourd’hui</h3>
+    <div class="flux">
+      <div class="etape"><b>Un parent cherche</b>« anniversaire enfant Saint-Pierre »</div>
+      <div class="lien rompu"></div>
+      <div class="etape mort"><b>Le site ne répond pas</b>« Anniversaire » : 0 occurrence sur les 13 pages</div>
+      <div class="lien rompu"></div>
+      <div class="etape mort"><b>Aucun formulaire</b>0 sur tout le site, page Contact comprise</div>
+      <div class="lien rompu"></div>
+      <div class="etape mort"><b>L’e-mail est cassé</b>L’adresse publiée n’existe pas</div>
+    </div>
+    <div class="detail">
+      <div class="bloc"><h4>Ce que ça coûte</h4><p><b>Anniversaire est le 3ᵉ mot le plus cité</b>
+      par leurs propres clients — 17 fois dans 423 avis. Une demande hors horaires part et ne
+      revient pas. Aucune trace, aucune relance.</p></div>
+      <div class="bloc"><h4>Le plus dur est déjà fait</h4><p>Les offres <b>existent</b> —
+      Kara’Niversaire, EVJF/EVG, team building, tarifs par tranche de joueurs. Elles sont sur
+      deux domaines satellites que personne ne trouve.</p></div>
+    </div>
+  </div>
+
+  <div class="bande apres">
+    <h3><span class="pastille"></span>Une fois branché</h3>
+    <div class="flux">
+      <div class="etape"><b>Il trouve la page</b>Anniversaires · Entreprises</div>
+      <div class="lien"></div>
+      <div class="etape neuf"><b>Un formulaire</b>Date, occasion, nombre, âge, restauration, contact</div>
+      <div class="lien"></div>
+      <div class="etape neuf"><b>Réponse immédiate</b>La formule correspondante et les créneaux</div>
+      <div class="lien"></div>
+      <div class="etape neuf"><b>Le contact est gardé</b>Leur première base clients</div>
+      <div class="lien"></div>
+      <div class="etape neuf"><b>J+2 et J+7</b>Relance si pas de réponse, alerte au responsable</div>
+    </div>
+    <div class="detail">
+      <div class="bloc eux"><h4>Ce qu’il faut de leur part</h4><p><b>Les formules et leurs prix</b>
+      — c’est le seul vrai prérequis, et il vient d’eux. Une adresse e-mail qui fonctionne.
+      Une personne qui traite les alertes.</p></div>
+      <div class="bloc"><h4>Délai</h4><p>Moyen. Le formulaire et la séquence sont rapides ;
+      l’attente porte sur <b>la validation des formules par eux</b>.</p></div>
+    </div>
+    <div class="mesure"><b>Deux effets, pas un.</b> Immédiat : plus aucune demande perdue hors
+    horaires — sur un anniversaire, le premier qui répond emporte souvent la réservation.
+    Différé et plus important : <b>la constitution de leur première base clients</b>, qui rend
+    possible tout le reste.</div>
+  </div>
+</div>
+
+<!-- ── PROCESS 3 ────────────────────────────────────────────────────── -->
+<div class="panneau" id="p3" role="tabpanel" aria-labelledby="o3" hidden>
+  <div class="bande avant">
+    <h3><span class="pastille"></span>Aujourd’hui</h3>
+    <div class="flux">
+      <div class="etape"><b>Le client appelle</b>Pendant les heures d’ouverture</div>
+      <div class="lien rompu"></div>
+      <div class="etape mort"><b>Rien par écrit</b>Aucune confirmation</div>
+      <div class="lien rompu"></div>
+      <div class="etape mort"><b>Aucun rappel</b>Le créneau non honoré est perdu sec</div>
+      <div class="lien rompu"></div>
+      <div class="etape mort"><b>Aucune coordonnée gardée</b>Le client reste un inconnu</div>
+    </div>
+    <div class="detail">
+      <div class="bloc"><h4>Le verrou</h4><p>Leur moteur <b>elloha est déjà payé et configuré —
+      sur les cartes cadeaux uniquement</b>. Sans ce filtre, il n’affiche aucune activité
+      réservable. C’est une configuration de leur compte, pas un développement.</p></div>
+      <div class="bloc"><h4>Pourquoi c’est le troisième</h4><p>Tant que la réservation reste
+      téléphonique, <b>il n’y a rien à automatiser</b>. Cette dépendance le place en dernier,
+      pas son intérêt.</p></div>
+    </div>
+  </div>
+
+  <div class="bande apres">
+    <h3><span class="pastille"></span>Une fois elloha activé</h3>
+    <div class="flux">
+      <div class="etape"><b>Réservation en ligne</b>À toute heure, sans mobiliser personne</div>
+      <div class="lien"></div>
+      <div class="etape neuf"><b>Confirmation immédiate</b>E-mail et SMS : adresse, accès, consignes d’âge</div>
+      <div class="lien"></div>
+      <div class="etape neuf"><b>Rappel J−1</b>Moins de créneaux perdus</div>
+      <div class="lien"></div>
+      <div class="etape neuf"><b>J+1</b>Bascule vers la demande d’avis — la boucle se referme</div>
+    </div>
+    <div class="detail">
+      <div class="bloc eux"><h4>Ce qu’il faut de leur part</h4><p><b>Activer la réservation
+      d’activités dans elloha.</b> C’est une décision qu’eux seuls peuvent prendre. Plus l’accès
+      elloha et un expéditeur SMS.</p></div>
+      <div class="bloc"><h4>Délai</h4><p>Court, <b>une fois elloha activé</b>.</p></div>
+    </div>
+    <div class="mesure"><b>Ce qu’on mesure :</b> le taux de non-présentation avant et après.
+    Effet secondaire majeur — chaque réservation alimente la base clients.</div>
+  </div>
+</div>
+
+<!-- ── Ce qu'on ne fait PAS ─────────────────────────────────────────── -->
+<section class="ecarte">
+  <h2>Ce que je ne vous proposerai pas</h2>
+  <p>Dire ce qu’on écarte, et pourquoi, vaut souvent mieux que d’allonger la liste.</p>
+  <div class="ecartes">
+    <div class="ec non"><span class="v">Jamais</span>
+      <h3>Automatiser vos publications</h3>
+      <p>Vous publiez déjà <b>2,55 fois par jour, 77 fois par mois</b>. Le problème n’est pas la
+      fréquence — vous travaillez déjà plus que tout le secteur. Automatiser le volume
+      industrialiserait le problème.</p></div>
+    <div class="ec plus-tard"><span class="v">Plus tard</span>
+      <h3>Remplir les créneaux creux</h3>
+      <p>Une offre de dernière minute suppose une base de contacts. Elle n’existe pas encore —
+      elle se crée au process 2. Bonne idée, mauvais moment.</p></div>
+    <div class="ec non"><span class="v">Sans objet</span>
+      <h3>Un chatbot sur le site</h3>
+      <p>Répondre automatiquement à des visiteurs sur un site où l’on ne peut <b>rien
+      réserver</b> ne crée aucune valeur.</p></div>
+    <div class="ec plus-tard"><span class="v">Plus tard</span>
+      <h3>Un programme de fidélité</h3>
+      <p>Même dépendance : sans base clients, il n’y a personne à fidéliser.</p></div>
+  </div>
+</section>
+
+<footer>
+  Chiffres relevés le 20 août 2026 sur familyarena.re, la fiche Google Business Profile et le
+  compte Instagram public. Aucun résultat n’est promis : chaque process indique ce qui sera
+  <b>mesuré</b>, pas ce qui est garanti.
+</footer>
+</div>
+
+<script>
+/* Un process à la fois. Les onglets pilotent l'affichage et l'état ARIA
+   ensemble : un lecteur d'écran doit voir la même chose que l'œil. */
+(function(){
+  var onglets = [].slice.call(document.querySelectorAll('[role="tab"]'));
+  function montrer(id){
+    onglets.forEach(function(b){
+      var actif = b.id === id;
+      b.setAttribute('aria-selected', actif ? 'true' : 'false');
+      document.getElementById(b.getAttribute('aria-controls')).hidden = !actif;
+    });
+  }
+  onglets.forEach(function(b){
+    b.addEventListener('click', function(){ montrer(b.id); });
+    b.addEventListener('keydown', function(e){
+      var i = onglets.indexOf(b);
+      if (e.key === 'ArrowRight' || e.key === 'ArrowLeft'){
+        var n = onglets[(i + (e.key === 'ArrowRight' ? 1 : onglets.length - 1)) % onglets.length];
+        n.focus(); montrer(n.id); e.preventDefault();
+      }
+    });
+  });
+})();
+</script>
