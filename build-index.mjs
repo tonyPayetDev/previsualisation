@@ -303,6 +303,9 @@ header{display:flex;align-items:baseline;justify-content:space-between;gap:.8rem
 header h1{font-size:.95rem;margin:0;font-weight:700;letter-spacing:.01em;color:var(--texte)}
 header h1 i{font-style:normal;color:var(--jaune)}
 header .compte{font-size:.75rem;color:var(--mut);font-variant-numeric:tabular-nums}
+.outils-bar{margin:0 0 1rem;font-size:.8rem;color:var(--mut);
+  background:var(--panel);border:1px solid var(--border);border-radius:9px;padding:.6rem .8rem}
+.outils-bar a{color:var(--jaune);font-weight:600;text-decoration:none}
 
 /* Barre de filtre — collante, pour rester accessible sur 300+ entrées */
 .filtres{position:sticky;top:0;z-index:5;background:var(--bg);
@@ -355,6 +358,11 @@ footer code{color:var(--texte);font-size:.9em}
   <h1>Prévisualisation <i>Autoboost</i></h1>
   <span class="compte"><b id="n">${items.length}</b> / ${items.length} routes</span>
 </header>
+<!-- Les outils de travail ne sont pas des maquettes, mais sans un lien ici ils
+     n'existent pour personne : /tri-clips/ et /videos/ n'etaient references
+     nulle part sur le site. -->
+<p class="outils-bar"><a href="/tri/">Trier au pouce</a> — clips pour les hooks,
+et vidéos finies : croix pour abandonner, cœur pour planifier.</p>
 
 <div class="filtres">
   <input id="q" type="search" placeholder="Filtrer : nom de route, sujet, client…" autocomplete="off">
