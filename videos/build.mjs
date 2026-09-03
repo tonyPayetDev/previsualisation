@@ -183,6 +183,9 @@ li.v.e-abandon .actes button[data-e=abandon]{background:#241318;border-color:#4a
   ce que tu marques « à planifier » part dans la file. Tes choix sont enregistrés sur le
   serveur — pas dans ce navigateur.</p>
 
+  <p class="sous" style="margin-top:10px"><a href="/tri/" style="color:var(--jaune)">\u2197 Trier au pouce</a>
+  \u2014 m\u00eame outil que le tri des hooks : croix pour abandonner, c\u0153ur pour planifier.</p>
+
   <div class="filtres" id="filtres">
     <button data-f="adecider" class="on">À décider<span class="n"></span></button>
     <button data-f="planifier">À planifier<span class="n"></span></button>
