@@ -23,6 +23,17 @@ body{background:var(--ui-fond);color:var(--ui-texte);
   font:400 15px/1.55 Sora,ui-sans-serif,system-ui,sans-serif;
   padding-bottom:env(safe-area-inset-bottom)}
 ::selection{background:var(--ui-vif);color:#140C02}
+#suite{margin:16px 0 4px;padding:18px;border-radius:14px;
+  background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.1)}
+#suite .suite-t{font-size:17px;font-weight:700;margin-bottom:6px}
+#suite .suite-p{font-size:14px;opacity:.82;line-height:1.55;margin-bottom:14px}
+#suite .suite-b{display:block;text-align:center;padding:14px 16px;border-radius:11px;
+  font-size:15px;font-weight:700;text-decoration:none;margin-bottom:9px}
+#suite .suite-x{font-size:13px;opacity:.7;text-align:center;margin-top:4px}
+#suite .suite-x a{color:inherit}
+#dlg-det{margin-top:14px}
+#dlg-det summary{cursor:pointer;font-size:13px;opacity:.65;padding:6px 0}
+#dlg-det pre{margin-top:8px}
 :where(button,select,input,[contenteditable]):focus-visible{
   outline:2.5px solid var(--ui-vif);outline-offset:2px;border-radius:3px}
 html{scrollbar-color:#2A2F34 var(--ui-fond)}
@@ -397,10 +408,24 @@ button.petit{min-height:38px;padding:0 14px;font-size:.82rem}
 <dialog id="dlg">
   <h3 id="dlg-t">Composition prête</h3>
   <p id="dlg-p"></p>
-  <pre id="dlg-json"></pre>
+
+  <div id="suite">
+    <div class="suite-t">Et maintenant&nbsp;?</div>
+    <p class="suite-p">Ce que tu viens de composer, on peut l'installer chez toi&nbsp;:
+      tes plats, ta carte, tes photos — et ça publie tout seul, chaque jour.</p>
+    <a class="suite-b primaire" id="suite-rdv" target="_blank" rel="noopener">Caler un rendez-vous</a>
+    <a class="suite-b second" id="suite-wa" target="_blank" rel="noopener">Écrire à Tony</a>
+    <div class="suite-x">ou par téléphone&nbsp;: <a id="suite-tel" href="tel:+262692417749">0692&nbsp;41&nbsp;77&nbsp;49</a></div>
+  </div>
+
+  <details id="dlg-det">
+    <summary>Voir la composition envoyée</summary>
+    <pre id="dlg-json"></pre>
+    <button class="second" id="dlg-copier" type="button">Copier</button>
+  </details>
+
   <div class="bar" style="padding:14px 0 0">
     <span class="grandir"></span>
-    <button class="second" id="dlg-copier">Copier</button>
     <button class="primaire" id="dlg-fermer">Fermer</button>
   </div>
 </dialog>
@@ -798,7 +823,7 @@ document.getElementById('planifier').addEventListener('click', () => {
     media.innerHTML = '<div style="padding:18px;text-align:center;opacity:.8">'
       + 'Choisis d\'abord la vignette à publier dans l\'aperçu.</div>';
   } else {
-    const src = document.querySelector('.vignette[data-i="' + selection + '"]');
+    const src = document.querySelector('#grille .v[data-i="' + selection + '"]');
     if (src) {
       const un = src.cloneNode(true);
       un.classList.remove('actif');
@@ -834,6 +859,17 @@ document.getElementById('conf-ok').addEventListener('click', () => {
       : 'Tony vient d\'être prévenu que tu es arrivé au bout, avec cette composition. Rien n\'a été publié : la mise en ligne se fait après son passage.')
     + (televersees ? ' ' + televersees + ' photo(s) que tu as envoyée(s) restent dans ce navigateur : le rendu utilisera la banque à leur place.' : '');
   document.getElementById('dlg-json').textContent = JSON.stringify(sortie, null, 2);
+  /* La suite : on pre-remplit avec le nom, sinon Tony recoit un message anonyme
+     et ne peut pas relier la demande a la composition qu'il vient de recevoir. */
+  const qui = (E.nom || '').trim() || 'mon restaurant';
+  const ou  = (E.ville || '').trim();
+  const msg = 'Bonjour Tony, je viens de composer un feed pour ' + qui
+            + (ou ? ' (' + ou + ')' : '') + ' avec ton outil FoodBoost. '
+            + 'J\'aimerais qu\'on en parle pour l\'installer chez moi.';
+  document.getElementById('suite-rdv').href =
+    'https://calendly.com/tony-payet-professionnel/nouvelle-reunion';
+  document.getElementById('suite-wa').href =
+    'https://wa.me/262692417749?text=' + encodeURIComponent(msg);
   dlg.showModal();
 });
 document.getElementById('dlg-copier').addEventListener('click', async () => {
