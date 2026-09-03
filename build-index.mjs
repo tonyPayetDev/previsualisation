@@ -36,6 +36,8 @@ const DATES = path.join(BASE, 'dates.json');
    maquettes. */
 const OUTILLAGE = new Set([
   'taches', 'appels', 'carte', 'partage', 'a-envoyer', 'cta', 'sites-clients',
+  'tri',
+
   'docker-entrypoint.d', 'styles',
   '.git', '.claude', 'node_modules', 'assets', 'cartographie',
 ]);
