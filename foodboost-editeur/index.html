@@ -159,6 +159,92 @@ dialog pre{background:#0C0F11;border:1px solid var(--ui-trait);border-radius:7px
   border:1px solid #1f4a41;border-radius:9px;padding:11px 12px;min-height:46px}
 .creneau input:focus{outline:0;border-color:#3dc4c2}
 .creneau .quand{flex:0 0 100%;font-size:12.8px;color:#6b7089;line-height:1.5}
+
+/* ── L'atelier : sur écran large c'est une colonne, sur téléphone une feuille
+      qui monte du bas quand on touche une vignette. Sans ça, toucher une
+      vignette ne montrait rien : les réglages étaient deux écrans plus bas. ── */
+.atelier-tete{display:none}
+.atelier-corps{display:grid;gap:18px}
+button.petit{min-height:38px;padding:0 14px;font-size:.82rem}
+
+.legende-lab{display:grid;gap:6px;font-size:.78rem;color:var(--ui-doux);margin-top:14px}
+#legende{background:#101315;color:var(--ui-texte);border:1px solid var(--ui-trait);
+  border-radius:8px;padding:11px 12px;font:inherit;font-size:.9rem;line-height:1.5;
+  resize:vertical;min-height:96px}
+.bascule{display:flex;gap:11px;align-items:flex-start;margin-top:16px;
+  background:#141013;border:1px solid #3a2a1a;border-radius:10px;padding:13px 14px;
+  font-size:.84rem;line-height:1.5;color:var(--ui-doux);cursor:pointer}
+.bascule input{width:22px;height:22px;flex:none;margin-top:1px;accent-color:var(--ui-vif)}
+.bascule b{color:var(--ui-texte)}
+.bascule em{font-style:normal;display:block;margin-top:3px;color:#8fbf9f}
+.bascule.on{border-color:#7a4a12;background:#1d1206}
+.bascule.on em{color:#f0b45c}
+
+/* Le récapitulatif collé sous le bouton d'envoi. */
+.recap{max-width:1180px;margin:10px auto 0;display:flex;align-items:center;gap:10px;
+  background:#101a17;border:1px solid #1f4a41;border-radius:10px;padding:9px 11px}
+.recap-vig{width:30px;height:53px;object-fit:cover;border-radius:5px;flex:none;background:#000}
+.recap-txt{font-size:.78rem;line-height:1.45;color:#9fe8d6}
+.recap-txt b{color:#eafff8;font-weight:650}
+
+/* La fenêtre de confirmation. */
+.conf-grille{display:flex;gap:14px;align-items:flex-start}
+.conf-media{width:104px;height:185px;flex:none;border-radius:8px;overflow:hidden;
+  border:1px solid var(--ui-trait);background:var(--fond);position:relative}
+/* La grille est clonée telle quelle puis réduite : à 104 px de large, les
+   tailles de police en clamp() s'effondrent et le texte se chevauche. Une
+   mise à l'échelle garde les proportions exactes du vrai média. */
+.conf-media .grille{position:absolute;top:0;left:0;width:312px;
+  display:grid;grid-template-columns:repeat(3,1fr);
+  transform:scale(.3333);transform-origin:0 0}
+.conf-media .v{pointer-events:none}
+.conf-detail{flex:1;display:grid;gap:9px;min-width:0}
+.conf-l span{display:block;font:700 10px/1 ui-monospace,monospace;letter-spacing:.14em;
+  text-transform:uppercase;color:#6b7089;margin-bottom:4px}
+.conf-l b{font-size:.86rem;font-weight:600;color:var(--ui-texte);word-break:break-word}
+.conf-leg{background:#0C0F11;border:1px solid var(--ui-trait);border-radius:7px;padding:11px 12px;
+  font-size:.83rem;line-height:1.55;color:#C8D0D6;white-space:pre-wrap;max-height:180px;overflow:auto}
+#dlg-conf p{margin-bottom:14px}
+#dlg-conf p.chaud{color:#f0b45c;background:#1d1206;border:1px solid #443814;
+  border-radius:9px;padding:10px 12px}
+
+@media (max-width:61.99rem){
+  /* La feuille. Elle ne s'ouvre que sur sélection : le reste du temps la page
+     se lit comme avant, sans panneau mort qui prend la moitié de l'écran. */
+  #atelier{position:fixed;left:0;right:0;bottom:0;z-index:60;
+    background:var(--ui-panneau);border-top:1px solid var(--ui-trait);
+    border-radius:16px 16px 0 0;box-shadow:0 -18px 44px rgba(0,0,0,.6);
+    transform:translateY(101%);transition:transform .26s cubic-bezier(.2,.8,.3,1);
+    max-height:58vh;display:flex;flex-direction:column}
+  body.atelier-ouvert #atelier{transform:none}
+  .atelier-tete{display:flex;align-items:center;gap:12px;padding:13px 16px 11px;
+    border-bottom:1px solid var(--ui-trait);position:relative}
+  .atelier-tete::before{content:"";position:absolute;top:6px;left:50%;transform:translateX(-50%);
+    width:38px;height:4px;border-radius:99px;background:#3a4046}
+  .atelier-titre{font-weight:700;font-size:.92rem;flex:1}
+  .atelier-corps{overflow-y:auto;-webkit-overflow-scrolling:touch;
+    padding:14px 14px calc(16px + env(safe-area-inset-bottom));gap:14px}
+  #atelier .bloc{border:0;background:transparent;padding:0}
+  #atelier .bloc h3{display:none}
+  .banque{max-height:none;grid-template-columns:repeat(auto-fill,minmax(64px,1fr))}
+  #voile-atelier{position:fixed;inset:0;z-index:55;background:rgba(0,0,0,.3);
+    opacity:0;pointer-events:none;transition:opacity .26s}
+  body.atelier-ouvert #voile-atelier{opacity:1}
+  /* Pas de verrou de défilement : la feuille ne prend que 58vh, et il faut
+     pouvoir remonter dans la grille — sinon on édite à l'aveugle. */
+  /* La grille reste visible au-dessus de la feuille : on choisit une vignette,
+     on la voit changer sans fermer. */
+  body.atelier-ouvert .apercu{position:static}
+  .v{min-height:0}
+  .edit{min-height:48px;font-size:16px}   /* 16px : iOS n'y zoome pas à la mise au point */
+  #legende{font-size:16px}
+  select,input[type=text],input[type=date],input[type=time]{font-size:16px;min-height:46px}
+  .recap{margin-top:8px;padding:8px 10px}
+  .pied .bar{gap:8px}
+  .pied .bar .etat{flex:0 0 100%;order:-1}
+  .pied button{flex:1}
+  main{padding-bottom:172px}
+}
 </style>
 </head>
 <body>
@@ -215,9 +301,15 @@ dialog pre{background:#0C0F11;border:1px solid var(--ui-trait);border-radius:7px
       </div>
     </div>
 
+    <div id="atelier">
+    <div class="atelier-tete">
+      <span class="atelier-titre" id="atelier-titre">La vignette sélectionnée</span>
+      <button class="second petit" id="fermer-atelier" type="button">Terminé</button>
+    </div>
+    <div class="atelier-corps">
     <div class="bloc" id="bloc-tuile">
       <h3>La vignette sélectionnée</h3>
-      <p class="aide" id="aide-tuile">Clique une vignette dans l'aperçu pour la modifier.</p>
+      <p class="aide" id="aide-tuile">Touche une vignette dans l'aperçu pour la modifier.</p>
       <div id="reglages-tuile"></div>
     </div>
 
@@ -225,27 +317,44 @@ dialog pre{background:#0C0F11;border:1px solid var(--ui-trait);border-radius:7px
       <h3>Changer la photo</h3>
       <p class="aide">Choisis dans la banque, ou envoie celle du client. Une photo
         téléversée reste dans ce navigateur — elle ne part nulle part tant que tu
-        n'as pas appuyé sur « Envoyer à planifier ».</p>
+        n'as pas confirmé l'envoi.</p>
       <div class="rangee">
         <label>Ta propre photo<input type="file" id="fichier" accept="image/*"></label>
       </div>
       <div class="banque" id="banque"></div>
-    <div class="destination" id="destination">
-    <span class="t">Destination</span>
-    <span class="cible">Instagram <b>@foodboost</b> <span>· reel 9:16, 9 s</span></span>
-    <div class="tags" id="tags"></div>
-    <div class="creneau">
-      <label>Date de publication<input type="date" id="d-date"></label>
-      <label>Heure<input type="time" id="d-heure" value="18:00"></label>
-      <span class="quand" id="d-quand"></span>
     </div>
-    <p class="avert" id="avert-pub">Le bouton « Envoyer à planifier » <b>ne publie pas</b> :
-    il montre exactement ce qui partirait. La publication attend le feu vert de Tony.</p>
     </div>
+    </div>
+
+    <div class="bloc" id="bloc-envoi">
+      <h3>Ce qui va partir</h3>
+      <p class="aide">Le récapitulatif ci-dessous est exactement ce qui sera envoyé.
+        Rien ne part avant la confirmation.</p>
+      <div class="destination" id="destination">
+        <span class="t">Destination</span>
+        <span class="cible">Instagram <b>@foodboost</b> <span>· reel 9:16, 9 s</span></span>
+        <div class="tags" id="tags"></div>
+        <div class="creneau">
+          <label>Date de publication<input type="date" id="d-date"></label>
+          <label>Heure<input type="time" id="d-heure" value="18:00"></label>
+          <span class="quand" id="d-quand"></span>
+        </div>
+      </div>
+      <label class="legende-lab">Légende du post
+        <textarea id="legende" rows="4" maxlength="900"></textarea></label>
+      <p class="aide" style="margin:6px 0 0">Les hashtags sont ajoutés à la fin —
+        cinq au maximum, sinon Instagram refuse le post.</p>
+      <label class="bascule">
+        <input type="checkbox" id="auto">
+        <span><b>Mode automatique</b> — publier sans passer par la validation de Tony.
+          <em id="auto-etat">Désactivé.</em></span>
+      </label>
     </div>
   </section>
   
 </main>
+
+<div id="voile-atelier"></div>
 
 <div class="pied">
   <div class="bar">
@@ -254,7 +363,36 @@ dialog pre{background:#0C0F11;border:1px solid var(--ui-trait);border-radius:7px
     <button class="second" id="reinit">Repartir de zéro</button>
     <button class="primaire" id="planifier">Envoyer à planifier</button>
   </div>
+  <!-- « Un petit truc en dessous » : le récapitulatif de ce qui part, collé au
+       bouton, pour qu'on ne l'envoie jamais sans avoir vu la destination. -->
+  <div class="recap" id="recap">
+    <img class="recap-vig" id="recap-vig" alt="">
+    <span class="recap-txt" id="recap-txt"></span>
+  </div>
 </div>
+
+<dialog id="dlg-conf">
+  <h3>Confirmer l'envoi</h3>
+  <p id="conf-mode"></p>
+  <div class="conf-grille">
+    <div class="conf-media" id="conf-media"></div>
+    <div class="conf-detail">
+      <div class="conf-l"><span>Réseau</span><b>Instagram · @foodboost</b></div>
+      <div class="conf-l"><span>Format</span><b>Reel 9:16 · 9 s · au fil aussi</b></div>
+      <div class="conf-l"><span>Créneau</span><b id="conf-creneau"></b></div>
+      <div class="conf-l"><span>Hashtags</span><b id="conf-tags"></b></div>
+    </div>
+  </div>
+  <div class="conf-l" style="display:block;margin-top:12px">
+    <span>Légende</span>
+    <div class="conf-leg" id="conf-leg"></div>
+  </div>
+  <div class="bar" style="padding:16px 0 0">
+    <span class="grandir"></span>
+    <button class="second" id="conf-annuler" type="button">Annuler</button>
+    <button class="primaire" id="conf-ok" type="button">Confirmer l'envoi</button>
+  </div>
+</dialog>
 
 <dialog id="dlg">
   <h3 id="dlg-t">Composition prête</h3>
@@ -364,10 +502,13 @@ function choisir(i) {
   selection = i;
   const t = PLAN[i];
   const zone = document.getElementById('reglages-tuile');
+  const role = ({ photo:'photo seule', hook:'accroche sur fond', bas:'accroche sur la photo',
+       menu:'carte de menu', sig:'carton de signature' })[t.r];
   document.getElementById('aide-tuile').textContent =
-    'Vignette ' + (i + 1) + ' sur 9 — ' +
-    ({ photo:'photo seule', hook:'accroche sur fond', bas:'accroche sur la photo',
-       menu:'carte de menu', sig:'carton de signature' })[t.r] + '.';
+    'Vignette ' + (i + 1) + ' sur 9 — ' + role + '.';
+  document.getElementById('atelier-titre').textContent =
+    'Vignette ' + (i + 1) + ' — ' + role;
+  ouvrirAtelier();
 
   if (t.r === 'photo') { zone.innerHTML = '<p class="vide">Rien à écrire ici : choisis une photo ci-dessous.</p>'; peindre(); return; }
   if (t.r === 'menu') {
@@ -440,14 +581,23 @@ document.getElementById('fichier').addEventListener('change', (ev) => {
 });
 
 for (const id of ['nom', 'type', 'ville']) {
-  document.getElementById(id).addEventListener('input', (e) => { E[id] = e.target.value; modifs++; garder(); peindre(); });
+  document.getElementById(id).addEventListener('input', (e) => {
+    if (!E) return;
+    E[id] = e.target.value; modifs++; garder(); peindre();
+    rafraichirLegende(); peindreTags(); peindreRecap();
+  });
 }
-document.getElementById('ambiance').addEventListener('change', (e) => { E.ambiance = e.target.value; modifs++; garder(); peindre(); });
+document.getElementById('ambiance').addEventListener('change', (e) => {
+  if (!E) return;
+  E.ambiance = e.target.value; modifs++; garder(); peindre();
+});
 document.getElementById('famille').addEventListener('change', (e) => {
+  if (!E) return;
   E = Object.assign(neuf(e.target.value), { nom:E.nom, type:E.type, ville:E.ville, ambiance:E.ambiance });
   selection = null; modifs++; garder(); peindre();
   document.getElementById('reglages-tuile').innerHTML = '';
-  document.getElementById('aide-tuile').textContent = 'Clique une vignette dans l\'aperçu pour la modifier.';
+  document.getElementById('aide-tuile').textContent = 'Touche une vignette dans l\'aperçu pour la modifier.';
+  fermerAtelier(); rafraichirLegende(); peindreTags(); peindreRecap();
 });
 document.getElementById('reinit').addEventListener('click', () => {
   if (!confirm('Tout remettre comme au départ ?')) return;
@@ -488,17 +638,26 @@ const peindreTags = () => {
   if (e) e.addEventListener('input', peindreTags);
 });
 /* Un feed produit pour un lead arrive ici pré-rempli : le générateur n'a qu'à
-   composer l'adresse. Sans ça, il faut retaper le nom et la ville à la main. */
-(() => {
+   composer l'adresse. Sans ça, il faut retaper le nom et la ville à la main.
+   IMPORTANT : ceci s'exécutait AVANT que l'état E existe. Le champ « famille »
+   déclenche un gestionnaire qui lit E.nom — donc « Cannot read properties of
+   null » à chaque ouverture d'un lien pré-rempli, et l'ambiance de l'URL
+   silencieusement perdue. On applique donc l'adresse une fois l'état construit.
+   Les champs texte écoutent « input », les listes « change » : on émet les deux,
+   sinon le nom de l'URL n'atteint jamais l'état. */
+function appliquerUrl() {
   const q = new URLSearchParams(location.search);
   const poser = (id, cle) => {
     const v = q.get(cle);
     const e = document.getElementById(id);
-    if (v && e) { e.value = v; e.dispatchEvent(new Event('change', { bubbles: true })); }
+    if (!v || !e) return;
+    e.value = v;
+    e.dispatchEvent(new Event('input', { bubbles: true }));
+    e.dispatchEvent(new Event('change', { bubbles: true }));
   };
-  poser('nom', 'nom'); poser('type', 'type'); poser('ville', 'ville');
   poser('famille', 'famille'); poser('ambiance', 'ambiance');
-})();
+  poser('nom', 'nom'); poser('type', 'type'); poser('ville', 'ville');
+}
 
 /* Demain, pas aujourd'hui : le rendu et la relecture prennent du temps, et
    proposer une heure déjà passée est le meilleur moyen de rater le créneau. */
@@ -521,7 +680,7 @@ const peindreTags = () => {
   };
   ['d-date', 'd-heure'].forEach((id) => {
     const x = document.getElementById(id);
-    if (x) x.addEventListener('change', dire);
+    if (x) x.addEventListener('change', () => { dire(); peindreRecap(); });
   });
   dire();
 })();
@@ -529,31 +688,133 @@ const peindreTags = () => {
 peindreTags();
 
 const dlg = document.getElementById('dlg');
-document.getElementById('planifier').addEventListener('click', () => {
+const dlgConf = document.getElementById('dlg-conf');
+
+/* ── La légende. Elle n'existait pas : on envoyait une composition sans texte,
+      donc rien de publiable. Elle est proposée, puis modifiable — et dès qu'on
+      y touche, elle n'est plus réécrite sous les doigts. ─────────────────── */
+const LEG_FAMILLE = {
+  creole: 'La carte du jour, en cuisine créole.',
+  pizza: 'La carte du jour, sortie du four.',
+  japonais: 'La carte du jour, coupée à la minute.',
+  burger: 'La carte du jour, au grill.',
+  snack: 'La carte du jour, à emporter.',
+};
+let legendeTouchee = false;
+const legendeAuto = () => {
+  const nom = (E.nom || '').trim();
+  const ville = (E.ville || '').trim();
+  return (nom ? nom + '\n' : '')
+    + (LEG_FAMILLE[E.famille] || 'La carte du jour.')
+    + (ville ? '\n' + ville + '.' : '');
+};
+const champLegende = document.getElementById('legende');
+const rafraichirLegende = () => {
+  if (!champLegende || legendeTouchee) return;
+  champLegende.value = legendeAuto();
+};
+if (champLegende) champLegende.addEventListener('input', () => {
+  legendeTouchee = true; modifs++; garder(); peindreRecap();
+});
+
+/* Le texte complet réellement posté : légende + hashtags, dans cet ordre. */
+const legendeComplete = () => {
+  const t = (champLegende ? champLegende.value : legendeAuto()).trim();
+  return t + '\n\n' + calculerTags().map((x) => '#' + x).join(' ');
+};
+
+/* ── Mode automatique. Éteint par défaut, et il le reste tant que personne ne
+      le coche : publier sans relecture n'est pas un défaut raisonnable. ──── */
+const champAuto = document.getElementById('auto');
+const modeAuto = () => !!(champAuto && champAuto.checked);
+const peindreAuto = () => {
+  if (!champAuto) return;
+  const on = champAuto.checked;
+  champAuto.closest('.bascule').classList.toggle('on', on);
+  document.getElementById('auto-etat').textContent = on
+    ? 'Activé — le post part directement sur @foodboost, sans relecture.'
+    : 'Désactivé.';
+  const bouton = document.getElementById('planifier');
+  if (bouton) bouton.textContent = on ? 'Publier sur @foodboost' : 'Envoyer à planifier';
+  peindreRecap();
+};
+if (champAuto) {
+  try { champAuto.checked = localStorage.getItem('fb-auto') === '1'; } catch (e) {}
+  champAuto.addEventListener('change', () => {
+    try { localStorage.setItem('fb-auto', champAuto.checked ? '1' : '0'); } catch (e) {}
+    peindreAuto();
+  });
+}
+
+/* ── Le récapitulatif sous le bouton ──────────────────────────────────── */
+function peindreRecap() {
+  const z = document.getElementById('recap-txt');
+  if (!z) return;
+  const v = document.getElementById('recap-vig');
+  if (v && E) v.src = url(E.photos[0]);
+  const quand = (document.getElementById('d-quand') || {}).textContent || 'créneau non choisi';
+  const n = calculerTags().length;
+  const debut = (champLegende ? champLegende.value : '').trim().split('\n')[0] || '(légende vide)';
+  z.innerHTML = 'Part sur <b>Instagram @foodboost</b> · reel 9:16 · <b>' + quand.replace(' — heure de La Réunion.', '') + '</b><br>'
+    + '« ' + debut.slice(0, 46) + (debut.length > 46 ? '…' : '') + ' » · ' + n + ' hashtags · '
+    + (modeAuto() ? '<b>publication automatique</b>' : 'relecture de Tony avant publication');
+}
+
+/* ── L'envoi : on montre d'abord EXACTEMENT ce qui part, on envoie ensuite. */
+function composer() {
   const sortie = JSON.parse(JSON.stringify(E));
   const d1 = (document.getElementById('d-date') || {}).value || '';
   const h1 = (document.getElementById('d-heure') || {}).value || '';
+  sortie.legende = legendeComplete();
   sortie.destination = { reseau: 'instagram', compte: '@foodboost',
-    format: 'reel 9:16', hashtags: calculerTags(), publie: false,
+    format: 'reel 9:16', hashtags: calculerTags(), publie: modeAuto(),
     creneau: d1 && h1 ? d1 + 'T' + h1 + ':00+04:00' : null };
-  const televersees = sortie.photos.filter((p) => p.startsWith('data:')).length;
   sortie.photos = sortie.photos.map((p) => p.startsWith('data:') ? '(photo téléversée)' : p);
+  return sortie;
+}
+
+document.getElementById('planifier').addEventListener('click', () => {
+  const s = composer();
+  document.getElementById('conf-mode').textContent = modeAuto()
+    ? 'Mode automatique activé : en confirmant, ce post part sur @foodboost sans relecture.'
+    : 'Rien ne sera publié. En confirmant, Tony reçoit cette composition et publie après relecture.';
+  document.getElementById('conf-mode').className = modeAuto() ? 'chaud' : '';
+  document.getElementById('conf-creneau').textContent =
+    (document.getElementById('d-quand') || {}).textContent || 'aucun créneau choisi';
+  document.getElementById('conf-tags').textContent = s.destination.hashtags.map((x) => '#' + x).join(' ');
+  document.getElementById('conf-leg').textContent = s.legende;
+  /* L'aperçu du média : la vraie grille, clonée, pas une vignette symbolique. */
+  const media = document.getElementById('conf-media');
+  media.innerHTML = '';
+  const g = document.getElementById('grille').cloneNode(true);
+  g.querySelectorAll('.actif').forEach((x) => x.classList.remove('actif'));
+  media.appendChild(g);
+  dlgConf.showModal();
+});
+document.getElementById('conf-annuler').addEventListener('click', () => dlgConf.close());
+document.getElementById('conf-ok').addEventListener('click', () => {
+  const sortie = composer();
+  const televersees = E.photos.filter((p) => p.startsWith('data:')).length;
   /* On signale sans bloquer : la fenêtre s ouvre même si le réseau tombe. */
   try {
     fetch('https://n7n.automatisationboost.com/webhook/feed-planifier', {
       method: 'POST', headers: { 'Content-Type': 'application/json' }, keepalive: true,
       body: JSON.stringify({
         client: new URLSearchParams(location.search).get('client') || '',
-        nom: E.nom, ville: E.ville, famille: E.famille, modifs,
+        nom: E.nom, type: E.type, ville: E.ville, famille: E.famille,
+        ambiance: E.ambiance, modifs,
+        legende: sortie.legende, auto: modeAuto(), publier: modeAuto(),
         photos: sortie.photos, destination: sortie.destination,
       }),
     }).catch(function () {});
   } catch (e) {}
-
+  dlgConf.close();
+  document.getElementById('dlg-t').textContent = modeAuto() ? 'Envoyé pour publication' : 'Composition transmise';
   document.getElementById('dlg-p').textContent =
-    televersees
-      ? televersees + ' photo(s) que tu as envoyée(s) ne sont pas encore transmissibles : le lien vers le rendu n\'est pas branché. Voici la composition telle qu\'elle serait envoyée.'
-      : 'Tony vient d\'être prévenu que tu es arrivé au bout, avec cette composition. Rien n\'a été publié : la mise en ligne se fait après son passage.';
+    (modeAuto()
+      ? 'Le post est parti vers @foodboost. Le rendu prend une à deux minutes, la publication suit.'
+      : 'Tony vient d\'être prévenu que tu es arrivé au bout, avec cette composition. Rien n\'a été publié : la mise en ligne se fait après son passage.')
+    + (televersees ? ' ' + televersees + ' photo(s) que tu as envoyée(s) restent dans ce navigateur : le rendu utilisera la banque à leur place.' : '');
   document.getElementById('dlg-json').textContent = JSON.stringify(sortie, null, 2);
   dlg.showModal();
 });
@@ -585,7 +846,45 @@ document.getElementById('famille').value = E.famille;
   }
   banque(PHOTOS_BANQUE, client);
 })();
+appliquerUrl();
 peindre();
+
+/* ── La feuille de réglages, sur téléphone ────────────────────────────────
+   Toucher une vignette ouvrait bien le panneau — deux écrans plus bas, hors
+   du champ de vision. Sur un téléphone ça revenait à ne rien avoir. La feuille
+   monte du bas, la grille reste visible au-dessus, et on voit la vignette
+   changer pendant qu'on tape. Sur écran large, rien ne bouge. */
+const surTelephone = () => window.matchMedia('(max-width:61.99rem)').matches;
+function ouvrirAtelier() {
+  if (!surTelephone()) return;
+  document.body.classList.add('atelier-ouvert');
+  /* La feuille occupe le bas de l'écran : on remonte la vignette choisie dans
+     la bande restée libre, sinon on tape un texte qu'on ne voit pas changer. */
+  requestAnimationFrame(() => {
+    const el = document.querySelector('.v.actif');
+    if (!el) return;
+    const r = el.getBoundingClientRect();
+    const cible = window.innerHeight * 0.19;
+    const dy = r.top + r.height / 2 - cible;
+    if (Math.abs(dy) > 8) window.scrollBy({ top: dy, behavior: 'smooth' });
+  });
+}
+function fermerAtelier() {
+  document.body.classList.remove('atelier-ouvert');
+}
+document.getElementById('fermer-atelier').addEventListener('click', fermerAtelier);
+document.getElementById('voile-atelier').addEventListener('click', fermerAtelier);
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') fermerAtelier(); });
+/* Repasser en grand écran avec la feuille ouverte laissait la page bloquée
+   au défilement : la classe survivait au changement de largeur. */
+window.matchMedia('(max-width:61.99rem)').addEventListener('change', (e) => {
+  if (!e.matches) fermerAtelier();
+});
+
+rafraichirLegende();
+peindreAuto();
+peindreTags();
+peindreRecap();
 </script>
 </body>
 </html>
