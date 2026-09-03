@@ -1,0 +1,196 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>CV interactif — la vidéo et le prompt</title>
+<style>
+:root{--noir:#08080a;--panneau:#101015;--bord:#20202a;--blanc:#F4F5F8;--corps:#c9ccd4;
+      --attenue:#8d929c;--jaune:#FFE600;--violet:#A855F7}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--noir);color:var(--corps);line-height:1.62;
+  font-family:system-ui,-apple-system,"Segoe UI",sans-serif;padding:32px 18px 80px;
+  display:flex;flex-direction:column;align-items:center}
+.w{width:100%;max-width:780px}
+.eb{font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--jaune);font-weight:700}
+h1{font-size:clamp(25px,5.6vw,38px);color:var(--blanc);letter-spacing:-.03em;line-height:1.12;margin:10px 0 12px}
+h1 em{font-style:normal;color:var(--jaune)}
+h2{font-size:12.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--jaune);
+  margin:40px 0 4px;font-weight:700}
+h2+.s{color:var(--attenue);font-size:14px;margin-bottom:14px}
+p{font-size:15px}
+.duo{display:flex;gap:20px;flex-wrap:wrap;align-items:flex-start;margin-top:20px}
+figure{flex:1 1 250px;max-width:290px}
+video{width:100%;border-radius:14px;display:block;box-shadow:0 20px 50px -20px #000}
+figcaption{font-size:13px;color:var(--attenue);margin-top:8px;text-align:center}
+.pts{flex:1 1 260px}
+ul{margin-left:19px}li{margin:9px 0;font-size:15px}
+li b{color:var(--blanc)}
+pre{background:#000;border:1px solid var(--bord);border-radius:14px;padding:18px;
+  overflow-x:auto;font-size:12.5px;line-height:1.55;color:#D6DBD9;max-height:520px;
+  white-space:pre-wrap;word-break:break-word}
+.bar{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap}
+button,a.b{font:inherit;font-size:14px;font-weight:700;padding:11px 18px;border-radius:10px;
+  border:1px solid var(--bord);background:var(--panneau);color:var(--blanc);cursor:pointer;
+  text-decoration:none}
+button.p{background:var(--jaune);color:#141400;border-color:var(--jaune)}
+.enc{background:var(--panneau);border:1px solid var(--bord);border-radius:14px;padding:18px 20px;margin-top:18px}
+.enc.att{border-color:var(--violet)}
+.enc h3{font-size:15.5px;color:var(--blanc);margin-bottom:8px}
+code{background:#000;padding:1px 6px;border-radius:4px;font-size:13px;color:var(--jaune)}
+</style>
+<div class="w">
+<div class="eb">CV interactif · 3 septembre 2026</div>
+<h1>La vidéo, et <em>le prompt qui le reproduit</em>.</h1>
+<p>Le CV existe déjà et il est en ligne : <a href="../cv/" style="color:var(--jaune)">/cv/</a>.
+Ici il y a deux choses — une vidéo de 28 s pour le montrer, et le prompt complet pour en
+refaire un identique pour quelqu'un d'autre.</p>
+
+<div class="duo">
+  <figure><video src="video.mp4" controls playsinline poster="cover.jpg"></video>
+    <figcaption><b>28,0 s</b> — captation réelle du CV</figcaption></figure>
+  <div class="pts">
+    <h2 style="margin-top:0">Ce qu'il y a dans la vidéo</h2>
+    <ul>
+      <li>La <b>vraie page</b>, filmée en largeur mobile pour que le texte se lise.</li>
+      <li>Le <b>clic sur le portrait</b> qui déclenche l'avatar — l'interaction qu'on vend.</li>
+      <li>Trois plans avatar, méthode « le blanc » : <b>0 % de voix sur bouche fermée</b>.</li>
+      <li>Carton final : <b>Commente CV</b>.</li>
+    </ul>
+  </div>
+</div>
+
+<h2>Le méga-prompt</h2>
+<div class="s">Autonome : il décrit le système de design, les 8 sections, les 5 interactions
+et les contraintes non négociables. Il finit en demandant le contenu réel — pour qu'aucune
+ligne de CV ne soit inventée.</div>
+<div class="bar">
+  <button class="p" id="copier">Copier le prompt</button>
+  <a class="b" href="prompt.txt" download>Télécharger .txt</a>
+</div>
+<pre id="p">Construis un CV interactif en UN SEUL fichier HTML, autonome, sans framework et sans
+dépendance réseau autre que Google Fonts. Le fichier doit s&#x27;ouvrir en double-cliquant
+dessus et fonctionner hors ligne une fois les polices en cache.
+
+# CE QUE CE CV DOIT ÊTRE
+
+Un CV qu&#x27;un recruteur REGARDE au lieu de le lire. Pas une page de portfolio, pas un
+site : un CV, avec la densité d&#x27;information d&#x27;un CV papier, mais vivant. Il doit
+rester imprimable en 2 pages A4 propres.
+
+# SYSTÈME DE DESIGN — à respecter exactement
+
+Jetons CSS sur :root :
+  --noir:#08080a   fond général
+  --panneau:#101015 cartes et encadrés
+  --bord:#20202a   filets et bordures
+  --blanc:#F4F5F8  titres
+  --corps:#c9ccd4  texte courant
+  --attenue:#8d929c mentions secondaires (dates, lieux)
+  --jaune:#FFE600  accent principal
+  --violet:#A855F7 accent secondaire
+
+Police unique : Outfit (Google Fonts), poids 300/400/600/700, avec repli
+-apple-system, sans-serif. Aucune autre famille.
+
+Règles typographiques : titres de section en majuscules, 12-13px,
+letter-spacing .18em, couleur --jaune, suivis d&#x27;un filet de 2px. Le nom en 44-56px,
+poids 700, letter-spacing -.02em. Texte courant 15px/1.65.
+
+# STRUCTURE — 8 sections, dans cet ordre
+
+1. En-tête    nom, titre, badge de disponibilité, ville et fuseau, années
+              d&#x27;expérience, langues, boutons de contact, bouton de téléchargement PDF
+2. Profil     3 paragraphes + une ligne de chiffres clés
+3. Expérience frise verticale, un poste = un noeud, entreprise en accent, dates en atténué
+4. Réalisations récentes  4 à 6 items concrets, une ligne de titre + une de résultat
+5. Compétences  puces arrondies, les 3 premières en accent, les autres en neutre
+6. Formation   même frise, plus compacte
+7. Sites livrés liste de liens avec une pastille par domaine
+8. Conditions + Contact direct
+
+Mise en page : grille 2 colonnes `1fr 62mm` au-dessus de 850px — colonne principale
+à gauche (profil, expérience, réalisations), colonne latérale à droite (compétences,
+formation, sites). Une seule colonne en dessous. Largeur maximale 850px, centrée.
+
+# LES INTERACTIONS — c&#x27;est ce qui fait le CV
+
+1. LE PORTRAIT QUI PARLE. Le portrait est un &lt;button&gt;, entouré d&#x27;un anneau en dégradé
+   jaune→violet qui tourne lentement. Au survol, la mention « Cliquez pour m&#x27;entendre »
+   apparaît. Au clic, une &lt;video muted loop playsinline&gt; en preload=&quot;none&quot; se
+   superpose au portrait en fondu et se joue : c&#x27;est un avatar qui parle. Un second
+   clic la met en pause et rend la photo. Utilise deux sources, .webm puis .mp4.
+
+2. RÉVÉLATION AU DÉFILEMENT. Un IntersectionObserver fait entrer chaque bloc
+   (opacité 0 → 1, translation de 18px vers le haut, 420ms, ease-out) UNE SEULE FOIS —
+   il faut appeler unobserve sur la cible dès qu&#x27;elle est vue, sinon les blocs
+   rejouent leur animation à chaque passage et ça donne le tournis.
+
+3. COMPTEURS. Les chiffres clés du profil comptent de 0 à leur valeur quand ils
+   entrent dans le cadre, sur 1,2s, en easing out. Même observer, branche séparée.
+
+4. RELIEF AU CURSEUR. Sur les cartes de la colonne latérale : mousemove qui calcule
+   la position relative du curseur et applique une rotation de ±4° maximum plus un
+   halo radial qui suit le pointeur. Remise à zéro en douceur sur mouseleave.
+
+5. PROGRESSION. Une barre fine en haut de page suit le défilement. Écouteur `scroll`
+   en { passive: true }, et recalcul sur `resize`.
+
+# ANIMATIONS CSS — une quinzaine de keyframes nommées en français
+
+respire (anneau du portrait), tourne (dégradé de l&#x27;anneau), halo, onde et ondeSon
+(l&#x27;écoute), veille et vivant (la pastille de disponibilité), trait (les filets de
+section qui se dessinent), monte et descend (entrées), glisse, fondu, touche,
+souffle, pulseNoeud (les points de la frise).
+
+# CE QUI EST NON NÉGOCIABLE
+
+- UN SEUL fichier. Le CSS et le JS sont en ligne dans le HTML. Seuls le portrait,
+  la vidéo d&#x27;avatar et le PDF sont des fichiers à côté.
+- Pas de bibliothèque d&#x27;animation obligatoire. Si tu utilises GSAP, embarque-le
+  localement — jamais un CDN.
+- `@media (prefers-reduced-motion: reduce)` désactive TOUTES les animations, y
+  compris les entrées au défilement. Ce n&#x27;est pas décoratif : c&#x27;est une exigence
+  d&#x27;accessibilité.
+- `@media print` : fond blanc, texte noir, deux colonnes conservées, animations et
+  boutons masqués, aucune coupure au milieu d&#x27;un poste. Le résultat doit tenir en
+  2 pages A4.
+- Points de rupture à 850px et 720px, testés au doigt sur 390px de large.
+- Le portrait a un `width` et un `height` explicites et `loading=&quot;eager&quot;` : c&#x27;est la
+  plus grosse image au-dessus de la ligne de flottaison.
+- La vidéo d&#x27;avatar est en `preload=&quot;none&quot;` : elle ne se télécharge qu&#x27;au clic.
+  Sans ça on impose 1 Mo à quelqu&#x27;un qui ne cliquera jamais.
+- Chaque bouton de contact est un vrai lien (`mailto:`, `https://wa.me/…`, `tel:`),
+  pas un onclick JavaScript.
+
+# CE QUE TU DOIS ME DEMANDER AVANT D&#x27;ÉCRIRE
+
+Le contenu réel : nom, titre, ville, années d&#x27;expérience, les postes avec dates et
+descriptions, les réalisations, les compétences, la formation, les liens, et les
+coordonnées à afficher. N&#x27;invente aucune ligne de CV — un CV inventé est inutilisable.
+</pre>
+
+<div class="enc att">
+  <h3>Ce qui est lisible à l'écran dans la vidéo</h3>
+  <p>Sur la captation du CV, on lit distinctement <b>ton adresse e-mail</b> et
+  <b>Saint-Denis, La Réunion</b>. Le numéro de téléphone n'apparaît pas — le bouton WhatsApp
+  ne l'affiche pas. Ce sont des informations déjà publiques sur ton CV en ligne, mais une
+  vidéo destinée aux réseaux les diffuse beaucoup plus largement. <b>Dis-moi ce que tu veux :</b>
+  les laisser, les flouter, ou au contraire en ajouter d'autres.</p>
+</div>
+
+<div class="enc">
+  <h3>Un détail à corriger avant diffusion</h3>
+  <p>La puce de compétences du CV affiche <code>n8n · Make</code>. La tâche
+  <code>cv-pdf-a-reparer</code> de ton tableau demande justement de retirer les mentions de Make —
+  elle est encore « en attente de ta validation », donc je n'y ai pas touché. Mais c'est visible
+  dans la vidéo.</p>
+</div>
+</div>
+<script>
+document.getElementById('copier').addEventListener('click',async()=>{
+  const b=document.getElementById('copier');
+  try{ await navigator.clipboard.writeText(document.getElementById('p').textContent);
+       b.textContent='Copié'; setTimeout(()=>b.textContent='Copier le prompt',1600); }
+  catch(e){ b.textContent='Copie refusée par le navigateur'; }
+});
+</script>
