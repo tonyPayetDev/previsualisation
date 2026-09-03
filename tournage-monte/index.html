@@ -32,7 +32,7 @@ et la vidéo revient montée — cartes posées aux bons instants, du bon côté
 
 <div class="duo">
   <figure><video src="video.mp4" controls playsinline poster="cover.jpg"></video>
-    <figcaption><b>15,85 s</b> — 4 cartes, 9 sous-titres</figcaption></figure>
+    <figcaption><b>57,1 s</b> — ta vraie prise · 8 cartes, 35 sous-titres</figcaption></figure>
   <div class="et">
     <h2 style="margin-top:0">Les trois gestes</h2>
     <ol>
@@ -44,8 +44,8 @@ et la vidéo revient montée — cartes posées aux bons instants, du bon côté
 </div>
 
 <h2>La commande</h2>
-<pre>Monte la session 2026-09-03-124437 de /tournage/ :
-node /work/autoboost-neon-videos/_moteur/monter-tournage.mjs 2026-09-03-124437</pre>
+<pre>Monte la session 2026-09-03-201804 de /tournage/ :
+node /work/autoboost-neon-videos/_moteur/monter-tournage.mjs 2026-09-03-201804</pre>
 <p class="s">Le moteur télécharge la prise et les repères depuis ton stockage, normalise en
 1080×1920, pose une carte par repère <b>du côté opposé à ta position</b>, et incruste les
 sous-titres. Une incrustation par passe — empiler fait tuer ffmpeg sans la moindre erreur.</p>
@@ -64,10 +64,25 @@ sous-titres. Une incrustation par passe — empiler fait tuer ffmpeg sans la moi
   précision (<code>[montre|le tableau des leads]</code>) ; sinon le sous-titre suffit.</p>
 </div>
 
+<div class="enc att">
+  <h3>Ce que ta prise a révélé — et qu'il faut corriger côté tournage</h3>
+  <p style="font-size:15px"><b>Tu as filmé en paysage, à 10 images par seconde.</b></p>
+  <ul style="margin-top:10px">
+    <li><b>Le paysage</b>, je l'ai traité : un recadrage 9:16 de force ne gardait que 35 % de la
+    largeur et <b>coupait tes mains</b> — exactement ce que les repères servent à souligner.
+    Le moteur resserre donc en 5:4 et pose l'image dans une bande, sur un fond flouté.</li>
+    <li><b>Les 10 i/s, non.</b> Ça vient de l'enregistrement du navigateur, pas du montage, et
+    aucun traitement ne réinvente les images manquantes. Le mouvement sera saccadé.</li>
+    <li>Ton micro sortait à <b>−33 dB</b> : inaudible sur un fil social. Remonté à −17,9 dB.</li>
+  </ul>
+  <p style="font-size:15px;margin-top:10px">Pour la prochaine : filme <b>en portrait</b> si tu
+  peux, et si le navigateur reste bloqué à 10 i/s, tourne avec l'appli caméra du téléphone puis
+  charge le fichier dans l'outil — le repli existe et pose les repères en relecture.</p>
+</div>
 <div class="enc">
-  <h3>Ce que cette vidéo ne prouve pas</h3>
-  <p style="font-size:15px">L'image verte est la <b>mire de test de Chrome</b> : cette session
-  vient du test automatisé, pas d'une vraie prise. Le mécanisme est vérifié de bout en bout —
-  le rendu avec ton visage reste à faire, avec ton téléphone.</p>
+  <h3>Un repère que ton pouce a rattrapé</h3>
+  <p style="font-size:15px">Le dernier repère était prévu à <b>39,38 s</b> par le prompteur, mais
+  tu l'as confirmé à <b>52,56 s</b> — treize secondes plus tard. Le montage a suivi ton pouce,
+  pas le défilé. C'est précisément à ça que servent les trois horodatages.</p>
 </div>
 </div>
