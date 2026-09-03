@@ -61,6 +61,10 @@ h1 em{font-style:normal;color:var(--or)}
 .chapo{color:var(--doux);font-size:13.5px;line-height:1.5;margin-bottom:18px}
 label.lb{display:block;font-size:12px;font-weight:700;letter-spacing:.06em;
   text-transform:uppercase;color:var(--doux);margin:18px 0 7px}
+.lien-ex{float:right;font:inherit;font-size:12.5px;font-weight:700;letter-spacing:.02em;
+  background:none;border:0;color:var(--or);cursor:pointer;padding:0;text-decoration:underline;
+  text-underline-offset:3px}
+.lien-ex:active{opacity:.6}
 textarea{width:100%;min-height:190px;background:var(--carte);color:var(--texte);
   border:1px solid var(--trait);border-radius:12px;padding:13px;font:inherit;
   font-size:15px;line-height:1.6;resize:vertical}
@@ -208,7 +212,9 @@ pre.json{margin-top:10px;background:#101016;border:1px solid var(--trait);border
   À la fin tu récupères la vidéo <b>et</b> le fichier des repères — c'est lui qui dit au
   moteur de montage à quelle seconde faire entrer une carte, et de quel côté.</p>
 
-  <label class="lb" for="txt">Ton script</label>
+  <label class="lb" for="txt">Ton script
+    <button type="button" id="ex" class="lien-ex">charger un exemple</button>
+  </label>
   <textarea id="txt" placeholder="Colle ton script ici. Une ligne = un bloc qui défile."></textarea>
 
   <div class="palette" id="pal"></div>
@@ -362,9 +368,42 @@ function erreur1(t){ const m = $('#msg1'); m.textContent = t; m.classList.add('o
 
 /* ═══ 1 · Script ═══════════════════════════════════════════════════════ */
 const txt = $('#txt');
+/* Un exemple RÉEL : il se tourne tel quel, il utilise huit repères différents,
+   et ses chiffres sont vrais (relevé du dépôt le 03/09). Un exemple inventé
+   apprendrait la syntaxe mais donnerait une vidéo qui ment. */
+const EXEMPLE = [
+  "[centre] Si tu as une entreprise et que tu ne publies rien, tu perds des clients. Chaque jour.",
+  "",
+  "[droite|le téléphone qui sonne] Un appel manqué à midi, c'est une réservation partie chez le voisin.",
+  "",
+  "[montre|les trois outils] Moi, j'ai trois choses qui tournent pendant que je travaille.",
+  "",
+  "[compte|un, deux, trois] Un : les vidéos. Deux : les relances. Trois : les rendez-vous.",
+  "",
+  "[avance] Aucune des trois ne me demande d'ouvrir un logiciel de montage.",
+  "",
+  "[pause] Aucune.",
+  "",
+  "[gauche|le compteur] Cent trois vidéos publiées cette semaine. Je n'en ai monté aucune à la main.",
+  "",
+  "[recule] Et ça, ce n'est pas une promesse. C'est le dépôt qui le dit.",
+  "",
+  "[centre] Commente OUTILS, je te montre comment c'est branché."
+].join("\n");
+
 try { txt.value = localStorage.getItem(CLE_BROUILLON) || ''; } catch(e){}
 
 /* La palette d'insertion. Elle remplace la frappe de crochets au doigt. */
+$('#ex').addEventListener('click', () => {
+  /* Écraser un script en cours sans prévenir serait la pire des surprises. */
+  if (txt.value.trim() && !confirm("Remplacer ton script par l'exemple ?")) return;
+  txt.value = EXEMPLE;
+  majApercu();
+  txt.focus();
+  txt.setSelectionRange(0, 0);
+  txt.scrollTop = 0;
+});
+
 $('#pal').innerHTML = Object.entries(TAGS)
   .filter(([k]) => k !== 'libre')
   .map(([k,v]) => `<button data-t="${k}"><span>${v.ic}</span><b>[${k}]</b></button>`).join('');
