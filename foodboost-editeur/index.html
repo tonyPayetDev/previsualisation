@@ -356,9 +356,10 @@ button.petit{min-height:38px;padding:0 14px;font-size:.82rem}
       <p class="aide" style="margin:6px 0 0">Les hashtags sont ajoutés à la fin —
         cinq au maximum, sinon Instagram refuse le post.</p>
       <label class="bascule">
-        <input type="checkbox" id="auto">
-        <span><b>Mode automatique</b> — publier sans passer par la validation de Tony.
-          <em id="auto-etat">Désactivé.</em></span>
+        <input type="checkbox" id="auto" checked>
+        <span><b>Publication directe</b> — le post part sur @foodboost dès que tu confirmes.
+          Décoche si tu préfères que Tony relise avant.
+          <em id="auto-etat">Activé.</em></span>
       </label>
     </div>
   </section>
@@ -647,17 +648,24 @@ const HASH_FAMILLE = {
 const calculerTags = () => {
   const ville = sansAccent(document.getElementById('ville').value);
   const fam = document.getElementById('famille').value;
-  const t = ['reunion974'];
+  /* Le nom de l'etablissement passe DEVANT : c'est le seul hashtag qui
+     ramene quelqu'un vers lui. Les generiques ne servent qu'a completer,
+     et ce sont eux qu'on coupe quand on atteint le plafond de cinq. */
+  const nom = sansAccent(document.getElementById('nom').value);
+  const t = [];
+  if (nom && nom.length >= 3) t.push(nom);
   (HASH_FAMILLE[fam] || ['restaurant']).forEach((x) => t.push(x));
   if (ville) t.push(ville + '974');
-  t.push('foodreunion');
+  t.push('reunion974', 'foodreunion');
   return [...new Set(t)].slice(0, 5);
 };
 const peindreTags = () => {
   const z = document.getElementById('tags');
   if (z) z.innerHTML = calculerTags().map((t) => '<b>#' + t + '</b>').join('');
 };
-['ville', 'famille'].forEach((id) => {
+/* 'nom' compris : le hashtag de l'etablissement doit suivre la saisie,
+   sinon on affiche des tags perimes jusqu'au prochain changement de ville. */
+['nom', 'ville', 'famille'].forEach((id) => {
   const e = document.getElementById(id);
   if (e) e.addEventListener('change', peindreTags);
   if (e) e.addEventListener('input', peindreTags);
@@ -764,7 +772,10 @@ const peindreAuto = () => {
   peindreRecap();
 };
 if (champAuto) {
-  try { champAuto.checked = localStorage.getItem('fb-auto') === '1'; } catch (e) {}
+  try {
+    const memo = localStorage.getItem('fb-auto');
+    champAuto.checked = (memo === null) ? true : (memo === '1');
+  } catch (e) { champAuto.checked = true; }
   champAuto.addEventListener('change', () => {
     try { localStorage.setItem('fb-auto', champAuto.checked ? '1' : '0'); } catch (e) {}
     peindreAuto();
