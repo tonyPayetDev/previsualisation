@@ -1,0 +1,73 @@
+<!doctype html>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Du tournage au montage</title>
+<style>
+:root{--bg:#0a0a0a;--carte:#141419;--trait:#23232c;--or:#FFE600;--doux:#8B8B96}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:#C9CCD4;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;
+ line-height:1.62;padding:32px 18px 72px;display:flex;flex-direction:column;align-items:center}
+.w{width:100%;max-width:700px}
+h1{font-size:clamp(24px,5.4vw,34px);color:#F3F3F7;letter-spacing:-.03em;line-height:1.14;margin-bottom:10px}
+h1 em{font-style:normal;color:var(--or)}
+p.s{color:var(--doux);font-size:15px;max-width:60ch}
+h2{font-size:12.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--or);margin:34px 0 10px}
+.duo{display:flex;gap:20px;flex-wrap:wrap;margin-top:20px;align-items:flex-start}
+figure{flex:0 1 240px;max-width:250px}
+video{width:100%;border-radius:14px;display:block;box-shadow:0 20px 50px -20px #000}
+figcaption{font-size:13px;color:var(--doux);margin-top:8px;text-align:center}
+.et{flex:1 1 280px}
+ol{margin-left:20px}li{margin:11px 0;font-size:15px}li b{color:#F3F3F7}
+pre{background:#000;border:1px solid var(--trait);border-radius:12px;padding:14px 16px;
+ overflow-x:auto;font-size:12.5px;line-height:1.55;color:#D6DBD9;white-space:pre-wrap;word-break:break-all}
+.enc{background:var(--carte);border:1px solid var(--trait);border-radius:14px;padding:18px 20px;margin-top:16px}
+.enc.att{border-color:#FF6B5A}
+.enc h3{font-size:15.5px;color:#F3F3F7;margin-bottom:8px}
+code{background:#000;padding:1px 6px;border-radius:4px;font-size:13px;color:var(--or)}
+</style>
+<div class="w">
+<h1>Du tournage <em>au montage</em></h1>
+<p class="s">La chaîne est fermée : tu te filmes sur <code>/tournage/</code>, tu colles une ligne,
+et la vidéo revient montée — cartes posées aux bons instants, du bon côté, sous-titres incrustés.</p>
+
+<div class="duo">
+  <figure><video src="video.mp4" controls playsinline poster="cover.jpg"></video>
+    <figcaption><b>15,85 s</b> — 4 cartes, 9 sous-titres</figcaption></figure>
+  <div class="et">
+    <h2 style="margin-top:0">Les trois gestes</h2>
+    <ol>
+      <li>Tu tournes sur <b>/tournage/</b> et tu envoies.</li>
+      <li>Tu appuies sur <b>« Copier la commande »</b>.</li>
+      <li>Tu me la colles. Je rends la vidéo montée.</li>
+    </ol>
+  </div>
+</div>
+
+<h2>La commande</h2>
+<pre>Monte la session 2026-09-03-124437 de /tournage/ :
+node /work/autoboost-neon-videos/_moteur/monter-tournage.mjs 2026-09-03-124437</pre>
+<p class="s">Le moteur télécharge la prise et les repères depuis ton stockage, normalise en
+1080×1920, pose une carte par repère <b>du côté opposé à ta position</b>, et incruste les
+sous-titres. Une incrustation par passe — empiler fait tuer ffmpeg sans la moindre erreur.</p>
+
+<div class="enc">
+  <h3>Les sous-titres ne passent par aucune transcription</h3>
+  <p style="font-size:15px">Ton script est déjà connu : chaque repère porte son texte et sa
+  fenêtre. Les mots sont répartis dans cette fenêtre au prorata des caractères. Rien à payer,
+  et surtout <b>aucun risque que Whisper invente un mot</b> que tu n'as pas dit.</p>
+</div>
+
+<div class="enc att">
+  <h3>Un défaut trouvé au premier essai</h3>
+  <p style="font-size:15px">Les cartes affichaient <b>« Place-toi à droite »</b> — la consigne
+  de tournage, montrée au spectateur. Maintenant une carte n'apparaît que si tu as écrit une
+  précision (<code>[montre|le tableau des leads]</code>) ; sinon le sous-titre suffit.</p>
+</div>
+
+<div class="enc">
+  <h3>Ce que cette vidéo ne prouve pas</h3>
+  <p style="font-size:15px">L'image verte est la <b>mire de test de Chrome</b> : cette session
+  vient du test automatisé, pas d'une vraie prise. Le mécanisme est vérifié de bout en bout —
+  le rendu avec ton visage reste à faire, avec ton téléphone.</p>
+</div>
+</div>

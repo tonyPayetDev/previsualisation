@@ -65,6 +65,13 @@ label.lb{display:block;font-size:12px;font-weight:700;letter-spacing:.06em;
   background:none;border:0;color:var(--or);cursor:pointer;padding:0;text-decoration:underline;
   text-underline-offset:3px}
 .lien-ex:active{opacity:.6}
+.pont{margin-top:18px;background:var(--carte);border:1px solid var(--trait);
+  border-left:4px solid var(--or);border-radius:14px;padding:16px 18px}
+.pont-t{font-size:12.5px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--or)}
+.pont-p{font-size:14px;color:var(--doux);margin:8px 0 12px;line-height:1.55}
+.pont-c{background:#000;border:1px solid var(--trait);border-radius:10px;padding:12px 14px;
+  font-family:ui-monospace,Menlo,monospace;font-size:12.5px;line-height:1.5;color:#D6DBD9;
+  overflow-x:auto;white-space:pre-wrap;word-break:break-all;margin-bottom:10px}
 textarea{width:100%;min-height:190px;background:var(--carte);color:var(--texte);
   border:1px solid var(--trait);border-radius:12px;padding:13px;font:inherit;
   font-size:15px;line-height:1.6;resize:vertical}
@@ -315,6 +322,16 @@ pre.json{margin-top:10px;background:#101016;border:1px solid var(--trait);border
   <p class="chapo" id="e4cha">La vidéo et les repères partent sur ton stockage.</p>
   <div id="etapes"></div>
   <div id="liens"></div>
+
+  <div class="pont" id="pont" hidden>
+    <div class="pont-t">Faire monter la vidéo</div>
+    <p class="pont-p">Colle cette ligne à Claude Code. Il télécharge la prise et les repères,
+    pose les cartes du côté opposé à toi, et incruste les sous-titres à partir de ton script —
+    sans transcription.</p>
+    <pre class="pont-c" id="cmd"></pre>
+    <button class="b" id="copier">Copier la commande</button>
+  </div>
+
   <label class="lb">Le fichier de repères</label>
   <pre class="json" id="apjson"></pre>
   <div class="duo" style="margin-top:14px">
@@ -939,10 +956,29 @@ $('#valider').addEventListener('click', async () => {
     const r2 = await envoyer(bj, dossier + '/reperes.json', 'reperes.json', 'application/json');
     et(2, 'ok', Math.round(jsonTexte.length/1024*10)/10 + ' Ko');
     $('#liens').innerHTML += `<a class="lien" href="${r2.url || (base+dossier+'/reperes.json')}" target="_blank" rel="noopener">${r2.url || (base+dossier+'/reperes.json')}</a>`;
-    $('#e4cha').textContent = 'Envoyé. Donne le lien du reperes.json au moteur de montage.';
+    $('#e4cha').textContent = 'Envoyé. La prise et les repères sont en ligne.';
+    /* Le pont vers le montage : une ligne à coller, rien à retenir. */
+    $('#cmd').textContent =
+      'Monte la session ' + sessionId + ' de /tournage/ : '
+      + 'node /work/autoboost-neon-videos/_moteur/monter-tournage.mjs ' + sessionId;
+    $('#pont').hidden = false;
   } catch(e){
     et(2, 'ko', 'échec');
     $('#liens').innerHTML += `<div class="lien" style="color:#ffb4ac">Repères non envoyés — ${esc(e.message)}<br>Appuie sur « Garder le JSON » : c'est le fichier qui compte.</div>`;
+  }
+});
+
+$('#copier').addEventListener('click', async () => {
+  const b = $('#copier');
+  try {
+    await navigator.clipboard.writeText($('#cmd').textContent);
+    b.textContent = 'Copié'; setTimeout(() => b.textContent = 'Copier la commande', 1800);
+  } catch(e){
+    /* Le presse-papier est refusé hors HTTPS ou sans geste : on sélectionne
+       le texte pour qu'il reste copiable à la main. */
+    const r = document.createRange(); r.selectNodeContents($('#cmd'));
+    const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r);
+    b.textContent = 'Sélectionné — copie à la main';
   }
 });
 
