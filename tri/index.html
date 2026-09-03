@@ -332,7 +332,7 @@ video{max-height:100%;max-width:100%;aspect-ratio:9/16;background:#000;
      Un envoi qui échoue est réessayé et reste affiché : jamais de silence. */
   var API = 'https://n7n.automatisationboost.com/webhook/video-decision';
   var CLEV = 'tri_videos';
-  var vids = [], vue = [], vdeci = {}, j = 0, famille = '';
+  var vids = [], vue = [], vdeci = {}, j = 0, famille = '', nbRefus = null;
   var file = [];              /* envois en attente : un échec ne perd rien */
   var enVol = false;
 
@@ -369,6 +369,17 @@ video{max-height:100%;max-width:100%;aspect-ratio:9/16;background:#000;
         dire('<b>envoi impossible</b> — je réessaie. Ne ferme pas la page.', 'ko');
       })
       .then(function(){ enVol = false; if (file.length) setTimeout(pousser, 1200); });
+  }
+
+  /* Ce qui est deja ecarte se redit a chaque fois qu'on revient sur l'onglet :
+     sinon l'info arrive avant que Tony regarde, et disparait. */
+  function rappelRefus(){
+    if (nbRefus === null) return;
+    if (nbRefus < 0)
+      dire('<b>Registre des refus injoignable</b> — une vidéo déjà écartée peut ' +
+           'réapparaître. Recharge avant de décider.', 'ko');
+    else
+      dire(nbRefus + ' vidéo(s) déjà au registre des refus · ✗ y écrit, ♥ écrit dans le Sheet de suivi.', '');
   }
 
   function filtrer(){
@@ -474,10 +485,11 @@ video{max-height:100%;max-width:100%;aspect-ratio:9/16;background:#000;
           vdeci[x.route] = { route: x.route, decision: 'croix', at: x.date, envoye: true };
       });
       ecrireV();
+      nbRefus = l2.length;
       j = premiereNonTrieeV();
-      if (mode === 'videos') afficherVideos();
-      if (mode === 'videos') dire(l2.length + ' vidéo(s) déjà au registre des refus.', '');
+      if (mode === 'videos'){ afficherVideos(); rappelRefus(); }
     }).catch(function(){
+      nbRefus = -1;
       j = premiereNonTrieeV();
       if (mode === 'videos'){
         afficherVideos();
@@ -505,7 +517,7 @@ video{max-height:100%;max-width:100%;aspect-ratio:9/16;background:#000;
     $('badgeVoix').classList.remove('on');
     v.removeAttribute('src'); v.removeAttribute('poster'); v.load();
     try { localStorage.setItem('tri_onglet', m); } catch(e){}
-    if (c) afficherClips(); else afficherVideos();
+    if (c) afficherClips(); else { afficherVideos(); rappelRefus(); }
   }
   $('ongClips').addEventListener('click', function(){ versMode('clips'); });
   $('ongVideos').addEventListener('click', function(){ versMode('videos'); });
