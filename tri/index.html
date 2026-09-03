@@ -28,9 +28,10 @@ body{background:var(--noir);color:#f2f0f5;
 :focus-visible{outline:2px solid #fff;outline-offset:2px}
 [hidden]{display:none!important}
 
-/* ── Les deux onglets ───────────────────────────────────────────────────── */
+/* ── Les trois onglets ───────────────────────────────────────────────────── */
 .onglets{flex:0 0 auto;display:grid;grid-template-columns:1fr 1fr;gap:6px;
   padding:calc(8px + env(safe-area-inset-top)) 14px 0}
+.onglets.t3{grid-template-columns:1fr 1fr 1fr}
 .onglets button{padding:11px 8px;border-radius:10px 10px 0 0;border:1px solid var(--trait);
   border-bottom:none;background:#0d0d12;color:var(--doux);font:inherit;font-size:13px;
   font-weight:600;letter-spacing:.05em;cursor:pointer;min-height:44px}
@@ -103,6 +104,30 @@ video{max-height:100%;max-width:100%;aspect-ratio:9/16;background:#000;
 #bCoeur{border-color:var(--oui)}         #bCoeur .k{color:var(--oui)}
 #bStylo{border-color:#FFB020}            #bStylo .k{color:#FFB020}
 .actions.q3{grid-template-columns:repeat(3,1fr)}
+.creer{flex:1 1 auto;overflow-y:auto;padding:14px 2px 20px}
+.creer .cl{display:block;font-size:12px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--or);font-weight:700;margin:16px 0 7px}
+.creer .cl .mini{float:right;font:inherit;font-size:11px;font-weight:700;letter-spacing:.02em;
+  text-transform:none;background:none;border:0;color:#8B8B96;text-decoration:underline;cursor:pointer}
+.creer select,.creer textarea,.creer input[type=text]{width:100%;background:#0f0f14;color:#F3F3F7;
+  border:1px solid var(--trait);border-radius:12px;padding:13px;font:inherit;font-size:15.5px;
+  min-height:48px}
+.creer textarea{resize:vertical}
+.caide{font-size:13px;color:#8B8B96;margin-top:7px;line-height:1.5}
+.caide a{color:var(--or)}
+.ctags{display:flex;flex-wrap:wrap;gap:8px}
+.ctags button{font:inherit;font-size:14px;font-weight:600;padding:10px 14px;border-radius:999px;
+  border:1px solid var(--trait);background:#0f0f14;color:#C9CCD4;cursor:pointer;min-height:44px}
+.ctags button.on{background:var(--or);color:#141400;border-color:var(--or)}
+.cbar{display:flex;gap:9px;margin-top:20px}
+.cbar button{flex:1 1 0;font:inherit;font-size:15px;font-weight:700;padding:14px 10px;
+  border-radius:12px;border:1px solid var(--trait);background:#0f0f14;color:#C9CCD4;cursor:pointer}
+.cbar button.p{background:var(--or);color:#141400;border-color:var(--or)}
+.ccmd{background:#000;border:1px solid var(--trait);border-radius:12px;padding:13px;margin-top:14px;
+  font-family:ui-monospace,Menlo,monospace;font-size:12.5px;line-height:1.55;color:#D6DBD9;
+  white-space:pre-wrap;word-break:break-word;max-height:260px;overflow-y:auto}
+#cCopier{width:100%;margin-top:10px;font:inherit;font-size:15px;font-weight:700;padding:14px;
+  border-radius:12px;border:1px solid var(--or);background:var(--or);color:#141400;cursor:pointer}
 .voile{position:fixed;inset:0;background:rgba(6,6,8,.86);z-index:60;display:flex;
   align-items:flex-end;justify-content:center;backdrop-filter:blur(4px)}
 .voile[hidden]{display:none}
@@ -140,9 +165,10 @@ video{max-height:100%;max-width:100%;aspect-ratio:9/16;background:#000;
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 
-<div class="onglets">
-  <button id="ongClips" class="on">CLIPS <i>la matière des hooks</i></button>
+<div class="onglets t3">
+  <button id="ongClips" class="on">CLIPS <i>la matière</i></button>
   <button id="ongVideos">VIDÉOS <i>croix ou cœur</i></button>
+  <button id="ongCreer">CRÉER <i>une nouvelle</i></button>
 </div>
 
 <div class="haut">
@@ -204,6 +230,29 @@ video{max-height:100%;max-width:100%;aspect-ratio:9/16;background:#000;
     </div>
   </div>
 </div>
+
+<section class="creer" id="panCreer" hidden>
+  <label class="cl" for="cStyle">Le style</label>
+  <select id="cStyle"></select>
+  <p class="caide" id="cStyleAide"></p>
+
+  <label class="cl" for="cSujet">De quoi ça parle</label>
+  <textarea id="cSujet" rows="4" placeholder="Le sujet, l'angle, ce que tu veux dire. Écris comme tu parles."></textarea>
+
+  <label class="cl">Hashtags <span id="cNbTags">3</span>/5
+    <button type="button" class="mini" id="cResetTags">remettre les 3</button></label>
+  <div class="ctags" id="cTags"></div>
+
+  <label class="cl" for="cMot">Le mot à commenter</label>
+  <input id="cMot" type="text" placeholder="OUTILS, MENU, PROMPT…" autocapitalize="characters">
+
+  <div class="cbar">
+    <button id="cValider" class="p">Valider et préparer</button>
+    <button id="cSouci">Un souci sur ce style</button>
+  </div>
+  <pre class="ccmd" id="cCmd" hidden></pre>
+  <button class="p" id="cCopier" hidden>Copier la commande</button>
+</section>
 
 <div class="depot" id="depot">
   <div class="zone" id="zone">
@@ -547,23 +596,141 @@ video{max-height:100%;max-width:100%;aspect-ratio:9/16;background:#000;
   /* ═══════════════ bascule d'onglet ═══════════════ */
   function versMode(m){
     mode = m;
-    var c = m === 'clips';
+    var c = m === 'clips', vd = m === 'videos', cr = m === 'creer';
     $('ongClips').classList.toggle('on', c);
-    $('ongVideos').classList.toggle('on', !c);
+    $('ongVideos').classList.toggle('on', vd);
+    $('ongCreer').classList.toggle('on', cr);
+    /* CRÉER n'est pas un tri : ni lecteur, ni boutons de décision, ni dépôt. */
+    $('panCreer').hidden = !cr;
+    document.querySelector('.scene').hidden = cr;
     $('outilsClips').hidden = !c;
-    $('outilsVideos').hidden = c;
+    $('outilsVideos').hidden = !vd;
     $('actClips').hidden = !c;
-    $('actVideos').hidden = c;
+    $('actVideos').hidden = !vd;
     $('tags').hidden = !c;
     $('zoneNote').hidden = !c;
-    $('etat').hidden = c;
+    $('etat').hidden = !vd;
+    if (cr){ try { localStorage.setItem('tri_onglet', m); } catch(e){} return; }
     $('badgeVoix').classList.remove('on');
     v.removeAttribute('src'); v.removeAttribute('poster'); v.load();
     try { localStorage.setItem('tri_onglet', m); } catch(e){}
     if (c) afficherClips(); else { afficherVideos(); rappelRefus(); }
   }
+  /* ═══════════════ onglet CRÉER ═══════════════
+     Huit styles, tous déjà montés au moins une fois. Chacun renvoie vers un
+     exemple réel : un style qu'on ne peut pas montrer n'est pas un style, c'est
+     une intention. */
+  var STYLES = [
+    { id:'cartes-avatar', nom:'Cartes numérotées + avatar',
+      aide:"Un compteur, une carte par point, une jauge de progression, l'avatar qui ouvre. Le plus lisible pour une liste.",
+      ex:'sept-choses', duree:'40-45 s' },
+    { id:'prompt-reveal', nom:'Prompt reveal',
+      aide:"Le rendu IA en plein cadre, le prompt qui défile en dessous, l'écran qui se verrouille, puis le mot à commenter.",
+      ex:'', duree:'25-30 s' },
+    { id:'journal-ia', nom:'Journal IA',
+      aide:"4 à 6 brèves avec leurs chiffres et leurs sources, deux running gags, avatar en ponctuation.",
+      ex:'', duree:'45-60 s' },
+    { id:'split', nom:'Split b-roll / avatar',
+      aide:"B-roll en haut, toi en bas dans une carte arrondie, la légende sur la couture.",
+      ex:'', duree:'20-30 s' },
+    { id:'beatsync', nom:'Beat-sync images',
+      aide:"Plusieurs visuels coupés sur le rythme, grille de beats mesurée sur la piste.",
+      ex:'foodboost-post-demo', duree:'15-20 s' },
+    { id:'vitrine', nom:'Vitrine plats (FoodBoost)',
+      aide:"Cinémagraphes de plats, nom + accroche par plan, carton final. Pour un restaurant.",
+      ex:'foodboost-post-demo', duree:'9-20 s' },
+    { id:'capture', nom:'Capture commentée',
+      aide:"Un site ou une page filmée qui défile, avec des cartes qui entrent aux bons moments.",
+      ex:'cv-interactif', duree:'30-40 s' },
+    { id:'essai', nom:'Essai contemplatif',
+      aide:"Long, lent, très peu de texte. Une idée suivie jusqu'au bout, sans CTA qui pousse.",
+      ex:'', duree:'3-7 min' },
+  ];
+  /* Relevés sur ses 40 derniers posts TikTok publiés, pas supposés. */
+  var TAGS3 = ['automatisation', 'ia', 'n8n'];
+  var TAGS_SUGG = ['automatisation','ia','n8n','videoIA','freelance','veilleIA',
+                   'AutomationBoost','prompt','seedance','contenu','claudecode','reunion'];
+  var tagsChoisis = new Set(TAGS3);
+
+  function remplirStyles(){
+    var sel = $('cStyle');
+    sel.innerHTML = STYLES.map(function(x){
+      return '<option value="' + x.id + '">' + x.nom + ' — ' + x.duree + '</option>'; }).join('');
+    majAide();
+  }
+  function styleCourant(){ return STYLES.filter(function(x){ return x.id === $('cStyle').value; })[0]; }
+  function majAide(){
+    var x = styleCourant(); if (!x) return;
+    $('cStyleAide').innerHTML = x.aide +
+      (x.ex ? ' <a href="/' + x.ex + '/" target="_blank" rel="noopener">voir un exemple</a>'
+            : ' <i>(pas encore d\'exemple en ligne)</i>');
+  }
+  function dessinerTagsC(){
+    var el = $('cTags'); el.innerHTML = '';
+    TAGS_SUGG.forEach(function(t){
+      var b = document.createElement('button'); b.type = 'button'; b.textContent = '#' + t;
+      if (tagsChoisis.has(t)) b.className = 'on';
+      b.addEventListener('click', function(){
+        if (tagsChoisis.has(t)) { tagsChoisis.delete(t); b.classList.remove('on'); }
+        else {
+          /* Cinq maximum : Instagram refuse au-dela et le post part en echec. */
+          if (tagsChoisis.size >= 5){ dire('<b>Cinq hashtags maximum</b> — Instagram rejette au-delà.', 'ko'); return; }
+          tagsChoisis.add(t); b.classList.add('on');
+        }
+        $('cNbTags').textContent = tagsChoisis.size;
+      });
+      el.appendChild(b);
+    });
+    $('cNbTags').textContent = tagsChoisis.size;
+  }
+
+  $('cStyle').addEventListener('change', majAide);
+  $('cResetTags').addEventListener('click', function(){
+    tagsChoisis = new Set(TAGS3); dessinerTagsC();
+  });
+
+  $('cValider').addEventListener('click', function(){
+    var x = styleCourant();
+    var sujet = $('cSujet').value.trim();
+    var mot = $('cMot').value.trim().toUpperCase();
+    if (!sujet){ dire('<b>Dis de quoi ça parle</b> — sans sujet je ne peux rien monter.', 'ko'); return; }
+    var brief = 'Fais-moi une vidéo.\n\n'
+      + 'Style   : ' + x.nom + ' (' + x.id + ', ' + x.duree + ')\n'
+      + 'Sujet   : ' + sujet + '\n'
+      + 'Hashtags: ' + [...tagsChoisis].map(function(t){ return '#' + t; }).join(' ') + '\n'
+      + (mot ? 'Mot-clé : commente ' + mot + '\n' : '')
+      + '\nRappels : ouvre sur l\'avatar qui parle (pas sur un b-roll), musique libre de droits '
+      + 'et pas celle de la dernière vidéo, CTA explicite à la fin.';
+    $('cCmd').textContent = brief;
+    $('cCmd').hidden = false; $('cCopier').hidden = false;
+    try { localStorage.setItem('tri-dernier-brief', brief); } catch(e){}
+    dire('<b>Brief prêt</b> — copie-le et passe-le-moi. Le rendu tourne sur ta machine, '
+       + 'pas dans le navigateur : c\'est cette ligne qui fait le pont.', 'ok');
+    $('cCmd').scrollIntoView({ behavior:'smooth', block:'nearest' });
+  });
+
+  $('cCopier').addEventListener('click', async function(){
+    var b = this;
+    try { await navigator.clipboard.writeText($('cCmd').textContent);
+          b.textContent = 'Copié'; } catch(e){ b.textContent = 'Copie refusée'; }
+    setTimeout(function(){ b.textContent = 'Copier la commande'; }, 1800);
+  });
+
+  $('cSouci').addEventListener('click', function(){
+    var x = styleCourant();
+    var quoi = prompt('Qu\'est-ce qui cloche avec « ' + x.nom + ' » ?');
+    if (!quoi || !quoi.trim()) return;
+    var txt = 'Souci sur le style « ' + x.nom + ' » (' + x.id + ') : ' + quoi.trim();
+    $('cCmd').textContent = txt; $('cCmd').hidden = false; $('cCopier').hidden = false;
+    try { localStorage.setItem('tri-dernier-souci', txt); } catch(e){}
+    dire('<b>Noté</b> — copie la ligne et passe-la-moi, je regarde le style.', 'ok');
+  });
+
+  remplirStyles(); dessinerTagsC();
+
   $('ongClips').addEventListener('click', function(){ versMode('clips'); });
   $('ongVideos').addEventListener('click', function(){ versMode('videos'); });
+  $('ongCreer').addEventListener('click', function(){ versMode('creer'); });
 
   /* ═══════════════ clavier ═══════════════ */
   document.addEventListener('keydown', function(e){
