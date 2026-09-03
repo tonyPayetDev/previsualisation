@@ -101,6 +101,28 @@ video{max-height:100%;max-width:100%;aspect-ratio:9/16;background:#000;
 #bGarder{border-color:var(--garder)}     #bGarder .k{color:var(--garder)}
 #bCroix{border-color:var(--coeur)}       #bCroix .k{color:var(--coeur)}
 #bCoeur{border-color:var(--oui)}         #bCoeur .k{color:var(--oui)}
+#bStylo{border-color:#FFB020}            #bStylo .k{color:#FFB020}
+.actions.q3{grid-template-columns:repeat(3,1fr)}
+.voile{position:fixed;inset:0;background:rgba(6,6,8,.86);z-index:60;display:flex;
+  align-items:flex-end;justify-content:center;backdrop-filter:blur(4px)}
+.voile[hidden]{display:none}
+.pan{width:100%;max-width:560px;background:#141419;border:1px solid #23232c;
+  border-radius:18px 18px 0 0;padding:20px 18px calc(20px + env(safe-area-inset-bottom));
+  max-height:88vh;overflow-y:auto}
+.pan-t{font-size:19px;font-weight:700;color:#F3F3F7;letter-spacing:-.02em}
+.pan-s{font-size:13.5px;color:#8B8B96;margin:4px 0 16px;word-break:break-word}
+.tags{display:flex;flex-wrap:wrap;gap:9px;margin-bottom:14px}
+.tags button{font:inherit;font-size:14.5px;font-weight:600;padding:11px 15px;border-radius:999px;
+  border:1px solid #23232c;background:#0f0f14;color:#C9CCD4;cursor:pointer;min-height:44px}
+.tags button.on{background:#FFB020;color:#1a1000;border-color:#FFB020}
+.tags button .n{opacity:.55;font-size:12px;margin-left:5px;font-variant-numeric:tabular-nums}
+.tags button.on .n{opacity:.7}
+.pan textarea{width:100%;background:#0f0f14;color:#F3F3F7;border:1px solid #23232c;
+  border-radius:12px;padding:12px;font:inherit;font-size:15px;resize:vertical}
+.pan-b{display:flex;gap:10px;margin-top:14px}
+.pan-b button{flex:1 1 0;font:inherit;font-size:15px;font-weight:700;padding:13px;
+  border-radius:12px;border:1px solid #23232c;background:#0f0f14;color:#C9CCD4;cursor:pointer}
+.pan-b button.p{background:#FFB020;color:#1a1000;border-color:#FFB020}
 
 /* ── Le bandeau d'état : jamais d'échec silencieux ──────────────────────── */
 .etat{flex:0 0 auto;padding:6px 14px 0;font-size:12.5px;color:var(--doux);
@@ -164,9 +186,23 @@ video{max-height:100%;max-width:100%;aspect-ratio:9/16;background:#000;
   <button id="bGarder"><span class="k">→</span><span class="l">GARDER</span></button>
 </div>
 
-<div class="actions q2" id="actVideos" hidden>
+<div class="actions q3" id="actVideos" hidden>
   <button id="bCroix"><span class="k">✗</span><span class="l">ABANDONNER</span></button>
+  <button id="bStylo"><span class="k">✎</span><span class="l">MODIFIER</span></button>
   <button id="bCoeur"><span class="k">♥</span><span class="l">PLANIFIER</span></button>
+</div>
+
+<div class="voile" id="voileMod" hidden>
+  <div class="pan">
+    <div class="pan-t">Qu'est-ce qu'il faut corriger&nbsp;?</div>
+    <div class="pan-s" id="modTitre"></div>
+    <div class="tags" id="modTags"></div>
+    <textarea id="modNote" rows="3" placeholder="Précise si besoin — ce que tu écris ici me revient tel quel."></textarea>
+    <div class="pan-b">
+      <button id="modAnnuler">Annuler</button>
+      <button id="modOk" class="p">Enregistrer</button>
+    </div>
+  </div>
 </div>
 
 <div class="depot" id="depot">
@@ -352,7 +388,11 @@ video{max-height:100%;max-width:100%;aspect-ratio:9/16;background:#000;
         var d = vdeci[t.corps.route];
         if (d) { d.envoye = true; d.reponse = res.j; ecrireV(); }
         if (res.j && res.j.ok){
-          if (t.corps.decision === 'refus')
+          if (t.corps.decision === 'modifier')
+            dire('<b>✎ noté</b> — « ' + t.titre + ' » est marquée à corriger' +
+                 ((t.corps.tags && t.corps.tags.length) ? ' (' + t.corps.tags.join(', ') + ')' : '') +
+                 '. Elle reste planifiable une fois refaite.', 'ok');
+          else if (t.corps.decision === 'refus')
             dire('<b>✗ enregistré</b> — « ' + t.titre + ' » est au registre des refus (' +
                  (res.j.refuses || '?') + ' au total). Elle ne pourra plus être planifiée.', 'ok');
           else if (res.j.action === 'append')
@@ -425,14 +465,17 @@ video{max-height:100%;max-width:100%;aspect-ratio:9/16;background:#000;
     return vue.length;
   }
 
-  function deciderVideo(quoi){
+  function deciderVideo(quoi, tags, note){
     if (j >= vue.length) return;
     var c = vue[j];
-    vdeci[c.route] = { route: c.route, decision: quoi, at: new Date().toISOString() };
+    vdeci[c.route] = { route: c.route, decision: quoi, tags: tags || [], note: note || '',
+                       at: new Date().toISOString() };
     ecrireV();
-    file.push({ titre: c.titre, corps: { route: c.route, titre: c.titre,
+    var corps = { route: c.route, titre: c.titre,
       url: 'https://previsualisation.automatisationboost.com/' + c.route + '/video.mp4',
-      decision: quoi === 'croix' ? 'refus' : 'planifier' } });
+      decision: quoi === 'croix' ? 'refus' : (quoi === 'stylo' ? 'modifier' : 'planifier') };
+    if (quoi === 'stylo'){ corps.tags = tags || []; corps.note = note || ''; }
+    file.push({ titre: c.titre, corps: corps });
     dire('Envoi en cours…', '');
     pousser();
     j++; afficherVideos();
@@ -553,6 +596,61 @@ video{max-height:100%;max-width:100%;aspect-ratio:9/16;background:#000;
   $('bDebut').addEventListener('click', function(){ deciderClip('HOOK_DEBUT'); });
   $('bFin').addEventListener('click', function(){ deciderClip('HOOK_FIN'); });
   $('bGarder').addEventListener('click', function(){ deciderClip('GARDER'); });
+  /* Les dix motifs de départ : ce qui a réellement dû être corrigé cette
+     semaine. La liste se réordonne ensuite par fréquence — le plus fréquent
+     en tête, parce que c'est celui qu'on va vouloir cocher le plus souvent. */
+  var TAGS = ['synchro', 'son', 'hook', 'trop long', 'sous-titres',
+              'cadrage', 'texte', 'musique', 'CTA', 'rythme'];
+  var CLET = 'tri-tags-freq';
+  var freq = {}; try { freq = JSON.parse(localStorage.getItem(CLET)) || {}; } catch(e){}
+  var choisis = new Set();
+
+  function dessinerTags(){
+    var el = $('modTags');
+    var tri = TAGS.slice().sort(function(a,b){
+      var d = (freq[b]||0) - (freq[a]||0);
+      return d !== 0 ? d : TAGS.indexOf(a) - TAGS.indexOf(b);
+    });
+    el.innerHTML = '';
+    tri.forEach(function(t){
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.innerHTML = t + (freq[t] ? '<span class="n">' + freq[t] + '</span>' : '');
+      if (choisis.has(t)) b.className = 'on';
+      b.addEventListener('click', function(){
+        if (choisis.has(t)) { choisis.delete(t); b.classList.remove('on'); }
+        else { choisis.add(t); b.classList.add('on'); }
+      });
+      el.appendChild(b);
+    });
+  }
+
+  function ouvrirModif(){
+    if (j >= vue.length) return;
+    choisis = new Set();
+    $('modTitre').textContent = vue[j].titre;
+    $('modNote').value = '';
+    dessinerTags();
+    $('voileMod').hidden = false;
+  }
+  function fermerModif(){ $('voileMod').hidden = true; }
+
+  $('bStylo').addEventListener('click', ouvrirModif);
+  $('modAnnuler').addEventListener('click', fermerModif);
+  $('voileMod').addEventListener('click', function(e){ if (e.target === this) fermerModif(); });
+  $('modOk').addEventListener('click', function(){
+    var tags = [...choisis];
+    var note = $('modNote').value.trim();
+    if (!tags.length && !note){
+      dire('<b>Dis au moins quoi corriger</b> — une étiquette ou un mot.', 'ko');
+      return;
+    }
+    tags.forEach(function(t){ freq[t] = (freq[t] || 0) + 1; });
+    try { localStorage.setItem(CLET, JSON.stringify(freq)); } catch(e){}
+    fermerModif();
+    deciderVideo('stylo', tags, note);
+  });
+
   $('bCroix').addEventListener('click', function(){ deciderVideo('croix'); });
   $('bCoeur').addEventListener('click', function(){ deciderVideo('coeur'); });
 
