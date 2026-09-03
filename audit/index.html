@@ -3,52 +3,102 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Audit gratuit — AutomatisationBoost</title>
-<meta name="description" content="Sept questions, deux minutes. Vous recevez un diagnostic écrit, et Tony vous rappelle sous 48 h.">
+<title>Audit — AutomatisationBoost</title>
+<meta name="description" content="Six écrans, deux minutes. Vos réponses complètent ce que j'ai déjà relevé sur votre site.">
 <meta name="robots" content="noindex,nofollow">
 <style>
 /* Charte tony.automatisationboost.com : nuit #0c0d18, turquoise #3dc4c2,
-   bleu #26729f, jaune #eab308, lavande #d1c5e0. */
+   bleu #26729f, jaune #eab308, lavande #d1c5e0.
+   Le formulaire est ouvert au pouce, depuis un message direct : tout ce qui
+   compte tient dans un écran, et le bouton d'avancement ne bouge jamais. */
 :root{
   --nuit:#0c0d18; --carte:#141626; --carte2:#1a1d30; --trait:#252943;
   --encre:#eef0f7; --doux:#9298b3; --faible:#6b7191;
   --turq:#3dc4c2; --bleu:#26729f; --jaune:#eab308; --lavande:#d1c5e0;
+  --rouge:#f2606f;
+  --barre: 56px;
 }
 *{margin:0;padding:0;box-sizing:border-box}
 html{-webkit-text-size-adjust:100%;background:var(--nuit)}
 body{
   background:var(--nuit); color:var(--encre);
   font:400 16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
-  padding:30px 17px calc(40px + env(safe-area-inset-bottom));
+  padding:0 17px calc(var(--pied,132px) + 26px + env(safe-area-inset-bottom));
+  overflow-wrap:break-word;
 }
-.wrap{max-width:600px;margin-inline:auto;display:flex;flex-direction:column;gap:0}
+.wrap{max-width:600px;margin-inline:auto}
 ::selection{background:var(--turq);color:#06201f}
 
-header{display:flex;flex-direction:column;gap:11px;padding-bottom:26px}
+/* ── La barre de progression : collée en haut, elle est la seule promesse
+      visible que ça se termine. ─────────────────────────────────────────── */
+.progres{
+  position:sticky;top:0;z-index:20;background:var(--nuit);
+  padding:14px 0 12px;margin-bottom:4px;
+}
+.progres[hidden]{display:none}
+.progres .rail{height:4px;background:var(--trait);border-radius:99px;overflow:hidden}
+.progres .jauge{height:100%;width:0;background:var(--turq);border-radius:99px;
+  transition:width .32s cubic-bezier(.2,.8,.3,1)}
+.progres .ligne{display:flex;justify-content:space-between;align-items:baseline;
+  margin-top:9px;font-size:13px;color:var(--faible)}
+.progres .ligne b{color:var(--doux);font-weight:600}
+
+header{display:flex;flex-direction:column;gap:10px;padding:28px 0 22px}
 .marque{font-size:17px;font-weight:800;letter-spacing:-.01em}
 .marque span{color:var(--jaune)}
-h1{font-size:clamp(28px,7.5vw,40px);line-height:1.06;font-weight:800;letter-spacing:-.03em;
-  text-wrap:balance;margin-top:6px}
-.intro{color:var(--doux);font-size:16px;line-height:1.62;max-width:52ch}
+h1{font-size:clamp(27px,7.2vw,38px);line-height:1.07;font-weight:800;letter-spacing:-.03em;
+  text-wrap:balance;margin-top:4px}
+.intro{color:var(--doux);font-size:16px;line-height:1.62}
 .intro b{color:var(--encre);font-weight:600}
 
+/* ── Le bloc « ce que j'ai déjà vu » : c'est lui qui fait remplir le reste ── */
+.releve{background:var(--carte);border:1px solid var(--trait);border-radius:15px;
+  padding:19px 18px;margin:22px 0 4px}
+.releve[hidden]{display:none}
+.releve .oeil{font-size:11.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--turq)}
+.releve h2{font-size:18.5px;font-weight:800;letter-spacing:-.02em;line-height:1.25;margin:9px 0 4px}
+.releve .quand{font-size:13px;color:var(--faible)}
+.releve ul{list-style:none;margin:15px 0 0;display:flex;flex-direction:column;gap:11px}
+.releve li{font-size:14.7px;line-height:1.5;color:var(--doux);padding-left:19px;position:relative}
+.releve li::before{content:"";position:absolute;left:0;top:8px;width:7px;height:7px;
+  border-radius:50%;background:var(--rouge)}
+.releve li.bon::before{background:var(--turq)}
+.releve li b{color:var(--encre);font-weight:600}
+.releve .suite{margin-top:15px;padding-top:14px;border-top:1px dashed var(--trait);
+  font-size:14.3px;line-height:1.58;color:var(--doux)}
+.releve .suite b{color:var(--encre);font-weight:600}
+
+/* ── Les questions ─────────────────────────────────────────────────────── */
+.etape{display:none}
+.etape.active{display:block;animation:entre .26s ease}
+@keyframes entre{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}
+.chapitre{padding:6px 0 2px}
+.chapitre .num{font-size:11.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--turq)}
+.chapitre h2{font-size:clamp(22px,5.8vw,28px);font-weight:800;letter-spacing:-.025em;
+  line-height:1.15;margin:8px 0 6px;text-wrap:balance}
+.chapitre p{color:var(--doux);font-size:15px;line-height:1.55}
+
 fieldset{border:0;padding:22px 0;border-top:1px solid var(--trait);
-  display:flex;flex-direction:column;gap:13px}
+  display:flex;flex-direction:column;gap:12px;margin-top:14px}
+fieldset[hidden]{display:none}
 legend{padding:0}
 .q{font-size:17.5px;font-weight:650;line-height:1.35;letter-spacing:-.012em;text-wrap:balance}
-.aide{color:var(--faible);font-size:13.5px;margin-top:-6px}
+.aide{color:var(--faible);font-size:13.5px;margin-top:-5px;line-height:1.5}
 
 .choix{display:flex;flex-direction:column;gap:9px}
 .choix.grille{display:grid;grid-template-columns:repeat(auto-fit,minmax(146px,1fr))}
 label.opt{
   display:flex;align-items:center;gap:11px;cursor:pointer;
   background:var(--carte);border:1px solid var(--trait);border-radius:11px;
-  padding:13px 15px;min-height:52px;font-size:15.3px;line-height:1.4;
+  padding:13px 15px;min-height:54px;font-size:15.3px;line-height:1.4;
   transition:border-color .16s,background .16s;
+  -webkit-tap-highlight-color:transparent;
 }
 label.opt:hover{border-color:#39406b}
 label.opt input{
-  appearance:none;flex:0 0 auto;width:20px;height:20px;border:1.5px solid #3b4166;
+  appearance:none;flex:0 0 auto;width:21px;height:21px;border:1.5px solid #3b4166;
   background:var(--carte2);cursor:pointer;transition:border-color .16s,background .16s;
 }
 label.opt input[type=radio]{border-radius:50%}
@@ -68,7 +118,7 @@ label.opt input:focus-visible{outline:2.5px solid var(--jaune);outline-offset:2p
 input[type=text],input[type=email],input[type=tel],textarea,select{
   width:100%;font:inherit;font-size:16px;color:var(--encre);
   background:var(--carte);border:1px solid var(--trait);border-radius:10px;
-  padding:13px 14px;min-height:50px;transition:border-color .16s;
+  padding:13px 14px;min-height:52px;transition:border-color .16s;
 }
 textarea{min-height:96px;resize:vertical;line-height:1.55}
 input:focus,textarea:focus,select:focus{outline:0;border-color:var(--turq)}
@@ -78,29 +128,55 @@ select{appearance:none;cursor:pointer;
   background-repeat:no-repeat;background-position:right 15px center;background-size:12px;
   padding-right:40px}
 
-.envoi{padding-top:24px;border-top:1px solid var(--trait);display:flex;flex-direction:column;gap:12px}
+/* ── La barre d'avancement, toujours au pouce ──────────────────────────── */
+.pied{
+  position:fixed;left:0;right:0;bottom:0;z-index:30;
+  background:linear-gradient(to top,var(--nuit) 68%,rgba(12,13,24,0));
+  padding:22px 17px calc(16px + env(safe-area-inset-bottom));
+}
+.pied[hidden]{display:none}
+.pied{pointer-events:none}
+.pied .dedans{max-width:600px;margin-inline:auto;display:flex;gap:10px;align-items:stretch;
+  pointer-events:auto}
 button{
   font:inherit;font-size:17px;font-weight:700;letter-spacing:-.01em;
   background:var(--turq);color:#06201f;border:0;border-radius:12px;
-  padding:18px;min-height:60px;cursor:pointer;
+  padding:17px;min-height:58px;cursor:pointer;flex:1;
   transition:transform .15s cubic-bezier(.2,.8,.3,1),opacity .16s;
 }
-button:hover{transform:translateY(-1px)}
 button:active{transform:translateY(1px)}
 button:disabled{opacity:.55;cursor:default;transform:none}
 button:focus-visible{outline:2.5px solid var(--jaune);outline-offset:3px}
-.promesse{color:var(--faible);font-size:13.4px;line-height:1.6;text-align:center}
-.erreur{background:#241318;border:1px solid #4a222b;color:#f2606f;border-radius:10px;
-  padding:13px 15px;font-size:14.5px;line-height:1.5}
+button.retour{
+  flex:0 0 auto;width:58px;background:var(--carte);color:var(--doux);
+  border:1px solid var(--trait);font-size:20px;font-weight:400;padding:0;
+}
+button.retour[hidden]{display:none}
+.promesse{color:var(--faible);font-size:12.8px;line-height:1.5;text-align:center;
+  max-width:600px;margin:11px auto 0;pointer-events:none}
+
+.erreur{background:#241318;border:1px solid #4a222b;color:var(--rouge);border-radius:10px;
+  padding:13px 15px;font-size:14.5px;line-height:1.5;margin-top:18px}
 .erreur[hidden]{display:none}
 
-.merci{background:#0f1d1d;border:1px solid #1f4a49;border-radius:14px;padding:30px 26px;
-  display:flex;flex-direction:column;gap:13px;text-align:center}
+/* ── La fin : elle doit dire « c'est enregistré », pas « merci » ────────── */
+.merci{background:#0f1d1d;border:1px solid #1f4a49;border-radius:16px;padding:30px 24px;
+  display:flex;flex-direction:column;gap:14px;margin-top:36px}
 .merci[hidden]{display:none}
-.merci h2{font-size:24px;font-weight:800;letter-spacing:-.025em;line-height:1.15}
+.merci .coche{width:44px;height:44px;border-radius:50%;background:var(--turq);
+  display:flex;align-items:center;justify-content:center;font-size:23px;color:#06201f;
+  font-weight:800;line-height:1}
+.merci h2{font-size:25px;font-weight:800;letter-spacing:-.025em;line-height:1.15}
 .merci p{color:var(--doux);font-size:15.3px;line-height:1.62}
+.merci p b{color:var(--encre);font-weight:600}
+.merci .ref{background:#0b1616;border:1px dashed #2a5c5b;border-radius:10px;
+  padding:12px 14px;font-size:14px;color:var(--doux)}
+.merci .ref b{display:block;font-size:19px;color:var(--turq);font-weight:800;
+  letter-spacing:.08em;margin-top:3px;font-variant-numeric:tabular-nums}
+.merci ol{margin:2px 0 0 18px;color:var(--doux);font-size:15px;line-height:1.6}
+.merci ol li{margin:7px 0}
 .merci a.tel{display:block;background:var(--turq);color:#06201f;font-weight:700;font-size:18px;
-  text-decoration:none;padding:16px;border-radius:11px;margin-top:6px}
+  text-decoration:none;padding:16px;border-radius:11px;text-align:center;margin-top:4px}
 
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
@@ -108,22 +184,250 @@ button:focus-visible{outline:2.5px solid var(--jaune);outline-offset:3px}
 <body>
 <div class="wrap">
 
-<header>
-  <div class="marque">Automation<span>Boost</span></div>
-  <h1>Ce qui vous fait perdre du temps, en deux minutes</h1>
-  <p class="intro">Sept questions, aucune n'est un piège. Vous recevez tout de suite
-  <b>le point qui vous coûte le plus cher</b>, et je vous rappelle sous 48 h pour vous dire
-  ce qui est automatisable — et ce qui ne l'est pas.</p>
-</header>
+<div class="progres" id="progres" hidden>
+  <div class="rail"><div class="jauge" id="jauge"></div></div>
+  <div class="ligne"><b id="etiquette">Étape 1 sur 6</b><span id="reste">2 minutes</span></div>
+</div>
+
+<!-- ══ Écran d'accueil ══════════════════════════════════════════════════ -->
+<section class="etape active" id="e0">
+  <header>
+    <div class="marque">Automation<span>Boost</span></div>
+    <h1 id="titre">Ce qui vous fait perdre des clients, en deux minutes</h1>
+    <p class="intro" id="chapo">Six écrans, trois questions chacun. Vous recevez
+    <b>un audit écrit</b> — pas une brochure.</p>
+  </header>
+
+  <div class="releve" id="releve" hidden>
+    <div class="oeil">Ce que j'ai déjà regardé</div>
+    <h2 id="releveTitre">Votre site, avant de vous écrire</h2>
+    <div class="quand" id="releveQuand"></div>
+    <ul id="releveListe"></ul>
+    <p class="suite">Ça, c'est ce qui se voit de l'extérieur. <b>Ce que je ne peux pas
+    voir, c'est ce qui se passe chez vous</b> : ce que devient un appel pendant le service,
+    où atterrit une demande le dimanche soir, ce que vous payez déjà en publicité.
+    Vos réponses ci-dessous complètent le constat — et c'est ce mélange des deux qui
+    fait l'audit.</p>
+  </div>
+</section>
 
 <form id="audit" novalidate>
+
+<!-- ══ Étape 1 — ce qui se perd ═════════════════════════════════════════ -->
+<section class="etape" id="e1">
+  <div class="chapitre">
+    <div class="num">Étape 1 · Ce qui se perd</div>
+    <h2>Commençons par les demandes qui n'arrivent jamais jusqu'à vous.</h2>
+    <p>Aucune de ces réponses n'est un aveu — c'est le cas dans à peu près tous les
+    établissements que j'ouvre.</p>
+  </div>
+
+  <fieldset>
+    <legend class="q">Le téléphone sonne en plein service. Que se passe-t-il le plus souvent&nbsp;?</legend>
+    <div class="choix">
+      <label class="opt"><input type="radio" name="appels" value="toujours">On décroche à tous les coups</label>
+      <label class="opt"><input type="radio" name="appels" value="souvent">On décroche la plupart du temps</label>
+      <label class="opt"><input type="radio" name="appels" value="vide">Ça sonne dans le vide assez souvent</label>
+      <label class="opt"><input type="radio" name="appels" value="rappel">On rappelle plus tard, quand on voit l'appel manqué</label>
+      <label class="opt"><input type="radio" name="appels" value="inconnu">Honnêtement, on ne sait pas combien d'appels on rate</label>
+    </div>
+  </fieldset>
+
+  <fieldset>
+    <legend class="q">Une demande qui arrive le soir, le dimanche ou pendant la fermeture&nbsp;: elle atterrit où&nbsp;?</legend>
+    <p class="aide">Un devis, un groupe, un anniversaire, une réservation.</p>
+    <div class="choix">
+      <label class="opt"><input type="radio" name="horsheures" value="mail">Dans une boîte mail qu'on relève le lendemain</label>
+      <label class="opt"><input type="radio" name="horsheures" value="tel">Sur le téléphone de quelqu'un</label>
+      <label class="opt"><input type="radio" name="horsheures" value="reseaux">En message privé sur Instagram ou Facebook</label>
+      <label class="opt"><input type="radio" name="horsheures" value="nullepart">Nulle part de précis</label>
+      <label class="opt"><input type="radio" name="horsheures" value="inconnu">Je ne sais pas</label>
+    </div>
+  </fieldset>
+
+  <fieldset>
+    <legend class="q">Sur dix personnes qui vous contactent, combien repartent sans réponse&nbsp;?</legend>
+    <p class="aide">C'est la question la plus utile des six écrans. Répondez de mémoire.</p>
+    <div class="choix">
+      <label class="opt"><input type="radio" name="sansreponse" value="aucune">Aucune, on répond à tout le monde</label>
+      <label class="opt"><input type="radio" name="sansreponse" value="1a2">Une ou deux</label>
+      <label class="opt"><input type="radio" name="sansreponse" value="3a5">Trois à cinq</label>
+      <label class="opt"><input type="radio" name="sansreponse" value="plus5">Plus de la moitié</label>
+      <label class="opt"><input type="radio" name="sansreponse" value="inconnu">Je n'ai aucun moyen de le savoir</label>
+    </div>
+  </fieldset>
+</section>
+
+<!-- ══ Étape 2 — qui répond ═════════════════════════════════════════════ -->
+<section class="etape" id="e2">
+  <div class="chapitre">
+    <div class="num">Étape 2 · Qui répond, et en combien de temps</div>
+    <h2>Sur un groupe ou un anniversaire, le premier qui répond emporte la réservation.</h2>
+  </div>
+
+  <fieldset>
+    <legend class="q">Par où vos clients vous contactent-ils&nbsp;?</legend>
+    <p class="aide">Plusieurs réponses possibles.</p>
+    <div class="choix grille">
+      <label class="opt"><input type="checkbox" name="canal" value="telephone">Téléphone</label>
+      <label class="opt"><input type="checkbox" name="canal" value="instagram">Instagram</label>
+      <label class="opt"><input type="checkbox" name="canal" value="facebook">Facebook</label>
+      <label class="opt"><input type="checkbox" name="canal" value="whatsapp">WhatsApp</label>
+      <label class="opt"><input type="checkbox" name="canal" value="formulaire">Le site</label>
+      <label class="opt"><input type="checkbox" name="canal" value="surplace">Sur place</label>
+    </div>
+  </fieldset>
+
+  <fieldset>
+    <legend class="q">En général, vous leur répondez au bout de combien de temps&nbsp;?</legend>
+    <div class="choix">
+      <label class="opt"><input type="radio" name="delai" value="moins1h">Moins d'une heure</label>
+      <label class="opt"><input type="radio" name="delai" value="heures">Dans la journée</label>
+      <label class="opt"><input type="radio" name="delai" value="lendemain">Le lendemain</label>
+      <label class="opt"><input type="radio" name="delai" value="plustard">Au bout de plusieurs jours</label>
+      <label class="opt"><input type="radio" name="delai" value="pastoujours">Honnêtement, pas toujours</label>
+    </div>
+  </fieldset>
+
+  <fieldset>
+    <legend class="q">Qui s'occupe des demandes qui arrivent&nbsp;?</legend>
+    <p class="aide">Une alerte automatique envoyée à personne ne sert à rien — c'est pour ça
+    que je pose la question.</p>
+    <div class="choix">
+      <label class="opt"><input type="radio" name="qui" value="identifiee">Une personne identifiée, c'est son rôle</label>
+      <label class="opt"><input type="radio" name="qui" value="patron">Le gérant, en plus du reste</label>
+      <label class="opt"><input type="radio" name="qui" value="equipe">L'équipe, sans responsable désigné</label>
+      <label class="opt"><input type="radio" name="qui" value="cm">Un community manager, pour les réseaux</label>
+      <label class="opt"><input type="radio" name="qui" value="personne">Personne en particulier</label>
+    </div>
+  </fieldset>
+</section>
+
+<!-- ══ Étape 3 — la réservation ═════════════════════════════════════════ -->
+<section class="etape" id="e3">
+  <div class="chapitre">
+    <div class="num">Étape 3 · La réservation</div>
+    <h2>C'est le seul endroit où une visite devient un encaissement.</h2>
+  </div>
+
+  <fieldset>
+    <legend class="q">Aujourd'hui, comment est-ce qu'on réserve chez vous&nbsp;?</legend>
+    <div class="choix">
+      <label class="opt"><input type="radio" name="reservation" value="tel">Uniquement par téléphone</label>
+      <label class="opt"><input type="radio" name="reservation" value="telmsg">Téléphone et messages, au cas par cas</label>
+      <label class="opt"><input type="radio" name="reservation" value="partiel">En ligne, mais seulement pour une partie de l'offre</label>
+      <label class="opt"><input type="radio" name="reservation" value="ligne">En ligne, pour tout</label>
+      <label class="opt"><input type="radio" name="reservation" value="aucune">On ne réserve pas, on vient c'est tout</label>
+    </div>
+  </fieldset>
+
+  <fieldset id="fsResaSouci" hidden>
+    <legend class="q">Quand ça coince, ça coince où&nbsp;?</legend>
+    <p class="aide">Plusieurs réponses possibles.</p>
+    <div class="choix">
+      <label class="opt"><input type="checkbox" name="resasouci" value="horsheures">Impossible de réserver quand on est fermé</label>
+      <label class="opt"><input type="checkbox" name="resasouci" value="double">Doubles réservations, créneaux qui se chevauchent</label>
+      <label class="opt"><input type="checkbox" name="resasouci" value="confirmation">Le client n'a rien par écrit, il rappelle pour vérifier</label>
+      <label class="opt"><input type="checkbox" name="resasouci" value="outil">L'outil en ligne n'affiche pas toute l'offre</label>
+      <label class="opt"><input type="checkbox" name="resasouci" value="temps">Ça mobilise quelqu'un au téléphone en plein service</label>
+      <label class="opt"><input type="checkbox" name="resasouci" value="rien">Rien ne coince vraiment</label>
+    </div>
+  </fieldset>
+
+  <fieldset id="fsNoshow" hidden>
+    <legend class="q">Des créneaux réservés que personne n'honore&nbsp;?</legend>
+    <div class="choix">
+      <label class="opt"><input type="radio" name="noshow" value="jamais">Presque jamais</label>
+      <label class="opt"><input type="radio" name="noshow" value="parfois">De temps en temps</label>
+      <label class="opt"><input type="radio" name="noshow" value="souvent">Assez souvent, oui</label>
+      <label class="opt"><input type="radio" name="noshow" value="inconnu">Je ne compte pas</label>
+    </div>
+  </fieldset>
+</section>
+
+<!-- ══ Étape 4 — se faire trouver ═══════════════════════════════════════ -->
+<section class="etape" id="e4">
+  <div class="chapitre">
+    <div class="num">Étape 4 · Se faire trouver</div>
+    <h2>Ce que vous payez déjà, et ce que ça vous rapporte.</h2>
+  </div>
+
+  <fieldset>
+    <legend class="q">Faites-vous de la publicité en ligne&nbsp;?</legend>
+    <p class="aide">Google Ads (l'ancien AdWords), c'est payer pour apparaître en haut
+    des résultats Google. Meta, ce sont les publicités Facebook et Instagram.</p>
+    <div class="choix">
+      <label class="opt"><input type="radio" name="ads" value="google">Oui, Google Ads</label>
+      <label class="opt"><input type="radio" name="ads" value="meta">Oui, Facebook / Instagram</label>
+      <label class="opt"><input type="radio" name="ads" value="deux">Oui, les deux</label>
+      <label class="opt"><input type="radio" name="ads" value="arrete">On en a fait, on a arrêté</label>
+      <label class="opt"><input type="radio" name="ads" value="non">Non, jamais</label>
+      <label class="opt"><input type="radio" name="ads" value="voudrait">Non, mais on se pose la question</label>
+    </div>
+  </fieldset>
+
+  <fieldset id="fsAdsBudget" hidden>
+    <legend class="q">Ça vous coûte combien par mois, à peu près&nbsp;?</legend>
+    <div class="choix grille">
+      <label class="opt"><input type="radio" name="adsbudget" value="moins100">Moins de 100 €</label>
+      <label class="opt"><input type="radio" name="adsbudget" value="100a300">100 à 300 €</label>
+      <label class="opt"><input type="radio" name="adsbudget" value="300a800">300 à 800 €</label>
+      <label class="opt"><input type="radio" name="adsbudget" value="plus800">Plus de 800 €</label>
+      <label class="opt"><input type="radio" name="adsbudget" value="inconnu">Je ne sais pas exactement</label>
+    </div>
+  </fieldset>
+
+  <fieldset id="fsAdsRetour" hidden>
+    <legend class="q">Et vous savez ce que ça vous rapporte&nbsp;?</legend>
+    <p class="aide">Pas des clics ou des vues — des réservations ou des clients.</p>
+    <div class="choix">
+      <label class="opt"><input type="radio" name="adsretour" value="chiffre">Oui, je peux vous donner le chiffre</label>
+      <label class="opt"><input type="radio" name="adsretour" value="impression">J'ai une impression, pas de chiffre</label>
+      <label class="opt"><input type="radio" name="adsretour" value="non">Non, aucune idée</label>
+      <label class="opt"><input type="radio" name="adsretour" value="agence">C'est une agence qui gère, je reçois un rapport</label>
+    </div>
+  </fieldset>
+
+  <fieldset>
+    <legend class="q">Vos avis Google, comment ils arrivent&nbsp;?</legend>
+    <div class="choix">
+      <label class="opt"><input type="radio" name="avis" value="spontane">Tout seuls, quand le client y pense</label>
+      <label class="opt"><input type="radio" name="avis" value="demande">On les demande de vive voix, quand on y pense</label>
+      <label class="opt"><input type="radio" name="avis" value="systeme">On a un système en place (QR code, SMS, e-mail)</label>
+      <label class="opt"><input type="radio" name="avis" value="jamais">On ne les demande jamais</label>
+    </div>
+  </fieldset>
+
+  <fieldset>
+    <legend class="q">Qu'est-ce que vous avez déjà&nbsp;?</legend>
+    <p class="aide">Plusieurs réponses possibles.</p>
+    <div class="choix grille">
+      <label class="opt"><input type="checkbox" name="outils" value="site">Un site internet</label>
+      <label class="opt"><input type="checkbox" name="outils" value="instagram">Une page Instagram</label>
+      <label class="opt"><input type="checkbox" name="outils" value="facebook">Une page Facebook</label>
+      <label class="opt"><input type="checkbox" name="outils" value="google">Une fiche Google</label>
+      <label class="opt"><input type="checkbox" name="outils" value="reservation">Un outil de réservation</label>
+      <label class="opt"><input type="checkbox" name="outils" value="caisse">Un logiciel de caisse</label>
+      <label class="opt"><input type="checkbox" name="outils" value="fichier">Un fichier de contacts clients</label>
+      <label class="opt"><input type="checkbox" name="outils" value="rien">Rien de tout ça</label>
+    </div>
+  </fieldset>
+</section>
+
+<!-- ══ Étape 5 — votre temps ════════════════════════════════════════════ -->
+<section class="etape" id="e5">
+  <div class="chapitre">
+    <div class="num">Étape 5 · Votre temps</div>
+    <h2>Ce qui part chaque semaine et qu'on ne facture à personne.</h2>
+  </div>
 
   <fieldset>
     <legend class="q">Votre activité, c'est plutôt&nbsp;?</legend>
     <div class="champ">
-      <select name="secteur" id="secteur" required>
+      <select name="secteur" id="secteur">
         <option value="">Choisissez…</option>
-        <option value="restaurant">Restaurant, snack, boulangerie</option>
+        <option value="loisirs">Loisirs, activités, événementiel</option>
+        <option value="restaurant">Restaurant, bar, snack, boulangerie</option>
         <option value="commerce">Commerce, boutique</option>
         <option value="beaute">Institut, coiffeur, esthétique</option>
         <option value="sante">Santé, bien-être, thérapie</option>
@@ -139,10 +443,11 @@ button:focus-visible{outline:2.5px solid var(--jaune);outline-offset:3px}
     <p class="aide">Plusieurs réponses possibles.</p>
     <div class="choix grille">
       <label class="opt"><input type="checkbox" name="taches" value="messages">Répondre aux messages</label>
+      <label class="opt"><input type="checkbox" name="taches" value="appels">Prendre les appels</label>
       <label class="opt"><input type="checkbox" name="taches" value="reseaux">Publier sur les réseaux</label>
       <label class="opt"><input type="checkbox" name="taches" value="devis">Faire les devis</label>
       <label class="opt"><input type="checkbox" name="taches" value="relances">Relancer les clients</label>
-      <label class="opt"><input type="checkbox" name="taches" value="rdv">Prendre les rendez-vous</label>
+      <label class="opt"><input type="checkbox" name="taches" value="rdv">Prendre les réservations</label>
       <label class="opt"><input type="checkbox" name="taches" value="site">Mettre le site à jour</label>
     </div>
   </fieldset>
@@ -156,43 +461,15 @@ button:focus-visible{outline:2.5px solid var(--jaune);outline-offset:3px}
       <label class="opt"><input type="radio" name="heures" value="plus10">Plus de 10 h</label>
     </div>
   </fieldset>
+</section>
 
-  <fieldset>
-    <legend class="q">Comment vos clients vous contactent-ils&nbsp;?</legend>
-    <p class="aide">Plusieurs réponses possibles.</p>
-    <div class="choix grille">
-      <label class="opt"><input type="checkbox" name="canal" value="instagram">Instagram</label>
-      <label class="opt"><input type="checkbox" name="canal" value="whatsapp">WhatsApp</label>
-      <label class="opt"><input type="checkbox" name="canal" value="telephone">Téléphone</label>
-      <label class="opt"><input type="checkbox" name="canal" value="facebook">Facebook</label>
-      <label class="opt"><input type="checkbox" name="canal" value="formulaire">Le site</label>
-      <label class="opt"><input type="checkbox" name="canal" value="surplace">Sur place</label>
-    </div>
-  </fieldset>
-
-  <fieldset>
-    <legend class="q">En général, vous leur répondez au bout de combien de temps&nbsp;?</legend>
-    <p class="aide">Répondez franchement — c'est la question la plus utile des sept.</p>
-    <div class="choix">
-      <label class="opt"><input type="radio" name="delai" value="moins1h">Moins d'une heure</label>
-      <label class="opt"><input type="radio" name="delai" value="heures">Dans la journée</label>
-      <label class="opt"><input type="radio" name="delai" value="lendemain">Le lendemain</label>
-      <label class="opt"><input type="radio" name="delai" value="plustard">Au bout de plusieurs jours</label>
-      <label class="opt"><input type="radio" name="delai" value="pastoujours">Honnêtement, pas toujours</label>
-    </div>
-  </fieldset>
-
-  <fieldset>
-    <legend class="q">Qu'est-ce que vous avez déjà&nbsp;?</legend>
-    <div class="choix grille">
-      <label class="opt"><input type="checkbox" name="outils" value="site">Un site internet</label>
-      <label class="opt"><input type="checkbox" name="outils" value="instagram">Une page Instagram</label>
-      <label class="opt"><input type="checkbox" name="outils" value="facebook">Une page Facebook</label>
-      <label class="opt"><input type="checkbox" name="outils" value="google">Une fiche Google</label>
-      <label class="opt"><input type="checkbox" name="outils" value="caisse">Un logiciel de caisse</label>
-      <label class="opt"><input type="checkbox" name="outils" value="rien">Rien de tout ça</label>
-    </div>
-  </fieldset>
+<!-- ══ Étape 6 — pour vous répondre ═════════════════════════════════════ -->
+<section class="etape" id="e6">
+  <div class="chapitre">
+    <div class="num">Étape 6 · Pour vous répondre</div>
+    <h2>Dernier écran. C'est celui qui déclenche l'audit.</h2>
+    <p>Dès que vous validez, vos réponses sont enregistrées et je reçois le dossier.</p>
+  </div>
 
   <fieldset>
     <legend class="q">Si une seule chose devait changer cette année&nbsp;?</legend>
@@ -205,11 +482,11 @@ button:focus-visible{outline:2.5px solid var(--jaune);outline-offset:3px}
   </fieldset>
 
   <fieldset>
-    <legend class="q">Pour vous répondre</legend>
+    <legend class="q">Où je vous envoie l'audit</legend>
     <div class="champs">
       <div class="champ">
         <label for="nom">Votre prénom</label>
-        <input type="text" id="nom" name="nom" autocomplete="given-name" required>
+        <input type="text" id="nom" name="nom" autocomplete="given-name">
       </div>
       <div class="champ">
         <label for="entreprise">Votre établissement</label>
@@ -217,7 +494,7 @@ button:focus-visible{outline:2.5px solid var(--jaune);outline-offset:3px}
       </div>
       <div class="champ large">
         <label for="email">Votre email</label>
-        <input type="email" id="email" name="email" autocomplete="email" inputmode="email" required>
+        <input type="email" id="email" name="email" autocomplete="email" inputmode="email">
       </div>
       <div class="champ">
         <label for="telephone">Votre téléphone</label>
@@ -236,99 +513,374 @@ button:focus-visible{outline:2.5px solid var(--jaune);outline-offset:3px}
     </div>
   </fieldset>
 
-  <div class="envoi">
-    <div class="erreur" id="erreur" hidden role="alert"></div>
-    <button type="submit" id="btn">Recevoir mon diagnostic</button>
-    <p class="promesse">Gratuit et sans engagement. Vos réponses ne servent qu'à ça —
-    aucune revente, aucune liste de diffusion.</p>
-  </div>
+  <div class="erreur" id="erreur" hidden role="alert"></div>
+</section>
 
 </form>
 
+<!-- ══ Confirmation ═════════════════════════════════════════════════════ -->
 <div class="merci" id="merci" hidden>
-  <h2>C'est envoyé.</h2>
-  <p id="merciTexte">Vous recevez le diagnostic par email dans la minute. Je vous rappelle
-  sous 48 h ouvrées pour vous dire ce qui est automatisable chez vous, et ce qui ne l'est pas.</p>
-  <p>Si c'est urgent, appelez-moi&nbsp;:</p>
+  <div class="coche" aria-hidden="true">✓</div>
+  <h2>C'est enregistré.</h2>
+  <div class="ref">Votre numéro de dossier<b id="refAffiche">—</b></div>
+  <p><b>Vos réponses sont arrivées chez moi</b>, pas dans une boîte automatique.
+  Gardez ce numéro : il suffit de me le citer si vous m'appelez.</p>
+  <ol>
+    <li>Vous recevez un accusé de réception par e-mail dans la minute.</li>
+    <li>Je croise vos réponses avec ce que j'ai relevé sur votre site.</li>
+    <li>Je vous renvoie <b>l'audit écrit sous 48 h ouvrées</b>, avec le point qui vous
+    coûte le plus cher et ce que ça demande de corriger.</li>
+  </ol>
+  <p>Si c'est urgent, ou si vous préférez que je vous explique de vive voix&nbsp;:</p>
   <a class="tel" href="tel:+262692417749">06 92 41 77 49</a>
+</div>
+
+<!-- ══ Barre d'action ═══════════════════════════════════════════════════ -->
+<div class="pied" id="pied">
+  <div class="dedans">
+    <button type="button" class="retour" id="btnRetour" hidden aria-label="Écran précédent">←</button>
+    <button type="button" id="btnSuivant">Voir les questions</button>
+  </div>
+  <p class="promesse" id="promesse">Gratuit, sans engagement. Vos réponses ne servent qu'à
+  l'audit — aucune revente, aucune liste de diffusion.</p>
 </div>
 
 </div>
 
 <script>
-/* Le formulaire poste vers n8n, qui analyse, enregistre, prévient Tony et
-   accuse réception au prospect. On ne bloque JAMAIS l'utilisateur sur une
-   erreur réseau : ses réponses sont déjà parties dans 99 % des cas, et lui
-   afficher un échec le ferait renvoyer deux fois. */
+/* ─────────────────────────────────────────────────────────────────────────
+   Le formulaire est ouvert au pouce depuis un message direct. Trois règles :
+   1. On ne montre jamais plus de trois questions à la fois.
+   2. On ne prétend JAMAIS que c'est enregistré tant que n8n n'a pas répondu.
+      L'ancienne version affichait le remerciement même sur échec réseau ;
+      ici c'est le contraire — un envoi perdu est pire qu'un bouton à retoucher.
+   3. Ce qui est saisi survit à une fermeture d'onglet (localStorage).
+   ───────────────────────────────────────────────────────────────────────── */
 (function () {
+  'use strict';
+
   var WEBHOOK = 'https://n7n.automatisationboost.com/webhook/audit-auto';
+  var CLE = 'audit-ab-v2';
+
+  /* ── Ce que j'ai relevé, par prospect. Un relevé = une date + des faits
+        vérifiables devant eux. Rien d'autre n'a le droit d'entrer ici. ──── */
+  var PROSPECTS = {
+    'family-arena': {
+      titre: 'Family Arena — ce qui vous coûte des réservations',
+      chapo: 'J’ai passé votre site au crible avant de vous écrire. Six écrans, ' +
+             'trois questions chacun, et je vous renvoie l’audit complet.',
+      nom: 'Family Arena',
+      site: 'familyarena.re',
+      quand: 'Relevé du 20 août 2026 sur familyarena.re, karafamily.re, iquiz-family.re, ' +
+             'votre fiche Google et votre compte Instagram public.',
+      constats: [
+        ['Sur les 13 pages du site, <b>aucun formulaire</b> — page Contact comprise, et ' +
+         'aucune adresse e-mail cliquable.', 0],
+        ['<b>L’adresse e-mail publiée dans vos mentions légales ne peut rien recevoir</b> : ' +
+         'un remplacement automatique a mangé le nom de domaine.', 0],
+        ['Votre moteur de réservation <b>elloha est payé et installé</b>, mais le lien du site ' +
+         'le filtre sur les cartes cadeaux. Sans ce filtre, aucune activité n’apparaît.', 0],
+        ['Le mot <b>« anniversaire » n’apparaît nulle part sur le site</b>, alors que ' +
+         'c’est le 3<sup>e</sup> mot le plus cité dans vos 423 avis Google.', 0],
+        ['Le <b>pixel Meta est annoncé dans votre bandeau cookies mais n’est pas installé</b> : ' +
+         'une publicité lancée aujourd’hui serait pilotée à l’aveugle.', 0],
+        ['Et ce qui va bien&nbsp;: <b>4,3 ★ sur 423 avis</b>, devant Bowling City (3,7 ★ sur 511), ' +
+         'un serveur qui répond en moins de 170 ms et un consentement cookies plus rigoureux ' +
+         'que la plupart des TPE.', 1]
+      ]
+    }
+  };
+
   var form = document.getElementById('audit');
-  var btn = document.getElementById('btn');
+  var pied = document.getElementById('pied');
+  var btn = document.getElementById('btnSuivant');
+  var btnRetour = document.getElementById('btnRetour');
+  var progres = document.getElementById('progres');
+  var jauge = document.getElementById('jauge');
+  var etiquette = document.getElementById('etiquette');
+  var reste = document.getElementById('reste');
   var err = document.getElementById('erreur');
   var merci = document.getElementById('merci');
+  var promesse = document.getElementById('promesse');
 
-  function rate(msg, id) {
-    err.textContent = msg;
-    err.hidden = false;
-    var el = document.getElementById(id);
-    if (el) { el.focus(); el.scrollIntoView({ block: 'center', behavior: 'smooth' }); }
+  var ecrans = [];
+  for (var i = 0; i <= 6; i++) ecrans.push(document.getElementById('e' + i));
+  var TOTAL = 6;
+  var pos = 0;
+
+  /* ── Le relevé : affiché seulement si le lien porte un prospect connu ── */
+  var params = new URLSearchParams(window.location.search);
+  var cle = (params.get('p') || '').toLowerCase();
+  var P = PROSPECTS[cle] || null;
+
+  if (P) {
+    document.getElementById('titre').textContent = P.titre;
+    document.getElementById('chapo').innerHTML = P.chapo;
+    document.getElementById('releveTitre').textContent = P.site;
+    document.getElementById('releveQuand').textContent = P.quand;
+    var ul = document.getElementById('releveListe');
+    P.constats.forEach(function (c) {
+      var li = document.createElement('li');
+      li.innerHTML = c[0];
+      if (c[1]) li.className = 'bon';
+      ul.appendChild(li);
+    });
+    document.getElementById('releve').hidden = false;
+    var champEnt = document.getElementById('entreprise');
+    if (champEnt && !champEnt.value) champEnt.value = P.nom;
   }
-  function coches(nom) {
-    return Array.prototype.map.call(
-      form.querySelectorAll('input[name="' + nom + '"]:checked'), function (i) { return i.value; });
-  }
+
+  /* ── Petits utilitaires de lecture ───────────────────────────────────── */
   function choisi(nom) {
     var el = form.querySelector('input[name="' + nom + '"]:checked');
     return el ? el.value : '';
   }
+  function coches(nom) {
+    return Array.prototype.map.call(
+      form.querySelectorAll('input[name="' + nom + '"]:checked'),
+      function (i) { return i.value; });
+  }
+  function val(id) {
+    var el = document.getElementById(id);
+    return el ? el.value.trim() : '';
+  }
 
-  form.addEventListener('submit', function (e) {
-    e.preventDefault();
+  /* ── Questions conditionnelles : on n'affiche pas ce qui ne s'applique
+        pas. C'est ce qui garde les écrans à trois questions. ───────────── */
+  function conditions() {
+    var r = choisi('reservation');
+    var aResa = r && r !== 'aucune';
+    document.getElementById('fsResaSouci').hidden = !aResa;
+    document.getElementById('fsNoshow').hidden = !aResa;
+
+    var a = choisi('ads');
+    var paie = (a === 'google' || a === 'meta' || a === 'deux');
+    document.getElementById('fsAdsBudget').hidden = !paie;
+    document.getElementById('fsAdsRetour').hidden = !paie;
+  }
+  form.addEventListener('change', function () { conditions(); sauver(); });
+  form.addEventListener('input', sauver);
+
+  /* ── Brouillon local : un formulaire ouvert dans un DM se ferme vite ─── */
+  function sauver() {
+    try {
+      var d = {};
+      Array.prototype.forEach.call(form.elements, function (el) {
+        if (!el.name && !el.id) return;
+        if (el.type === 'checkbox' || el.type === 'radio') {
+          if (el.checked) { d[el.name] = (d[el.name] || []).concat(el.value); }
+        } else if (el.value) { d['#' + (el.id || el.name)] = el.value; }
+      });
+      localStorage.setItem(CLE, JSON.stringify(d));
+    } catch (e) { /* navigation privée : tant pis, on continue */ }
+  }
+  function relire() {
+    try {
+      var d = JSON.parse(localStorage.getItem(CLE) || '{}');
+      Object.keys(d).forEach(function (k) {
+        if (k.charAt(0) === '#') {
+          var el = document.getElementById(k.slice(1));
+          if (el) el.value = d[k];
+        } else {
+          d[k].forEach(function (v) {
+            var el = form.querySelector('[name="' + k + '"][value="' + v + '"]');
+            if (el) el.checked = true;
+          });
+        }
+      });
+    } catch (e) { /* idem */ }
+  }
+  relire();
+  conditions();
+
+  /* ── Ce qui est obligatoire, écran par écran ─────────────────────────── */
+  var OBLIGATOIRE = {
+    1: [['appels', 'Dites-moi ce qui se passe quand le téléphone sonne.'],
+        ['horsheures', 'Il manque l’endroit où atterrit une demande hors horaires.'],
+        ['sansreponse', 'Il manque la part de demandes qui restent sans réponse.']],
+    2: [['delai', 'Il manque votre délai de réponse habituel.'],
+        ['qui', 'Il manque qui s’occupe des demandes.']],
+    3: [['reservation', 'Dites-moi comment on réserve chez vous aujourd’hui.']],
+    4: [['ads', 'Dites-moi si vous faites de la publicité en ligne.'],
+        ['avis', 'Il manque la façon dont vos avis Google arrivent.']],
+    5: [['heures', 'Il manque le nombre d’heures par semaine.']],
+    6: []
+  };
+
+  function rate(msg, id) {
+    err.textContent = msg;
+    err.hidden = false;
+    var cible = id ? document.getElementById(id) : err;
+    if (cible) {
+      if (cible.focus) { try { cible.focus({ preventScroll: true }); } catch (e) { cible.focus(); } }
+      cible.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    }
+    return false;
+  }
+
+  function valide(n) {
     err.hidden = true;
+    var regles = OBLIGATOIRE[n] || [];
+    for (var k = 0; k < regles.length; k++) {
+      var champ = regles[k][0];
+      var groupe = form.querySelector('[name="' + champ + '"]');
+      var visible = groupe && groupe.closest('fieldset') && !groupe.closest('fieldset').hidden;
+      if (visible && !choisi(champ)) {
+        var fs = groupe.closest('fieldset');
+        err.textContent = regles[k][1];
+        err.hidden = false;
+        fs.appendChild(err);
+        fs.scrollIntoView({ block: 'center', behavior: 'smooth' });
+        return false;
+      }
+    }
+    if (n === 5 && !val('secteur')) return rate('Dites-moi d’abord dans quoi vous travaillez.', 'secteur');
+    if (n === 6) {
+      document.getElementById('e6').appendChild(err);
+      if (val('nom').length < 2) return rate('Il me faut votre prénom pour vous répondre.', 'nom');
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val('email')))
+        return rate('Cette adresse e-mail ne semble pas valide.', 'email');
+    }
+    return true;
+  }
 
-    var secteur = document.getElementById('secteur').value;
-    var nom = document.getElementById('nom').value.trim();
-    var email = document.getElementById('email').value.trim();
+  /* ── Navigation ──────────────────────────────────────────────────────── */
+  function afficher(n) {
+    ecrans.forEach(function (s, k) { s.classList.toggle('active', k === n); });
+    pos = n;
+    progres.hidden = (n === 0);
+    btnRetour.hidden = (n === 0);
+    if (n > 0) {
+      jauge.style.width = Math.round((n / TOTAL) * 100) + '%';
+      etiquette.textContent = 'Étape ' + n + ' sur ' + TOTAL;
+      reste.textContent = n === TOTAL ? 'dernier écran' : (TOTAL - n) + ' écran' + (TOTAL - n > 1 ? 's' : '') + ' après';
+    }
+    btn.textContent = n === 0 ? 'Commencer'
+      : n === TOTAL ? 'Valider et envoyer mon audit'
+      : 'Continuer';
+    promesse.textContent = n === TOTAL
+      ? 'En validant, vos réponses sont enregistrées et je reçois le dossier.'
+      : 'Gratuit, sans engagement. Vos réponses ne servent qu’à l’audit — aucune revente, aucune liste de diffusion.';
+    err.hidden = true;
+    if (typeof mesurerPied === 'function') mesurerPied();
+    window.scrollTo({ top: 0, behavior: n === 0 ? 'auto' : 'smooth' });
+  }
 
-    if (!secteur) return rate('Dites-moi d’abord dans quoi vous travaillez.', 'secteur');
-    if (!choisi('heures')) return rate('Il manque le nombre d’heures par semaine.', 'audit');
-    if (!choisi('delai')) return rate('Il manque votre délai de réponse habituel.', 'audit');
-    if (nom.length < 2) return rate('Il me faut votre prénom pour vous répondre.', 'nom');
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return rate('Cette adresse email ne semble pas valide.', 'email');
+  btnRetour.addEventListener('click', function () { if (pos > 0) afficher(pos - 1); });
 
-    btn.disabled = true;
-    btn.textContent = 'Envoi…';
+  btn.addEventListener('click', function () {
+    if (pos === 0) { afficher(1); return; }
+    if (!valide(pos)) return;
+    if (pos < TOTAL) { afficher(pos + 1); return; }
+    envoyer();
+  });
 
-    var corps = {
-      nom: nom,
-      entreprise: document.getElementById('entreprise').value.trim(),
-      email: email,
-      telephone: document.getElementById('telephone').value.trim(),
-      commune: document.getElementById('commune').value.trim(),
-      secteur: secteur,
-      taches: coches('taches'),
+  /* ── L'envoi. On attend la réponse de n8n : pas de faux succès. ──────── */
+  var refDossier = null;
+  function reference() {
+    if (refDossier) return refDossier;
+    var d = new Date();
+    var deuxChiffres = function (x) { return (x < 10 ? '0' : '') + x; };
+    refDossier = 'AB-' + String(d.getFullYear()).slice(2) + deuxChiffres(d.getMonth() + 1)
+      + deuxChiffres(d.getDate()) + '-' + Math.random().toString(36).slice(2, 6).toUpperCase();
+    return refDossier;
+  }
+
+  function corps() {
+    return {
+      ref: reference(),
+      nom: val('nom'),
+      entreprise: val('entreprise'),
+      email: val('email').toLowerCase(),
+      telephone: val('telephone'),
+      commune: val('commune'),
+      secteur: val('secteur'),
+      /* écran 1 — ce qui se perd */
+      appels: choisi('appels'),
+      horsheures: choisi('horsheures'),
+      sansreponse: choisi('sansreponse'),
+      /* écran 2 — qui répond */
       canal: coches('canal'),
-      outils: coches('outils'),
-      heures: choisi('heures'),
       delai: choisi('delai'),
+      qui: choisi('qui'),
+      /* écran 3 — la réservation */
+      reservation: choisi('reservation'),
+      resasouci: coches('resasouci'),
+      noshow: choisi('noshow'),
+      /* écran 4 — se faire trouver */
+      ads: choisi('ads'),
+      adsbudget: choisi('adsbudget'),
+      adsretour: choisi('adsretour'),
+      avis: choisi('avis'),
+      outils: coches('outils'),
+      /* écran 5 — le temps */
+      taches: coches('taches'),
+      heures: choisi('heures'),
+      /* écran 6 */
       objectif: choisi('objectif'),
-      message: document.getElementById('message').value.trim(),
-      source: 'audit-questionnaire',
-      page: window.location.pathname,
+      message: val('message'),
+      /* traçabilité */
+      prospect: cle || '',
+      site: P ? P.site : '',
+      source: 'audit-questionnaire-v2',
+      page: window.location.pathname + window.location.search,
       date: new Date().toISOString()
     };
+  }
 
-    fetch(WEBHOOK, {
+  function poster() {
+    return fetch(WEBHOOK, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(corps)
-    }).catch(function () { /* voir le commentaire en tête */ })
+      body: JSON.stringify(corps())
+    }).then(function (r) {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.text();
+    });
+  }
+
+  function envoyer() {
+    btn.disabled = true;
+    btnRetour.disabled = true;
+    btn.textContent = 'Envoi…';
+    err.hidden = true;
+
+    poster()
+      .catch(function () { return poster(); })   /* une seule reprise, réseau mobile */
       .then(function () {
+        try { localStorage.removeItem(CLE); } catch (e) {}
         form.hidden = true;
+        ecrans[0].hidden = true;
+        progres.hidden = true;
+        pied.hidden = true;
+        document.getElementById('refAffiche').textContent = reference();
         merci.hidden = false;
-        merci.scrollIntoView({ block: 'start', behavior: 'smooth' });
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      })
+      .catch(function () {
+        btn.disabled = false;
+        btnRetour.disabled = false;
+        btn.textContent = 'Réessayer l’envoi';
+        err.innerHTML = 'L’envoi n’est pas passé — vos réponses sont toujours là, ' +
+          'rien n’est perdu. Touchez « Réessayer l’envoi ». Si ça bloque encore, ' +
+          'appelez-moi au <a href="tel:+262692417749" style="color:#f2606f;font-weight:700">06 92 41 77 49</a>.';
+        err.hidden = false;
+        err.scrollIntoView({ block: 'center', behavior: 'smooth' });
       });
-  });
+  }
+
+  /* La barre est fixe : sa hauteur varie avec le texte du bouton et de la
+     mention légale. Sans mesure, la dernière réponse d'un écran se retrouve
+     sous la barre et devient intouchable au pouce. */
+  function mesurerPied() {
+    var h = pied.hidden ? 0 : pied.getBoundingClientRect().height;
+    document.documentElement.style.setProperty('--pied', Math.round(h) + 'px');
+  }
+  window.addEventListener('resize', mesurerPied);
+  if (window.ResizeObserver) new ResizeObserver(mesurerPied).observe(pied);
+
+  afficher(0);
+  mesurerPied();
 })();
 </script>
 </body>
