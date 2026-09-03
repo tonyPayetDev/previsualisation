@@ -770,10 +770,17 @@ function composer() {
     format: 'reel 9:16', hashtags: calculerTags(), publie: modeAuto(),
     creneau: d1 && h1 ? d1 + 'T' + h1 + ':00+04:00' : null };
   sortie.photos = sortie.photos.map((p) => p.startsWith('data:') ? '(photo téléversée)' : p);
+  /* Le post, c'est UNE tuile — celle qu'on a choisie. La grille sert à voir le
+     compte, pas à être publiée d'un bloc. */
+  sortie.poste = selection === null ? null : PLAN[selection].p;
   return sortie;
 }
 
 document.getElementById('planifier').addEventListener('click', () => {
+  if (selection === null) {
+    alert('Choisis la vignette que tu veux publier : c\'est ce post-là qui part, pas tout le feed.');
+    return;
+  }
   const s = composer();
   document.getElementById('conf-mode').textContent = modeAuto()
     ? 'Mode automatique activé : en confirmant, ce post part sur @foodboost sans relecture.'
@@ -783,12 +790,22 @@ document.getElementById('planifier').addEventListener('click', () => {
     (document.getElementById('d-quand') || {}).textContent || 'aucun créneau choisi';
   document.getElementById('conf-tags').textContent = s.destination.hashtags.map((x) => '#' + x).join(' ');
   document.getElementById('conf-leg').textContent = s.legende;
-  /* L'aperçu du média : la vraie grille, clonée, pas une vignette symbolique. */
+  /* L'aperçu du média : LA tuile choisie, en grand. Montrer la grille entière
+     laissait croire que les neuf partaient — c'est un post qui part. */
   const media = document.getElementById('conf-media');
   media.innerHTML = '';
-  const g = document.getElementById('grille').cloneNode(true);
-  g.querySelectorAll('.actif').forEach((x) => x.classList.remove('actif'));
-  media.appendChild(g);
+  if (selection === null) {
+    media.innerHTML = '<div style="padding:18px;text-align:center;opacity:.8">'
+      + 'Choisis d\'abord la vignette à publier dans l\'aperçu.</div>';
+  } else {
+    const src = document.querySelector('.vignette[data-i="' + selection + '"]');
+    if (src) {
+      const un = src.cloneNode(true);
+      un.classList.remove('actif');
+      un.style.cssText += ';width:min(230px,60%);margin:0 auto;display:block';
+      media.appendChild(un);
+    }
+  }
   dlgConf.showModal();
 });
 document.getElementById('conf-annuler').addEventListener('click', () => dlgConf.close());
@@ -805,6 +822,7 @@ document.getElementById('conf-ok').addEventListener('click', () => {
         ambiance: E.ambiance, modifs,
         legende: sortie.legende, auto: modeAuto(), publier: modeAuto(),
         photos: sortie.photos, destination: sortie.destination,
+        poste: sortie.poste,
       }),
     }).catch(function () {});
   } catch (e) {}
