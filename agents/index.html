@@ -34,12 +34,19 @@ code{background:#000;padding:1px 6px;border-radius:4px;font-size:12.5px;color:va
 .fin{margin-top:38px;border-top:1px solid var(--trait);padding-top:15px;font-size:13.5px;color:var(--doux)}
 </style>
 <div class="w">
-<div class="eb">Tes agents · relevé du 2026-09-03</div>
+<div class="eb">Tes agents · relevé du 2026-09-04</div>
 <h1>Qui fait quoi, <em>et avec quoi</em></h1>
 <p class="s">Cette page est <b>générée depuis les fichiers réels</b>. Un agent supprimé disparaît
 d'ici au passage suivant — une page écrite à la main aurait menti dès la première suppression.</p>
 
 <h2>Contrôle</h2>
+  <div class="ag">
+    <div class="tt"><b>montage-qa</b><span class="fam">Contrôle</span></div>
+    <p>L'ouverture, le carton final, le blanc au démarrage, la durée. Et les trois règles de Tony : ouvrir sur l'avatar, un CTA explicite, une musique libre de droits qui change.</p>
+    <div class="dit">Tu dis : « vérifie le montage de &lt;vidéo> »</div>
+    <div class="ou ok">
+      ✓ outil de mesure · <code>_shared/montage-qa/mesurer.mjs</code></div>
+  </div>
   <div class="ag">
     <div class="tt"><b>motion-qa</b><span class="fam">Contrôle</span></div>
     <p>Plans figés, rafales de coupes, images noires ou cramées, contenu dans les marges, format et cadence.</p>
@@ -105,6 +112,10 @@ d'ici au passage suivant — une page écrite à la main aurait menti dès la pr
     il ne crie que là où c'est vrai.</li>
     <li><b>synchro-qa</b> refuse au-delà de <b>15 % de voix sur bouche fermée</b> et sort en
     erreur. C'est un garde-fou, pas un avis.</li>
+    <li><b>montage-qa</b> détecte le carton final avec un seuil relevé sur de vraies vidéos
+    (8,07 de pixels clairs avec carton contre 0,00 sans). Et il <b>refuse de mesurer</b> la
+    densité de parole : sur une piste avec musique continue, c'est inséparable — mieux vaut
+    ne pas mesurer que mesurer faux.</li>
   </ul>
 </div>
 
@@ -119,7 +130,7 @@ d'ici au passage suivant — une page écrite à la main aurait menti dès la pr
 </div>
 
 <div class="fin">
-  Généré depuis <code>/work/.claude/agents/</code> — 8 agents.
+  Généré depuis <code>/work/.claude/agents/</code> — 9 agents.
   Les outils de mesure vivent dans <code>_shared/motion-qa/</code> et
   <code>_shared/avatar-sync/</code>, et leur présence est vérifiée à la génération de cette page.
 </div>
