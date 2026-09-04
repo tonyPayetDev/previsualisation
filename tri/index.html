@@ -514,11 +514,40 @@ video{max-height:100%;max-width:100%;aspect-ratio:9/16;background:#000;
     return vue.length;
   }
 
+  /* Les décisions qui n'ont jamais atteint le serveur repartent au chargement.
+     Sans ça, « un échec ne perd rien » n'était vrai que dans l'onglet ouvert :
+     la file vit en mémoire et personne ne la relisait. Constaté le 04/09/2026,
+     n8n répondant 503 — tout tri fait pendant la panne aurait disparu à la
+     fermeture de l'onglet, sans un mot.
+
+     On ne renvoie QUE les entrées marquées envoye:false. Celles d'avant ce
+     correctif n'ont pas le champ : elles sont laissées tranquilles, car on ne
+     peut pas savoir si elles sont parties, et un doublon de refus vaut moins
+     qu'une décision perdue — mais un doublon reste un dégât. */
+  function renvoyerEnAttente(){
+    var n = 0;
+    vids.forEach(function(x){
+      var d = vdeci[x.route];
+      if (!d || d.envoye !== false) return;
+      var corps = { route: d.route, titre: x.titre,
+        url: 'https://previsualisation.automatisationboost.com/' + d.route + '/video.mp4',
+        decision: d.decision === 'croix' ? 'refus' : (d.decision === 'stylo' ? 'modifier' : 'planifier') };
+      if (d.decision === 'stylo'){ corps.tags = d.tags || []; corps.note = d.note || ''; }
+      file.push({ titre: x.titre, corps: corps });
+      n++;
+    });
+    if (n){
+      dire('<b>' + n + ' décision' + (n > 1 ? 's' : '') + ' jamais parvenue' +
+           (n > 1 ? 's' : '') + ' au serveur</b> — renvoi en cours…', '');
+      pousser();
+    }
+  }
+
   function deciderVideo(quoi, tags, note){
     if (j >= vue.length) return;
     var c = vue[j];
     vdeci[c.route] = { route: c.route, decision: quoi, tags: tags || [], note: note || '',
-                       at: new Date().toISOString() };
+                       at: new Date().toISOString(), envoye: false };
     ecrireV();
     var corps = { route: c.route, titre: c.titre,
       url: 'https://previsualisation.automatisationboost.com/' + c.route + '/video.mp4',
@@ -568,6 +597,7 @@ video{max-height:100%;max-width:100%;aspect-ratio:9/16;background:#000;
       $('oFamille').appendChild(o);
     });
     filtrer();
+    renvoyerEnAttente();
     /* Les croix déjà posées ailleurs (autre téléphone, cache vidé) reviennent
        du serveur : sans ça la page reproposerait une vidéo écartée. */
     fetch(API + '?t=' + Date.now()).then(function(r){ return r.json(); }).then(function(g){
