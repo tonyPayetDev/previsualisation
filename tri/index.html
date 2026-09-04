@@ -603,11 +603,18 @@ video{max-height:100%;max-width:100%;aspect-ratio:9/16;background:#000;
     fetch(API + '?t=' + Date.now()).then(function(r){ return r.json(); }).then(function(g){
       var l2 = typeof g.refus === 'string' ? JSON.parse(g.refus || '[]') : (g.refus || []);
       l2.forEach(function(x){
-        if (x && x.route && !vdeci[x.route])
+        if (!x || !x.route || vdeci[x.route]) return;
+        /* Le serveur range les ✎ et les ✗ dans la même liste, distingués par
+           « type ». Tout relire en croix affichait une demande de correction
+           comme un refus définitif, et jetait ses tags et sa note au passage. */
+        if (x.type === 'modifier')
+          vdeci[x.route] = { route: x.route, decision: 'stylo', tags: x.tags || [],
+                             note: x.note || '', at: x.date, envoye: true };
+        else
           vdeci[x.route] = { route: x.route, decision: 'croix', at: x.date, envoye: true };
       });
       ecrireV();
-      nbRefus = l2.length;
+      nbRefus = l2.filter(function(x){ return x && x.type !== 'modifier'; }).length;
       j = premiereNonTrieeV();
       if (mode === 'videos'){ afficherVideos(); rappelRefus(); }
     }).catch(function(){
