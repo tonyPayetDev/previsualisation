@@ -9,7 +9,7 @@
 :root{
   --fond:#0b0d10; --carte:#14181d; --bord:#242a32; --bord2:#39424e;
   --texte:#e9ecf0; --gris:#98a2ae; --gris2:#6c7683;
-  --or:#e0ae3a; --vert:#3ecf8e; --rouge:#e5544b; --bleu:#5b9dff;
+  --or:#e0ae3a; --vert:#3ecf8e; --rouge:#e5544b; --bleu:#5b9dff; --violet:#8b5cf6;
 }
 *{box-sizing:border-box}
 body{margin:0;background:var(--fond);color:var(--texte);
@@ -18,17 +18,13 @@ body{margin:0;background:var(--fond);color:var(--texte);
 h1{font-size:25px;margin:0 0 6px;letter-spacing:-.02em}
 .sous{color:var(--gris);font-size:14px;margin:0 0 8px}
 .nav{display:flex;flex-wrap:wrap;gap:7px;margin:12px 0 26px}
-.nav a{font-size:12.5px;color:var(--gris);text-decoration:none;border:1px solid var(--bord);
-  border-radius:99px;padding:4px 11px}
+.nav a{font-size:12.5px;color:var(--gris);text-decoration:none;border:1px solid var(--bord);border-radius:99px;padding:4px 11px}
 .nav a:hover{color:var(--texte);border-color:var(--bord2)}
-
-h2{font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:var(--gris);
-  margin:28px 0 10px;font-weight:600;display:flex;align-items:baseline;gap:8px}
+h2{font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:var(--gris);margin:28px 0 10px;font-weight:600;display:flex;align-items:baseline;gap:8px}
 h2 i{font-style:normal;color:var(--gris2);text-transform:none;letter-spacing:0;font-size:12px;font-weight:400}
-
 .grille{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:9px}
-.opt{background:var(--carte);border:1px solid var(--bord);border-radius:11px;padding:12px 13px;
-  cursor:pointer;text-align:left;color:inherit;font:inherit;transition:border-color .14s,background .14s}
+.grille.petit{grid-template-columns:repeat(auto-fill,minmax(250px,1fr))}
+.opt{position:relative;background:var(--carte);border:1px solid var(--bord);border-radius:11px;padding:12px 13px;cursor:pointer;text-align:left;color:inherit;font:inherit;transition:border-color .14s,background .14s;overflow:hidden}
 .opt:hover{border-color:var(--bord2)}
 .opt[aria-pressed="true"]{border-color:var(--or);background:#1d1c15}
 .opt b{display:block;font-size:14.5px;margin-bottom:3px}
@@ -36,24 +32,47 @@ h2 i{font-style:normal;color:var(--gris2);text-transform:none;letter-spacing:0;f
 .opt em{display:block;font-style:normal;font-size:11.5px;color:var(--gris2);margin-top:5px}
 .opt[disabled]{opacity:.34;cursor:not-allowed}
 .opt[disabled] .pourquoi{color:var(--rouge)}
-
+/* modèle avec vignette */
+.mod{padding:0}
+.mod .vig{display:block;width:100%;height:104px;object-fit:cover;background:linear-gradient(135deg,#1b2330,#0f1319)}
+.mod .vig.ph{display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:800;color:#2f3a49}
+.mod .corps{padding:11px 12px 12px}
+.mod .flag{position:absolute;top:7px;right:7px;z-index:2;background:rgba(10,12,15,.72);border:1px solid var(--bord2);color:var(--gris);
+  border-radius:99px;font-size:11px;padding:3px 9px;cursor:pointer}
+.mod .flag:hover{color:var(--texte)}
+.mod.corrige{border-color:var(--rouge)}
+.mod.corrige .flag{background:var(--rouge);color:#fff;border-color:var(--rouge)}
+.badge-av{display:inline-block;font-size:10.5px;color:var(--gris2);border:1px solid var(--bord);border-radius:99px;padding:1px 7px;margin-top:6px}
+/* chips (hooks/broll) */
+.chips{display:flex;flex-wrap:wrap;gap:7px}
+.chip{background:var(--carte);border:1px solid var(--bord);border-radius:9px;padding:7px 10px;cursor:pointer;font:inherit;font-size:12px;color:var(--gris);text-align:left;max-width:280px}
+.chip:hover{border-color:var(--bord2);color:var(--texte)}
+.chip[aria-pressed="true"]{border-color:var(--violet);background:#181528;color:#cbb8ff}
+.chip .cid{font:11px ui-monospace,Menlo,monospace;color:var(--gris2)}
+.chip .ct{display:block;margin-top:2px}
+.chip .tg{color:var(--gris2);font-size:10.5px}
+.filtre{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 9px}
+.filtre button{background:none;border:1px solid var(--bord);color:var(--gris2);border-radius:99px;padding:3px 10px;font:inherit;font-size:11.5px;cursor:pointer}
+.filtre button[aria-pressed="true"]{border-color:var(--violet);color:#cbb8ff}
+.repli{max-height:230px;overflow:auto;padding-right:4px}
+.toggle{display:flex;align-items:center;gap:10px;background:var(--carte);border:1px solid var(--bord);border-radius:10px;padding:11px 13px;cursor:pointer;margin:0 0 11px}
+.toggle .sw{width:40px;height:23px;border-radius:99px;background:#2a323c;position:relative;flex:none;transition:background .15s}
+.toggle .sw i{position:absolute;top:2px;left:2px;width:19px;height:19px;border-radius:50%;background:#7c8894;transition:.15s}
+.toggle[aria-pressed="true"] .sw{background:#2a3a24}
+.toggle[aria-pressed="true"] .sw i{left:19px;background:var(--vert)}
+.toggle .lbl b{display:block;font-size:14px}.toggle .lbl span{font-size:12px;color:var(--gris)}
 .champ{display:block;margin:0 0 11px}
 .champ span{display:block;font-size:12.5px;color:var(--gris);margin-bottom:4px}
-input[type=text],textarea,select{width:100%;background:#101419;border:1px solid var(--bord);
-  border-radius:9px;color:var(--texte);font:inherit;font-size:14.5px;padding:9px 11px}
+input[type=text],textarea,select{width:100%;background:#101419;border:1px solid var(--bord);border-radius:9px;color:var(--texte);font:inherit;font-size:14.5px;padding:9px 11px}
 textarea{min-height:64px;resize:vertical}
 input:focus,textarea:focus,select:focus{outline:none;border-color:var(--bleu)}
 .deux{display:grid;grid-template-columns:1fr 1fr;gap:11px}
-
-.alerte{border-left:3px solid var(--or);background:#1a1710;border-radius:6px;
-  padding:10px 12px;font-size:13px;color:#e0cd9e;margin:10px 0 0;line-height:1.5}
+.alerte{border-left:3px solid var(--or);background:#1a1710;border-radius:6px;padding:10px 12px;font-size:13px;color:#e0cd9e;margin:10px 0 0;line-height:1.5}
 .alerte.dur{border-color:var(--rouge);background:#1c1312;color:#f0aca7}
-
 .sortie{background:#0e1216;border:1px solid var(--bord);border-radius:12px;padding:14px;margin-top:12px}
 pre{margin:0;white-space:pre-wrap;word-break:break-word;font:13px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;color:#cfd8e3}
 .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:11px}
-.bt{background:#1a2230;border:1px solid #2c3b52;color:var(--bleu);border-radius:9px;
-  padding:8px 14px;font:inherit;font-size:14px;cursor:pointer}
+.bt{background:#1a2230;border:1px solid #2c3b52;color:var(--bleu);border-radius:9px;padding:8px 14px;font:inherit;font-size:14px;cursor:pointer}
 .bt:hover{background:#22304a}
 .bt.pri{background:#2a2410;border-color:#5a4a1c;color:var(--or)}
 .bt.pri:hover{background:#392f14}
@@ -65,29 +84,53 @@ footer{margin-top:34px;font-size:12px;color:var(--gris2);line-height:1.6}
 <div class="page">
 
 <h1>Studio vidéo</h1>
-<p class="sous">Choisis le modèle et l'avatar, remplis les paramètres. La page produit une commande
-que tu me colles telle quelle — elle ne lance rien toute seule.</p>
+<p class="sous">Choisis le modèle, l'habillage et les plans, remplis les paramètres. La page produit une
+commande que tu me colles telle quelle — elle ne lance rien toute seule. Un template qui ne va pas ?
+Clique « pas OK » dessus.</p>
 <nav class="nav">
-  <a href="/taches/">Mes demandes</a>
+  <a href="/outils/">Mes outils</a>
+  <a href="/templates/">Les templates</a>
+  <a href="/tri/">Trier</a>
   <a href="/carte/">La carte</a>
   <a href="/">Prévisualisation</a>
 </nav>
 
-<h2>1 · Le modèle <i>ce que la vidéo raconte</i></h2>
+<h2>1 · Le modèle <i>ce que la vidéo raconte — « pas OK » pour en signaler un à corriger</i></h2>
 <div class="grille" id="modeles"></div>
+<label class="champ" id="corrige-zone" hidden><span>Ce qui cloche sur le(s) template(s) signalé(s) <i>(je corrige ça)</i></span>
+  <textarea id="corrige-quoi" placeholder="ex. la synchro des lèvres décroche à la fin, le CTA est illisible…"></textarea></label>
 
 <h2>2 · La garde-robe <i>un seul look par vidéo</i></h2>
 <div class="grille" id="garderobes"></div>
 <p class="alerte" id="regle-gr">La banque a été tournée en trois fois, avec des vêtements différents.
 Piocher deux looks au milieu d'une même vidéo donne l'impression que tu te changes entre deux phrases.
-Deux looks ne sont tolérés que si le second est <b>uniquement</b> à l'ouverture ou à la fermeture,
-où la coupure franche se lit comme un effet voulu.</p>
+Deux looks ne sont tolérés que si le second est <b>uniquement</b> à l'ouverture ou à la fermeture.</p>
 
-<h2>3 · Les plans <i>filtrés par la garde-robe choisie</i></h2>
+<h2>3 · Les plans avatar <i>filtrés par la garde-robe choisie</i></h2>
 <div class="grille" id="clips"></div>
 <p class="alerte dur" id="alerte-clips" hidden></p>
 
-<h2>4 · Tes paramètres</h2>
+<h2>4 · L'intro <i>l'ouverture avec ta voix, ou pas</i></h2>
+<button class="toggle" id="introVoix" type="button" aria-pressed="true">
+  <span class="sw"><i></i></span>
+  <span class="lbl"><b>Je refais l'intro avec ma voix clonée</b><span>Décoché : on garde l'audio d'origine du plan d'ouverture.</span></span>
+</button>
+
+<h2>5 · Blocs motion HyperFrames <i>les briques d'animation à enchaîner</i></h2>
+<div class="grille petit" id="blocs"></div>
+
+<h2>6 · Hook de début <i>le plan d'ouverture qui retient (banque triée)</i></h2>
+<div class="filtre" id="fdebut"></div>
+<div class="chips repli" id="hdebut"></div>
+
+<h2>7 · Hook de fin <i>le plan de clôture</i></h2>
+<div class="chips" id="hfin"></div>
+
+<h2>8 · B-roll <i>les plans d'illustration à intercaler</i></h2>
+<div class="filtre" id="fbroll"></div>
+<div class="chips repli" id="broll"></div>
+
+<h2>9 · Tes paramètres</h2>
 <label class="champ"><span>Le sujet — de quoi parle la vidéo</span>
   <input type="text" id="sujet" placeholder="ex. le nouveau modèle vidéo de Google, et ce qu'on peut vendre avec"></label>
 <label class="champ"><span>Le hook — la première phrase, celle qui retient</span>
@@ -95,7 +138,7 @@ où la coupure franche se lit comme un effet voulu.</p>
 <div class="deux">
   <label class="champ"><span>Le CTA</span>
     <input type="text" id="cta" placeholder="ex. Dis-moi en commentaire ce que tu ferais avec"></label>
-  <label class="champ"><span>Mot-clé de l'auto-DM <i></i></span>
+  <label class="champ"><span>Mot-clé de l'auto-DM</span>
     <input type="text" id="motcle" placeholder="ex. SEEDANCE"></label>
 </div>
 <div class="deux">
@@ -115,7 +158,7 @@ où la coupure franche se lit comme un effet voulu.</p>
 <label class="champ"><span>Autre chose à savoir <i>(facultatif)</i></span>
   <textarea id="notes" placeholder="Une contrainte, un lien, une référence visuelle, ce qu'il ne faut surtout pas faire…"></textarea></label>
 
-<h2>5 · La commande à me coller</h2>
+<h2>10 · La commande à me coller</h2>
 <div class="sortie"><pre id="sortie">Choisis un modèle pour commencer.</pre></div>
 <div class="actions">
   <button class="bt pri" id="copier" type="button">Copier la commande</button>
@@ -123,17 +166,20 @@ où la coupure franche se lit comme un effet voulu.</p>
 </div>
 
 <footer>
-  Les 9 plans listés sont ceux qui existent réellement sur le disque, avec leur durée mesurée —
-  pas les 24 du brief de tournage. Les 15 manquants n'ont jamais été tournés.<br>
-  Cette page ne produit pas la vidéo : elle produit la commande. C'est voulu — le rendu passe par
-  la chaîne qui vérifie l'accord mot/image, et une page web ne peut pas faire cette vérification.
+  Les plans avatar, les hooks et le b-roll listés existent réellement (banque triée au pouce dans <a href="/tri/" style="color:var(--gris)">Trier</a>,
+  durées avatar mesurées à l'ffprobe). Les blocs motion sont les briques HyperFrames réutilisables (hook, problème, solution, preuve, CTA, b-roll).
+  Cette page produit la commande, pas la vidéo : le rendu passe par la chaîne qui vérifie l'accord mot/image.
 </footer>
 
 </div>
 
 <script>
-// Les données viennent de bank.json et des fichiers réellement présents.
-// Durées mesurées à l'ffprobe, pas déclarées.
+var MODELES = [{"id": "veille-to-video-v3", "nom": "VideoBoost v3", "desc": "Assemble les plans de la banque avec ta voix clonée. Le modèle par défaut.", "av": true, "reco": true, "thumb": null}, {"id": "prompt-reveal-branded", "nom": "Prompt Reveal", "desc": "Un rendu IA bluffant, puis le prompt exact qui défile. Pas d'avatar.", "av": false, "thumb": "keynote-prompt-reveal.jpg"}, {"id": "revelation-ab-branded", "nom": "Révélation A/B", "desc": "Une astuce qui circule vs le détail qui change tout, montré à l'écran.", "av": true, "thumb": null}, {"id": "horror-beatsync-video", "nom": "Horror Beat-Sync", "desc": "Ambiance calée sur le kick, fin sur un mini-drop.", "av": true, "thumb": null}, {"id": "reel-remix", "nom": "Reel Remix", "desc": "Panneau screen-record en haut, avatar en bas. On clone le format, pas le contenu.", "av": true, "thumb": null}, {"id": "yapping-facecam-branded", "nom": "Yapping face caméra", "desc": "Face caméra, débit rapide, captions mot-à-mot.", "av": true, "thumb": null}, {"id": "hook-puissant-branded", "nom": "Hook puissant", "desc": "Chute + atterrissage, pile de hooks, countdown, slam final GO.", "av": true, "thumb": null}, {"id": "veille-journal-ia", "nom": "Journal IA", "desc": "L'édition quotidienne : actu, angle clivant, coup à jouer. 45 s à 1 min.", "av": true, "thumb": null}, {"id": "essai-contemplatif-branded", "nom": "Essai contemplatif", "desc": "Format lent, voix off, image qui respire. Pour un propos, pas une promo.", "av": false, "thumb": "essai-contemplatif-premium.jpg"}, {"id": "foodboost-vitrine-video", "nom": "FoodBoost vitrine", "desc": "100 % généré, pour un restaurateur. Publie sur @foodboost, pas ton visage.", "av": false, "thumb": null}, {"id": "clip-musical-ia", "nom": "Clip musical IA", "desc": "Clip monté sur des plans Higgsfield. Rendu 9:16 ET 16:9.", "av": false, "thumb": null}, {"id": "script-pspc-branded", "nom": "Script PSVC", "desc": "Écrit un script : Problème → Solution → Validation → CTA. Pas de vidéo.", "av": false, "thumb": null}, {"id": "motion-design-site", "nom": "Site motion design", "desc": "Une page web animée au scroll. Pas une vidéo.", "av": false, "thumb": null}, {"id": "website-to-video", "nom": "Site → vidéo", "desc": "Capture un site et en fait une visite filmée.", "av": false, "thumb": null}];
+var BLOCS = [{"id": "hook", "nom": "Accroche", "desc": "Gros texte plein cadre qui arrête le scroll."}, {"id": "problem", "nom": "Le problème", "desc": "La douleur : ce qui coince aujourd'hui."}, {"id": "solution", "nom": "La solution", "desc": "Ce que ça change, la mécanique montrée."}, {"id": "proof", "nom": "La preuve", "desc": "Un chiffre, une capture, un résultat réel."}, {"id": "cta", "nom": "Appel à l'action", "desc": "Le mot-clé à commenter, la ressource promise."}, {"id": "broll", "nom": "Respiration b-roll", "desc": "Un plan d'illustration entre deux idées."}];
+var HDEBUT = [{"id": "ee1e069a", "t": "BE FRESH — SLOT MACHINE BOISSONS — SEEDANCE 2.", "tags": ["b-roll"]}, {"id": "d6202a5c", "t": "CLIP 3 — PUISSANT / ROUTE COCOTIERS / TRANSFOR", "tags": []}, {"id": "5b74b381", "t": "CLIP 3 — PUISSANT / ROUTE COCOTIERS / TRANSFOR", "tags": []}, {"id": "c144a0a9", "t": "CHARACTER LOCK", "tags": ["nature"]}, {"id": "2ef0456c", "t": "A street vox-pop interview. An off-camera inte", "tags": ["visage"]}, {"id": "327795b8", "t": "The same Creole restaurant owner, the same res", "tags": []}, {"id": "7fee91d4", "t": "CREOLE MAN ON THE RAMPART — 15s SINGLE TAKE — ", "tags": []}, {"id": "f488e814", "t": "NEON FILM — 4 SHOTS / SEEDANCE 2.5 — V2 (BLACK", "tags": []}, {"id": "96e903c5", "t": "⚠️ Joindre l'image de référence de Tony (visag", "tags": []}, {"id": "77ef5995", "t": "PROMPT 06 — DESK CITY", "tags": ["b-roll"]}, {"id": "2408ac15", "t": "⚠️ Joindre l'image de référence de Tony (visag", "tags": ["action"]}, {"id": "45b03812", "t": "⚠️ Joindre l'image de référence de Tony (visag", "tags": ["visage"]}, {"id": "888a5b3b", "t": "REFERENCE IMAGE LOCK", "tags": ["action"]}, {"id": "a3b868ef", "t": "The frame opens on two full seconds of total b", "tags": ["action"]}, {"id": "e9d9e8d5", "t": "⚠️ Joindre l'image de référence de Tony (visag", "tags": ["visage", "action"]}, {"id": "8dfc6346", "t": "Frame rate feel: 24fps cinematic base, filmed ", "tags": ["b-roll"]}, {"id": "48b4b41d", "t": "The frame opens on two full seconds of total b", "tags": ["visage", "action"]}, {"id": "0b77defd", "t": "Ultra-realistic cinematic street video, photor", "tags": ["action", "visage"]}, {"id": "d2167bb6", "t": "A vertical social-media hook built on classic ", "tags": ["action", "nature"]}, {"id": "9701d02f", "t": "10-second vertical 9:16 photorealistic comedy ", "tags": ["action"]}, {"id": "2c6d963c", "t": "A late-night self-service laundromat. A calm m", "tags": ["visage", "action"]}, {"id": "7e8df26c", "t": "A tired Réunion Island father eats dinner at h", "tags": ["action"]}, {"id": "1c74f23b", "t": "Same airliner, same man, same yellow post-it p", "tags": ["visage", "action"]}, {"id": "7d3f1f52", "t": "PROMPT 1 — PARTIE 1 / 10 SECONDES", "tags": ["action"]}, {"id": "2b7eae09", "t": "A man finishing a morning training run with hi", "tags": ["action", "visage", "nature"]}, {"id": "3d1a7f3b", "t": "10-second vertical 9:16 photorealistic comedy ", "tags": ["visage", "action"]}, {"id": "3ed1eab4", "t": "CHARACTER LOCK] Adult male, black shirt with a", "tags": ["visage"]}, {"id": "3f28f9e9", "t": "10-second vertical 9:16 photorealistic social-", "tags": ["visage", "action"]}, {"id": "d06fbb8c", "t": "CHARACTER LOCK] Adult male, black shirt with a", "tags": ["visage", "action"]}, {"id": "1c051a03", "t": "A confident man in sunglasses walks down a sun", "tags": ["visage", "action"]}, {"id": "c274ce85", "t": "Create a polished 2D cartoon video game gamepl", "tags": ["b-roll"]}, {"id": "4c76974c", "t": "A street reporter ambushes an ordinary middle-", "tags": ["visage", "action"]}, {"id": "4916a8af", "t": "FILM 1 / 7 — LA PEUR", "tags": ["visage", "action", "b-roll"]}, {"id": "be434b02", "t": "The frame opens on pure white. The white resol", "tags": ["visage", "action"]}, {"id": "06a08f26", "t": "REFERENCE IMAGE MAPPING", "tags": ["visage", "action"]}, {"id": "02ef9209", "t": "A man in a neon-lit superhero suit walks down ", "tags": ["visage", "action"]}, {"id": "72233bac", "t": "A calm man stands in the foreground of a vast ", "tags": ["visage", "action"]}, {"id": "cbbaaed2", "t": "A man with the ability to detect anyone doom-s", "tags": ["visage", "action"]}, {"id": "e07e16c9", "t": "PLAN 04 — L'ESCALADE (24.0 → 32.0s)", "tags": ["visage", "action"]}, {"id": "0e19512d", "t": "Create an ultra-premium 10-second cinematic au", "tags": ["action", "voiture"]}, {"id": "df37aeb2", "t": "PLAN 03 — LE PREMIER SORT (16.0 → 24.0s)", "tags": ["visage", "action"]}, {"id": "3696cdd4", "t": "Create an ultra-premium 10-second cinematic au", "tags": ["action", "voiture"]}, {"id": "90dfbfe3", "t": "Vertical 9:16 cinematic shot. Narrow rocky mou", "tags": ["action", "nature"]}, {"id": "5cfb6cbf", "t": "Video Concept", "tags": ["action"]}, {"id": "92b47145", "t": "Video Concept", "tags": ["visage", "action"]}, {"id": "6d9e852b", "t": "Voici le **prompt complet optimisé** « Ultra I", "tags": ["visage", "action"]}, {"id": "51e6f9f2", "t": "Ultra-photorealistic cinematic 10-second verti", "tags": ["visage", "action"]}];
+var HFIN = [{"id": "5afeb48f", "t": "A bystander films a matte black low-slung mid-", "tags": ["ville"]}, {"id": "4a71abdb", "t": "A bystander films a matte black low-slung mid-", "tags": []}, {"id": "29ee0df1", "t": "A bystander films a matte black low-slung mid-", "tags": ["voiture"]}, {"id": "d8ceaa7e", "t": "*Updated prompt with the requested addition** ", "tags": []}, {"id": "4a976952", "t": "An ordinary man walks down an ordinary street ", "tags": ["visage"]}, {"id": "4a571514", "t": "An ordinary man walks down an ordinary street ", "tags": []}];
+var BROLL = [{"id": "fa81a64a", "t": "CLIP 3B — LÉVITATION / BRAS CROISÉS — SEEDANCE", "tags": ["visage"]}, {"id": "1a9de701", "t": "A bystander films a matte black low-slung mid-", "tags": ["voiture"]}, {"id": "4b2424b1", "t": "Use the provided avatar reference as the exact", "tags": ["visage"]}, {"id": "c9cb1169", "t": "Use the provided avatar reference as the exact", "tags": ["visage"]}, {"id": "4a02ab95", "t": "Use the provided avatar reference as the exact", "tags": ["visage"]}, {"id": "a43fad7a", "t": "NEON FILM — 4 SHOTS / SEEDANCE 2.5 — V3 (COPYR", "tags": ["visage"]}, {"id": "bd5bf703", "t": "A premium gourmet burger is finished, lifted a", "tags": ["b-roll"]}, {"id": "83840116", "t": "Prompt (Le japonais vous permet d'écrire des p", "tags": []}, {"id": "808b39ff", "t": "A man stands in a moving subway car and fires ", "tags": []}, {"id": "bfc80f59", "t": "A man standing in a moving subway car addresse", "tags": []}, {"id": "c0ed31a0", "t": "A man is one step from boarding an aircraft on", "tags": ["b-roll"]}, {"id": "73140f74", "t": "<<<image_2>>> wearing <<<image_3>>>", "tags": ["b-roll"]}, {"id": "5ed85774", "t": "*[TECHNICAL SPECIFICATIONS]**", "tags": ["b-roll"]}, {"id": "30e18045", "t": "Step 1 create reference image for higher accur", "tags": ["b-roll", "ville"]}, {"id": "f3fc2a67", "t": "PLAN 05 — LA CHUTE (32.0 → 40.0s)", "tags": ["b-roll"]}, {"id": "8d127b25", "t": "Editing: this is a FAST-CUT MONTAGE, not a con", "tags": []}, {"id": "2bc0ad58", "t": "A single barman's hand builds a mojito, step b", "tags": ["b-roll"]}, {"id": "a4ac5c2e", "t": "Image-to-video. Use the provided L'Unisson ref", "tags": ["b-roll"]}, {"id": "38a8573b", "t": "IMAGE-TO-VIDEO — PAGE GOURMANDE / CINEMATIC FO", "tags": ["b-roll"]}, {"id": "3daf7da3", "t": "Image-to-video. Use the provided BE FRESH tabl", "tags": ["b-roll"]}, {"id": "71ffb29e", "t": "Vertical 9:16 cinematic shot. Himalayan river ", "tags": ["b-roll"]}, {"id": "47e1a64d", "t": "PLAN 02 — L'APPARITION (8.0 → 16.0s)", "tags": ["b-roll"]}, {"id": "0945b936", "t": "*Prompt image de référence (photoréaliste + ef", "tags": []}, {"id": "fe50f9b5", "t": "*Prompt image de référence (photoréaliste + ef", "tags": []}, {"id": "a63b49de", "t": "SPECS] Duration 5.0 seconds. 9:16 vertical, 4K", "tags": ["b-roll"]}, {"id": "fdf0c870", "t": "*Prompt image de référence (photoréaliste) – d", "tags": []}, {"id": "617c5505", "t": "A man filmed as a talking-head creator clip ex", "tags": ["b-roll"]}, {"id": "034e017b", "t": "A man filmed as a talking-head creator clip le", "tags": ["b-roll"]}, {"id": "537405e4", "t": "A man filmed as a talking-head creator clip ra", "tags": ["b-roll"]}];
+
 var GARDEROBES = [
   { id:'chemise-noir-jaune', nom:'Chemise noire, détail jaune', note:'Le tournage le plus récent, et le plus fourni : 4 plans de 10 s.', reco:true },
   { id:'chemise-noire-studio', nom:'Chemise noire studio', note:'Premier tournage. 3 plans de 5 s — court pour porter une vidéo entière.' },
@@ -150,41 +196,47 @@ var CLIPS = [
   { id:'HOOK_spider_entree', gr:'spider-suit', role:'hook-visuel', nom:'Entrée Spider',     dur:8.00,  parle:false, note:'ne parle pas — ouverture uniquement' },
   { id:'SPIDER_talking',     gr:'spider-suit', role:'cta',         nom:'Spider qui parle',  dur:2.04,  parle:true,  note:'2 s seulement' }
 ];
-var MODELES = [
-  { id:'veille-to-video-v3', nom:'VideoBoost v3', desc:'Assemble les plans de la banque avec ta voix clonée. Le modèle par défaut pour une vidéo Autoboost.', av:true, reco:true },
-  { id:'prompt-reveal-branded', nom:'Prompt Reveal', desc:'Un rendu IA bluffant, puis le prompt exact qui défile. Pas d’avatar.', av:false },
-  { id:'horror-beatsync-video', nom:'Horror Beat-Sync', desc:'Calé sur la trend « YOU CAN ASK THE… ». Coupes sur le kick.', av:false },
-  { id:'veille-journal-ia', nom:'Journal IA', desc:'L’édition quotidienne : actu du jour, angle clivant, coup à jouer. 45 s à 1 min.', av:true },
-  { id:'essai-contemplatif-branded', nom:'Essai contemplatif', desc:'Format lent, voix off, image qui respire. Pour un propos, pas une promo.', av:false },
-  { id:'foodboost-vitrine-video', nom:'FoodBoost vitrine', desc:'100 % généré, pour un restaurateur. Pas ton visage.', av:false },
-  { id:'video-to-resource', nom:'Vidéo → ressource', desc:'Reprend une vidéo déjà produite et en fait une page ressource.', av:false },
-  { id:'website-to-video', nom:'Site → vidéo', desc:'Capture un site et en fait une visite filmée.', av:false }
-];
 
-var etat = { modele:null, gr:null, clips:[] };
+var etat = { modele:null, gr:null, clips:[], blocs:[], hd:[], hf:[], broll:[], introVoix:true, corriger:{} };
 var $ = function(s){ return document.querySelector(s); };
+var esc = function(s){ return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); };
 
-function carte(o){
-  var b = document.createElement('button');
-  b.className = 'opt'; b.type = 'button'; b.setAttribute('aria-pressed','false');
-  b.innerHTML = '<b>' + o.titre + '</b><span>' + o.desc + '</span>' + (o.pied ? '<em class="pourquoi">' + o.pied + '</em>' : '');
-  return b;
-}
-
+/* ---------- modèles (avec vignette + drapeau « pas OK ») ---------- */
 function peindreModeles(){
   var c = $('#modeles'); c.innerHTML = '';
   MODELES.forEach(function(m){
-    var b = carte({ titre:m.nom + (m.reco ? ' · conseillé' : ''), desc:m.desc,
-      pied:(m.av ? 'utilise la banque avatar' : 'sans avatar') });
+    var b = document.createElement('button');
+    b.className = 'opt mod' + (etat.corriger[m.id] ? ' corrige' : '');
+    b.type = 'button'; b.setAttribute('aria-pressed', etat.modele && etat.modele.id===m.id ? 'true':'false');
+    var vig = m.thumb
+      ? '<img class="vig" src="assets/previews/'+esc(m.thumb)+'" alt="" loading="lazy">'
+      : '<span class="vig ph">'+esc(m.nom.charAt(0))+'</span>';
+    b.innerHTML = '<span class="flag" data-flag="'+esc(m.id)+'">'+(etat.corriger[m.id]?'à corriger ✕':'pas OK')+'</span>'
+      + vig
+      + '<span class="corps"><b>'+esc(m.nom)+(m.reco?' · conseillé':'')+'</b>'
+      + '<span>'+esc(m.desc)+'</span>'
+      + '<span class="badge-av">'+(m.av?'banque avatar':'sans avatar')+'</span></span>';
+    b.querySelector('.flag').addEventListener('click', function(e){
+      e.stopPropagation();
+      if (etat.corriger[m.id]) delete etat.corriger[m.id]; else etat.corriger[m.id]=true;
+      peindreModeles(); majCorrige(); ecrire();
+    });
     b.addEventListener('click', function(){
       etat.modele = m; etat.gr = null; etat.clips = [];
       peindreModeles(); peindreGarderobes(); peindreClips(); ecrire();
     });
-    if (etat.modele && etat.modele.id === m.id) b.setAttribute('aria-pressed','true');
     c.appendChild(b);
   });
 }
+function majCorrige(){ $('#corrige-zone').hidden = Object.keys(etat.corriger).length === 0; }
 
+/* ---------- garde-robe + plans avatar (inchangé) ---------- */
+function carte(o){
+  var b = document.createElement('button');
+  b.className = 'opt'; b.type = 'button'; b.setAttribute('aria-pressed','false');
+  b.innerHTML = '<b>' + esc(o.titre) + '</b><span>' + esc(o.desc) + '</span>' + (o.pied ? '<em class="pourquoi">' + esc(o.pied) + '</em>' : '');
+  return b;
+}
 function peindreGarderobes(){
   var c = $('#garderobes'); c.innerHTML = '';
   var utile = etat.modele && etat.modele.av;
@@ -197,14 +249,11 @@ function peindreGarderobes(){
   GARDEROBES.forEach(function(g){
     var n = CLIPS.filter(function(x){ return x.gr === g.id; }).length;
     var b = carte({ titre:g.nom + (g.reco ? ' · conseillé' : ''), desc:g.note, pied:n + ' plan' + (n>1?'s':'') + ' disponible' + (n>1?'s':'') });
-    b.addEventListener('click', function(){
-      etat.gr = g; etat.clips = []; peindreGarderobes(); peindreClips(); ecrire();
-    });
+    b.addEventListener('click', function(){ etat.gr = g; etat.clips = []; peindreGarderobes(); peindreClips(); ecrire(); });
     if (etat.gr && etat.gr.id === g.id) b.setAttribute('aria-pressed','true');
     c.appendChild(b);
   });
 }
-
 function peindreClips(){
   var c = $('#clips'); c.innerHTML = '';
   if (!etat.gr){
@@ -213,11 +262,9 @@ function peindreClips(){
   }
   var ROLE = { hook:'Accroche', explain:'Explication', cta:'Appel à l’action', 'hook-visuel':'Accroche visuelle' };
   CLIPS.filter(function(x){ return x.gr === etat.gr.id; }).forEach(function(k){
-    var b = carte({ titre:k.nom, desc:ROLE[k.role] + ' · ' + k.dur.toFixed(2).replace('.',',') + ' s' + (k.parle ? '' : ' · ne parle pas'),
-      pied:k.note || '' });
+    var b = carte({ titre:k.nom, desc:ROLE[k.role] + ' · ' + k.dur.toFixed(2).replace('.',',') + ' s' + (k.parle ? '' : ' · ne parle pas'), pied:k.note || '' });
     b.addEventListener('click', function(){
-      var i = etat.clips.indexOf(k.id);
-      if (i > -1) etat.clips.splice(i,1); else etat.clips.push(k.id);
+      var i = etat.clips.indexOf(k.id); if (i > -1) etat.clips.splice(i,1); else etat.clips.push(k.id);
       peindreClips(); ecrire();
     });
     if (etat.clips.indexOf(k.id) > -1) b.setAttribute('aria-pressed','true');
@@ -225,66 +272,110 @@ function peindreClips(){
   });
   verifier();
 }
-
-// La vérification qui justifie l'existence de cette page : la durée totale des
-// plans PARLANTS choisis doit couvrir la voix. C'est l'erreur qui revient —
-// choisir trois clips de 5 s pour une vidéo de 45 s, et découvrir au montage
-// qu'il manque 30 s d'image.
 function verifier(){
   var a = $('#alerte-clips');
   var pris = CLIPS.filter(function(k){ return etat.clips.indexOf(k.id) > -1; });
   var parle = pris.filter(function(k){ return k.parle; });
   var total = parle.reduce(function(s,k){ return s + k.dur; }, 0);
-  var vise = ($('#duree').value || '').split('-')[0];
-  var cible = Number(vise) || 18;
+  var vise = ($('#duree').value || '').split('-')[0]; var cible = Number(vise) || 18;
   var msgs = [];
   if (pris.length && !parle.length) msgs.push('Aucun plan choisi ne parle : il n’y a rien sur quoi poser la voix.');
-  if (parle.length && total < cible) {
-    msgs.push('Les plans parlants totalisent ' + total.toFixed(1).replace('.',',') + ' s pour une vidéo de ' +
-      cible + ' s minimum. Il manque ' + (cible - total).toFixed(1).replace('.',',') +
-      ' s — soit on rejoue un plan, soit on couvre la différence avec du b-roll.');
-  }
+  if (parle.length && total < cible) msgs.push('Les plans parlants totalisent ' + total.toFixed(1).replace('.',',') + ' s pour une vidéo de ' + cible + ' s minimum. Il manque ' + (cible - total).toFixed(1).replace('.',',') + ' s — rejoue un plan, ou couvre avec du b-roll.');
   var roles = {}; pris.forEach(function(k){ roles[k.role] = 1; });
   if (pris.length >= 2 && !roles.cta && !roles['hook-visuel']) msgs.push('Aucun plan d’appel à l’action dans la sélection.');
-  a.hidden = !msgs.length;
-  a.innerHTML = msgs.join('<br>');
+  a.hidden = !msgs.length; a.innerHTML = msgs.join('<br>');
 }
 
+/* ---------- blocs motion ---------- */
+function peindreBlocs(){
+  var c = $('#blocs'); c.innerHTML = '';
+  BLOCS.forEach(function(bl){
+    var b = carte({ titre:bl.nom, desc:bl.desc, pied:'blocks/'+bl.id+'.html' });
+    b.addEventListener('click', function(){
+      var i = etat.blocs.indexOf(bl.id); if (i>-1) etat.blocs.splice(i,1); else etat.blocs.push(bl.id);
+      peindreBlocs(); ecrire();
+    });
+    if (etat.blocs.indexOf(bl.id) > -1) b.setAttribute('aria-pressed','true');
+    c.appendChild(b);
+  });
+}
+
+/* ---------- chips génériques (hooks / b-roll) ---------- */
+function tagsDe(list){ var s={}; list.forEach(function(x){(x.tags||[]).forEach(function(t){s[t]=1;});}); return Object.keys(s).sort(); }
+function peindreChips(liste, cible, sel, filtreId, filtreEtat){
+  var box = $(cible); box.innerHTML='';
+  var f = filtreEtat.v || '';
+  liste.filter(function(x){ return !f || (x.tags||[]).indexOf(f)>-1; }).forEach(function(x){
+    var b=document.createElement('button'); b.className='chip'; b.type='button';
+    b.setAttribute('aria-pressed', sel.indexOf(x.id)>-1?'true':'false');
+    b.innerHTML='<span class="cid">'+esc(x.id.slice(0,8))+'</span><span class="ct">'+esc(x.t||'(sans titre)')+'</span>'
+      +((x.tags&&x.tags.length)?'<span class="tg">'+esc(x.tags.join(' · '))+'</span>':'');
+    b.addEventListener('click', function(){
+      var i=sel.indexOf(x.id); if(i>-1) sel.splice(i,1); else sel.push(x.id);
+      b.setAttribute('aria-pressed', i>-1?'false':'true'); ecrire();
+    });
+    box.appendChild(b);
+  });
+  if (filtreId){
+    var fb=$(filtreId); fb.innerHTML='';
+    var mk=function(lbl,val){var t=document.createElement('button');t.type='button';t.textContent=lbl;
+      t.setAttribute('aria-pressed', (filtreEtat.v||'')===val?'true':'false');
+      t.addEventListener('click',function(){ filtreEtat.v=val; peindreChips(liste,cible,sel,filtreId,filtreEtat); }); fb.appendChild(t);};
+    mk('tout','');
+    tagsDe(liste).forEach(function(t){ mk(t,t); });
+  }
+}
+var fDeb={v:''}, fBro={v:''};
+
+/* ---------- intro voix ---------- */
+$('#introVoix').addEventListener('click', function(){
+  etat.introVoix = !etat.introVoix;
+  this.setAttribute('aria-pressed', etat.introVoix?'true':'false'); ecrire();
+});
+
+/* ---------- commande ---------- */
+function nomsClips(ids, src){ return ids.map(function(id){ var c=src.filter(function(x){return x.id===id;})[0]; return c? (id.slice(0,8)+' ('+(c.t||c.nom||'')+')') : id; }); }
 function ecrire(){
   var s = $('#sortie');
-  if (!etat.modele){ s.textContent = 'Choisis un modèle pour commencer.'; return; }
+  var flags = Object.keys(etat.corriger);
+  if (!etat.modele && !flags.length){ s.textContent = 'Choisis un modèle pour commencer.'; return; }
   var L = [];
-  L.push('Fais-moi une vidéo avec /' + etat.modele.id + '.');
-  L.push('');
-  if (etat.gr) L.push('Garde-robe : ' + etat.gr.nom + ' (' + etat.gr.id + ') — ne pas mélanger avec une autre.');
-  if (etat.clips.length) L.push('Plans : ' + etat.clips.join(', '));
-  var v = function(id){ return ($('#' + id).value || '').trim(); };
-  if (v('sujet'))  L.push('Sujet : ' + v('sujet'));
-  if (v('hook'))   L.push('Hook : ' + v('hook'));
-  if (v('cta'))    L.push('CTA : ' + v('cta'));
-  if (v('motcle')) L.push('Mot-clé auto-DM : ' + v('motcle').toUpperCase() + ' (vérifie que la ressource existe avant de l’annoncer)');
-  L.push('Durée : ' + $('#duree').value);
-  L.push('Musique : ' + $('#musique').value);
-  if (v('notes')) { L.push(''); L.push('À savoir : ' + v('notes')); }
-  L.push('');
-  L.push('Publie sur prévisualisation et donne-moi le lien. Ne programme rien sans mon accord.');
+  if (flags.length){
+    L.push('⚠️ Templates à corriger : ' + flags.join(', ') + '.');
+    var q = ($('#corrige-quoi').value||'').trim();
+    if (q) L.push('Ce qui cloche : ' + q);
+    L.push('');
+  }
+  if (etat.modele){
+    L.push('Fais-moi une vidéo avec /' + etat.modele.id + '.');
+    L.push('');
+    if (etat.gr) L.push('Garde-robe : ' + etat.gr.nom + ' (' + etat.gr.id + ') — ne pas mélanger avec une autre.');
+    if (etat.clips.length) L.push('Plans avatar : ' + etat.clips.join(', '));
+    if (etat.modele.av) L.push('Intro : ' + (etat.introVoix ? 'je refais l’ouverture avec ma voix clonée (couper l’audio natif du plan)' : 'garder l’audio d’origine du plan d’ouverture'));
+    if (etat.blocs.length) L.push('Blocs motion HyperFrames : ' + etat.blocs.join(' → '));
+    if (etat.hd.length) L.push('Hook de début : ' + nomsClips(etat.hd, HDEBUT).join(' ; '));
+    if (etat.hf.length) L.push('Hook de fin : ' + nomsClips(etat.hf, HFIN).join(' ; '));
+    if (etat.broll.length) L.push('B-roll à intercaler : ' + nomsClips(etat.broll, BROLL).join(' ; '));
+    var v = function(id){ return ($('#' + id).value || '').trim(); };
+    if (v('sujet'))  L.push('Sujet : ' + v('sujet'));
+    if (v('hook'))   L.push('Hook : ' + v('hook'));
+    if (v('cta'))    L.push('CTA : ' + v('cta'));
+    if (v('motcle')) L.push('Mot-clé auto-DM : ' + v('motcle').toUpperCase() + ' (vérifie que la ressource existe avant de l’annoncer)');
+    L.push('Durée : ' + $('#duree').value);
+    L.push('Musique : ' + $('#musique').value);
+    if (v('notes')) { L.push(''); L.push('À savoir : ' + v('notes')); }
+    L.push('');
+    L.push('Publie sur prévisualisation et donne-moi le lien. Ne programme rien sans mon accord.');
+  }
   s.textContent = L.join('\n');
 }
 
-['sujet','hook','cta','motcle','notes'].forEach(function(id){
-  document.getElementById(id).addEventListener('input', ecrire);
-});
-['duree','musique'].forEach(function(id){
-  document.getElementById(id).addEventListener('change', function(){ verifier(); ecrire(); });
-});
+['sujet','hook','cta','motcle','notes','corrige-quoi'].forEach(function(id){ document.getElementById(id).addEventListener('input', ecrire); });
+['duree','musique'].forEach(function(id){ document.getElementById(id).addEventListener('change', function(){ verifier(); ecrire(); }); });
 $('#copier').addEventListener('click', function(){
   var t = $('#sortie').textContent;
-  // navigator.clipboard échoue hors HTTPS et dans certaines vues intégrées :
-  // on garde la sélection manuelle comme filet, sinon le bouton ment.
   if (navigator.clipboard && window.isSecureContext) {
-    navigator.clipboard.writeText(t).then(function(){
-      $('#copier').textContent = 'Copié'; setTimeout(function(){ $('#copier').textContent = 'Copier la commande'; }, 1600);
-    });
+    navigator.clipboard.writeText(t).then(function(){ $('#copier').textContent = 'Copié'; setTimeout(function(){ $('#copier').textContent = 'Copier la commande'; }, 1600); });
   } else {
     var r = document.createRange(); r.selectNodeContents($('#sortie'));
     var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(r);
@@ -292,12 +383,19 @@ $('#copier').addEventListener('click', function(){
   }
 });
 $('#raz').addEventListener('click', function(){
-  etat = { modele:null, gr:null, clips:[] };
-  ['sujet','hook','cta','motcle','notes'].forEach(function(id){ document.getElementById(id).value = ''; });
-  peindreModeles(); peindreGarderobes(); peindreClips(); ecrire();
+  etat = { modele:null, gr:null, clips:[], blocs:[], hd:[], hf:[], broll:[], introVoix:true, corriger:{} };
+  ['sujet','hook','cta','motcle','notes','corrige-quoi'].forEach(function(id){ document.getElementById(id).value = ''; });
+  $('#introVoix').setAttribute('aria-pressed','true');
+  peindreModeles(); majCorrige(); peindreGarderobes(); peindreClips(); peindreBlocs();
+  peindreChips(HDEBUT,'#hdebut',etat.hd,'#fdebut',fDeb); peindreChips(HFIN,'#hfin',etat.hf,null,{v:''}); peindreChips(BROLL,'#broll',etat.broll,'#fbroll',fBro);
+  ecrire();
 });
 
-peindreModeles(); peindreGarderobes(); peindreClips(); ecrire();
+peindreModeles(); majCorrige(); peindreGarderobes(); peindreClips(); peindreBlocs();
+peindreChips(HDEBUT,'#hdebut',etat.hd,'#fdebut',fDeb);
+peindreChips(HFIN,'#hfin',etat.hf,null,{v:''});
+peindreChips(BROLL,'#broll',etat.broll,'#fbroll',fBro);
+ecrire();
 </script>
 </body>
 </html>
