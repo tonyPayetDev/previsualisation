@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Créer une vidéo</title>
+<style>
+  :root{--gold:#eab308;--violet:#8b5cf6;--bg:#0a0a0f;--card:#111117;--line:#232330;--txt:#EDEDED;--mut:#8A8A8A}
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--txt);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;-webkit-text-size-adjust:100%}
+  .wrap{max-width:620px;margin:0 auto;padding:22px 18px 60px}
+  header{display:flex;align-items:center;gap:12px;margin-bottom:6px}
+  .lock{width:40px;height:40px;border-radius:11px;background:var(--gold);display:flex;align-items:center;justify-content:center;flex:none}
+  h1{font-size:23px;font-weight:800;margin:0;letter-spacing:-.4px}
+  .sub{color:var(--mut);font-size:14px;margin:2px 0 22px}
+  label.cl{display:block;font-size:12px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--mut);font-weight:700;margin:20px 0 8px}
+  label.cl .mini{float:right;font-size:11px;font-weight:700;letter-spacing:.02em;color:var(--violet);
+    background:none;border:0;cursor:pointer;text-transform:none}
+  select,textarea,input[type=text]{width:100%;background:#0f0f14;color:var(--txt);
+    border:1px solid var(--line);border-radius:12px;padding:13px 14px;font-size:16px;font-family:inherit}
+  textarea{resize:vertical;line-height:1.45}
+  select:focus,textarea:focus,input:focus{outline:none;border-color:var(--gold)}
+  .aide{color:var(--mut);font-size:13.5px;line-height:1.5;margin:10px 2px 0;min-height:1.2em}
+  .duree-row{display:flex;gap:10px;align-items:center}
+  .duree-row input{flex:1}
+  .duree-row .hint{font-size:12px;color:var(--mut);white-space:nowrap}
+  .tags{display:flex;flex-wrap:wrap;gap:8px}
+  .tag{font-size:13px;padding:8px 13px;border-radius:20px;border:1px solid var(--line);
+    background:#0f0f14;color:var(--mut);cursor:pointer;user-select:none}
+  .tag.on{background:rgba(234,179,8,.14);border-color:var(--gold);color:var(--gold);font-weight:600}
+  .bar{display:flex;gap:10px;margin-top:24px}
+  button.act{flex:1;padding:15px;border-radius:13px;border:0;font-size:16px;font-weight:800;cursor:pointer}
+  .p{background:var(--gold);color:#0a0a0f}
+  .g{background:#17171f;color:var(--txt);border:1px solid var(--line)}
+  pre.cmd{white-space:pre-wrap;background:#0d0d12;border:1px solid var(--line);border-radius:14px;
+    padding:16px;font-size:13.5px;line-height:1.5;color:#dfe3ea;margin-top:18px;
+    font-family:ui-monospace,"SF Mono",Menlo,monospace}
+  .copy{width:100%;margin-top:10px;padding:14px;border-radius:12px;border:1px solid var(--gold);
+    background:rgba(234,179,8,.12);color:var(--gold);font-weight:800;font-size:15px;cursor:pointer}
+  .foot{color:var(--mut);font-size:12px;margin-top:26px;line-height:1.5}
+  [hidden]{display:none!important}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="lock"><svg viewBox="0 0 24 24" width="22" height="22" fill="#0a0a0f"><path d="M13 2L4.5 13.5H11L10 22l8.5-11.5H12z"/></svg></div>
+    <div><h1>Créer une vidéo</h1></div>
+  </header>
+  <p class="sub">Choisis un style, indique la durée et le sujet. Ça te prépare le brief à me copier-coller.</p>
+
+  <label class="cl" for="cStyle">Le style</label>
+  <select id="cStyle"></select>
+  <p class="aide" id="cAide"></p>
+
+  <label class="cl" for="cDuree">La durée</label>
+  <div class="duree-row">
+    <input id="cDuree" type="text" inputmode="text" placeholder="ex. 30 s">
+    <span class="hint" id="cDureeReco"></span>
+  </div>
+
+  <label class="cl" for="cSujet">De quoi ça parle</label>
+  <textarea id="cSujet" rows="4" placeholder="Le sujet, l'angle, ce que tu veux dire. Écris comme tu parles."></textarea>
+
+  <label class="cl">Hashtags <span id="cNbTags">3</span>/5
+    <button type="button" class="mini" id="cReset">remettre les 3</button></label>
+  <div class="tags" id="cTags"></div>
+
+  <label class="cl" for="cMot">Le mot à commenter (CTA)</label>
+  <input id="cMot" type="text" placeholder="OUTILS, MENU, PROMPT…" autocapitalize="characters">
+
+  <div class="bar">
+    <button class="act p" id="cValider">Valider et préparer</button>
+  </div>
+
+  <pre class="cmd" id="cCmd" hidden></pre>
+  <button class="copy" id="cCopier" hidden>Copier le brief</button>
+
+  <p class="foot">Le brief se copie ici ; c'est toi qui me le passes. Le rendu tourne sur la machine, pas dans le navigateur.</p>
+</div>
+
+<script>
+(function(){
+  var $=function(id){return document.getElementById(id);};
+  var STYLES=[
+    {id:'cartes-avatar',nom:'Cartes numérotées + avatar',aide:"Un compteur, une carte par point, une jauge de progression, l'avatar qui ouvre. Le plus lisible pour une liste.",duree:'40-45 s'},
+    {id:'prompt-reveal',nom:'Prompt reveal',aide:"Le rendu IA en plein cadre, le prompt qui défile en dessous, l'écran qui se verrouille, puis le mot à commenter.",duree:'25-30 s'},
+    {id:'journal-ia',nom:'Journal IA',aide:"4 à 6 brèves avec leurs chiffres et leurs sources, deux running gags, avatar en ponctuation.",duree:'45-60 s'},
+    {id:'split',nom:'Split b-roll / avatar',aide:"B-roll en haut, toi en bas dans une carte arrondie, la légende sur la couture.",duree:'20-30 s'},
+    {id:'skit-inverse',nom:'Skit inversé (MAUVAIS/BON/EXCELLENT)',aide:"3 exemples ironiques, cartes avec vrais logos, avatar plein écran 3 s puis médaillon néon à droite.",duree:'20-30 s'},
+    {id:'beatsync',nom:'Beat-sync images',aide:"Plusieurs visuels coupés sur le rythme, grille de beats mesurée sur la piste.",duree:'15-20 s'},
+    {id:'vitrine',nom:'Vitrine plats (FoodBoost)',aide:"Cinémagraphes de plats, nom + accroche par plan, carton final. Pour un restaurant. → part sur @foodboost.",duree:'9-20 s'},
+    {id:'capture',nom:'Capture commentée',aide:"Un site ou une page filmée qui défile, avec des cartes qui entrent aux bons moments.",duree:'30-40 s'},
+    {id:'voix-off',nom:'Voix off + B-roll sous-titré',aide:"Pas de visage : B-roll varié, ta voix, sous-titres mot à mot. Aucun souci de lip-sync.",duree:'25-40 s'},
+    {id:'essai',nom:'Essai contemplatif',aide:"Long, lent, très peu de texte. Une idée suivie jusqu'au bout, sans CTA qui pousse.",duree:'3-7 min'},
+  ];
+  var TAGS3=['automatisation','ia','n8n'];
+  var TAGS_SUGG=['automatisation','ia','n8n','videoIA','freelance','veilleIA','AutomationBoost','prompt','seedance','contenu','claudecode','reunion'];
+  var chosen=new Set(TAGS3);
+
+  function remplirStyles(){
+    $('cStyle').innerHTML=STYLES.map(function(x){return '<option value="'+x.id+'">'+x.nom+' — '+x.duree+'</option>';}).join('');
+    majStyle();
+  }
+  function styleCourant(){var id=$('cStyle').value;return STYLES.filter(function(x){return x.id===id;})[0]||STYLES[0];}
+  function majStyle(){
+    var x=styleCourant();
+    $('cAide').textContent=x.aide;
+    $('cDureeReco').textContent='conseillé : '+x.duree;
+    if(!$('cDuree').dataset.touched) $('cDuree').value=x.duree;
+  }
+  $('cStyle').addEventListener('change',function(){ $('cDuree').dataset.touched=''; majStyle(); });
+  $('cDuree').addEventListener('input',function(){ this.dataset.touched='1'; });
+
+  function majTags(){
+    $('cTags').innerHTML='';
+    TAGS_SUGG.forEach(function(t){
+      var b=document.createElement('span');
+      b.className='tag'+(chosen.has(t)?' on':'');
+      b.textContent='#'+t;
+      b.addEventListener('click',function(){
+        if(chosen.has(t)) chosen.delete(t);
+        else { if(chosen.size>=5) return; chosen.add(t); }
+        majTags();
+      });
+      $('cTags').appendChild(b);
+    });
+    $('cNbTags').textContent=chosen.size;
+  }
+  $('cReset').addEventListener('click',function(){ chosen=new Set(TAGS3); majTags(); });
+
+  $('cValider').addEventListener('click',function(){
+    var x=styleCourant();
+    var sujet=$('cSujet').value.trim();
+    var duree=$('cDuree').value.trim()||x.duree;
+    var mot=$('cMot').value.trim().toUpperCase();
+    if(!sujet){ alert('Dis de quoi ça parle — sans sujet je ne peux rien monter.'); $('cSujet').focus(); return; }
+    var brief='Fais-moi une vidéo.\n\n'
+      +'Style   : '+x.nom+' ('+x.id+')\n'
+      +'Durée   : '+duree+'\n'
+      +'Sujet   : '+sujet+'\n'
+      +'Hashtags: '+[...chosen].map(function(t){return '#'+t;}).join(' ')+'\n'
+      +(mot?'Mot-clé : commente '+mot+'\n':'')
+      +'\nRappels : ouvre sur l\'avatar qui parle puis réduis-le en médaillon néon à droite, '
+      +'musique libre de droits et pas celle de la dernière vidéo, CTA explicite à la fin.';
+    $('cCmd').textContent=brief; $('cCmd').hidden=false; $('cCopier').hidden=false;
+    try{ localStorage.setItem('creer-dernier-brief',brief); }catch(e){}
+    $('cCmd').scrollIntoView({behavior:'smooth',block:'nearest'});
+  });
+  $('cCopier').addEventListener('click',async function(){
+    var b=this;
+    try{ await navigator.clipboard.writeText($('cCmd').textContent); b.textContent='Copié ✓'; }
+    catch(e){ b.textContent='Copie refusée — sélectionne à la main'; }
+    setTimeout(function(){ b.textContent='Copier le brief'; },1800);
+  });
+
+  remplirStyles(); majTags();
+  try{ var last=localStorage.getItem('creer-dernier-brief'); if(last){ $('cCmd').textContent=last; } }catch(e){}
+})();
+</script>
+</body>
+</html>
