@@ -219,6 +219,10 @@ pre.json{margin-top:10px;background:#101016;border:1px solid var(--trait);border
   À la fin tu récupères la vidéo <b>et</b> le fichier des repères — c'est lui qui dit au
   moteur de montage à quelle seconde faire entrer une carte, et de quel côté.</p>
 
+  <label class="lb">Le template que tu tournes</label>
+  <div class="seg" id="segtpl"></div>
+  <p class="aide" id="tplaide">Choisis le format visé — je monte avec le même quand tu envoies. <a id="tplvoir" class="lien-ex" href="#" target="_blank" rel="noopener" hidden>revoir un exemple ↗</a></p>
+
   <label class="lb" for="txt">Ton script
     <button type="button" id="ex" class="lien-ex">charger un exemple</button>
   </label>
@@ -238,6 +242,17 @@ pre.json{margin-top:10px;background:#101016;border:1px solid var(--trait);border
     <span class="val" id="vitval">130 mots/min</span>
   </div>
   <p class="aide">Réglable aussi pendant le tournage, sans arrêter l'enregistrement.</p>
+
+  <label class="lb">Musique de lecture <i>pour rester carré</i></label>
+  <div class="reglage">
+    <select id="mus" style="flex:1;background:#0e1013;border:1px solid var(--trait);color:var(--txt,#eee);border-radius:9px;padding:9px 11px;font:inherit"></select>
+    <button type="button" class="b fant" id="musecoute">Écouter</button>
+  </div>
+  <div class="reglage">
+    <input type="range" id="musvol" min="0" max="100" step="5" value="45">
+    <span class="val" id="musvolval">45 %</span>
+  </div>
+  <p class="aide">Elle tourne en boucle pendant que tu lis. <b>Mets un écouteur</b> — sinon elle passe dans le micro et pollue la banque de voix.</p>
 
   <label class="lb">Caméra</label>
   <div class="seg" id="segcam">
@@ -375,11 +390,57 @@ let etat = {
   reperes : [],     // LE livrable
   duree   : 0,
   source  : 'camera',
+  template: 'libre',
+  musique : null,
+  musVol  : 0.45,
   video   : null,   // Blob
   meta    : {},
 };
 
 /* ── Écrans ──────────────────────────────────────────────────────────── */
+const TEMPLATES = [
+  { id:'libre', nom:'Aucun / libre', route:'', desc:'Tournage simple, sans format impose.' },
+  { id:'split-prompts', nom:'Split-prompts', route:'/split-prompts/', desc:'Ecran scinde : toi + un site/preuve.' },
+  { id:'hook-puissant-branded', nom:'Hook puissant', route:'/hook-puissant/', desc:'Chute, pile de hooks, countdown, slam GO.' },
+  { id:'veille-to-video-v3', nom:'VideoBoost v3', route:'/veille-to-avatar-v3/', desc:'Talking-head + habillage neon, voix clonee.' },
+  { id:'reel-remix', nom:'Reel Remix', route:'', desc:'Panneau screen-record en haut, toi en bas.' },
+  { id:'yapping-facecam-branded', nom:'Yapping face cam', route:'', desc:'Face camera, debit rapide, captions.' },
+  { id:'revelation-ab-branded', nom:'Revelation A/B', route:'', desc:'Une astuce vs le detail qui change tout.' }
+];
+const MUS_FILES = ['bgm-cyberpunk-city.mp3','flowers_horror.mp3','food-cat-walk-128.mp3','food-deep-urban-122.mp3','food-sunny-groove-120.mp3','hook-epical-drums-02-80.mp3','horror-echoes-ambient.mp3','horror-piano-horror-ambient.mp3','journal-digital-clouds-128.mp3','journal-moon-walk-88.mp3','mindset-epical-drums-03-80.mp3','mindset-epical-drums-05-75.mp3','valse-des-fleurs-integrale-71.mp3','valse-des-fleurs-maison-evidee.mp3','valse-des-fleurs-maison-tutti.mp3','vsl-voxscape-ambient.mp3'];
+const MUSBASE = '/studio/ecoute/';
+function labelMus(f){
+  var b=f.replace('.mp3',''); var m=b.match(/-(\d{2,3})$/); var bpm=m?m[1]:null;
+  if(bpm) b=b.slice(0,-(bpm.length+1));
+  b=b.replace(/[-_]/g,' ').replace(/\b\w/g,function(c){return c.toUpperCase();});
+  return bpm ? b+' \u00b7 '+bpm+' BPM' : b;
+}
+function renderTemplates(){
+  var c=$('#segtpl'); if(!c) return; c.innerHTML='';
+  TEMPLATES.forEach(function(t){
+    var b=document.createElement('button'); b.type='button'; b.textContent=t.nom;
+    if(etat.template===t.id) b.classList.add('on'); b.title=t.desc;
+    b.addEventListener('click',function(){
+      etat.template=t.id;
+      Array.prototype.forEach.call(c.children,function(x){x.classList.toggle('on',x===b);});
+      var v=$('#tplvoir'); if(t.route){ v.href=t.route; v.hidden=false; } else { v.hidden=true; }
+      var a=$('#tplaide'); a.firstChild.nodeValue=t.desc+' ';
+    });
+    c.appendChild(b);
+  });
+}
+function renderMusiques(){
+  var sel=$('#mus'); if(!sel) return;
+  var opt=document.createElement('option'); opt.value=''; opt.textContent='Aucune \u2014 silence'; sel.appendChild(opt);
+  MUS_FILES.forEach(function(f){ var o=document.createElement('option'); o.value=f; o.textContent=labelMus(f); sel.appendChild(o); });
+  sel.addEventListener('change',function(){ etat.musique=sel.value||null; if(apercuMus){stopApercu();} });
+  var vol=$('#musvol'); vol.addEventListener('input',function(){ etat.musVol=vol.value/100; $('#musvolval').textContent=vol.value+' %'; if(guide)guide.volume=etat.musVol; if(apercuMus)apercuMus.volume=etat.musVol; });
+}
+var guide=null, apercuMus=null;
+function startMusique(){ if(!etat.musique) return; try{ guide=new Audio(MUSBASE+etat.musique); guide.loop=true; guide.volume=etat.musVol; guide.play().catch(function(){}); }catch(e){} }
+function stopMusique(){ if(guide){ try{guide.pause();}catch(e){} guide=null; } }
+function stopApercu(){ if(apercuMus){ try{apercuMus.pause();}catch(e){} apercuMus=null; } var b=$('#musecoute'); if(b)b.textContent='\u00c9couter'; }
+
 function montrer(id){ $$('.ecran').forEach(e => e.classList.toggle('on', e.id === id)); }
 function erreur1(t){ const m = $('#msg1'); m.textContent = t; m.classList.add('on'); }
 
@@ -612,6 +673,7 @@ function arreterTout(){
   if (stream) stream.getTracks().forEach(t => t.stop());
   if (verrou) { try { verrou.release(); } catch(e){} verrou = null; }
   $('#past').classList.remove('rec');
+  stopMusique();
 }
 
 const maintenant = () => (performance.now() - t0) / 1000;
@@ -668,6 +730,7 @@ function demarrer(){
     $('#past').classList.add('rec');
     $('#rec').classList.add('stop');
     $('#fait').disabled = false;
+    stopApercu(); startMusique();
     rafId = requestAnimationFrame(boucle);
   };
   rec.start(1000);
@@ -746,6 +809,7 @@ function stopper(){
 }
 
 function finTournage(){
+  stopMusique();
   if (iActif >= 0 && cues[iActif].rep.tFin === null) cues[iActif].rep.tFin = etat.duree;
   const type = (rec && rec.mimeType) || 'video/webm';
   etat.video  = new Blob(morceaux, { type });
@@ -873,6 +937,8 @@ function fabriquerJson(){
     session: sessionId,
     cree: d.toISOString(),
     source: etat.source,
+    template: etat.template || 'libre',
+    musiqueLecture: etat.musique || null,
     vitesseMpm: mpm,
     video: {
       fichier: nomVideo,
@@ -959,8 +1025,10 @@ $('#valider').addEventListener('click', async () => {
     $('#e4cha').textContent = 'Envoyé. La prise et les repères sont en ligne.';
     /* Le pont vers le montage : une ligne à coller, rien à retenir. */
     $('#cmd').textContent =
-      'Monte la session ' + sessionId + ' de /tournage/ : '
-      + 'node /work/autoboost-neon-videos/_moteur/monter-tournage.mjs ' + sessionId;
+      'Monte la session ' + sessionId + ' de /tournage/'
+      + (etat.template && etat.template !== 'libre' ? ' au template ' + etat.template : '')
+      + ' : node /work/autoboost-neon-videos/_moteur/monter-tournage.mjs ' + sessionId
+      + (etat.template && etat.template !== 'libre' ? ' --template ' + etat.template : '');
     $('#pont').hidden = false;
   } catch(e){
     et(2, 'ko', 'échec');
@@ -1000,4 +1068,12 @@ $('#retour').addEventListener('click', () => { montrer('e1'); });
 /* Petit garde-fou : si la page se ferme pendant un tournage, on relâche
    la caméra proprement plutôt que de laisser la LED allumée. */
 window.addEventListener('pagehide', arreterTout);
+
+/* Studio tournage : template + musique */
+renderTemplates(); renderMusiques();
+(function(){ var b=$('#musecoute'); if(!b) return; b.addEventListener('click', function(){
+  if(apercuMus){ stopApercu(); return; }
+  if(!etat.musique){ return; }
+  try{ apercuMus=new Audio(MUSBASE+etat.musique); apercuMus.loop=true; apercuMus.volume=etat.musVol; apercuMus.play().catch(function(){}); b.textContent='Stop'; }catch(e){}
+}); })();
 </script>
