@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>Split-prompts — avant / après</title>
+<style>
+:root{--bg:#0a0a0f;--carte:#121218;--bord:#242430;--txt:#EDEDED;--mut:#8A8A8A;--or:#eab308;--vert:#3ED37B;--rouge:#ef4444;--violet:#8b5cf6}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--txt);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.w{max-width:900px;margin:0 auto;padding:24px 16px 80px}
+a.retour{color:var(--mut);font-size:13px;text-decoration:none}a.retour:hover{color:var(--or)}
+h1{font-size:23px;margin:12px 0 4px;letter-spacing:-.3px}
+.sous{color:var(--mut);font-size:14px;margin:0 0 22px;line-height:1.5}
+.duo{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:620px){.duo{grid-template-columns:1fr}}
+.col{background:var(--carte);border:1px solid var(--bord);border-radius:14px;overflow:hidden}
+.col.apr{border-color:var(--or)}
+.tag{font:700 11px/1 system-ui;letter-spacing:.14em;text-transform:uppercase;padding:10px 12px;display:flex;justify-content:space-between;align-items:center}
+.col.av .tag{color:var(--mut)}.col.apr .tag{color:var(--or)}
+video{width:100%;aspect-ratio:9/16;background:#000;display:block;object-fit:contain}
+.meta{padding:9px 12px;font-size:12px;color:var(--mut);border-top:1px solid var(--bord)}
+h2{font-size:13px;text-transform:uppercase;letter-spacing:.1em;color:var(--mut);margin:34px 0 12px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:620px){.grid{grid-template-columns:1fr}}
+.box{background:var(--carte);border:1px solid var(--bord);border-radius:12px;padding:14px 16px}
+.box.ok{border-left:3px solid var(--vert)}.box.todo{border-left:3px solid var(--rouge)}
+.box b{display:block;font-size:14px;margin-bottom:10px}
+.box.ok b{color:var(--vert)}.box.todo b{color:#f0a6a0}
+ul{margin:0;padding-left:18px}li{font-size:13.5px;color:#cfd3da;line-height:1.7;margin-bottom:4px}
+li s{color:var(--mut)}
+.note{margin-top:26px;background:#15130c;border:1px solid #3a3115;border-radius:12px;padding:14px 16px;font-size:13.5px;color:#e6d29a;line-height:1.6}
+.note b{color:var(--or)}
+</style>
+</head>
+<body>
+<div class="w">
+  <a class="retour" href="/outils/">← mes outils</a>
+  <h1>Split-prompts — avant / après</h1>
+  <p class="sous">La passe audio/montage est appliquée (blanc + mime coupés, son remonté, lit musical, hold CTA).
+  Les défauts visuels de fond (mockups vides, sous-titres coupés, chiffres) se corrigent au rendu — voir en bas.</p>
+
+  <div class="duo">
+    <div class="col av">
+      <div class="tag"><span>Avant</span><span>27,1 s · −19,5 LUFS</span></div>
+      <video src="https://assets.automatisationboost.com/previsualisation/split-prompts-corrige/avant.mp4" controls playsinline preload="metadata"></video>
+      <div class="meta">Version publiée · silence 3,0→4,1 s (bouche qui mime), son faible, fin sèche</div>
+    </div>
+    <div class="col apr">
+      <div class="tag"><span>Après</span><span>27,8 s · ~−15,7 LUFS</span></div>
+      <video src="https://assets.automatisationboost.com/previsualisation/split-prompts-corrige/apres.mp4" controls playsinline preload="metadata"></video>
+      <div class="meta">Blanc + mime coupés (250 ms gardés), loudnorm, lit musical −22 dB, +1,5 s de hold sur le CTA</div>
+    </div>
+  </div>
+
+  <h2>Le détail</h2>
+  <div class="grid">
+    <div class="box ok">
+      <b>Corrigé dans cette passe</b>
+      <ul>
+        <li>Silence mort 3,0→4,1 s <s>+ bouche qui mime</s> → coupés</li>
+        <li>Son de −19,5 à ~−15,7 LUFS</li>
+        <li>Lit musical ajouté (avant : aucun)</li>
+        <li>Fin sèche → +1,5 s de hold sur « Commente PROMPT »</li>
+      </ul>
+    </div>
+    <div class="box todo">
+      <b>À corriger au rendu (source)</b>
+      <ul>
+        <li><b>Mockups vides</b> — remplir avec de vrais visuels de prompts (défaut n°1)</li>
+        <li>Sous-titres coupés par la couture bleue → 1 ligne / plus haut</li>
+        <li>Doublons titre + sous-titre qui se répètent</li>
+        <li>Chiffres incohérents (30 000 annoncés vs 5 100 affichés)</li>
+        <li>1re frame quasi noire, aucune coupe dans le plan visage, aucune marque/URL</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="note"><b>Ce qu'il me faut pour la suite.</b> Le défaut n°1 (mockups vides) est le plus important : la vidéo doit
+  montrer de vrais prompts. Dis-moi si je remplis les cartes avec des <b>vignettes de résultats</b> (tes rendus Higgsfield)
+  ou des <b>cartes de prompt texte</b> tirées de ta bibliothèque ShortForge — et je repars du montage source pour tout le reste.</div>
+</div>
+</body>
+</html>
