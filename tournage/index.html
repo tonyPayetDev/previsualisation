@@ -667,7 +667,7 @@ $('#go').addEventListener('click', async () => {
   if (!etat.blocs.length) return erreur1("Le script est vide — colle au moins une ligne.");
   try {
     stream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: cam, width:{ideal:1080}, height:{ideal:1920} },
+      video: { facingMode: cam, width:{ideal:1080}, height:{ideal:1920}, aspectRatio:{ideal:9/16}, frameRate:{ideal:30, min:24} },
       audio: { echoCancellation:true, noiseSuppression:true }
     });
   } catch (err){
