@@ -120,7 +120,7 @@ Deux looks ne sont tolérés que si le second est <b>uniquement</b> à l'ouvertu
 </button>
 
 <h2>5 · Blocs motion HyperFrames <i>les briques d'animation à enchaîner</i></h2>
-<div class="grille petit" id="blocs"></div>
+<div class="grille" id="blocs" style="grid-template-columns:repeat(auto-fill,minmax(140px,1fr))"></div>
 
 <h2>6 · Hook de début <i>le plan d'ouverture qui retient (banque triée)</i></h2>
 <div class="filtre" id="fdebut"></div>
@@ -321,7 +321,11 @@ function verifier(){
 function peindreBlocs(){
   var c = $('#blocs'); c.innerHTML = '';
   BLOCS.forEach(function(bl){
-    var b = carte({ titre:bl.nom, desc:bl.desc, pied:'blocks/'+bl.id+'.html' });
+    var b = document.createElement('button'); b.className='opt mod'; b.type='button'; b.setAttribute('aria-pressed','false');
+    b.innerHTML = '<div class="vigwrap"><img class="vig" src="assets/blocks/'+esc(bl.id)+'.png" alt="" loading="lazy">'
+      + '<span class="lbl">rendu réel · 1080×1920</span></div>'
+      + '<span class="corps"><b>'+esc(bl.nom)+'</b><span>'+esc(bl.desc)+'</span>'
+      + '<span class="badge-av">blocks/'+esc(bl.id)+'.html</span></span>';
     b.addEventListener('click', function(){
       var i = etat.blocs.indexOf(bl.id); if (i>-1) etat.blocs.splice(i,1); else etat.blocs.push(bl.id);
       peindreBlocs(); ecrire();
