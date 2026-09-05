@@ -425,6 +425,7 @@ function renderTemplates(){
       Array.prototype.forEach.call(c.children,function(x){x.classList.toggle('on',x===b);});
       var v=$('#tplvoir'); if(t.route){ v.href=t.route; v.hidden=false; } else { v.hidden=true; }
       var a=$('#tplaide'); a.firstChild.nodeValue=t.desc+' ';
+      var ex=$('#ex'); if(ex) ex.textContent = (t.id!=='libre' && SCRIPTS[t.id]) ? 'charger un exemple '+t.nom : 'charger un exemple';
     });
     c.appendChild(b);
   });
@@ -469,13 +470,88 @@ const EXEMPLE = [
   "[centre] Commente OUTILS, je te montre comment c'est branché."
 ].join("\n");
 
+/* Un exemple de script PAR template — « charger un exemple » charge celui du
+   template selectionne. C'est ce que corrige le retour de Tony : avant, le
+   bouton remettait toujours le meme script quel que soit le template. */
+const SCRIPTS = {
+  'split-prompts': [
+    "[centre] Trente mille prompts video. Et toi, tu fixes encore une page blanche.",
+    "",
+    "[droite|la bibliotheque a l'ecran] Je tape le style que je veux, il sort le prompt exact.",
+    "",
+    "[montre|l'exemple rempli] Je remplace juste mon sujet. Le reste est deja ecrit.",
+    "",
+    "[avance] Tu ne devines plus ce qui marche. Tu choisis.",
+    "",
+    "[centre] Commente PROMPTS, je t'ouvre la bibliotheque."
+  ].join("\n"),
+  'hook-puissant-branded': [
+    "[centre] Arrete de scroller deux secondes, celui-la va te faire gagner de l'argent.",
+    "",
+    "[pause] Vraiment.",
+    "",
+    "[montre|le systeme a l'ecran] Trois automatisations tournent pendant que je dors.",
+    "",
+    "[compte|un, deux, trois] Les videos, les relances, les rendez-vous.",
+    "",
+    "[avance] Zero montage. Zero logiciel ouvert.",
+    "",
+    "[centre] Commente BOOST, je te donne le plan."
+  ].join("\n"),
+  'veille-to-video-v3': [
+    "[centre] Google vient de sortir un nouveau modele video, et personne n'en parle vraiment.",
+    "",
+    "[droite|la demo] En clair : une image, un prompt, et t'as un plan cinema.",
+    "",
+    "[montre|le prix] Douze centimes le plan. Un tournage, c'etait huit cents euros.",
+    "",
+    "[avance] Ce que tu peux vendre avec ca, c'est enorme.",
+    "",
+    "[centre] Commente SEEDANCE, je te montre comment je m'en sers."
+  ].join("\n"),
+  'reel-remix': [
+    "[centre] J'ai vu passer ce reel, il a fait des millions de vues. Voila pourquoi.",
+    "",
+    "[droite|le reel d'origine] Le format est bon. Le fond, lui, ne te sert a rien.",
+    "",
+    "[montre|ma version] Alors je garde le format, et je mets MA valeur dedans.",
+    "",
+    "[avance] Tu ne copies pas. Tu remixes.",
+    "",
+    "[centre] Commente REMIX, je te donne la methode."
+  ].join("\n"),
+  'yapping-facecam-branded': [
+    "[centre] Je vais te dire un truc que personne ne dit sur l'IA et le business.",
+    "",
+    "[avance] Tout le monde veut l'outil. Personne veut le systeme.",
+    "",
+    "[montre|l'ecran] L'outil sans systeme, c'est un jouet. Le systeme, c'est ce qui facture.",
+    "",
+    "[pause] Relis ca.",
+    "",
+    "[centre] Commente SYSTEME, je t'explique la difference."
+  ].join("\n"),
+  'revelation-ab-branded': [
+    "[centre] Tout le monde te dit d'utiliser cette astuce IA. Elle est incomplete.",
+    "",
+    "[droite|la version A] Version A : tu demandes, ca repond. Correct, banal.",
+    "",
+    "[montre|la version B] Version B : tu ajoutes ce detail, et la, ca change tout.",
+    "",
+    "[avance] Le detail, c'est le contexte. C'est lui qui fait la difference.",
+    "",
+    "[centre] Commente DETAIL, je te l'envoie en entier."
+  ].join("\n")
+};
+function exempleCourant(){ return (etat.template && SCRIPTS[etat.template]) ? SCRIPTS[etat.template] : EXEMPLE; }
+
 try { txt.value = localStorage.getItem(CLE_BROUILLON) || ''; } catch(e){}
 
 /* La palette d'insertion. Elle remplace la frappe de crochets au doigt. */
 $('#ex').addEventListener('click', () => {
   /* Écraser un script en cours sans prévenir serait la pire des surprises. */
   if (txt.value.trim() && !confirm("Remplacer ton script par l'exemple ?")) return;
-  txt.value = EXEMPLE;
+  txt.value = exempleCourant();
   majApercu();
   txt.focus();
   txt.setSelectionRange(0, 0);
