@@ -95,6 +95,17 @@ const OUTILS = [
     chiffre: rendus.length, unite: 'rendus publiés' },
 ];
 
+const FABRIQUER = [
+  { href: '/studio-video/', titre: 'Studio vidéo', quoi: 'Choisis un modèle, un avatar, une durée : la page te sort la commande à me coller.', chiffre: null, unite: '', cle: true },
+  { href: '/creer/', titre: 'Créer une vidéo', quoi: 'Le brief guidé : style, durée, sujet, hashtags, mot-clé.', chiffre: null, unite: '' },
+  { href: '/generateur/', titre: 'Générateur de brief', quoi: 'Un template, un format, une durée → le JSON exact à me transmettre.', chiffre: null, unite: '' },
+  { href: '/templates/', titre: 'Catalogue des templates', quoi: 'Chaque style, sa commande pour le relancer, et les vidéos qui en sont sorties.', chiffre: null, unite: '' },
+  { href: '/banque-higgsfield/', titre: 'Banque Higgsfield', quoi: '624 clips triés, cherchables, pour arrêter de choisir les hooks à l\'aveugle.', chiffre: null, unite: '' },
+  { href: '/tournage/', titre: 'Tournage / prompteur', quoi: 'Ton script défile, les mouvements s\'affichent, la vidéo part avec ses repères.', chiffre: null, unite: '' },
+  { href: '/studio/', titre: 'Atelier assets & styles', quoi: 'Musiques, bruitages, clips avatar, palette, polices.', chiffre: null, unite: '' },
+  { href: '/foodboost-editeur/', titre: 'Éditeur de feed FoodBoost', quoi: 'Monter le feed vitrine d\'un restaurant, plat par plat.', chiffre: null, unite: '' },
+];
+
 const carte = (o) => `      <a class="outil${o.cle ? ' cle' : ''}" href="${o.href}">
         <span class="t">${ech(o.titre)}</span>
         <span class="q">${ech(o.quoi)}</span>
@@ -173,6 +184,12 @@ ul .badge{font-family:var(--mno);font-size:10.5px;color:var(--faible);white-spac
   <p>Décider, faire, appeler, situer — dans cet ordre.</p>
   <div class="outils">
 ${OUTILS.map(carte).join('\n')}
+  </div>
+
+  <h2>Fabriquer</h2>
+  <p>Tout ce qui sert à sortir une vidéo — du modèle au brief que tu me colles.</p>
+  <div class="outils">
+${FABRIQUER.map(carte).join('\n')}
   </div>
 
   <h2>Derniers rendus</h2>

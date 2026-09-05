@@ -361,8 +361,7 @@ footer code{color:var(--texte);font-size:.9em}
 <!-- Les outils de travail ne sont pas des maquettes, mais sans un lien ici ils
      n'existent pour personne : /tri-clips/ et /videos/ n'etaient references
      nulle part sur le site. -->
-<p class="outils-bar"><a href="/tri/">Trier au pouce</a> — clips pour les hooks,
-et vidéos finies : croix pour abandonner, cœur pour planifier.</p>
+<p class="outils-bar"><a href="/outils/">Mes outils</a> · <a href="/studio-video/">Studio vidéo</a> · <a href="/tri/">Trier au pouce</a> · <a href="/carte/">La carte</a> — tout ce que j'ai fabriqué est rangé dans <a href="/outils/">Mes outils</a>.</p>
 
 <div class="filtres">
   <input id="q" type="search" placeholder="Filtrer : nom de route, sujet, client…" autocomplete="off">
