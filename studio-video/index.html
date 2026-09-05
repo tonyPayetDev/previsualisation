@@ -34,8 +34,11 @@ h2 i{font-style:normal;color:var(--gris2);text-transform:none;letter-spacing:0;f
 .opt[disabled] .pourquoi{color:var(--rouge)}
 /* modèle avec vignette */
 .mod{padding:0}
-.mod .vig{display:block;width:100%;height:104px;object-fit:cover;background:linear-gradient(135deg,#1b2330,#0f1319)}
-.mod .vig.ph{display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:800;color:#2f3a49}
+.mod .vigwrap{position:relative;width:100%;aspect-ratio:9/16;background:linear-gradient(135deg,#1b2330,#0f1319);overflow:hidden}
+.mod .vig{display:block;width:100%;height:100%;object-fit:cover}
+.mod .vig.ph{display:flex;align-items:center;justify-content:center;font-size:46px;font-weight:800;color:#2f3a49;font-family:system-ui}
+.mod .vigwrap .lbl{position:absolute;left:0;right:0;bottom:0;padding:16px 10px 8px;font-size:12px;color:#cfd6df;background:linear-gradient(to top,rgba(6,8,11,.86),rgba(6,8,11,0));pointer-events:none}
+#modeles{grid-template-columns:repeat(auto-fill,minmax(140px,1fr))}
 .mod .corps{padding:11px 12px 12px}
 .mod .flag{position:absolute;top:7px;right:7px;z-index:2;background:rgba(10,12,15,.72);border:1px solid var(--bord2);color:var(--gris);
   border-radius:99px;font-size:11px;padding:3px 9px;cursor:pointer}
@@ -175,6 +178,19 @@ Deux looks ne sont tolérés que si le second est <b>uniquement</b> à l'ouvertu
 
 <script>
 var MODELES = [{"id": "veille-to-video-v3", "nom": "VideoBoost v3", "desc": "Assemble les plans de la banque avec ta voix clonée. Le modèle par défaut.", "av": true, "reco": true, "thumb": null}, {"id": "prompt-reveal-branded", "nom": "Prompt Reveal", "desc": "Un rendu IA bluffant, puis le prompt exact qui défile. Pas d'avatar.", "av": false, "thumb": "keynote-prompt-reveal.jpg"}, {"id": "revelation-ab-branded", "nom": "Révélation A/B", "desc": "Une astuce qui circule vs le détail qui change tout, montré à l'écran.", "av": true, "thumb": null}, {"id": "horror-beatsync-video", "nom": "Horror Beat-Sync", "desc": "Ambiance calée sur le kick, fin sur un mini-drop.", "av": true, "thumb": null}, {"id": "reel-remix", "nom": "Reel Remix", "desc": "Panneau screen-record en haut, avatar en bas. On clone le format, pas le contenu.", "av": true, "thumb": null}, {"id": "yapping-facecam-branded", "nom": "Yapping face caméra", "desc": "Face caméra, débit rapide, captions mot-à-mot.", "av": true, "thumb": null}, {"id": "hook-puissant-branded", "nom": "Hook puissant", "desc": "Chute + atterrissage, pile de hooks, countdown, slam final GO.", "av": true, "thumb": null}, {"id": "veille-journal-ia", "nom": "Journal IA", "desc": "L'édition quotidienne : actu, angle clivant, coup à jouer. 45 s à 1 min.", "av": true, "thumb": null}, {"id": "essai-contemplatif-branded", "nom": "Essai contemplatif", "desc": "Format lent, voix off, image qui respire. Pour un propos, pas une promo.", "av": false, "thumb": "essai-contemplatif-premium.jpg"}, {"id": "foodboost-vitrine-video", "nom": "FoodBoost vitrine", "desc": "100 % généré, pour un restaurateur. Publie sur @foodboost, pas ton visage.", "av": false, "thumb": null}, {"id": "clip-musical-ia", "nom": "Clip musical IA", "desc": "Clip monté sur des plans Higgsfield. Rendu 9:16 ET 16:9.", "av": false, "thumb": null}, {"id": "script-pspc-branded", "nom": "Script PSVC", "desc": "Écrit un script : Problème → Solution → Validation → CTA. Pas de vidéo.", "av": false, "thumb": null}, {"id": "motion-design-site", "nom": "Site motion design", "desc": "Une page web animée au scroll. Pas une vidéo.", "av": false, "thumb": null}, {"id": "website-to-video", "nom": "Site → vidéo", "desc": "Capture un site et en fait une visite filmée.", "av": false, "thumb": null}];
+var PREV = {
+  'veille-to-video-v3':'https://assets.automatisationboost.com/previsualisation/veille-to-avatar-v3-v3/video.mp4',
+  'prompt-reveal-branded':'https://assets.automatisationboost.com/previsualisation/prompt-reveal-01/video.mp4',
+  'revelation-ab-branded':'https://assets.automatisationboost.com/previsualisation/autoboost-61-dix-questions/video.mp4',
+  'horror-beatsync-video':'https://assets.automatisationboost.com/previsualisation/autoboost-site-immersif/video.mp4',
+  'reel-remix':'https://assets.automatisationboost.com/previsualisation/autoboost-45-mcp-v3/video.mp4',
+  'yapping-facecam-branded':'https://assets.automatisationboost.com/previsualisation/yapping-oneclick/video.mp4',
+  'hook-puissant-branded':'https://assets.automatisationboost.com/previsualisation/hook-puissant/video.mp4',
+  'veille-journal-ia':'https://assets.automatisationboost.com/previsualisation/journal-ia-2026-08-27/video.mp4',
+  'essai-contemplatif-branded':'https://assets.automatisationboost.com/previsualisation/essai-contemplatif-plafond/essai-contemplatif-plafond-yellow-final.mp4',
+  'foodboost-vitrine-video':'https://assets.automatisationboost.com/previsualisation/foodboost-03/video.mp4',
+  'clip-musical-ia':'https://assets.automatisationboost.com/previsualisation/clip-roule-kiki/vertical.mp4'
+};
 var BLOCS = [{"id": "hook", "nom": "Accroche", "desc": "Gros texte plein cadre qui arrête le scroll."}, {"id": "problem", "nom": "Le problème", "desc": "La douleur : ce qui coince aujourd'hui."}, {"id": "solution", "nom": "La solution", "desc": "Ce que ça change, la mécanique montrée."}, {"id": "proof", "nom": "La preuve", "desc": "Un chiffre, une capture, un résultat réel."}, {"id": "cta", "nom": "Appel à l'action", "desc": "Le mot-clé à commenter, la ressource promise."}, {"id": "broll", "nom": "Respiration b-roll", "desc": "Un plan d'illustration entre deux idées."}];
 var HDEBUT = [{"id": "ee1e069a", "t": "BE FRESH — SLOT MACHINE BOISSONS — SEEDANCE 2.", "tags": ["b-roll"]}, {"id": "d6202a5c", "t": "CLIP 3 — PUISSANT / ROUTE COCOTIERS / TRANSFOR", "tags": []}, {"id": "5b74b381", "t": "CLIP 3 — PUISSANT / ROUTE COCOTIERS / TRANSFOR", "tags": []}, {"id": "c144a0a9", "t": "CHARACTER LOCK", "tags": ["nature"]}, {"id": "2ef0456c", "t": "A street vox-pop interview. An off-camera inte", "tags": ["visage"]}, {"id": "327795b8", "t": "The same Creole restaurant owner, the same res", "tags": []}, {"id": "7fee91d4", "t": "CREOLE MAN ON THE RAMPART — 15s SINGLE TAKE — ", "tags": []}, {"id": "f488e814", "t": "NEON FILM — 4 SHOTS / SEEDANCE 2.5 — V2 (BLACK", "tags": []}, {"id": "96e903c5", "t": "⚠️ Joindre l'image de référence de Tony (visag", "tags": []}, {"id": "77ef5995", "t": "PROMPT 06 — DESK CITY", "tags": ["b-roll"]}, {"id": "2408ac15", "t": "⚠️ Joindre l'image de référence de Tony (visag", "tags": ["action"]}, {"id": "45b03812", "t": "⚠️ Joindre l'image de référence de Tony (visag", "tags": ["visage"]}, {"id": "888a5b3b", "t": "REFERENCE IMAGE LOCK", "tags": ["action"]}, {"id": "a3b868ef", "t": "The frame opens on two full seconds of total b", "tags": ["action"]}, {"id": "e9d9e8d5", "t": "⚠️ Joindre l'image de référence de Tony (visag", "tags": ["visage", "action"]}, {"id": "8dfc6346", "t": "Frame rate feel: 24fps cinematic base, filmed ", "tags": ["b-roll"]}, {"id": "48b4b41d", "t": "The frame opens on two full seconds of total b", "tags": ["visage", "action"]}, {"id": "0b77defd", "t": "Ultra-realistic cinematic street video, photor", "tags": ["action", "visage"]}, {"id": "d2167bb6", "t": "A vertical social-media hook built on classic ", "tags": ["action", "nature"]}, {"id": "9701d02f", "t": "10-second vertical 9:16 photorealistic comedy ", "tags": ["action"]}, {"id": "2c6d963c", "t": "A late-night self-service laundromat. A calm m", "tags": ["visage", "action"]}, {"id": "7e8df26c", "t": "A tired Réunion Island father eats dinner at h", "tags": ["action"]}, {"id": "1c74f23b", "t": "Same airliner, same man, same yellow post-it p", "tags": ["visage", "action"]}, {"id": "7d3f1f52", "t": "PROMPT 1 — PARTIE 1 / 10 SECONDES", "tags": ["action"]}, {"id": "2b7eae09", "t": "A man finishing a morning training run with hi", "tags": ["action", "visage", "nature"]}, {"id": "3d1a7f3b", "t": "10-second vertical 9:16 photorealistic comedy ", "tags": ["visage", "action"]}, {"id": "3ed1eab4", "t": "CHARACTER LOCK] Adult male, black shirt with a", "tags": ["visage"]}, {"id": "3f28f9e9", "t": "10-second vertical 9:16 photorealistic social-", "tags": ["visage", "action"]}, {"id": "d06fbb8c", "t": "CHARACTER LOCK] Adult male, black shirt with a", "tags": ["visage", "action"]}, {"id": "1c051a03", "t": "A confident man in sunglasses walks down a sun", "tags": ["visage", "action"]}, {"id": "c274ce85", "t": "Create a polished 2D cartoon video game gamepl", "tags": ["b-roll"]}, {"id": "4c76974c", "t": "A street reporter ambushes an ordinary middle-", "tags": ["visage", "action"]}, {"id": "4916a8af", "t": "FILM 1 / 7 — LA PEUR", "tags": ["visage", "action", "b-roll"]}, {"id": "be434b02", "t": "The frame opens on pure white. The white resol", "tags": ["visage", "action"]}, {"id": "06a08f26", "t": "REFERENCE IMAGE MAPPING", "tags": ["visage", "action"]}, {"id": "02ef9209", "t": "A man in a neon-lit superhero suit walks down ", "tags": ["visage", "action"]}, {"id": "72233bac", "t": "A calm man stands in the foreground of a vast ", "tags": ["visage", "action"]}, {"id": "cbbaaed2", "t": "A man with the ability to detect anyone doom-s", "tags": ["visage", "action"]}, {"id": "e07e16c9", "t": "PLAN 04 — L'ESCALADE (24.0 → 32.0s)", "tags": ["visage", "action"]}, {"id": "0e19512d", "t": "Create an ultra-premium 10-second cinematic au", "tags": ["action", "voiture"]}, {"id": "df37aeb2", "t": "PLAN 03 — LE PREMIER SORT (16.0 → 24.0s)", "tags": ["visage", "action"]}, {"id": "3696cdd4", "t": "Create an ultra-premium 10-second cinematic au", "tags": ["action", "voiture"]}, {"id": "90dfbfe3", "t": "Vertical 9:16 cinematic shot. Narrow rocky mou", "tags": ["action", "nature"]}, {"id": "5cfb6cbf", "t": "Video Concept", "tags": ["action"]}, {"id": "92b47145", "t": "Video Concept", "tags": ["visage", "action"]}, {"id": "6d9e852b", "t": "Voici le **prompt complet optimisé** « Ultra I", "tags": ["visage", "action"]}, {"id": "51e6f9f2", "t": "Ultra-photorealistic cinematic 10-second verti", "tags": ["visage", "action"]}];
 var HFIN = [{"id": "5afeb48f", "t": "A bystander films a matte black low-slung mid-", "tags": ["ville"]}, {"id": "4a71abdb", "t": "A bystander films a matte black low-slung mid-", "tags": []}, {"id": "29ee0df1", "t": "A bystander films a matte black low-slung mid-", "tags": ["voiture"]}, {"id": "d8ceaa7e", "t": "*Updated prompt with the requested addition** ", "tags": []}, {"id": "4a976952", "t": "An ordinary man walks down an ordinary street ", "tags": ["visage"]}, {"id": "4a571514", "t": "An ordinary man walks down an ordinary street ", "tags": []}];
@@ -208,9 +224,11 @@ function peindreModeles(){
     var b = document.createElement('button');
     b.className = 'opt mod' + (etat.corriger[m.id] ? ' corrige' : '');
     b.type = 'button'; b.setAttribute('aria-pressed', etat.modele && etat.modele.id===m.id ? 'true':'false');
-    var vig = m.thumb
-      ? '<img class="vig" src="assets/previews/'+esc(m.thumb)+'" alt="" loading="lazy">'
-      : '<span class="vig ph">'+esc(m.nom.charAt(0))+'</span>';
+    var prev = PREV[m.id];
+    var vig = '<div class="vigwrap">' + (prev
+      ? '<video class="vig prev" data-src="'+prev+'" muted loop playsinline preload="none"></video>'
+      : '<span class="vig ph">'+esc(m.nom.charAt(0))+'</span>')
+      + '<span class="lbl">aperçu 9:16</span></div>';
     b.innerHTML = '<span class="flag" data-flag="'+esc(m.id)+'">'+(etat.corriger[m.id]?'à corriger ✕':'pas OK')+'</span>'
       + vig
       + '<span class="corps"><b>'+esc(m.nom)+(m.reco?' · conseillé':'')+'</b>'
@@ -227,6 +245,19 @@ function peindreModeles(){
     });
     c.appendChild(b);
   });
+  brancherApercus();
+}
+function brancherApercus(){
+  var vids = document.querySelectorAll('#modeles video.prev');
+  if(!('IntersectionObserver' in window)){ vids.forEach(function(v){ if(!v.src&&v.dataset.src){v.src=v.dataset.src;} v.play().catch(function(){}); }); return; }
+  var io = new IntersectionObserver(function(es){
+    es.forEach(function(e){
+      var v=e.target;
+      if(e.isIntersecting){ if(!v.src&&v.dataset.src){ v.src=v.dataset.src; } v.play().catch(function(){}); }
+      else { v.pause(); }
+    });
+  }, { rootMargin:'80px', threshold:0.25 });
+  vids.forEach(function(v){ io.observe(v); });
 }
 function majCorrige(){ $('#corrige-zone').hidden = Object.keys(etat.corriger).length === 0; }
 
@@ -386,12 +417,12 @@ $('#raz').addEventListener('click', function(){
   etat = { modele:null, gr:null, clips:[], blocs:[], hd:[], hf:[], broll:[], introVoix:true, corriger:{} };
   ['sujet','hook','cta','motcle','notes','corrige-quoi'].forEach(function(id){ document.getElementById(id).value = ''; });
   $('#introVoix').setAttribute('aria-pressed','true');
-  peindreModeles(); majCorrige(); peindreGarderobes(); peindreClips(); peindreBlocs();
+  peindreModeles(); brancherApercus(); majCorrige(); peindreGarderobes(); peindreClips(); peindreBlocs();
   peindreChips(HDEBUT,'#hdebut',etat.hd,'#fdebut',fDeb); peindreChips(HFIN,'#hfin',etat.hf,null,{v:''}); peindreChips(BROLL,'#broll',etat.broll,'#fbroll',fBro);
   ecrire();
 });
 
-peindreModeles(); majCorrige(); peindreGarderobes(); peindreClips(); peindreBlocs();
+peindreModeles(); brancherApercus(); majCorrige(); peindreGarderobes(); peindreClips(); peindreBlocs();
 peindreChips(HDEBUT,'#hdebut',etat.hd,'#fdebut',fDeb);
 peindreChips(HFIN,'#hfin',etat.hf,null,{v:''});
 peindreChips(BROLL,'#broll',etat.broll,'#fbroll',fBro);
