@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Ton numéro est sur Internet — mini dessin animé</title>
+<style>
+  :root{ --bg:#0a0a0f; --panel:#111117; --bord:#242430; --jaune:#f5d90a; --bleu:#57A8FF;
+         --texte:#f2f2f5; --doux:#9a9aa8; --rouge:#ef4444; --vert:#3ED37B; }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--texte);line-height:1.6;
+       font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;padding:2rem 1rem 4rem}
+  .wrap{max-width:520px;margin:0 auto}
+  a.back{color:var(--doux);font-size:.8rem;text-decoration:none;display:inline-block;margin-bottom:1rem}
+  a.back:hover{color:var(--jaune)}
+  h1{font-size:1.35rem;margin:0 0 .35rem}
+  .sub{color:var(--doux);font-size:.9rem;margin:0 0 1.4rem}
+  video{width:100%;border-radius:14px;border:1px solid var(--bord);display:block;background:#000}
+  section{margin-top:1.4rem;background:var(--panel);border:1px solid var(--bord);border-radius:14px;padding:1rem 1.1rem}
+  section h2{font-size:.72rem;letter-spacing:.09em;text-transform:uppercase;color:var(--jaune);margin:0 0 .7rem}
+  section p{margin:0 0 .7rem;font-size:.87rem;color:var(--doux)}
+  section p:last-child{margin-bottom:0}
+  section b{color:var(--texte)}
+  .att{border-left:3px solid var(--rouge)}
+  .att h2{color:#fca5a5}
+  table{width:100%;border-collapse:collapse;font-size:.78rem;font-variant-numeric:tabular-nums}
+  th{text-align:left;color:var(--doux);font-weight:600;padding:.3rem .35rem;border-bottom:1px solid var(--bord)}
+  td{padding:.3rem .35rem;border-bottom:1px solid rgba(36,36,48,.6);vertical-align:top}
+  td.n{color:var(--bleu);white-space:nowrap}
+  ul{margin:.2rem 0 .7rem;padding-left:1.1rem;font-size:.87rem;color:var(--doux)}
+  li{margin-bottom:.25rem}
+  code{font-size:.8rem;color:var(--bleu);background:#0d0d14;padding:.05rem .3rem;border-radius:4px}
+  .pied{color:var(--doux);font-size:.78rem;margin-top:1.4rem}
+</style>
+<body><div class="wrap">
+<a class="back" href="/">← toutes les prévisualisations</a>
+<header><h1>Ton numéro est sur Internet — et comment l’effacer</h1>
+<p class="sub">Mini dessin animé HyperFrames · 4 scènes · 30,7 s · 1080×1920 · CTA EFFACER</p></header>
+<video controls playsinline preload="metadata" src="https://assets.automatisationboost.com/previsualisation/anim-effacer/video.mp4"></video>
+
+<section><h2>Le script, scène par scène</h2>
+<table>
+<tr><th>Scène</th><th>Voix off</th><th>À l’écran</th></tr>
+<tr><td class="n">1 · 0–7 s</td><td>« Ton numéro, ton adresse, ton mail… visibles sur des sites que tu n’as jamais vus. Sympa, non ? »</td><td>Le personnage, téléphone en main ; trois fiches « PUBLIC » claquent à l’écran (annuaire inversé, site d’avis, vieux forum). Visage sourire → bouche bée → peur, bras en l’air, goutte de sueur, badge « ! ».</td></tr>
+<tr><td class="n">2 · 7–15,6 s</td><td>« Je demande à une IA de lister chaque site et de rédiger la demande de suppression. Article 17 du RGPD : ils ont un mois pour répondre. »</td><td>Bulle « Trouve tout, et efface. », le robot arrive en rebond, tape ; la liste des 4 sites se coche ligne par ligne, puis la lettre jaune « Demande de suppression — Article 17 du RGPD » monte.</td></tr>
+<tr><td class="n">3 · 15,6–24,2 s</td><td><i>(voix non générée, voir plus bas)</i> — prévue : « Elle ouvre le navigateur, remplit les formulaires un par un. Et les fiches disparaissent, une à une. »</td><td>Fenêtre de navigateur, le curseur jaune remplit Nom / Numéro / Motif, presse ENVOYER ; les trois fiches s’effacent une à une (pouf + scale + rotation), compteur 3 → 2 → 1 → 0.</td></tr>
+<tr><td class="n">4 · 24,2–30,6 s</td><td><i>(voix non générée)</i> — prévue : « Et toi, tu respires. Commente EFFACER, je t’envoie le guide. »</td><td>Le personnage respire (scale lent + anneau qui s’élargit), bouclier ; carton final <b>Commente EFFACER — je t’envoie le guide</b>, EFFACER en jaune #FFE600 sur fond #0A0A0F.</td></tr>
+</table></section>
+
+<section class="att"><h2>Ce qui manque : la voix des scènes 3 et 4</h2>
+<p>Les deux premières phrases sont bien en <b>voix clonée</b> (webhook tts-gen, 6,1 s et 7,9 s). Les appels 3 et 4 sont revenus vides : le workflow n8n <code>tts-gen</code> échoue sur WaveSpeed avec <b>« Insufficient credits »</b> (exécutions 83754 → 83762, le 06/09 à 20 h 49). Les solutions de repli ont été vérifiées et sont toutes à sec : Higgsfield 0,47 crédit (0,7 requis par phrase, voix « Tony » disponible), Kie.ai 1,92 crédit et aucun modèle TTS, pas de moteur TTS local.</p>
+<p>Les scènes 3 et 4 tiennent donc sur l’animation, les cartons courts, la musique et les <b>effets sonores</b> (pouf à chaque fiche effacée, impact sur le carton EFFACER). Après recharge WaveSpeed : lancer <code>autoboost-neon-videos/anim-effacer/tts.sh</code>, remettre les deux balises <code>&lt;audio&gt;</code> laissées en commentaire dans <code>public/index.html</code>, re-rendre.</p></section>
+
+<section><h2>Assets utilisés et licences</h2>
+<p><b>Illustrations : OpenMoji</b> (openmoji.org), licence <b>CC BY-SA 4.0</b>, SVG couleur téléchargés par code : 1F642 sourire, 1F62F bouche bée, 1F628 peur, 1F60C soulagé, 1F916 robot, 1F4F1 téléphone, 1F4DE combiné, 1F3E0 maison, 2709 enveloppe, 1F4DD mémo, 1F50D loupe, 1F310 globe, 2728 étincelles, 1F4A8 pouf, 1F6E1 bouclier. Le corps du personnage, les fiches, le navigateur et le carton sont dessinés en CSS. Aucune photo de personne réelle, aucun logo de marque ; les sites cités sont inventés.</p>
+<p><b>Musique</b> : <code>food-sunny-groove-120.mp3</code>, Mixkit Free License (usage commercial, sans attribution), à 18 % du volume, fondu de sortie sur 1,2 s.</p>
+<p><b>Effets sonores</b> : palette interne <code>_shared/sfx-palette/v1</code> (whoosh latéral, notification, clics doux, confirmation, pop, impact, zoom), sons Mixkit Free License, volumes 0,13–0,26 comme dans la palette.</p>
+<p><b>unDraw</b> a été tenté en premier (API <code>/api/illustrations</code>) : 404, abandonné.</p>
+<p>Police : DejaVu Sans / DejaVu Sans Mono (seules polices rendues par le moteur ici).</p></section>
+
+<section><h2>Mesures du fichier</h2>
+<p><b>30,7 s</b> · 1080×1920 · 30 fps · H.264 + AAC 192 kb/s · 10,5 Mo. Sortie HyperFrames à −23,8 LUFS, remixée en ffmpeg (<code>loudnorm I=-14 TP=-1.5 LRA=11</code>) → <b>−14,1 LUFS</b>, pic vrai −1,1 dBTP. Contrôle visuel sur 6 images extraites du MP4 (3, 10, 13, 19, 22, 28 s) : texte lisible, personnages et fiches visibles, carton EFFACER net.</p></section>
+
+<section><h2>Ce qui reste à améliorer</h2>
+<ul>
+<li>Générer les voix 3 et 4 dès que WaveSpeed est rechargé (le script et les balises sont prêts).</li>
+<li>Le personnage est un « emoji sur un corps CSS » : ça marche pour un dessin animé simple, mais une vraie illustration unDraw (si l’API revient) ou une planche Seedance donnerait plus de caractère.</li>
+<li>Scène 3 : le formulaire est rempli trois fois de suite ; on pourrait varier (trois onglets, trois sites) pour éviter la répétition.</li>
+<li>Pas d’avatar de Tony : c’est voulu (demande = dessin animé), mais le format Autoboost habituel exige avatar + b-roll ; à décider si cette vidéo est une exception de style ou un test.</li>
+</ul></section>
+
+<p class="pied">Rendu le 06/09/2026 · HyperFrames · 1080×1920 · 30 fps · scènes 1-2 voix clonée, scènes 3-4 SFX</p>
+</div></body></html>
