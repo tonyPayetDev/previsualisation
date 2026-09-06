@@ -1,0 +1,1 @@
+- Vidéo Astra livrée : 36,4 s, −14,8 LUFS, R2 `previsualisation/astra-human-atlas/video.mp4`, page `/astra-human-atlas/`, Sheet ligne (CTA ASTRA, en attente). Affirmation « GPT-6 Astra a fait ça » = celle de Tony, non vérifiée (signalé sur la page).
