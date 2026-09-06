@@ -32,8 +32,9 @@ const LIB = {
 };
 
 const carte = (t) => `
-  <li class="t" data-id="${esc(t.id)}" data-defaut="${esc(t.etat)}">
+  <li class="t" data-id="${esc(t.id)}" data-defaut="${esc(t.etat)}" data-qui="${esc(t.qui || 'claude')}">
     <div class="haut">
+      <span class="qui q-${esc(t.qui || 'claude')}">${t.qui === 'toi' ? 'Toi' : 'Claude'}</span>
       <span class="etat"></span>
       <h3>${esc(t.titre)}</h3>
     </div>
@@ -43,6 +44,7 @@ const carte = (t) => `
     ${t.note ? `<p class="no">${esc(t.note)}</p>` : ''}
     ${t.lien ? `<a class="lien" href="${esc(t.lien)}" target="_blank" rel="noopener">Voir le résultat ↗</a>` : ''}
     <div class="actes"></div>
+    <button type="button" class="lancer" data-titre="${esc(t.titre)}">▶ Lancer 25 min</button>
     <p class="dit"></p>
     <div class="msg">
       <button type="button" class="msg-ouvrir">Dire ce qui ne va pas</button>
@@ -119,6 +121,23 @@ fs.writeFileSync(`${D}/index.html`, `<!doctype html>
   .bandeau{position:fixed;left:0;right:0;bottom:0;background:#0b0e13;border-top:1px solid var(--ligne);
            padding:11px 16px;font-size:13px;color:var(--gris);text-align:center}
   .bandeau b{color:var(--blanc)}
+  .qui{font-size:11px;letter-spacing:.14em;text-transform:uppercase;border-radius:999px;padding:3px 9px;white-space:nowrap;font-weight:700}
+  .q-toi{background:#3b2a06;color:#fbbf24}.q-claude{background:#0d2a3a;color:#60a5fa}
+  .filtres{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 18px}
+  .filtres button{min-height:40px;padding:8px 14px;font-size:14px}
+  .filtres button[aria-pressed=true]{border-color:var(--ambre);color:var(--ambre);background:#1f1705}
+  body[data-filtre=toi] .t[data-qui=claude]{display:none}
+  body[data-filtre=claude] .t[data-qui=toi]{display:none}
+  body[data-filtre=ouvert] .t.e-ok,body[data-filtre=ouvert] .t.e-refuse,body[data-filtre=ouvert] .t.e-fait{display:none}
+  .lancer{margin-top:10px;background:#12231a;border-color:#1f6f52;color:#8ff0c4;font-size:13.5px;min-height:40px;padding:8px 14px}
+  .lancer.en-cours{background:#2a2410;border-color:#8a6a10;color:#fbbf24}
+  .focus{position:fixed;left:0;right:0;bottom:44px;background:#0b0e13;border-top:1px solid var(--ligne);padding:10px 16px;display:none;align-items:center;gap:12px;flex-wrap:wrap;font-size:14px}
+  .focus.on{display:flex}
+  .focus .chrono{font-family:ui-monospace,Menlo,monospace;font-size:22px;font-weight:700;color:var(--ambre);min-width:70px}
+  .focus .quoi{flex:1;min-width:160px;color:var(--blanc)}
+  .focus select{background:#161b23;color:var(--blanc);border:1px solid var(--ligne);border-radius:8px;padding:6px 8px;font:inherit;font-size:13px;max-width:180px}
+  .focus button{min-height:38px;padding:6px 12px;font-size:13.5px}
+  .focus .chance{font-size:12px;color:var(--gris)}
 </style>
 </head>
 <body>
@@ -128,7 +147,28 @@ fs.writeFileSync(`${D}/index.html`, `<!doctype html>
   <p class="sous">Tu dis oui, je le fais. Quand c’est livré, tu dis si ça passe.
      Rien ne se lance sans ton feu vert — et rien n’est considéré fini sans ton « c’est bon ».</p>
   <div class="compte" id="compte"></div>
+  <div class="filtres" id="filtres">
+    <button type="button" data-f="ouvert" aria-pressed="true">Ouvertes</button>
+    <button type="button" data-f="toi">Pour toi</button>
+    <button type="button" data-f="claude">Pour Claude</button>
+    <button type="button" data-f="tout">Tout</button>
+  </div>
   <ul id="liste">${taches.map(carte).join('')}</ul>
+</div>
+<div class="focus" id="focus">
+  <span class="chrono" id="f-chrono">25:00</span>
+  <span class="quoi" id="f-quoi"></span>
+  <select id="f-musique" title="Musique du bloc (libre de droits)">
+    <option value="mindset-epical-drums-03-80.mp3">🥁 Epical Drums — motivant</option>
+    <option value="hook-epical-drums-02-80.mp3">⚡ Epical Drums 02 — action</option>
+    <option value="food-sunny-groove-120.mp3">☀️ Sunny Groove — léger</option>
+    <option value="journal-digital-clouds-128.mp3">☁️ Digital Clouds — focus</option>
+    <option value="">🔇 sans musique</option>
+  </select>
+  <button type="button" id="f-pause">Pause</button>
+  <button type="button" id="f-stop">Terminer</button>
+  <span class="chance" id="f-chance"></span>
+  <audio id="f-audio" loop preload="none"></audio>
 </div>
 <div class="bandeau" id="bandeau">Chargement de tes décisions…</div>
 <script>
@@ -144,6 +184,7 @@ fs.writeFileSync(`${D}/index.html`, `<!doctype html>
     if (e === 'fait') return [['ok', 'C’est bon', 'oui'], ['revoir', 'À reprendre', 'non']];
     if (e === 'valide') return [['propose', 'Annuler le go', '']];
     if (e === 'refuse' || e === 'ok' || e === 'revoir') return [['propose', 'Remettre à valider', '']];
+    if (e === 'attente-toi') return [['ok', 'Je l’ai fait ✓', 'oui']];
     return [];
   };
 
@@ -251,6 +292,79 @@ fs.writeFileSync(`${D}/index.html`, `<!doctype html>
     }
     peindre();
   })();
+
+  /* ── filtres Toi / Claude ─────────────────────────────────────────── */
+  const F = document.getElementById('filtres');
+  let filtre = 'ouvert';
+  try { filtre = localStorage.getItem('taches-filtre') || 'ouvert'; } catch (_) {}
+  const appliquerFiltre = () => {
+    document.body.dataset.filtre = filtre;
+    F.querySelectorAll('button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.f === filtre)));
+  };
+  F.addEventListener('click', (ev) => {
+    const b = ev.target.closest('button'); if (!b) return;
+    filtre = b.dataset.f; try { localStorage.setItem('taches-filtre', filtre); } catch (_) {}
+    appliquerFiltre();
+  });
+  appliquerFiltre();
+
+  /* ── « Lancer 25 min » : un bloc de concentration sur UNE tâche, avec musique.
+     Échéance en heure absolue (un onglet en arrière-plan ralentit les minuteurs).
+     La musique ne part que sur le clic — un navigateur refuse sinon. ────────── */
+  const TRAVAIL = 25 * 60 * 1000;
+  const fo = document.getElementById('focus'), fc = document.getElementById('f-chrono'), fq = document.getElementById('f-quoi');
+  const fm = document.getElementById('f-musique'), fa = document.getElementById('f-audio'), fch = document.getElementById('f-chance');
+  let bloc = null;   // { id, titre, fin, reste, marche }
+  try { bloc = JSON.parse(localStorage.getItem('taches-bloc') || 'null'); } catch (_) {}
+  try { const m = localStorage.getItem('pomo-musique'); if (m !== null) fm.value = m; } catch (_) {}
+  const sauverBloc = () => { try { localStorage.setItem('taches-bloc', JSON.stringify(bloc)); } catch (_) {} };
+  const restant = () => bloc ? (bloc.marche ? Math.max(0, bloc.fin - Date.now()) : bloc.reste) : TRAVAIL;
+  const jouer = () => {
+    if (!fm.value) { fa.pause(); return; }
+    const src = '/studio/ecoute/' + fm.value;
+    if (fa.getAttribute('src') !== src) { fa.setAttribute('src', src); fa.load(); }
+    fa.volume = 0.35; fa.play().catch(() => {});
+  };
+  const faits = () => { try { const j = JSON.parse(localStorage.getItem('taches-faits') || '{}'); const d = new Date().toISOString().slice(0, 10); return j[d] || 0; } catch (_) { return 0; } };
+  const compterFait = () => { try { const j = JSON.parse(localStorage.getItem('taches-faits') || '{}'); const d = new Date().toISOString().slice(0, 10); j[d] = (j[d] || 0) + 1; localStorage.setItem('taches-faits', JSON.stringify(j)); } catch (_) {} };
+  const peindreBloc = () => {
+    fo.classList.toggle('on', !!bloc);
+    document.querySelectorAll('.lancer').forEach((b) => {
+      const li = b.closest('.t'); const actif = bloc && bloc.id === li.dataset.id;
+      b.classList.toggle('en-cours', !!actif);
+      b.textContent = actif ? (bloc.marche ? '⏱ En cours…' : '⏸ En pause') : '▶ Lancer 25 min';
+    });
+    if (!bloc) { document.title = 'À valider'; return; }
+    const ms = restant(); const m = Math.floor(ms / 60000), sec = Math.floor((ms % 60000) / 1000);
+    const t = String(m).padStart(2, '0') + ':' + String(sec).padStart(2, '0');
+    fc.textContent = t; fq.textContent = bloc.titre;
+    document.getElementById('f-pause').textContent = bloc.marche ? 'Pause' : 'Reprendre';
+    document.title = t + ' · ' + bloc.titre;
+    fch.textContent = 'blocs finis aujourd’hui : ' + faits() + ' · chances que ça marche : ' + Math.min(95, 30 + faits()) + ' % (jeu, pas une prévision)';
+  };
+  document.querySelectorAll('.lancer').forEach((b) => b.onclick = () => {
+    const li = b.closest('.t');
+    if (bloc && bloc.id === li.dataset.id) { // même tâche : pause / reprise
+      if (bloc.marche) { bloc.reste = restant(); bloc.marche = false; bloc.fin = 0; fa.pause(); }
+      else { bloc.fin = Date.now() + bloc.reste; bloc.marche = true; jouer(); }
+    } else {
+      bloc = { id: li.dataset.id, titre: b.dataset.titre, fin: Date.now() + TRAVAIL, reste: TRAVAIL, marche: true };
+      jouer();
+    }
+    sauverBloc(); peindreBloc();
+  });
+  document.getElementById('f-pause').onclick = () => { if (!bloc) return; if (bloc.marche) { bloc.reste = restant(); bloc.marche = false; bloc.fin = 0; fa.pause(); } else { bloc.fin = Date.now() + bloc.reste; bloc.marche = true; jouer(); } sauverBloc(); peindreBloc(); };
+  document.getElementById('f-stop').onclick = () => { bloc = null; fa.pause(); sauverBloc(); peindreBloc(); };
+  fm.addEventListener('change', () => { try { localStorage.setItem('pomo-musique', fm.value); } catch (_) {} if (bloc && bloc.marche) jouer(); });
+  setInterval(() => {
+    if (bloc && bloc.marche && restant() <= 0) {
+      compterFait(); fa.pause();
+      const titre = bloc.titre; bloc = null; sauverBloc(); peindreBloc();
+      let n = 0; const id = setInterval(() => { document.title = (n % 2 ? '✅ ' : '') + 'Bloc fini — ' + titre; if (++n > 9) { clearInterval(id); peindreBloc(); } }, 700);
+    } else peindreBloc();
+  }, 1000);
+  if (bloc && bloc.marche) { /* la musique ne peut pas repartir seule après rechargement : elle repart au prochain clic */ }
+  peindreBloc();
 })();
 </script>
 </body>

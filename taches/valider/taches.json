@@ -1,7 +1,212 @@
 {
  "_note": "Définitions des tâches. C'est MOI qui tiens ce fichier ; les décisions de Tony vivent dans le webhook n8n taches-validation (clé 'taches'), jamais ici — sinon une reconstruction de la page effacerait ses validations.",
- "maj": "2026-09-04 07:47:56",
+ "maj": "2026-09-06 15:39:30",
  "taches": [
+  {
+   "id": "valider-video-module1",
+   "titre": "Regarder la vidéo « module 1 ouvert » et dire go ou ce qui cloche",
+   "pourquoi": "La vidéo est sur previsualisation/split-module1. Elle annonce l'ouverture jusqu'au 20 septembre ; chaque jour sans elle, le module ouvert ne sert à personne.",
+   "fini": "Un « go » (ou une phrase) sur cette carte.",
+   "cout": "0 €",
+   "etat": "attente-toi",
+   "qui": "toi",
+   "note": "Ajoutée le 2026-09-06.",
+   "lien": "https://previsualisation.automatisationboost.com/split-module1/"
+  },
+  {
+   "id": "choisir-hooks-systeme",
+   "titre": "Regarder les 3 hooks « SYSTÈME » et dire si on lance le test",
+   "pourquoi": "Même corps en vraie voix, trois ouvertures. On publie les trois à 3 jours d'écart, même heure, et on garde celle qui fait le plus de vues à J+3.",
+   "fini": "Un « go », ou l'ordre de passage que tu veux.",
+   "cout": "0 € — aucune API, ta vraie voix",
+   "etat": "attente-toi",
+   "qui": "toi",
+   "note": "Ajoutée le 2026-09-06.",
+   "lien": "https://previsualisation.automatisationboost.com/split-systeme/"
+  },
+  {
+   "id": "enregistrer-200-phrases",
+   "titre": "Enregistrer la grande session voix : 200 phrases, 40 minutes, sur /tournage/",
+   "pourquoi": "La banque réelle n'a que 13 phrases (63 s). Avec 200 phrases indépendantes (hook, explication, CTA, transition), je monte des vidéos sans TTS et sans lèvres qui trichent.",
+   "fini": "Une session /tournage/ envoyée sur R2 ; je découpe le reste.",
+   "cout": "0 €",
+   "etat": "attente-toi",
+   "qui": "toi",
+   "note": "Ajoutée le 2026-09-06.",
+   "lien": "https://previsualisation.automatisationboost.com/tournage/"
+  },
+  {
+   "id": "purger-vps-docker",
+   "titre": "Purger Docker sur le VPS (une commande)",
+   "pourquoi": "Le disque du VPS Coolify se remplit ; quand il est plein, plus aucun déploiement de previsualisation ne passe et je perds des heures à chercher ailleurs.",
+   "fini": "`ssh root@158.220.127.234 \"docker system prune -af --volumes\"` exécuté.",
+   "cout": "0 €",
+   "etat": "attente-toi",
+   "qui": "toi",
+   "note": "Ajoutée le 2026-09-06."
+  },
+  {
+   "id": "reconnecter-linkedin",
+   "titre": "Reconnecter LinkedIn dans Blotato",
+   "pourquoi": "Les posts LinkedIn programmés (série secteurs, journal) échouent tant que le compte n'est pas reconnecté.",
+   "fini": "LinkedIn en vert dans Blotato.",
+   "cout": "0 €",
+   "etat": "attente-toi",
+   "qui": "toi",
+   "note": "Ajoutée le 2026-09-06.",
+   "lien": "https://my.blotato.com"
+  },
+  {
+   "id": "recharger-apify",
+   "titre": "Recharger Apify",
+   "pourquoi": "La veille RSS du journal, le scraping HoReCa et la mesure des vues (test de hooks) passent par Apify : sans crédits, je ne peux ni mesurer ni prospecter.",
+   "fini": "Crédits > 0 sur le compte Apify.",
+   "cout": "~10 €",
+   "etat": "attente-toi",
+   "qui": "toi",
+   "note": "Ajoutée le 2026-09-06."
+  },
+  {
+   "id": "lire-retours-module1",
+   "titre": "Me coller les retours Instagram sur le module 1",
+   "pourquoi": "Le bandeau du module renvoie les gens en DM Instagram, que je ne lis pas. Sans ces retours, ouvrir le module ne sert à rien.",
+   "fini": "Les messages collés dans la case « dire ce qui ne va pas » de cette carte, ou un fichier.",
+   "cout": "0 €",
+   "etat": "attente-toi",
+   "qui": "toi",
+   "note": "Ajoutée le 2026-09-06."
+  },
+  {
+   "id": "rappeler-6-decroches",
+   "titre": "Rappeler les 6 qui ont décroché la semaine du 24 août",
+   "pourquoi": "C'est la tâche la plus proche du cash du tableau : des gens qui ont déjà répondu une fois.",
+   "fini": "6 lignes remplies dans la feuille d'appels.",
+   "cout": "0 €",
+   "etat": "attente-toi",
+   "qui": "toi",
+   "note": "Ajoutée le 2026-09-06.",
+   "lien": "https://previsualisation.automatisationboost.com/appels/"
+  },
+  {
+   "id": "planifier-hooks-systeme",
+   "titre": "Programmer les 3 hooks SYSTÈME et mesurer le gagnant",
+   "pourquoi": "Test de hooks : trois posts à 3 jours d'écart, même heure, mesure des vues à J+3 par le scraping, résultat écrit dans STRATEGIE.md et l'onglet Analyse Perf.",
+   "fini": "3 posts programmés, un tableau vues/likes/commentaires par hook à J+3, et le gagnant nommé.",
+   "cout": "0 € (scraping Apify déjà en place)",
+   "etat": "propose",
+   "qui": "claude",
+   "note": "Ajoutée le 2026-09-06."
+  },
+  {
+   "id": "planifier-video-module1",
+   "titre": "Programmer la vidéo « module 1 » sur les 5 réseaux",
+   "pourquoi": "Dès ton go : upload binaire Blotato, 5 réseaux, légende avec le mot MODULE, et la ligne du Sheet passée en programmé.",
+   "fini": "5 posts programmés, IDs dans le Sheet.",
+   "cout": "0 €",
+   "etat": "propose",
+   "qui": "claude",
+   "note": "Ajoutée le 2026-09-06."
+  },
+  {
+   "id": "opener-journal-automatique",
+   "titre": "Coller l'ouverture « déchirure » automatiquement dans le journal",
+   "pourquoi": "Aujourd'hui je l'ai collée à la main. Le script du journal doit la préfixer tout seul chaque matin.",
+   "fini": "render-publish.sh préfixe assets/opener-dechirure.mp4 et vérifie une image de la déchirure.",
+   "cout": "0 €",
+   "etat": "propose",
+   "qui": "claude",
+   "note": "Ajoutée le 2026-09-06."
+  },
+  {
+   "id": "generateur-sites-demo",
+   "titre": "Le générateur de sites démo à 0 € : 20 premiers sites",
+   "pourquoi": "Pour viser 1 000 sites, il faut un générateur qui n'appelle aucune API payante : HTML + photos publiques du commerce (OSM/Google), stockage R2 (3 Go pour 1 000). 20 sites d'abord, pour mesurer le temps et la qualité.",
+   "fini": "20 sites en ligne sur R2 avec une page d'index, temps par site mesuré.",
+   "cout": "0 € de génération, ~0,05 €/mois de stockage",
+   "etat": "propose",
+   "qui": "claude",
+   "note": "Ajoutée le 2026-09-06."
+  },
+  {
+   "id": "cadenceur-envoi-demos",
+   "titre": "Le cadenceur d'envoi des démos : 50 par jour, suivi des ouvertures",
+   "pourquoi": "1 000 emails d'un coup = boîte grillée. Un workflow n8n qui en envoie 50 par jour depuis le Sheet de leads, avec tracking d'ouverture et relance J+3.",
+   "fini": "Workflow actif, 50 envois/jour visibles dans le Sheet, taux d'ouverture lu.",
+   "cout": "0 €",
+   "etat": "propose",
+   "qui": "claude",
+   "note": "Ajoutée le 2026-09-06."
+  },
+  {
+   "id": "interface-phrases-tournage",
+   "titre": "L'interface phrase par phrase sur /tournage/ (banque de voix)",
+   "pourquoi": "Le cahier des charges voice-bank demande : une phrase à l'écran, rec/stop/écoute/refaire/valider, progression. C'est ce qui rend la session de 200 phrases faisable en 40 min.",
+   "fini": "Un mode « banque » sur /tournage/ qui envoie une session avec le texte de chaque phrase.",
+   "cout": "0 €",
+   "etat": "propose",
+   "qui": "claude",
+   "note": "Ajoutée le 2026-09-06."
+  },
+  {
+   "id": "decoupe-auto-banque-voix",
+   "titre": "Découper automatiquement toute nouvelle session dans la banque de voix",
+   "pourquoi": "Ce que j'ai fait à la main aujourd'hui (Whisper mots → phrases → wav+mp4 → manifest) doit tourner seul sur chaque session /tournage/.",
+   "fini": "Un script qui prend une session et remplit reel/ ; testé sur la session du 5 septembre.",
+   "cout": "0 €",
+   "etat": "propose",
+   "qui": "claude",
+   "note": "Ajoutée le 2026-09-06."
+  },
+  {
+   "id": "etape-blotato-feed",
+   "titre": "Construire l'étape Blotato du feed démo (jamais construite)",
+   "pourquoi": "Le workflow s'arrête au rendu + email : « je ne peux pas planifier » vient de là, pas d'un bug.",
+   "fini": "Le feed validé se retrouve programmé dans Blotato depuis le workflow.",
+   "cout": "0 €",
+   "etat": "propose",
+   "qui": "claude",
+   "note": "Ajoutée le 2026-09-06."
+  },
+  {
+   "id": "image-demo-resto",
+   "titre": "Corriger l'image qui n'arrive jamais dans la démo resto",
+   "pourquoi": "image_font vide + un Switch sans repli : Kie répond 200 avec une erreur dans le corps et tout paraît réussi.",
+   "fini": "Une démo resto complète avec son image, prouvée sur un vrai restaurant.",
+   "cout": "~0,04 € par test",
+   "etat": "propose",
+   "qui": "claude",
+   "note": "Ajoutée le 2026-09-06."
+  },
+  {
+   "id": "branche-video-foodboost",
+   "titre": "Câbler la branche vidéo du workflow FoodBoost quotidien",
+   "pourquoi": "La branche vitrine est prouvée, la branche vidéo n'est pas reliée. C'est le dernier morceau avant de dire « FoodBoost fini ».",
+   "fini": "Un post vidéo FoodBoost sorti par le workflow, sans intervention.",
+   "cout": "~0,45 € par vidéo",
+   "etat": "propose",
+   "qui": "claude",
+   "note": "Ajoutée le 2026-09-06."
+  },
+  {
+   "id": "page-formation-module-gratuit",
+   "titre": "Mettre la page de vente formation.html à jour",
+   "pourquoi": "La page vend la formation sans dire que le module 1 est ouvert : les gens qui arrivent par la vidéo doivent voir le bouton « lire le module 1 » avant le prix.",
+   "fini": "Un bouton « Lire le module 1 gratuitement (jusqu'au 20/09) » au-dessus du prix, déployé.",
+   "cout": "0 €",
+   "etat": "propose",
+   "qui": "claude",
+   "note": "Ajoutée le 2026-09-06."
+  },
+  {
+   "id": "modifs-koytcha-florent",
+   "titre": "Appliquer la liste de modifs de Florent (koytchaimmo.re v5)",
+   "pourquoi": "Le client a listé ses modifications ; tant qu'elles ne sont pas faites, la facture n'est pas envoyable.",
+   "fini": "Liste cochée, site déployé, capture envoyée à Florent.",
+   "cout": "0 €",
+   "etat": "propose",
+   "qui": "claude",
+   "note": "Ajoutée le 2026-09-06."
+  },
   {
    "id": "demo-unisson",
    "titre": "Vidéo démo pour L'Unisson",
@@ -10,7 +215,8 @@
    "cout": "~0,30 $ si les photos suffisent",
    "etat": "valide",
    "note": "Demandée de vive voix ce matin — je l'ai lancée.",
-   "lien": "https://previsualisation.automatisationboost.com/demo-unisson/"
+   "lien": "https://previsualisation.automatisationboost.com/demo-unisson/",
+   "qui": "claude"
   },
   {
    "id": "recharge-wavespeed",
@@ -19,7 +225,8 @@
    "fini": "Les 6 blocs manquants en voix clonée, l'essai remonté vers 7 min, republié sur la même route.",
    "cout": "la recharge est de ton côté ; le reste ne coûte que du temps machine",
    "etat": "attente-toi",
-   "note": "Rien à valider : c'est une action que je ne peux pas faire à ta place."
+   "note": "Rien à valider : c'est une action que je ne peux pas faire à ta place.",
+   "qui": "toi"
   },
   {
    "id": "rappel-unisson",
@@ -28,7 +235,8 @@
    "fini": "Appel passé, réaction notée dans la fiche.",
    "cout": "10 minutes",
    "etat": "attente-toi",
-   "note": "À faire après la vidéo, pas avant — c'est le lien qui fait la conversation."
+   "note": "À faire après la vidéo, pas avant — c'est le lien qui fait la conversation.",
+   "qui": "toi"
   },
   {
    "id": "50-emails-secteur-2",
@@ -38,7 +246,8 @@
    "cout": "gratuit (OpenStreetMap + audit maison)",
    "etat": "propose",
    "note": "VERIFIE le 03/09 au soir : AUCUN email hotel n'est parti. Aucun workflow hotels n'existe dans n8n, aucun onglet Hotels dans le Sheet. Les 50 emails sont prets sur disque, les 50 portent bien la ligne de retrait (j'en ai reparé 3 qui ne l'avaient pas). La mise en file reste bloquee par le classificateur de securite de l'environnement, 3 approches de suite. || A savoir : la campagne AGENCES est TERMINEE, 50/50 envoyes (la fiche disait 30/50). Elle tourne encore chaque matin a 8h et ne fait plus rien.",
-   "lien": "https://previsualisation.automatisationboost.com/prospection-hotels/"
+   "lien": "https://previsualisation.automatisationboost.com/prospection-hotels/",
+   "qui": "claude"
   },
   {
    "id": "pubs-douleur",
@@ -48,7 +257,8 @@
    "cout": "gratuit",
    "etat": "propose",
    "lien": "https://previsualisation.automatisationboost.com/pubs-douleur/",
-   "note": "Les 3 créas existent dans ton compte, visuels rendus par Meta (aperçu vérifié). Angle : douleur de position, pas de process. Je ne les ai PAS mises à la place des actuelles — changer la créa d’une pub qui tourne, c’est changer ce qui part vers le public, et c’est ta décision. Visuels faits ici, zéro centime."
+   "note": "Les 3 créas existent dans ton compte, visuels rendus par Meta (aperçu vérifié). Angle : douleur de position, pas de process. Je ne les ai PAS mises à la place des actuelles — changer la créa d’une pub qui tourne, c’est changer ce qui part vers le public, et c’est ta décision. Visuels faits ici, zéro centime.",
+   "qui": "claude"
   },
   {
    "id": "comparer-chrissansfiltre",
@@ -58,7 +268,8 @@
    "cout": "gratuit",
    "etat": "fait",
    "note": "Fait. Il est moins cher (47 € contre 67 €) ET il montre des preuves partout ; ta page n’en montrait aucune. J’ai appliqué la première recommandation dans la foulée : six images de vraies sorties sont maintenant sur ta page de vente, juste après le héros.",
-   "lien": "https://previsualisation.automatisationboost.com/comparer-chrissansfiltre/"
+   "lien": "https://previsualisation.automatisationboost.com/comparer-chrissansfiltre/",
+   "qui": "claude"
   },
   {
    "id": "cta-sans-ressource",
@@ -68,7 +279,8 @@
    "cout": "gratuit",
    "etat": "propose",
    "note": "Le plus rentable : ce sont des gens qui ont DÉJÀ levé la main.",
-   "lien": "https://previsualisation.automatisationboost.com/cta-portes/"
+   "lien": "https://previsualisation.automatisationboost.com/cta-portes/",
+   "qui": "claude"
   },
   {
    "id": "workflow-gpt-image-2",
@@ -77,7 +289,8 @@
    "fini": "Les 4 types de post passent par le même moteur, et « Promotion » produit vraiment quelque chose.",
    "cout": "~0,03 $ par image générée",
    "etat": "fait",
-   "note": "Repris le 31/08. Mon hypothèse de départ était FAUSSE : le correctif du 28/08 était bien publié (versionId = activeVersionId, historique de publication à l appui). Le vrai défaut était ailleurs et plus vicieux — deux branches envoyaient une URL de référence VIDE au générateur. « Menu du jour » (choix par défaut du formulaire ET repli du Switch) avait littéralement « = » comme référence ; « Événement » prenait l image du client sans repli, donc vide dès qu il n en colle pas. Or le correctif du 28/08 a routé « Promotion » vers cette branche-là : on avait réparé le silence du Switch en envoyant Promotion sur une branche elle-même cassée. Le garde-fou teste contains \"null\", une chaîne vide passe au travers — même motif que la démo resto où l image n arrivait jamais. Corrigé : 2 champs alignés sur les 3 autres branches, republié et vérifié à froid (2 nœuds modifiés sur 73, aucune credential touchée). RÉSERVES : rien n a été exécuté (emails réels + images payantes), donc le correctif n est prouvé que par lecture de code ; la cause racine est dans un sous-workflow PARTAGÉ, volontairement pas touchée ; et la démo se bloque au bout de 7 jours avec un nœud de remise à zéro relié à rien."
+   "note": "Repris le 31/08. Mon hypothèse de départ était FAUSSE : le correctif du 28/08 était bien publié (versionId = activeVersionId, historique de publication à l appui). Le vrai défaut était ailleurs et plus vicieux — deux branches envoyaient une URL de référence VIDE au générateur. « Menu du jour » (choix par défaut du formulaire ET repli du Switch) avait littéralement « = » comme référence ; « Événement » prenait l image du client sans repli, donc vide dès qu il n en colle pas. Or le correctif du 28/08 a routé « Promotion » vers cette branche-là : on avait réparé le silence du Switch en envoyant Promotion sur une branche elle-même cassée. Le garde-fou teste contains \"null\", une chaîne vide passe au travers — même motif que la démo resto où l image n arrivait jamais. Corrigé : 2 champs alignés sur les 3 autres branches, republié et vérifié à froid (2 nœuds modifiés sur 73, aucune credential touchée). RÉSERVES : rien n a été exécuté (emails réels + images payantes), donc le correctif n est prouvé que par lecture de code ; la cause racine est dans un sous-workflow PARTAGÉ, volontairement pas touchée ; et la démo se bloque au bout de 7 jours avec un nœud de remise à zéro relié à rien.",
+   "qui": "claude"
   },
   {
    "id": "presets-feed",
@@ -86,7 +299,8 @@
    "fini": "Les styles retenus deviennent des presets du workflow, utilisables sans réécrire un prompt.",
    "cout": "gratuit",
    "etat": "attente-toi",
-   "note": "J'attends juste que tu me dises lesquels tu jettes."
+   "note": "J'attends juste que tu me dises lesquels tu jettes.",
+   "qui": "toi"
   },
   {
    "id": "musetalk-vps",
@@ -94,7 +308,8 @@
    "pourquoi": "Tu l'as demandé, mais le VPS n'a pas de GPU : MuseTalk y tournerait à une vitesse inutilisable. Il faut choisir entre payer un GPU ou passer par une API hébergée.",
    "fini": "Une décision, et le lip-sync qui marche pour de vrai.",
    "cout": "un GPU se loue ~0,40 $/h, une API de lip-sync ~0,10 $/vidéo",
-   "etat": "propose"
+   "etat": "propose",
+   "qui": "claude"
   },
   {
    "id": "son-demo-unisson",
@@ -104,7 +319,8 @@
    "cout": "0 €",
    "etat": "fait",
    "note": "Deuxième piste. Tu as trouvé la première fade : celle-ci a été choisie en mesurant trente candidates, pas en lisant leur titre. Pleine énergie dès la première seconde, grille de temps deux fois plus nette (24,5 contre 9,98). Mixkit, licence libre.",
-   "lien": "https://previsualisation.automatisationboost.com/demo-unisson/"
+   "lien": "https://previsualisation.automatisationboost.com/demo-unisson/",
+   "qui": "claude"
   },
   {
    "id": "avatar-plus-grand",
@@ -114,7 +330,8 @@
    "cout": "0 €",
    "etat": "fait",
    "note": "Il manquait la variante du « fini quand » : le CTA plein cadre, pour que tu tranches. Elle est faite. Les deux sont sur la page, un bouton bascule de l’une à l’autre en gardant la position de lecture. Même plan source au même endroit (E3 neutre, 1,72 s pendant 4,85 s, dans sa plage de lèvres 1,67 → 6,79 s) : la synchro est identique, seul le cadrage change. En plein cadre le bloc SOLAIRE descend à 1150 px, sinon il tombait sur sa bouche.",
-   "lien": "https://previsualisation.automatisationboost.com/client-reunion-renouvelables/"
+   "lien": "https://previsualisation.automatisationboost.com/client-reunion-renouvelables/",
+   "qui": "claude"
   },
   {
    "id": "motion-creperie",
@@ -124,7 +341,8 @@
    "cout": "0 €",
    "etat": "fait",
    "note": "Fait. Registre symétrique assumé : rien ne part de biais. Un défaut trouvé et corrigé — la parallaxe déplaçait l'image de 14 px alors qu'elle ne dépassait son cadre que d'1 px, d'où une bande claire.",
-   "lien": "https://previsualisation.automatisationboost.com/client-creperie-saintgeorges/"
+   "lien": "https://previsualisation.automatisationboost.com/client-creperie-saintgeorges/",
+   "qui": "claude"
   },
   {
    "id": "pubs-en-ligne",
@@ -133,7 +351,8 @@
    "fini": "Formation et ShortForge actives, 5 €/jour chacune, redirigeant vers les vraies pages avec le pixel et le suivi des clics Stripe.",
    "cout": "10 €/jour",
    "etat": "fait",
-   "note": "Fait. Restaurateurs reste en pause : sa destination est le formulaire de démo, qui n'existe pas encore."
+   "note": "Fait. Restaurateurs reste en pause : sa destination est le formulaire de démo, qui n'existe pas encore.",
+   "qui": "claude"
   },
   {
    "id": "formulaire-demo-resto",
@@ -143,7 +362,8 @@
    "cout": "0 €",
    "etat": "fait",
    "note": "Repris. Les 13 champs du « fini quand » y étaient déjà et le formulaire répond en 200 — le défaut était ailleurs : « Image prête ? [faux] → Attendre 20s » était une boucle SANS SORTIE. La dernière vraie demande a fait 10 tours (204 s) et rien ne bornait le 11e : si Kie ne rend jamais l’image, l’exécution tourne indéfiniment. Ajouté un nœud « Sortie de secours » qui coupe au 15e tour (~5 min) ou dès que Kie renvoie un état d’échec. Le lead ne se perd pas pour autant : « Prévenir Tony » part en parallèle juste après le formulaire, avant toute génération. Workflow actif et publié (versionId = activeVersionId), les 4 credentials conservées. Pas de soumission de test : elle aurait envoyé un vrai email.",
-   "lien": "https://n7n.automatisationboost.com/form/481d9cd4-caf9-4fdc-a58f-e1c816b133bc"
+   "lien": "https://n7n.automatisationboost.com/form/481d9cd4-caf9-4fdc-a58f-e1c816b133bc",
+   "qui": "claude"
   },
   {
    "id": "carrousel-preuves",
@@ -153,7 +373,8 @@
    "cout": "0 €",
    "etat": "fait",
    "note": "Fait. Carte 06 : six images de vidéos réellement publiées. Carte 07 : le vrai config.json + les dix directions lues dans le skill livré. En le faisant j'ai découvert que le skill ne contenait ni les 10 formats ni les 10 directions que la page vend — je les ai écrits pour de bon.",
-   "lien": "https://previsualisation.automatisationboost.com/pub-carrousel/"
+   "lien": "https://previsualisation.automatisationboost.com/pub-carrousel/",
+   "qui": "claude"
   },
   {
    "id": "video-virale",
@@ -163,7 +384,8 @@
    "cout": "0 €",
    "etat": "fait",
    "note": "Repris avec ce qui manquait : un format CONCRET chez un concurrent. Trouvé chez jb.roy_ (1 574 abonnés, même taille que toi) : l’appel à froid EN DIRECT à un prospect qui a téléchargé sa ressource — 86 s sans script ni montage. C’est le seul de ses trois tops avec de l’engagement réel (1 commentaire, 2 partages) ; ses n°1-2 ont zéro des deux, même loterie que tes vues. Transcript tiré, mécanique décortiquée, et la version pour toi est prête : ceux qui commenteront RESTO/IMMO/SANTE en septembre reçoivent ton workflow par Auto-DM — le premier qui commente, tu l’appelles en le filmant. Ce qu’on ne copie pas est aussi sur la page (sa légende générique, et filmer sans prévenir).",
-   "lien": "https://previsualisation.automatisationboost.com/analyse-virale/"
+   "lien": "https://previsualisation.automatisationboost.com/analyse-virale/",
+   "qui": "claude"
   },
   {
    "id": "befresh-feed",
@@ -173,7 +395,8 @@
    "cout": "~0,27 $",
    "etat": "fait",
    "note": "Fait. Neuf tuiles, charte du lookbook officiel (noir + or + magenta), niche réelle. Zéro fait inventé, zéro bouteille d'alcool.",
-   "lien": "https://previsualisation.automatisationboost.com/befresh-feed/"
+   "lien": "https://previsualisation.automatisationboost.com/befresh-feed/",
+   "qui": "claude"
   },
   {
    "id": "shortforge-promesse",
@@ -183,7 +406,8 @@
    "cout": "0 €",
    "etat": "fait",
    "note": "Fait et déployé. Contraste mesuré sur les dix : l'accent pastel a dû être assombri de #E0A38A à #B8623C pour tenir le 3:1.",
-   "lien": "https://videoboost.automatisationboost.com/vente.html"
+   "lien": "https://videoboost.automatisationboost.com/vente.html",
+   "qui": "claude"
   },
   {
    "id": "carrousel-pub",
@@ -193,7 +417,8 @@
    "cout": "5 €/jour",
    "etat": "fait",
    "note": "En ligne. Deux pièges au passage : l'upload d'image locale n'est pas ouvert sur ton compte, et Meta n'arrive pas à télécharger depuis previsualisation (Cloudflare) — je suis passé par les URL GitHub brutes. Aperçu vérifié avant activation : les titres longs se coupaient, je les ai raccourcis.",
-   "lien": "https://www.facebook.com/adsmanager/manage/ads/edit?act=1576379627158917&selected_ad_ids=52551203975867"
+   "lien": "https://www.facebook.com/adsmanager/manage/ads/edit?act=1576379627158917&selected_ad_ids=52551203975867",
+   "qui": "claude"
   },
   {
    "id": "landing-foodboost",
@@ -203,7 +428,8 @@
    "cout": "0 €",
    "etat": "fait",
    "note": "Reprise visuelle le 31/08, sur ta demande « photo en arrière-plan, effet Ken Burns ». Le fond n a PAS bougé : les 5 étapes, la démo, les 2 cas clients, les tarifs et le formulaire court sont toujours là. Ce qui change : la page portait un vert forêt #0d2818 qui n existe dans aucun asset FoodBoost et tirait ses polices de Google Fonts — elle est passée sur la charte relevée dans foodboost-charte/src/charte.mjs (noir braise, ambre, rouge, or, crème) avec Anton et Inter embarquées en data-URI, donc plus aucune ressource distante que Cloudflare puisse laisser tomber. Deux fonds photo en Ken Burns, découpés dans TES visuels (tuiles du feed), aucune image de stock. Vérifié : 0 débordement à 1280 et 390, aucune couleur définie seulement dans un bloc média, polices chargées. Deux défauts trouvés en regardant les captures et corrigés — à 390 px les 5 étapes se repliaient dans la colonne du numéro et le texte se cassait lettre par lettre ; et des légendes de démo étaient fausses (« Dessert » sur une grillade). RESTE À TOI : 6 gabarits vides ([MONTANT]€, [NOM RESTAURANT], [VILLE]) — aucun chiffre ni nom inventé ; et l iframe de démo affiche l email noacoco9@gmail.com pré-rempli sur une page PUBLIQUE montrée à des prospects, ça vient du formulaire n8n et pas de la page.",
-   "lien": "https://previsualisation.automatisationboost.com/foodboost-landing/"
+   "lien": "https://previsualisation.automatisationboost.com/foodboost-landing/",
+   "qui": "claude"
   },
   {
    "id": "demo-video-papies",
@@ -212,7 +438,8 @@
    "fini": "Une vidéo verticale faite avec LEURS photos, sur le format de L'Unisson, en ligne sur previsualisation, prête à leur envoyer.",
    "cout": "~0,30 $",
    "etat": "propose",
-   "lien": "https://previsualisation.automatisationboost.com/demo-papies/"
+   "lien": "https://previsualisation.automatisationboost.com/demo-papies/",
+   "qui": "claude"
   },
   {
    "id": "post-video-feed-lookbook",
@@ -221,7 +448,8 @@
    "fini": "Une vidéo courte montant le feed généré, dans la charte du lookbook FoodBoost, qui pousse à remplir le formulaire.",
    "cout": "~0,20 $",
    "etat": "propose",
-   "lien": "https://previsualisation.automatisationboost.com/foodboost-post-feed/"
+   "lien": "https://previsualisation.automatisationboost.com/foodboost-post-feed/",
+   "qui": "claude"
   },
   {
    "id": "echappee-email-demo",
@@ -230,7 +458,8 @@
    "fini": "Un second workflow n8n qui génère les neuf tuiles côté serveur et envoie le lien par email.",
    "cout": "~0,27 $ par demande",
    "etat": "propose",
-   "lien": "https://previsualisation.automatisationboost.com/demo-feed-email/"
+   "lien": "https://previsualisation.automatisationboost.com/demo-feed-email/",
+   "qui": "claude"
   },
   {
    "id": "menage-workflows-resto",
@@ -238,7 +467,8 @@
    "pourquoi": "Six workflows tournent en même temps sur le même travail — Dev restaurant V4, En dev resto v1, le formulaire de démo, le tuto Playwright et deux scrapers. Avant d'en brancher un de plus il faut savoir lequel est le vrai.",
    "fini": "Un seul workflow actif par fonction, les autres éteints, et la liste écrite quelque part.",
    "cout": "0 €",
-   "etat": "attente-toi"
+   "etat": "attente-toi",
+   "qui": "toi"
   },
   {
    "id": "tuto-wan-moins-cher",
@@ -248,7 +478,8 @@
    "cout": "gratuit (clip déjà généré, voix clonée par webhook)",
    "etat": "propose",
    "note": "Il me faut le clip u0yo7UGASZI en fichier — le lien de partage Higgsfield n’est pas lisible depuis ici. La ressource « WAN » reste à écrire : je peux repartir de la page burger qui porte déjà les tarifs.",
-   "lien": "https://previsualisation.automatisationboost.com/tuto-wan/"
+   "lien": "https://previsualisation.automatisationboost.com/tuto-wan/",
+   "qui": "claude"
   },
   {
    "id": "oxygene-event",
@@ -258,7 +489,8 @@
    "cout": "0 € — composition HTML et ffmpeg, aucun appel payant",
    "etat": "fait",
    "note": "Six photos récupérées sur leur second site. Leur domaine principal ne résout plus en DNS.",
-   "lien": "https://previsualisation.automatisationboost.com/oxygene-event/"
+   "lien": "https://previsualisation.automatisationboost.com/oxygene-event/",
+   "qui": "claude"
   },
   {
    "id": "porte-appels",
@@ -268,7 +500,8 @@
    "cout": "0 €",
    "etat": "fait",
    "note": "260 des 637 numéros sont des mobiles, donc joignables sur WhatsApp.",
-   "lien": "https://previsualisation.automatisationboost.com/appels/"
+   "lien": "https://previsualisation.automatisationboost.com/appels/",
+   "qui": "claude"
   },
   {
    "id": "formulaire-audit",
@@ -278,7 +511,8 @@
    "cout": "0 € — analyse déterministe, aucun appel de modèle",
    "etat": "fait",
    "note": "Testé de bout en bout. Il reste à le poser sur automatisationboost.com, et à créer le cal.com.",
-   "lien": "https://previsualisation.automatisationboost.com/audit/"
+   "lien": "https://previsualisation.automatisationboost.com/audit/",
+   "qui": "claude"
   },
   {
    "id": "stagiaire-repare",
@@ -288,7 +522,8 @@
    "cout": "0 €",
    "etat": "fait",
    "note": "Sur cinq modèles gratuits testés, un seul est à la fois rapide et juste. Un autre rend du code crédible et faux.",
-   "lien": ""
+   "lien": "",
+   "qui": "claude"
   },
   {
    "id": "repondre-3-leads",
@@ -298,7 +533,8 @@
    "cout": "0 €",
    "etat": "propose",
    "note": "Le quatrième, John, est une agence d’automatisation qui te démarche par ton propre formulaire : à ignorer.",
-   "lien": ""
+   "lien": "",
+   "qui": "claude"
   },
   {
    "id": "aiguillage-audit",
@@ -308,7 +544,8 @@
    "cout": "0 €",
    "etat": "propose",
    "note": "Une demi-heure. Le nouveau formulaire d’audit ne passe pas par ce workflow, mais l’ancien bouton de la page d’accueil, si.",
-   "lien": ""
+   "lien": "",
+   "qui": "claude"
   },
   {
    "id": "audit-sur-le-site",
@@ -318,7 +555,8 @@
    "cout": "0 €",
    "etat": "propose",
    "note": "Changement visible par tes visiteurs — j’attends ton feu vert, je n’y touche pas seul.",
-   "lien": ""
+   "lien": "",
+   "qui": "claude"
   },
   {
    "id": "cv-pdf-a-reparer",
@@ -328,7 +566,8 @@
    "cout": "0 €",
    "etat": "propose",
    "note": "Aucun outil d’édition PDF ici (ni qpdf, ni ghostscript, ni pypdf) : je ne peux pas retoucher le fichier Canva. Deux voies — tu corriges dans Canva et tu réexportes, ou je le reconstruis en HTML et je l’imprime en PDF par Chrome (testé, ça marche). La seconde te rend le CV modifiable en une ligne pour toujours, mais elle refait la mise en page : il me faut ton feu vert, et la photo dont tu m’avais parlé.",
-   "lien": ""
+   "lien": "",
+   "qui": "claude"
   },
   {
    "id": "tonypayet-403",
@@ -338,7 +577,8 @@
    "cout": "0 € si c’est une redirection ; à voir si l’hébergement est en cause",
    "etat": "propose",
    "note": "",
-   "lien": ""
+   "lien": "",
+   "qui": "claude"
   },
   {
    "id": "cal-com-rdv",
@@ -348,7 +588,8 @@
    "cout": "0 € — la formule gratuite suffit",
    "etat": "attente-toi",
    "note": "",
-   "lien": ""
+   "lien": "",
+   "qui": "toi"
   },
   {
    "id": "nettoyer-tests-audit",
@@ -358,7 +599,8 @@
    "cout": "0 €",
    "etat": "attente-toi",
    "note": "Je n’ai ni le droit de supprimer dans ta boîte, ni l’API pour supprimer une ligne de table (405).",
-   "lien": ""
+   "lien": "",
+   "qui": "toi"
   },
   {
    "id": "video-style-montre",
@@ -368,7 +610,8 @@
    "cout": "à chiffrer selon la méthode retenue",
    "etat": "attente-toi",
    "note": "Bloqué sur un point : la vidéo vient du compte « humian », qui est dans ton registre des refus depuis le 15/08 (« tout sauf humian »). Confirme que tu lèves ce refus et je lance.",
-   "lien": ""
+   "lien": "",
+   "qui": "toi"
   },
   {
    "id": "video-split-facture",
@@ -378,7 +621,8 @@
    "cout": "0 € — b-roll existant, voix par le webhook gratuit",
    "etat": "fait",
    "note": "27,5 s · sujet « facturation automatique en 3 étapes », mot-clé FACTURE. Deux choses à trancher avant publication : le mot-clé FACTURE ne mène à aucune ressource (les gens commenteraient dans le vide), et le b-roll est trop sombre — c'est la faiblesse du format à corriger en premier. Rien n'a été programmé sur aucun réseau.",
-   "lien": "https://previsualisation.automatisationboost.com/split-facture/"
+   "lien": "https://previsualisation.automatisationboost.com/split-facture/",
+   "qui": "claude"
   },
   {
    "id": "avatar-synchro-garde-fou",
@@ -388,7 +632,8 @@
    "cout": "0 €",
    "etat": "fait",
    "note": "Il a tranché : « le blanc ». Reste à câbler dans veille-to-video-v3, autoboost-split, veille-journal-ia et prompt-reveal-branded, avec la nuance : couper si la bouche bouge en silence plus de ~1,2 s.",
-   "lien": "https://previsualisation.automatisationboost.com/avatar-synchro/"
+   "lien": "https://previsualisation.automatisationboost.com/avatar-synchro/",
+   "qui": "claude"
   },
   {
    "id": "video-trois-outils",
@@ -398,7 +643,8 @@
    "cout": "0 €",
    "etat": "fait",
    "note": "J'ai brûlé un des 6 HOOK_FIN (29ee0df1, la supercar). À dire s'il préfère les garder.",
-   "lien": "https://previsualisation.automatisationboost.com/trois-outils/"
+   "lien": "https://previsualisation.automatisationboost.com/trois-outils/",
+   "qui": "claude"
   },
   {
    "id": "foodboost-un-post",
@@ -408,7 +654,8 @@
    "cout": "0 €",
    "etat": "fait",
    "note": "Nom de l'établissement en tête des hashtags, publication directe par défaut, carton VideoBoost réutilisable, format beat-sync généralisé.",
-   "lien": "https://previsualisation.automatisationboost.com/foodboost-post-demo/"
+   "lien": "https://previsualisation.automatisationboost.com/foodboost-post-demo/",
+   "qui": "claude"
   },
   {
    "id": "formulaire-family-arena",
@@ -418,7 +665,8 @@
    "cout": "0 €",
    "etat": "fait",
    "note": "Son propre test du 03/09 11h47 est bien arrivé complet (ref AB-260903-81VZ). 2 lignes de test à supprimer quand il veut.",
-   "lien": "https://previsualisation.automatisationboost.com/audit/?p=family-arena"
+   "lien": "https://previsualisation.automatisationboost.com/audit/?p=family-arena",
+   "qui": "claude"
   },
   {
    "id": "audit-reunion-renouvelables",
@@ -428,7 +676,8 @@
    "cout": "quelques centimes de scrape Apify",
    "etat": "fait",
    "note": "J'ai d'abord écrit « 1 seule vidéo sur 127 » — FAUX, le compteur du profil ignore les Reels. Corrigé : ils ont 40 vidéos, médiane 229 vues, et deux à ~2 000. Le vrai angle est là.",
-   "lien": "https://previsualisation.automatisationboost.com/audit-reunion-renouvelables/"
+   "lien": "https://previsualisation.automatisationboost.com/audit-reunion-renouvelables/",
+   "qui": "claude"
   },
   {
    "id": "cv-interactif-video-prompt",
@@ -438,7 +687,8 @@
    "cout": "0 €",
    "etat": "fait",
    "note": "À trancher : son e-mail et sa ville sont lisibles à l'écran. Et la puce du CV affiche encore « n8n · Make ».",
-   "lien": "https://previsualisation.automatisationboost.com/cv-interactif/"
+   "lien": "https://previsualisation.automatisationboost.com/cv-interactif/",
+   "qui": "claude"
   },
   {
    "id": "ressource-studio",
@@ -448,7 +698,8 @@
    "cout": "0 €",
    "etat": "fait",
    "note": "Livree et verifiee en ligne (HTTP 200). Trois etapes : la feuille (une ligne = une video), le moteur qui rend, la file qui publie apres validation. Se termine par l'avertissement demande : des corrections seront necessaires selon le cas d'usage.",
-   "lien": "https://automatisationboost.com/ressources/studio-video-3-etapes.html"
+   "lien": "https://automatisationboost.com/ressources/studio-video-3-etapes.html",
+   "qui": "claude"
   },
   {
    "id": "ressource-prompt-voiture",
@@ -458,7 +709,8 @@
    "cout": "0 €",
    "etat": "fait",
    "note": "Livree et verifiee en ligne (HTTP 200), 4 blocs CHARACTER LOCK servis. C'est le VRAI prompt du clip commente, recupere dans l'historique Higgsfield (job 4a71abdb) — pas celui de prompt-voiture-seedance-turbo, qui parle d'une autre voiture et aurait servi de repli.",
-   "lien": "https://automatisationboost.com/ressources/prompt-verrouiller-visage-seedance.html"
+   "lien": "https://automatisationboost.com/ressources/prompt-verrouiller-visage-seedance.html",
+   "qui": "claude"
   },
   {
    "id": "outil-validation-videos",
@@ -468,7 +720,8 @@
    "cout": "0 €",
    "etat": "fait",
    "note": "77 vidéos réelles. ✗ écrit côté serveur (n8n u6wPLkdRql1WVBEh) : une vidéo écartée ne peut plus être planifiée, blocage vérifié en 409. ♥ écrit dans le Sheet. 3e décision ✎ MODIFIER ajoutée avec 10 étiquettes qui se réordonnent par fréquence. Non testé : le passage en ✅ Validé sur une vraie ligne (c'est une publication).",
-   "lien": "https://previsualisation.automatisationboost.com/tri/"
+   "lien": "https://previsualisation.automatisationboost.com/tri/",
+   "qui": "claude"
   },
   {
    "id": "outil-tournage-prompteur",
@@ -478,7 +731,8 @@
    "cout": "0 €",
    "etat": "fait",
    "note": "Vérifié : page en 200, JSON de repères réellement sur R2 (4 repères, horodatages réels), règle du côté opposé respectée, et le pont vers rush-monte/monter.mjs tourne sur le fichier téléchargé. Reste à valider sur son vrai téléphone : format d'enregistrement Safari, lisibilité en plein soleil, latence entre le geste et l'appui.",
-   "lien": "https://previsualisation.automatisationboost.com/tournage/"
+   "lien": "https://previsualisation.automatisationboost.com/tournage/",
+   "qui": "claude"
   },
   {
    "id": "strategie-video-youtube",
@@ -488,7 +742,8 @@
    "cout": "0 €",
    "etat": "propose",
    "note": "BLOQUE a la transcription, 5 chemins essayes le 03/09 au soir. La video est identifiee : « Ma strategie pour multiplier mon RPM sur TikTok (guide complet) » de Ghiles Derbal. || tokscript get_youtube_transcript : timeout 50 s, 3 fois. tokscript submit_transcript_job : abonnement Pro requis. WebFetch : ne rend que le pied de page. timedtext : 0 octet, pas de sous-titres publics. yt-dlp : « Sign in to confirm you're not a bot », il faut des cookies. || TROIS SORTIES : 1) il exporte ses cookies YouTube depuis son navigateur, yt-dlp les accepte ; 2) il ouvre la transcription dans l'interface YouTube et me la colle ; 3) abonnement tokscript Pro. La 2 est gratuite et prend deux minutes.",
-   "lien": ""
+   "lien": "",
+   "qui": "claude"
   },
   {
    "id": "video-semaine-preuve",
@@ -498,7 +753,8 @@
    "cout": "0 €",
    "etat": "fait",
    "note": "Défaut de synchro corrigé à la source : le plan avatar s'arrête à la fin de la voix + 0,35 s. Et j'avais inventé 3 clients dans la première version — remplacés par les 7 vrais.",
-   "lien": "https://previsualisation.automatisationboost.com/semaine-preuve/"
+   "lien": "https://previsualisation.automatisationboost.com/semaine-preuve/",
+   "qui": "claude"
   },
   {
    "id": "moteur-montage-tournage",
@@ -508,7 +764,8 @@
    "cout": "0 €",
    "etat": "fait",
    "note": "Vérifié de bout en bout sur sa vraie session R2 (4 cartes, 9 sous-titres, 15,85 s). Défaut trouvé et corrigé : les cartes affichaient la consigne de tournage au spectateur. L'image de la démo est la mire de Chrome — le rendu avec son visage reste à faire.",
-   "lien": "https://previsualisation.automatisationboost.com/tournage-monte/"
+   "lien": "https://previsualisation.automatisationboost.com/tournage-monte/",
+   "qui": "claude"
   },
   {
    "id": "atelier-assets",
@@ -518,7 +775,8 @@
    "cout": "0 €",
    "etat": "fait",
    "note": "16 musiques dont 6 déjà montées, 12 bruitages dont 6. Le meilleur clip avatar n'offre que 1,15 s de bouche fermée — c'est la preuve chiffrée que les médaillons doivent rester figés. La page ne supprime rien : elle produit la liste à retirer.",
-   "lien": "https://previsualisation.automatisationboost.com/studio/"
+   "lien": "https://previsualisation.automatisationboost.com/studio/",
+   "qui": "claude"
   },
   {
    "id": "corriger-feed-foodboost",
@@ -528,7 +786,8 @@
    "cout": "0 €",
    "etat": "propose",
    "note": "Ce qu'il faut à la place n'est pas dit — une étiquette signale le défaut, pas la solution. À trancher avec lui avant de refaire.",
-   "lien": "https://previsualisation.automatisationboost.com/feed-foodboost/"
+   "lien": "https://previsualisation.automatisationboost.com/feed-foodboost/",
+   "qui": "claude"
   },
   {
    "id": "corriger-feed-l-arbradelis",
@@ -538,7 +797,8 @@
    "cout": "0 €",
    "etat": "propose",
    "note": "Ce qu'il faut à la place n'est pas dit — une étiquette signale le défaut, pas la solution. À trancher avec lui avant de refaire.",
-   "lien": "https://previsualisation.automatisationboost.com/feed-l-arbradelis/"
+   "lien": "https://previsualisation.automatisationboost.com/feed-l-arbradelis/",
+   "qui": "claude"
   },
   {
    "id": "corriger-foodboost-post-demo",
@@ -548,7 +808,8 @@
    "cout": "0 €",
    "etat": "propose",
    "note": "Ce qu'il faut à la place n'est pas dit — une étiquette signale le défaut, pas la solution. À trancher avec lui avant de refaire.",
-   "lien": "https://previsualisation.automatisationboost.com/foodboost-post-demo/"
+   "lien": "https://previsualisation.automatisationboost.com/foodboost-post-demo/",
+   "qui": "claude"
   },
   {
    "id": "corriger-semaine-preuve",
@@ -558,7 +819,8 @@
    "cout": "0 €",
    "etat": "propose",
    "note": "Ce qu'il faut à la place n'est pas dit — une étiquette signale le défaut, pas la solution. À trancher avec lui avant de refaire.",
-   "lien": "https://previsualisation.automatisationboost.com/semaine-preuve/"
+   "lien": "https://previsualisation.automatisationboost.com/semaine-preuve/",
+   "qui": "claude"
   },
   {
    "id": "corriger-sept-choses",
@@ -568,7 +830,8 @@
    "cout": "0 €",
    "etat": "propose",
    "note": "Ce qu'il faut à la place n'est pas dit — une étiquette signale le défaut, pas la solution. À trancher avec lui avant de refaire.",
-   "lien": "https://previsualisation.automatisationboost.com/sept-choses/"
+   "lien": "https://previsualisation.automatisationboost.com/sept-choses/",
+   "qui": "claude"
   },
   {
    "id": "republier-14-linkedin",
@@ -578,7 +841,8 @@
    "cout": "0 €",
    "etat": "propose",
    "note": "C'est une publication vers l'exterieur : ne rien lancer sans son accord explicite.",
-   "lien": "https://previsualisation.automatisationboost.com/plan/"
+   "lien": "https://previsualisation.automatisationboost.com/plan/",
+   "qui": "claude"
   },
   {
    "id": "aiguiller-les-leads",
@@ -588,7 +852,8 @@
    "cout": "0 €",
    "etat": "propose",
    "note": "",
-   "lien": "https://previsualisation.automatisationboost.com/plan/"
+   "lien": "https://previsualisation.automatisationboost.com/plan/",
+   "qui": "claude"
   },
   {
    "id": "enchainer-les-secteurs",
@@ -598,7 +863,8 @@
    "cout": "0 €",
    "etat": "propose",
    "note": "",
-   "lien": "https://previsualisation.automatisationboost.com/plan/"
+   "lien": "https://previsualisation.automatisationboost.com/plan/",
+   "qui": "claude"
   },
   {
    "id": "radar-linkedin",
@@ -608,7 +874,8 @@
    "cout": "0 €",
    "etat": "propose",
    "note": "~1 euro par semaine de scrape : demande son accord avant de lancer.",
-   "lien": "https://previsualisation.automatisationboost.com/plan/"
+   "lien": "https://previsualisation.automatisationboost.com/plan/",
+   "qui": "claude"
   },
   {
    "id": "carrousel",
@@ -618,7 +885,8 @@
    "cout": "0 €",
    "etat": "propose",
    "note": "",
-   "lien": "https://previsualisation.automatisationboost.com/plan/"
+   "lien": "https://previsualisation.automatisationboost.com/plan/",
+   "qui": "claude"
   },
   {
    "id": "pont-rendu",
@@ -628,7 +896,8 @@
    "cout": "0 €",
    "etat": "propose",
    "note": "",
-   "lien": "https://previsualisation.automatisationboost.com/plan/"
+   "lien": "https://previsualisation.automatisationboost.com/plan/",
+   "qui": "claude"
   },
   {
    "id": "recolte-scripts",
@@ -638,7 +907,8 @@
    "cout": "0 €",
    "etat": "propose",
    "note": "La transcription YouTube a expire 2 fois aujourd'hui : a fiabiliser avant de batir dessus.",
-   "lien": "https://previsualisation.automatisationboost.com/plan/"
+   "lien": "https://previsualisation.automatisationboost.com/plan/",
+   "qui": "claude"
   },
   {
    "id": "crons-dans-n8n",
@@ -648,7 +918,8 @@
    "cout": "0 €",
    "etat": "propose",
    "note": "",
-   "lien": "https://previsualisation.automatisationboost.com/plan/"
+   "lien": "https://previsualisation.automatisationboost.com/plan/",
+   "qui": "claude"
   },
   {
    "id": "portes-page-accueil",
@@ -658,7 +929,8 @@
    "cout": "0 €",
    "etat": "propose",
    "note": "",
-   "lien": "https://previsualisation.automatisationboost.com/plan/"
+   "lien": "https://previsualisation.automatisationboost.com/plan/",
+   "qui": "claude"
   },
   {
    "id": "audit-des-29-skills",
@@ -668,7 +940,8 @@
    "cout": "0 €",
    "etat": "propose",
    "note": "",
-   "lien": "https://previsualisation.automatisationboost.com/plan/"
+   "lien": "https://previsualisation.automatisationboost.com/plan/",
+   "qui": "claude"
   },
   {
    "id": "corriger-trois-outils",
@@ -678,7 +951,8 @@
    "cout": "0 €",
    "etat": "propose",
    "note": "Ce qu'il faut à la place n'est pas dit — une étiquette signale le défaut, pas la solution. À trancher avec lui avant de refaire.",
-   "lien": "https://previsualisation.automatisationboost.com/trois-outils/"
+   "lien": "https://previsualisation.automatisationboost.com/trois-outils/",
+   "qui": "claude"
   }
  ]
 }

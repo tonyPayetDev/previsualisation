@@ -183,10 +183,21 @@ footer{border-top:1px solid var(--ligne);padding:30px 0 60px;color:var(--mut);fo
   padding:.32rem .7rem;font-size:.78rem;transition:border-color .15s}
 .lien:hover{border-color:var(--or);color:var(--or)}
 .lien.notion{border-color:rgba(234,179,8,.4);color:var(--or)}
+.musique{background:var(--panneau);color:var(--texte);border:1px solid var(--ligne);border-radius:6px;padding:.3rem .5rem;font-size:.78rem;font-family:inherit;max-width:190px}
+.chance{font-family:var(--mno);font-size:.74rem;color:var(--or);border:1px solid rgba(234,179,8,.35);border-radius:999px;padding:.25rem .6rem;white-space:nowrap}
+/* avancement par chantier : barre + pourcentage + ce qui manque */
+.b .pc{display:flex;align-items:center;gap:8px;margin-top:6px}
+.b .pc i{flex:1;height:4px;border-radius:2px;background:#1e1e28;overflow:hidden;display:block;font-style:normal}
+.b .pc i b{display:block;height:100%;background:var(--or);border-radius:2px}
+.b.produit .pc i b{background:var(--violet)}.b.socle .pc i b{background:#8b8ba3}
+.b .pc em{font-style:normal;font-family:var(--mno);font-size:11px;color:var(--texte);min-width:34px;text-align:right}
+.b .mq{display:block;color:var(--mut);font-size:11px;margin-top:4px;line-height:1.4}
+.b .mq::before{content:"manque : ";color:#c9a227}
 @media(max-width:700px){
   .bandeau .in{padding:.5rem 16px;gap:.5rem}
   .phase{display:none}
   .cycles{display:none}
+  .chance{display:none}
   .lien span.txt{display:none}
 }
 </style>
@@ -199,6 +210,16 @@ footer{border-top:1px solid var(--ligne);padding:30px 0 60px;color:var(--mut);fo
       <button class="bp go" id="b-go" type="button">Démarrer</button>
       <button class="bp" id="b-raz" type="button">Remettre à zéro</button>
       <span class="cycles" id="cycles"></span>
+      <select class="musique" id="musique" title="Musique pendant le bloc de travail (libre de droits, banque du dépôt)">
+        <option value="">🔇 sans musique</option>
+        <option value="mindset-epical-drums-03-80.mp3" selected>🥁 Epical Drums — motivant</option>
+        <option value="hook-epical-drums-02-80.mp3">⚡ Epical Drums 02 — action</option>
+        <option value="food-sunny-groove-120.mp3">☀️ Sunny Groove — léger</option>
+        <option value="journal-digital-clouds-128.mp3">☁️ Digital Clouds — focus</option>
+        <option value="journal-moon-walk-88.mp3">🌙 Moon Walk — tendu</option>
+      </select>
+      <span class="chance" id="chance" title="Jeu de motivation, pas une prévision : 30 % de base, +1 % par bloc de 25 min fini aujourd'hui, +2 % par chantier au-dessus de 80 %."></span>
+      <audio id="musique-audio" loop preload="none"></audio>
     </div>
     <div class="droite">
       <a class="lien notion" href="https://www.notion.so/63f7542b9b8641898864022f1c1961a8" target="_blank" rel="noopener">
@@ -296,8 +317,8 @@ footer{border-top:1px solid var(--ligne);padding:30px 0 60px;color:var(--mut);fo
 <div class="wrap">
 
 <div class="hero">
-  <span class="mono">État au 30 août 2026 · évolution mesurée depuis la carte du 21 août</span>
-  <h1 class="dsp">Dix chantiers.<br>Une seule question :<br><em>lequel te fait facturer ?</em></h1>
+  <span class="mono">État au 6 septembre 2026 · pourcentages et « manque » ajoutés ce jour</span>
+  <h1 class="dsp">Quatorze chantiers.<br>Une seule question :<br><em>lequel te fait facturer ?</em></h1>
   <p>Tu m'as donné neuf lignes. Il y en a plus — et surtout, elles ne pèsent pas pareil. Cette carte les relie à ce qu'elles produisent vraiment, et remonte jusqu'au bout de la chaîne.</p>
   <div class="regle">
     <span class="s">Ta règle d'or, écrite de ta main :</span>
@@ -385,6 +406,10 @@ footer{border-top:1px solid var(--ligne);padding:30px 0 60px;color:var(--mut);fo
           <button class="b socle" data-obj="o4" data-id="p10"><span class="pt"></span><span class="t">Comment-to-DM</span><span class="s">la porte entre une vue et un contact · 15 mots sans porte</span></button>
           <button class="b socle" data-obj="o4" data-id="p11"><span class="pt"></span><span class="t">Agents &amp; routines</span><span class="s">8 routines cloud · ce qui tourne sans toi</span></button>
           <button class="b socle" data-obj="o4" data-id="p12"><span class="pt"></span><span class="t">Freelance — postuler auto</span><span class="s">le filet de sécurité pendant que le reste monte</span></button>
+          <button class="b produit" data-obj="o1,o2" data-id="p14"><span class="pt"></span><span class="t">FoodBoost</span><span class="s">post quotidien actif · vitrine prouvée · feed démo en HTML</span></button>
+          <button class="b produit" data-obj="o1,o3" data-id="p15"><span class="pt"></span><span class="t">Formation IA (29,90 €)</span><span class="s">module 1 ouvert à tous jusqu'au 20 septembre · retours attendus</span></button>
+          <button class="b socle" data-obj="o4,o2" data-id="p16"><span class="pt"></span><span class="t">Banque de voix réelle</span><span class="s">13 phrases en vraie voix · 3 vidéos sorties sans un centime</span></button>
+          <button class="b argent" data-obj="o1" data-id="p17"><span class="pt"></span><span class="t">1 000 sites démo</span><span class="s">2 615 commerces OSM en base · générateur HTML à 0 € · envoi à cadencer</span></button>
           <button class="b perso" data-obj="o5" data-id="p13"><span class="pt"></span><span class="t">Sport</span><span class="s">3 à 4 h par jour · non négociable</span></button>
         </div>
       </div>
@@ -506,7 +531,7 @@ footer{border-top:1px solid var(--ligne);padding:30px 0 60px;color:var(--mut);fo
 </section>
 
 <footer>
-  <div>Carte reconstruite le 21 août 2026, <b>mise à jour le 30 août</b> à partir du dépôt, des 64 publications programmées, du suivi d'appels <span class="mono" style="letter-spacing:.04em;text-transform:none">appels/resultats.json</span>, du registre <span class="mono" style="letter-spacing:.04em;text-transform:none">taches/semaine.json</span> et de tes propres documents — <span class="mono" style="letter-spacing:.04em;text-transform:none">BACKLOG-TONY.md</span>, <span class="mono" style="letter-spacing:.04em;text-transform:none">QUI-FAIT-QUOI.md</span>, <span class="mono" style="letter-spacing:.04em;text-transform:none">STRATEGIE.md</span>. Rien n'y est inventé : les chiffres de 2026 sont recomptés, et la seule ligne non re-mesurée porte la mention « non re-mesuré ».</div>
+  <div>Carte reconstruite le 21 août 2026, <b>mise à jour le 6 septembre</b> (pourcentages d'avancement et ce qui manque, par chantier) à partir du dépôt, des 64 publications programmées, du suivi d'appels <span class="mono" style="letter-spacing:.04em;text-transform:none">appels/resultats.json</span>, du registre <span class="mono" style="letter-spacing:.04em;text-transform:none">taches/semaine.json</span> et de tes propres documents — <span class="mono" style="letter-spacing:.04em;text-transform:none">BACKLOG-TONY.md</span>, <span class="mono" style="letter-spacing:.04em;text-transform:none">QUI-FAIT-QUOI.md</span>, <span class="mono" style="letter-spacing:.04em;text-transform:none">STRATEGIE.md</span>. Rien n'y est inventé : les chiffres de 2026 sont recomptés, et la seule ligne non re-mesurée porte la mention « non re-mesuré ».</div>
 </footer>
 
 </div>
@@ -607,5 +632,73 @@ footer{border-top:1px solid var(--ligne);padding:30px 0 60px;color:var(--mut);fo
 })();
 </script>
 
+
+<script>
+/* Avancement par chantier — estimé à partir du dépôt, du Sheet et du tableau
+   de validation le 6 septembre 2026. Le % dit « ce qu'il reste pour pouvoir
+   dire fini », pas le temps passé. « manque » = les 2-3 choses concrètes. */
+(function(){
+  var A = {
+    p1:  [35, "rappeler les 6 qui ont décroché · 59 numéros jamais appelés · répondre aux 3 leads sans réponse"],
+    p2:  [60, "brancher l'envoi par email de la démo · livrer Osmose, The Grill, Pizza Ok · une relance J+3"],
+    p3:  [80, "le rendez-vous · un devis signé"],
+    p4:  [55, "4 angles restants sur 7 · planifier les posts livrés · un retour client écrit"],
+    p5:  [85, "la liste de modifs de Florent · le header vidéo intégré côté WordPress · la facture"],
+    p6:  [45, "la page de vente finale · le premier client fondateur · l'onboarding"],
+    p7:  [70, "le test de hooks mesuré à J+3 · la série suivante planifiée 5 vidéos d'avance"],
+    p8:  [20, "l'accès Meta Ads depuis ici · choisir le meilleur organique par vue · première campagne France"],
+    p9:  [90, "l'ouverture « déchirure » automatique dans le script · LinkedIn reconnecté · Apify rechargé pour la veille"],
+    p10: [75, "15 mots-clés sans ressource · le bouton Facebook vers une vraie page · TikTok reste impossible"],
+    p11: [65, "porter les crons dans n8n · un modèle gratuit stable pour le stagiaire · purger le disque du VPS"],
+    p12: [30, "réparer le CV PDF · tonypayet.com en erreur · brancher les candidatures automatiques"],
+    p14: [85, "la branche vidéo du workflow quotidien · la planification du feed démo (jamais construite) · l'image de la démo resto qui n'arrive pas"],
+    p15: [70, "les retours du module 1 · mettre formation.html à jour · une première vente mesurée"],
+    p16: [15, "la grande session d'enregistrement (200 phrases) · l'interface phrase par phrase · l'alignement automatique"],
+    p17: [5,  "le générateur sans image payante · le stockage R2 (3 Go pour 1 000 sites) · l'envoi cadencé à 50/jour"]
+  };
+  var haut = 0;
+  Object.keys(A).forEach(function(id){
+    var b = document.querySelector('#projets [data-id="' + id + '"]'); if (!b) return;
+    var pc = A[id][0]; if (pc >= 80) haut++;
+    var el = document.createElement('span'); el.className = 'pc';
+    el.innerHTML = '<i><b style="width:' + pc + '%"></b></i><em>' + pc + ' %</em>';
+    b.appendChild(el);
+    var mq = document.createElement('span'); mq.className = 'mq'; mq.textContent = A[id][1];
+    b.appendChild(mq);
+  });
+  window.__chantiersHauts = haut;
+})();
+
+/* Musique pendant le bloc de travail + jauge « chances que ça marche ».
+   La musique vient de la banque libre de droits du dépôt (/studio/ecoute/).
+   Un navigateur refuse la lecture sans geste : elle démarre au clic sur
+   Démarrer, jamais toute seule. */
+(function(){
+  var sel = document.getElementById('musique'), au = document.getElementById('musique-audio');
+  var bGo = document.getElementById('b-go'), bRaz = document.getElementById('b-raz'), ch = document.getElementById('chance');
+  if (!sel || !au) return;
+  try { var m = localStorage.getItem('pomo-musique'); if (m !== null) sel.value = m; } catch (_) {}
+  sel.addEventListener('change', function(){ try { localStorage.setItem('pomo-musique', sel.value); } catch (_) {} if (!au.paused) jouer(); });
+  function jouer(){
+    if (!sel.value) { au.pause(); return; }
+    var src = '/studio/ecoute/' + sel.value;
+    if (au.getAttribute('src') !== src) { au.setAttribute('src', src); au.load(); }
+    au.volume = 0.35; au.play().catch(function(){});
+  }
+  function etat(){ try { return JSON.parse(localStorage.getItem('pomo-v1') || 'null') || {}; } catch (_) { return {}; } }
+  bGo.addEventListener('click', function(){
+    // l'état est mis à jour par le premier écouteur (déclaré avant) : on lit après coup
+    setTimeout(function(){ var s = etat(); if (s.marche && s.phase === 'travail') jouer(); else au.pause(); }, 30);
+  });
+  bRaz.addEventListener('click', function(){ au.pause(); });
+  setInterval(function(){ var s = etat(); if (!s.marche || s.phase !== 'travail') { if (!au.paused) au.pause(); } }, 1000);
+  function jauge(){
+    var s = etat(); var pc = 30 + (s.faits || 0) + 2 * (window.__chantiersHauts || 0);
+    if (pc > 95) pc = 95;
+    if (ch) ch.textContent = 'chances que ça marche : ' + pc + ' %';
+  }
+  jauge(); setInterval(jauge, 5000);
+})();
+</script>
 </body>
 </html>
