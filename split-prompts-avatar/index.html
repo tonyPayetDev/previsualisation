@@ -1,0 +1,46 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Split-prompts — avatar Seedance</title><style>
+:root{--bg:#0a0a0f;--carte:#121218;--bord:#242430;--txt:#EDEDED;--mut:#8A8A8A;--or:#eab308;--vert:#3ED37B;--rouge:#ef4444;--violet:#8b5cf6}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--txt);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.w{max-width:900px;margin:0 auto;padding:24px 16px 80px}
+a.retour{color:var(--mut);font-size:13px;text-decoration:none}a.retour:hover{color:var(--or)}
+h1{font-size:23px;margin:12px 0 4px;letter-spacing:-.3px}
+.sous{color:var(--mut);font-size:14px;margin:0 0 22px;line-height:1.5}
+.duo{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.col.v2{border-color:var(--vert)}.col.v2 .tag{color:var(--vert)}
+@media(max-width:720px){.duo{grid-template-columns:1fr}}
+.col{background:var(--carte);border:1px solid var(--bord);border-radius:14px;overflow:hidden}
+.col.apr{border-color:var(--or)}
+.tag{font:700 11px/1 system-ui;letter-spacing:.14em;text-transform:uppercase;padding:10px 12px;display:flex;justify-content:space-between;align-items:center}
+.col.av .tag{color:var(--mut)}.col.apr .tag{color:var(--or)}
+video{width:100%;aspect-ratio:9/16;background:#000;display:block;object-fit:contain}
+.meta{padding:9px 12px;font-size:12px;color:var(--mut);border-top:1px solid var(--bord)}
+h2{font-size:13px;text-transform:uppercase;letter-spacing:.1em;color:var(--mut);margin:34px 0 12px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:620px){.grid{grid-template-columns:1fr}}
+.box{background:var(--carte);border:1px solid var(--bord);border-radius:12px;padding:14px 16px}
+.box.ok{border-left:3px solid var(--vert)}.box.todo{border-left:3px solid var(--rouge)}
+.box b{display:block;font-size:14px;margin-bottom:10px}
+.box.ok b{color:var(--vert)}.box.todo b{color:#f0a6a0}
+ul{margin:0;padding-left:18px}li{font-size:13.5px;color:#cfd3da;line-height:1.7;margin-bottom:4px}
+li s{color:var(--mut)}
+.note{margin-top:26px;background:#15130c;border:1px solid #3a3115;border-radius:12px;padding:14px 16px;font-size:13.5px;color:#e6d29a;line-height:1.6}
+.note b{color:var(--or)}
+</style></head><body><div class="w">
+<a class="retour" href="/">← mes outils</a>
+<h1>Split-prompts — captation réelle vs avatar Seedance</h1>
+<p class="sous">Même montage, même voix (v2 : lit coupé à 7 s, zoom sur l&#39;application). Seule la bande du bas change : tes 3 clips Seedance 2.5 (P1 0→6 s, P2 0→7,2 s, P3 0→10 s) coupés sur les retours frontaux, recadrés 720×638 à y=100.</p>
+<div class="duo">
+  <div class="col av"><div class="tag"><span>Captation réelle · v2</span><span>27,8 s</span></div>
+    <video src="https://assets.automatisationboost.com/previsualisation/split-prompts-corrige/apres-v2.mp4" controls playsinline preload="metadata"></video>
+    <div class="meta">Tournage du 05/09, session 165800</div></div>
+  <div class="col apr"><div class="tag"><span>Avatar Seedance</span><span>27,8 s</span></div>
+    <video src="https://assets.automatisationboost.com/previsualisation/split-prompts-avatar/video.mp4" controls playsinline preload="metadata"></video>
+    <div class="meta">Bande basse = clips Higgsfield 276e77bf · 14a5140c · e766e564, à partir de 5,63 s</div></div>
+</div>
+<h2>À savoir</h2>
+<div class="grid">
+  <div class="box ok"><b>Ce qui tient</b><ul><li>Identité stable sur les 3 clips (lunettes, mèche, chemise, bijoux)</li><li>Gestes suivis : boîte, globe, balayage, pince</li><li>Regard caméra, clignements, sourires</li><li>Sous-titres et appli intacts, voix v2 conservée</li></ul></div>
+  <div class="box todo"><b>Ce qui ne peut pas tenir avec ces 3 clips</b><ul><li><b>La bouche ne suit pas ta voix</b> : Seedance a généré sa propre parole (charabia, vérifié Whisper). Structurel.</li><li>Cadre qui saute aux coupes (push-in inégal : +40 % / +20 % / +10 %)</li><li>P1 : mains hors champ après 5 s</li></ul></div>
+</div>
+<div class="note"><b>Pour que la bouche suive :</b> phrase exacte du script dans le prompt (« He says in French: “…” ») puis <b>voice_change</b> vers ton élément voix « Tony » sur Higgsfield. Deux lignes par prompt, prompts prêts dans <code>analyses-reels/hf-avatar-3-clips-bilan.md</code>.</div>
+</div></body></html>
