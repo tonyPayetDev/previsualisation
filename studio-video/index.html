@@ -126,6 +126,9 @@ Deux looks ne sont tolérés que si le second est <b>uniquement</b> à l'ouvertu
 <div class="filtre" id="fdebut"></div>
 <div class="chips repli" id="hdebut"></div>
 
+<h2>6 bis · Hook parlé (script) <i>la phrase que l'avatar dit en ouverture — un seul choix, ou aucun</i></h2>
+<div class="chips" id="hscript"></div>
+
 <h2>7 · Hook de fin <i>le plan de clôture</i></h2>
 <div class="chips" id="hfin"></div>
 
@@ -213,7 +216,8 @@ var CLIPS = [
   { id:'SPIDER_talking',     gr:'spider-suit', role:'cta',         nom:'Spider qui parle',  dur:2.04,  parle:true,  note:'2 s seulement' }
 ];
 
-var etat = { modele:null, gr:null, clips:[], blocs:[], hd:[], hf:[], broll:[], introVoix:true, corriger:{} };
+var HOOK_SCRIPTS = [{"nom": "VOUS_ENCORE", "type": "question (a trou : le spectateur complete lui-meme)", "texte": "Vous faites encore… ?"}, {"nom": "RACONTE_TRUC", "type": "confidence / proximite", "texte": "Faut que je vous raconte un truc."}, {"nom": "REGARDEZ_DIFF", "type": "avant / apres (curiosite)", "texte": "Regardez la différence !"}, {"nom": "ERREUR_COMMUNE", "type": "erreur que tout le monde fait", "texte": "L'erreur que tout le monde fait."}, {"nom": "EN_30SEC", "type": "promesse de resultat rapide", "texte": "En 30 secondes, je vous montre comment…"}];
+var etat = { modele:null, gr:null, clips:[], blocs:[], hd:[], hf:[], broll:[], hs:null, introVoix:true, corriger:{} };
 var $ = function(s){ return document.querySelector(s); };
 var esc = function(s){ return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); };
 
@@ -362,6 +366,22 @@ function peindreChips(liste, cible, sel, filtreId, filtreEtat){
 }
 var fDeb={v:''}, fBro={v:''};
 
+/* ---------- hook parlé (script) — radio: one choice or none ---------- */
+function peindreHookScripts(){
+  var box = $('#hscript'); box.innerHTML='';
+  HOOK_SCRIPTS.forEach(function(h){
+    var b=document.createElement('button'); b.className='chip'; b.type='button';
+    b.title = h.texte;
+    b.setAttribute('aria-pressed', etat.hs===h.nom?'true':'false');
+    b.innerHTML='<span class="cid">'+esc(h.nom)+'</span><span class="ct">« '+esc(h.texte)+' »</span><span class="tg">'+esc(h.type)+'</span>';
+    b.addEventListener('click', function(){
+      etat.hs = (etat.hs===h.nom) ? null : h.nom;
+      peindreHookScripts(); ecrire();
+    });
+    box.appendChild(b);
+  });
+}
+
 /* ---------- intro voix ---------- */
 $('#introVoix').addEventListener('click', function(){
   etat.introVoix = !etat.introVoix;
@@ -389,6 +409,7 @@ function ecrire(){
     if (etat.modele.av) L.push('Intro : ' + (etat.introVoix ? 'je refais l’ouverture avec ma voix clonée (couper l’audio natif du plan)' : 'garder l’audio d’origine du plan d’ouverture'));
     if (etat.blocs.length) L.push('Blocs motion HyperFrames : ' + etat.blocs.join(' → '));
     if (etat.hd.length) L.push('Hook de début : ' + nomsClips(etat.hd, HDEBUT).join(' ; '));
+    if (etat.hs){ var hsel = HOOK_SCRIPTS.filter(function(h){ return h.nom===etat.hs; })[0]; if (hsel) L.push('Hook parlé : ' + hsel.nom + ' — « ' + hsel.texte + ' »'); }
     if (etat.hf.length) L.push('Hook de fin : ' + nomsClips(etat.hf, HFIN).join(' ; '));
     if (etat.broll.length) L.push('B-roll à intercaler : ' + nomsClips(etat.broll, BROLL).join(' ; '));
     var v = function(id){ return ($('#' + id).value || '').trim(); };
@@ -418,11 +439,12 @@ $('#copier').addEventListener('click', function(){
   }
 });
 $('#raz').addEventListener('click', function(){
-  etat = { modele:null, gr:null, clips:[], blocs:[], hd:[], hf:[], broll:[], introVoix:true, corriger:{} };
+  etat = { modele:null, gr:null, clips:[], blocs:[], hd:[], hf:[], broll:[], hs:null, introVoix:true, corriger:{} };
   ['sujet','hook','cta','motcle','notes','corrige-quoi'].forEach(function(id){ document.getElementById(id).value = ''; });
   $('#introVoix').setAttribute('aria-pressed','true');
   peindreModeles(); brancherApercus(); majCorrige(); peindreGarderobes(); peindreClips(); peindreBlocs();
   peindreChips(HDEBUT,'#hdebut',etat.hd,'#fdebut',fDeb); peindreChips(HFIN,'#hfin',etat.hf,null,{v:''}); peindreChips(BROLL,'#broll',etat.broll,'#fbroll',fBro);
+  peindreHookScripts();
   ecrire();
 });
 
@@ -430,6 +452,7 @@ peindreModeles(); brancherApercus(); majCorrige(); peindreGarderobes(); peindreC
 peindreChips(HDEBUT,'#hdebut',etat.hd,'#fdebut',fDeb);
 peindreChips(HFIN,'#hfin',etat.hf,null,{v:''});
 peindreChips(BROLL,'#broll',etat.broll,'#fbroll',fBro);
+peindreHookScripts();
 ecrire();
 </script>
 </body>
