@@ -1,0 +1,558 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#0a0a0f">
+<title>Le Matin</title>
+<style>
+:root{--bg:#0a0a0f;--carte:#121218;--bord:#242430;--txt:#EDEDED;--mut:#8A8A8A;--jaune:#FFE600;--violet:#A855F7;--vert:#3ED37B;--rouge:#ef4444}
+*{box-sizing:border-box;margin:0;padding:0}
+html{color-scheme:dark}
+body{background:var(--bg);color:var(--txt);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:17px;line-height:1.4;min-height:100vh;-webkit-text-size-adjust:100%;-webkit-tap-highlight-color:transparent;overflow-x:hidden}
+.ecran{display:none;min-height:100vh;padding:max(16px,env(safe-area-inset-top)) 16px max(24px,env(safe-area-inset-bottom));max-width:520px;margin:0 auto;flex-direction:column;gap:16px}
+.ecran.actif{display:flex}
+h1{font-size:34px;font-weight:800;letter-spacing:-.02em;line-height:1.05}
+h1 b{color:var(--jaune)}
+h2{font-size:24px;font-weight:800;letter-spacing:-.01em;line-height:1.15}
+.mut{color:var(--mut)}
+.petit{font-size:14px}
+.carte{background:var(--carte);border:1px solid var(--bord);border-radius:16px;padding:16px}
+.serie{display:inline-flex;align-items:center;gap:8px;background:var(--carte);border:1px solid var(--bord);border-radius:999px;padding:8px 14px;font-weight:700;font-size:16px}
+.curseur{display:flex;flex-direction:column;gap:6px}
+.curseur .lig{display:flex;justify-content:space-between;align-items:baseline}
+.curseur .lig b{font-size:17px}
+.curseur .val{font-size:28px;font-weight:800;color:var(--jaune);min-width:2ch;text-align:right;font-variant-numeric:tabular-nums}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:48px;background:transparent;cursor:pointer}
+input[type=range]:focus{outline:none}
+input[type=range]:focus-visible{outline:2px solid var(--violet);outline-offset:2px;border-radius:12px}
+input[type=range]::-webkit-slider-runnable-track{height:8px;border-radius:4px;background:var(--bord)}
+input[type=range]::-moz-range-track{height:8px;border-radius:4px;background:var(--bord)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:32px;height:32px;border-radius:50%;background:var(--jaune);border:4px solid var(--bg);margin-top:-12px;box-shadow:0 0 0 2px var(--jaune)}
+input[type=range]::-moz-range-thumb{width:24px;height:24px;border-radius:50%;background:var(--jaune);border:4px solid var(--bg);box-shadow:0 0 0 2px var(--jaune)}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;min-height:56px;padding:12px 20px;border-radius:14px;border:1px solid var(--bord);background:var(--carte);color:var(--txt);font:inherit;font-weight:700;font-size:18px;cursor:pointer;width:100%;text-align:center}
+.btn.prim{background:var(--jaune);color:#0a0a0f;border-color:var(--jaune)}
+.btn.sec{background:transparent;border-color:var(--violet);color:var(--violet)}
+.btn.discret{background:transparent;border-color:transparent;color:var(--mut);font-weight:600;font-size:15px;min-height:48px}
+.btn:active{transform:scale(.98)}
+.btn[disabled]{opacity:.5;cursor:default}
+.ligne-btn{display:flex;gap:10px}
+.ligne-btn .btn{flex:1}
+textarea,input[type=text]{width:100%;min-height:48px;padding:12px 14px;border-radius:12px;border:1px solid var(--bord);background:#0e0e14;color:var(--txt);font:inherit;font-size:17px;resize:vertical}
+textarea:focus,input[type=text]:focus{outline:2px solid var(--violet);outline-offset:0;border-color:var(--violet)}
+textarea{min-height:110px}
+.champ{display:flex;flex-direction:column;gap:6px}
+.champ label{font-size:14px;color:var(--mut);font-weight:600}
+.champ label b{color:var(--jaune)}
+/* ── séance ── */
+.entete{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.etapes{display:flex;gap:6px;flex:1}
+.etapes i{flex:1;height:6px;border-radius:3px;background:var(--bord);display:block}
+.etapes i.faite{background:var(--vert)}
+.etapes i.passee{background:var(--rouge)}
+.etapes i.encours{background:var(--jaune)}
+.compte{font-size:96px;font-weight:800;letter-spacing:-.04em;line-height:1;text-align:center;font-variant-numeric:tabular-nums;color:var(--jaune);margin:4px 0}
+.compte.pause{color:var(--mut)}
+.compte.fini{color:var(--vert)}
+.titre-etape{text-align:center}
+.titre-etape .n{color:var(--violet);font-weight:800;font-size:14px;letter-spacing:.12em;text-transform:uppercase}
+.consigne{text-align:center;font-size:19px;line-height:1.35}
+.barre{height:6px;border-radius:3px;background:var(--bord);overflow:hidden}
+.barre i{display:block;height:100%;width:0;background:var(--violet);transition:width .25s linear}
+.panneau{display:none;flex-direction:column;gap:12px;flex:1}
+.panneau.actif{display:flex}
+/* respiration */
+.souffle{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:12px 0}
+.cercle{width:180px;height:180px;border-radius:50%;background:radial-gradient(circle at 50% 50%,rgba(168,85,247,.55),rgba(168,85,247,.12) 70%);border:2px solid var(--violet);transform:scale(.55);transition:transform 2s ease-in-out;box-shadow:0 0 40px rgba(168,85,247,.25)}
+.cercle.in1{transform:scale(.9);transition-duration:2s}
+.cercle.in2{transform:scale(1);transition-duration:1s}
+.cercle.out{transform:scale(.55);transition-duration:6s}
+.phase{font-size:24px;font-weight:800;text-align:center;min-height:1.2em}
+.cycles{font-size:15px;color:var(--mut)}
+/* mouvement */
+.bloc{font-size:30px;font-weight:800;text-align:center;line-height:1.15}
+.bloc small{display:block;font-size:15px;color:var(--mut);font-weight:600;margin-top:6px}
+.sous{font-size:44px;font-weight:800;text-align:center;color:var(--violet);font-variant-numeric:tabular-nums}
+/* priming */
+.cartep{display:none;flex-direction:column;gap:10px}
+.cartep.actif{display:flex}
+.cartep h3{font-size:22px;font-weight:800}
+.grand-cash{font-size:30px;font-weight:800;line-height:1.15;text-align:center;color:var(--jaune);word-break:break-word}
+.ok{color:var(--vert);font-weight:700}
+.err{color:var(--rouge);font-weight:700}
+.chart{width:100%;height:auto;display:block}
+.legende{display:flex;gap:14px;font-size:13px;color:var(--mut)}
+.legende i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px;vertical-align:middle}
+.espace{flex:1}
+.etat{font-size:14px;text-align:center;min-height:1.2em}
+</style>
+</head>
+<body>
+
+<!-- ───────── ACCUEIL ───────── -->
+<section class="ecran actif" id="e-accueil">
+  <header style="display:flex;justify-content:space-between;align-items:center;gap:10px">
+    <h1>Le <b>Matin</b></h1>
+    <span class="serie" id="serie">🔥 —</span>
+  </header>
+  <p class="mut">18 minutes pour mettre ton cerveau en route. Note d'abord où tu en es, honnêtement.</p>
+
+  <div class="carte" style="display:flex;flex-direction:column;gap:14px">
+    <div class="curseur"><div class="lig"><b>Énergie</b><span class="val" id="v-energie_avant">5</span></div><input type="range" min="1" max="10" value="5" id="energie_avant" aria-label="Énergie avant"></div>
+    <div class="curseur"><div class="lig"><b>Humeur</b><span class="val" id="v-humeur_avant">5</span></div><input type="range" min="1" max="10" value="5" id="humeur_avant" aria-label="Humeur avant"></div>
+    <div class="curseur"><div class="lig"><b>Clarté</b><span class="val" id="v-clarte_avant">5</span></div><input type="range" min="1" max="10" value="5" id="clarte_avant" aria-label="Clarté avant"></div>
+  </div>
+
+  <button class="btn prim" id="b-commencer">Commencer (18 min)</button>
+
+  <div class="carte" style="display:flex;flex-direction:column;gap:8px">
+    <div style="display:flex;justify-content:space-between;align-items:baseline"><b>14 derniers jours</b><span class="petit mut">énergie</span></div>
+    <svg class="chart" id="chart" viewBox="0 0 352 130" preserveAspectRatio="none" aria-label="Énergie avant et après sur 14 jours"></svg>
+    <div class="legende"><span><i style="background:#A855F7"></i>avant</span><span><i style="background:#FFE600"></i>après</span></div>
+    <div class="petit mut" id="hist-etat">chargement de l'historique…</div>
+  </div>
+  <p class="petit mut" id="file-etat" hidden></p>
+</section>
+
+<!-- ───────── SÉANCE ───────── -->
+<section class="ecran" id="e-seance">
+  <div class="entete">
+    <div class="etapes" id="etapes"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+    <span class="petit mut" id="total" style="font-variant-numeric:tabular-nums">18:00</span>
+  </div>
+  <div class="titre-etape"><div class="n" id="etape-n">Étape 1 / 6</div><h2 id="etape-titre">Lumière + eau</h2></div>
+  <div class="compte" id="compte">2:00</div>
+  <div class="barre"><i id="barre"></i></div>
+
+  <!-- 1 Lumière + eau -->
+  <div class="panneau" id="p1">
+    <p class="consigne">Sors ou mets-toi à la fenêtre, <b>lumière dans les yeux</b>, bois un grand verre d'eau.<br><span class="mut">Pas de téléphone.</span></p>
+  </div>
+
+  <!-- 2 Soupirs cycliques -->
+  <div class="panneau" id="p2">
+    <div class="souffle">
+      <div class="cercle" id="cercle"></div>
+      <div class="phase" id="phase">Inspire</div>
+      <div class="cycles" id="cycles">cycle 1</div>
+    </div>
+    <p class="consigne petit mut">Double inspiration par le nez (une grande, puis une petite pour finir de remplir), longue expiration par la bouche.</p>
+  </div>
+
+  <!-- 3 Mouvement -->
+  <div class="panneau" id="p3">
+    <div class="sous" id="sous3">1:00</div>
+    <div class="bloc" id="bloc3">20 jumping jacks<small>bloc 1 / 3</small></div>
+    <p class="consigne petit mut">Puis 20 squats, puis planche 30 s + secoue les bras.</p>
+  </div>
+
+  <!-- 4 Priming -->
+  <div class="panneau" id="p4">
+    <div class="sous" id="sous4">0:30</div>
+    <p class="consigne petit mut">Main sur le cœur.</p>
+    <div class="cartep" id="c4-0"><h3>Gratitude 1 / 3</h3><p class="mut">Quelque chose de petit et vrai. Ressens-le.</p><input type="text" maxlength="120" placeholder="(optionnel)" data-k="g1"></div>
+    <div class="cartep" id="c4-1"><h3>Gratitude 2 / 3</h3><p class="mut">Une personne, un moment.</p><input type="text" maxlength="120" placeholder="(optionnel)" data-k="g2"></div>
+    <div class="cartep" id="c4-2"><h3>Gratitude 3 / 3</h3><p class="mut">Quelque chose que tu as déjà.</p><input type="text" maxlength="120" placeholder="(optionnel)" data-k="g3"></div>
+    <div class="cartep" id="c4-3"><h3>Objectif 1 / 3</h3><p class="mut">Vois-le comme déjà atteint. Ressens ce que ça fait.</p><input type="text" maxlength="120" placeholder="(optionnel)" data-k="o1"></div>
+    <div class="cartep" id="c4-4"><h3>Objectif 2 / 3</h3><p class="mut">Déjà fait. Qu'est-ce qui a changé ?</p><input type="text" maxlength="120" placeholder="(optionnel)" data-k="o2"></div>
+    <div class="cartep" id="c4-5"><h3>Objectif 3 / 3</h3><p class="mut">Déjà atteint. Qui te félicite ?</p><input type="text" maxlength="120" placeholder="(optionnel)" data-k="o3"></div>
+  </div>
+
+  <!-- 5 Le cerveau attaque -->
+  <div class="panneau" id="p5">
+    <div class="sous" id="sous5">2:00</div>
+    <div class="cartep" id="c5-0">
+      <h3>Vide-tête</h3>
+      <p class="mut">Tout ce qui tourne. Sans filtre, sans ordre.</p>
+      <textarea id="videtete" placeholder="J'ai en tête…"></textarea>
+    </div>
+    <div class="cartep" id="c5-1">
+      <h3>Les 3 priorités du jour</h3>
+      <input type="text" maxlength="140" placeholder="Priorité 1" id="prio1">
+      <input type="text" maxlength="140" placeholder="Priorité 2" id="prio2">
+      <input type="text" maxlength="140" placeholder="Priorité 3" id="prio3">
+      <div class="champ"><label><b>La première action cash</b> — obligatoire : un nom + un geste</label><input type="text" maxlength="160" placeholder="ex. appeler Osmose Bistro" id="action_cash"></div>
+      <div class="etat err" id="cash-etat"></div>
+    </div>
+  </div>
+
+  <!-- 6 Engagement -->
+  <div class="panneau" id="p6">
+    <p class="consigne mut petit">Ta première action cash :</p>
+    <div class="grand-cash" id="cash-grand">—</div>
+    <button class="btn prim" id="b-engage">Je le fais dans l'heure</button>
+  </div>
+
+  <div class="espace"></div>
+  <div class="ligne-btn">
+    <button class="btn" id="b-pause">Pause</button>
+    <button class="btn discret" id="b-passer">Passer</button>
+  </div>
+</section>
+
+<!-- ───────── FIN ───────── -->
+<section class="ecran" id="e-fin">
+  <h2>Et maintenant ?</h2>
+  <p class="mut">Les mêmes curseurs, sans tricher.</p>
+  <div class="carte" style="display:flex;flex-direction:column;gap:14px">
+    <div class="curseur"><div class="lig"><b>Énergie</b><span class="val" id="v-energie_apres">5</span></div><input type="range" min="1" max="10" value="5" id="energie_apres" aria-label="Énergie après"></div>
+    <div class="curseur"><div class="lig"><b>Humeur</b><span class="val" id="v-humeur_apres">5</span></div><input type="range" min="1" max="10" value="5" id="humeur_apres" aria-label="Humeur après"></div>
+    <div class="curseur"><div class="lig"><b>Clarté</b><span class="val" id="v-clarte_apres">5</span></div><input type="range" min="1" max="10" value="5" id="clarte_apres" aria-label="Clarté après"></div>
+    <div class="curseur"><div class="lig"><b>Prêt à attaquer la journée ?</b><span class="val" id="v-pret">5</span></div><input type="range" min="1" max="10" value="5" id="pret" aria-label="Prêt à attaquer"></div>
+  </div>
+  <div class="champ"><label>Note (optionnel)</label><textarea id="note" placeholder="Ce qui a marché, ce qui a coincé…" style="min-height:80px"></textarea></div>
+  <button class="btn prim" id="b-enregistrer">Enregistrer</button>
+  <div class="etat" id="fin-etat"></div>
+</section>
+
+<!-- ───────── MERCI ───────── -->
+<section class="ecran" id="e-merci">
+  <div class="espace"></div>
+  <h1 style="text-align:center"><span id="merci-titre">Enregistré</span> <span class="ok">✓</span></h1>
+  <p class="mut" style="text-align:center" id="merci-sous">Bonne journée. Ta première action cash :</p>
+  <div class="grand-cash" id="merci-cash">—</div>
+  <div class="espace"></div>
+  <button class="btn" id="b-retour">Retour à l'accueil</button>
+</section>
+
+<script>
+(function () {
+  'use strict';
+  var API = 'https://n7n.automatisationboost.com/webhook/matin-journal';
+  var QKEY = 'matin_queue_v1';
+  var $ = function (id) { return document.getElementById(id); };
+  var fmt = function (s) { s = Math.max(0, Math.ceil(s)); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); };
+  var pad2 = function (n) { return String(n).padStart(2, '0'); };
+  var localDate = function (d) { d = d || new Date(); return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate()); };
+  var localTime = function (d) { d = d || new Date(); return pad2(d.getHours()) + ':' + pad2(d.getMinutes()); };
+  var ls = { get: function (k) { try { return localStorage.getItem(k); } catch (e) { return null; } }, set: function (k, v) { try { localStorage.setItem(k, v); return true; } catch (e) { return false; } }, del: function (k) { try { localStorage.removeItem(k); } catch (e) {} } };
+
+  // ── protocol ────────────────────────────────────────────────────────────
+  var ETAPES = [
+    { titre: 'Lumière + eau', dur: 120 },
+    { titre: 'Soupirs cycliques', dur: 300 },
+    { titre: 'Mouvement', dur: 180 },
+    { titre: 'Priming', dur: 180 },
+    { titre: 'Le cerveau attaque', dur: 240 },
+    { titre: 'Engagement', dur: 60 }
+  ];
+  var TOTAL = ETAPES.reduce(function (a, e) { return a + e.dur; }, 0); // 1080 s
+
+  var S = {
+    ecran: 'accueil', etape: -1, deadline: 0, restant: 0, pause: false, tick: null,
+    statut: [], debut: 0, dureeEcoulee: 0, lastSub: null, bloque: false, engage: false, wakeLock: null, saved: false
+  };
+
+  // ── screens ─────────────────────────────────────────────────────────────
+  function montrer(id) {
+    Array.prototype.forEach.call(document.querySelectorAll('.ecran'), function (e) { e.classList.remove('actif'); });
+    $('e-' + id).classList.add('actif');
+    S.ecran = id;
+    window.scrollTo(0, 0);
+  }
+
+  // ── sound / vibration ───────────────────────────────────────────────────
+  var ctx = null;
+  function initAudio() { try { if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)(); if (ctx.state === 'suspended') ctx.resume(); } catch (e) { ctx = null; } }
+  function bip(n, freq) {
+    n = n || 1; freq = freq || 880;
+    try { if (navigator.vibrate) navigator.vibrate(n === 1 ? [120] : [120, 80, 120, 80, 120]); } catch (e) {}
+    if (!ctx) return;
+    try {
+      for (var i = 0; i < n; i++) {
+        var o = ctx.createOscillator(), g = ctx.createGain();
+        o.type = 'sine'; o.frequency.value = freq;
+        var t = ctx.currentTime + i * 0.22;
+        g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.35, t + 0.01); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.18);
+        o.connect(g); g.connect(ctx.destination); o.start(t); o.stop(t + 0.2);
+      }
+    } catch (e) {}
+  }
+
+  // ── wake lock ───────────────────────────────────────────────────────────
+  function garderEveil() {
+    try {
+      if (!navigator.wakeLock) return;
+      navigator.wakeLock.request('screen').then(function (wl) { S.wakeLock = wl; }).catch(function () {});
+    } catch (e) {}
+  }
+  function lacherEveil() { try { if (S.wakeLock) { S.wakeLock.release(); S.wakeLock = null; } } catch (e) {} }
+  document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible' && S.ecran === 'seance' && !S.pause) garderEveil(); });
+
+  // ── sliders ─────────────────────────────────────────────────────────────
+  ['energie_avant', 'humeur_avant', 'clarte_avant', 'energie_apres', 'humeur_apres', 'clarte_apres', 'pret'].forEach(function (id) {
+    var el = $(id);
+    el.addEventListener('input', function () { $('v-' + id).textContent = el.value; });
+  });
+
+  // ── session engine ──────────────────────────────────────────────────────
+  function commencer() {
+    initAudio();
+    S.statut = ETAPES.map(function () { return 'attente'; });
+    S.debut = Date.now(); S.dureeEcoulee = 0; S.engage = false; S.saved = false;
+    Array.prototype.forEach.call(document.querySelectorAll("#e-seance input[type=text], #e-seance textarea, #note"), function (el) { el.value = ""; });
+    $("cash-etat").textContent = "";
+    montrer('seance');
+    garderEveil();
+    allerEtape(0);
+    if (!S.tick) S.tick = setInterval(tick, 250);
+  }
+
+  function allerEtape(i) {
+    if (i >= ETAPES.length) { finSeance(); return; }
+    S.etape = i; S.restant = ETAPES[i].dur; S.deadline = Date.now() + S.restant * 1000; S.pause = false; S.bloque = false; S.lastSub = null;
+    S.statut[i] = 'encours';
+    $('etape-n').textContent = 'Étape ' + (i + 1) + ' / 6';
+    $('etape-titre').textContent = ETAPES[i].titre;
+    for (var k = 1; k <= 6; k++) $('p' + k).classList.toggle('actif', k === i + 1);
+    $('b-pause').textContent = 'Pause';
+    $('compte').classList.remove('pause', 'fini');
+    if (i === 5) { $('cash-grand').textContent = $('action_cash').value.trim() || '—'; }
+    if (i === 1) { $('cercle').className = 'cercle'; }
+    rendreEtapes();
+    bip(i === 0 ? 1 : 2);
+    rendre(0);
+  }
+
+  function rendreEtapes() {
+    var is = $('etapes').children;
+    for (var k = 0; k < is.length; k++) {
+      is[k].className = S.statut[k] === 'faite' ? 'faite' : S.statut[k] === 'passee' ? 'passee' : S.statut[k] === 'encours' ? 'encours' : '';
+    }
+  }
+
+  function terminerEtape(statut) {
+    var i = S.etape;
+    S.dureeEcoulee += ETAPES[i].dur - Math.max(0, S.restant);
+    S.statut[i] = statut;
+    allerEtape(i + 1);
+  }
+
+  function passer() { if (S.ecran !== 'seance') return; terminerEtape('passee'); }
+
+  function pause() {
+    if (S.ecran !== 'seance' || S.bloque) return;
+    S.pause = !S.pause;
+    if (S.pause) { S.restant = (S.deadline - Date.now()) / 1000; $('b-pause').textContent = 'Reprendre'; $('compte').classList.add('pause'); lacherEveil(); }
+    else { S.deadline = Date.now() + S.restant * 1000; $('b-pause').textContent = 'Pause'; $('compte').classList.remove('pause'); garderEveil(); initAudio(); }
+  }
+
+  function tick() {
+    if (S.ecran !== 'seance') return;
+    if (S.pause) return;
+    if (S.bloque) {
+      // step 5 finished but action cash still empty: wait for it
+      if ($('action_cash').value.trim()) { S.bloque = false; $('cash-etat').textContent = ''; S.restant = 0; terminerEtape('faite'); }
+      return;
+    }
+    S.restant = (S.deadline - Date.now()) / 1000;
+    var ecoule = ETAPES[S.etape].dur - S.restant;
+    if (S.restant <= 0) {
+      if (S.etape === 4 && !$('action_cash').value.trim()) {
+        S.bloque = true; S.restant = 0; rendre(ETAPES[4].dur);
+        $('compte').textContent = '0:00'; $('compte').classList.add('fini');
+        $('cash-etat').textContent = 'Il manque ta première action cash : un nom + un geste.';
+        $('action_cash').focus();
+        bip(2, 660);
+        return;
+      }
+      terminerEtape('faite');
+      return;
+    }
+    rendre(ecoule);
+  }
+
+  function rendre(ecoule) {
+    var i = S.etape, dur = ETAPES[i].dur;
+    $('compte').textContent = fmt(dur - ecoule);
+    $('barre').style.width = Math.min(100, ecoule / dur * 100) + '%';
+    var totalRestant = TOTAL - S.dureeEcoulee - ecoule;
+    $('total').textContent = fmt(totalRestant) + ' restantes';
+    var sub = null;
+    if (i === 1) {
+      // 9 s cycle: inhale 2 s, top-up 1 s, exhale 6 s
+      var t = ecoule % 9, cyc = Math.floor(ecoule / 9) + 1;
+      var ph = t < 2 ? 'in1' : t < 3 ? 'in2' : 'out';
+      if (ph !== S.lastSub) { $('cercle').className = 'cercle ' + ph; $('phase').textContent = ph === 'in1' ? 'Inspire par le nez' : ph === 'in2' ? 'Encore un peu' : 'Expire longuement'; }
+      $('cycles').textContent = 'cycle ' + cyc + ' / 33';
+      sub = ph;
+    } else if (i === 2) {
+      var b = Math.min(2, Math.floor(ecoule / 60));
+      var noms = ['20 jumping jacks', '20 squats', 'Planche 30 s<br>+ secoue les bras'];
+      if (b !== S.lastSub) { $('bloc3').innerHTML = noms[b] + '<small>bloc ' + (b + 1) + ' / 3</small>'; if (S.lastSub !== null) bip(1, 1046); }
+      $('sous3').textContent = fmt(60 - (ecoule - b * 60));
+      sub = b;
+    } else if (i === 3) {
+      var c = Math.min(5, Math.floor(ecoule / 30));
+      if (c !== S.lastSub) { for (var k = 0; k < 6; k++) $('c4-' + k).classList.toggle('actif', k === c); if (S.lastSub !== null) bip(1, 1046); }
+      $('sous4').textContent = fmt(30 - (ecoule - c * 30));
+      sub = c;
+    } else if (i === 4) {
+      var p = ecoule < 120 ? 0 : 1;
+      if (p !== S.lastSub) { $('c5-0').classList.toggle('actif', p === 0); $('c5-1').classList.toggle('actif', p === 1); if (S.lastSub !== null) { bip(1, 1046); $('prio1').focus(); } }
+      $('sous5').textContent = fmt(120 - (ecoule - p * 120));
+      sub = p;
+    }
+    S.lastSub = sub;
+  }
+
+  function finSeance() {
+    if (S.tick) { clearInterval(S.tick); S.tick = null; }
+    lacherEveil();
+    bip(3, 1046);
+    montrer('fin');
+    ['energie', 'humeur', 'clarte'].forEach(function (k) { $(k + '_apres').value = $(k + '_avant').value; $('v-' + k + '_apres').textContent = $(k + '_avant').value; });
+    $('fin-etat').textContent = '';
+  }
+
+  // ── payload / save ──────────────────────────────────────────────────────
+  function payload() {
+    var prios = [$('prio1').value, $('prio2').value, $('prio3').value].map(function (v) { return v.trim(); }).filter(Boolean);
+    var gr = ['g1', 'g2', 'g3', 'o1', 'o2', 'o3'].map(function (k) { var el = document.querySelector('[data-k="' + k + '"]'); return el && el.value.trim() ? k + ': ' + el.value.trim() : ''; }).filter(Boolean);
+    var noteParts = [];
+    if ($('note').value.trim()) noteParts.push($('note').value.trim());
+    if (gr.length) noteParts.push('[priming] ' + gr.join(' | '));
+    if ($('videtete').value.trim()) noteParts.push('[vide-tête] ' + $('videtete').value.trim().slice(0, 600));
+    if (S.engage) noteParts.push('[engagé dans l\'heure]');
+    var faites = [];
+    S.statut.forEach(function (s, i) { if (s === 'faite') faites.push(i + 1); });
+    var now = new Date();
+    return {
+      date: S.testDate || localDate(now), heure: localTime(new Date(S.debut || now)),
+      energie_avant: +$('energie_avant').value, humeur_avant: +$('humeur_avant').value, clarte_avant: +$('clarte_avant').value,
+      energie_apres: +$('energie_apres').value, humeur_apres: +$('humeur_apres').value, clarte_apres: +$('clarte_apres').value,
+      pret: +$('pret').value,
+      action_cash: $('action_cash').value.trim(), priorites: prios.join(' | '),
+      etapes_faites: faites.join(','), duree_s: Math.round(S.dureeEcoulee),
+      note: noteParts.join('\n').slice(0, 1900)
+    };
+  }
+
+  function envoyer(p) {
+    var ctl = ('AbortController' in window) ? new AbortController() : null;
+    var timer = ctl ? setTimeout(function () { ctl.abort(); }, 12000) : null;
+    return fetch(API, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(p), signal: ctl ? ctl.signal : undefined })
+      .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json().catch(function () { return {}; }); })
+      .then(function (j) { if (j && j.status && j.status !== 'ok') throw new Error('réponse ' + j.status); return true; })
+      .finally(function () { if (timer) clearTimeout(timer); });
+  }
+
+  function lireFile() { try { var q = JSON.parse(ls.get(QKEY) || '[]'); return Array.isArray(q) ? q : []; } catch (e) { return []; } }
+  function ecrireFile(q) { if (!q.length) { ls.del(QKEY); return true; } return ls.set(QKEY, JSON.stringify(q)); }
+
+  function enregistrer() {
+    if (S.saved) return;
+    var p = payload();
+    var b = $('b-enregistrer'); b.disabled = true; b.textContent = 'Envoi…';
+    $('fin-etat').textContent = '';
+    envoyer(p).then(function () {
+      S.saved = true;
+      merci('Enregistré', 'Bonne journée. Ta première action cash :', p.action_cash);
+    }).catch(function (e) {
+      var q = lireFile(); q = q.filter(function (x) { return x.date !== p.date; }); q.push(p);
+      var ok = ecrireFile(q);
+      S.saved = true;
+      merci(ok ? 'Gardé sur ce téléphone' : 'Non enregistré', ok ? 'Pas de réseau (' + e.message + ') — la séance sera envoyée à la prochaine ouverture. Ta première action cash :' : 'Pas de réseau et pas de stockage local (' + e.message + '). Ta première action cash :', p.action_cash);
+    }).finally(function () { b.disabled = false; b.textContent = 'Enregistrer'; });
+  }
+
+  function merci(titre, sous, cash) {
+    $('merci-titre').textContent = titre;
+    $('merci-sous').textContent = sous;
+    $('merci-cash').textContent = cash || '—';
+    montrer('merci');
+  }
+
+  function viderFile() {
+    var q = lireFile();
+    var el = $('file-etat');
+    if (!q.length) { el.hidden = true; return Promise.resolve(); }
+    el.hidden = false; el.textContent = q.length + ' séance(s) en attente d\'envoi…';
+    var p = q[0];
+    return envoyer(p).then(function () {
+      ecrireFile(lireFile().filter(function (x) { return x.date !== p.date; }));
+      return viderFile();
+    }).catch(function (e) { el.textContent = q.length + ' séance(s) en attente d\'envoi (' + e.message + ') — nouvel essai à la prochaine ouverture.'; });
+  }
+
+  // ── history: streak + chart ─────────────────────────────────────────────
+  function jourIdx(iso) { return Math.round(Date.parse(iso + 'T00:00:00Z') / 86400000); }
+  function calcSerie(rows) {
+    var ds = rows.map(function (r) { return r.date; }).filter(function (d) { return /^\d{4}-\d{2}-\d{2}$/.test(d) && d !== '2000-01-01'; }).sort();
+    ds = ds.filter(function (d, i) { return ds.indexOf(d) === i; });
+    if (!ds.length) return 0;
+    var t0 = jourIdx(localDate()), last = jourIdx(ds[ds.length - 1]);
+    if (t0 - last > 2) return 0;
+    var n = 1;
+    for (var i = ds.length - 1; i > 0; i--) { if (jourIdx(ds[i]) - jourIdx(ds[i - 1]) <= 2) n++; else break; }
+    return n;
+  }
+  function dessiner(rows) {
+    var svg = $('chart'); while (svg.firstChild) svg.removeChild(svg.firstChild);
+    var NS = 'http://www.w3.org/2000/svg';
+    var W = 352, H = 130, L = 22, R = 8, T = 10, B = 22;
+    var t0 = jourIdx(localDate());
+    var byDate = {}; rows.forEach(function (r) { if (r.date !== '2000-01-01') byDate[r.date] = r; });
+    var jours = [];
+    for (var k = 13; k >= 0; k--) { var d = new Date((t0 - k) * 86400000); var iso = d.toISOString().slice(0, 10); jours.push({ iso: iso, r: byDate[iso] || null, x: L + (13 - k) * ((W - L - R) / 13) }); }
+    var y = function (v) { return T + (H - T - B) * (1 - (v - 1) / 9); };
+    var mk = function (tag, attrs) { var e = document.createElementNS(NS, tag); for (var a in attrs) e.setAttribute(a, attrs[a]); svg.appendChild(e); return e; };
+    [1, 5, 10].forEach(function (v) { mk('line', { x1: L, x2: W - R, y1: y(v), y2: y(v), stroke: '#242430', 'stroke-width': 1 }); var t = mk('text', { x: 2, y: y(v) + 4, fill: '#8A8A8A', 'font-size': 10 }); t.textContent = v; });
+    jours.forEach(function (j, i) { if (i % 2 === 0) { var t = mk('text', { x: j.x, y: H - 6, fill: '#8A8A8A', 'font-size': 9, 'text-anchor': 'middle' }); t.textContent = j.iso.slice(8); } });
+    var serieLigne = function (key, couleur) {
+      var seg = [];
+      jours.forEach(function (j) { var v = j.r && j.r[key] !== null && j.r[key] !== undefined && j.r[key] !== '' ? +j.r[key] : null; if (v === null) { seg.push(null); } else { seg.push({ x: j.x, y: y(v) }); } });
+      var d = '', prev = null;
+      seg.forEach(function (p) { if (!p) { prev = null; return; } d += (prev ? ' L' : ' M') + p.x.toFixed(1) + ' ' + p.y.toFixed(1); prev = p; });
+      if (d) mk('path', { d: d, fill: 'none', stroke: couleur, 'stroke-width': 2.5, 'stroke-linejoin': 'round' });
+      seg.forEach(function (p) { if (p) mk('circle', { cx: p.x, cy: p.y, r: 4, fill: couleur }); });
+    };
+    serieLigne('energie_avant', '#A855F7');
+    serieLigne('energie_apres', '#FFE600');
+  }
+  function chargerHistorique() {
+    var ctl = ('AbortController' in window) ? new AbortController() : null;
+    var timer = ctl ? setTimeout(function () { ctl.abort(); }, 10000) : null;
+    return fetch(API + '?t=' + Date.now(), { signal: ctl ? ctl.signal : undefined })
+      .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+      .then(function (j) {
+        var rows = (j && Array.isArray(j.rows)) ? j.rows : [];
+        var reelles = rows.filter(function (r) { return r.date !== '2000-01-01'; });
+        $('serie').textContent = '🔥 ' + calcSerie(rows) + ' jour' + (calcSerie(rows) > 1 ? 's' : '');
+        dessiner(rows);
+        $('hist-etat').textContent = reelles.length ? reelles.length + ' séance' + (reelles.length > 1 ? 's' : '') + ' enregistrée' + (reelles.length > 1 ? 's' : '') + ' au total' : 'Aucune séance encore. La première est aujourd\'hui.';
+      })
+      .catch(function () { $('serie').textContent = '🔥 —'; $('hist-etat').textContent = 'historique indisponible'; dessiner([]); })
+      .finally(function () { if (timer) clearTimeout(timer); });
+  }
+
+  // ── wiring ──────────────────────────────────────────────────────────────
+  $('b-commencer').addEventListener('click', commencer);
+  $('b-pause').addEventListener('click', pause);
+  $('b-passer').addEventListener('click', passer);
+  $('b-engage').addEventListener('click', function () { S.engage = true; bip(1, 1318); terminerEtape('faite'); });
+  $('b-enregistrer').addEventListener('click', enregistrer);
+  $('b-retour').addEventListener('click', function () { montrer('accueil'); chargerHistorique(); });
+  $('action_cash').addEventListener('input', function () { if ($('action_cash').value.trim()) $('cash-etat').textContent = ''; });
+  window.addEventListener('beforeunload', function (e) { if (S.ecran === 'seance' || (S.ecran === 'fin' && !S.saved)) { e.preventDefault(); e.returnValue = ''; } });
+
+  dessiner([]);
+  viderFile().then(chargerHistorique);
+
+  // ── test hook (no effect unless called) ─────────────────────────────────
+  window.__matin = {
+    state: S, ETAPES: ETAPES,
+    skipTo: function (n) {
+      // n = 1..6 jumps to that step (previous steps counted as done), 7 = end screen
+      if (S.ecran === 'accueil') commencer();
+      var cible = Math.max(1, Math.min(7, n | 0)) - 1;
+      while (S.etape < cible && S.ecran === 'seance') { S.restant = 0; terminerEtape('faite'); }
+    },
+    setTestDate: function (d) { S.testDate = d; },
+    payload: payload
+  };
+})();
+</script>
+</body>
+</html>
