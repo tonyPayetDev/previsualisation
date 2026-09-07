@@ -1,0 +1,645 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#0a0a0f">
+<title>Nickel</title>
+<style>
+:root{--bg:#0a0a0f;--carte:#121218;--bord:#242430;--txt:#EDEDED;--mut:#8A8A8A;--jaune:#FFE600;--violet:#A855F7;--vert:#3ED37B;--rouge:#ef4444}
+*{box-sizing:border-box;margin:0;padding:0}
+html{color-scheme:dark}
+body{background:var(--bg);color:var(--txt);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:17px;line-height:1.4;min-height:100vh;-webkit-text-size-adjust:100%;-webkit-tap-highlight-color:transparent;overflow-x:hidden}
+.ecran{display:none;min-height:100vh;padding:max(16px,env(safe-area-inset-top)) 16px max(24px,env(safe-area-inset-bottom));max-width:520px;margin:0 auto;flex-direction:column;gap:14px}
+.ecran.actif{display:flex}
+h1{font-size:34px;font-weight:800;letter-spacing:-.02em;line-height:1.05}
+h1 b{color:var(--jaune)}
+h2{font-size:24px;font-weight:800;letter-spacing:-.01em;line-height:1.15}
+h3{font-size:17px;font-weight:800}
+.mut{color:var(--mut)}
+.petit{font-size:14px}
+.jaune{color:var(--jaune)}
+.violet{color:var(--violet)}
+.vert{color:var(--vert)}
+.carte{background:var(--carte);border:1px solid var(--bord);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:10px}
+.serie{display:inline-flex;align-items:center;gap:8px;background:var(--carte);border:1px solid var(--bord);border-radius:999px;padding:8px 14px;font-weight:700;font-size:16px;white-space:nowrap}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;min-height:56px;padding:12px 20px;border-radius:14px;border:1px solid var(--bord);background:var(--carte);color:var(--txt);font:inherit;font-weight:700;font-size:18px;cursor:pointer;width:100%;text-align:center}
+.btn.prim{background:var(--jaune);color:#0a0a0f;border-color:var(--jaune)}
+.btn.sec{background:transparent;border-color:var(--violet);color:var(--violet)}
+.btn.discret{background:transparent;border-color:transparent;color:var(--mut);font-weight:600;font-size:15px;min-height:48px}
+.btn:active{transform:scale(.98)}
+.btn[disabled]{opacity:.5;cursor:default}
+.ligne-btn{display:flex;gap:10px}
+.ligne-btn .btn{flex:1}
+textarea,input[type=text],input[type=time]{width:100%;min-height:48px;padding:12px 14px;border-radius:12px;border:1px solid var(--bord);background:#0e0e14;color:var(--txt);font:inherit;font-size:17px;resize:vertical}
+textarea:focus,input[type=text]:focus,input[type=time]:focus{outline:2px solid var(--violet);outline-offset:0;border-color:var(--violet)}
+textarea{min-height:110px}
+.champ{display:flex;flex-direction:column;gap:6px}
+.champ label{font-size:14px;color:var(--mut);font-weight:600}
+/* ── accueil ── */
+.gros{font-size:56px;font-weight:800;letter-spacing:-.03em;line-height:1;font-variant-numeric:tabular-nums}
+.gros small{font-size:22px;font-weight:700;color:var(--mut);letter-spacing:0;margin-left:4px}
+.fleche{font-size:17px;font-weight:700}
+.fleche.bas{color:var(--vert)}
+.fleche.haut{color:var(--rouge)}
+.fleche.egal{color:var(--mut)}
+.verdict{border-color:var(--jaune);background:linear-gradient(180deg,rgba(255,230,0,.07),rgba(255,230,0,0))}
+.verdict p{font-size:19px;font-weight:700;line-height:1.3}
+.chart{width:100%;height:auto;display:block}
+.legende{display:flex;gap:14px;font-size:13px;color:var(--mut)}
+.legende i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px;vertical-align:middle}
+.espace{flex:1}
+.etat{font-size:14px;text-align:center;min-height:1.2em}
+.ok{color:var(--vert);font-weight:700}
+.err{color:var(--rouge);font-weight:700}
+.zone-tete{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.zone-nom{font-size:22px;font-weight:800}
+.pastille{font-size:13px;font-weight:700;color:var(--violet);letter-spacing:.08em;text-transform:uppercase}
+.progress{height:6px;border-radius:3px;background:var(--bord);overflow:hidden}
+.progress i{display:block;height:100%;width:0;background:var(--violet);transition:width .25s}
+/* déclencheurs */
+.decl{display:flex;flex-direction:column;gap:2px}
+.decl label{display:flex;align-items:center;gap:12px;min-height:48px;cursor:pointer;font-weight:600}
+.decl label small{display:block;font-weight:400;color:var(--mut);font-size:13px}
+.case{width:26px;height:26px;border-radius:8px;border:2px solid var(--bord);display:inline-flex;align-items:center;justify-content:center;flex:none;font-size:16px;color:#0a0a0f;background:transparent}
+input.cb{position:absolute;opacity:0;width:1px;height:1px;pointer-events:none}
+input.cb:checked+.case{background:var(--vert);border-color:var(--vert)}
+input.cb:checked+.case::after{content:"✓";font-weight:800}
+input.cb:focus-visible+.case{outline:2px solid var(--violet);outline-offset:2px}
+/* ── état 1-5 ── */
+.notes5{display:flex;gap:8px}
+.notes5 button{flex:1;min-height:64px;border-radius:14px;border:1px solid var(--bord);background:var(--carte);color:var(--txt);font:inherit;font-size:26px;font-weight:800;cursor:pointer}
+.notes5 button:active{transform:scale(.96)}
+.notes5 button.choisi{background:var(--jaune);color:#0a0a0f;border-color:var(--jaune)}
+.echelle{display:flex;justify-content:space-between;font-size:12px;color:var(--mut)}
+/* ── session ── */
+.entete{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.compte{font-size:88px;font-weight:800;letter-spacing:-.04em;line-height:1;text-align:center;font-variant-numeric:tabular-nums;color:var(--jaune);margin:0}
+.compte.pause{color:var(--mut)}
+.compte.fini{color:var(--vert)}
+.barre{height:6px;border-radius:3px;background:var(--bord);overflow:hidden}
+.barre i{display:block;height:100%;width:0;background:var(--violet);transition:width .25s linear}
+.consigne{text-align:center;font-size:15px;color:var(--mut)}
+.taches{display:flex;flex-direction:column;gap:6px}
+.tache{display:flex;align-items:center;gap:12px;min-height:52px;padding:8px 12px;border-radius:12px;background:var(--carte);border:1px solid var(--bord);cursor:pointer;font-weight:600;position:relative}
+.tache .num{color:var(--violet);font-weight:800;font-size:13px;min-width:1.4em}
+.tache .lib{flex:1}
+.tache .lib small{display:block;font-weight:400;color:var(--mut);font-size:13px}
+.tache.faite .lib{color:var(--mut);text-decoration:line-through}
+.tache.deja{opacity:.55}
+.tache.deja .lib::after{content:" · déjà fait cette semaine";font-size:12px;color:var(--vert);text-decoration:none;display:inline-block}
+.compteur{font-size:14px;color:var(--mut);text-align:center}
+/* ── fin ── */
+.recap{display:flex;gap:10px}
+.recap .carte{flex:1;align-items:center;text-align:center;gap:4px}
+.recap .v{font-size:32px;font-weight:800;font-variant-numeric:tabular-nums}
+.recap .l{font-size:13px;color:var(--mut)}
+/* ── réglages ── */
+.zone-edit{gap:8px}
+.zone-edit input[type=text]{font-weight:700}
+.zone-edit textarea{min-height:150px;font-size:15px}
+</style>
+</head>
+<body>
+
+<!-- ───────── ACCUEIL ───────── -->
+<section class="ecran actif" id="e-accueil">
+  <header style="display:flex;justify-content:space-between;align-items:center;gap:10px">
+    <h1>Nic<b>kel</b></h1>
+    <span class="serie" id="serie" title="Série de resets du soir">🔥 —</span>
+  </header>
+  <p class="mut petit">Une maison propre en y passant moins de temps. La règle, c'est le temps — pas la perfection.</p>
+
+  <div class="carte">
+    <div class="zone-tete"><span class="pastille">Zone de la semaine</span><span class="petit mut" id="zone-jour">jour — / 5</span></div>
+    <div class="zone-nom" id="zone-nom">—</div>
+    <div class="progress"><i id="zone-prog"></i></div>
+    <div class="petit mut" id="zone-detail">—</div>
+  </div>
+
+  <button class="btn prim" id="b-reset">Reset du soir · 10 min</button>
+  <button class="btn sec" id="b-zone">Zone de la semaine · 15 min</button>
+  <p class="petit mut" style="text-align:center" id="rappel">Reset du soir à 20:30</p>
+
+  <div class="carte">
+    <div class="zone-tete"><span class="pastille">Cette semaine</span><span class="petit mut" id="sem-dates">—</span></div>
+    <div class="gros"><span id="min-cette">—</span><small>min</small></div>
+    <div class="fleche egal" id="min-compare">—</div>
+  </div>
+
+  <div class="carte verdict" id="verdict-carte">
+    <span class="pastille jaune">Verdict</span>
+    <p id="verdict">—</p>
+    <div class="petit mut" id="verdict-sous"></div>
+  </div>
+
+  <div class="carte">
+    <div class="zone-tete"><b style="white-space:nowrap">4 semaines</b><span class="petit mut">min · état /5</span></div>
+    <svg class="chart" id="chart" viewBox="0 0 352 150" preserveAspectRatio="none" aria-label="Minutes par semaine et état de la maison sur 4 semaines"></svg>
+    <div class="legende"><span><i style="background:#A855F7"></i>minutes</span><span><i style="background:#FFE600"></i>état /5</span></div>
+    <div class="petit mut" id="hist-etat">chargement de l'historique…</div>
+  </div>
+
+  <div class="carte decl">
+    <span class="pastille">Déclencheurs · pas de timer</span>
+    <label><input class="cb" type="checkbox" id="d-machine"><span class="case"></span><span>Machine lancée<small>dès que le panier est plein</small></span></label>
+    <label><input class="cb" type="checkbox" id="d-lit"><span class="case"></span><span>Lit fait<small>en te levant</small></span></label>
+    <label><input class="cb" type="checkbox" id="d-cuisine"><span class="case"></span><span>Clean as you go<small>tu ranges en cuisinant</small></span></label>
+  </div>
+
+  <button class="btn discret" id="b-reglages">⚙ Réglages</button>
+  <p class="petit mut" id="file-etat" hidden></p>
+</section>
+
+<!-- ───────── ÉTAT DU JOUR ───────── -->
+<section class="ecran" id="e-etat">
+  <div class="espace"></div>
+  <h2>La maison, là, maintenant ?</h2>
+  <p class="mut">Une note honnête, une fois par jour, avant de commencer.</p>
+  <div class="notes5" id="notes5">
+    <button data-n="1">1</button><button data-n="2">2</button><button data-n="3">3</button><button data-n="4">4</button><button data-n="5">5</button>
+  </div>
+  <div class="echelle"><span>le bazar</span><span>nickel</span></div>
+  <div class="espace"></div>
+  <button class="btn discret" id="b-etat-retour">Retour</button>
+</section>
+
+<!-- ───────── SESSION ───────── -->
+<section class="ecran" id="e-session">
+  <div class="entete">
+    <div><span class="pastille" id="s-type">Reset du soir</span><div id="s-sous" class="petit mut">ordre fixe · tu touches, tu ranges</div></div>
+    <span class="petit mut" id="s-total" style="font-variant-numeric:tabular-nums">10:00</span>
+  </div>
+  <div class="compte" id="compte">10:00</div>
+  <div class="barre"><i id="barre"></i></div>
+  <div class="compteur" id="s-compteur">0 / 6</div>
+  <div class="taches" id="taches"></div>
+  <div class="espace"></div>
+  <div class="ligne-btn">
+    <button class="btn" id="b-pause">Pause</button>
+    <button class="btn prim" id="b-terminer">Terminer</button>
+  </div>
+</section>
+
+<!-- ───────── FIN ───────── -->
+<section class="ecran" id="e-fin">
+  <h2 id="fin-titre">Reset terminé</h2>
+  <p class="mut" id="fin-sous">Le timer a fait son travail. Le reste attend demain.</p>
+  <div class="recap">
+    <div class="carte"><div class="v jaune" id="fin-duree">—</div><div class="l">temps réel</div></div>
+    <div class="carte"><div class="v violet" id="fin-cases">—</div><div class="l">cases cochées</div></div>
+    <div class="carte"><div class="v" id="fin-etatv">—</div><div class="l">état /5</div></div>
+  </div>
+  <div class="champ"><label>Note (optionnel)</label><textarea id="note" placeholder="Ce qui a coincé, ce qui a pris du temps…" style="min-height:80px"></textarea></div>
+  <button class="btn prim" id="b-enregistrer">Enregistrer</button>
+  <div class="etat" id="fin-etat"></div>
+</section>
+
+<!-- ───────── MERCI ───────── -->
+<section class="ecran" id="e-merci">
+  <div class="espace"></div>
+  <h1 style="text-align:center"><span id="merci-titre">Enregistré</span> <span class="ok">✓</span></h1>
+  <p class="mut" style="text-align:center" id="merci-sous">—</p>
+  <div class="espace"></div>
+  <button class="btn" id="b-retour">Retour à l'accueil</button>
+</section>
+
+<!-- ───────── RÉGLAGES ───────── -->
+<section class="ecran" id="e-reglages">
+  <h2>Réglages</h2>
+  <p class="mut petit">Cinq zones, une par semaine, en rotation. Une tâche par ligne.</p>
+  <div class="champ"><label>Heure du reset du soir (rappel affiché, pas de notification)</label><input type="time" id="r-heure" value="20:30"></div>
+  <div id="r-zones"></div>
+  <button class="btn prim" id="b-r-sauver">Enregistrer les réglages</button>
+  <button class="btn discret" id="b-r-defaut">Remettre les zones par défaut</button>
+  <div class="etat" id="r-etat"></div>
+  <button class="btn" id="b-r-retour">Retour</button>
+</section>
+
+<script>
+(function () {
+  'use strict';
+  var API = 'https://n7n.automatisationboost.com/webhook/menage-journal';
+  var QKEY = 'nickel_queue_v1', CKEY = 'nickel_config_v1', CDIRTY = 'nickel_config_dirty';
+  var $ = function (id) { return document.getElementById(id); };
+  var fmt = function (s) { s = Math.max(0, Math.ceil(s)); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); };
+  var pad2 = function (n) { return String(n).padStart(2, '0'); };
+  var localDate = function (d) { d = d || new Date(); return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate()); };
+  var ls = { get: function (k) { try { return localStorage.getItem(k); } catch (e) { return null; } }, set: function (k, v) { try { localStorage.setItem(k, v); return true; } catch (e) { return false; } }, del: function (k) { try { localStorage.removeItem(k); } catch (e) {} } };
+  var DAY = 86400000;
+  var jourIdx = function (iso) { return Math.round(Date.parse(iso + 'T00:00:00Z') / DAY); };
+  var isoDeIdx = function (i) { return new Date(i * DAY).toISOString().slice(0, 10); };
+  // Monday of the ISO week that contains `iso`.
+  var lundi = function (iso) { var i = jourIdx(iso); var dow = (new Date(i * DAY).getUTCDay() + 6) % 7; return isoDeIdx(i - dow); };
+  var semaineISO = function (iso) { var d = new Date(iso + 'T00:00:00Z'); var day = (d.getUTCDay() + 6) % 7; d.setUTCDate(d.getUTCDate() - day + 3); var y1 = new Date(Date.UTC(d.getUTCFullYear(), 0, 4)); return 1 + Math.round(((d - y1) / DAY - 3 + ((y1.getUTCDay() + 6) % 7)) / 7); };
+  var jj = function (iso) { return iso.slice(8, 10) + '/' + iso.slice(5, 7); };
+
+  // ── the method (fixed) ──────────────────────────────────────────────────
+  var RESET = [
+    { t: 'Vaisselle faite ou lave-vaisselle lancé' },
+    { t: 'Plan de travail essuyé' },
+    { t: 'Ce qui traîne remis à sa place', s: 'une seule fois : tu touches, tu ranges' },
+    { t: 'Sol de la cuisine balayé' },
+    { t: 'Sac poubelle sorti', s: 'seulement s\'il est plein' },
+    { t: 'Demain préparé', s: 'tenue, sac' }
+  ];
+  var RESET_DUR = 600, ZONE_DUR = 900;
+  var ZONES_DEFAUT = [
+    { nom: 'Cuisine', taches: ['Frigo (étagères, bacs)', 'Plaques / cuisinière', 'Micro-ondes', 'Four', 'Poubelle lavée', 'Dessus du frigo et des meubles', 'Plinthes et bas de meubles', 'Évier et robinet détartrés', 'Un placard vidé et essuyé', 'Hotte / filtre'] },
+    { nom: 'Salle de bain + WC', taches: ['Douche / baignoire et joints', 'Lavabo et robinet détartrés', 'Miroir', 'WC : cuvette, extérieur, brosse', 'Sol lavé', 'Paroi ou rideau de douche', 'Placard sous le lavabo', 'Serviettes et tapis changés', 'Grilles d\'aération dépoussiérées'] },
+    { nom: 'Chambre', taches: ['Draps changés', 'Sous le lit', 'Tables de nuit', 'Poussière : meubles, tête de lit', 'Placard : un tri de vêtements', 'Sol aspiré puis lavé', 'Miroir / vitres', 'Interrupteurs et poignées', 'Lampes et abat-jour'] },
+    { nom: 'Salon + bureau', taches: ['Canapé : coussins, dessous', 'Poussière : meubles, étagères', 'Écran TV / écran du bureau', 'Câbles et bureau rangés', 'Sol aspiré puis lavé', 'Vitres / baie', 'Plantes : feuilles, arrosage', 'Télécommandes, clavier, souris désinfectés', 'Tri des papiers'] },
+    { nom: 'Entrée + sols + linge', taches: ['Paillasson secoué', 'Chaussures rangées', 'Sols de passage lavés', 'Machine à laver : joint, bac à lessive', 'Panier vidé, lessive lancée', 'Pliage / repassage en retard', 'Portes, poignées, interrupteurs', 'Toiles d\'araignée, coins de plafond', 'Miroir et porte d\'entrée'] }
+  ];
+  var CFG = { zones: JSON.parse(JSON.stringify(ZONES_DEFAUT)), heureReset: '20:30', maj: 0 };
+
+  function chargerConfigLocale() {
+    try { var c = JSON.parse(ls.get(CKEY) || 'null'); if (c && Array.isArray(c.zones) && c.zones.length === 5) CFG = normaliserCfg(c); } catch (e) {}
+  }
+  function normaliserCfg(c) {
+    var zones = [];
+    for (var i = 0; i < 5; i++) {
+      var z = (c.zones && c.zones[i]) || {};
+      var taches = Array.isArray(z.taches) ? z.taches.map(function (t) { return String(t).trim(); }).filter(Boolean) : [];
+      zones.push({ nom: String(z.nom || ZONES_DEFAUT[i].nom).trim().slice(0, 60) || ZONES_DEFAUT[i].nom, taches: taches.length ? taches.slice(0, 20) : ZONES_DEFAUT[i].taches.slice() });
+    }
+    return { zones: zones, heureReset: /^\d{2}:\d{2}$/.test(String(c.heureReset || '')) ? c.heureReset : '20:30', maj: +c.maj || 0 };
+  }
+  function sauverConfig(envoi) {
+    CFG.maj = Date.now();
+    ls.set(CKEY, JSON.stringify(CFG));
+    rendreAccueilStatique();
+    if (!envoi) return Promise.resolve();
+    ls.set(CDIRTY, '1');
+    return envoyer({ date: 'config', type: 'config', zone: '', note: JSON.stringify(CFG).slice(0, 3900) })
+      .then(function () { ls.del(CDIRTY); return true; })
+      .catch(function () { return false; });
+  }
+
+  // ── state ───────────────────────────────────────────────────────────────
+  var S = { ecran: 'accueil', type: null, dur: 0, deadline: 0, restant: 0, pause: false, tick: null, debut: 0, dureeEcoulee: 0, wakeLock: null, saved: false, apres: null, rows: [], testDate: null, taches: [], deja: [] };
+  var today = function () { return S.testDate || localDate(); };
+
+  function montrer(id) {
+    Array.prototype.forEach.call(document.querySelectorAll('.ecran'), function (e) { e.classList.remove('actif'); });
+    $('e-' + id).classList.add('actif');
+    S.ecran = id;
+    window.scrollTo(0, 0);
+  }
+
+  // ── sound / vibration / wake lock ───────────────────────────────────────
+  var ctx = null;
+  function initAudio() { try { if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)(); if (ctx.state === 'suspended') ctx.resume(); } catch (e) { ctx = null; } }
+  function bip(n, freq) {
+    n = n || 1; freq = freq || 880;
+    try { if (navigator.vibrate) navigator.vibrate(n === 1 ? [120] : [120, 80, 120, 80, 120]); } catch (e) {}
+    if (!ctx) return;
+    try {
+      for (var i = 0; i < n; i++) {
+        var o = ctx.createOscillator(), g = ctx.createGain();
+        o.type = 'sine'; o.frequency.value = freq;
+        var t = ctx.currentTime + i * 0.22;
+        g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.35, t + 0.01); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.18);
+        o.connect(g); g.connect(ctx.destination); o.start(t); o.stop(t + 0.2);
+      }
+    } catch (e) {}
+  }
+  function garderEveil() { try { if (!navigator.wakeLock) return; navigator.wakeLock.request('screen').then(function (wl) { S.wakeLock = wl; }).catch(function () {}); } catch (e) {} }
+  function lacherEveil() { try { if (S.wakeLock) { S.wakeLock.release(); S.wakeLock = null; } } catch (e) {} }
+  document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible' && S.ecran === 'session' && !S.pause) garderEveil(); });
+
+  // ── daily state: house score, triggers, zone progress ───────────────────
+  function etatDuJour() { var v = +ls.get('nickel_etat_' + today()); return v >= 1 && v <= 5 ? v : null; }
+  function zoneIdx(iso) { return semaineISO(iso || today()) % 5; }
+  function zoneCourante() { return CFG.zones[zoneIdx()]; }
+  function zoneFaites(iso) { try { var a = JSON.parse(ls.get('nickel_zone_' + lundi(iso || today())) || '[]'); return Array.isArray(a) ? a : []; } catch (e) { return []; } }
+  function sauverZoneFaites(iso, arr) { ls.set('nickel_zone_' + lundi(iso), JSON.stringify(arr)); }
+  var DECL = ['machine', 'lit', 'cuisine'];
+  function chargerDecl() {
+    var d = {}; try { d = JSON.parse(ls.get('nickel_decl_' + today()) || '{}') || {}; } catch (e) {}
+    DECL.forEach(function (k) { $('d-' + k).checked = !!d[k]; });
+  }
+  DECL.forEach(function (k) { $('d-' + k).addEventListener('change', function () { var d = {}; DECL.forEach(function (x) { d[x] = $('d-' + x).checked; }); ls.set('nickel_decl_' + today(), JSON.stringify(d)); }); });
+
+  // ── home rendering ──────────────────────────────────────────────────────
+  function rendreAccueilStatique() {
+    var z = zoneCourante(), t = today(), l = lundi(t);
+    var jours = S.rows.filter(function (r) { return r.type === 'zone' && lundi(r.date) === l; }).map(function (r) { return r.date; });
+    jours = jours.filter(function (d, i) { return jours.indexOf(d) === i; });
+    var faites = zoneFaites(t).filter(function (i) { return i < z.taches.length; });
+    $('zone-nom').textContent = z.nom;
+    $('zone-jour').textContent = 'jour ' + Math.min(5, jours.length + (jours.indexOf(t) >= 0 ? 0 : 1)) + ' / 5 · semaine ' + semaineISO(t);
+    $('zone-prog').style.width = (z.taches.length ? faites.length / z.taches.length * 100 : 0) + '%';
+    $('zone-detail').textContent = faites.length + ' / ' + z.taches.length + ' tâches de fond faites cette semaine — le reste attend le mois prochain.';
+    $('rappel').textContent = 'Reset du soir à ' + CFG.heureReset + ' · 5 jours sur 7 pour la zone';
+    $('sem-dates').textContent = jj(l) + ' → ' + jj(isoDeIdx(jourIdx(l) + 6));
+  }
+
+  function statsSemaines(rows) {
+    var t = today(), l0 = lundi(t);
+    var sem = {};
+    rows.forEach(function (r) {
+      var k = lundi(r.date); sem[k] = sem[k] || { sec: 0, etats: [], jours: {} };
+      sem[k].sec += +r.duree_s || 0;
+      if (r.etat !== null && r.etat !== undefined && r.etat !== '' && !isNaN(+r.etat)) sem[k].etats.push(+r.etat);
+      sem[k].jours[r.date] = true;
+    });
+    var get = function (k) { return sem[k] || { sec: 0, etats: [], jours: {} }; };
+    var moy = function (xs) { return xs.length ? Math.round(xs.reduce(function (a, b) { return a + b; }, 0) / xs.length * 10) / 10 : null; };
+    var liste = [];
+    for (var k = 3; k >= 0; k--) { var key = isoDeIdx(jourIdx(l0) - 7 * k); var w = get(key); liste.push({ lundi: key, min: Math.round(w.sec / 60), etat: moy(w.etats), jours: Object.keys(w.jours).length, sec: w.sec }); }
+    var cles = Object.keys(sem).sort();
+    return { liste: liste, cette: liste[3], derniere: liste[2], sem: sem, cles: cles, moy: moy };
+  }
+
+  function calcSerie(rows) {
+    var ds = rows.filter(function (r) { return r.type === 'reset'; }).map(function (r) { return r.date; }).sort();
+    ds = ds.filter(function (d, i) { return ds.indexOf(d) === i; });
+    if (!ds.length) return 0;
+    var t0 = jourIdx(today()), last = jourIdx(ds[ds.length - 1]);
+    if (t0 - last > 1) return 0;
+    var n = 1;
+    for (var i = ds.length - 1; i > 0; i--) { if (jourIdx(ds[i]) - jourIdx(ds[i - 1]) === 1) n++; else break; }
+    return n;
+  }
+
+  function rendreVerdict(st) {
+    var n = st.cles.length;
+    if (n < 3) {
+      $('verdict').textContent = n === 0 ? 'Rien de mesuré encore. Ce soir, 10 minutes, et le compteur démarre.' : 'Verdict à la 3e semaine — ' + n + ' / 3 mesurée' + (n > 1 ? 's' : '') + '.';
+      $('verdict-sous').textContent = 'La seule phrase qui compte : combien de minutes en moins par jour, et la maison à combien sur 5.';
+      return;
+    }
+    var w0 = st.sem[st.cles[0]], w1 = st.sem[st.cles[n - 1]];
+    var parJour = function (w) { var j = Object.keys(w.jours).length; return j ? w.sec / 60 / j : null; };
+    var p0 = parJour(w0), p1 = parJour(w1), e1 = st.moy(w1.etats);
+    if (p0 === null || p1 === null) { $('verdict').textContent = 'Pas assez de jours mesurés.'; return; }
+    var diff = Math.round((p0 - p1) * 10) / 10;
+    if (diff > 0) { $('verdict').textContent = 'Tu passes ' + diff + ' min de moins par jour et la maison est à ' + (e1 === null ? '—' : e1) + '/5.'; $('verdict-sous').textContent = 'Semaine du ' + jj(st.cles[0]) + ' : ' + Math.round(p0) + ' min/jour → semaine du ' + jj(st.cles[n - 1]) + ' : ' + Math.round(p1) + ' min/jour.'; }
+    else { $('verdict').textContent = 'Tu passes ' + Math.round(-diff * 10) / 10 + ' min de plus par jour, la maison est à ' + (e1 === null ? '—' : e1) + '/5.'; $('verdict-sous').textContent = 'Arrête à 10:00, même si tout n\'est pas coché. La règle est le temps.'; }
+  }
+
+  function dessiner(st) {
+    var svg = $('chart'); while (svg.firstChild) svg.removeChild(svg.firstChild);
+    var NS = 'http://www.w3.org/2000/svg';
+    var W = 352, H = 150, L = 30, R = 26, T = 12, B = 24;
+    var mk = function (tag, attrs) { var e = document.createElementNS(NS, tag); for (var a in attrs) e.setAttribute(a, attrs[a]); svg.appendChild(e); return e; };
+    var maxMin = Math.max(60, Math.ceil(Math.max.apply(null, st.liste.map(function (w) { return w.min; })) / 30) * 30);
+    var yM = function (v) { return T + (H - T - B) * (1 - v / maxMin); };
+    var yE = function (v) { return T + (H - T - B) * (1 - (v - 1) / 4); };
+    [0, maxMin / 2, maxMin].forEach(function (v) { mk('line', { x1: L, x2: W - R, y1: yM(v), y2: yM(v), stroke: '#242430', 'stroke-width': 1 }); var t = mk('text', { x: L - 4, y: yM(v) + 4, fill: '#8A8A8A', 'font-size': 10, 'text-anchor': 'end' }); t.textContent = v; });
+    [1, 3, 5].forEach(function (v) { var t = mk('text', { x: W - R + 6, y: yE(v) + 4, fill: '#FFE600', 'font-size': 10, opacity: .8 }); t.textContent = v; });
+    var colW = (W - L - R) / 4, bw = colW * 0.42;
+    var pts = [];
+    st.liste.forEach(function (w, i) {
+      var cx = L + colW * (i + 0.5);
+      if (w.min > 0) mk('rect', { x: cx - bw / 2, y: yM(w.min), width: bw, height: Math.max(1, yM(0) - yM(w.min)), rx: 4, fill: '#A855F7', opacity: i === 3 ? 1 : .7 });
+      if (w.min > 0) { var tm = mk('text', { x: cx, y: yM(w.min) - 4, fill: '#EDEDED', 'font-size': 10, 'text-anchor': 'middle', 'font-weight': 700 }); tm.textContent = w.min; }
+      var lab = mk('text', { x: cx, y: H - 7, fill: i === 3 ? '#EDEDED' : '#8A8A8A', 'font-size': 10, 'text-anchor': 'middle' }); lab.textContent = i === 3 ? 'cette sem.' : jj(w.lundi);
+      if (w.etat !== null) pts.push({ x: cx, y: yE(w.etat), v: w.etat });
+    });
+    var d = ''; pts.forEach(function (p, i) { d += (i ? ' L' : 'M') + p.x.toFixed(1) + ' ' + p.y.toFixed(1); });
+    if (pts.length > 1) mk('path', { d: d, fill: 'none', stroke: '#FFE600', 'stroke-width': 2.5, 'stroke-linejoin': 'round' });
+    pts.forEach(function (p) { mk('circle', { cx: p.x, cy: p.y, r: 5, fill: '#FFE600', stroke: '#0a0a0f', 'stroke-width': 2 }); });
+  }
+
+  function rendreAccueil() {
+    var rows = S.rows;
+    var st = statsSemaines(rows);
+    rendreAccueilStatique();
+    var serie = calcSerie(rows);
+    $('serie').textContent = '🔥 ' + serie + ' soir' + (serie > 1 ? 's' : '');
+    $('min-cette').textContent = st.cette.min;
+    var el = $('min-compare'), d = st.cette.min - st.derniere.min;
+    if (st.derniere.jours === 0 && st.cette.jours === 0) { el.className = 'fleche egal'; el.textContent = 'Rien de mesuré encore cette semaine ni la semaine dernière.'; }
+    else if (st.derniere.jours === 0) { el.className = 'fleche egal'; el.textContent = 'Première semaine mesurée · ' + st.cette.jours + ' jour' + (st.cette.jours > 1 ? 's' : '') + ' actif' + (st.cette.jours > 1 ? 's' : ''); }
+    else if (d < 0) { el.className = 'fleche bas'; el.textContent = '↓ ' + (-d) + ' min de moins que la semaine dernière (' + st.derniere.min + ' min)'; }
+    else if (d > 0) { el.className = 'fleche haut'; el.textContent = '↑ ' + d + ' min de plus que la semaine dernière (' + st.derniere.min + ' min)'; }
+    else { el.className = 'fleche egal'; el.textContent = '= même temps que la semaine dernière (' + st.derniere.min + ' min)'; }
+    rendreVerdict(st);
+    dessiner(st);
+    var n = rows.length;
+    $('hist-etat').textContent = n ? n + ' session' + (n > 1 ? 's' : '') + ' enregistrée' + (n > 1 ? 's' : '') + ' · ' + st.cles.length + ' semaine' + (st.cles.length > 1 ? 's' : '') : 'Aucune session encore. La première est ce soir.';
+    chargerDecl();
+  }
+
+  // ── house score gate ────────────────────────────────────────────────────
+  var enAttente = null;
+  function demarrer(type) {
+    if (etatDuJour() === null) { enAttente = type; Array.prototype.forEach.call($('notes5').children, function (b) { b.classList.remove('choisi'); }); montrer('etat'); return; }
+    commencer(type);
+  }
+  Array.prototype.forEach.call($('notes5').children, function (b) {
+    b.addEventListener('click', function () {
+      Array.prototype.forEach.call($('notes5').children, function (x) { x.classList.remove('choisi'); });
+      b.classList.add('choisi');
+      ls.set('nickel_etat_' + today(), b.getAttribute('data-n'));
+      var t = enAttente; enAttente = null;
+      setTimeout(function () { if (t) commencer(t); else montrer('accueil'); }, 180);
+    });
+  });
+  $('b-etat-retour').addEventListener('click', function () { enAttente = null; montrer('accueil'); });
+
+  // ── session engine ──────────────────────────────────────────────────────
+  function commencer(type) {
+    initAudio();
+    S.type = type; S.dur = type === 'reset' ? RESET_DUR : ZONE_DUR;
+    S.debut = Date.now(); S.dureeEcoulee = 0; S.saved = false; S.pause = false; S.apres = null;
+    S.deadline = Date.now() + S.dur * 1000; S.restant = S.dur;
+    var z = zoneCourante();
+    if (type === 'reset') { S.taches = RESET.map(function (r) { return { t: r.t, s: r.s || '' }; }); S.deja = []; $('s-type').textContent = 'Reset du soir'; $('s-sous').textContent = 'ordre fixe · tu touches, tu ranges · stop à 10:00'; }
+    else { S.taches = z.taches.map(function (t) { return { t: t, s: '' }; }); S.deja = zoneFaites(today()); $('s-type').textContent = 'Zone : ' + z.nom; $('s-sous').textContent = '15 min · ce que tu ne fais pas attend le mois prochain'; }
+    var c = $('taches'); c.innerHTML = '';
+    S.taches.forEach(function (t, i) {
+      var deja = S.deja.indexOf(i) >= 0;
+      var lab = document.createElement('label'); lab.className = 'tache' + (deja ? ' faite deja' : '');
+      lab.innerHTML = '<input class="cb" type="checkbox" data-i="' + i + '"' + (deja ? ' checked disabled' : '') + '><span class="case"></span><span class="num">' + (i + 1) + '</span><span class="lib"></span>';
+      var lib = lab.querySelector('.lib'); lib.textContent = t.t; if (t.s) { var sm = document.createElement('small'); sm.textContent = t.s; lib.appendChild(sm); }
+      if (!deja) lab.querySelector('input').addEventListener('change', function (ev) { lab.classList.toggle('faite', ev.target.checked); if (ev.target.checked) bip(1, 1318); compterCases(); });
+      c.appendChild(lab);
+    });
+    $('b-pause').textContent = 'Pause';
+    $('compte').className = 'compte';
+    $('note').value = '';
+    compterCases();
+    montrer('session');
+    garderEveil();
+    rendre(0);
+    if (!S.tick) S.tick = setInterval(tick, 250);
+  }
+  function cochees() { return Array.prototype.filter.call(document.querySelectorAll('#taches input'), function (i) { return i.checked && !i.disabled; }).map(function (i) { return +i.getAttribute('data-i'); }); }
+  function compterCases() { var n = cochees().length + S.deja.length; $('s-compteur').textContent = n + ' / ' + S.taches.length + (n === S.taches.length ? ' · tout est fait, arrête-toi' : ''); }
+  function pause() {
+    if (S.ecran !== 'session') return;
+    S.pause = !S.pause;
+    if (S.pause) { S.restant = (S.deadline - Date.now()) / 1000; $('b-pause').textContent = 'Reprendre'; $('compte').classList.add('pause'); lacherEveil(); }
+    else { S.deadline = Date.now() + S.restant * 1000; $('b-pause').textContent = 'Pause'; $('compte').classList.remove('pause'); garderEveil(); initAudio(); }
+  }
+  function tick() {
+    if (S.ecran !== 'session' || S.pause) return;
+    S.restant = (S.deadline - Date.now()) / 1000;
+    if (S.restant <= 0) { S.restant = 0; rendre(S.dur); finSession(S.dur, true); return; }
+    rendre(S.dur - S.restant);
+  }
+  function rendre(ecoule) {
+    $('compte').textContent = fmt(S.dur - ecoule);
+    $('barre').style.width = Math.min(100, ecoule / S.dur * 100) + '%';
+    $('s-total').textContent = fmt(S.dur - ecoule) + ' restantes';
+  }
+  function terminer() { if (S.ecran !== 'session') return; var ec = S.pause ? S.dur - S.restant : (Date.now() - S.debut) / 1000; finSession(Math.min(S.dur, Math.max(0, ec)), false); }
+  function finSession(dureeS, tempsEcoule) {
+    if (S.tick) { clearInterval(S.tick); S.tick = null; }
+    lacherEveil();
+    S.dureeEcoulee = Math.round(dureeS);
+    S.apres = { faites: cochees(), total: S.taches.length };
+    $('compte').textContent = '0:00'; $('compte').classList.add('fini');
+    bip(3, 1046);
+    var reset = S.type === 'reset';
+    $('fin-titre').textContent = reset ? 'Reset terminé' : 'Zone : ' + zoneCourante().nom + ' — terminé';
+    $('fin-sous').textContent = tempsEcoule ? (reset ? 'Le timer a sonné. Ce qui n\'est pas coché attend demain — c\'est la règle.' : 'Quinze minutes, stop. Le reste attend le mois prochain.') : (reset ? 'Fini avant la sonnerie. C\'est exactement ce qu\'on cherche.' : 'Fini avant la sonnerie. Le reste attend le mois prochain.');
+    $('fin-duree').textContent = fmt(S.dureeEcoulee);
+    $('fin-cases').textContent = (S.apres.faites.length + S.deja.length) + '/' + S.apres.total;
+    var e = etatDuJour(); $('fin-etatv').textContent = e === null ? '—' : e;
+    $('fin-etat').textContent = '';
+    $('b-enregistrer').disabled = false; $('b-enregistrer').textContent = 'Enregistrer';
+    montrer('fin');
+  }
+
+  // ── payload / save ──────────────────────────────────────────────────────
+  function payload() {
+    var z = zoneCourante();
+    var noms = S.apres.faites.map(function (i) { return S.taches[i] ? S.taches[i].t : ''; }).filter(Boolean);
+    var parts = [];
+    if ($('note').value.trim()) parts.push($('note').value.trim());
+    if (noms.length) parts.push('[fait] ' + noms.join(' | '));
+    if (S.type === 'reset') { var d = {}; try { d = JSON.parse(ls.get('nickel_decl_' + today()) || '{}') || {}; } catch (e) {} var dl = DECL.filter(function (k) { return d[k]; }); if (dl.length) parts.push('[déclencheurs] ' + dl.join(', ')); }
+    return {
+      date: today(), type: S.type, zone: S.type === 'zone' ? z.nom : '',
+      duree_s: S.dureeEcoulee, faites: S.apres.faites.length + (S.type === 'zone' ? S.deja.length : 0), total: S.apres.total,
+      etat: etatDuJour(), note: parts.join('\n').slice(0, 1900)
+    };
+  }
+  function envoyer(p) {
+    var ctl = ('AbortController' in window) ? new AbortController() : null;
+    var timer = ctl ? setTimeout(function () { ctl.abort(); }, 12000) : null;
+    return fetch(API, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(p), signal: ctl ? ctl.signal : undefined })
+      .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json().catch(function () { return {}; }); })
+      .then(function (j) { if (j && j.status && j.status !== 'ok') throw new Error('réponse ' + j.status); return true; })
+      .finally(function () { if (timer) clearTimeout(timer); });
+  }
+  function lireFile() { try { var q = JSON.parse(ls.get(QKEY) || '[]'); return Array.isArray(q) ? q : []; } catch (e) { return []; } }
+  function ecrireFile(q) { if (!q.length) { ls.del(QKEY); return true; } return ls.set(QKEY, JSON.stringify(q)); }
+  var cle = function (x) { return x.date + '|' + x.type; };
+  function fusionnerLocal(p) {
+    // Keep the home screen honest even before the next GET: merge the row locally.
+    S.rows = S.rows.filter(function (r) { return cle(r) !== cle(p); }).concat([p]);
+    if (p.type === 'zone') { var arr = zoneFaites(p.date); S.apres.faites.forEach(function (i) { if (arr.indexOf(i) < 0) arr.push(i); }); sauverZoneFaites(p.date, arr); }
+  }
+  function enregistrer() {
+    if (S.saved) return;
+    var p = payload();
+    var b = $('b-enregistrer'); b.disabled = true; b.textContent = 'Envoi…';
+    $('fin-etat').textContent = '';
+    var resume = fmt(p.duree_s) + ' · ' + p.faites + '/' + p.total + ' cases' + (p.etat ? ' · maison à ' + p.etat + '/5' : '');
+    envoyer(p).then(function () {
+      S.saved = true; fusionnerLocal(p);
+      merci('Enregistré', resume);
+    }).catch(function (e) {
+      var q = lireFile().filter(function (x) { return cle(x) !== cle(p); }); q.push(p);
+      var ok = ecrireFile(q);
+      S.saved = true; fusionnerLocal(p);
+      merci(ok ? 'Gardé sur ce téléphone' : 'Non enregistré', (ok ? 'Pas de réseau (' + e.message + ') — envoyé à la prochaine ouverture. ' : 'Pas de réseau et pas de stockage local (' + e.message + '). ') + resume);
+    }).finally(function () { b.disabled = false; b.textContent = 'Enregistrer'; });
+  }
+  function merci(titre, sous) { $('merci-titre').textContent = titre; $('merci-sous').textContent = sous; montrer('merci'); }
+  function viderFile() {
+    var q = lireFile(), el = $('file-etat');
+    var suite = function () { if (ls.get(CDIRTY)) return sauverConfig(true); return Promise.resolve(); };
+    if (!q.length) { el.hidden = true; return suite(); }
+    el.hidden = false; el.textContent = q.length + ' session(s) en attente d\'envoi…';
+    var p = q[0];
+    return envoyer(p).then(function () { ecrireFile(lireFile().filter(function (x) { return cle(x) !== cle(p); })); return viderFile(); })
+      .catch(function (e) { el.textContent = q.length + ' session(s) en attente d\'envoi (' + e.message + ') — nouvel essai à la prochaine ouverture.'; return suite(); });
+  }
+
+  // ── history ─────────────────────────────────────────────────────────────
+  function chargerHistorique() {
+    var ctl = ('AbortController' in window) ? new AbortController() : null;
+    var timer = ctl ? setTimeout(function () { ctl.abort(); }, 10000) : null;
+    return fetch(API + '?t=' + Date.now(), { signal: ctl ? ctl.signal : undefined })
+      .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+      .then(function (j) {
+        var rows = (j && Array.isArray(j.rows)) ? j.rows : [];
+        var cfgRow = null;
+        S.rows = rows.filter(function (r) { if (r.date === 'config') { cfgRow = r; return false; } return /^\d{4}-\d{2}-\d{2}$/.test(String(r.date)) && r.date !== '2000-01-01'; });
+        // Queued (unsent) rows still count locally.
+        lireFile().forEach(function (p) { if (p.date !== 'config') S.rows = S.rows.filter(function (r) { return cle(r) !== cle(p); }).concat([p]); });
+        if (cfgRow && cfgRow.note && !ls.get(CDIRTY)) { try { var c = JSON.parse(cfgRow.note); if (c && (+c.maj || 0) > (CFG.maj || 0)) { CFG = normaliserCfg(c); ls.set(CKEY, JSON.stringify(CFG)); } } catch (e) {} }
+        rendreAccueil();
+      })
+      .catch(function () { $('hist-etat').textContent = 'historique indisponible (hors ligne ?)'; rendreAccueil(); })
+      .finally(function () { if (timer) clearTimeout(timer); });
+  }
+
+  // ── settings ────────────────────────────────────────────────────────────
+  function rendreReglages() {
+    $('r-heure').value = CFG.heureReset;
+    var c = $('r-zones'); c.innerHTML = '';
+    CFG.zones.forEach(function (z, i) {
+      var d = document.createElement('div'); d.className = 'carte zone-edit'; d.style.marginBottom = '12px';
+      d.innerHTML = '<span class="pastille">Zone ' + (i + 1) + (i === zoneIdx() ? ' · cette semaine' : '') + '</span><input type="text" maxlength="60" data-z="' + i + '" aria-label="Nom de la zone ' + (i + 1) + '"><textarea data-t="' + i + '" aria-label="Tâches de la zone ' + (i + 1) + '"></textarea>';
+      d.querySelector('input').value = z.nom; d.querySelector('textarea').value = z.taches.join('\n');
+      c.appendChild(d);
+    });
+    $('r-etat').textContent = '';
+  }
+  function lireReglages() {
+    var zones = [];
+    for (var i = 0; i < 5; i++) zones.push({ nom: document.querySelector('[data-z="' + i + '"]').value, taches: document.querySelector('[data-t="' + i + '"]').value.split('\n') });
+    return normaliserCfg({ zones: zones, heureReset: $('r-heure').value, maj: 0 });
+  }
+  $('b-reglages').addEventListener('click', function () { rendreReglages(); montrer('reglages'); });
+  $('b-r-retour').addEventListener('click', function () { montrer('accueil'); rendreAccueil(); });
+  $('b-r-defaut').addEventListener('click', function () { CFG.zones = JSON.parse(JSON.stringify(ZONES_DEFAUT)); rendreReglages(); $('r-etat').textContent = 'Zones par défaut rechargées — pense à enregistrer.'; $('r-etat').className = 'etat mut'; });
+  $('b-r-sauver').addEventListener('click', function () {
+    CFG = lireReglages();
+    var b = $('b-r-sauver'); b.disabled = true;
+    $('r-etat').textContent = 'Enregistrement…'; $('r-etat').className = 'etat mut';
+    sauverConfig(true).then(function (ok) {
+      rendreReglages();
+      $('r-etat').textContent = ok ? 'Réglages enregistrés (téléphone + serveur).' : 'Gardés sur ce téléphone, serveur injoignable — renvoyés à la prochaine ouverture.';
+      $('r-etat').className = 'etat ' + (ok ? 'ok' : 'err');
+    }).finally(function () { b.disabled = false; });
+  });
+
+  // ── wiring ──────────────────────────────────────────────────────────────
+  $('b-reset').addEventListener('click', function () { demarrer('reset'); });
+  $('b-zone').addEventListener('click', function () { demarrer('zone'); });
+  $('b-pause').addEventListener('click', pause);
+  $('b-terminer').addEventListener('click', terminer);
+  $('b-enregistrer').addEventListener('click', enregistrer);
+  $('b-retour').addEventListener('click', function () { montrer('accueil'); rendreAccueil(); chargerHistorique(); });
+  window.addEventListener('beforeunload', function (e) { if (S.ecran === 'session' || (S.ecran === 'fin' && !S.saved)) { e.preventDefault(); e.returnValue = ''; } });
+
+  chargerConfigLocale();
+  rendreAccueil();
+  viderFile().then(chargerHistorique);
+
+  // ── test hook (no effect unless called) ─────────────────────────────────
+  window.__nickel = {
+    state: S, RESET: RESET, config: function () { return CFG; }, payload: payload,
+    setTestDate: function (d) { S.testDate = d; rendreAccueil(); },
+    setEtat: function (n) { ls.set('nickel_etat_' + today(), String(n)); },
+    start: function (type) { if (etatDuJour() === null) ls.set('nickel_etat_' + today(), '3'); commencer(type); },
+    finish: function (type, dureeS) {
+      // Close a session with a given real duration, without waiting for the timer.
+      if (S.ecran !== 'session' || (type && S.type !== type)) window.__nickel.start(type || 'reset');
+      finSession(Math.min(S.dur, Math.max(0, +dureeS || 0)), false);
+    },
+    save: enregistrer, home: function () { montrer('accueil'); return chargerHistorique(); }
+  };
+})();
+</script>
+</body>
+</html>
