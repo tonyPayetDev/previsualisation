@@ -26,51 +26,78 @@ code{background:#17171e;border-radius:3px;padding:2px 6px;font-size:12.5px;color
 
 <div class="cadre"><h3>Slide type — titre + schéma</h3><div class="enveloppe"><div class="zoom">
   <section class="slide">
+    <div class="deco">
+      <div class="tache a"></div><div class="tache b"></div>
+      <div class="pois hd"></div><div class="pois bg"></div>
+    </div>
     <div class="num">03 / 09</div>
-    <span class="badge">Architecture</span>
-    <h1>Un agent, <i>c'est un nœud</i></h1>
-    <p class="corps">Un déclencheur part, le <b>nœud Agent</b> prend la main.
-       Tu lui accroches trois choses : un cerveau, une mémoire, des outils.</p>
-    <p class="appui">Tout est un fil que tu peux voir.</p>
-    <div class="schema">
-      <div class="rangee">
-        <div class="noeud j"><span class="pt"></span>Déclencheur<small>Trigger</small></div>
-        <div class="fil"></div>
-        <div class="noeud v"><span class="pt"></span>Agent IA<small>Agent</small></div>
-      </div>
-      <div class="rangee">
-        <div class="noeud"><span class="pt"></span>Modèle<small>OpenAI</small></div>
-        <div class="fil court"></div>
-        <div class="noeud"><span class="pt"></span>Mémoire<small>Postgres</small></div>
-        <div class="fil court"></div>
-        <div class="noeud"><span class="pt"></span>Outil<small>Notion</small></div>
-      </div>
-    </div>
-    <div class="pied">
-      <span class="marque">automatisationboost.com</span>
-      <span class="suivant">Suivant →</span>
-    </div>
-  </section>
-</div></div></div>
 
-<div class="cadre"><h3>Slide type — chiffre plein</h3><div class="enveloppe"><div class="zoom">
-  <section class="slide">
-    <div class="num">01 / 09</div>
-    <span class="badge">Preuve</span>
-    <h1>591 workflows.<i>140 qui tournent.</i></h1>
-    <p class="corps">Pas une promesse. Un serveur, des exécutions,
-       des <b>journaux consultables</b>.</p>
-    <p class="appui">Le reste, c'est du bruit.</p>
+    <span class="badge">Architecture
+      <svg viewBox="0 0 170 16" fill="none"><path d="M3 11c34-7 92-9 164-4" stroke="#eab308" stroke-width="4" stroke-linecap="round"/></svg>
+      <svg class="ticks" viewBox="0 0 34 34" fill="none" stroke="#eab308" stroke-width="3" stroke-linecap="round">
+        <path d="M4 22L9 9M15 20l3-14M26 21l7-11"/></svg>
+    </span>
+
+    <h1>Un agent,<i>c&rsquo;est un n&oelig;ud</i></h1>
+
+    <p class="corps">Un déclencheur part, le <b>nœud Agent</b> prend la main.
+       Tu lui accroches trois choses&nbsp;: un cerveau, une mémoire, des outils.</p>
+
+    <p class="appui">Tout est un fil que tu peux voir.
+      <svg viewBox="0 0 460 18" fill="none" preserveAspectRatio="none">
+        <path d="M4 12c70-9 150-10 224-6 66 4 152 2 228-3" stroke="#eab308" stroke-width="5" stroke-linecap="round"/></svg>
+    </p>
+
     <div class="schema">
-      <div class="rangee">
-        <div class="noeud j"><span class="pt"></span>Mesuré<small>n8n API</small></div>
-        <div class="fil"></div>
-        <div class="noeud v"><span class="pt"></span>Vérifiable<small>Public</small></div>
+      <!-- Les liaisons descendent en POINTILLE depuis les ports, comme dans n8n.
+           Trace en SVG plutot qu'en bordures CSS : une courbe de Bezier ne se
+           fait pas avec des div. -->
+      <svg class="fils" xmlns="http://www.w3.org/2000/svg"></svg>
+
+      <div class="haut">
+        <svg class="eclair" width="34" height="42" viewBox="0 0 24 30" fill="currentColor">
+          <path d="M13 0 2 17h7l-2 13L22 12h-8l3-12z"/></svg>
+        <div class="noeud j"><span class="ic" style="background:rgba(234,179,8,.16)">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#eab308" stroke-width="2">
+            <path d="M21 12a9 9 0 11-3-6.7"/><path d="M21 4v5h-5"/></svg></span>
+          <span class="lb">Déclencheur<small>Trigger</small></span></div>
+        <span class="trait"></span>
+        <div class="noeud agent v"><span class="ic" style="background:rgba(139,92,246,.18)">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="2">
+            <rect x="4" y="7" width="16" height="12" rx="3"/><path d="M12 3v4M9 12h.01M15 12h.01M9 16h6"/></svg></span>
+          <span class="lb">Agent IA<small>AI Agent</small></span></div>
+        <span class="trait"></span>
+        <span class="plus">+</span>
       </div>
+
+      <div class="ports">
+        <span class="port"><span class="d"></span><span>Modèle</span></span>
+        <span class="port"><span class="d"></span><span>Mémoire</span></span>
+        <span class="port"><span class="d"></span><span>Outil</span></span>
+      </div>
+
+      <div class="rang-bas">
+        <div class="noeud"><span class="ic" style="background:rgba(255,255,255,.07)">
+          <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#c7c7d4" stroke-width="2">
+            <path d="M9 3a3 3 0 00-3 3 3 3 0 000 6 3 3 0 003 3V3zM15 3a3 3 0 013 3 3 3 0 010 6 3 3 0 01-3 3V3z"/></svg></span>
+          <span class="lb">OpenAI<small>Chat model</small></span></div>
+        <div class="noeud"><span class="ic" style="background:rgba(255,255,255,.07)">
+          <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#c7c7d4" stroke-width="2">
+            <ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/></svg></span>
+          <span class="lb">Postgres<small>Memory</small></span></div>
+        <div class="noeud"><span class="ic" style="background:rgba(255,255,255,.07)">
+          <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#c7c7d4" stroke-width="2">
+            <path d="M15 3a5 5 0 00-4.5 7.2L3 17.7 6.3 21l7.5-7.5A5 5 0 1015 3z"/></svg></span>
+          <span class="lb">Notion<small>Tool</small></span></div>
+      </div>
+      <div class="etiq"><span>Model</span><span>Memory</span><span>Tool</span></div>
     </div>
+
     <div class="pied">
       <span class="marque">automatisationboost.com</span>
-      <span class="suivant">Suivant →</span>
+      <span class="suivant">Suivant
+        <svg width="26" height="16" viewBox="0 0 26 16" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M1 8h22M17 2l6 6-6 6"/></svg>
+      </span>
     </div>
   </section>
 </div></div></div>
@@ -89,4 +116,30 @@ code{background:#17171e;border-radius:3px;padding:2px 6px;font-size:12.5px;color
   un filtre sur un parent crée un bloc conteneur et casse le positionnement de
   ses enfants — c'est exactement le bug qui empêchait le menu Koytcha de s'ouvrir.
 </div>
-</div></body></html>
+</div>
+<script>
+/* Les liaisons sont tracees APRES coup, depuis la position reelle de chaque
+   port et de chaque sous-noeud. Des coordonnees ecrites a la main dans un
+   viewBox etire par preserveAspectRatio donnaient des fils trop courts. */
+function fils(){
+  document.querySelectorAll('.schema').forEach(function(c){
+    var svg=c.querySelector('svg.fils'); if(!svg) return;
+    var rc=c.getBoundingClientRect();
+    svg.setAttribute('viewBox','0 0 '+Math.round(rc.width)+' '+Math.round(rc.height));
+    svg.setAttribute('preserveAspectRatio','none');
+    var ports=c.querySelectorAll('.port .d'), cibles=c.querySelectorAll('.rang-bas .noeud');
+    var d='';
+    for(var i=0;i<Math.min(ports.length,cibles.length);i++){
+      var a=ports[i].getBoundingClientRect(), b=cibles[i].getBoundingClientRect();
+      var x1=a.left+a.width/2-rc.left, y1=a.bottom-rc.top+7;
+      var x2=b.left+b.width/2-rc.left, y2=b.top-rc.top;
+      var m=(y1+y2)/2;
+      d+='<path d="M'+x1+' '+y1+' C'+x1+' '+m+', '+x2+' '+m+', '+x2+' '+y2+'"/>';
+    }
+    svg.innerHTML='<g stroke="#8b5cf6" stroke-width="3" stroke-dasharray="11 11" fill="none" stroke-linecap="round">'+d+'</g>';
+  });
+}
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(fils); else fils();
+window.addEventListener('load', fils);
+</script>
+</body></html>
