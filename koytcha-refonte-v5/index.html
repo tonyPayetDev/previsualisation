@@ -1202,8 +1202,12 @@ footer a:hover{color:var(--magenta)}
 /* Leger zoom au survol, en plus du Ken Burns qui se fige (regle plus bas).
    Il porte sur la FIGURE et non sur l image : superposer une transformation a
    celle d une animation en cours ne marche pas, l animation gagne toujours. */
-.realisations figure{transition:transform .45s cubic-bezier(.22,.61,.36,1),box-shadow .45s ease}
-.realisations figure:hover{transform:scale(1.03);box-shadow:0 10px 26px rgba(0,0,0,.16);z-index:2}
+/* Le zoom porte sur le CADRE, pas sur la figure : porte par la figure il
+   emmenait le reflet avec lui, et un miroir qui grossit avec son objet ne
+   ressemble plus a un miroir. */
+.realisations .cadre-real{transition:transform .45s cubic-bezier(.22,.61,.36,1),box-shadow .45s ease}
+.realisations figure:hover{z-index:2}
+.realisations figure:hover .cadre-real{transform:scale(1.03);box-shadow:0 10px 26px rgba(0,0,0,.16)}
 
 /* ── Anneau neon rose qui tourne autour du cadre au survol ───────────────
    Un degrade conique dont l angle est anime : l arc clair fait le tour du
@@ -1232,7 +1236,7 @@ footer a:hover{color:var(--magenta)}
 @keyframes tour-neon{to{--tour:360deg}}
 
 @media (prefers-reduced-motion:reduce){
-  .realisations figure:hover{transform:none}
+  .realisations figure:hover .cadre-real{transform:none}
   /* L anneau reste, mais fixe : c est le mouvement qui gene, pas la couleur. */
   .realisations figure:hover::before,.realisations figure:hover::after{animation:none}
 }
@@ -1475,7 +1479,9 @@ footer a:hover{color:var(--magenta)}
     <div class="cartes">
       <a class="carte monte" href="https://koytchaimmo.re/nos-programmes/" target="_blank" rel="noopener">
         <div class="vue"><span class="ville">Écocité Ouest</span>
-          <img src="../koytchaimmo-refonte/assets/alpha1-net.webp" alt="Cambaie Park, Saint-Paul" loading="lazy"></div>
+          <img src="assets/programmes/cambaie-1200.webp"
+                 srcset="assets/programmes/cambaie-600.webp 600w, assets/programmes/cambaie-1200.webp 1200w"
+                 sizes="(max-width:900px) 100vw, 31vw" alt="Cambaie Park, Saint-Paul" loading="lazy"></div>
         <h3>Cambaie Park</h3>
         <p>Nouveau pôle d’activités au cœur de l’Écocité Ouest.</p>
         <span class="dec">Découvrir
@@ -1483,8 +1489,8 @@ footer a:hover{color:var(--magenta)}
       </a>
       <a class="carte monte" href="https://koytchaimmo.re/programmes/ze-bureu-2/" target="_blank" rel="noopener">
         <div class="vue"><span class="ville">L’Éperon</span>
-          <img src="assets/programmes/w4-1200.webp"
-               srcset="assets/programmes/w4-600.webp 600w, assets/programmes/w4-1200.webp 1200w"
+          <img src="assets/programmes/w3-1200.webp"
+               srcset="assets/programmes/w3-600.webp 600w, assets/programmes/w3-1200.webp 1200w"
                sizes="(max-width:900px) 100vw, 31vw" alt="Ze Bure@u 2" loading="lazy"></div>
         <h3>Ze Bure@u 2</h3>
         <p>La signature Koytcha Immo sur l’Éperon.</p>
@@ -1493,7 +1499,9 @@ footer a:hover{color:var(--magenta)}
       </a>
       <a class="carte monte" href="https://koytchaimmo.re/nos-programmes/" target="_blank" rel="noopener">
         <div class="vue"><span class="ville">La Possession</span>
-          <img src="../koytchaimmo-refonte/assets/drone-net.webp" alt="ZE Lokal, La Possession" loading="lazy"></div>
+          <img src="assets/programmes/zelokal-1200.webp"
+                 srcset="assets/programmes/zelokal-600.webp 600w, assets/programmes/zelokal-1200.webp 1200w"
+                 sizes="(max-width:900px) 100vw, 31vw" alt="Ze Lokal, La Possession" loading="lazy"></div>
         <h3>Ze Lokal</h3>
         <p>Locaux d’activité à vendre ou à louer à La Possession.</p>
         <span class="dec">Découvrir
@@ -1575,10 +1583,10 @@ footer a:hover{color:var(--magenta)}
             <figcaption><a href="https://koytchaimmo.re/programmes/espace-turquoise/" target="_blank" rel="noopener">Espace Turquoise</a></figcaption>
           </figure>
           <figure>
-            <span class="cadre-real"><img src="assets/programmes/w4-1200.webp"
-                 srcset="assets/programmes/w4-600.webp 600w, assets/programmes/w4-1200.webp 1200w"
+            <span class="cadre-real"><img src="assets/programmes/w3-1200.webp"
+                 srcset="assets/programmes/w3-600.webp 600w, assets/programmes/w3-1200.webp 1200w"
                  sizes="(max-width:900px) 86vw, 20vw" alt="Villas La Marine 2" loading="lazy"></span>
-            <span class="miroir" aria-hidden="true" style="--photo:url(assets/programmes/w4-600.webp)"></span>
+            <span class="miroir" aria-hidden="true" style="--photo:url(assets/programmes/w3-600.webp)"></span>
             <figcaption>Villas La Marine 2</figcaption>
           </figure>
         </div>
