@@ -954,7 +954,12 @@ footer a:hover{color:var(--magenta)}
      `scroll-snap` cale chaque carte proprement ; la barre de defilement est
      masquee mais le geste, lui, reste natif. */
   .cartes{display:flex;grid-template-columns:none;gap:14px;overflow-x:auto;
-    scroll-snap-type:x mandatory;scroll-behavior:smooth;
+    /* `proximity` et non `mandatory` : en mandatory, le navigateur ramene la
+       piste sur le point d'ancrage a chaque micro-deplacement, et le
+       defilement automatique de 0,4 px etait annule a chaque image — la
+       carrousel restait fige a zero. En proximity, il avance, et le geste du
+       doigt cale quand meme proprement. */
+    scroll-snap-type:x proximity;
     padding:2px 20px 14px;margin:0 -20px;
     scrollbar-width:none;-ms-overflow-style:none}
   .cartes::-webkit-scrollbar{display:none}
