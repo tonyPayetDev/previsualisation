@@ -195,11 +195,85 @@ footer{border-top:1px solid var(--ligne);padding:30px 0 60px;color:var(--mut);fo
 .b .mq::before{content:"manque : ";color:#c9a227}
 @media(max-width:700px){
   .bandeau .in{padding:.5rem 16px;gap:.5rem}
+  /* Le groupe pomodoro ne tenait pas sur 390 px : le sélecteur de musique
+     débordait de la fenêtre. On l'autorise à passer à la ligne. */
+  .pomo{flex-wrap:wrap;min-width:0}
+  .musique{max-width:100%}
   .phase{display:none}
   .cycles{display:none}
   .chance{display:none}
   .lien span.txt{display:none}
 }
+
+/* ---------- Le fait de la semaine (encart or) ---------- */
+.fait{border:1px solid rgba(234,179,8,.45);background:rgba(234,179,8,.07);
+  border-radius:5px;padding:22px 24px;margin-bottom:26px}
+.fait .mono{color:var(--or);display:block;margin-bottom:12px}
+.fait h3{font-family:var(--dsp);text-transform:uppercase;font-weight:700;letter-spacing:.01em;
+  line-height:1.08;font-size:clamp(21px,2.9vw,32px);max-width:24ch;color:var(--or)}
+.fait p{margin-top:12px;color:#cfcad8;font-size:14.5px;max-width:66ch}
+.fait .arens{margin-top:16px;display:inline-block;border:1px dashed rgba(234,179,8,.5);
+  border-radius:4px;padding:9px 14px;font-family:var(--mno);font-size:11px;
+  letter-spacing:.13em;text-transform:uppercase;color:var(--or)}
+
+/* ---------- Semaine précédente repliée ---------- */
+.repli{margin-top:26px;border:1px solid var(--ligne);border-radius:5px;background:var(--panneau)}
+.repli>summary{cursor:pointer;list-style:none;padding:14px 18px;font-family:var(--mno);
+  font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--mut)}
+.repli>summary::-webkit-details-marker{display:none}
+.repli>summary::before{content:"+ ";color:var(--or)}
+.repli[open]>summary::before{content:"– "}
+.repli>summary:hover{color:var(--texte)}
+.repli .evo{border-top:1px solid var(--ligne);background:var(--ligne)}
+.repli .mvt{background:var(--panneau);font-size:12.5px;padding:18px 18px}
+.repli .mvt b{font-size:13px}
+.repli .mvt .av,.repli .mvt .ap{font-size:23px}
+
+/* ---------- Le tuyau : KPI permanents ---------- */
+/* Six tuiles : trois colonnes exactement, sinon la dernière reste orpheline
+   sur une ligne vide. auto-fit donnerait 5 + 1. */
+.kpi{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;
+  background:var(--ligne);border:1px solid var(--ligne);border-radius:5px;overflow:hidden}
+@media(max-width:820px){.kpi{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:460px){.kpi{grid-template-columns:1fr}}
+.k{background:var(--panneau);padding:20px 18px}
+.k .n{font-family:var(--dsp);font-size:clamp(28px,3.4vw,40px);line-height:1;
+  font-variant-numeric:tabular-nums;color:var(--texte)}
+.k .n.or{color:var(--or)} .k .n.rouge{color:var(--rouge)}
+.k .l{margin-top:9px;font-size:13.5px;font-weight:600;color:#fff;line-height:1.3}
+.k .s{margin-top:5px;color:var(--mut);font-size:12px;line-height:1.45}
+.k.alerte{background:rgba(239,100,97,.07)}
+.trou{margin-top:18px;border:1px solid var(--ligne);border-left:3px solid var(--rouge);
+  border-radius:0 5px 5px 0;background:var(--panneau);padding:18px 20px;
+  font-size:13.5px;line-height:1.6;color:var(--mut)}
+.trou b{color:var(--texte)}
+.registre{margin-top:18px;color:var(--mut);font-size:13px;line-height:1.65}
+.registre b{color:var(--texte)}
+
+/* ---------- Les vues ---------- */
+.vues{display:grid;grid-template-columns:minmax(0,0.9fr) minmax(0,1.4fr);gap:16px;align-items:start}
+@media(max-width:820px){.vues{grid-template-columns:1fr}}
+.mesure{border:1px solid rgba(234,179,8,.35);background:rgba(234,179,8,.05);
+  border-radius:5px;padding:22px 20px}
+.mesure .n{font-family:var(--dsp);font-size:clamp(38px,5vw,58px);line-height:1;color:var(--or);
+  font-variant-numeric:tabular-nums}
+.mesure .l{margin-top:8px;font-size:14px;font-weight:600;color:#fff;line-height:1.35}
+.mesure .s{margin-top:10px;color:var(--mut);font-size:12.5px;line-height:1.55}
+.portes{list-style:none;border:1px solid var(--ligne);border-radius:5px;background:var(--panneau);
+  overflow:hidden}
+.portes li{padding:15px 18px;border-top:1px solid var(--ligne);color:var(--mut);
+  font-size:13px;line-height:1.55}
+.portes li:first-child{border-top:0}
+.portes li b{display:block;color:var(--texte);font-size:13.5px;margin-bottom:3px}
+.portes li .ko{color:var(--rouge);font-family:var(--mno);font-size:10px;letter-spacing:.14em;
+  margin-left:8px;vertical-align:1px}
+.action{grid-column:1/-1;border:1px solid rgba(139,92,246,.4);background:rgba(139,92,246,.07);
+  border-radius:5px;padding:18px 20px;font-size:13.5px;line-height:1.6;color:#cfcad8}
+.action b{color:var(--violet);display:block;font-family:var(--dsp);text-transform:uppercase;
+  font-size:15px;letter-spacing:.02em;margin-bottom:7px}
+.repere{grid-column:1/-1;color:var(--mut);font-size:12.5px;line-height:1.6;
+  border-top:1px solid var(--ligne);padding-top:14px}
+.repere b{color:var(--texte)}
 </style>
 
 <div class="bandeau">
@@ -317,7 +391,7 @@ footer{border-top:1px solid var(--ligne);padding:30px 0 60px;color:var(--mut);fo
 <div class="wrap">
 
 <div class="hero">
-  <span class="mono">État au 6 septembre 2026 · pourcentages et « manque » ajoutés ce jour</span>
+  <span class="mono">État au 8 septembre 2026 · semaine du 1er au 7 septembre, KPI du tuyau, mesurabilité des vues</span>
   <h1 class="dsp">Quatorze chantiers.<br>Une seule question :<br><em>lequel te fait facturer ?</em></h1>
   <p>Tu m'as donné neuf lignes. Il y en a plus — et surtout, elles ne pèsent pas pareil. Cette carte les relie à ce qu'elles produisent vraiment, et remonte jusqu'au bout de la chaîne.</p>
   <div class="regle">
@@ -329,11 +403,11 @@ footer{border-top:1px solid var(--ligne);padding:30px 0 60px;color:var(--mut);fo
 </div>
 
 <div class="chiffres">
-  <div><div class="n or">403</div><div class="l">routes en prévisualisation<br>dont 229 avec vidéo</div><span class="d up">+106 depuis le 21 août</span></div>
-  <div><div class="n or">64</div><div class="l">publications programmées<br>jusqu'au 8 septembre</div><span class="d up">+13 jours d'avance</span></div>
-  <div><div class="n">8</div><div class="l">routines cloud<br>dont 3 quotidiennes</div><span class="d neutre">non re-mesuré</span></div>
-  <div><div class="n or">14</div><div class="l">clients appelés<br>cette semaine</div><span class="d up">contre 0 le 21 août</span></div>
-  <div><div class="n or">1</div><div class="l">ligne remplie<br>dans ton suivi hebdo</div><span class="d up">la première</span></div>
+  <div><div class="n or">1</div><div class="l">rendez-vous décroché<br>avec un gérant</div><span class="d up">le premier entrant</span></div>
+  <div><div class="n or">66</div><div class="l">posts publiés<br>du 1er au 7 septembre</div><span class="d up">contre 0 la semaine d'avant</span></div>
+  <div><div class="n or">34</div><div class="l">publications programmées<br>jusqu'au 14 septembre</div><span class="d neutre">un post par jour</span></div>
+  <div><div class="n or">495</div><div class="l">routes en prévisualisation<br>au 8 septembre</div><span class="d up">+92 depuis le 30 août</span></div>
+  <div><div class="n rouge">0</div><div class="l">appel passé<br>cette semaine</div><span class="d down">contre 14 la semaine du 24</span></div>
 </div>
 
 <div class="wrap">
@@ -341,40 +415,142 @@ footer{border-top:1px solid var(--ligne);padding:30px 0 60px;color:var(--mut);fo
 <!-- ============ L'ÉVOLUTION DE LA SEMAINE ============ -->
 <section>
   <div class="tete">
-    <span class="mono">Du 24 au 30 août</span>
-    <h2 class="dsp">Ce qui a bougé cette semaine.</h2>
-    <p>Mesuré contre la carte du 21 août, pas contre une impression. Chaque ligne vient d'une source qui se recompte : le suivi d'appels, le registre hebdomadaire, le dépôt, la file Blotato.</p>
+    <span class="mono">Du 1er au 7 septembre</span>
+    <h2 class="dsp">La semaine où quelqu'un a dit oui.</h2>
+    <p>Mesuré contre la semaine précédente, pas contre une impression. Chaque ligne vient d'une source qui se recompte : le registre hebdomadaire <span class="mono" style="letter-spacing:.04em;text-transform:none">taches/semaine.json</span>, le suivi d'appels, le dépôt, la file Blotato, le tableau de validation.</p>
   </div>
+
+  <div class="fait">
+    <span class="mono">Le fait de la semaine</span>
+    <h3>Un rendez-vous obtenu avec un gérant qui cherche une solution d'automatisation.</h3>
+    <p>C'est le premier rendez-vous entrant depuis que ce suivi existe. Toutes les autres lignes de cette carte mesurent de la production ; celle-ci mesure une conversation avec quelqu'un qui peut signer. À ce stade elle vaut plus que les soixante-six posts.</p>
+    <div class="arens">À renseigner par toi : nom · société · date du rendez-vous</div>
+  </div>
+
   <div class="evo">
     <div class="mvt fort">
-      <span class="av">0</span><span class="fl">→</span><span class="ap">14</span>
-      <b>Le téléphone s'est mis à sonner.</b>
-      Six personnes ont décroché. Un refus net chez Oxygène Event, une demande de démo chez Les Papi'es, et un numéro direct obtenu chez L'Unisson. Avant cette série, ton dernier appel remontait au 3 juillet — huit semaines.
-    </div>
-    <div class="mvt fort">
-      <span class="av">0</span><span class="fl">→</span><span class="ap">1</span>
-      <b>Le suivi hebdomadaire n'est plus vide.</b>
-      Première ligne remplie. C'est le chiffre le plus petit de cette carte et le plus important : sans lui, aucune des autres évolutions ne serait comparable la semaine prochaine.
+      <span class="av">0</span><span class="fl">→</span><span class="ap">66</span>
+      <b>La publication est repartie de zéro à plein.</b>
+      22 vidéos distinctes, cinq réseaux chacune, zéro échec Blotato. La semaine du 25 au 31 août n'avait rien publié du tout — c'est le rattrapage le plus net de la carte.
     </div>
     <div class="mvt">
-      <span class="av">297</span><span class="fl">→</span><span class="ap">403</span>
-      <b>La prévisualisation a pris 106 routes.</b>
-      Dont 229 portent une vidéo, contre 166. C'est de la production, pas encore du chiffre d'affaires.
+      <span class="av">64</span><span class="fl">→</span><span class="ap">34</span>
+      <b>La réserve a fondu de moitié, mais elle tient.</b>
+      34 posts encore programmés jusqu'au 14 septembre inclus, un par jour. C'est mécanique : publier 66 posts vide la file. Elle reste au-dessus de ta règle des trois vidéos d'avance, elle ne l'est plus de beaucoup.
     </div>
     <div class="mvt">
-      <span class="av">26 août</span><span class="fl">→</span><span class="ap">8 sept.</span>
-      <b>La file de publication ne se vide plus.</b>
-      64 posts programmés, treize jours d'avance au lieu de cinq.
+      <span class="av">20</span><span class="fl">→</span><span class="ap">29</span>
+      <b>Tu tranches toujours par écrit.</b>
+      12 décisions posées cette semaine, 29 au total : 13 « fait », 10 « ok », 3 « propose », 2 « validé », 1 « refusé ». Le tableau de validation n'existait pas il y a trois semaines.
     </div>
     <div class="mvt">
-      <span class="av">—</span><span class="fl">→</span><span class="ap">20</span>
-      <b>Tu tranches maintenant par écrit.</b>
-      Le tableau de validation n'existait pas le 21 août. Vingt décisions posées depuis le 28, dont cinq tâches lancées et deux renvoyées à revoir.
+      <span class="av">403</span><span class="fl">→</span><span class="ap">495</span>
+      <b>La prévisualisation a pris 92 routes.</b>
+      Le dépôt continue de grossir. C'est de la production, toujours pas du chiffre d'affaires — sauf que cette semaine, pour la première fois, il y a un rendez-vous au bout.
     </div>
     <div class="mvt rien">
-      <span class="av">15</span><span class="fl">→</span><span class="ap">15</span>
-      <b>Ce qui n'a pas bougé : les mots-clés sans porte.</b>
-      Quinze CTA envoient encore les gens vers une ressource qui n'existe pas. C'est passé en tâche validée, donc c'est la prochaine à tomber.
+      <span class="av">14</span><span class="fl">→</span><span class="ap">0</span>
+      <b>Le téléphone s'est tu.</b>
+      Aucun appel journalisé depuis le 1er septembre : <span class="mono" style="letter-spacing:.04em;text-transform:none">appels/resultats.json</span> n'a pas bougé. La semaine du 24 au 30 août en portait 14. C'est la seule ligne qui a reculé, et c'est celle qui touche le plus vite à la facture.
+    </div>
+    <div class="mvt rien">
+      <span class="av">?</span><span class="fl">→</span><span class="ap">?</span>
+      <b>Les vues restent non mesurables.</b>
+      66 posts publiés, et aucun moyen de savoir combien de gens les ont vus. Trois voies testées ce matin, trois refus. Le détail est plus bas, section « Les vues » — c'est un résultat, pas un trou qu'on cache.
+    </div>
+  </div>
+
+  <details class="repli">
+    <summary>La semaine précédente · du 24 au 30 août</summary>
+    <div class="evo">
+      <div class="mvt fort">
+        <span class="av">0</span><span class="fl">→</span><span class="ap">14</span>
+        <b>Le téléphone s'était mis à sonner.</b>
+        Six personnes ont décroché. Un refus net chez Oxygène Event, une demande de démo chez Les Papi'es, et un numéro direct obtenu chez L'Unisson. Avant cette série, le dernier appel remontait au 3 juillet — huit semaines.
+      </div>
+      <div class="mvt fort">
+        <span class="av">0</span><span class="fl">→</span><span class="ap">1</span>
+        <b>Le suivi hebdomadaire n'était plus vide.</b>
+        Première ligne remplie. Le chiffre le plus petit de cette carte et le plus important : sans lui, la comparaison ci-dessus serait impossible.
+      </div>
+      <div class="mvt">
+        <span class="av">297</span><span class="fl">→</span><span class="ap">403</span>
+        <b>La prévisualisation avait pris 106 routes.</b>
+        Dont 229 portaient une vidéo, contre 166.
+      </div>
+      <div class="mvt">
+        <span class="av">26 août</span><span class="fl">→</span><span class="ap">8 sept.</span>
+        <b>La file de publication ne se vidait plus.</b>
+        64 posts programmés, treize jours d'avance au lieu de cinq.
+      </div>
+      <div class="mvt">
+        <span class="av">—</span><span class="fl">→</span><span class="ap">20</span>
+        <b>Le tableau de validation est né.</b>
+        Vingt décisions posées depuis le 28, dont cinq tâches lancées et deux renvoyées à revoir.
+      </div>
+      <div class="mvt rien">
+        <span class="av">15</span><span class="fl">→</span><span class="ap">15</span>
+        <b>Ce qui n'avait pas bougé : les mots-clés sans porte.</b>
+        Quinze CTA envoyaient encore les gens vers une ressource qui n'existe pas.
+      </div>
+    </div>
+  </details>
+</section>
+
+<!-- ============ LE TUYAU ============ -->
+<section style="border-top:1px solid var(--ligne)">
+  <div class="tete">
+    <span class="mono">Le tuyau · relevé du 27 août 2026</span>
+    <h2 class="dsp">78 personnes entrées. Un rendez-vous sorti.</h2>
+    <p>Voilà les vrais chiffres de contact que tu demandes. Ils viennent du fichier de leads relevé le <b>27 août</b> : le Google Sheet n'est plus lisible publiquement aujourd'hui, donc rien n'a été re-mesuré depuis et je ne fais pas semblant du contraire. Le dernier scraping qui a rempli ce fichier date d'<b>avril 2026</b>.</p>
+  </div>
+
+  <div class="kpi">
+    <div class="k"><div class="n">78</div><div class="l">leads en base</div><div class="s">72 avec un téléphone, 16 avec un email</div></div>
+    <div class="k"><div class="n or">31</div><div class="l">contacts sortants</div><div class="s">15 emails directs, 13 SMS, 3 emails via un site</div></div>
+    <div class="k alerte"><div class="n rouge">0</div><div class="l">relance</div><div class="s">personne n'a jamais reçu un deuxième message</div></div>
+    <div class="k alerte"><div class="n rouge">59</div><div class="l">numéros jamais appelés</div><div class="s">sur les 72 numéros que tu as en base</div></div>
+    <div class="k"><div class="n">22</div><div class="l">fiches dans le suivi d'appels</div><div class="s">9 « répondu », 3 « à rappeler », 2 « appelé », 8 sans état</div></div>
+    <div class="k"><div class="n or">1</div><div class="l">rendez-vous</div><div class="s">obtenu cette semaine · le premier du suivi</div></div>
+  </div>
+
+  <div class="trou">
+    <b>Le trou est là, et il tient en deux nombres.</b> Il y a <b>59 numéros de téléphone</b> dans ton fichier que personne n'a jamais composés, et <b>0 relance</b> sur les 31 personnes déjà contactées. Sur les 22 fiches d'appel, <b>11 sont marquées chaudes</b> — donc onze personnes qui ont manifesté un intérêt et qui n'ont pas eu de deuxième contact. Ce n'est pas un problème d'outil : le fichier est là, les numéros sont là, le rendez-vous de cette semaine prouve que ça marche quand on décroche.
+  </div>
+
+  <div class="registre">
+    <b>Ce qui n'est pas mesuré ici :</b> le contenu des 31 messages envoyés, et le taux de réponse réel — il n'existe pas de colonne « répondu » dans le fichier de leads, seulement dans le suivi d'appels. Tant que le Sheet n'est pas relisible, ces deux chiffres restent inconnus plutôt qu'estimés.
+  </div>
+</section>
+
+<!-- ============ LES VUES ============ -->
+<section style="border-top:1px solid var(--ligne)">
+  <div class="tete">
+    <span class="mono">Les vues · testé le 8 septembre 2026</span>
+    <h2 class="dsp">Ce qu'on sait, ce qu'on ne sait pas, et pourquoi.</h2>
+    <p>Tu m'as demandé les vues « si tu arrives à les récupérer ». Je n'y arrive pas aujourd'hui. Voici le seul chiffre d'audience réellement mesuré, les trois portes essayées ce matin, et la seule action qui ouvre la mesure.</p>
+  </div>
+
+  <div class="vues">
+    <div class="mesure">
+      <div class="n">16</div>
+      <div class="l">abonnés Instagram<br>@automatisationboost</div>
+      <div class="s">123 publications au compteur. Relevé par tokscript le 8 septembre. C'est le seul chiffre d'audience réel dont je dispose aujourd'hui — aucune vue, aucune vue moyenne, aucune portée.</div>
+    </div>
+
+    <ul class="portes">
+      <li><b>Analytics Blotato <span class="ko">échec</span></b>Les 12 posts publiés que j'ai testés renvoient <span class="mono" style="letter-spacing:.04em;text-transform:none">metrics: null</span>. Blotato ne collecte pas les métriques de ces comptes — il publie, il ne mesure pas.</li>
+      <li><b>tokscript sur TikTok @tonypayet4 <span class="ko">échec</span></b>Renvoie 0 partout : les données de profil sont indisponibles pour ce compte.</li>
+      <li><b>Webhook Apify <span class="mono" style="letter-spacing:.04em;text-transform:none">scrape-social-apify</span> <span class="ko">échec</span></b>Il répond bien, en 58 secondes — mais il est câblé en dur sur trois comptes clients (befresh.events, essenci_elles, salonducakedesign.fr) et il ignore les paramètres qu'on lui passe. Il ne peut pas lire ton compte.</li>
+    </ul>
+
+    <div class="action">
+      <b>La seule action qui débloque</b>
+      Une des deux, pas les deux : ouvrir le webhook <span class="mono" style="letter-spacing:.04em;text-transform:none">scrape-social-apify</span> à un paramètre <span class="mono" style="letter-spacing:.04em;text-transform:none">compte</span> au lieu des trois comptes écrits en dur, ou activer la collecte des analytics côté Blotato pour tes comptes. La première est un changement de workflow n8n que je peux faire ; la seconde dépend d'un réglage chez eux. Tant que ni l'une ni l'autre n'est faite, publier 66 posts et en publier 6 donnent exactement la même information : aucune.
+    </div>
+
+    <div class="repere">
+      <b>Un repère, pas ton chiffre :</b> le même outil mesure sur le compte client befresh.events une moyenne de <b>3 573 vues</b> et une médiane de <b>821</b> sur 61 posts. Ce n'est pas ton compte — c'est la preuve que l'outil sait mesurer quand on le pointe au bon endroit, et l'ordre de grandeur de ce qu'on lira le jour où la porte sera ouverte.
     </div>
   </div>
 </section>
@@ -394,7 +570,7 @@ footer{border-top:1px solid var(--ligne);padding:30px 0 60px;color:var(--mut);fo
       <div class="col">
         <h3>Les chantiers</h3>
         <div class="bulles" id="projets">
-          <button class="b argent" data-obj="o1" data-id="p1"><span class="pt"></span><span class="t">Appels &amp; relances</span><span class="s">~30 sites livrés, jamais rappelés · 13 emails, 0 réponse</span></button>
+          <button class="b argent" data-obj="o1" data-id="p1"><span class="pt"></span><span class="t">Appels &amp; relances</span><span class="s">78 leads · 59 numéros jamais appelés · 31 contacts, 0 relance</span></button>
           <button class="b argent" data-obj="o1" data-id="p2"><span class="pt"></span><span class="t">Sites démo clients</span><span class="s">106 sites inventoriés · Osmose, The Grill, Pizza Ok en attente</span></button>
           <button class="b argent" data-obj="o1,o2" data-id="p3"><span class="pt"></span><span class="t">Family Arena</span><span class="s">dossier complet + site portail livré · rendez-vous à prendre</span></button>
           <button class="b argent" data-obj="o1,o2" data-id="p4"><span class="pt"></span><span class="t">BeFresh</span><span class="s">client test = ta vitrine · 3 vidéos livrées, 4 angles bloqués</span></button>
@@ -495,6 +671,8 @@ footer{border-top:1px solid var(--ligne);padding:30px 0 60px;color:var(--mut);fo
     <b>Ce que disait cette carte le 21 août :</b> ton tableau de suivi existait, avec les bonnes colonnes — appels, réponses, rendez-vous — et <b>les deux semaines étaient vides</b>. Tu l'avais écrit toi-même : si la colonne « appels » est à zéro, aucune analyse n'est nécessaire, tu as ta réponse.
     <br><br>
     <b>Ce n'est plus vrai.</b> La semaine du 24 au 30 août porte <b>14 appels</b>, dont 6 où quelqu'un a décroché, 4 à rappeler et un numéro direct obtenu chez L'Unisson. La ligne de suivi est remplie pour la première fois. Le bloc de 30 minutes du vendredi reste le plus important de la semaine — c'est le seul qui dit si le reste a servi — mais il a maintenant quelque chose à mesurer.
+    <br><br>
+    <b>Et la semaine du 1er au 7 septembre repose la question autrement.</b> Elle porte <b>0 appel</b> : les blocs « appels » du lundi, du mardi et du jeudi n'ont produit aucune ligne dans <span class="mono" style="letter-spacing:.04em;text-transform:none">appels/resultats.json</span>. À la place, 22 vidéos ont été produites et 66 posts publiés — le planning a basculé du côté production. Ce n'est pas un échec en soi : c'est un arbitrage, et il a quand même donné un rendez-vous. Mais avec 59 numéros jamais composés en base, deux semaines de suite sans téléphone coûteraient plus cher que deux semaines sans vidéo.
   </div>
 </section>
 
@@ -502,7 +680,7 @@ footer{border-top:1px solid var(--ligne);padding:30px 0 60px;color:var(--mut);fo
 <section style="border-top:1px solid var(--ligne)">
   <div class="tete">
     <span class="mono">Ce qui bloque</span>
-    <h2 class="dsp">Quatre choses que personne ne peut débloquer à ta place.</h2>
+    <h2 class="dsp">Cinq choses que personne ne peut débloquer à ta place.</h2>
     <p>Elles ne sont pas techniques. Chacune arrête une chaîne entière en aval.</p>
   </div>
 
@@ -524,14 +702,21 @@ footer{border-top:1px solid var(--ligne);padding:30px 0 60px;color:var(--mut);fo
     </div>
     <div class="bq">
       <h4>Cinq vidéos attendent ton œil</h4>
-      <p>Produites, en ligne, jamais publiées : tuto Claude Code v4, Matrix révélation, hook Matrix, formation déchirure v2, conte enfant.</p>
+      <p>Produites, en ligne, jamais publiées : tuto Claude Code v4, Matrix révélation, hook Matrix, formation déchirure v2, conte enfant. <span style="color:var(--mut)">(Relevé du 6 septembre, non re-mesuré depuis.)</span></p>
       <div class="eff">Du travail fini qui ne rapporte rien tant qu'il dort.</div>
+    </div>
+    <div class="bq">
+      <h4>Aucune vue n'est mesurable</h4>
+      <p>Blotato ne collecte pas les métriques de tes comptes, tokscript ne lit pas <span class="mono" style="letter-spacing:.04em;text-transform:none">tonypayet4</span>, et le webhook Apify est câblé sur trois comptes clients.</p>
+      <div class="eff">66 posts publiés cette semaine, et rien pour dire lesquels ont marché.</div>
     </div>
   </div>
 </section>
 
 <footer>
-  <div>Carte reconstruite le 21 août 2026, <b>mise à jour le 6 septembre</b> (pourcentages d'avancement et ce qui manque, par chantier) à partir du dépôt, des 64 publications programmées, du suivi d'appels <span class="mono" style="letter-spacing:.04em;text-transform:none">appels/resultats.json</span>, du registre <span class="mono" style="letter-spacing:.04em;text-transform:none">taches/semaine.json</span> et de tes propres documents — <span class="mono" style="letter-spacing:.04em;text-transform:none">BACKLOG-TONY.md</span>, <span class="mono" style="letter-spacing:.04em;text-transform:none">QUI-FAIT-QUOI.md</span>, <span class="mono" style="letter-spacing:.04em;text-transform:none">STRATEGIE.md</span>. Rien n'y est inventé : les chiffres de 2026 sont recomptés, et la seule ligne non re-mesurée porte la mention « non re-mesuré ».</div>
+  <div>Carte reconstruite le 21 août 2026, <b>mise à jour le 8 septembre</b> : semaine du 1<sup>er</sup> au 7 septembre, bloc « Le tuyau », bloc « Les vues ». Sources recomptées ce jour — le dépôt (495 routes), la file Blotato (66 posts publiés, 34 programmés jusqu'au 14 septembre), le tableau de validation (29 décisions), le suivi d'appels <span class="mono" style="letter-spacing:.04em;text-transform:none">appels/resultats.json</span> (inchangé depuis le 1<sup>er</sup> septembre), le registre <span class="mono" style="letter-spacing:.04em;text-transform:none">taches/semaine.json</span>, et tes propres documents — <span class="mono" style="letter-spacing:.04em;text-transform:none">BACKLOG-TONY.md</span>, <span class="mono" style="letter-spacing:.04em;text-transform:none">QUI-FAIT-QUOI.md</span>, <span class="mono" style="letter-spacing:.04em;text-transform:none">STRATEGIE.md</span>.
+  <br><br>
+  Deux relevés ne datent pas d'aujourd'hui et le disent en clair : les chiffres de contact du bloc « Le tuyau » sont ceux du <b>27 août</b> (le Google Sheet de leads n'est plus lisible publiquement), et les pourcentages d'avancement par chantier sont ceux du <b>6 septembre</b>. Aucune vue n'est affichée parce qu'aucune n'a pu être mesurée : les trois voies testées et leur échec sont détaillés dans la section « Les vues ». Rien n'est estimé, rien n'est inventé.</div>
 </footer>
 
 </div>
