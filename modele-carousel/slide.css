@@ -46,11 +46,13 @@ h1 i{display:block;font-family:var(--serif);font-style:italic;font-weight:400;
 /* ── L'encart schéma : c'est lui qui porte le néon ─────────────────────── */
 .schema{margin-top:auto;background:var(--carte);border:1px solid var(--ligne);
   border-radius:22px;padding:52px 44px}
-.rangee{display:flex;align-items:center;justify-content:center;gap:26px}
+/* wrap + shrink : a trois noeuds la rangee depassait la carte des deux cotes.
+   Les noeuds peuvent maintenant se retrecir et passer a la ligne. */
+.rangee{display:flex;align-items:center;justify-content:center;gap:20px;flex-wrap:wrap}
 .rangee + .rangee{margin-top:54px}
 .noeud{background:#1b1b24;border:1.5px solid var(--ligne);border-radius:14px;
-  padding:22px 26px;font-size:27px;font-weight:600;white-space:nowrap;
-  display:flex;align-items:center;gap:14px}
+  padding:20px 24px;font-size:26px;font-weight:600;white-space:nowrap;
+  display:flex;align-items:center;gap:13px;min-width:0;flex:0 1 auto}
 .noeud small{display:block;font-size:19px;font-weight:400;color:var(--gris);
   letter-spacing:.06em;text-transform:uppercase;margin-top:5px}
 .noeud .pt{width:13px;height:13px;border-radius:50%;background:var(--gris);flex:0 0 auto}
@@ -62,9 +64,9 @@ h1 i{display:block;font-family:var(--serif);font-style:italic;font-weight:400;
 .noeud.v{border-color:var(--violet);
   box-shadow:0 0 0 1px var(--violet),0 0 34px -4px rgba(139,92,246,.75)}
 .noeud.v .pt{background:var(--violet);box-shadow:0 0 14px var(--violet)}
-.fil{flex:0 0 62px;height:2px;background:linear-gradient(90deg,var(--jaune),var(--violet));
+.fil{flex:0 1 46px;min-width:20px;height:2px;background:linear-gradient(90deg,var(--jaune),var(--violet));
   box-shadow:0 0 12px rgba(139,92,246,.6);border-radius:2px}
-.fil.court{flex-basis:38px}
+.fil.court{flex-basis:30px}
 
 .pied{display:flex;align-items:center;justify-content:space-between;margin-top:44px}
 .marque{font-size:25px;color:var(--gris);letter-spacing:.04em}
