@@ -582,7 +582,11 @@ function choisir(i) {
 /* La banque : cliquer une photo remplace celle de la vignette sélectionnée. */
 function banque(liste, client) {
   const grille = (l) => l
-    .map((n) => `<img src="photos/${n}.jpg" data-n="${n}" alt="" loading="lazy">`).join('');
+    /* `url(n)` et pas un chemin en dur : depuis que les photos d'un client sont
+       servies par resto.automatisationboost, `n` peut etre une adresse absolue.
+       Concatener « photos/ » devant donnait photos/https://….jpg.jpg — neuf 404
+       et un selecteur vide. */
+    .map((n) => `<img src="${url(n)}" data-n="${n}" alt="" loading="lazy">`).join('');
   const z = document.getElementById('banque');
   z.innerHTML =
     (client && client.photos.length
