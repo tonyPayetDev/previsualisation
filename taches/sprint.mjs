@@ -30,7 +30,8 @@ const RANG_CASH = { direct: 0, proche: 1, loin: 2 };
 const RANG_ETAT = { attente: 0, bloque: 1 };
 
 const ouvertes = brutes
-  .filter((t) => t.etat !== 'livre')
+  // « plus-tard » = gardé dans le tableau de bord, sorti du sprint : le sprint ne porte que la semaine.
+  .filter((t) => t.etat !== 'livre' && t.etat !== 'plus-tard')
   .map((t, i) => ({
     id: `t${i}`,
     t: String(t.t || '').trim(),

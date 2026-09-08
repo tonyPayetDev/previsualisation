@@ -63,6 +63,7 @@ const ETATS = {
   livre:   { nom: 'Livré',            aide: 'testé en ligne, pas seulement poussé' },
   bloque:  { nom: 'Bloqué',           aide: 'une permission me refuse l\'action' },
   attente: { nom: 'En attente de toi', aide: "il me manque une décision ou une info" },
+  'plus-tard': { nom: 'Plus tard', aide: 'gardé, mais rien ni personne n\'attend dessus' },
 };
 
 const n = e => data.taches.filter(t => t.etat === e).length;
