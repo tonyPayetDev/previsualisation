@@ -79,7 +79,10 @@ img{max-width:100%;display:block}
   color:#fff;font-family:var(--sans);font-weight:600;font-size:17px;line-height:1}
 .liens{display:flex;gap:26px;list-style:none;margin:0;padding:0;font-size:14px;font-weight:400}
 .liens a{text-decoration:none;opacity:.82;transition:opacity .2s}
-.liens a:hover{opacity:1}
+.liens a:hover{opacity:1;color:var(--magenta)}
+/* Sur l en-tete transparent, .nav:not(.pose) .liens a force le blanc : sans
+   cette ligne le rose au survol n avait aucune chance de passer. */
+.nav:not(.pose) .liens a:hover{color:var(--magenta)}
 .nav:not(.pose) .liens a,.nav:not(.pose) .logo b{color:#fff}
 .nav:not(.pose) .logo .im{color:#fff}
 .bt{display:inline-flex;align-items:center;gap:9px;background:var(--magenta);color:#fff;
@@ -211,12 +214,12 @@ img{max-width:100%;display:block}
    dont l angle tourne. Il vit derriere la boite (z-index -1), on ne voit
    donc que le liseré qui depasse. */
 .boite{position:relative;isolation:isolate}
-.boite::before,.boite::after{content:'';position:absolute;inset:-2px;border-radius:5px;
+.boite::before,.boite::after{content:'';position:absolute;inset:-1px;border-radius:5px;
   z-index:-1;opacity:0;pointer-events:none;transition:opacity .4s ease;
   /* Le masque ne garde que le liseré. Sans lui le degrade remplissait le
      rectangle entier et, la boite etant du verre translucide (fond a 13 %),
      il se voyait AU TRAVERS : la moitie du module virait au rose plein. */
-  padding:2px;
+  padding:1px;
   -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
           mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
   -webkit-mask-composite:xor;mask-composite:exclude;
@@ -226,9 +229,9 @@ img{max-width:100%;display:block}
     #ffa3de 312deg,
     rgba(230,0,126,.9) 338deg,
     rgba(230,0,126,0) 360deg)}
-.boite::after{inset:-5px;padding:3px;filter:blur(9px)}
+.boite::after{inset:-4px;padding:2px;filter:blur(7px)}
 .boite:hover::before,.boite:focus-within::before{opacity:1;animation:tour-neon 3s linear infinite}
-.boite:hover::after,.boite:focus-within::after{opacity:.85;animation:tour-neon 3s linear infinite}
+.boite:hover::after,.boite:focus-within::after{opacity:.6;animation:tour-neon 3s linear infinite}
 @media (prefers-reduced-motion:reduce){
   .boite:hover::before,.boite:hover::after,
   .boite:focus-within::before,.boite:focus-within::after{animation:none}
@@ -492,7 +495,13 @@ h2.tt i{font-style:italic}
 
 .ville{position:absolute;top:14px;left:14px;background:rgba(20,20,20,.78);color:#fff;
   font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;padding:7px 12px;backdrop-filter:blur(4px)}
-.carte h3{font-family:var(--serif);font-weight:400;font-size:22px;margin:20px 0 8px;letter-spacing:-.01em}
+.carte h3{font-family:var(--serif);font-weight:400;font-size:22px;margin:20px 0 8px;letter-spacing:-.01em;
+  transition:color .25s var(--ease)}
+/* Le titre passe au rose quand on survole la carte — c'est la carte entiere
+   qui est le lien, pas seulement le mot « Decouvrir ». */
+.carte:hover h3{color:var(--magenta)}
+.lien-fleche{transition:color .25s var(--ease)}
+.lien-fleche:hover{color:var(--magenta)}
 .carte p{margin:0 0 16px;font-size:14.5px;color:var(--gris);min-height:3em}
 .carte .dec{font-size:13.5px;font-weight:500;color:var(--magenta);display:inline-flex;align-items:center;gap:8px}
 
@@ -1101,16 +1110,11 @@ footer a:hover{color:var(--magenta)}
    Le dégradé ne laisse voir que le dernier dixième — au-delà ça fait
    vitrine de magasin. La marge basse empêche le reflet de mordre sur le
    texte : le reflet est peint hors du flux, il ne pousse rien. */
-/* Meme defaut que sur les realisations : `transparent 94%` rendait le reflet
-   invisible sous l image et faiblement visible tout en bas. Remplace par un
-   miroir explicite (voir .realisations .miroir), qui marche aussi sous
-   Firefox et dont on fixe la hauteur au pixel. */
-.carte .vue{margin-bottom:6px}
-.carte .miroir{display:block;height:54px;margin:5px 0 14px;border-radius:0 0 4px 4px;
-  background:var(--photo) center bottom/100% auto no-repeat;
-  transform:scaleY(-1);
-  -webkit-mask-image:linear-gradient(rgba(0,0,0,0) 14%,rgba(0,0,0,.38));
-          mask-image:linear-gradient(rgba(0,0,0,0) 14%,rgba(0,0,0,.38))}
+/* Pas de reflet sur les cartes programmes : elles portent un titre, un
+   texte et un lien juste dessous — le miroir venait s'intercaler au milieu
+   du bloc de lecture. Il reste sur la bande de realisations, qui n'a qu'une
+   legende d'un mot. */
+.carte .vue{margin-bottom:14px}
 
 /* ── Anneau neon rose au survol d une carte programme ──────────────────
    Cale sur le rapport 4/3 de la vue, comme sur les vignettes : sinon il
@@ -1130,7 +1134,6 @@ footer a:hover{color:var(--magenta)}
 .cartes .carte:hover::after,.cartes .carte:focus-visible::after{opacity:.55;animation:tour-neon 2.2s linear infinite}
 @media (prefers-reduced-motion:reduce){
   .cartes .carte:hover::before,.cartes .carte:hover::after{animation:none}
-  .carte .miroir{opacity:.7}
 }
 .carte h3{margin-top:10px}
 /* Le reflet etait degrade a l envers : `transparent 94%` le rendait invisible
@@ -1473,7 +1476,6 @@ footer a:hover{color:var(--magenta)}
       <a class="carte monte" href="https://koytchaimmo.re/nos-programmes/" target="_blank" rel="noopener">
         <div class="vue"><span class="ville">Écocité Ouest</span>
           <img src="../koytchaimmo-refonte/assets/alpha1-net.webp" alt="Cambaie Park, Saint-Paul" loading="lazy"></div>
-          <span class="miroir" aria-hidden="true" style="--photo:url(../koytchaimmo-refonte/assets/alpha1-net.webp)"></span>
         <h3>Cambaie Park</h3>
         <p>Nouveau pôle d’activités au cœur de l’Écocité Ouest.</p>
         <span class="dec">Découvrir
@@ -1484,7 +1486,6 @@ footer a:hover{color:var(--magenta)}
           <img src="assets/programmes/w4-1200.webp"
                srcset="assets/programmes/w4-600.webp 600w, assets/programmes/w4-1200.webp 1200w"
                sizes="(max-width:900px) 100vw, 31vw" alt="Ze Bure@u 2" loading="lazy"></div>
-               <span class="miroir" aria-hidden="true" style="--photo:url(assets/programmes/w4-600.webp)"></span>
         <h3>Ze Bure@u 2</h3>
         <p>La signature Koytcha Immo sur l’Éperon.</p>
         <span class="dec">Découvrir
@@ -1493,7 +1494,6 @@ footer a:hover{color:var(--magenta)}
       <a class="carte monte" href="https://koytchaimmo.re/nos-programmes/" target="_blank" rel="noopener">
         <div class="vue"><span class="ville">La Possession</span>
           <img src="../koytchaimmo-refonte/assets/drone-net.webp" alt="ZE Lokal, La Possession" loading="lazy"></div>
-          <span class="miroir" aria-hidden="true" style="--photo:url(../koytchaimmo-refonte/assets/drone-net.webp)"></span>
         <h3>Ze Lokal</h3>
         <p>Locaux d’activité à vendre ou à louer à La Possession.</p>
         <span class="dec">Découvrir
