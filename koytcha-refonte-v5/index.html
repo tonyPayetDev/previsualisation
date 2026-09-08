@@ -1848,18 +1848,25 @@ footer a:hover{color:var(--magenta)}
     if (!piste || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     var VITESSE = 0.4, main = false, vu = false, tic = null;
 
+    /* On tient la position en flottant DANS le script, et on ne fait qu'ecrire
+       dans scrollLeft. En lisant `piste.scrollLeft` a chaque image pour lui
+       rajouter 0,4 px, on repartait de la valeur ARRONDIE que rend le
+       navigateur : 0 + 0,4 relu comme 0, indefiniment. La piste ne bougeait
+       pas d'un pixel — c'est ce que la verification a montre. */
+    var pos = 0;
     function debordement() { return piste.scrollWidth - piste.clientWidth; }
     function pas() {
-      if (main || !vu || debordement() < 8) return;
       var d = debordement();
-      if (piste.scrollLeft >= d - 1) piste.scrollLeft = 0;   // on reboucle au debut
-      else piste.scrollLeft += VITESSE;
+      if (main || !vu || d < 8) return;
+      pos += VITESSE;
+      if (pos >= d) pos = 0;                                  // on reboucle au debut
+      piste.scrollLeft = pos;
     }
     function demarrer() { if (!tic) tic = setInterval(pas, 16); }
     function arreter() { if (tic) { clearInterval(tic); tic = null; } }
 
     ['pointerdown', 'touchstart', 'wheel', 'keydown'].forEach(function (e) {
-      piste.addEventListener(e, function () { main = true; arreter(); }, { passive: true });
+      piste.addEventListener(e, function () { main = true; pos = piste.scrollLeft; arreter(); }, { passive: true });
     });
 
     if ('IntersectionObserver' in window) {
