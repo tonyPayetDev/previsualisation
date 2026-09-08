@@ -46,7 +46,11 @@ img{max-width:100%;display:block}
 /* ── Barre de navigation ─────────────────────────────────────────────── */
 .nav{position:fixed;inset:0 0 auto;z-index:60;padding:18px 0;
   transition:background .4s var(--ease),padding .4s var(--ease),box-shadow .4s var(--ease)}
-.nav.pose{background:rgba(255,255,255,.96);padding:11px 0;box-shadow:0 1px 0 var(--ligne);backdrop-filter:blur(8px)}
+/* Le flou etait deja la mais invisible : a 96 % d'opacite, il n'y avait plus
+   rien a flouter derriere. En descendant a 82 % on voit la photo passer sous la
+   barre, tres legerement adoucie. `-webkit-` en premier pour Safari iOS. */
+.nav.pose{background:rgba(255,255,255,.82);padding:11px 0;box-shadow:0 1px 0 var(--ligne);
+  -webkit-backdrop-filter:blur(14px) saturate(150%);backdrop-filter:blur(14px) saturate(150%)}
 .nav .wrap{display:flex;align-items:center;justify-content:space-between;gap:24px}
 .logo{display:flex;align-items:center;gap:11px;text-decoration:none;flex:0 0 auto}
 .logo img{height:34px;width:auto;display:block;transition:height .4s var(--ease)}
@@ -969,16 +973,6 @@ footer a:hover{color:var(--magenta)}
   .nav.ouvert li.deploye > .chev svg{transform:rotate(180deg)}
   .nav.ouvert .sous a{padding:12px 22px 12px 34px;font-size:13.5px}
   body.bloque{overflow:hidden}
-  /* Le panneau fait defiler six entrees et leurs sous-menus : arrive en bas,
-     rien ne ramene en haut sans remonter au pouce. */
-  .nav.ouvert .haut-li{border-bottom:0;padding:18px 22px 30px}
-  .nav.ouvert .haut{display:inline-flex;align-items:center;gap:9px;background:none;
-    border:1px solid rgba(0,0,0,.16);border-radius:2px;padding:12px 18px;
-    font:inherit;font-size:12.5px;letter-spacing:.1em;text-transform:uppercase;
-    color:var(--noir);cursor:pointer}
-  .nav.ouvert .haut:hover{border-color:var(--magenta);color:var(--magenta)}
-  .haut-li{display:none}
-  .nav.ouvert .haut-li{display:block}
   .piste{height:150vh}
 }
 @media(max-width:620px){
@@ -1406,10 +1400,10 @@ footer a:hover{color:var(--magenta)}
         </ul>
       </li>
       <li><a href="#contact">Contact</a></li>
-      <li class="haut-li"><button class="haut" type="button">
-        <svg viewBox="0 0 14 14" width="13" height="13" fill="none" stroke="currentColor"
-             stroke-width="1.7" aria-hidden="true"><path d="M7 12V2M2.5 6.5L7 2l4.5 4.5"/></svg>
-        Remonter en haut</button></li>
+      <!-- Le bouton « Remonter en haut » vivait ici, en fin de panneau. Retire
+           a la demande de Tony : il n'apparaissait qu'au bas du menu deja
+           ouvert, la ou personne ne le cherche, et il doublait le geste de
+           defilement que le telephone fait deja tres bien. -->
     </ul>
     <!-- Correctif v3 · 3 : passé en contour. Deux boutons roses pleins se
          disputaient le clic alors qu'ils mènent à deux parcours opposés
@@ -1800,12 +1794,6 @@ footer a:hover{color:var(--magenta)}
   });
   document.addEventListener('keydown', function(e){
     if (e.key === 'Escape' && nav.classList.contains('ouvert')) { fermer(); burger.focus(); }
-  });
-
-  var haut = nav.querySelector('.haut');
-  if (haut) haut.addEventListener('click', function(){
-    fermer();
-    window.scrollTo({ top: 0, behavior: reduit ? 'auto' : 'smooth' });
   });
 
   /* ── Retour sonore au clic ────────────────────────────────────────────
