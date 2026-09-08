@@ -354,11 +354,19 @@ img{max-width:100%;display:block}
    visees au pouce (44 px de haut, la cible tactile de reference) et une
    largeur plancher pour que « A l achat » ne soit pas deux fois plus etroit
    que « A la location ». */
-.boite .app .MuiToggleButton-root{display:inline-flex;justify-content:center;
-  flex:0 0 auto;max-width:none;width:auto;min-width:158px;min-height:44px;
-  background:rgba(0,0,0,.18);border:1px solid rgba(255,255,255,.28);border-radius:2px;
-  padding:12px 22px;margin:0 6px 12px;font-family:var(--sans);font-size:12.5px;font-weight:400;
-  letter-spacing:.09em;text-transform:none;color:#fff;white-space:nowrap;
+/* Le conteneur du module est un `div.col-12` en display:block, pas un
+   ToggleButtonGroup : c'est LUI qu'il faut passer en flex pour ranger les
+   boutons deux par ligne. Et les boutons portent eux-memes `col-md-4 col-5`,
+   les largeurs Bootstrap : sans les neutraliser, ils reprennent la largeur de
+   la grille et se remettent en colonne. */
+.boite .app .col-12:has(> .MuiToggleButton-root){display:flex;flex-wrap:wrap;
+  justify-content:center;gap:10px}
+.boite .app .MuiToggleButton-root{display:inline-flex;justify-content:center;align-items:center;
+  flex:1 1 calc(50% - 10px);max-width:none;width:auto;min-width:0;min-height:46px;
+  background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.30);border-radius:3px;
+  -webkit-backdrop-filter:blur(9px) saturate(120%);backdrop-filter:blur(9px) saturate(120%);
+  padding:12px 14px;margin:0;font-family:var(--sans);font-size:12.5px;font-weight:400;
+  letter-spacing:.09em;text-transform:none;color:#fff;white-space:normal;text-align:center;
   transition:all .22s var(--ease)}
 .boite .app .MuiToggleButton-root:hover{background:rgba(255,255,255,.18);border-color:#fff;color:#fff}
 /* Selectionne : le rose de la marque, pas le blanc. Sur une photo de ciel, un
@@ -428,7 +436,9 @@ img{max-width:100%;display:block}
   .boite .app .MuiToggleButtonGroup-root{display:flex;flex-wrap:wrap;gap:10px;width:100%}
   .boite .app .MuiToggleButton-root{display:flex;flex:1 1 calc(50% - 5px);min-width:0;
     padding:15px 12px;margin:0}
-  .boite .app .col-md-4{width:100%;min-width:0;margin:0 0 10px}
+  /* NE PAS remettre width:100% ici : les boutons portent eux-memes col-md-4,
+     et cette regle les repassait en colonne — c'est ce que Tony voyait. */
+  .boite .app .col-md-4:not(.MuiToggleButton-root){width:100%;min-width:0;margin:0 0 10px}
   .boite-repli .choix{display:flex;flex-wrap:wrap;gap:10px}
   .boite-repli .puce{flex:1 1 calc(50% - 5px);min-width:0;justify-content:center;
     text-align:center;padding:13px 10px}
