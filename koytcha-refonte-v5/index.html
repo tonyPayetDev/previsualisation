@@ -129,6 +129,10 @@ img{max-width:100%;display:block}
 /* Meme oubli que pour la fleche : le burger heritait du noir et se perdait
    sur la photo sombre du premier ecran. */
 .nav:not(.pose) .burger{color:#fff}
+/* ...sauf panneau ouvert : la barre passe alors au blanc, et un burger blanc
+   sur fond blanc rendait la croix de fermeture invisible. Regression
+   introduite en corrigeant sa visibilite sur la photo sombre. */
+.nav.ouvert .burger{color:var(--noir)}
 .nav.ouvert .chev{color:var(--noir)}
 .chev svg{width:10px;height:6px;transition:transform .25s var(--ease)}
 .a-sous:hover .chev svg,.a-sous:focus-within .chev svg{transform:rotate(180deg)}
@@ -965,6 +969,16 @@ footer a:hover{color:var(--magenta)}
   .nav.ouvert li.deploye > .chev svg{transform:rotate(180deg)}
   .nav.ouvert .sous a{padding:12px 22px 12px 34px;font-size:13.5px}
   body.bloque{overflow:hidden}
+  /* Le panneau fait defiler six entrees et leurs sous-menus : arrive en bas,
+     rien ne ramene en haut sans remonter au pouce. */
+  .nav.ouvert .haut-li{border-bottom:0;padding:18px 22px 30px}
+  .nav.ouvert .haut{display:inline-flex;align-items:center;gap:9px;background:none;
+    border:1px solid rgba(0,0,0,.16);border-radius:2px;padding:12px 18px;
+    font:inherit;font-size:12.5px;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--noir);cursor:pointer}
+  .nav.ouvert .haut:hover{border-color:var(--magenta);color:var(--magenta)}
+  .haut-li{display:none}
+  .nav.ouvert .haut-li{display:block}
   .piste{height:150vh}
 }
 @media(max-width:620px){
@@ -1392,6 +1406,10 @@ footer a:hover{color:var(--magenta)}
         </ul>
       </li>
       <li><a href="#contact">Contact</a></li>
+      <li class="haut-li"><button class="haut" type="button">
+        <svg viewBox="0 0 14 14" width="13" height="13" fill="none" stroke="currentColor"
+             stroke-width="1.7" aria-hidden="true"><path d="M7 12V2M2.5 6.5L7 2l4.5 4.5"/></svg>
+        Remonter en haut</button></li>
     </ul>
     <!-- Correctif v3 · 3 : passé en contour. Deux boutons roses pleins se
          disputaient le clic alors qu'ils mènent à deux parcours opposés
@@ -1782,6 +1800,12 @@ footer a:hover{color:var(--magenta)}
   });
   document.addEventListener('keydown', function(e){
     if (e.key === 'Escape' && nav.classList.contains('ouvert')) { fermer(); burger.focus(); }
+  });
+
+  var haut = nav.querySelector('.haut');
+  if (haut) haut.addEventListener('click', function(){
+    fermer();
+    window.scrollTo({ top: 0, behavior: reduit ? 'auto' : 'smooth' });
   });
 
   /* ── Retour sonore au clic ────────────────────────────────────────────
