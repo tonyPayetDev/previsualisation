@@ -1,0 +1,134 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>3 outils à tester — v2</title>
+<style>
+:root{--bg:#0a0a0f;--carte:#111117;--trait:#232330;--or:#eab308;--violet:#8b5cf6;--doux:#8A8A8A;--txt:#EDEDED}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--txt);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;
+  line-height:1.6;padding:30px 18px 64px;display:flex;flex-direction:column;align-items:center}
+h1{font-size:clamp(21px,4.2vw,29px);letter-spacing:-.02em;text-align:center}
+h1 em{font-style:normal;color:var(--or)}
+p.s{color:var(--doux);text-align:center;max-width:60ch;margin:10px 0 26px;font-size:15px}
+.duo{display:flex;gap:18px;flex-wrap:wrap;justify-content:center;width:100%}
+figure{width:100%;max-width:300px}
+video{width:100%;border-radius:14px;display:block;box-shadow:0 18px 44px -18px #000;background:#000}
+figcaption{margin-top:9px;font-size:13.5px;color:var(--doux);text-align:center}
+figcaption b{color:#fff}
+.tag{display:inline-block;font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+  padding:3px 9px;border-radius:99px;margin-bottom:8px}
+.av{background:#1b1b22;color:var(--doux);border:1px solid var(--trait)}
+.ap{background:var(--or);color:#0a0a0f;font-weight:700}
+.bloc{max-width:660px;width:100%;margin-top:26px;background:var(--carte);border:1px solid var(--trait);
+  border-radius:14px;padding:20px 23px}
+.bloc h2{font-size:12.5px;color:var(--or);letter-spacing:.11em;text-transform:uppercase;margin-bottom:13px}
+.bloc li{margin:10px 0 10px 18px;font-size:14.5px;color:#cbc7d2}
+.bloc b{color:#fff}
+blockquote{border-left:3px solid var(--violet);padding-left:15px;color:#cbc7d2;font-size:15px;font-style:italic}
+table{border-collapse:collapse;margin-top:14px;width:100%;font-size:14px}
+th,td{padding:9px 11px;border-bottom:1px solid var(--trait);text-align:left;vertical-align:top}
+th{color:var(--or);font-size:11.5px;letter-spacing:.1em;text-transform:uppercase}
+td.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.ok{color:var(--or);font-weight:700}
+code{background:#000;padding:1px 6px;border-radius:4px;font-size:13px}
+a{color:var(--or)}
+</style>
+
+<h1>3 outils à tester — <em>version 2</em></h1>
+<p class="s">Les trois corrections de ton tri du 04/09, et rien d'autre : la prononciation
+de « n8n », un hook plus percutant, et la valse au piano avec des bruitages.
+Le montage « le blanc » ne bouge pas.</p>
+
+<div class="duo">
+  <figure>
+    <span class="tag av">Avant · v1</span>
+    <video src="https://assets.automatisationboost.com/previsualisation/trois-outils/video.mp4" controls playsinline preload="none"></video>
+    <figcaption><b>24,90 s</b> — hook « desk city », lit électro, un seul whoosh par coupe.
+    <a href="/trois-outils/">la page v1</a></figcaption>
+  </figure>
+  <figure>
+    <span class="tag ap">Après · v2</span>
+    <video src="https://assets.automatisationboost.com/previsualisation/trois-outils-v2/video.mp4" controls playsinline poster="cover.jpg"></video>
+    <figcaption><b>24,90 s</b> — hook « je casse l'écran noir », valse au piano, 17 bruitages.</figcaption>
+  </figure>
+</div>
+
+<div class="bloc">
+  <h2>Ce que tu as dit</h2>
+  <blockquote>« Déjà, tu dis mal le mot “n8n”. Je ne sais pas si tu peux corriger ça.
+  Après, j'aime pas le hook que tu as choisi au début. Un hook bien plus percutant :
+  prends autre chose. Prends la musique du piano que je vais télécharger. »</blockquote>
+</div>
+
+<div class="bloc">
+  <h2>1 · « n8n » — la phonétique dans le texte envoyé</h2>
+  <ul>
+    <li>Deux graphies testées au webhook <code>tts-gen</code>, arbitrées par
+    faster-whisper : <b>« N huit N »</b> sort « N c'est une huit haine » — refusée.
+    <b>« ène-huit-ène »</b> sort <b>« N8N »</b> — gardée.</li>
+    <li>Même traitement que le reste : rognage des silences, <code>atempo=1.12</code>,
+    <code>dynaudnorm</code>. F0 médiane <b>114 Hz</b> — c'est bien ta voix clonée,
+    pas le repli OpenAI.</li>
+  </ul>
+</div>
+
+<div class="bloc">
+  <h2>2 · Le nouveau hook</h2>
+  <ul>
+    <li>Plan pris dans ta banque triée : <code>48b4b41d</code> — HOOK_DEBUT,
+    « je casse l'écran noir ». Deux secondes de noir, le poing traverse la vitre
+    à <b>2,04 s</b>, tu t'assois.</li>
+    <li>Accroche réécrite, cash : <b>« Tu perds dix heures par semaine.
+    Ces trois outils te les rendent. »</b> — le chiffre arrive avant l'impact,
+    « ces trois outils » tombe pile dessus.</li>
+    <li>L'ancienne accroche « Si j'étais toi, je testerais… pas dans six mois »
+    est supprimée ; la ligne « SI J'ÉTAIS TOI » reste, en carte, après l'impact.</li>
+  </ul>
+</div>
+
+<div class="bloc">
+  <h2>3 · La valse et les bruitages</h2>
+  <ul>
+    <li><b>Version évidée</b> retenue (<code>valse-des-fleurs-maison-evidee.mp3</code>) :
+    c'est celle qui est faite pour passer sous une voix. Mesures :
+    évidée <b>−28,8 LUFS</b> et plate à ±1 dB · tutti <b>−70 LUFS</b>, inaudible ·
+    intégrale −21,7 LUFS mais elle monte.</li>
+    <li>Les trois fichiers font <b>20,0 s</b>, pas la durée de la vidéo : bouclés
+    sur la grille de mesures (3,000 s la mesure, temps fort à 1,15 s), reprise à
+    0,6 s, fondu croisé de 0,25 s sur un temps fort. Aucune couture audible.</li>
+    <li>Duckée en <b>sidechain</b> — l'ordre est <code>[musique][voix]</code>,
+    jamais l'inverse. Contrôle dans les blancs : <b>−32 à −38 dB RMS</b>.
+    De la musique, pas les −91 dB du sidechain retourné.</li>
+    <li><b>17 bruitages</b> au lieu de 4 : glitch sur le noir, click sur « dix heures »,
+    whoosh + impact sur le poing, whoosh à chaque coupe, impact sur chaque nom d'outil,
+    pop à chaque carte, chime + notify sur le CTA. Calés au pic mesuré de chaque
+    fichier, ≈ 7 dB sous la voix.</li>
+  </ul>
+</div>
+
+<div class="bloc">
+  <h2>Les mesures du fichier livré</h2>
+  <table>
+    <tr><th>Contrôle</th><th>Mesure</th><th style="text-align:right">Verdict</th></tr>
+    <tr><td>Format</td><td>1080×1920, 30 fps, H.264 + AAC 48 kHz, 24,90 s</td><td class="n ok">conforme</td></tr>
+    <tr><td>Voix (intégré)</td><td>−14,5 LUFS, LRA 6,5 LU</td><td class="n ok">audible au téléphone</td></tr>
+    <tr><td>Lit musical dans les blancs</td><td>−35,0 / −38,3 / −32,3 / −34,5 dB RMS</td><td class="n ok">présent</td></tr>
+    <tr><td>« n8n » au whisper</td><td>lu <b>« N8N »</b> à 6,44 s</td><td class="n ok">compris</td></tr>
+    <tr><td>Hook au whisper</td><td>« Tu perds 10 heures par semaine. Ces 3 outils te les rendent. »</td><td class="n ok">net</td></tr>
+    <tr><td>CTA au whisper</td><td>« …le mot <b>outil</b> et je t'envoie… »</td><td class="n ok">mot-clé compris</td></tr>
+    <tr><td>Synchro A1 · B1 · C2</td><td>voix sur bouche fermée : 0 % · 0 % · 0 %</td><td class="n ok">0 % (plafond 15 %)</td></tr>
+  </table>
+</div>
+
+<div class="bloc">
+  <h2>Ce qui a demandé un deuxième passage</h2>
+  <ul>
+    <li>La phrase du CTA sortait <b>« commentes où t'il se »</b> au whisper —
+    la voix collait « commente » et « OUTILS ». Regénérée en
+    <b>« Commente le mot “outils” »</b> : le mot-clé est maintenant détaché et lu
+    <code>outil</code>. La carte à l'écran, elle, dit toujours <b>Commente OUTILS</b>.</li>
+    <li>La palette a été repassée à la charte au passage : <code>#eab308</code> et
+    <code>#8b5cf6</code>. La v1 portait encore le <code>#FFE600</code> mort.</li>
+  </ul>
+</div>
