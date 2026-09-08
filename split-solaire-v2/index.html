@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Solaire — écran scindé v2</title>
+<style>
+ :root{--bg:#0a0a0f;--panel:#111117;--border:#242430;--y:#f5d90a;--o:#ff7a1a;--v:#8b5cf6;--text:#f2f2f5;--muted:#9a9aa8}
+ *{box-sizing:border-box}
+ body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;padding:2rem 1rem 4rem}
+ .wrap{max-width:480px;margin:0 auto}
+ a.back{color:var(--muted);font-size:.8rem;text-decoration:none;display:inline-block;margin-bottom:1rem}
+ header{text-align:center;margin-bottom:1.5rem}
+ header h1{font-size:1.45rem;margin:0 0 .3rem;background:linear-gradient(90deg,var(--y),var(--o));-webkit-background-clip:text;background-clip:text;color:transparent}
+ header p{color:var(--muted);font-size:.85rem;margin:0}
+ .card{background:var(--panel);border:1px solid var(--border);border-radius:16px;overflow:hidden;margin-bottom:1.4rem;box-shadow:0 18px 50px -24px rgba(168,85,247,.45)}
+ .card.vieux{box-shadow:none;opacity:.9}
+ .head{padding:.9rem 1.1rem;display:flex;justify-content:space-between;align-items:center;gap:.5rem}
+ .head h2{font-size:1rem;margin:0;font-weight:600}
+ .badge{font-size:.68rem;font-weight:700;padding:.24rem .62rem;border-radius:999px;background:rgba(245,217,10,.12);color:var(--y);border:1px solid rgba(245,217,10,.3);white-space:nowrap}
+ .badge.ko{background:rgba(239,68,68,.12);color:#ff9b9b;border-color:rgba(239,68,68,.35)}
+ .badge.ok{background:rgba(139,92,246,.14);color:#c9b6ff;border-color:rgba(139,92,246,.4)}
+ video{display:block;width:100%;aspect-ratio:9/16;background:#000}
+ .meta{padding:.9rem 1.1rem 1.1rem;border-top:1px solid var(--border);font-size:.82rem;color:#c9c9d4;line-height:1.68}
+ .meta b{color:var(--y)}
+ .note{background:rgba(139,92,246,.08);border:1px solid rgba(139,92,246,.35);border-radius:14px;padding:1rem 1.1rem;font-size:.87rem;line-height:1.6;color:#ded4ff;margin-bottom:1.4rem}
+ .note span{display:block;font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:.45rem}
+ .note q{font-style:italic;color:#fff}
+ .t{display:flex;gap:.7rem;padding:.42rem 0;border-bottom:1px solid var(--border)}
+ .t:last-child{border-bottom:0}
+ .t span:first-child{color:var(--muted);min-width:9rem}
+ .phrase{font-size:.95rem;line-height:1.5;color:#fff;border-left:3px solid var(--y);padding-left:.8rem;margin:.2rem 0 .8rem}
+ .phrase small{display:block;color:var(--muted);font-size:.72rem;margin-top:.3rem;border:0;padding:0}
+ footer{text-align:center;margin-top:2rem;font-size:.75rem;color:var(--muted)}
+</style></head><body>
+<div class="wrap">
+ <a class="back" href="/">← toutes les prévisualisations</a>
+ <header><h1>Solaire — la voix du hook</h1><p>version 2 · 30,5 s · 7 septembre 2026</p></header>
+
+ <div class="note">
+  <span>Ta note sur le tri</span>
+  <q>Change la voix du hook du début, mais garde bien cette vidéo.</q>
+ </div>
+
+ <div class="card">
+  <div class="head"><h2>La v2 — même image, ta voix</h2><span class="badge">30,5 s · 9:16</span></div>
+  <video src="https://assets.automatisationboost.com/previsualisation/split-solaire-v2/video.mp4" controls playsinline preload="metadata" poster="cover.jpg"></video>
+  <div class="meta">
+   <b>L'image n'a pas bougé d'une seule frame</b> — le flux vidéo de la v1 est recopié tel quel
+   (<code>-c:v copy</code>), il n'y a que la bande son qui est refaite.
+   Les quatre répliques du métro sont regénérées en <b>voix clonée</b>.
+  </div>
+ </div>
+
+ <div class="card">
+  <div class="head"><h2>Les quatre répliques</h2><span class="badge ok">voix clonée</span></div>
+  <div class="meta">
+   Chacune est posée dans la fenêtre où ta bouche bouge vraiment dans le clip — fenêtres
+   relevées mot à mot par transcription. Le clip n'est <b>jamais étiré</b> : c'est le texte
+   qui est resserré quand il dépasse.
+   <div class="phrase">« Toi, utilise l'IA. »<small>0,10 → 1,65 s · fenêtre 0,00 – 1,72 s</small></div>
+   <div class="phrase">« Toi, arrête Pôle emploi, utilise l'IA. »<small>2,04 → 4,36 s · fenêtre 2,04 – 4,38 s</small></div>
+   <div class="phrase">« Toi aussi, tu peux réussir avec l'IA et faire du code. »<small>4,70 → 7,54 s · fenêtre 4,70 – 7,54 s</small></div>
+   <div class="phrase">« Sans l'IA, t'iras pas loin. »<small>8,08 → 9,50 s · fenêtre 8,08 – 9,50 s</small></div>
+  </div>
+ </div>
+
+ <div class="card vieux">
+  <div class="head"><h2>La v1 — celle du 31/08</h2><span class="badge ko">voix d'origine</span></div>
+  <video src="https://assets.automatisationboost.com/previsualisation/split-solaire/video.mp4" controls playsinline preload="none"></video>
+  <div class="meta">Même image, mais la voix off générée avec le clip — pas la tienne.</div>
+ </div>
+
+ <div class="card">
+  <div class="head"><h2>Les bruitages</h2><span class="badge">19 impacts</span></div>
+  <div class="meta">
+   Palette figée <b>v1</b>, un impact par changement de plan et sur chaque chiffre, sous la voix.
+   <div class="t"><span>Les 4 répliques</span><span>clic doux avant chacune</span></div>
+   <div class="t"><span>Hook → split</span><span>whoosh + impact à 10,07 s</span></div>
+   <div class="t"><span>Carton « 6 nœuds »</span><span>notification + clic à 17,50 s</span></div>
+   <div class="t"><span>Les 5 nœuds</span><span>clics en cascade, 17,65 → 20,48 s</span></div>
+   <div class="t"><span>Carton « J+2 »</span><span>notification + validation à 25,30 s</span></div>
+   <div class="t"><span>Le CTA</span><span>pop + impact à 27,54 s</span></div>
+  </div>
+ </div>
+
+ <div class="card">
+  <div class="head"><h2>Les mesures</h2><span class="badge">vérifié</span></div>
+  <div class="meta">
+   <div class="t"><span>Hors fenêtre</span><span><b>0,0 %</b> sur les 4 répliques du hook</span></div>
+   <div class="t"><span>Synchro lèvres</span><span><b>0 %</b> de voix sur bouche fermée sur les 4 plans du split</span></div>
+   <div class="t"><span>Étirement</span><span>aucun</span></div>
+   <div class="t"><span>Niveau</span><span>−15,2 LUFS · crête −0,8 dB, pas d'écrêtage</span></div>
+   <div class="t"><span>Format</span><span>1080×1920 · 30 i/s · 30,50 s</span></div>
+  </div>
+ </div>
+
+ <div class="card">
+  <div class="head"><h2>Deux choses que tu dois savoir</h2><span class="badge">honnête</span></div>
+  <div class="meta">
+   <b>1. L'ambiance du wagon est partie avec l'ancienne voix.</b> Le clip n'a qu'une seule
+   piste son, la voix off y est mixée avec le bruit du métro : impossible d'enlever l'une sans
+   l'autre. Pour ne pas laisser une ouverture sèche, la musique entre à 1,2 s en fond bas et
+   remonte au niveau normal au moment du split.<br>
+   <b>2. La troisième réplique n'est plus mot pour mot.</b> L'originale disait « même si tu es
+   une femme, tu peux réussir… ». Dans <b>ta</b> voix ce n'est plus une réplique de clip, c'est
+   toi qui le dis, sur ton compte. J'ai gardé le sens et le rythme : « Toi aussi, tu peux
+   réussir avec l'IA et faire du code. » Si tu veux la version littérale, c'est une ligne à
+   changer et un rendu de trois minutes.
+  </div>
+ </div>
+
+ <footer>AutomatisationBoost — prévisualisation · rien n'a été programmé sur Blotato</footer>
+</div></body></html>
