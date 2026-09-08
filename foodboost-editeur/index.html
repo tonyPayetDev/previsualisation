@@ -471,7 +471,11 @@ const PLAN = [
   {r:'hook', h:2, p:1, play:1}, {r:'menu', m:1, p:4}, {r:'sig', p:0},
 ];
 
-const url = (n) => n.startsWith('data:') ? n : 'photos/' + n + '.jpg';
+/* Les photos d'un client ne sont plus copiees ici : elles vivent deja sur
+   resto.automatisationboost.com, ou les demos les servent. Les dupliquer
+   dans ce depot ajoutait 32 Mo pour rien — et le disque du VPS a deja bloque
+   des deploiements. url() laisse donc passer une adresse absolue telle quelle. */
+const url = (n) => (n.startsWith('data:') || n.startsWith('http')) ? n : 'photos/' + n + '.jpg';
 let E = null;      // état courant
 let selection = null;
 let modifs = 0;
@@ -919,28 +923,26 @@ document.getElementById('famille').value = E.famille;
      On ne le refait pas si l'état gardé est déjà celui de ce client : sinon un
      retour sur la page effacerait les vignettes que Tony vient de changer. */
   if (client && client.photos && client.photos.length && E.client !== slug) {
-    /* Il n'y a que CINQ emplacements de photo, partages entre les stories et
-       les vignettes de la grille : on ne peut donc pas reserver les photos du
-       client aux stories et laisser les plats a la banque. Et le releve sur
-       arbradelis.com a ramene sept vues de salle et de terrasse, aucun plat —
-       posees partout, elles collaient « Menu du jour : rougail saucisse » sur
-       une photo de tables vides.
-       Seul l'emplacement 0 est pris : il porte la photo de profil et deux
-       vignettes sans accroche de plat. Le reste attend de vraies photos de
-       plats, et la banque du client reste en tete du selecteur pour que Tony
-       les pose lui-meme la ou elles vont. */
+    /* Poser les photos du client dans l'apercu, pas seulement dans la banque :
+       sinon l'image qu'on envoie montre des plats de stock, c'est-a-dire le
+       feed de quelqu'un d'autre.
+       Il n'y a que CINQ emplacements, partages entre les stories et la grille.
+       Quand le releve n'a ramene que des vues de salle (cas ArbraDelis, sept
+       photos, zero assiette), les poser toutes collait « Menu du jour : rougail
+       saucisse » sur des tables vides — on ne prend alors que l'emplacement 0,
+       qui porte la photo de profil et deux vignettes sans accroche de plat. */
     E.client = slug;
-    E.photos[0] = client.photos[0];
+    var plats = client.photos.filter(function(x){ return /plat/.test(x); });
+    var pose = plats.length >= 3 ? client.photos.slice(0, 5) : client.photos.slice(0, 1);
+    pose.forEach(function(n, i){ E.photos[i] = n; });
     garder();
     peindre();
-    const z = document.getElementById('banque');
+    var z = document.getElementById('banque');
     if (z && z.parentNode) {
-      const p = document.createElement('p');
+      var p = document.createElement('p');
       p.className = 'banque-titre';
-      p.innerHTML = '<b>' + client.photos.length + ' photos de ' + client.nom
-        + '</b> <em>\u00b7 relevees sur ' + client.source + '. Ce sont des vues de salle,'
-        + ' pas des plats : seule la photo de profil est posee. Pose les autres ou tu veux,'
-        + ' et demande-leur des photos de plats avant d\u2019envoyer.</em>';
+      p.innerHTML = '<b>' + client.photos.length + ' photos de ' + client.nom + '</b> <em>\u00b7 relevees sur '
+        + client.source + '. ' + pose.length + ' posee(s) dans l\u2019apercu, le reste est dans le selecteur.</em>';
       z.parentNode.insertBefore(p, z);
     }
   }
