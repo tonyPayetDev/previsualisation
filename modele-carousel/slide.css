@@ -1,0 +1,73 @@
+/* ── Modèle de slide carrousel — AutomatisationBoost ─────────────────────
+   Reprise de la mise en page qui marche sur Instagram (badge, titre lourd +
+   accent en serif italique, filet à gauche du corps, encart schéma en bas),
+   transposée sur fond noir avec la charte : jaune #eab308, violet #8b5cf6.
+   Les valeurs #FFE600 et #A855F7 sont mortes, ne jamais les réintroduire. */
+:root{
+  --noir:#0a0a0f; --carte:#14141b; --ligne:#25252f;
+  --jaune:#eab308; --violet:#8b5cf6;
+  --texte:#f2f2f7; --gris:#8b8b99;
+  --sans:'Inter','Poppins',system-ui,sans-serif;
+  --serif:'Fraunces',Georgia,serif;
+}
+*{box-sizing:border-box}
+.slide{
+  width:1080px;height:1350px;position:relative;overflow:hidden;
+  background:var(--noir);color:var(--texte);font-family:var(--sans);
+  padding:96px 84px;display:flex;flex-direction:column}
+/* halo d'ambiance : deux taches très diffuses, jamais de dégradé net */
+.slide::before{content:'';position:absolute;width:900px;height:900px;
+  top:-340px;right:-300px;border-radius:50%;pointer-events:none;
+  background:radial-gradient(circle,rgba(139,92,246,.16),transparent 62%)}
+.slide::after{content:'';position:absolute;width:760px;height:760px;
+  bottom:-300px;left:-260px;border-radius:50%;pointer-events:none;
+  background:radial-gradient(circle,rgba(234,179,8,.11),transparent 62%)}
+.slide > *{position:relative;z-index:1}
+
+.badge{align-self:flex-start;border:1.5px solid var(--jaune);color:var(--jaune);
+  border-radius:4px;padding:13px 26px;font-size:25px;font-weight:600;
+  letter-spacing:.22em;text-transform:uppercase}
+.num{position:absolute;top:78px;right:84px;z-index:2;font-size:27px;
+  font-weight:600;color:var(--gris);letter-spacing:.1em}
+
+h1{font-size:104px;line-height:.98;font-weight:800;letter-spacing:-.035em;
+  margin:40px 0 0}
+h1 i{display:block;font-family:var(--serif);font-style:italic;font-weight:400;
+  color:var(--jaune);letter-spacing:-.02em;
+  text-shadow:0 0 44px rgba(234,179,8,.42)}
+
+.corps{border-left:4px solid var(--violet);padding-left:30px;margin-top:44px;
+  font-size:37px;line-height:1.45;color:#d8d8e2;max-width:26ch}
+.corps b{color:var(--jaune);font-weight:600}
+.appui{font-family:var(--serif);font-style:italic;font-size:35px;color:#fff;
+  margin-top:32px;text-decoration:underline;text-decoration-color:var(--jaune);
+  text-underline-offset:12px;text-decoration-thickness:3px}
+
+/* ── L'encart schéma : c'est lui qui porte le néon ─────────────────────── */
+.schema{margin-top:auto;background:var(--carte);border:1px solid var(--ligne);
+  border-radius:22px;padding:52px 44px}
+.rangee{display:flex;align-items:center;justify-content:center;gap:26px}
+.rangee + .rangee{margin-top:54px}
+.noeud{background:#1b1b24;border:1.5px solid var(--ligne);border-radius:14px;
+  padding:22px 26px;font-size:27px;font-weight:600;white-space:nowrap;
+  display:flex;align-items:center;gap:14px}
+.noeud small{display:block;font-size:19px;font-weight:400;color:var(--gris);
+  letter-spacing:.06em;text-transform:uppercase;margin-top:5px}
+.noeud .pt{width:13px;height:13px;border-radius:50%;background:var(--gris);flex:0 0 auto}
+/* Néon : liseré + halo. Deux ombres, pas un filtre — un filtre sur un parent
+   crée un bloc conteneur et casse tout positionnement fixe à l'intérieur. */
+.noeud.j{border-color:var(--jaune);
+  box-shadow:0 0 0 1px var(--jaune),0 0 34px -4px rgba(234,179,8,.75)}
+.noeud.j .pt{background:var(--jaune);box-shadow:0 0 14px var(--jaune)}
+.noeud.v{border-color:var(--violet);
+  box-shadow:0 0 0 1px var(--violet),0 0 34px -4px rgba(139,92,246,.75)}
+.noeud.v .pt{background:var(--violet);box-shadow:0 0 14px var(--violet)}
+.fil{flex:0 0 62px;height:2px;background:linear-gradient(90deg,var(--jaune),var(--violet));
+  box-shadow:0 0 12px rgba(139,92,246,.6);border-radius:2px}
+.fil.court{flex-basis:38px}
+
+.pied{display:flex;align-items:center;justify-content:space-between;margin-top:44px}
+.marque{font-size:25px;color:var(--gris);letter-spacing:.04em}
+.suivant{background:var(--jaune);color:#0a0a0f;border-radius:999px;
+  padding:19px 38px;font-size:26px;font-weight:700;letter-spacing:.14em;
+  text-transform:uppercase;display:flex;align-items:center;gap:14px}
