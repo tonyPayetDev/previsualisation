@@ -60,6 +60,9 @@ const ICO = {
   etoile: svg('<path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8L3.5 9.7l5.9-.9z"/>'),
   maquette: svg('<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M7 6.5h.01M10 6.5h.01"/>'),
   lien: svg('<path d="M14 4h6v6M20 4l-8.5 8.5"/><path d="M18 13.5V19a1.5 1.5 0 0 1-1.5 1.5h-11A1.5 1.5 0 0 1 4 19V8a1.5 1.5 0 0 1 1.5-1.5H11"/>'),
+  video: svg('<rect x="3" y="6" width="12" height="12" rx="2"/><path d="M15 10.5l6-3v9l-6-3z"/>'),
+  loupe: svg('<circle cx="11" cy="11" r="6"/><path d="M20 20l-4.5-4.5"/>'),
+  deux: svg('<path d="M4 7h10"/><path d="M4 12h10"/><path d="M4 17h6"/><path d="M17 9v8"/><path d="M20 13h-6"/>'),
   tel: svg('<path d="M6.5 3.5h3l1.5 4-2 1.5a12 12 0 0 0 6 6l1.5-2 4 1.5v3a1.5 1.5 0 0 1-1.6 1.5C11.4 19.4 4.6 12.6 4 5.1A1.5 1.5 0 0 1 5.5 3.5z"/>'),
 };
 
@@ -81,6 +84,59 @@ const nAvecUrl = items.filter(i => urlDe[i.dir]).length;
 // --- Audit responsive ---------------------------------------------------------
 // Produit par audit-responsive.mjs puis analyse-responsive.mjs. Absent tant
 // que l'audit n'a pas tourné : la galerie doit rester générable sans lui.
+/* Les mesures du site DU CLIENT (pas de ma maquette) : c'est le seul chiffre
+ * qu'on a le droit de lui citer dans un message. `audit-avant.json` vient du
+ * passage Playwright en 390x844 du 21/08. Un site qui n'a pas repondu n'a pas
+ * de `mesure` : on ne lui invente pas de defaut. */
+const LEUR = Object.fromEntries(
+  (fs.existsSync(path.join(DOSSIER, 'audit-avant.json'))
+    ? JSON.parse(fs.readFileSync(path.join(DOSSIER, 'audit-avant.json'), 'utf8'))
+    : []).filter(x => x && x.dir).map(x => [x.dir, x]));
+
+/* Le fait a citer, ou rien. L'ordre suit ce qui coute le plus cher au client :
+ * un numero qu'on ne peut pas toucher, puis une page qui deborde, puis
+ * l'absence de formulaire. */
+function faitClient(dir) {
+  const x = LEUR[dir]; if (!x) return null;
+  const t = x.tel || x.mesure || null; if (!t) return null;
+  if (t.viewportMeta === false) return "votre site n'a pas de balise viewport : sur un telephone il s'affiche a la taille d'un ecran d'ordinateur";
+  if (t.debordement > 8) return `sur un ecran de telephone votre page deborde de ${t.debordement} px sur la droite`;
+  const b = t.boutons || [];
+  const gros = b.filter(z => z.partVw >= 90).length;
+  if (gros) return `${gros} de vos boutons prennent toute la largeur de l'ecran sur mobile`;
+  const petit = b.filter(z => z.police && z.police < 12).length;
+  if (petit) return `${petit} de vos boutons ont un texte sous 12 px : illisible a bout de bras`;
+  return null;
+}
+
+/* Deux propositions, deux messages. Tony copie, il colle ou il l'envoie en SMS.
+ * Le lien passe par r.html : il porte le domaine du site, et le clic est
+ * journalise cote serveur (workflow n8n email-tracking). */
+const RDV = 'https://automatisationboost.com/audit.html';
+function messages(i) {
+  const f = faitClient(i.dir);
+  const nom = i.nom;
+  const lienAudit = `https://automatisationboost.com/r.html?a=${i.dir}&q=audit&s=site`;
+  const lienDemo = `https://automatisationboost.com/r.html?a=${i.dir}&q=demo&s=site`;
+  const sign = "\n\nTony PAYET — AutomatisationBoost\nLa Reunion";
+  const audit = `Bonjour,\n\nTony PAYET, j'automatise des taches pour des entreprises d'ici.\n\n`
+    + (f ? `J'ai ouvert le site de ${nom} sur un telephone : ${f}.\n\n`
+         : `J'ai regarde le site de ${nom} sur un telephone.\n\n`)
+    + `Je peux vous en faire le releve complet, gratuitement et sans rendez-vous : ${lienAudit}\n\n`
+    + `Si une mesure vous semble fausse, repondez-moi, je la refais et je vous envoie la capture.` + sign;
+  const video = `Bonjour,\n\nTony PAYET, je produis des videos verticales pour des entreprises de La Reunion — `
+    + `format reseaux, voix et sous-titres compris, a partir d'un simple texte.\n\n`
+    + `Votre site tient la route ; c'est votre presence video qui vous manquerait. `
+    + `Je peux vous en montrer une faite pour ${nom} avant que vous decidiez quoi que ce soit.\n\n`
+    + `Voir un exemple : ${lienDemo}\n\nEt si vous preferez en parler : ${RDV}` + sign;
+  const deux = `Bonjour,\n\nTony PAYET, j'automatise et je produis des videos pour des entreprises d'ici.\n\n`
+    + (f ? `Deux choses. D'abord votre site, vu sur un telephone : ${f}. Le releve complet est ici : ${lienAudit}\n\n`
+         : `Deux choses. D'abord votre site : je peux vous en faire le releve mobile complet ici : ${lienAudit}\n\n`)
+    + `Ensuite la video : je produis des formats verticaux pour les reseaux a partir d'un simple texte. `
+    + `Un exemple : ${lienDemo}\n\nSi vous preferez en parler : ${RDV}` + sign;
+  return { audit, video, deux, fait: f };
+}
+
 const AUDIT = fs.existsSync(path.join(DOSSIER, 'audit-resume.json'))
   ? JSON.parse(fs.readFileSync(path.join(DOSSIER, 'audit-resume.json'), 'utf8')) : {};
 
@@ -238,6 +294,17 @@ a.retour:hover{color:var(--or)}
 .nom{font-size:.87rem;font-weight:600;line-height:1.25}
 .meta{font-size:.72rem;color:var(--mut)}
 .actions{display:flex;gap:.3rem;flex-wrap:wrap;margin-top:auto;padding-top:.35rem}
+/* Proposer : deux prestations, un message pret par bouton. Separe des actions
+   du haut (qui ouvrent des pages) parce que celles-ci ECRIVENT quelque chose —
+   confondre les deux fait envoyer un message quand on voulait juste regarder. */
+.propose{margin-top:.4rem;border-top:1px dashed var(--bord);padding-top:.4rem}
+.propose .pt{display:block;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--mut);margin-bottom:.3rem}
+.propose .pt em{font-style:normal;color:var(--vert);text-transform:none;letter-spacing:0}
+.propose .pb{display:flex;gap:.3rem;flex-wrap:wrap}
+.bt.prop{border-color:#3a3550;color:#b9aee0}
+.bt.prop:hover{border-color:#6d5fb0;color:#e6dfff}
+.bt.prop.copie{border-color:var(--vert);color:var(--vert)}
+.bt.prop.sms{border-color:#2a3d33;color:#6f9d80;font-size:.72rem;font-weight:700;letter-spacing:.06em}
 .bt{background:none;border:1px solid var(--bord);color:var(--mut);border-radius:6px;
   padding:.24rem .52rem;font-size:.71rem;cursor:pointer;font-family:inherit;text-decoration:none;
   display:inline-flex;align-items:center;gap:.28rem}
@@ -397,6 +464,20 @@ ${items.map(i => `  <article class="carte" data-dir="${esc(i.dir)}" data-etat="$
         ${i.tel ? `<a class="bt tel" href="tel:${esc(i.tel)}" title="Appeler ${esc(i.tel)}"
           aria-label="Appeler ${esc(i.nom)}">${ICO.tel}<span class="lb">appeler</span></a>` : ''}
       </div>
+      ${(() => { const m = messages(i); return `
+      <div class="propose">
+        <span class="pt">Proposer${m.fait ? ' <em>(fait mesure chez eux)</em>' : ''}</span>
+        <div class="pb">
+          <button class="bt prop" type="button" data-msg="${esc(m.video)}"
+            title="Copier la proposition video" aria-label="Copier la proposition video pour ${esc(i.nom)}">${ICO.video}<span class="lb">video</span></button>
+          <button class="bt prop" type="button" data-msg="${esc(m.audit)}"
+            title="Copier la proposition d'audit" aria-label="Copier la proposition d'audit pour ${esc(i.nom)}">${ICO.loupe}<span class="lb">auditer</span></button>
+          <button class="bt prop" type="button" data-msg="${esc(m.deux)}"
+            title="Copier la proposition qui contient les deux" aria-label="Copier les deux propositions pour ${esc(i.nom)}">${ICO.deux}<span class="lb">les deux</span></button>
+          ${i.tel ? `<a class="bt prop sms" href="sms:${esc(i.tel)}" title="Ouvrir un SMS vers ${esc(i.tel)} — colle le message copie"
+            aria-label="Envoyer un SMS a ${esc(i.nom)}">SMS</a>` : ''}
+        </div>
+      </div>`; })()}
       <textarea class="note" rows="2" placeholder="Ce qu'il faut corriger — ou pourquoi abandonner…"></textarea>
     </div>
   </article>`).join('\n')}
@@ -706,6 +787,31 @@ ${items.map(i => `  <article class="carte" data-dir="${esc(i.dir)}" data-etat="$
   });
   document.getElementById('b-fermer').addEventListener('click', function(){ sortie.classList.remove('on'); });
   sortie.addEventListener('click', function(e){ if (e.target === sortie) sortie.classList.remove('on'); });
+  /* Les boutons « proposer » : un clic met le message dans le presse-papier.
+     Rien n'est envoye d'ici — Tony colle dans ce qu'il veut (SMS, WhatsApp,
+     mail, DM). Le bouton dit qu'il a copie, sinon on ne sait pas si ca a
+     marche et on clique trois fois. */
+  document.querySelectorAll('.bt.prop[data-msg]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      var t = b.getAttribute('data-msg');
+      var fini = function () {
+        b.classList.add('copie');
+        var lb = b.querySelector('.lb'); var av = lb ? lb.textContent : '';
+        if (lb) lb.textContent = 'copie';
+        setTimeout(function () { b.classList.remove('copie'); if (lb) lb.textContent = av; }, 1500);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(t).then(fini, function () {
+          var z = document.createElement('textarea'); z.value = t; document.body.appendChild(z);
+          z.select(); try { document.execCommand('copy'); } catch (_) {} z.remove(); fini();
+        });
+      } else {
+        var z = document.createElement('textarea'); z.value = t; document.body.appendChild(z);
+        z.select(); try { document.execCommand('copy'); } catch (_) {} z.remove(); fini();
+      }
+    });
+  });
+
   document.getElementById('b-copier').addEventListener('click', function(){
     var ta = document.getElementById('brief');
     ta.select();
