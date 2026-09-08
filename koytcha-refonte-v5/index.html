@@ -1943,39 +1943,88 @@ footer a:hover{color:var(--magenta)}
   })();
 
   /* ── Retour sonore au clic ────────────────────────────────────────────
-     Synthetise plutot que telecharge : deux oscillateurs de 50 a 120 ms,
-     zero fichier, zero requete. Le contexte audio n est cree qu au premier
-     clic — le creer au chargement le laisserait suspendu par la politique
-     de lecture automatique des navigateurs. Volume tres bas (0,035) : un
-     site immobilier qui bipe fort, on le quitte. Coupe si le visiteur a
-     demande moins d animations. */
+     Synthetise, pas telecharge : zero fichier, zero requete. Le contexte audio
+     n est cree qu au premier clic — le creer au chargement le laisserait
+     suspendu par la politique de lecture automatique des navigateurs.
+
+     Le premier jet etait un bip : une onde triangle qui descend. Ca sonnait
+     electronique, et un site immobilier haut de gamme qui bipe fait penser a un
+     distributeur de billets. Deux sons remplacent le bip, tous les deux courts
+     et bas :
+
+     · le CHOIX est un petit coup mat — une bouffee de bruit filtree tres court
+       (28 ms) posee sur une sinusoide grave. L oreille l entend comme un objet
+       qu on pose, pas comme une machine ;
+     · l ACTION PRINCIPALE est un intervalle de quinte qui monte (440 puis 660
+       Hz), en sinusoide pure et tres douce. Ca dit « valide » sans crier.
+
+     Volume tres bas dans les deux cas, et rien du tout si le visiteur a demande
+     moins d animations. */
   var son = null;
-  var bip = function(freq, duree, force){
-    if (reduit) return;
+  var contexte = function(){
+    if (reduit) return null;
     try {
       var AC = window.AudioContext || window.webkitAudioContext;
-      if (!AC) return;
+      if (!AC) return null;
       son = son || new AC();
       if (son.state === 'suspended') son.resume();
-      var t = son.currentTime, o = son.createOscillator(), g = son.createGain();
-      o.type = 'triangle';
-      o.frequency.setValueAtTime(freq, t);
-      o.frequency.exponentialRampToValueAtTime(freq * 0.62, t + duree);
-      g.gain.setValueAtTime(0.0001, t);
-      g.gain.linearRampToValueAtTime(force, t + 0.006);
-      g.gain.exponentialRampToValueAtTime(0.0001, t + duree);
-      o.connect(g); g.connect(son.destination);
-      o.start(t); o.stop(t + duree + 0.03);
-    } catch (e) { /* pas de son disponible : le site marche pareil */ }
+      return son;
+    } catch (e) { return null; }
   };
+
+  /* Le coup mat : bruit blanc court passe dans un filtre passe-bande, plus une
+     sinusoide grave pour lui donner du corps. */
+  var toc = function(force){
+    var c = contexte(); if (!c) return;
+    try {
+      var t = c.currentTime, duree = 0.028;
+      var n = c.createBuffer(1, Math.ceil(c.sampleRate * duree), c.sampleRate);
+      var d = n.getChannelData(0);
+      for (var i = 0; i < d.length; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / d.length);
+      var src = c.createBufferSource(); src.buffer = n;
+      var f = c.createBiquadFilter(); f.type = 'bandpass'; f.frequency.value = 1700; f.Q.value = 1.1;
+      var g = c.createGain();
+      g.gain.setValueAtTime(force, t);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + duree);
+      src.connect(f); f.connect(g); g.connect(c.destination);
+      src.start(t); src.stop(t + duree);
+
+      var o = c.createOscillator(), go = c.createGain();
+      o.type = 'sine'; o.frequency.setValueAtTime(190, t);
+      o.frequency.exponentialRampToValueAtTime(130, t + 0.05);
+      go.gain.setValueAtTime(0.0001, t);
+      go.gain.linearRampToValueAtTime(force * 0.8, t + 0.004);
+      go.gain.exponentialRampToValueAtTime(0.0001, t + 0.06);
+      o.connect(go); go.connect(c.destination);
+      o.start(t); o.stop(t + 0.09);
+    } catch (e) { /* pas de son : le site marche pareil */ }
+  };
+
+  /* La quinte qui monte : deux sinusoides, la seconde decalee de 60 ms. */
+  var quinte = function(force){
+    var c = contexte(); if (!c) return;
+    try {
+      var t = c.currentTime;
+      [[440, 0, 0.16], [660, 0.06, 0.20]].forEach(function (v) {
+        var o = c.createOscillator(), g = c.createGain();
+        o.type = 'sine'; o.frequency.setValueAtTime(v[0], t + v[1]);
+        g.gain.setValueAtTime(0.0001, t + v[1]);
+        g.gain.linearRampToValueAtTime(force, t + v[1] + 0.012);
+        g.gain.exponentialRampToValueAtTime(0.0001, t + v[1] + v[2]);
+        o.connect(g); g.connect(c.destination);
+        o.start(t + v[1]); o.stop(t + v[1] + v[2] + 0.03);
+      });
+    } catch (e) { /* idem */ }
+  };
+
   document.addEventListener('click', function(e){
     var c = e.target.closest ? e.target.closest(
       'a.btn, .bt, .boite-repli .bt, button.puce, .MuiToggleButton-root, .puce, .chev, .burger, .plus') : null;
     if (!c) return;
-    /* L action principale sonne plus grave et un peu plus long : l oreille
-       distingue « j ai choisi » de « je valide ». */
-    if (c.matches('a.btn, .bt')) bip(520, 0.13, 0.045);
-    else bip(880, 0.055, 0.032);
+    /* L action principale et le choix ne sonnent pas pareil : l oreille
+       distingue « j ai choisi » de « je valide » sans y penser. */
+    if (c.matches('a.btn, .bt')) quinte(0.030);
+    else toc(0.028);
   }, true);
 
   /* Apparition des blocs. IntersectionObserver plutôt qu'un calcul au scroll :
