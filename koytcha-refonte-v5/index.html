@@ -184,7 +184,15 @@ img{max-width:100%;display:block}
    Dégradé et pas aplat — un aplat éteindrait la photo, qui est l'argument. */
 .voile{position:absolute;inset:0;
   background:linear-gradient(100deg,rgba(10,10,10,.88) 0%,rgba(10,10,10,.66) 30%,rgba(10,10,10,.34) 58%,rgba(10,10,10,.62) 100%)}
-.hero{position:absolute;inset:0;display:flex;align-items:center;z-index:3}
+/* Le hero centre son contenu verticalement. Tant que la boite de recherche est
+   repliee, tout tient. Des que l'utilisateur filtre, la boite grandit de deux
+   champs et d'un bouton : le contenu devient plus haut que le hero, et un
+   centrage fait deborder AUTANT en haut qu'en bas — le titre passait donc sous
+   la barre de navigation fixe. C'est ce que Tony a vu.
+   `safe center` centre tant que ca rentre, et bascule sur le haut des que ca
+   deborde. Le padding degage la hauteur de la barre pour ce cas-la. */
+.hero{position:absolute;inset:0;display:flex;align-items:center;align-items:safe center;
+  padding:84px 0 24px;z-index:3;overflow-y:auto;-webkit-overflow-scrolling:touch}
 .hero .wrap{width:100%}
 /* Retour a la disposition d origine : texte a gauche, module dessous.
    La version en deux colonnes poussait le module sur la partie la plus
