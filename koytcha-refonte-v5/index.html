@@ -126,6 +126,9 @@ img{max-width:100%;display:block}
 /* .nav:not(.pose) ne repeint que les <a> : sans cette ligne la fleche restait
    noire sur l en-tete sombre, donc invisible. */
 .nav:not(.pose) .chev{color:#fff}
+/* Meme oubli que pour la fleche : le burger heritait du noir et se perdait
+   sur la photo sombre du premier ecran. */
+.nav:not(.pose) .burger{color:#fff}
 .nav.ouvert .chev{color:var(--noir)}
 .chev svg{width:10px;height:6px;transition:transform .25s var(--ease)}
 .a-sous:hover .chev svg,.a-sous:focus-within .chev svg{transform:rotate(180deg)}
@@ -404,8 +407,13 @@ img{max-width:100%;display:block}
 @media (max-width:640px){
   /* 158 px x2 + marges ne tiennent pas dans 390 px : on laisse la largeur
      suivre le texte plutot que de casser la ligne en deux. */
-  .boite .app .MuiToggleButton-root{min-width:0;padding:12px 18px;margin:0 4px 10px}
-  .boite .app .col-md-4{width:auto;min-width:150px;margin:0 4px 10px}
+  /* Sur telephone les puces passent pleine largeur, empilees : une cible de
+     la largeur du pouce plutot que deux boutons etroits cote a cote. Chaque
+     etape n'en propose que deux, la boite ne s'allonge donc pas beaucoup. */
+  .boite .app .MuiToggleButton-root{display:flex;width:100%;min-width:0;
+    padding:15px 18px;margin:0 0 10px}
+  .boite .app .col-md-4{width:100%;min-width:0;margin:0 0 10px}
+  .boite-repli .puce{width:100%;justify-content:center}
 }
 @media (prefers-reduced-motion:reduce){
   .boite .app .MuiToggleButton-root,.boite .app a.btn{transition:none}
@@ -887,7 +895,13 @@ footer a:hover{color:var(--magenta)}
      barre, les sous-menus deviennent des accordeons. */
   .liens{display:none}
   .burger{display:block}
-  .nav.ouvert{background:#fff}
+  /* Le panneau est en position:fixed et doit se caler sur l'ECRAN. Or
+     .nav.pose porte un backdrop-filter, et un backdrop-filter cree un bloc
+     conteneur pour ses descendants fixes : le panneau se calait alors sur la
+     barre de 54 px et paraissait ne pas s'ouvrir — mais seulement APRES avoir
+     defile, puisque .pose n'existe pas en haut de page. Le fond etant opaque
+     quand le menu est ouvert, retirer le flou ne change rien a l'oeil. */
+  .nav.ouvert{background:#fff;backdrop-filter:none;-webkit-backdrop-filter:none}
   .nav.ouvert .liens{display:block;position:fixed;left:0;right:0;top:70px;bottom:0;
     background:#fff;margin:0;padding:6px 0 48px;overflow-y:auto;
     -webkit-overflow-scrolling:touch;z-index:55}
