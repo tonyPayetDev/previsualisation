@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Koytcha Immo — intégrer la page dans WordPress</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--magenta:#E6007E;--noir:#141414;--gris:#5b5b60;--ligne:#e6e6ea;--fond:#fafafb}
+*{box-sizing:border-box}
+body{margin:0;font-family:'Poppins',system-ui,sans-serif;font-weight:300;line-height:1.65;
+  color:var(--noir);background:var(--fond);-webkit-font-smoothing:antialiased}
+.wrap{max-width:820px;margin:0 auto;padding:0 22px}
+header{background:#fff;border-bottom:1px solid var(--ligne);padding:38px 0 30px}
+h1{font-size:clamp(25px,4vw,34px);font-weight:500;margin:0 0 8px;letter-spacing:-.02em}
+h1 b{color:var(--magenta);font-weight:600}
+.chapo{color:var(--gris);margin:0;font-size:15.5px}
+h2{font-size:19px;font-weight:600;margin:46px 0 14px;letter-spacing:-.01em}
+h2 .n{display:inline-grid;place-items:center;width:27px;height:27px;border-radius:50%;
+  background:var(--magenta);color:#fff;font-size:14px;font-weight:600;margin-right:11px;vertical-align:2px}
+h3{font-size:15.5px;font-weight:600;margin:26px 0 8px}
+p{margin:0 0 14px}
+main{padding:10px 0 70px}
+.tele{display:block;background:#fff;border:1px solid var(--ligne);border-left:3px solid var(--magenta);
+  border-radius:5px;padding:22px 24px;margin:26px 0 8px;text-decoration:none;color:inherit;
+  transition:box-shadow .25s ease,transform .25s ease}
+.tele:hover{box-shadow:0 12px 30px -12px rgba(0,0,0,.20);transform:translateY(-2px)}
+.tele .t{font-weight:600;font-size:16px;color:var(--magenta);margin:0 0 4px}
+.tele .d{font-size:13.5px;color:var(--gris);margin:0}
+code{background:#f0f0f4;border-radius:3px;padding:2px 6px;font-size:13px;
+  font-family:ui-monospace,Menlo,Consolas,monospace}
+pre{background:#17171b;color:#e8e8ee;border-radius:5px;padding:16px 18px;overflow-x:auto;
+  font-size:12.5px;line-height:1.6;font-family:ui-monospace,Menlo,Consolas,monospace}
+.enc{background:#fff;border:1px solid var(--ligne);border-radius:5px;padding:18px 20px;margin:18px 0}
+.att{border-left:3px solid #e0a400;background:#fffdf5}
+.imp{border-left:3px solid var(--magenta)}
+ul,ol{margin:0 0 14px;padding-left:22px}
+li{margin-bottom:7px}
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:14px;background:#fff}
+th,td{text-align:left;padding:11px 13px;border-bottom:1px solid var(--ligne);vertical-align:top}
+th{font-weight:600;background:#f4f4f7}
+footer{border-top:1px solid var(--ligne);padding:26px 0;color:var(--gris);font-size:13.5px;background:#fff}
+a{color:var(--magenta)}
+@media (prefers-color-scheme:dark){
+  :root{--noir:#eceef2;--gris:#a0a0ab;--ligne:#2a2a33;--fond:#131317}
+  body{background:var(--fond);color:var(--noir)}
+  header,footer,.tele,.enc,table,th{background:#1b1b21}
+  th{background:#232329}
+  code{background:#26262e;color:#e8e8ee}
+  .att{background:#241f10}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <h1>Intégrer la page d'accueil dans <b>WordPress</b></h1>
+    <p class="chapo">Koytcha Immo — marche à suivre, environ 20 minutes.</p>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <a class="tele" href="../export/koytcha-accueil.html" download="koytcha-accueil.html">
+    <p class="t">⬇ Télécharger la page complète (HTML)</p>
+    <p class="d">Fichier autonome : toutes les images et polices pointent vers des adresses absolues.
+      Ouvrez-le en double-cliquant dessus pour vérifier avant de l'intégrer.</p>
+  </a>
+  <p style="font-size:13px;color:var(--gris);margin-top:6px">
+    Si le clic ouvre la page au lieu de la télécharger : clic droit → « Enregistrer la cible du lien sous… ».
+    <a href="../export/koytcha-accueil.html" target="_blank" rel="noopener">Ouvrir dans un onglet</a>
+  </p>
+
+  <div class="enc att">
+    <strong>Avant de commencer : faites une sauvegarde.</strong>
+    <p style="margin:8px 0 0">Une sauvegarde complète du site <em>et</em> de la base de données. Si un
+      réglage tourne mal, c'est ce qui vous permet de revenir en arrière en cinq minutes au lieu de
+      passer la journée dessus.</p>
+  </div>
+
+  <h2><span class="n">1</span>Choisir la méthode</h2>
+  <p>Deux voies, selon ce que vous voulez garder de l'existant.</p>
+
+  <table>
+    <tr><th style="width:34%">Méthode</th><th>Quand la choisir</th></tr>
+    <tr>
+      <td><strong>A — Modèle de page</strong><br><span style="color:var(--gris);font-size:13px">recommandée</span></td>
+      <td>La page reste du HTML/CSS pur. Rendu identique au pixel près, le plus rapide à charger.
+        En revanche Florent ne pourra pas la modifier depuis Elementor.</td>
+    </tr>
+    <tr>
+      <td><strong>B — Reconstruction Elementor</strong></td>
+      <td>Chaque section est refaite avec les widgets Elementor. Beaucoup plus long, et les effets
+        (Ken Burns, néon au survol, miroir) demandent quand même du CSS personnalisé. À réserver au
+        cas où l'équipe doit éditer la page elle-même au quotidien.</td>
+    </tr>
+  </table>
+
+  <h2><span class="n">2</span>Méthode A — poser un modèle de page</h2>
+
+  <h3>a. Déposer le fichier dans le thème enfant</h3>
+  <p>Renommez le fichier téléchargé en <code>page-accueil-koytcha.php</code> et placez-le à la racine
+    de votre <strong>thème enfant</strong>. Jamais dans le thème parent : la prochaine mise à jour
+    l'écraserait.</p>
+  <p>Ajoutez ces quatre lignes tout en haut du fichier, avant le <code>&lt;!doctype html&gt;</code> :</p>
+<pre>&lt;?php
+/* Template Name: Accueil Koytcha 2026 */
+?&gt;</pre>
+  <p>C'est cet en-tête, et lui seul, qui fait apparaître le modèle dans WordPress.</p>
+
+  <h3>b. Affecter le modèle à la page</h3>
+  <ol>
+    <li>Créez une page (ou ouvrez la page d'accueil actuelle).</li>
+    <li>Dans le panneau de droite, section <em>Attributs de page</em>, choisissez
+      <strong>Accueil Koytcha 2026</strong>.</li>
+    <li>Publiez, puis regardez le résultat.</li>
+  </ol>
+
+  <div class="enc">
+    <strong>Le mieux est de tester sur une page temporaire d'abord</strong> — par exemple
+    <code>/nouvelle-accueil/</code>. Vous basculez la vraie page d'accueil seulement une fois que
+    tout est vérifié, dans <em>Réglages → Lecture</em>.
+  </div>
+
+  <h3>c. Rapatrier les images sur votre serveur</h3>
+  <p>Dans le fichier livré, les images pointent vers
+    <code>previsualisation.automatisationboost.com</code>. Ça fonctionne immédiatement, mais votre site
+    dépend alors d'un serveur qui n'est pas le vôtre. Pour être autonome :</p>
+  <ol>
+    <li>Téléversez les images dans la médiathèque WordPress.</li>
+    <li>Dans le fichier, remplacez chaque
+      <code>https://previsualisation.automatisationboost.com/koytcha-refonte-v5/assets/</code>
+      par l'adresse de votre médiathèque
+      (<code>https://koytchaimmo.re/app/uploads/2026/09/</code> par exemple).</li>
+  </ol>
+  <p>Un « Rechercher / Remplacer » dans un éditeur de texte suffit, c'est la même chaîne partout.</p>
+
+  <h2><span class="n">3</span>Le module de recherche</h2>
+  <div class="enc imp">
+    <p style="margin:0 0 10px"><strong>Sur WordPress, ne gardez pas le bloc tel quel — mettez le widget Elementor.</strong></p>
+    <p style="margin:0">Le fichier livré contient une copie du module qui fonctionne hors WordPress
+      grâce à un React chargé depuis un CDN. Sur votre site, WordPress fournit déjà ce React :
+      insérez simplement le widget <em>Search KTP</em> à l'emplacement prévu, et supprimez du
+      fichier les trois lignes marquées <code>&lt;!-- ORDRE IMPORTANT --&gt;</code> ainsi que le
+      bloc <code>window.wp.element</code> à la fin.</p>
+  </div>
+  <p>L'emplacement est repérable dans le fichier : cherchez <code>class="boite"</code>. C'est le
+    conteneur en verre dépoli du premier écran.</p>
+  <p>L'habillage aux couleurs de la nouvelle page est porté par les règles CSS commençant par
+    <code>.boite .app</code>. Gardez-les si vous voulez le même rendu sombre ; supprimez-les pour
+    retrouver l'apparence d'origine du module.</p>
+
+  <h2><span class="n">4</span>Vérifier avant de basculer</h2>
+  <ul>
+    <li>Le module de recherche affiche un nombre de résultats et le bouton mène bien aux annonces.</li>
+    <li>Le menu s'ouvre sur téléphone et les sous-menus se déplient.</li>
+    <li>Les cinq réalisations portent le bon nom sous la bonne photo.</li>
+    <li>Le pied de page : 45 rue Alexis de Villeneuve, contact@koytchaimmo.re, pas de samedi.</li>
+    <li>Aucune erreur rouge dans la console du navigateur (touche F12, onglet <em>Console</em>).</li>
+  </ul>
+
+  <h2><span class="n">5</span>Si quelque chose casse</h2>
+  <table>
+    <tr><th style="width:38%">Symptôme</th><th>Cause la plus probable</th></tr>
+    <tr><td>Les polices ne sont pas les bonnes</td>
+        <td>Une extension ou le thème charge sa propre feuille de style <em>après</em> la page.
+          Les règles du fichier doivent passer en dernier.</td></tr>
+    <tr><td>Le module reste vide</td>
+        <td>Le widget Elementor n'est pas placé, ou le shim React a été laissé <em>et</em> entre en
+          conflit avec celui de WordPress. N'en gardez qu'un.</td></tr>
+    <tr><td>Images absentes</td>
+        <td>Un « Rechercher / Remplacer » incomplet à l'étape 2c. Cherchez
+          <code>previsualisation</code> dans le fichier : il ne doit plus rien rester.</td></tr>
+    <tr><td>La page déborde à droite sur mobile</td>
+        <td>Un conteneur du thème impose une largeur. Le fichier livré ne déborde pas — c'est
+          l'habillage du thème autour.</td></tr>
+  </table>
+
+  <h2><span class="n">6</span>Deux corrections à faire en même temps</h2>
+  <p>Elles ne concernent pas la page d'accueil, mais elles sont en production aujourd'hui.</p>
+  <ol>
+    <li><strong>Le formulaire de contact.</strong> Deux des trois destinataires pointent vers
+      <code>example.com</code>, un domaine qui n'appartient à personne : ces messages ne sont jamais
+      arrivés. Le destinataire doit être fixé dans le modèle Contact Form 7, côté serveur — pas dans
+      un champ caché rempli par le navigateur, comme aujourd'hui.</li>
+    <li><strong>Les comptes administrateur.</strong> Plusieurs comptes aux noms générés figurent dans
+      la liste des utilisateurs. À traiter avant toute mise en ligne.</li>
+  </ol>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    Tony PAYET — 06 92 41 77 49 — tony.payet.professionnel@gmail.com<br>
+    Préversion : <a href="../">previsualisation.automatisationboost.com/koytcha-refonte-v5/</a>
+  </div>
+</footer>
+</body>
+</html>
