@@ -434,8 +434,13 @@ img{max-width:100%;display:block}
      la moitie de la largeur du telephone — largement le pouce — et tout le
      module tient dans un seul regard. */
   .boite .app .MuiToggleButtonGroup-root{display:flex;flex-wrap:wrap;gap:10px;width:100%}
+  /* `!important` a contrecoeur, et pour une raison precise : les boutons portent
+     les classes utilitaires Bootstrap `mr-1 mb-3`, et Bootstrap declare ses
+     marges en `!important`. Sans lui, ces 4 px de marge droite s'ajoutent aux
+     50 % de base et au gap : le total depasse la ligne, et les deux boutons
+     repassent l'un sous l'autre. C'est exactement ce que Tony voyait. */
   .boite .app .MuiToggleButton-root{display:flex;flex:1 1 calc(50% - 5px);min-width:0;
-    padding:15px 12px;margin:0}
+    padding:15px 12px;margin:0 !important}
   /* NE PAS remettre width:100% ici : les boutons portent eux-memes col-md-4,
      et cette regle les repassait en colonne — c'est ce que Tony voyait. */
   .boite .app .col-md-4:not(.MuiToggleButton-root){width:100%;min-width:0;margin:0 0 10px}
