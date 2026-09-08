@@ -1013,7 +1013,7 @@ Je vous en fais une de dix secondes gratuitement, avec vos photos, pour que vous
 <script>
 (() => {
   const URL_ETAT='https://n7n.automatisationboost.com/webhook/taches-validation';
-  let etat={}, envoyes={};
+  let etat={}, envoyes={}, charge=false;
   const jour=new Date().toISOString().slice(0,10);
   document.getElementById('jour').textContent='aujourd\u2019hui : ' + jour.split('-').reverse().join('/');
   try { envoyes=JSON.parse(localStorage.getItem('actions-envoyees')||'{}'); } catch(e) {}
@@ -1046,6 +1046,11 @@ Je vous en fais une de dix secondes gratuitement, avec vos photos, pour que vous
   let enVol=false,duNeuf=false;
   const pousser=async()=>{ duNeuf=true; if(enVol) return; enVol=true;
     while(duNeuf) { duNeuf=false;
+      // Le magasin n8n est PARTAGE avec /taches/valider/ (validations + idees).
+      // Poster avant d'avoir relu son contenu ecraserait tout par un objet vide :
+      // on attend la lecture, et si elle n'aboutit pas on ne pousse rien.
+      if(!charge) { document.getElementById('pied').textContent='Coches gardées sur ce téléphone \u2014 compteur pas encore synchronisé.';
+        enVol=false; return; }
       const parJour={};
       Object.entries(envoyes).forEach(([id,v])=>{ (parJour[v.jour]=parJour[v.jour]||[]).push(id); });
       etat['envois:'+jour]={etat:'envois',jour,ids:parJour[jour]||[],nb:(parJour[jour]||[]).length,maj:new Date().toISOString()};
@@ -1056,8 +1061,9 @@ Je vous en fais une de dix secondes gratuitement, avec vos photos, pour que vous
   (async()=>{ try {
       const r=await fetch(URL_ETAT+'?t='+Date.now()); const j=await r.json();
       const d=typeof j.donnees==='string'?JSON.parse(j.donnees||'{}'):(j.donnees||{});
-      etat=d&&typeof d==='object'?d:{};
+      etat=d&&typeof d==='object'?d:{}; charge=true;
       document.getElementById('pied').innerHTML='<b>'+total+'</b> contacts prêts \u00b7 compteur synchronisé';
+      if(Object.keys(envoyes).length) pousser();
     } catch(e) { document.getElementById('pied').textContent='Compteur hors ligne \u2014 tes coches restent sur ce téléphone.'; }
     compter(); })();
 })();
