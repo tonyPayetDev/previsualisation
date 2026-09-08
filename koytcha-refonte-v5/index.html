@@ -57,6 +57,10 @@ img{max-width:100%;display:block}
 .logo .l-sombre{display:none}
 .nav.pose .logo .l-clair{display:none}
 .nav.pose .logo .l-sombre{display:block}
+/* Panneau mobile ouvert = barre blanche : il faut le logo sombre, sinon la
+   version blanche disparait sur le blanc (seule la pastille restait visible). */
+.nav.ouvert .logo .l-clair{display:none}
+.nav.ouvert .logo .l-sombre{display:block}
 
 /* Reseaux : vraies couleurs de marque, pas un gris uniforme. Elles ne sont
    visibles qu au survol — en permanence, quatre pastilles colorees sur une
@@ -85,7 +89,46 @@ img{max-width:100%;display:block}
 .bt.ligne{background:transparent;border:1px solid currentColor;color:inherit}
 .bt.ligne:hover{background:var(--noir);color:#fff;border-color:var(--noir)}
 .burger{display:none;background:none;border:0;cursor:pointer;padding:8px;color:inherit}
-.burger span{display:block;width:22px;height:1.5px;background:currentColor;margin:5px 0}
+.burger span{display:block;width:22px;height:1.5px;background:currentColor;margin:5px 0;
+  transition:transform .3s var(--ease),opacity .2s ease}
+/* Le burger devient une croix : sans ce retour, rien ne dit que le panneau
+   ouvert peut se refermer par le meme bouton. */
+.nav.ouvert .burger span:nth-child(1){transform:translateY(6.5px) rotate(45deg)}
+.nav.ouvert .burger span:nth-child(2){opacity:0}
+.nav.ouvert .burger span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg)}
+
+/* ── Sous-menus ─────────────────────────────────────────────────────────
+   Les entrees Acheter / Louer / Vendre / A propos ouvrent les memes
+   destinations que le site actuel — les liens Acheter et Louer pointent
+   vers leur page de recherche deja filtree (prestation_type + pro_res). */
+.liens{align-items:center}
+.liens > li{position:relative;display:flex;align-items:center}
+.chev{background:none;border:0;padding:2px 0 2px 6px;margin:0;cursor:pointer;color:inherit;
+  display:inline-flex;align-items:center;opacity:.82}
+/* .nav:not(.pose) ne repeint que les <a> : sans cette ligne la fleche restait
+   noire sur l en-tete sombre, donc invisible. */
+.nav:not(.pose) .chev{color:#fff}
+.nav.ouvert .chev{color:var(--noir)}
+.chev svg{width:10px;height:6px;transition:transform .25s var(--ease)}
+.a-sous:hover .chev svg,.a-sous:focus-within .chev svg{transform:rotate(180deg)}
+/* Le survol doit survivre au trajet entre l onglet et le panneau : sans ce
+   pont invisible, le menu se referme dans les 8 px de vide. */
+.a-sous::after{content:'';position:absolute;left:0;right:-10px;top:100%;height:16px}
+.sous{position:absolute;top:calc(100% + 14px);left:-18px;min-width:308px;
+  margin:0;padding:8px 0;list-style:none;background:#fff;border-radius:4px;
+  box-shadow:0 20px 46px -14px rgba(0,0,0,.32);
+  opacity:0;visibility:hidden;transform:translateY(7px);
+  transition:opacity .22s ease,transform .22s var(--ease),visibility .22s;z-index:60}
+.a-sous:hover > .sous,.a-sous:focus-within > .sous{opacity:1;visibility:visible;transform:translateY(0)}
+.sous li{display:block}
+/* Sur l en-tete transparent, .liens a passe en blanc : le panneau etant
+   blanc, il faut lui rendre l encre sombre. */
+.sous a,.nav:not(.pose) .sous a{display:block;padding:11px 20px;font-size:13px;line-height:1.4;
+  color:var(--noir);opacity:1}
+.sous a:hover{background:rgba(230,0,126,.07);color:var(--magenta)}
+@media (prefers-reduced-motion:reduce){
+  .sous,.chev svg,.burger span{transition:none}
+}
 
 /* ── 1. En-tête, avec le bâtiment qui pivote au scroll ───────────────── */
 /* La scène est en `sticky` sur une piste haute : c'est ce qui donne la course
@@ -243,17 +286,25 @@ img{max-width:100%;display:block}
    fond y est blanc ; ici le titre est sur du verre sombre. */
 .boite .app h3,.boite .app h3 div{color:#fff}
 .boite .app h3 span{color:#fff!important}
-.boite .app h3 .row{justify-content:flex-start!important;margin:0}
-.boite .app h3 .col-10{flex:0 0 100%;max-width:100%;padding:0}
+.boite .app h3 .row{justify-content:center!important;margin:0}
+.boite .app h3 .col-10{flex:0 0 100%;max-width:100%;padding:0;text-align:center}
 .boite .app h3 strong{color:var(--magenta);font-weight:600}
 .boite .app .row{margin-left:0;margin-right:0}
 .boite .app [class*="col-"]{padding-left:0;padding-right:0}
-/* Les puces reprennent .puce a l identique — meme grammaire visuelle que le
-   reste de la boite, et la largeur suit le texte au lieu d une colonne fixe. */
-.boite .app .MuiToggleButton-root{flex:0 0 auto;max-width:none;width:auto;
+/* Centrage : la ligne Bootstrap demande deja .justify-content-center, mais
+   chaque etape vit dans une .col-12 pleine largeur — c est donc elle qui doit
+   centrer son contenu. text-align + inline-flex plutot que :has(), qui n est
+   pas connu de Safari avant 15.4. */
+.boite .app .col-12{text-align:center}
+/* Les puces reprennent .puce en plus genereux : assez de matiere pour etre
+   visees au pouce (44 px de haut, la cible tactile de reference) et une
+   largeur plancher pour que « A l achat » ne soit pas deux fois plus etroit
+   que « A la location ». */
+.boite .app .MuiToggleButton-root{display:inline-flex;justify-content:center;
+  flex:0 0 auto;max-width:none;width:auto;min-width:158px;min-height:44px;
   background:rgba(0,0,0,.18);border:1px solid rgba(255,255,255,.28);border-radius:2px;
-  padding:9px 13px;margin:0 8px 8px 0;font-family:var(--sans);font-size:12px;font-weight:400;
-  letter-spacing:.06em;text-transform:none;color:#fff;white-space:nowrap;
+  padding:12px 22px;margin:0 6px 12px;font-family:var(--sans);font-size:12.5px;font-weight:400;
+  letter-spacing:.09em;text-transform:none;color:#fff;white-space:nowrap;
   transition:all .22s var(--ease)}
 .boite .app .MuiToggleButton-root:hover{background:rgba(255,255,255,.18);border-color:#fff;color:#fff}
 .boite .app .MuiToggleButton-root.Mui-selected,
@@ -261,20 +312,33 @@ img{max-width:100%;display:block}
   color:var(--magenta);font-weight:600}
 /* react-select : le champ blanc par defaut trouait le verre. */
 .boite .app [class*="-control"]{background:rgba(0,0,0,.18);border:1px solid rgba(255,255,255,.28);
-  border-radius:2px;box-shadow:none;min-height:42px}
+  border-radius:2px;box-shadow:none;min-height:44px;font-size:12.5px}
 .boite .app [class*="-control"]:hover{border-color:#fff}
 .boite .app [class*="-singleValue"],.boite .app [class*="-Input"],.boite .app input{color:#fff}
 .boite .app [class*="-placeholder"]{color:rgba(255,255,255,.45)}
 .boite .app [class*="-menu"]{background:#1b1b1f;color:#fff;border-radius:2px}
 .boite .app [class*="-indicatorSeparator"]{background:rgba(255,255,255,.28)}
 /* Le bouton d action : meme carton plein que .bt, pleine largeur. */
-.boite .app .col-md-5{flex:0 0 100%;max-width:100%;margin-top:8px}
+/* Respiration entre les etapes et entre les deux listes deroulantes, que la
+   suppression des gouttieres Bootstrap avait collees. */
+.boite .app .row > .col-12 + .col-12{margin-top:2px}
+/* Bootstrap donne 33 % a ces colonnes, soit ~117 px une fois les gouttieres
+   retirees : « Type de bien ? » passait a la ligne. On les cale sur la
+   largeur des puces pour que la boite lise en colonnes regulieres. */
+.boite .app .col-md-4{flex:0 0 auto;max-width:none;width:158px;padding:0;margin:0 6px 12px}
+.boite .app .col-md-5{flex:0 0 100%;max-width:100%;margin-top:18px}
 .boite .app a.btn{display:block;width:100%;background:var(--magenta);border:0;border-radius:2px;
   padding:16px;color:#fff;font-family:var(--sans);font-size:13px;font-weight:600;
   letter-spacing:.12em;text-transform:uppercase;text-align:center;text-decoration:none;
   transition:background .22s var(--ease)}
 .boite .app a.btn:hover{background:var(--magenta-deep);color:#fff}
 .boite .app a.btn .row{justify-content:center!important}
+@media (max-width:640px){
+  /* 158 px x2 + marges ne tiennent pas dans 390 px : on laisse la largeur
+     suivre le texte plutot que de casser la ligne en deux. */
+  .boite .app .MuiToggleButton-root{min-width:0;padding:12px 18px;margin:0 4px 10px}
+  .boite .app .col-md-4{width:auto;min-width:150px;margin:0 4px 10px}
+}
 @media (prefers-reduced-motion:reduce){
   .boite .app .MuiToggleButton-root,.boite .app a.btn{transition:none}
   .boite .app .animated{animation:none}
@@ -739,8 +803,35 @@ footer a:hover{color:var(--magenta)}
   .duo{grid-template-columns:1fr}
   .chiffres{grid-template-columns:1fr 1fr;gap:30px}
   .pied{grid-template-columns:1fr 1fr}
+  /* ── Menu mobile ──────────────────────────────────────────────────────
+     Le bouton burger existait mais n avait AUCUN gestionnaire : sur telephone
+     le menu etait simplement inatteignable. Le panneau occupe l ecran sous la
+     barre, les sous-menus deviennent des accordeons. */
   .liens{display:none}
   .burger{display:block}
+  .nav.ouvert{background:#fff}
+  .nav.ouvert .liens{display:block;position:fixed;left:0;right:0;top:70px;bottom:0;
+    background:#fff;margin:0;padding:6px 0 48px;overflow-y:auto;
+    -webkit-overflow-scrolling:touch;z-index:55}
+  .nav.ouvert .liens > li{display:block;position:relative;
+    border-bottom:1px solid rgba(0,0,0,.07)}
+  .nav.ouvert .liens > li > a{display:block;padding:16px 22px;font-size:15px;
+    color:var(--noir);opacity:1}
+  /* La fleche est une cible a part, assez large pour le pouce : on doit
+     pouvoir ouvrir le sous-menu SANS declencher le lien parent. */
+  /* height:100% suivait la hauteur du <li> une fois deploye : la fleche
+     descendait au milieu du sous-menu. On la fixe sur la hauteur de ligne. */
+  .nav.ouvert .chev{position:absolute;top:0;right:0;height:56px;width:58px;
+    justify-content:center;padding:0}
+  .nav.ouvert .chev svg{width:12px;height:8px}
+  .nav.ouvert .a-sous::after{display:none}
+  .nav.ouvert .sous{position:static;display:none;opacity:1;visibility:visible;
+    transform:none;box-shadow:none;border-radius:0;min-width:0;padding:2px 0 10px;
+    background:rgba(0,0,0,.035)}
+  .nav.ouvert li.deploye > .sous{display:block}
+  .nav.ouvert li.deploye > .chev svg{transform:rotate(180deg)}
+  .nav.ouvert .sous a{padding:12px 22px 12px 34px;font-size:13.5px}
+  body.bloque{overflow:hidden}
   .piste{height:150vh}
 }
 @media(max-width:620px){
@@ -924,14 +1015,23 @@ footer a:hover{color:var(--magenta)}
                      to{transform:scale(1.115) translate3d(-2.0%,-1.5%,0)}}
 @keyframes kb-b{from{transform:scale(1.12) translate3d(1.4%,1.0%,0)}
                  to{transform:scale(1.04) translate3d(0,0,0)}}
+/* Course plus ample et plus rapide pour la bande de realisations : sur des
+   vignettes de 238 px, la derive d origine (4 a 13 %) se lisait a peine.
+   Les translations restent sous la marge que le zoom degage — a l amplitude
+   maximale (scale 1,22) le decalage effectif est de 2,7 % pour 11 % de
+   marge : aucune chance de decouvrir un bord. */
+@keyframes kb-a-fort{from{transform:scale(1.06) translate3d(-1.2%,-0.8%,0)}
+                       to{transform:scale(1.22) translate3d(2.2%,1.8%,0)}}
+@keyframes kb-b-fort{from{transform:scale(1.20) translate3d(2.0%,1.6%,0)}
+                       to{transform:scale(1.05) translate3d(-1.4%,-1.0%,0)}}
 /* Portée par .on : elle repart à zéro à chaque diapo, donc on voit la course
    entière au lieu d'un dix-septième. Une seule animation au lieu de quatre. */
 .bati img{animation:none}
 .bati img.on{animation:kb-diapo 8.4s ease-out both}
 .carte .vue img{animation:kb-a 22s ease-in-out infinite alternate}
 .cartes .carte:nth-child(2n) .vue img{animation-name:kb-b;animation-duration:27s}
-.realisations figure img{animation:kb-b 24s ease-in-out infinite alternate}
-.realisations figure:nth-child(2n) img{animation-name:kb-a;animation-duration:29s}
+.realisations figure img{animation:kb-b-fort 16s ease-in-out infinite alternate}
+.realisations figure:nth-child(2n) img{animation-name:kb-a-fort;animation-duration:19s}
 .final .fond img{animation:kb-a 34s ease-in-out infinite alternate}
 /* Au survol, la dérive se fige : le geste de l'utilisateur reprend la main. */
 .carte:hover .vue img,.realisations figure:hover img{animation-play-state:paused}
@@ -949,7 +1049,25 @@ footer a:hover{color:var(--magenta)}
    texte : le reflet est peint hors du flux, il ne pousse rien. */
 .carte .vue{-webkit-box-reflect:below 8px linear-gradient(transparent 94%,rgba(0,0,0,.16));margin-bottom:30px}
 .carte h3{margin-top:10px}
-.realisations figure img{-webkit-box-reflect:below 5px linear-gradient(transparent 94%,rgba(0,0,0,.15));margin-bottom:18px}
+/* Le reflet etait degrade a l envers : `transparent 94%` le rendait invisible
+   juste sous l image et faiblement visible tout en bas — l inverse d un
+   miroir. Il part maintenant franc au contact de l image et s eteint.
+   Il est porte par le cadre, pas par l image : un reflet est peint hors de
+   la boite, donc il survit au rognage du Ken Burns. */
+/* Miroir explicite plutot que -webkit-box-reflect : celui-ci posait le reflet
+   110 px trop bas (mesure a l ecran) et Firefox ne le connait pas du tout.
+   Ici le reflet est un element a part, dont on fixe la hauteur au pixel.
+   Il reprend le fichier 600w deja telecharge pour la vignette : aucune
+   requete supplementaire. Retourne par scaleY(-1) — le degrade du masque
+   est donc defini a l envers lui aussi, le plus dense finissant en haut,
+   au contact de la photo. */
+.realisations .miroir{display:block;height:56px;margin:5px 0 10px;
+  border-radius:0 0 6px 6px;
+  background:var(--photo) center bottom/100% auto no-repeat;
+  transform:scaleY(-1);
+  -webkit-mask-image:linear-gradient(rgba(0,0,0,0) 12%,rgba(0,0,0,.46));
+          mask-image:linear-gradient(rgba(0,0,0,0) 12%,rgba(0,0,0,.46))}
+@media (prefers-reduced-motion:reduce){.realisations .miroir{opacity:.7}}
 .realisations figcaption{margin-top:0}
 .realisations a{color:inherit;text-decoration:none}
 /* Les `sizes` des photos de programmes annoncent la largeur AFFICHEE, pas la
@@ -989,13 +1107,48 @@ footer a:hover{color:var(--magenta)}
    inegales. overflow:hidden recadre le zoom dans un cadre fixe — l effet reste,
    le decalage disparait. Le cadre porte l arrondi, sinon les angles
    reapparaissent quand l image grandit. */
-.realisations figure{margin:0;overflow:hidden;border-radius:6px;position:relative}
+/* Le rognage descend sur le cadre : la figure doit rester debordante pour
+   laisser passer le reflet ET l anneau neon, tous deux peints hors de sa
+   boite. */
+.realisations figure{margin:0;position:relative;isolation:isolate}
+.realisations .cadre-real{display:block;overflow:hidden;border-radius:6px;position:relative}
 /* Leger zoom au survol, en plus du Ken Burns qui se fige (regle plus bas).
    Il porte sur la FIGURE et non sur l image : superposer une transformation a
    celle d une animation en cours ne marche pas, l animation gagne toujours. */
 .realisations figure{transition:transform .45s cubic-bezier(.22,.61,.36,1),box-shadow .45s ease}
 .realisations figure:hover{transform:scale(1.03);box-shadow:0 10px 26px rgba(0,0,0,.16);z-index:2}
-@media (prefers-reduced-motion:reduce){.realisations figure:hover{transform:none}}
+
+/* ── Anneau neon rose qui tourne autour du cadre au survol ───────────────
+   Un degrade conique dont l angle est anime : l arc clair fait le tour du
+   rectangle. Anime un angle demande @property — sans lui (Firefox < 128) la
+   regle degrade proprement en halo rose fixe, ce qui reste correct.
+   Deux couches : ::before pose le trait net, ::after la meme chose floutee
+   pour la lueur. Les deux vivent DERRIERE l image (z-index -1), on ne voit
+   donc que les 2 px qui depassent. */
+@property --tour{syntax:'<angle>';initial-value:0deg;inherits:false}
+/* L anneau doit epouser le CADRE, pas la figure : `inset` sur la figure
+   l etirait jusque sous la legende et le halo la noyait de rose. On le cale
+   donc sur le haut de la figure avec le meme rapport 4/3 que l image. */
+.realisations figure::before,
+.realisations figure::after{content:'';position:absolute;left:-2px;top:-2px;
+  width:calc(100% + 4px);aspect-ratio:4/3;border-radius:8px;
+  z-index:-1;opacity:0;pointer-events:none;transition:opacity .35s ease;
+  background:conic-gradient(from var(--tour),
+    rgba(230,0,126,0) 0deg 244deg,
+    rgba(230,0,126,.9) 288deg,
+    #ffa3de 312deg,
+    rgba(230,0,126,.9) 336deg,
+    rgba(230,0,126,0) 360deg)}
+.realisations figure::after{left:-6px;top:-6px;width:calc(100% + 12px);filter:blur(9px)}
+.realisations figure:hover::before{opacity:1;animation:tour-neon 2.2s linear infinite}
+.realisations figure:hover::after{opacity:.55;animation:tour-neon 2.2s linear infinite}
+@keyframes tour-neon{to{--tour:360deg}}
+
+@media (prefers-reduced-motion:reduce){
+  .realisations figure:hover{transform:none}
+  /* L anneau reste, mais fixe : c est le mouvement qui gene, pas la couleur. */
+  .realisations figure:hover::before,.realisations figure:hover::after{animation:none}
+}
 .realisations img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:6px;display:block}
 .realisations figcaption{margin-top:7px;font-size:12.5px;letter-spacing:.04em;color:var(--gris,#5b5b60)}
 
@@ -1029,19 +1182,50 @@ footer a:hover{color:var(--magenta)}
       <img class="l-clair" src="assets/logo-blanc.png" alt="Koytcha Immo">
       <img class="l-sombre" src="assets/logo.png" alt="Koytcha Immo">
     </a>
-    <ul class="liens">
-      <li><a href="#programmes">Acheter</a></li>
-      <li><a href="#programmes">Louer</a></li>
-      <li><a href="#programmes">Vendre</a></li>
+    <ul class="liens" id="nav-liens">
+      <li class="a-sous">
+        <a href="#programmes">Acheter</a>
+        <button class="chev" type="button" aria-expanded="false" aria-controls="sm-acheter" aria-label="Ouvrir le sous-menu Acheter"><svg viewBox="0 0 10 6" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M1 1l4 4 4-4"/></svg></button>
+        <ul class="sous" id="sm-acheter">
+        <li><a href="https://koytchaimmo.re/index.php/recherche/?prestation_type=vente&amp;pro_res=residentiel" target="_blank" rel="noopener">Vous souhaitez acheter dans le résidentiel&nbsp;?</a></li>
+        <li><a href="https://koytchaimmo.re/index.php/recherche/?prestation_type=vente&amp;pro_res=professionnel" target="_blank" rel="noopener">Vous souhaitez acheter dans le pro&nbsp;?</a></li>
+        </ul>
+      </li>
+      <li class="a-sous">
+        <a href="#programmes">Louer</a>
+        <button class="chev" type="button" aria-expanded="false" aria-controls="sm-louer" aria-label="Ouvrir le sous-menu Louer"><svg viewBox="0 0 10 6" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M1 1l4 4 4-4"/></svg></button>
+        <ul class="sous" id="sm-louer">
+        <li><a href="https://koytchaimmo.re/index.php/recherche/?prestation_type=location&amp;pro_res=residentiel" target="_blank" rel="noopener">Vous souhaitez louer dans le résidentiel&nbsp;?</a></li>
+        <li><a href="https://koytchaimmo.re/index.php/recherche/?prestation_type=location&amp;pro_res=professionnel" target="_blank" rel="noopener">Vous souhaitez louer dans le professionnel&nbsp;?</a></li>
+        </ul>
+      </li>
+      <li class="a-sous">
+        <a href="#accompagne">Vendre</a>
+        <button class="chev" type="button" aria-expanded="false" aria-controls="sm-vendre" aria-label="Ouvrir le sous-menu Vendre"><svg viewBox="0 0 10 6" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M1 1l4 4 4-4"/></svg></button>
+        <ul class="sous" id="sm-vendre">
+        <li><a href="https://koytchaimmo.re/index.php/vendre/?pro_res=r%C3%A9sidentiel" target="_blank" rel="noopener">Vous souhaitez vendre dans le résidentiel&nbsp;?</a></li>
+        <li><a href="https://koytchaimmo.re/index.php/vendre/?pro_res=professionnel" target="_blank" rel="noopener">Vous souhaitez vendre dans le pro&nbsp;?</a></li>
+        </ul>
+      </li>
       <li><a href="#accompagne">Confier la gestion de mon bien</a></li>
-      <li><a href="#accompagne">À propos</a></li>
+      <li class="a-sous">
+        <a href="#accompagne">À propos</a>
+        <button class="chev" type="button" aria-expanded="false" aria-controls="sm-apropos" aria-label="Ouvrir le sous-menu À propos"><svg viewBox="0 0 10 6" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M1 1l4 4 4-4"/></svg></button>
+        <ul class="sous" id="sm-apropos">
+        <li><a href="https://koytchaimmo.re/qui-sommes-nous/" target="_blank" rel="noopener">Qui sommes-nous&nbsp;?</a></li>
+        <li><a href="https://koytchaimmo.re/notre-equipe/" target="_blank" rel="noopener">L’équipe Koytcha Immo</a></li>
+        <li><a href="https://www.koytchaconseil.com/" target="_blank" rel="noopener">Koytcha Conseil</a></li>
+        <li><a href="https://www.koytchaconseil.com/" target="_blank" rel="noopener">Koytcha Corporate</a></li>
+        <li><a href="https://www.koytchaconseil.com/" target="_blank" rel="noopener">Groupe Koytcha</a></li>
+        </ul>
+      </li>
       <li><a href="#contact">Contact</a></li>
     </ul>
     <!-- Correctif v3 · 3 : passé en contour. Deux boutons roses pleins se
          disputaient le clic alors qu'ils mènent à deux parcours opposés
          (je vends / j'achète). Le plein reste au parcours acheteur. -->
     
-    <button class="burger" type="button" aria-label="Menu"><span></span><span></span><span></span></button>
+    <button class="burger" type="button" aria-label="Menu" aria-expanded="false" aria-controls="nav-liens"><span></span><span></span><span></span></button>
   </div>
 </nav>
 
@@ -1253,33 +1437,38 @@ footer a:hover{color:var(--magenta)}
              photo. Les trois autres attendent sa confirmation. -->
         <div class="realisations">
           <figure>
-            <img src="assets/programmes/w5-1200.webp"
+            <span class="cadre-real"><img src="assets/programmes/w5-1200.webp"
                  srcset="assets/programmes/w5-600.webp 600w, assets/programmes/w5-1200.webp 1200w"
-                 sizes="(max-width:900px) 86vw, 20vw" alt="Ze Bure@u 1" loading="lazy">
+                 sizes="(max-width:900px) 86vw, 20vw" alt="Ze Bure@u 1" loading="lazy"></span>
+            <span class="miroir" aria-hidden="true" style="--photo:url(assets/programmes/w5-600.webp)"></span>
             <figcaption>Ze Bure@u 1</figcaption>
           </figure>
           <figure>
-            <a href="https://koytchaimmo.re/programmes/ze-bureu-2/" target="_blank" rel="noopener"><img src="assets/programmes/w4-1200.webp"
+            <a href="https://koytchaimmo.re/programmes/ze-bureu-2/" target="_blank" rel="noopener"><span class="cadre-real"><img src="assets/programmes/w4-1200.webp"
                  srcset="assets/programmes/w4-600.webp 600w, assets/programmes/w4-1200.webp 1200w"
-                 sizes="(max-width:900px) 86vw, 20vw" alt="Ze Bure@u 2" loading="lazy"></a>
+                 sizes="(max-width:900px) 86vw, 20vw" alt="Ze Bure@u 2" loading="lazy"></span>
+            <span class="miroir" aria-hidden="true" style="--photo:url(assets/programmes/w4-600.webp)"></span></a>
             <figcaption><a href="https://koytchaimmo.re/programmes/ze-bureu-2/" target="_blank" rel="noopener">Ze Bure@u 2</a></figcaption>
           </figure>
           <figure data-a-confirmer="1">
-            <a href="https://koytchaimmo.re/programmes/le-kerval/" target="_blank" rel="noopener"><img src="assets/programmes/w2-1200.webp"
+            <a href="https://koytchaimmo.re/programmes/le-kerval/" target="_blank" rel="noopener"><span class="cadre-real"><img src="assets/programmes/w2-1200.webp"
                  srcset="assets/programmes/w2-600.webp 600w, assets/programmes/w2-1200.webp 1200w"
-                 sizes="(max-width:900px) 86vw, 20vw" alt="Kerval" loading="lazy"></a>
+                 sizes="(max-width:900px) 86vw, 20vw" alt="Kerval" loading="lazy"></span>
+            <span class="miroir" aria-hidden="true" style="--photo:url(assets/programmes/w2-600.webp)"></span></a>
             <figcaption><a href="https://koytchaimmo.re/programmes/le-kerval/" target="_blank" rel="noopener">Kerval</a></figcaption>
           </figure>
           <figure data-a-confirmer="1">
-            <a href="https://koytchaimmo.re/programmes/espace-turquoise/" target="_blank" rel="noopener"><img src="assets/programmes/w3-1200.webp"
+            <a href="https://koytchaimmo.re/programmes/espace-turquoise/" target="_blank" rel="noopener"><span class="cadre-real"><img src="assets/programmes/w3-1200.webp"
                  srcset="assets/programmes/w3-600.webp 600w, assets/programmes/w3-1200.webp 1200w"
-                 sizes="(max-width:900px) 86vw, 20vw" alt="Espace Turquoise" loading="lazy"></a>
+                 sizes="(max-width:900px) 86vw, 20vw" alt="Espace Turquoise" loading="lazy"></span>
+            <span class="miroir" aria-hidden="true" style="--photo:url(assets/programmes/w3-600.webp)"></span></a>
             <figcaption><a href="https://koytchaimmo.re/programmes/espace-turquoise/" target="_blank" rel="noopener">Espace Turquoise</a></figcaption>
           </figure>
           <figure data-a-confirmer="1">
-            <img src="assets/programmes/w1-1200.webp"
+            <span class="cadre-real"><img src="assets/programmes/w1-1200.webp"
                  srcset="assets/programmes/w1-600.webp 600w, assets/programmes/w1-1200.webp 1200w"
-                 sizes="(max-width:900px) 86vw, 20vw" alt="Villas La Marine 2" loading="lazy">
+                 sizes="(max-width:900px) 86vw, 20vw" alt="Villas La Marine 2" loading="lazy"></span>
+            <span class="miroir" aria-hidden="true" style="--photo:url(assets/programmes/w1-600.webp)"></span>
             <figcaption>Villas La Marine 2</figcaption>
           </figure>
         </div>
@@ -1370,6 +1559,41 @@ footer a:hover{color:var(--magenta)}
   var nav = document.getElementById('nav');
   var poser = function(){ nav.classList.toggle('pose', window.scrollY > window.innerHeight * 0.62); };
   poser();
+
+  /* Menu mobile. Le bouton existait sans gestionnaire : le panneau ne s ouvrait
+     jamais. On bloque aussi le defilement du fond, sinon le doigt fait glisser
+     la page DERRIERE le panneau. */
+  var burger = document.querySelector('.burger');
+  var fermer = function(){
+    nav.classList.remove('ouvert');
+    document.body.classList.remove('bloque');
+    burger.setAttribute('aria-expanded', 'false');
+  };
+  burger.addEventListener('click', function(){
+    var ouvert = nav.classList.toggle('ouvert');
+    document.body.classList.toggle('bloque', ouvert);
+    burger.setAttribute('aria-expanded', ouvert ? 'true' : 'false');
+  });
+
+  /* Sous-menus : au survol sur grand ecran (CSS seul), au clic sur la fleche
+     en dessous de 980 px. Le bouton est distinct du lien parent, donc ouvrir
+     le sous-menu ne declenche pas la navigation. */
+  [].forEach.call(document.querySelectorAll('.chev'), function(b){
+    b.addEventListener('click', function(e){
+      e.preventDefault();
+      var li = b.parentNode, on = li.classList.toggle('deploye');
+      b.setAttribute('aria-expanded', on ? 'true' : 'false');
+    });
+  });
+
+  /* Choisir une destination referme le panneau — sinon il masque la page
+     d arrivee apres un lien d ancre. */
+  [].forEach.call(nav.querySelectorAll('.liens a'), function(a){
+    a.addEventListener('click', fermer);
+  });
+  document.addEventListener('keydown', function(e){
+    if (e.key === 'Escape' && nav.classList.contains('ouvert')) { fermer(); burger.focus(); }
+  });
 
   /* Apparition des blocs. IntersectionObserver plutôt qu'un calcul au scroll :
      le navigateur fait le travail hors du fil principal. */
