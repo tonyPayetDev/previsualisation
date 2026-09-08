@@ -123,6 +123,18 @@ fs.writeFileSync(`${D}/index.html`, `<!doctype html>
   .bandeau b{color:var(--blanc)}
   .qui{font-size:11px;letter-spacing:.14em;text-transform:uppercase;border-radius:999px;padding:3px 9px;white-space:nowrap;font-weight:700}
   .q-toi{background:#3b2a06;color:#fbbf24}.q-claude{background:#0d2a3a;color:#60a5fa}
+  .idee{background:var(--carte);border:1px solid var(--ligne);border-left:3px solid var(--ambre);border-radius:12px;padding:14px 16px;margin:0 0 18px}
+  .idee h2{font-size:15px;font-weight:650;margin-bottom:4px}
+  .idee p{font-size:13.5px;color:var(--gris);margin-bottom:10px}
+  .idee textarea{width:100%;font:inherit;font-size:16px;line-height:1.5;color:var(--blanc);background:#0a0d12;
+    border:1px solid var(--ligne);border-radius:9px;padding:11px 12px;resize:vertical;min-height:76px}
+  .idee textarea:focus{outline:0;border-color:var(--ambre)}
+  .idee .bas{display:flex;gap:8px;align-items:center;margin-top:9px}
+  .idee .bas button{background:#2a2205;border-color:#6b5510;color:#ffd97a}
+  .idee .dit{font-size:13px;color:var(--gris)}
+  .idees-liste{list-style:none;display:flex;flex-direction:column;gap:8px;margin-top:12px}
+  .idees-liste li{background:#0a0d12;border:1px solid var(--ligne);border-radius:9px;padding:10px 12px;font-size:14.5px;line-height:1.5}
+  .idees-liste li b{display:block;font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--gris);margin-bottom:4px;font-weight:600}
   .filtres{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 18px}
   .filtres button{min-height:40px;padding:8px 14px;font-size:14px}
   .filtres button[aria-pressed=true]{border-color:var(--ambre);color:var(--ambre);background:#1f1705}
@@ -147,6 +159,13 @@ fs.writeFileSync(`${D}/index.html`, `<!doctype html>
   <p class="sous">Tu dis oui, je le fais. Quand c’est livré, tu dis si ça passe.
      Rien ne se lance sans ton feu vert — et rien n’est considéré fini sans ton « c’est bon ».</p>
   <div class="compte" id="compte"></div>
+  <div class="idee">
+    <h2>Une idée, une tâche à lancer</h2>
+    <p>Écris-la ici, même mal formulée. Elle part dans mon backlog et je te la remets en tâche à valider, chiffrée et découpée.</p>
+    <textarea id="idee-txt" placeholder="Ex : envoyer les démos aux 116 commerces qui ont un email"></textarea>
+    <div class="bas"><button type="button" id="idee-ok">Envoyer dans le backlog</button><span class="dit" id="idee-dit"></span></div>
+    <ul class="idees-liste" id="idees-liste"></ul>
+  </div>
   <div class="filtres" id="filtres">
     <button type="button" data-f="ouvert" aria-pressed="true">Ouvertes</button>
     <button type="button" data-f="toi">Pour toi</button>
@@ -291,7 +310,34 @@ fs.writeFileSync(`${D}/index.html`, `<!doctype html>
         'Impossible de lire tes décisions — la page affiche les états par défaut.';
     }
     peindre();
+    peindreIdees();
   })();
+
+  /* ── boîte à idées : même magasin que les décisions, clés « idee:<horodatage> ».
+     Le tableau ignore les clés sans carte, donc rien n'entre en conflit. ─────── */
+  const peindreIdees = () => {
+    const l = document.getElementById('idees-liste');
+    const arr = Object.entries(etat).filter(([k, v]) => k.startsWith('idee:') && v && v.texte)
+      .sort((a, b) => b[0].localeCompare(a[0]));
+    l.innerHTML = arr.map(([k, v]) => {
+      const d = new Date(v.maj || Number(k.slice(5)));
+      const st = v.etat === 'traitee' ? 'Reprise en tâche' : 'Dans le backlog';
+      return '<li><b>' + st + ' · ' + d.toLocaleString('fr-FR') + '</b>' +
+             v.texte.replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c])) + '</li>';
+    }).join('');
+  };
+  document.getElementById('idee-ok').onclick = () => {
+    const t = document.getElementById('idee-txt');
+    const txt = t.value.trim();
+    if (!txt) { t.focus(); return; }
+    etat['idee:' + Date.now()] = { etat: 'idee', texte: txt, maj: new Date().toISOString() };
+    t.value = '';
+    document.getElementById('idee-dit').textContent = 'Envoyée. Je la reprends au prochain passage.';
+    setTimeout(() => { document.getElementById('idee-dit').textContent = ''; }, 4000);
+    peindreIdees();
+    duNeuf = true;
+    envoyer();
+  };
 
   /* ── filtres Toi / Claude ─────────────────────────────────────────── */
   const F = document.getElementById('filtres');
