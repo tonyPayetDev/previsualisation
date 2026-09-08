@@ -25,7 +25,8 @@
 import fs from 'node:fs';
 
 const BASE = 'https://previsualisation.automatisationboost.com';
-const AUTH = 'Basic ' + Buffer.from('tony:mGjmvScSTzjUySVBEcTJ').toString('base64');
+// Identifiants hors du dépôt (public) : PREVIS_AUTH='utilisateur:motdepasse' dans /work/.deploy.env
+const AUTH = process.env.PREVIS_AUTH ? 'Basic ' + Buffer.from(process.env.PREVIS_AUTH || '').toString('base64') : null;
 
 /* Les routes viennent des tâches elles-mêmes : ce sont les liens que Tony
    envoie réellement, pas une liste tenue à part qui se périme. */

@@ -19,7 +19,8 @@
 import fs from 'node:fs';
 
 const BASE = 'https://previsualisation.automatisationboost.com';
-const AUTH = 'Basic ' + Buffer.from('tony:mGjmvScSTzjUySVBEcTJ').toString('base64');
+// Identifiants hors du dépôt (public) : PREVIS_AUTH='utilisateur:motdepasse' dans /work/.deploy.env
+const AUTH = process.env.PREVIS_AUTH ? 'Basic ' + Buffer.from(process.env.PREVIS_AUTH || '').toString('base64') : null;
 const MIENS = /^https?:\/\/([a-z0-9-]+\.)*automatisationboost\.com\//i;
 const ATTENDU = {
   jpg: 'image/jpeg', jpeg: 'image/jpeg', png: 'image/png', webp: 'image/webp',

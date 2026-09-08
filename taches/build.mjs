@@ -43,7 +43,8 @@ const OUTILS = [
 ];
 
 const BASE = 'https://previsualisation.automatisationboost.com';
-const AUTH = 'Basic ' + Buffer.from('tony:mGjmvScSTzjUySVBEcTJ').toString('base64');
+// Identifiants hors du dépôt (public) : PREVIS_AUTH='utilisateur:motdepasse' dans /work/.deploy.env
+const AUTH = process.env.PREVIS_AUTH ? 'Basic ' + Buffer.from(process.env.PREVIS_AUTH || '').toString('base64') : null;
 
 const outilsVivants = [];
 for (const o of OUTILS) {
@@ -225,6 +226,8 @@ footer{margin-top:34px; font-size:12px; color:var(--gris2); line-height:1.6}
 <header>
   <h1>Où en sont mes demandes</h1>
   <p>Tout ce que tu m'as demandé, et où ça en est. Mis à jour le ${esc(data.maj)}.</p>
+  ${data._avis ? `<p style="background:#15130c;border:1px solid #3a3115;border-left:3px solid #eab308;border-radius:10px;padding:14px 16px;margin:16px 0;line-height:1.6;color:#e6d29a">
+    ${esc(data._avis)} <a href="/taches/valider/" style="color:#eab308">Ouvrir le tableau de validation →</a></p>` : ''}
   <nav class="nav">
 ${outilsVivants.map(o => `    <a href="${esc(o.h)}"${o.h === '/taches/' ? ' class="ici"' : ''} title="${esc(o.q)}">${esc(o.n)}</a>`).join('\n')}
   </nav>
