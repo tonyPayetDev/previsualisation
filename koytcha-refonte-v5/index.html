@@ -277,11 +277,17 @@ img{max-width:100%;display:block}
 .boite-repli .lab{display:block;font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;
   color:rgba(255,255,255,.62);margin:0 0 8px}
 .choix{display:flex;flex-wrap:wrap;gap:8px}
-.puce{background:rgba(0,0,0,.18);border:1px solid rgba(255,255,255,.28);border-radius:2px;
+/* Verre depoli au repos : le bouton laisse voir la photo derriere, floutee.
+   `-webkit-` en premier — sans lui, Safari iOS n'applique rien et les boutons
+   redeviennent des rectangles plats. */
+.puce{background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.30);border-radius:3px;
+  -webkit-backdrop-filter:blur(9px) saturate(120%);backdrop-filter:blur(9px) saturate(120%);
   padding:9px 13px;font:inherit;font-size:12px;letter-spacing:.06em;color:#fff;cursor:pointer;
   transition:all .22s var(--ease)}
 .puce:hover{border-color:#fff;background:rgba(255,255,255,.18)}
-.puce[aria-pressed="true"]{background:#fff;border-color:#fff;color:var(--magenta);font-weight:600}
+.puce[aria-pressed="true"]{background:var(--magenta);border-color:var(--magenta);color:#fff;
+  font-weight:600;box-shadow:0 6px 20px -8px rgba(230,0,126,.75)}
+.puce[aria-pressed="true"]:hover{background:var(--magenta-deep);border-color:var(--magenta-deep)}
 .plus{display:block;width:100%;background:none;border:0;border-top:1px solid rgba(255,255,255,.22);
   margin:16px 0 0;padding:12px 0 0;font:inherit;font-size:12px;letter-spacing:.12em;
   text-transform:uppercase;color:rgba(255,255,255,.72);cursor:pointer;text-align:left}
@@ -355,9 +361,16 @@ img{max-width:100%;display:block}
   letter-spacing:.09em;text-transform:none;color:#fff;white-space:nowrap;
   transition:all .22s var(--ease)}
 .boite .app .MuiToggleButton-root:hover{background:rgba(255,255,255,.18);border-color:#fff;color:#fff}
+/* Selectionne : le rose de la marque, pas le blanc. Sur une photo de ciel, un
+   bouton blanc se confond avec le fond flou de la boite — le magenta, lui, dit
+   sans ambiguite lequel des deux est actif. */
 .boite .app .MuiToggleButton-root.Mui-selected,
-.boite .app .MuiToggleButton-root[aria-pressed="true"]{background:#fff;border-color:#fff;
-  color:var(--magenta);font-weight:600}
+.boite .app .MuiToggleButton-root[aria-pressed="true"]{background:var(--magenta);
+  border-color:var(--magenta);color:#fff;font-weight:600;
+  box-shadow:0 6px 20px -8px rgba(230,0,126,.75)}
+.boite .app .MuiToggleButton-root.Mui-selected:hover,
+.boite .app .MuiToggleButton-root[aria-pressed="true"]:hover{background:var(--magenta-deep);
+  border-color:var(--magenta-deep);color:#fff}
 /* react-select : le champ blanc par defaut trouait le verre. */
 /* Le module heritait de la police du navigateur : react-select rend ses
    propres noeuds et rien ne leur imposait la police du site. */
@@ -407,13 +420,18 @@ img{max-width:100%;display:block}
 @media (max-width:640px){
   /* 158 px x2 + marges ne tiennent pas dans 390 px : on laisse la largeur
      suivre le texte plutot que de casser la ligne en deux. */
-  /* Sur telephone les puces passent pleine largeur, empilees : une cible de
-     la largeur du pouce plutot que deux boutons etroits cote a cote. Chaque
-     etape n'en propose que deux, la boite ne s'allonge donc pas beaucoup. */
-  .boite .app .MuiToggleButton-root{display:flex;width:100%;min-width:0;
-    padding:15px 18px;margin:0 0 10px}
+  /* Deux par ligne, pas empiles. Une etape n'offre que deux choix : les mettre
+     l'un au-dessus de l'autre allongeait la boite d'un ecran entier et cachait
+     le bouton « voir les annonces ». A deux par ligne, chaque cible fait encore
+     la moitie de la largeur du telephone — largement le pouce — et tout le
+     module tient dans un seul regard. */
+  .boite .app .MuiToggleButtonGroup-root{display:flex;flex-wrap:wrap;gap:10px;width:100%}
+  .boite .app .MuiToggleButton-root{display:flex;flex:1 1 calc(50% - 5px);min-width:0;
+    padding:15px 12px;margin:0}
   .boite .app .col-md-4{width:100%;min-width:0;margin:0 0 10px}
-  .boite-repli .puce{width:100%;justify-content:center}
+  .boite-repli .choix{display:flex;flex-wrap:wrap;gap:10px}
+  .boite-repli .puce{flex:1 1 calc(50% - 5px);min-width:0;justify-content:center;
+    text-align:center;padding:13px 10px}
 }
 @media (prefers-reduced-motion:reduce){
   .boite .app .MuiToggleButton-root,.boite .app a.btn{transition:none}
