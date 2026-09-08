@@ -19,8 +19,7 @@ input[type=search]{flex:1;min-width:220px;background:var(--carte);border:1px sol
 .c{background:var(--carte);border:1px solid var(--trait);border-radius:14px;overflow:hidden}
 .cmp{position:relative;aspect-ratio:9/13;overflow:hidden;background:#000;touch-action:pan-y}
 .cmp img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:top center;display:block}
-.cmp .av{position:absolute;inset:0;width:50%;overflow:hidden;border-right:2px solid var(--or)}
-.cmp .av img{width:auto;height:100%;max-width:none}
+.cmp .av{position:absolute;inset:0;clip-path:inset(0 50% 0 0)}
 .rg{position:absolute;inset:auto 0 0;width:100%;margin:0;opacity:0;height:100%;cursor:ew-resize}
 .et{position:absolute;top:10px;font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;
   background:#0a0a0fcc;padding:4px 9px;border-radius:6px;pointer-events:none}
@@ -710,7 +709,11 @@ chaque carte viennent des deux audits mesurés sur un écran de téléphone, pas
 (function(){
   document.querySelectorAll('.cmp').forEach(function(c){
     var av=c.querySelector('.av'), rg=c.querySelector('.rg'), poi=c.querySelector('.poi');
-    var maj=function(){ av.style.width=rg.value+'%'; poi.style.left=rg.value+'%'; };
+    /* On DÉCOUPE l'image d'avant au lieu de rétrécir son conteneur : à largeur
+       réduite, le navigateur remettait la capture à l'échelle et les deux
+       moitiés ne montraient plus le même cadrage — le glissement comparait deux
+       zooms différents. `clip-path` laisse l'image à sa taille exacte. */
+    var maj=function(){ av.style.clipPath='inset(0 '+(100-rg.value)+'% 0 0)'; poi.style.left=rg.value+'%'; };
     rg.addEventListener('input',maj); maj();
   });
   var q=document.getElementById('q'), cartes=[].slice.call(document.querySelectorAll('.c')), cpt=document.getElementById('cpt');
