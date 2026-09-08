@@ -1853,7 +1853,15 @@ footer a:hover{color:var(--magenta)}
        rajouter 0,4 px, on repartait de la valeur ARRONDIE que rend le
        navigateur : 0 + 0,4 relu comme 0, indefiniment. La piste ne bougeait
        pas d'un pixel — c'est ce que la verification a montre. */
+    /* LE point qui bloquait tout, mesure dans le navigateur : avec
+       `scroll-snap-type` actif, ecrire `piste.scrollLeft = 42` rend 0 — le
+       navigateur ramene aussitot la piste sur son point d'ancrage. Le
+       defilement automatique n'avait donc aucun effet, quelle que soit la
+       valeur du pas. On coupe le snap pendant l'animation et on le rend des
+       que l'utilisateur prend la main : il avance tout seul, et le geste du
+       doigt cale quand meme proprement. */
     var pos = 0;
+    piste.style.scrollSnapType = 'none';
     function debordement() { return piste.scrollWidth - piste.clientWidth; }
     function pas() {
       var d = debordement();
@@ -1866,7 +1874,10 @@ footer a:hover{color:var(--magenta)}
     function arreter() { if (tic) { clearInterval(tic); tic = null; } }
 
     ['pointerdown', 'touchstart', 'wheel', 'keydown'].forEach(function (e) {
-      piste.addEventListener(e, function () { main = true; pos = piste.scrollLeft; arreter(); }, { passive: true });
+      piste.addEventListener(e, function () {
+        main = true; pos = piste.scrollLeft; arreter();
+        piste.style.scrollSnapType = '';        // on rend le calage au pouce
+      }, { passive: true });
     });
 
     if ('IntersectionObserver' in window) {
