@@ -257,6 +257,7 @@ button.petit{min-height:38px;padding:0 14px;font-size:.82rem}
   main{padding-bottom:172px}
 }
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 <body>
 
@@ -372,6 +373,7 @@ button.petit{min-height:38px;padding:0 14px;font-size:.82rem}
   <div class="bar">
     <span class="etat" id="etat">Prêt. <b id="compte">0</b> modification(s).</span>
     <span class="grandir"></span>
+    <button class="second" id="image">Exporter en image</button>
     <button class="second" id="reinit">Repartir de zéro</button>
     <button class="primaire" id="planifier">Envoyer à planifier</button>
   </div>
@@ -970,6 +972,48 @@ function fermerAtelier() {
   document.body.classList.remove('atelier-ouvert');
 }
 document.getElementById('fermer-atelier').addEventListener('click', fermerAtelier);
+
+/* ── Exporter l'aperçu en une image ───────────────────────────────────────
+ * La route /foodboost-editeur/ est derrière le mot de passe nginx : un client
+ * qui reçoit ce lien tombe sur un 401. Ce qui s'envoie, ce n'est donc pas le
+ * lien, c'est une image du feed — en pièce jointe d'un mail, en DM, ou en
+ * WhatsApp.
+ *
+ * On rend le bloc d'aperçu tel qu'il est à l'écran, à 2x pour que ce soit net
+ * sur un téléphone, puis on déclenche un téléchargement. Le nom du fichier
+ * porte celui de l'établissement : cinq démos dans un dossier « Téléchargements »
+ * toutes appelées « feed.png » ne se distinguent plus.
+ */
+document.getElementById('image').addEventListener('click', async (ev) => {
+  const b = ev.currentTarget;
+  const av = b.textContent;
+  if (typeof html2canvas !== 'function') { b.textContent = 'export indisponible'; setTimeout(() => { b.textContent = av; }, 2500); return; }
+  b.disabled = true; b.textContent = 'rendu…';
+  try {
+    /* La feuille de réglages du téléphone recouvre l'aperçu : on la ferme avant
+       de photographier, sinon elle se retrouve dans l'image envoyée au client. */
+    fermerAtelier();
+    const cible = document.getElementById('apercu');
+    const toile = await html2canvas(cible, {
+      backgroundColor: getComputedStyle(document.body).backgroundColor || '#0a0a0f',
+      scale: 2, useCORS: true, logging: false,
+    });
+    const nom = (E.nom || 'feed').normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^A-Za-z0-9]+/g, '-').replace(/^-|-$/g, '').toLowerCase() || 'feed';
+    const a = document.createElement('a');
+    /* JPEG et pas PNG : la même image sortait à 2,2 Mo en PNG, ce qui passe mal
+       en pièce jointe et se fait recompresser par WhatsApp de toute façon. En
+       JPEG 0,92 elle fait quelques centaines de kilo-octets et le feed est fait
+       de photos, pas d'aplats — le PNG n'apportait rien. */
+    a.download = 'feed-' + nom + '.jpg';
+    a.href = toile.toDataURL('image/jpeg', 0.92);
+    document.body.appendChild(a); a.click(); a.remove();
+    b.textContent = 'image enregistrée';
+  } catch (e) {
+    b.textContent = 'export impossible';
+  }
+  setTimeout(() => { b.disabled = false; b.textContent = av; }, 2200);
+});
 document.getElementById('voile-atelier').addEventListener('click', fermerAtelier);
 document.addEventListener('keydown', (e) => { if (e.key === 'Escape') fermerAtelier(); });
 /* Repasser en grand écran avec la feuille ouverte laissait la page bloquée
