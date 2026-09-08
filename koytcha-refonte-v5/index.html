@@ -169,6 +169,110 @@ img{max-width:100%;display:block}
 .ref{display:block;text-align:center;margin-top:13px;font-size:12.5px;color:rgba(255,255,255,.62);text-decoration:none}
 .ref:hover{color:#fff}
 
+/* Repli fidele — reconstruit a partir de l'export Elementor de la section
+   « search ktp » (widget popular-posts, post 458). Memes etapes, memes
+   libelles, meme logique conditionnelle et memes valeurs par defaut que le
+   module reel, pour que l'apercu montre ce que Florent verra une fois le
+   bloc colle dans Elementor. Le vrai module remplace tout ceci des qu'il
+   s'hydrate ; ce repli n'existe que hors WordPress. */
+.boite-repli .etape{margin-bottom:14px}
+.boite-repli .lab{display:block;font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;
+  color:rgba(255,255,255,.62);margin:0 0 8px}
+.choix{display:flex;flex-wrap:wrap;gap:8px}
+.puce{background:rgba(0,0,0,.18);border:1px solid rgba(255,255,255,.28);border-radius:2px;
+  padding:9px 13px;font:inherit;font-size:12px;letter-spacing:.06em;color:#fff;cursor:pointer;
+  transition:all .22s var(--ease)}
+.puce:hover{border-color:#fff;background:rgba(255,255,255,.18)}
+.puce[aria-pressed="true"]{background:#fff;border-color:#fff;color:var(--magenta);font-weight:600}
+.plus{display:block;width:100%;background:none;border:0;border-top:1px solid rgba(255,255,255,.22);
+  margin:16px 0 0;padding:12px 0 0;font:inherit;font-size:12px;letter-spacing:.12em;
+  text-transform:uppercase;color:rgba(255,255,255,.72);cursor:pointer;text-align:left}
+.plus:hover{color:#fff}
+.plus .chev{float:right;transition:transform .25s var(--ease)}
+.plus[aria-expanded="true"] .chev{transform:rotate(180deg)}
+.crit{padding-top:14px}
+.paire{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.champ{position:relative}
+.champ input{width:100%;background:rgba(0,0,0,.18);border:1px solid rgba(255,255,255,.28);
+  border-radius:2px;padding:11px 34px 11px 12px;font:inherit;font-size:13px;color:#fff}
+.champ input::placeholder{color:rgba(255,255,255,.45)}
+.champ input:focus{outline:none;border-color:#fff}
+/* Les fleches natives du champ nombre passaient PAR-DESSUS le « m2 » et le
+   « EUR » : on les retire, l'unite est deja l'indication. */
+.champ input{appearance:textfield;-moz-appearance:textfield}
+.champ input::-webkit-outer-spin-button,
+.champ input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.champ .unite{position:absolute;right:11px;top:50%;transform:translateY(-50%);
+  font-size:12px;color:rgba(255,255,255,.55);pointer-events:none}
+.amgs{display:flex;flex-wrap:wrap;gap:7px}
+.amgs .puce{font-size:11.5px;padding:7px 11px}
+@media (prefers-reduced-motion:reduce){.puce,.plus .chev{transition:none}}
+
+/* Mobile : mesure a 390x844, la boite depassait de 27 px sous la ligne de
+   flottaison. On resserre les interlignes plutot que de retirer une etape —
+   le visiteur doit voir le bouton sans faire defiler. */
+@media (max-width:640px){
+  .boite-repli .etape{margin-bottom:10px}
+  .boite-repli .lab{margin-bottom:6px}
+  .choix{gap:7px}
+  .puce{padding:8px 11px}
+  .plus{margin-top:12px;padding-top:10px}
+  .boite-repli h2{margin-bottom:12px}
+  .boite-repli .bt{padding:13px}
+}
+
+/* ── Habillage du module reel a la charte de la refonte ─────────────────
+   Le plugin arrive avec son propre CSS (Material-UI + Bootstrap), dessine
+   pour un fond blanc : sur le verre depoli sombre le titre ressortait gris
+   et les libelles debordaient de leurs boutons (col-5 fige la largeur alors
+   que « PROFESSIONNEL » est plus long). Tout est porte par .boite .app :
+   rien ne fuit vers le reste de la page. A recopier dans le CSS du theme si
+   le meme rendu est voulu sur koytchaimmo.re. */
+.boite .app h3{font-family:var(--sans);font-weight:400;font-size:18px;margin:0 0 18px}
+/* Le gris (#54595F) est un style EN DUR dans les parametres du widget, pas
+   une regle CSS : mesure a l ecran, span.style.color = rgb(84,89,95). Un
+   selecteur ordinaire ne peut pas gagner contre du style en ligne, d ou le
+   seul !important du fichier. Sur leur site actuel ce gris convient — le
+   fond y est blanc ; ici le titre est sur du verre sombre. */
+.boite .app h3,.boite .app h3 div{color:#fff}
+.boite .app h3 span{color:#fff!important}
+.boite .app h3 .row{justify-content:flex-start!important;margin:0}
+.boite .app h3 .col-10{flex:0 0 100%;max-width:100%;padding:0}
+.boite .app h3 strong{color:var(--magenta);font-weight:600}
+.boite .app .row{margin-left:0;margin-right:0}
+.boite .app [class*="col-"]{padding-left:0;padding-right:0}
+/* Les puces reprennent .puce a l identique — meme grammaire visuelle que le
+   reste de la boite, et la largeur suit le texte au lieu d une colonne fixe. */
+.boite .app .MuiToggleButton-root{flex:0 0 auto;max-width:none;width:auto;
+  background:rgba(0,0,0,.18);border:1px solid rgba(255,255,255,.28);border-radius:2px;
+  padding:9px 13px;margin:0 8px 8px 0;font-family:var(--sans);font-size:12px;font-weight:400;
+  letter-spacing:.06em;text-transform:none;color:#fff;white-space:nowrap;
+  transition:all .22s var(--ease)}
+.boite .app .MuiToggleButton-root:hover{background:rgba(255,255,255,.18);border-color:#fff;color:#fff}
+.boite .app .MuiToggleButton-root.Mui-selected,
+.boite .app .MuiToggleButton-root[aria-pressed="true"]{background:#fff;border-color:#fff;
+  color:var(--magenta);font-weight:600}
+/* react-select : le champ blanc par defaut trouait le verre. */
+.boite .app [class*="-control"]{background:rgba(0,0,0,.18);border:1px solid rgba(255,255,255,.28);
+  border-radius:2px;box-shadow:none;min-height:42px}
+.boite .app [class*="-control"]:hover{border-color:#fff}
+.boite .app [class*="-singleValue"],.boite .app [class*="-Input"],.boite .app input{color:#fff}
+.boite .app [class*="-placeholder"]{color:rgba(255,255,255,.45)}
+.boite .app [class*="-menu"]{background:#1b1b1f;color:#fff;border-radius:2px}
+.boite .app [class*="-indicatorSeparator"]{background:rgba(255,255,255,.28)}
+/* Le bouton d action : meme carton plein que .bt, pleine largeur. */
+.boite .app .col-md-5{flex:0 0 100%;max-width:100%;margin-top:8px}
+.boite .app a.btn{display:block;width:100%;background:var(--magenta);border:0;border-radius:2px;
+  padding:16px;color:#fff;font-family:var(--sans);font-size:13px;font-weight:600;
+  letter-spacing:.12em;text-transform:uppercase;text-align:center;text-decoration:none;
+  transition:background .22s var(--ease)}
+.boite .app a.btn:hover{background:var(--magenta-deep);color:#fff}
+.boite .app a.btn .row{justify-content:center!important}
+@media (prefers-reduced-motion:reduce){
+  .boite .app .MuiToggleButton-root,.boite .app a.btn{transition:none}
+  .boite .app .animated{animation:none}
+}
+
 /* ── Section cinématique (mécanique reprise de koytcha-reveal) ───────── */
 /* Une scène collante dans une piste haute : c'est la hauteur de la piste
    qui donne la course de scroll, et la scène reste à l'écran pendant que
@@ -912,6 +1016,10 @@ footer a:hover{color:var(--magenta)}
 <!-- Module de recherche koytchaimmo : la feuille de style du plugin.
      Elle embarque sa propre grille. Vérifié le 08/09 : la v5 n'utilise aucune
      classe .btn / .row / .col-, donc la charger ne repeint rien de la page. -->
+<!-- Font Awesome : le widget pose des icones (chevron du bouton, maison,
+     immeuble). koytchaimmo.re la charge deja via son theme ; sans elle
+     l apercu affichait un point a la place du chevron. -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin>
 <link rel="stylesheet" href="https://koytchaimmo.re/app/plugins/elementor-search-react-ktp-v2/build/index.css">
 </head>
 <body>
@@ -974,12 +1082,77 @@ footer a:hover{color:var(--magenta)}
             <!-- Repli : affiché tant que le module n'a pas pris la main. -->
             <div class="boite-repli">
               <h2>Vous recherchez <b>un bien</b> ?</h2>
-              <div class="onglets">
-                <button class="onglet" type="button" aria-pressed="true">Résidentiel</button>
-                <button class="onglet" type="button" aria-pressed="false">Professionnel</button>
+
+              <div class="etape">
+                <span class="lab" id="l-pro">Pro ou résidentiel&nbsp;?</span>
+                <div class="choix" role="group" aria-labelledby="l-pro" data-champ="pro_res">
+                  <button class="puce" type="button" aria-pressed="false">Residentiel</button>
+                  <button class="puce" type="button" aria-pressed="true">Professionnel</button>
+                </div>
               </div>
-              <a class="bt" href="https://koytchaimmo.re/recherche/">Voir les annonces</a>
-              <a class="ref" href="https://koytchaimmo.re/recherche/">Rechercher par référence</a>
+
+              <div class="etape">
+                <span class="lab" id="l-proj">Votre projet&nbsp;?</span>
+                <div class="choix" role="group" aria-labelledby="l-proj" data-champ="prestation_type">
+                  <button class="puce" type="button" aria-pressed="true" data-val="location">À la location</button>
+                  <button class="puce" type="button" aria-pressed="false" data-val="vente">À l’achat</button>
+                </div>
+              </div>
+
+              <div class="etape">
+                <span class="lab" id="l-bien">Type de bien&nbsp;?</span>
+                <div class="choix" role="group" aria-labelledby="l-bien" data-champ="bien_type" id="bien-type"></div>
+              </div>
+
+              <div class="etape">
+                <span class="lab" id="l-sect">Votre secteur&nbsp;?</span>
+                <div class="choix" role="group" aria-labelledby="l-sect" data-champ="secteur">
+                  <button class="puce" type="button" aria-pressed="false">Nord</button>
+                  <button class="puce" type="button" aria-pressed="false">Ouest</button>
+                  <button class="puce" type="button" aria-pressed="false">Sud</button>
+                  <button class="puce" type="button" aria-pressed="false">Est</button>
+                </div>
+              </div>
+
+              <button class="plus" type="button" aria-expanded="false" aria-controls="criteres">
+                Plus de critères <span class="chev" aria-hidden="true">▾</span>
+              </button>
+              <div class="crit" id="criteres" hidden>
+                <div class="etape">
+                  <span class="lab">Quelle est la surface&nbsp;?</span>
+                  <div class="paire">
+                    <span class="champ"><input type="number" min="0" name="surface-min" placeholder="minimum" aria-label="Surface minimum"><span class="unite">m²</span></span>
+                    <span class="champ"><input type="number" min="0" name="surface-max" placeholder="maximum" aria-label="Surface maximum"><span class="unite">m²</span></span>
+                  </div>
+                </div>
+                <div class="etape">
+                  <span class="lab">Quel est votre budget&nbsp;?</span>
+                  <div class="paire">
+                    <span class="champ"><input type="number" min="0" name="tarif-min" placeholder="minimum" aria-label="Budget minimum"><span class="unite">€</span></span>
+                    <span class="champ"><input type="number" min="0" name="tarif-max" placeholder="maximum" aria-label="Budget maximum"><span class="unite">€</span></span>
+                  </div>
+                </div>
+                <div class="etape">
+                  <span class="lab" id="l-amg">Quels aménagements&nbsp;?</span>
+                  <div class="choix amgs" role="group" aria-labelledby="l-amg" data-champ="details" data-multi="1">
+                    <button class="puce" type="button" aria-pressed="false">Garage</button>
+                    <button class="puce" type="button" aria-pressed="false">Climatisation</button>
+                    <button class="puce" type="button" aria-pressed="false">Plafond</button>
+                    <button class="puce" type="button" aria-pressed="false">Alarme</button>
+                    <button class="puce" type="button" aria-pressed="false">Parking</button>
+                    <button class="puce" type="button" aria-pressed="false">Piscine</button>
+                    <button class="puce" type="button" aria-pressed="false">Terrasse</button>
+                    <button class="puce" type="button" aria-pressed="false">Accessibilité PMR</button>
+                    <button class="puce" type="button" aria-pressed="false">Clôturé</button>
+                    <button class="puce" type="button" aria-pressed="false">Sol</button>
+                    <button class="puce" type="button" aria-pressed="false">Viabilisé</button>
+                    <button class="puce" type="button" aria-pressed="false">Electricité</button>
+                  </div>
+                </div>
+              </div>
+
+              <a class="bt" id="voir-annonces" href="https://koytchaimmo.re/index.php/recherche/">Voir les annonces</a>
+              <a class="ref" href="https://koytchaimmo.re/index.php/recherche/">Rechercher par référence</a>
             </div>
           </div>
         </div>
@@ -1424,6 +1597,30 @@ footer a:hover{color:var(--magenta)}
   });
 })();
 </script>
+<!-- Pourquoi ces trois lignes : le bundle du plugin declare UN seul external,
+     window["wp"]["element"] — le React que WordPress injecte via wp-element.
+     Hors WordPress il vaut undefined et le bundle meurt au demarrage
+     (TypeError: Cannot read properties of undefined (reading 'element')),
+     d'ou le module vide dans l'apercu. On lui fournit le meme React 18 que
+     WP 6.x. Cote koytchaimmo.re ces lignes sont inutiles mais inoffensives :
+     wp.element y existe deja et on ne l'ecrase pas. -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js" crossorigin></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js" crossorigin></script>
+<script>
+window.wp = window.wp || {};
+if (!window.wp.element && window.React && window.ReactDOM) {
+  window.wp.element = Object.assign({}, window.React, window.ReactDOM, {
+    createRoot: window.ReactDOM.createRoot,
+    createPortal: window.ReactDOM.createPortal,
+    findDOMNode: window.ReactDOM.findDOMNode,
+    flushSync: window.ReactDOM.flushSync,
+    render: window.ReactDOM.render,
+    unmountComponentAtNode: window.ReactDOM.unmountComponentAtNode,
+    Platform: { OS: 'web', select: function (s) { return s.web; }, isWeb: true },
+    RawHTML: function (p) { return window.React.createElement('div', { dangerouslySetInnerHTML: { __html: p.children } }); }
+  });
+}
+</script>
 <script src="https://koytchaimmo.re/app/plugins/elementor-search-react-ktp-v2/build/index.js" defer></script>
 <script>
 /* Le repli disparaît dès que le plugin insère quelque chose dans #458.
@@ -1435,6 +1632,70 @@ footer a:hover{color:var(--magenta)}
   var vu = function () { if (cible.children.length) { repli.style.display = 'none'; return true; } return false; };
   if (vu()) return;
   new MutationObserver(function (_, o) { if (vu()) o.disconnect(); }).observe(cible, { childList: true, subtree: true });
+})();
+</script>
+<script>
+/* Repli interactif. Les valeurs viennent de l'export Elementor de la section
+   « search ktp » : les types de bien dependent de pro_res exactement comme
+   dans la configuration du widget (service_condition). Le bouton recompose
+   une URL vers leur page de recherche avec les noms de champs du plugin. */
+(function () {
+  var boite = document.querySelector('.boite-repli');
+  if (!boite) return;
+
+  var TYPES = {
+    Residentiel: ['Appartement', 'Maison/Villa', 'Terrain'],
+    Professionnel: ['Bureaux', 'Entrepôt', 'Local commercial', 'Immeuble', 'Parcelle', 'Fonds de commerce']
+  };
+
+  function actif(groupe) {
+    var b = groupe.querySelector('.puce[aria-pressed="true"]');
+    return b ? (b.dataset.val || b.textContent.trim()) : '';
+  }
+
+  function peupleTypes() {
+    var pro = boite.querySelector('[data-champ="pro_res"]'), hote = document.getElementById('bien-type');
+    hote.innerHTML = '';
+    TYPES[actif(pro)].forEach(function (t) {
+      var b = document.createElement('button');
+      b.type = 'button'; b.className = 'puce'; b.setAttribute('aria-pressed', 'false'); b.textContent = t;
+      hote.appendChild(b);
+    });
+  }
+
+  boite.addEventListener('click', function (e) {
+    var b = e.target.closest('.puce'); if (!b) return;
+    var groupe = b.parentNode, on = b.getAttribute('aria-pressed') === 'true';
+    if (groupe.dataset.multi) { b.setAttribute('aria-pressed', on ? 'false' : 'true'); return; }
+    /* Un seul choix par etape, et on peut deselectionner : le visiteur doit
+       pouvoir revenir a « peu importe » sans recharger la page. */
+    Array.prototype.forEach.call(groupe.children, function (x) { x.setAttribute('aria-pressed', 'false'); });
+    b.setAttribute('aria-pressed', on ? 'false' : 'true');
+    if (groupe.dataset.champ === 'pro_res') peupleTypes();
+  });
+
+  var plus = boite.querySelector('.plus'), crit = document.getElementById('criteres');
+  plus.addEventListener('click', function () {
+    var ouvert = plus.getAttribute('aria-expanded') === 'true';
+    plus.setAttribute('aria-expanded', ouvert ? 'false' : 'true');
+    crit.hidden = ouvert;
+  });
+
+  document.getElementById('voir-annonces').addEventListener('click', function (e) {
+    var p = new URLSearchParams();
+    boite.querySelectorAll('.choix').forEach(function (g) {
+      if (g.dataset.multi) {
+        g.querySelectorAll('.puce[aria-pressed="true"]').forEach(function (b) { p.append(g.dataset.champ + '[]', b.textContent.trim()); });
+      } else {
+        var v = actif(g); if (v) p.set(g.dataset.champ, v);
+      }
+    });
+    boite.querySelectorAll('.crit input').forEach(function (i) { if (i.value) p.set(i.name, i.value); });
+    var q = p.toString();
+    if (q) e.currentTarget.href = 'https://koytchaimmo.re/index.php/recherche/?' + q;
+  });
+
+  peupleTypes();
 })();
 </script>
 </body>
