@@ -934,7 +934,19 @@ footer a:hover{color:var(--magenta)}
 .cartes .carte{transition-delay:var(--retard,0ms)}
 
 @media(max-width:980px){
-  .cartes{grid-template-columns:1fr}
+  /* Sur telephone les trois programmes s'empilaient : il fallait faire defiler
+     un ecran et demi pour voir le troisieme, et la plupart s'arretaient au
+     premier. En carrousel horizontal, les trois sont a portee de pouce et le
+     deuxieme depasse volontairement du bord — c'est ce qui dit qu'il y en a
+     d'autres, mieux que n'importe quelle fleche.
+     `scroll-snap` cale chaque carte proprement ; la barre de defilement est
+     masquee mais le geste, lui, reste natif. */
+  .cartes{display:flex;grid-template-columns:none;gap:14px;overflow-x:auto;
+    scroll-snap-type:x mandatory;scroll-behavior:smooth;
+    padding:2px 20px 14px;margin:0 -20px;
+    scrollbar-width:none;-ms-overflow-style:none}
+  .cartes::-webkit-scrollbar{display:none}
+  .cartes .carte{flex:0 0 82%;scroll-snap-align:center;max-width:82%}
   .duo{grid-template-columns:1fr}
   .chiffres{grid-template-columns:1fr 1fr;gap:30px}
   .pied{grid-template-columns:1fr 1fr}
@@ -1795,6 +1807,45 @@ footer a:hover{color:var(--magenta)}
   document.addEventListener('keydown', function(e){
     if (e.key === 'Escape' && nav.classList.contains('ouvert')) { fermer(); burger.focus(); }
   });
+
+  /* ── Le carrousel des programmes, sur telephone ────────────────────────
+     Il avance tout seul, lentement, et s'arrete des que quelqu'un le touche.
+     Trois precautions qui font la difference entre un carrousel et une gene :
+       · on n'anime QUE si la piste deborde (sur ordinateur c'est une grille) ;
+       · le defilement s'arrete au premier geste — doigt, souris ou molette —
+         et ne repart pas : reprendre la main a l'utilisateur, c'est le lui
+         reprendre deux fois ;
+       · rien ne bouge si la section n'est pas a l'ecran, ni si le visiteur a
+         demande moins d'animation.
+     Le pas est de 0,4 px toutes les 16 ms — environ 25 px par seconde. C'est
+     volontairement lent : on doit avoir le temps de lire un nom de programme
+     sans le poursuivre du regard. */
+  (function () {
+    var piste = document.querySelector('.cartes');
+    if (!piste || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    var VITESSE = 0.4, main = false, vu = false, tic = null;
+
+    function debordement() { return piste.scrollWidth - piste.clientWidth; }
+    function pas() {
+      if (main || !vu || debordement() < 8) return;
+      var d = debordement();
+      if (piste.scrollLeft >= d - 1) piste.scrollLeft = 0;   // on reboucle au debut
+      else piste.scrollLeft += VITESSE;
+    }
+    function demarrer() { if (!tic) tic = setInterval(pas, 16); }
+    function arreter() { if (tic) { clearInterval(tic); tic = null; } }
+
+    ['pointerdown', 'touchstart', 'wheel', 'keydown'].forEach(function (e) {
+      piste.addEventListener(e, function () { main = true; arreter(); }, { passive: true });
+    });
+
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver(function (entrees) {
+        vu = entrees[0].isIntersecting;
+        if (vu && !main) demarrer(); else arreter();
+      }, { threshold: 0.25 }).observe(piste);
+    } else { vu = true; demarrer(); }
+  })();
 
   /* ── Retour sonore au clic ────────────────────────────────────────────
      Synthetise plutot que telecharge : deux oscillateurs de 50 a 120 ms,
