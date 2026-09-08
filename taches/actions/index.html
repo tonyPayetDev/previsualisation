@@ -1,0 +1,1064 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow"><title>Actions sans téléphone</title>
+<style>
+:root{--noir:#07080b;--carte:#0f1218;--ligne:#212734;--blanc:#eef1f6;--gris:#8b93a3;--or:#eab308;--surOr:#1a1200;--vert:#22c55e}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--noir);color:var(--blanc);font:16px/1.6 system-ui,-apple-system,"Segoe UI",sans-serif;padding:22px 14px 110px}
+.w{max-width:760px;margin:0 auto}
+.eb{font-size:11px;letter-spacing:.26em;text-transform:uppercase;color:var(--gris)}
+h1{font-size:clamp(25px,6vw,36px);line-height:1.08;letter-spacing:-.02em;margin:10px 0 8px}
+.sous{color:var(--gris);font-size:14.5px;max-width:58ch}
+.total{display:flex;gap:10px;align-items:baseline;margin:20px 0 6px}
+.total b{font-size:40px;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.total span{color:var(--gris);font-size:14px}
+.barre{height:8px;border-radius:5px;background:#171d29;overflow:hidden;margin-bottom:26px}
+.barre u{display:block;height:100%;background:var(--or);width:0}
+.lot{background:var(--carte);border:1px solid var(--ligne);border-radius:14px;padding:16px 14px;margin-bottom:16px}
+.tete{display:flex;align-items:baseline;gap:10px}
+.lot h2{font-size:18px;font-weight:650;letter-spacing:-.01em}
+.cpt{margin-left:auto;font-family:ui-monospace,Menlo,monospace;font-size:13px;color:var(--gris)}
+.but{color:#c3cad6;font-size:14.5px;margin-top:6px}
+.com{color:var(--gris);font-size:13.5px;margin-top:6px}
+ul{list-style:none;margin-top:14px;display:flex;flex-direction:column;gap:8px}
+li{display:flex;gap:11px;background:#0a0d13;border:1px solid var(--ligne);border-radius:11px;padding:11px 12px}
+li.ok{opacity:.45}
+li.ok .tt{text-decoration:line-through}
+.case{width:26px;height:26px;border-radius:8px;border:2px solid #38425a;flex:none;display:flex;align-items:center;justify-content:center;background:none;cursor:pointer}
+li.ok .case{border-color:var(--vert);background:rgba(34,197,94,.16)}
+.case b{width:12px;height:6px;border-left:3px solid var(--vert);border-bottom:3px solid var(--vert);transform:rotate(-45deg) translateY(-2px);display:block;opacity:0}
+li.ok .case b{opacity:1}
+.c{flex:1;min-width:0}
+.tt{font-size:15.5px;font-weight:600}
+.ss{color:var(--gris);font-size:13px;margin-top:2px;overflow-wrap:anywhere}
+details{margin-top:8px}
+summary{color:var(--gris);font-size:13px;cursor:pointer}
+textarea.msg{width:100%;margin-top:8px;min-height:150px;font:inherit;font-size:14px;line-height:1.55;color:var(--blanc);
+  background:#070a0f;border:1px solid var(--ligne);border-radius:9px;padding:10px 11px;resize:vertical}
+.btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:9px;align-items:center}
+button,.go{font:inherit;font-size:14px;font-weight:600;border:1px solid var(--ligne);background:#161b23;color:var(--blanc);
+  border-radius:9px;padding:9px 14px;cursor:pointer;min-height:42px;display:inline-flex;align-items:center;text-decoration:none}
+.go{background:var(--or);border-color:var(--or);color:var(--surOr)}
+.lien{color:var(--gris);font-size:13px;text-decoration:underline;text-underline-offset:3px}
+.pied{position:fixed;left:0;right:0;bottom:0;background:#0b0e13;border-top:1px solid var(--ligne);padding:11px 14px;text-align:center;font-size:13px;color:var(--gris)}
+.pied b{color:var(--blanc)}
+</style></head><body><div class="w">
+<div class="eb">Prospection · sans un seul appel</div>
+<h1>Ce que tu peux envoyer<br>depuis ton téléphone</h1>
+<p class="sous">Soixante-seize contacts, chacun avec son message déjà écrit et le bouton qui ouvre le bon endroit.
+Tu lis, tu ajustes si tu veux, tu envoies, tu coches. Rien à chercher, personne à appeler.</p>
+<div class="total"><b id="fait">0</b><span>envoyés sur 76 · <span id="jour"></span></span></div>
+<div class="barre"><u id="jauge"></u></div>
+<section class="lot" id="lot-prospects">
+      <div class="tete"><h2>19 monteurs et agences vidéo</h2><span class="cpt" id="cpt-prospects"></span></div>
+      <p class="but">Vendre ShortForge à des gens dont le montage est le coût principal.</p><p class="com">Chaque message repose sur un fait public vérifié le 20 août (prix affiché, délai, phrase de leur fiche). Ouvre le profil, colle, envoie.</p>
+      <ul><li data-id="p1">
+        <button class="case" aria-label="Marquer envoyé"><b></b></button>
+        <div class="c"><div class="tt">Jeannie</div><div class="ss">BeFreelancr · Montage TikTok/Reels/Shorts à 36 €, livré en 2 j. Note 5.0 (2 avis)</div>
+          <details><summary>Voir le message</summary><textarea class="msg">Bonjour Jeannie, j'ai vu ta fiche BeFreelancr : montage TikTok/Reels/Shorts à 36 € livré en 2 jours.
+À ce tarif, le temps de montage mange presque toute la marge horaire.
+J'ai construit ShortForge pour mon propre besoin : un script écrit en entrée, une vidéo verticale finie (voix clonée, avatar, sous-titres) en 25 à 35 secondes de rendu.
+Il ne monte pas les rushes d'un client — il fabrique la vidéo. Ce n'est donc pas un remplaçant de ce que tu vends aujourd'hui.
+67 €, paiement unique.
+Est-ce que tu as des commandes de ce type, sans rushes à monter ?</textarea></details>
+          <div class="btns"><button class="cp">Copier</button><a class="go" href="https://befreelancr.com/profile/18918/jeannie" target="_blank" rel="noopener">Ouvrir le profil</a></div>
+        </div></li><li data-id="p2">
+        <button class="case" aria-label="Marquer envoyé"><b></b></button>
+        <div class="c"><div class="tt">Andy Desiré</div><div class="ss">BeFreelancr · 25,20 €, 2 j. Écrit lui-même : « le montage vous prend trop de temps ? »</div>
+          <details><summary>Voir le message</summary><textarea class="msg">Bonjour Andy, sur ta fiche BeFreelancr tu demandes à tes clients : « le montage vous prend trop de temps ? ».
+La question marche aussi dans l'autre sens — à 25,20 € la vidéo livrée en 2 jours, c'est ton temps à toi qui part dedans.
+ShortForge prend un script écrit et sort une vidéo verticale complète (voix clonée, avatar, sous-titres) en 25 à 35 secondes de rendu.
+Il ne touche pas aux rushes UGC de tes clients, donc ça ne remplace pas ton service.
+67 € une fois.
+Tu produis parfois des vidéos sans rushes fournis ?</textarea></details>
+          <div class="btns"><button class="cp">Copier</button><a class="go" href="https://befreelancr.com/profile/28717/andy-desire" target="_blank" rel="noopener">Ouvrir le profil</a></div>
+        </div></li><li data-id="p3">
+        <button class="case" aria-label="Marquer envoyé"><b></b></button>
+        <div class="c"><div class="tt">Margot</div><div class="ss">BeFreelancr · 348 € pour 5 reels, livrés en 15 j — le délai le plus long observé</div>
+          <details><summary>Voir le message</summary><textarea class="msg">Bonjour Margot, j'ai vu votre offre BeFreelancr : 5 reels Instagram pour 348 €, livrés en 15 jours.
+C'est le délai qui raconte l'histoire — 5 montages, ça bloque deux semaines de calendrier.
+ShortForge génère une vidéo verticale complète à partir d'un script écrit en 25 à 35 secondes de rendu, voix clonée et sous-titres compris.
+Il part d'un texte, pas des vidéos du client — donc il ne couvre pas votre prestation telle quelle.
+67 €, paiement unique.
+Est-ce qu'une partie de vos reels part d'un texte plutôt que de rushes existants ?</textarea></details>
+          <div class="btns"><button class="cp">Copier</button><a class="go" href="https://befreelancr.com/profile/28943/margot" target="_blank" rel="noopener">Ouvrir le profil</a></div>
+        </div></li><li data-id="p4">
+        <button class="case" aria-label="Marquer envoyé"><b></b></button>
+        <div class="c"><div class="tt">Kaya</div><div class="ss">BeFreelancr · 35 €, 2 j. Argumentaire : « publier régulièrement sans passer des heures sur le montage »</div>
+          <details><summary>Voir le message</summary><textarea class="msg">Bonjour Kaya, tu écris sur ta fiche BeFreelancr : « publier régulièrement sans passer des heures sur le montage ».
+C'est le bon diagnostic, sauf qu'à 35 € la vidéo livrée en 2 jours, les heures en question sont les tiennes.
+ShortForge transforme un script écrit en vidéo verticale finie — voix clonée, avatar, sous-titres — en 25 à 35 secondes de rendu.
+Il ne remplace pas le montage de rushes client : c'est un autre usage, les vidéos créées de zéro.
+67 € une fois.
+Tu es aussi community manager — tu produis du contenu pour tes propres comptes ?</textarea></details>
+          <div class="btns"><button class="cp">Copier</button><a class="go" href="https://befreelancr.com/profile/29604/kaya" target="_blank" rel="noopener">Ouvrir le profil</a></div>
+        </div></li><li data-id="p5">
+        <button class="case" aria-label="Marquer envoyé"><b></b></button>
+        <div class="c"><div class="tt">Ahmed</div><div class="ss">BeFreelancr · 94,80 €, 3 j — pile dans la fourchette 80-150 €</div>
+          <details><summary>Voir le message</summary><textarea class="msg">Bonjour Ahmed, votre fiche BeFreelancr affiche 94,80 € pour une vidéo courte, livrée en 3 jours.
+À ce prix-là ce qui coûte, c'est le délai plus que le tarif : 3 jours par vidéo, ça plafonne le nombre de commandes que vous pouvez accepter.
+ShortForge part d'un script écrit et sort la vidéo verticale complète (voix clonée, avatar, sous-titres) en 25 à 35 secondes de rendu.
+Il ne monte pas les rushes du client, ce n'est donc pas un remplacement de votre prestation.
+67 €, une seule fois.
+Vous refusez des commandes par manque de temps ?</textarea></details>
+          <div class="btns"><button class="cp">Copier</button><a class="go" href="https://befreelancr.com/profile/29376/ahmed" target="_blank" rel="noopener">Ouvrir le profil</a></div>
+        </div></li><li data-id="p6">
+        <button class="case" aria-label="Marquer envoyé"><b></b></button>
+        <div class="c"><div class="tt">Pujol</div><div class="ss">BeFreelancr · 180 € une capsule de 20 secondes, livrée en 4 j, à partir de 3-4 photos</div>
+          <details><summary>Voir le message</summary><textarea class="msg">Bonjour, sur BeFreelancr vous vendez une capsule de 20 secondes à 180 €, livrée en 4 jours, à partir de 3 ou 4 photos.
+C'est la prestation de la plateforme qui ressemble le plus à ce que fait ShortForge : un script écrit en entrée, une vidéo verticale finie en 25 à 35 secondes de rendu, voix clonée et sous-titres inclus.
+Différence honnête : il génère la vidéo, il ne met pas en valeur les photos du client comme vous le faites.
+67 € en paiement unique.
+Votre délai de 4 jours, il vient du montage ou de votre file d'attente ?</textarea></details>
+          <div class="btns"><button class="cp">Copier</button><a class="go" href="https://befreelancr.com/profile/15000/pujol" target="_blank" rel="noopener">Ouvrir le profil</a></div>
+        </div></li><li data-id="p7">
+        <button class="case" aria-label="Marquer envoyé"><b></b></button>
+        <div class="c"><div class="tt">Manon</div><div class="ss">BeFreelancr · 36 €, 2 j, sous-titres animés inclus</div>
+          <details><summary>Voir le message</summary><textarea class="msg">Bonjour Manon, j'ai vu sur BeFreelancr : montage de reels à 36 €, livré en 2 jours, avec sous-titres animés.
+Les sous-titres, c'est justement la partie la plus mécanique du travail et celle qui prend le plus de temps pour ce qu'elle rapporte.
+ShortForge génère la vidéo verticale entière depuis un script écrit — voix clonée, avatar, sous-titres calés — en 25 à 35 secondes de rendu.
+Il part d'un texte et pas de rushes, donc il ne fait pas votre prestation actuelle.
+67 € une fois.
+Le sous-titrage vous prend combien de temps sur une vidéo à 36 € ?</textarea></details>
+          <div class="btns"><button class="cp">Copier</button><a class="go" href="https://befreelancr.com/profile/14875/manon" target="_blank" rel="noopener">Ouvrir le profil</a></div>
+        </div></li><li data-id="p8">
+        <button class="case" aria-label="Marquer envoyé"><b></b></button>
+        <div class="c"><div class="tt">Lylou</div><div class="ss">BeFreelancr · 60 €, 2 j, voix off pro incluse dans l'offre</div>
+          <details><summary>Voir le message</summary><textarea class="msg">Bonjour Lylou, votre offre BeFreelancr inclut la voix off pro dans un montage TikTok/Reels/Shorts à 60 €, livré en 2 jours.
+La voix off, c'est la ligne la plus chère à sous-traiter et la plus longue à enregistrer soi-même.
+ShortForge fabrique la vidéo verticale complète à partir d'un script écrit, voix clonée incluse, en 25 à 35 secondes de rendu.
+Il crée la vidéo, il ne monte pas les rushes fournis par un client — ce n'est donc pas votre prestation.
+67 €, paiement unique.
+Vous enregistrez vos voix off vous-même, ou vous les sous-traitez ?</textarea></details>
+          <div class="btns"><button class="cp">Copier</button><a class="go" href="https://befreelancr.com/profile/20225/lylou" target="_blank" rel="noopener">Ouvrir le profil</a></div>
+        </div></li><li data-id="p9">
+        <button class="case" aria-label="Marquer envoyé"><b></b></button>
+        <div class="c"><div class="tt">Ebel Assonus</div><div class="ss">BeFreelancr · 84 €, 3 j, montage manuel sur CapCut</div>
+          <details><summary>Voir le message</summary><textarea class="msg">Bonjour Ebel, sur BeFreelancr vous montez sur CapCut pour 84 €, livré en 3 jours.
+CapCut fait le travail, mais chaque vidéo repart de zéro à la main — c'est ça qui fixe le délai à 3 jours, pas la difficulté technique.
+ShortForge prend un script écrit et sort la vidéo verticale finie (voix clonée, avatar, sous-titres) en 25 à 35 secondes de rendu.
+Il ne reprend pas les rushes du client, donc il ne remplace pas ce que vous vendez.
+67 € une seule fois.
+Vous refaites l'habillage à chaque vidéo, ou vous partez d'un template ?</textarea></details>
+          <div class="btns"><button class="cp">Copier</button><a class="go" href="https://befreelancr.com/profile/17578/ebel" target="_blank" rel="noopener">Ouvrir le profil</a></div>
+        </div></li><li data-id="p10">
+        <button class="case" aria-label="Marquer envoyé"><b></b></button>
+        <div class="c"><div class="tt">Allan</div><div class="ss">BeFreelancr · 15 €, 3 j, avec dérush + zoom + sous-titres — marge horaire la plus tendue de la liste</div>
+          <details><summary>Voir le message</summary><textarea class="msg">Bonjour Allan, j'ai vu ta fiche BeFreelancr : montage TikTok/Reels/Short à 15 €, livré en 3 jours, avec dérush, zoom et sous-titres.
+À 15 € la vidéo, la vraie question n'est pas le prix d'un outil, c'est le nombre d'heures que tu peux te permettre d'y mettre.
+ShortForge génère la vidéo verticale complète depuis un script écrit — voix clonée, avatar, sous-titres — en 25 à 35 secondes de rendu.
+Il ne monte pas de rushes, il fabrique la vidéo : ce n'est donc pas ton service actuel.
+67 € une fois, soit le prix d'une commande.
+Tu mets combien de temps sur une vidéo à 15 € ?</textarea></details>
+          <div class="btns"><button class="cp">Copier</button><a class="go" href="https://befreelancr.com/profile/13854/allan" target="_blank" rel="noopener">Ouvrir le profil</a></div>
+        </div></li><li data-id="p11">
+        <button class="case" aria-label="Marquer envoyé"><b></b></button>
+        <div class="c"><div class="tt">Lucien</div><div class="ss">BeFreelancr · 30 €, 2 j, Premiere Pro, style Alex Hormozi (traitement répétable)</div>
+          <details><summary>Voir le message</summary><textarea class="msg">Bonjour Lucien, ta fiche BeFreelancr vend du montage TikTok « style Alex Hormozi » sur Premiere Pro, à 30 € et livré en 2 jours.
+Ce style, c'est un empilement de règles répétables — zooms serrés, coupes rapides, sous-titres — refait à la main à chaque commande.
+ShortForge applique ce genre de traitement à partir d'un script écrit et rend la vidéo verticale complète en 25 à 35 secondes.
+Il ne prend pas de rushes en entrée, donc il ne fait pas ta prestation.
+67 €, une fois.
+Tu as déjà essayé d'automatiser une partie de ce traitement ?</textarea></details>
+          <div class="btns"><button class="cp">Copier</button><a class="go" href="https://befreelancr.com/profile/7820/lucien" target="_blank" rel="noopener">Ouvrir le profil</a></div>
+        </div></li><li data-id="p12">
+        <button class="case" aria-label="Marquer envoyé"><b></b></button>
+        <div class="c"><div class="tt">Yonni</div><div class="ss">BeFreelancr · 60 €, 5 j sur des vidéos de 30 s à 2 min</div>
+          <details><summary>Voir le message</summary><textarea class="msg">Bonjour Yonni, sur BeFreelancr tu proposes des vidéos courtes de 30 s à 2 min à 60 €, livrées en 5 jours, sur du contenu gaming et sport.
+5 jours sur une vidéo à 60 €, c'est là que la marge horaire se joue.
+ShortForge part d'un script écrit et sort une vidéo verticale finie (voix clonée, avatar, sous-titres) en 25 à 35 secondes de rendu.
+Il ne monte pas de rushes gaming — c'est un autre usage, les vidéos fabriquées de zéro.
+67 € une fois.
+Ton délai de 5 jours, il vient d'où ?</textarea></details>
+          <div class="btns"><button class="cp">Copier</button><a class="go" href="https://befreelancr.com/profile/18253/yonni" target="_blank" rel="noopener">Ouvrir le profil</a></div>
+        </div></li><li data-id="p13">
+        <button class="case" aria-label="Marquer envoyé"><b></b></button>
+        <div class="c"><div class="tt">Loris Ardire</div><div class="ss">Codeur.com · 25 €/h. Se décrit : « Monteur vidéo YouTube/Shorts […] montage rythmé, storytelling, sous-titres, visuels &amp; habillages »</div>
+          <details><summary>Voir le message</summary><textarea class="msg">Bonjour Loris, sur ton profil Codeur tu te présentes comme monteur YouTube/Shorts : montage rythmé, storytelling, sous-titres, visuels et habillages, à 25 €/h.
+À ce taux horaire, chaque heure passée sur du sous-titrage ou de l'habillage est une heure sous-payée par rapport à ta valeur réelle.
+ShortForge fait la vidéo verticale entière à partir d'un script écrit — voix clonée, avatar, sous-titres — en 25 à 35 secondes de rendu.
+Il ne monte pas les rushes d'un client, donc ce n'est pas ton service actuel.
+67 €, paiement unique.
+Tu factures à l'heure, ou au forfait par vidéo ?</textarea></details>
+          <div class="btns"><button class="cp">Copier</button><a class="go" href="https://www.codeur.com/-lorisardire" target="_blank" rel="noopener">Ouvrir le profil</a></div>
+        </div></li><li data-id="p14">
+        <button class="case" aria-label="Marquer envoyé"><b></b></button>
+        <div class="c"><div class="tt">Julien Currat</div><div class="ss">Codeur.com · 50 €/h, 14 projets. « EXPERT Motion Designer \</div>
+          <details><summary>Voir le message</summary><textarea class="msg">Bonjour Julien, ton profil Codeur annonce « EXPERT Motion Designer | Monteur vidéo | Graphiste | Formateur Premiere Pro / After Effects / Capcut », à 50 €/h.
+Je t'écris surtout pour la casquette formateur : tes élèves apprennent l'outil, mais le mur qu'ils rencontrent ensuite c'est le temps de production, pas la technique.
+ShortForge génère une vidéo verticale complète à partir d'un script écrit en 25 à 35 secondes de rendu, voix clonée et sous-titres compris, pour 67 € une fois.
+Ce n'est pas un remplaçant d'After Effects et ça ne fait pas de motion design sur mesure — c'est un outil de volume.
+Est-ce que tes formations abordent la production en volume ?</textarea></details>
+          <div class="btns"><button class="cp">Copier</button><a class="go" href="https://www.codeur.com/-montagemaker" target="_blank" rel="noopener">Ouvrir le profil</a></div>
+        </div></li><li data-id="p15">
+        <button class="case" aria-label="Marquer envoyé"><b></b></button>
+        <div class="c"><div class="tt">Sébastien Lamour</div><div class="ss">Codeur.com · 30 €/h. Tag « Vidéo IA » déjà affiché sur le profil — sujet IA déjà tranché</div>
+          <details><summary>Voir le message</summary><textarea class="msg">Bonjour Sébastien, j'ai vu votre profil Codeur — fondateur de Vox Production, agence audiovisuelle à Paris, avec « Vidéo IA » parmi vos spécialités affichées.
+Vous avez donc déjà tranché la question de l'IA dans la production, ce qui rend l'échange plus direct.
+ShortForge est l'outil que j'ai construit pour mon propre usage : un script écrit en entrée, une vidéo verticale finie (voix clonée, avatar, sous-titres) en 25 à 35 secondes de rendu.
+Il ne remplace pas une production sur mesure — il sert quand il faut du volume.
+67 €, paiement unique.
+Vous utilisez quoi aujourd'hui côté vidéo IA ?</textarea></details>
+          <div class="btns"><button class="cp">Copier</button><a class="go" href="https://www.codeur.com/-sebastienlamour" target="_blank" rel="noopener">Ouvrir le profil</a></div>
+        </div></li><li data-id="p16">
+        <button class="case" aria-label="Marquer envoyé"><b></b></button>
+        <div class="c"><div class="tt">Hantz Marcel</div><div class="ss">Codeur.com · 167 €/h. « Monteur vidéo - Community Manager et Social Media Manager - Motion Designer », tag « Vidéo IA »</div>
+          <details><summary>Voir le message</summary><textarea class="msg">Bonjour Hantz, votre profil Codeur cumule monteur vidéo, community manager et social media manager, à 167 €/h.
+Ce cumul est parlant : quand vous gérez les réseaux d'un client, la production vidéo devient un coût récurrent que le forfait absorbe rarement bien.
+ShortForge produit une vidéo verticale complète depuis un script écrit — voix clonée, avatar, sous-titres — en 25 à 35 secondes de rendu, pour 67 € une fois.
+Il ne monte pas de rushes, il fabrique la vidéo : ça ne couvre donc pas toute votre prestation.
+Sur vos contrats de community management, la vidéo est incluse ou facturée à part ?</textarea></details>
+          <div class="btns"><button class="cp">Copier</button><a class="go" href="https://www.codeur.com/-acreativ" target="_blank" rel="noopener">Ouvrir le profil</a></div>
+        </div></li><li data-id="p17">
+        <button class="case" aria-label="Marquer envoyé"><b></b></button>
+        <div class="c"><div class="tt">Pull Up Événements</div><div class="ss">Le Tampon (974) · Annonce « 48 h pour recevoir vos rushes » et « 7-15 j pour la vidéo montée ». Fait des « formats courts et verticaux pensés pour Instagram, TikTok et Snapchat »</div>
+          <details><summary>Voir le message</summary><textarea class="msg">Bonjour, je suis Tony, basé à La Réunion également.
+Sur productionvideo974.re vous annoncez 48 h pour les rushes et 7 à 15 jours pour la vidéo montée, avec des formats courts et verticaux pensés pour Instagram, TikTok et Snapchat.
+C'est le montage final qui tient le délai, pas la captation.
+J'ai construit ShortForge : un script écrit en entrée, une vidéo verticale complète (voix clonée, avatar, sous-titres) en 25 à 35 secondes de rendu, 67 € en paiement unique.
+Ça ne monte pas vos rushes d'aftermovie — c'est pour les formats courts fabriqués sans tournage, entre deux événements.
+Ces formats courts, vous les tournez ou vous les créez ?</textarea></details>
+          <div class="btns"><button class="cp">Copier</button><a class="go" href="https://productionvideo974.re/" target="_blank" rel="noopener">Ouvrir le profil</a></div>
+        </div></li><li data-id="p18">
+        <button class="case" aria-label="Marquer envoyé"><b></b></button>
+        <div class="c"><div class="tt">ALJOME PROD</div><div class="ss">La Réunion (974) · Revendique 1 275+ vidéos produites, 55 M+ de vues. Catalogue : « Reels, TikTok, Shorts, stories, mini-séries »</div>
+          <details><summary>Voir le message</summary><textarea class="msg">Bonjour, Tony, de La Réunion également.
+Votre site annonce plus de 1 275 vidéos produites et 55 millions de vues, avec des Reels, TikTok et Shorts au catalogue.
+À ce volume-là, le coût de production par vidéo pèse beaucoup plus que sur une campagne isolée.
+ShortForge génère une vidéo verticale complète à partir d'un script écrit — voix clonée, avatar, sous-titres — en 25 à 35 secondes de rendu, pour 67 € en paiement unique.
+Il ne remplace ni vos tournages ni vos talents : il couvre les vidéos qui n'ont pas besoin de captation.
+Sur vos 1 275 vidéos, quelle part se passe de tournage ?</textarea></details>
+          <div class="btns"><button class="cp">Copier</button><a class="go" href="https://www.aljomeprod.com/" target="_blank" rel="noopener">Ouvrir le profil</a></div>
+        </div></li><li data-id="p19">
+        <button class="case" aria-label="Marquer envoyé"><b></b></button>
+        <div class="c"><div class="tt">Rush Production</div><div class="ss">Valence · Pack Signature = 24 vidéos/mois pour 950 € HT (~40 €/vidéo), engagement mensuel récurrent</div>
+          <details><summary>Voir le message</summary><textarea class="msg">Bonjour, sur rushproduction.fr votre Pack Signature annonce 24 vidéos par mois pour 950 € HT.
+Ça fait environ 40 € par vidéo livrée, avec un engagement à tenir tous les mois — c'est une charge de production qui ne redescend jamais.
+ShortForge part d'un script écrit et sort une vidéo verticale finie (voix clonée, avatar, sous-titres) en 25 à 35 secondes de rendu, pour 67 € une fois.
+Il ne fait ni vos captations ni vos films de marque : il sert quand une vidéo doit exister sans tournage.
+Sur vos packs mensuels, les 24 vidéos sortent toutes d'un tournage ?</textarea></details>
+          <div class="btns"><button class="cp">Copier</button><a class="go" href="https://rushproduction.fr/" target="_blank" rel="noopener">Ouvrir le profil</a></div>
+        </div></li></ul></section><section class="lot" id="lot-hebergeurs">
+      <div class="tete"><h2>50 hébergeurs de La Réunion, par email</h2><span class="cpt" id="cpt-hebergeurs"></span></div>
+      <p class="but">Une vidéo de 10 s offerte, faite avec leurs photos.</p><p class="com">Adresses tirées de l'annuaire ouvert OpenStreetMap. Un coup d'œil au site avant d'envoyer, puis le bouton ouvre ton client mail avec tout prérempli.</p>
+      <ul><li data-id="h1140765098">
+        <button class="case" aria-label="Marquer envoyé"><b></b></button>
+        <div class="c"><div class="tt">Gites Ango</div><div class="ss">chalet · Sainte-Suzanne · gitesango@gmail.com</div>
+          <details><summary>Voir le message</summary><textarea class="msg">Bonjour,
+
+Je suis Tony Payet, je suis basé à La Réunion et je fabrique des vidéos verticales pour les hébergeurs d'ici, à partir de leurs propres photos. Pas de tournage, pas de déplacement.
+
+J'ai regardé votre site avant d'écrire. Je vous propose une vidéo de dix secondes sur Gites Ango à Sainte-Suzanne, faite avec vos photos, gratuite et sans engagement. Si elle vous plaît, on parle de la suite ; sinon vous la gardez.
+
+Répondez-moi simplement avec deux ou trois photos et je vous l'envoie sous 48 heures.
+
+Tony Payet — AutomatisationBoost
+automatisationboost.com</textarea></details>
+          <div class="btns"><button class="cp">Copier</button><a class="go" href="mailto:gitesango@gmail.com?subject=Une%20vid%C3%A9o%20de%2010%20secondes%20pour%20Gites%20Ango" target="_blank" rel="noopener">Écrire</a><a class="lien" href="http://www.gites-ango.fr" target="_blank" rel="noopener">voir son site</a></div>
+        </div></li><li data-id="h1481223500">
+        <button class="case" aria-label="Marquer envoyé"><b></b></button>
+        <div class="c"><div class="tt">Hôtel Juliette Dodu</div><div class="ss">hotel · Saint-Denis · juliettedodu@orange.fr</div>
+          <details><summary>Voir le message</summary><textarea class="msg">Bonjour,
+
+Je suis Tony Payet, je suis basé à La Réunion et je fabrique des vidéos verticales pour les hébergeurs d'ici, à partir de leurs propres photos. Pas de tournage, pas de déplacement.
+
+J'ai regardé votre site avant d'écrire. Je vous propose une vidéo de dix secondes sur Hôtel Juliette Dodu à Saint-Denis, faite avec vos photos, gratuite et sans engagement. Si elle vous plaît, on parle de la suite ; sinon vous la gardez.
+
+Répondez-moi simplement avec deux ou trois photos et je vous l'envoie sous 48 heures.
+
+Tony Payet — AutomatisationBoost
+automatisationboost.com</textarea></details>
+          <div class="btns"><button class="cp">Copier</button><a class="go" href="mailto:juliettedodu@orange.fr?subject=Une%20vid%C3%A9o%20de%2010%20secondes%20pour%20Hôtel%20Juliette%20Dodu" target="_blank" rel="noopener">Écrire</a><a class="lien" href="https://hotel-juliette-dodu.com/" target="_blank" rel="noopener">voir son site</a></div>
+        </div></li><li data-id="h1944379335">
+        <button class="case" aria-label="Marquer envoyé"><b></b></button>
+        <div class="c"><div class="tt">Diana Dea Lodge</div><div class="ss">hotel · resa@diana-dea-lodge.re</div>
+          <details><summary>Voir le message</summary><textarea class="msg">Bonjour,
+
+Je suis Tony Payet, je suis basé à La Réunion et je fabrique des vidéos verticales pour les hébergeurs d'ici, à partir de leurs propres photos. Pas de tournage, pas de déplacement.
+
+J'ai regardé votre site avant d'écrire. Je vous propose une vidéo de dix secondes sur Diana Dea Lodge, faite avec vos photos, gratuite et sans engagement. Si elle vous plaît, on parle de la suite ; sinon vous la gardez.
+
+Répondez-moi simplement avec deux ou trois photos et je vous l'envoie sous 48 heures.
+
+Tony Payet — AutomatisationBoost
+automatisationboost.com</textarea></details>
+          <div class="btns"><button class="cp">Copier</button><a class="go" href="mailto:resa@diana-dea-lodge.re?subject=Une%20vid%C3%A9o%20de%2010%20secondes%20pour%20Diana%20Dea%20Lodge" target="_blank" rel="noopener">Écrire</a><a class="lien" href="https://www.diana-dea-lodge.re" target="_blank" rel="noopener">voir son site</a></div>
+        </div></li><li data-id="h2337890354">
+        <button class="case" aria-label="Marquer envoyé"><b></b></button>
+        <div class="c"><div class="tt">Capucine les Hauts</div><div class="ss">guest_house · La Rivière Saint-Louis · contact@capucines.net</div>
+          <details><summary>Voir le message</summary><textarea class="msg">Bonjour,
+
+Je suis Tony Payet, je suis basé à La Réunion et je fabrique des vidéos verticales pour les hébergeurs d'ici, à partir de leurs propres photos. Pas de tournage, pas de déplacement.
+
+Je n'ai pas trouvé de site à votre nom, dites-moi si je me trompe. Je vous propose une vidéo de dix secondes sur Capucine les Hauts à La Rivière Saint-Louis, faite avec vos photos, gratuite et sans engagement. Si elle vous plaît, on parle de la suite ; sinon vous la gardez.
+
+Répondez-moi simplement avec deux ou trois photos et je vous l'envoie sous 48 heures.
+
+Tony Payet — AutomatisationBoost
+automatisationboost.com</textarea></details>
+          <div class="btns"><button class="cp">Copier</button><a class="go" href="mailto:contact@capucines.net?subject=Une%20vid%C3%A9o%20de%2010%20secondes%20pour%20Capucine%20les%20Hauts" target="_blank" rel="noopener">Écrire</a></div>
+        </div></li><li data-id="h3034224757">
+        <button class="case" aria-label="Marquer envoyé"><b></b></button>
+        <div class="c"><div class="tt">Hôtel les Géraniums</div><div class="ss">hotel · La Plaine des Cafres · Contact@lesgeraniums.re</div>
+          <details><summary>Voir le message</summary><textarea class="msg">Bonjour,
+
+Je suis Tony Payet, je suis basé à La Réunion et je fabrique des vidéos verticales pour les hébergeurs d'ici, à partir de leurs propres photos. Pas de tournage, pas de déplacement.
+
+J'ai regardé votre site avant d'écrire. Je vous propose une vidéo de dix secondes sur Hôtel les Géraniums à La Plaine des Cafres, faite avec vos photos, gratuite et sans engagement. Si elle vous plaît, on parle de la suite ; sinon vous la gardez.
+
+Répondez-moi simplement avec deux ou trois photos et je vous l'envoie sous 48 heures.
+
+Tony Payet — AutomatisationBoost
+automatisationboost.com</textarea></details>
+          <div class="btns"><button class="cp">Copier</button><a class="go" href="mailto:Contact@lesgeraniums.re?subject=Une%20vid%C3%A9o%20de%2010%20secondes%20pour%20Hôtel%20les%20Géraniums" target="_blank" rel="noopener">Écrire</a><a class="lien" href="https://lesgeraniums.re/" target="_blank" rel="noopener">voir son site</a></div>
+        </div></li><li data-id="h3034260601">
+        <button class="case" aria-label="Marquer envoyé"><b></b></button>
+        <div class="c"><div class="tt">Les Coeurs d'Amants</div><div class="ss">guest_house · lescoeursdamants@gmail.com</div>
+          <details><summary>Voir le message</summary><textarea class="msg">Bonjour,
+
+Je suis Tony Payet, je suis basé à La Réunion et je fabrique des vidéos verticales pour les hébergeurs d'ici, à partir de leurs propres photos. Pas de tournage, pas de déplacement.
+
+J'ai regardé votre site avant d'écrire. Je vous propose une vidéo de dix secondes sur Les Coeurs d'Amants, faite avec vos photos, gratuite et sans engagement. Si elle vous plaît, on parle de la suite ; sinon vous la gardez.
+
+Répondez-moi simplement avec deux ou trois photos et je vous l'envoie sous 48 heures.
+
+Tony Payet — AutomatisationBoost
+automatisationboost.com</textarea></details>
+          <div class="btns"><button class="cp">Copier</button><a class="go" href="mailto:lescoeursdamants@gmail.com?subject=Une%20vid%C3%A9o%20de%2010%20secondes%20pour%20Les%20Coeurs%20d'Amants" target="_blank" rel="noopener">Écrire</a><a class="lien" href="https://www.lescoeursdamants.re/" target="_blank" rel="noopener">voir son site</a></div>
+        </div></li><li data-id="h3153700361">
+        <button class="case" aria-label="Marquer envoyé"><b></b></button>
+        <div class="c"><div class="tt">Le Village Sauvage</div><div class="ss">chalet · levillagesauvage@orange.fr</div>
+          <details><summary>Voir le message</summary><textarea class="msg">Bonjour,
+
+Je suis Tony Payet, je suis basé à La Réunion et je fabrique des vidéos verticales pour les hébergeurs d'ici, à partir de leurs propres photos. Pas de tournage, pas de déplacement.
+
+J'ai regardé votre site avant d'écrire. Je vous propose une vidéo de dix secondes sur Le Village Sauvage, faite avec vos photos, gratuite et sans engagement. Si elle vous plaît, on parle de la suite ; sinon vous la gardez.
+
+Répondez-moi simplement avec deux ou trois photos et je vous l'envoie sous 48 heures.
+
+Tony Payet — AutomatisationBoost
+automatisationboost.com</textarea></details>
+          <div class="btns"><button class="cp">Copier</button><a class="go" href="mailto:levillagesauvage@orange.fr?subject=Une%20vid%C3%A9o%20de%2010%20secondes%20pour%20Le%20Village%20Sauvage" target="_blank" rel="noopener">Écrire</a><a class="lien" href="http://www.villagesauvage.sitew.fr/" target="_blank" rel="noopener">voir son site</a></div>
+        </div></li><li data-id="h3668877642">
+        <button class="case" aria-label="Marquer envoyé"><b></b></button>
+        <div class="c"><div class="tt">La Caz' Océane</div><div class="ss">guest_house · lacazoceane@gmail.com</div>
+          <details><summary>Voir le message</summary><textarea class="msg">Bonjour,
+
+Je suis Tony Payet, je suis basé à La Réunion et je fabrique des vidéos verticales pour les hébergeurs d'ici, à partir de leurs propres photos. Pas de tournage, pas de déplacement.
+
+J'ai regardé votre site avant d'écrire. Je vous propose une vidéo de dix secondes sur La Caz' Océane, faite avec vos photos, gratuite et sans engagement. Si elle vous plaît, on parle de la suite ; sinon vous la gardez.
+
+Répondez-moi simplement avec deux ou trois photos et je vous l'envoie sous 48 heures.
+
+Tony Payet — AutomatisationBoost
+automatisationboost.com</textarea></details>
+          <div class="btns"><button class="cp">Copier</button><a class="go" href="mailto:lacazoceane@gmail.com?subject=Une%20vid%C3%A9o%20de%2010%20secondes%20pour%20La%20Caz'%20Océane" target="_blank" rel="noopener">Écrire</a><a class="lien" href="http://www.chambredhoteslareunioncazoceane.com/" target="_blank" rel="noopener">voir son site</a></div>
+        </div></li><li data-id="h3668938966">
+        <button class="case" aria-label="Marquer envoyé"><b></b></button>
+        <div class="c"><div class="tt">La PaVière</div><div class="ss">guest_house · lapaviere974@orange.fr</div>
+          <details><summary>Voir le message</summary><textarea class="msg">Bonjour,
+
+Je suis Tony Payet, je suis basé à La Réunion et je fabrique des vidéos verticales pour les hébergeurs d'ici, à partir de leurs propres photos. Pas de tournage, pas de déplacement.
+
+J'ai regardé votre site avant d'écrire. Je vous propose une vidéo de dix secondes sur La PaVière, faite avec vos photos, gratuite et sans engagement. Si elle vous plaît, on parle de la suite ; sinon vous la gardez.
+
+Répondez-moi simplement avec deux ou trois photos et je vous l'envoie sous 48 heures.
+
+Tony Payet — AutomatisationBoost
+automatisationboost.com</textarea></details>
+          <div class="btns"><button class="cp">Copier</button><a class="go" href="mailto:lapaviere974@orange.fr?subject=Une%20vid%C3%A9o%20de%2010%20secondes%20pour%20La%20PaVière" target="_blank" rel="noopener">Écrire</a><a class="lien" href="http://www.lapaviere.fr/" target="_blank" rel="noopener">voir son site</a></div>
+        </div></li><li data-id="h3670277864">
+        <button class="case" aria-label="Marquer envoyé"><b></b></button>
+        <div class="c"><div class="tt">Villa Hélèna</div><div class="ss">guest_house · delacroix.helena@orange.fr</div>
+          <details><summary>Voir le message</summary><textarea class="msg">Bonjour,
+
+Je suis Tony Payet, je suis basé à La Réunion et je fabrique des vidéos verticales pour les hébergeurs d'ici, à partir de leurs propres photos. Pas de tournage, pas de déplacement.
+
+Je n'ai pas trouvé de site à votre nom, dites-moi si je me trompe. Je vous propose une vidéo de dix secondes sur Villa Hélèna, faite avec vos photos, gratuite et sans engagement. Si elle vous plaît, on parle de la suite ; sinon vous la gardez.
+
+Répondez-moi simplement avec deux ou trois photos et je vous l'envoie sous 48 heures.
+
+Tony Payet — AutomatisationBoost
+automatisationboost.com</textarea></details>
+          <div class="btns"><button class="cp">Copier</button><a class="go" href="mailto:delacroix.helena@orange.fr?subject=Une%20vid%C3%A9o%20de%2010%20secondes%20pour%20Villa%20Hélèna" target="_blank" rel="noopener">Écrire</a></div>
+        </div></li><li data-id="h3801995252">
+        <button class="case" aria-label="Marquer envoyé"><b></b></button>
+        <div class="c"><div class="tt">La Villa du Soleil</div><div class="ss">hotel · Saint Gilles les Bains · lavilladusoleil@wanadoo.fr</div>
+          <details><summary>Voir le message</summary><textarea class="msg">Bonjour,
+
+Je suis Tony Payet, je suis basé à La Réunion et je fabrique des vidéos verticales pour les hébergeurs d'ici, à partir de leurs propres photos. Pas de tournage, pas de déplacement.
+
+J'ai regardé votre site avant d'écrire. Je vous propose une vidéo de dix secondes sur La Villa du Soleil à Saint Gilles les Bains, faite avec vos photos, gratuite et sans engagement. Si elle vous plaît, on parle de la suite ; sinon vous la gardez.
+
+Répondez-moi simplement avec deux ou trois photos et je vous l'envoie sous 48 heures.
+
+Tony Payet — AutomatisationBoost
+automatisationboost.com</textarea></details>
+          <div class="btns"><button class="cp">Copier</button><a class="go" href="mailto:lavilladusoleil@wanadoo.fr?subject=Une%20vid%C3%A9o%20de%2010%20secondes%20pour%20La%20Villa%20du%20Soleil" target="_blank" rel="noopener">Écrire</a><a class="lien" href="https://lavilladusoleil.com/" target="_blank" rel="noopener">voir son site</a></div>
+        </div></li><li data-id="h4050474292">
+        <button class="case" aria-label="Marquer envoyé"><b></b></button>
+        <div class="c"><div class="tt">Le Battant des Lames</div><div class="ss">hotel · Saint-Pierre · reservation@lebattantdeslames.com</div>
+          <details><summary>Voir le message</summary><textarea class="msg">Bonjour,
+
+Je suis Tony Payet, je suis basé à La Réunion et je fabrique des vidéos verticales pour les hébergeurs d'ici, à partir de leurs propres photos. Pas de tournage, pas de déplacement.
+
+J'ai regardé votre site avant d'écrire. Je vous propose une vidéo de dix secondes sur Le Battant des Lames à Saint-Pierre, faite avec vos photos, gratuite et sans engagement. Si elle vous plaît, on parle de la suite ; sinon vous la gardez.
+
+Répondez-moi simplement avec deux ou trois photos et je vous l'envoie sous 48 heures.
+
+Tony Payet — AutomatisationBoost
+automatisationboost.com</textarea></details>
+          <div class="btns"><button class="cp">Copier</button><a class="go" href="mailto:reservation@lebattantdeslames.com?subject=Une%20vid%C3%A9o%20de%2010%20secondes%20pour%20Le%20Battant%20des%20Lames" target="_blank" rel="noopener">Écrire</a><a class="lien" href="https://www.lebattantdeslames.com/lhotel/" target="_blank" rel="noopener">voir son site</a></div>
+        </div></li><li data-id="h4066792654">
+        <button class="case" aria-label="Marquer envoyé"><b></b></button>
+        <div class="c"><div class="tt">Dodo Spot</div><div class="ss">guest_house · dodospot@wanadoo.fr</div>
+          <details><summary>Voir le message</summary><textarea class="msg">Bonjour,
+
+Je suis Tony Payet, je suis basé à La Réunion et je fabrique des vidéos verticales pour les hébergeurs d'ici, à partir de leurs propres photos. Pas de tournage, pas de déplacement.
+
+J'ai regardé votre site avant d'écrire. Je vous propose une vidéo de dix secondes sur Dodo Spot, faite avec vos photos, gratuite et sans engagement. Si elle vous plaît, on parle de la suite ; sinon vous la gardez.
+
+Répondez-moi simplement avec deux ou trois photos et je vous l'envoie sous 48 heures.
+
+Tony Payet — AutomatisationBoost
+automatisationboost.com</textarea></details>
+          <div class="btns"><button class="cp">Copier</button><a class="go" href="mailto:dodospot@wanadoo.fr?subject=Une%20vid%C3%A9o%20de%2010%20secondes%20pour%20Dodo%20Spot" target="_blank" rel="noopener">Écrire</a><a class="lien" href="https://www.dodospot.com" target="_blank" rel="noopener">voir son site</a></div>
+        </div></li><li data-id="h4076694114">
+        <button class="case" aria-label="Marquer envoyé"><b></b></button>
+        <div class="c"><div class="tt">Magdeleine Dominique</div><div class="ss">guest_house · dominique.magdeleine@only.fr</div>
+          <details><summary>Voir le message</summary><textarea class="msg">Bonjour,
+
+Je suis Tony Payet, je suis basé à La Réunion et je fabrique des vidéos verticales pour les hébergeurs d'ici, à partir de leurs propres photos. Pas de tournage, pas de déplacement.
+
+Je n'ai pas trouvé de site à votre nom, dites-moi si je me trompe. Je vous propose une vidéo de dix secondes sur Magdeleine Dominique, faite avec vos photos, gratuite et sans engagement. Si elle vous plaît, on parle de la suite ; sinon vous la gardez.
+
+Répondez-moi simplement avec deux ou trois photos et je vous l'envoie sous 48 heures.
+
+Tony Payet — AutomatisationBoost
+automatisationboost.com</textarea></details>
+          <div class="btns"><button class="cp">Copier</button><a class="go" href="mailto:dominique.magdeleine@only.fr?subject=Une%20vid%C3%A9o%20de%2010%20secondes%20pour%20Magdeleine%20Dominique" target="_blank" rel="noopener">Écrire</a></div>
+        </div></li><li data-id="h4456433933">
+        <button class="case" aria-label="Marquer envoyé"><b></b></button>
+        <div class="c"><div class="tt">Bungalows du Mont-Auban</div><div class="ss">chalet · loc.974@wanadoo.fr</div>
+          <details><summary>Voir le message</summary><textarea class="msg">Bonjour,
+
+Je suis Tony Payet, je suis basé à La Réunion et je fabrique des vidéos verticales pour les hébergeurs d'ici, à partir de leurs propres photos. Pas de tournage, pas de déplacement.
+
+J'ai regardé votre site avant d'écrire. Je vous propose une vidéo de dix secondes sur Bungalows du Mont-Auban, faite avec vos photos, gratuite et sans engagement. Si elle vous plaît, on parle de la suite ; sinon vous la gardez.
+
+Répondez-moi simplement avec deux ou trois photos et je vous l'envoie sous 48 heures.
+
+Tony Payet — AutomatisationBoost
+automatisationboost.com</textarea></details>
+          <div class="btns"><button class="cp">Copier</button><a class="go" href="mailto:loc.974@wanadoo.fr?subject=Une%20vid%C3%A9o%20de%2010%20secondes%20pour%20Bungalows%20du%20Mont-Auban" target="_blank" rel="noopener">Écrire</a><a class="lien" href="https://www.bungalowsdumontauban.com/" target="_blank" rel="noopener">voir son site</a></div>
+        </div></li><li data-id="h4634408039">
+        <button class="case" aria-label="Marquer envoyé"><b></b></button>
+        <div class="c"><div class="tt">Le Relais des Gouverneurs</div><div class="ss">hotel · Hell-Bourg · contact@relaisdesgouverneurs.fr</div>
+          <details><summary>Voir le message</summary><textarea class="msg">Bonjour,
+
+Je suis Tony Payet, je suis basé à La Réunion et je fabrique des vidéos verticales pour les hébergeurs d'ici, à partir de leurs propres photos. Pas de tournage, pas de déplacement.
+
+J'ai regardé votre site avant d'écrire. Je vous propose une vidéo de dix secondes sur Le Relais des Gouverneurs à Hell-Bourg, faite avec vos photos, gratuite et sans engagement. Si elle vous plaît, on parle de la suite ; sinon vous la gardez.
+
+Répondez-moi simplement avec deux ou trois photos et je vous l'envoie sous 48 heures.
+
+Tony Payet — AutomatisationBoost
+automatisationboost.com</textarea></details>
+          <div class="btns"><button class="cp">Copier</button><a class="go" href="mailto:contact@relaisdesgouverneurs.fr?subject=Une%20vid%C3%A9o%20de%2010%20secondes%20pour%20Le%20Relais%20des%20Gouverneurs" target="_blank" rel="noopener">Écrire</a><a class="lien" href="https://www.relaisdesgouverneurs.fr/" target="_blank" rel="noopener">voir son site</a></div>
+        </div></li><li data-id="h4991210480">
+        <button class="case" aria-label="Marquer envoyé"><b></b></button>
+        <div class="c"><div class="tt">Jardin du Lagon</div><div class="ss">apartment · L’Ermitage les Bains · lejardindulagon@orange.fr</div>
+          <details><summary>Voir le message</summary><textarea class="msg">Bonjour,
+
+Je suis Tony Payet, je suis basé à La Réunion et je fabrique des vidéos verticales pour les hébergeurs d'ici, à partir de leurs propres photos. Pas de tournage, pas de déplacement.
+
+Je n'ai pas trouvé de site à votre nom, dites-moi si je me trompe. Je vous propose une vidéo de dix secondes sur Jardin du Lagon à L’Ermitage les Bains, faite avec vos photos, gratuite et sans engagement. Si elle vous plaît, on parle de la suite ; sinon vous la gardez.
+
+Répondez-moi simplement avec deux ou trois photos et je vous l'envoie sous 48 heures.
+
+Tony Payet — AutomatisationBoost
+automatisationboost.com</textarea></details>
+          <div class="btns"><button class="cp">Copier</button><a class="go" href="mailto:lejardindulagon@orange.fr?subject=Une%20vid%C3%A9o%20de%2010%20secondes%20pour%20Jardin%20du%20Lagon" target="_blank" rel="noopener">Écrire</a></div>
+        </div></li><li data-id="h5004568521">
+        <button class="case" aria-label="Marquer envoyé"><b></b></button>
+        <div class="c"><div class="tt">Coco vanille</div><div class="ss">hotel · contact.cocovanille.974@gmail.com</div>
+          <details><summary>Voir le message</summary><textarea class="msg">Bonjour,
+
+Je suis Tony Payet, je suis basé à La Réunion et je fabrique des vidéos verticales pour les hébergeurs d'ici, à partir de leurs propres photos. Pas de tournage, pas de déplacement.
+
+J'ai regardé votre site avant d'écrire. Je vous propose une vidéo de dix secondes sur Coco vanille, faite avec vos photos, gratuite et sans engagement. Si elle vous plaît, on parle de la suite ; sinon vous la gardez.
+
+Répondez-moi simplement avec deux ou trois photos et je vous l'envoie sous 48 heures.
+
+Tony Payet — AutomatisationBoost
+automatisationboost.com</textarea></details>
+          <div class="btns"><button class="cp">Copier</button><a class="go" href="mailto:contact.cocovanille.974@gmail.com?subject=Une%20vid%C3%A9o%20de%2010%20secondes%20pour%20Coco%20vanille" target="_blank" rel="noopener">Écrire</a><a class="lien" href="https://www.coco-vanille.com/" target="_blank" rel="noopener">voir son site</a></div>
+        </div></li><li data-id="h5064657622">
+        <button class="case" aria-label="Marquer envoyé"><b></b></button>
+        <div class="c"><div class="tt">Villa Prana</div><div class="ss">guest_house · villapranarun@gmail.com</div>
+          <details><summary>Voir le message</summary><textarea class="msg">Bonjour,
+
+Je suis Tony Payet, je suis basé à La Réunion et je fabrique des vidéos verticales pour les hébergeurs d'ici, à partir de leurs propres photos. Pas de tournage, pas de déplacement.
+
+J'ai regardé votre site avant d'écrire. Je vous propose une vidéo de dix secondes sur Villa Prana, faite avec vos photos, gratuite et sans engagement. Si elle vous plaît, on parle de la suite ; sinon vous la gardez.
+
+Répondez-moi simplement avec deux ou trois photos et je vous l'envoie sous 48 heures.
+
+Tony Payet — AutomatisationBoost
+automatisationboost.com</textarea></details>
+          <div class="btns"><button class="cp">Copier</button><a class="go" href="mailto:villapranarun@gmail.com?subject=Une%20vid%C3%A9o%20de%2010%20secondes%20pour%20Villa%20Prana" target="_blank" rel="noopener">Écrire</a><a class="lien" href="https://www.villapranareunion.com" target="_blank" rel="noopener">voir son site</a></div>
+        </div></li><li data-id="h5129848121">
+        <button class="case" aria-label="Marquer envoyé"><b></b></button>
+        <div class="c"><div class="tt">Matilona</div><div class="ss">hotel · Matilona@laposte.net</div>
+          <details><summary>Voir le message</summary><textarea class="msg">Bonjour,
+
+Je suis Tony Payet, je suis basé à La Réunion et je fabrique des vidéos verticales pour les hébergeurs d'ici, à partir de leurs propres photos. Pas de tournage, pas de déplacement.
+
+Je n'ai pas trouvé de site à votre nom, dites-moi si je me trompe. Je vous propose une vidéo de dix secondes sur Matilona, faite avec vos photos, gratuite et sans engagement. Si elle vous plaît, on parle de la suite ; sinon vous la gardez.
+
+Répondez-moi simplement avec deux ou trois photos et je vous l'envoie sous 48 heures.
+
+Tony Payet — AutomatisationBoost
+automatisationboost.com</textarea></details>
+          <div class="btns"><button class="cp">Copier</button><a class="go" href="mailto:Matilona@laposte.net?subject=Une%20vid%C3%A9o%20de%2010%20secondes%20pour%20Matilona" target="_blank" rel="noopener">Écrire</a></div>
+        </div></li><li data-id="h5159083823">
+        <button class="case" aria-label="Marquer envoyé"><b></b></button>
+        <div class="c"><div class="tt">Bienvenue dans les Hauts</div><div class="ss">guest_house · bienvenuedansleshauts@gmail.com</div>
+          <details><summary>Voir le message</summary><textarea class="msg">Bonjour,
+
+Je suis Tony Payet, je suis basé à La Réunion et je fabrique des vidéos verticales pour les hébergeurs d'ici, à partir de leurs propres photos. Pas de tournage, pas de déplacement.
+
+Je n'ai pas trouvé de site à votre nom, dites-moi si je me trompe. Je vous propose une vidéo de dix secondes sur Bienvenue dans les Hauts, faite avec vos photos, gratuite et sans engagement. Si elle vous plaît, on parle de la suite ; sinon vous la gardez.
+
+Répondez-moi simplement avec deux ou trois photos et je vous l'envoie sous 48 heures.
+
+Tony Payet — AutomatisationBoost
+automatisationboost.com</textarea></details>
+          <div class="btns"><button class="cp">Copier</button><a class="go" href="mailto:bienvenuedansleshauts@gmail.com?subject=Une%20vid%C3%A9o%20de%2010%20secondes%20pour%20Bienvenue%20dans%20les%20Hauts" target="_blank" rel="noopener">Écrire</a></div>
+        </div></li><li data-id="h5249241523">
+        <button class="case" aria-label="Marquer envoyé"><b></b></button>
+        <div class="c"><div class="tt">Villa Cœur de corail</div><div class="ss">guest_house · info@villacoeurdecorail.com</div>
+          <details><summary>Voir le message</summary><textarea class="msg">Bonjour,
+
+Je suis Tony Payet, je suis basé à La Réunion et je fabrique des vidéos verticales pour les hébergeurs d'ici, à partir de leurs propres photos. Pas de tournage, pas de déplacement.
+
+J'ai regardé votre site avant d'écrire. Je vous propose une vidéo de dix secondes sur Villa Cœur de corail, faite avec vos photos, gratuite et sans engagement. Si elle vous plaît, on parle de la suite ; sinon vous la gardez.
+
+Répondez-moi simplement avec deux ou trois photos et je vous l'envoie sous 48 heures.
+
+Tony Payet — AutomatisationBoost
+automatisationboost.com</textarea></details>
+          <div class="btns"><button class="cp">Copier</button><a class="go" href="mailto:info@villacoeurdecorail.com?subject=Une%20vid%C3%A9o%20de%2010%20secondes%20pour%20Villa%20Cœur%20de%20corail" target="_blank" rel="noopener">Écrire</a><a class="lien" href="https://www.villacoeurdecorail.com/" target="_blank" rel="noopener">voir son site</a></div>
+        </div></li><li data-id="h5283528209">
+        <button class="case" aria-label="Marquer envoyé"><b></b></button>
+        <div class="c"><div class="tt">Dina Morgabine Saint-Gilles</div><div class="ss">hotel · La Saline les Bains · reservation@dinamorgabine.com</div>
+          <details><summary>Voir le message</summary><textarea class="msg">Bonjour,
+
+Je suis Tony Payet, je suis basé à La Réunion et je fabrique des vidéos verticales pour les hébergeurs d'ici, à partir de leurs propres photos. Pas de tournage, pas de déplacement.
+
+J'ai regardé votre site avant d'écrire. Je vous propose une vidéo de dix secondes sur Dina Morgabine Saint-Gilles à La Saline les Bains, faite avec vos photos, gratuite et sans engagement. Si elle vous plaît, on parle de la suite ; sinon vous la gardez.
+
+Répondez-moi simplement avec deux ou trois photos et je vous l'envoie sous 48 heures.
+
+Tony Payet — AutomatisationBoost
+automatisationboost.com</textarea></details>
+          <div class="btns"><button class="cp">Copier</button><a class="go" href="mailto:reservation@dinamorgabine.com?subject=Une%20vid%C3%A9o%20de%2010%20secondes%20pour%20Dina%20Morgabine%20Saint-Gilles" target="_blank" rel="noopener">Écrire</a><a class="lien" href="https://saintgilles.dinamorgabine.com/" target="_blank" rel="noopener">voir son site</a></div>
+        </div></li><li data-id="h5512816394">
+        <button class="case" aria-label="Marquer envoyé"><b></b></button>
+        <div class="c"><div class="tt">Relais de l'Hermitage</div><div class="ss">hotel · Saint Gilles les Bains · reservation@relais-hermitage-saintgilles.fr</div>
+          <details><summary>Voir le message</summary><textarea class="msg">Bonjour,
+
+Je suis Tony Payet, je suis basé à La Réunion et je fabrique des vidéos verticales pour les hébergeurs d'ici, à partir de leurs propres photos. Pas de tournage, pas de déplacement.
+
+J'ai regardé votre site avant d'écrire. Je vous propose une vidéo de dix secondes sur Relais de l'Hermitage à Saint Gilles les Bains, faite avec vos photos, gratuite et sans engagement. Si elle vous plaît, on parle de la suite ; sinon vous la gardez.
+
+Répondez-moi simplement avec deux ou trois photos et je vous l'envoie sous 48 heures.
+
+Tony Payet — AutomatisationBoost
+automatisationboost.com</textarea></details>
+          <div class="btns"><button class="cp">Copier</button><a class="go" href="mailto:reservation@relais-hermitage-saintgilles.fr?subject=Une%20vid%C3%A9o%20de%2010%20secondes%20pour%20Relais%20de%20l'Hermitage" target="_blank" rel="noopener">Écrire</a><a class="lien" href="https://www.relais-hermitage-saintgilles.fr/" target="_blank" rel="noopener">voir son site</a></div>
+        </div></li><li data-id="h5685546170">
+        <button class="case" aria-label="Marquer envoyé"><b></b></button>
+        <div class="c"><div class="tt">Doudou Hôtel</div><div class="ss">hotel · La Saline les Bains · reception@hoteldoudou.com</div>
+          <details><summary>Voir le message</summary><textarea class="msg">Bonjour,
+
+Je suis Tony Payet, je suis basé à La Réunion et je fabrique des vidéos verticales pour les hébergeurs d'ici, à partir de leurs propres photos. Pas de tournage, pas de déplacement.
+
+J'ai regardé votre site avant d'écrire. Je vous propose une vidéo de dix secondes sur Doudou Hôtel à La Saline les Bains, faite avec vos photos, gratuite et sans engagement. Si elle vous plaît, on parle de la suite ; sinon vous la gardez.
+
+Répondez-moi simplement avec deux ou trois photos et je vous l'envoie sous 48 heures.
+
+Tony Payet — AutomatisationBoost
+automatisationboost.com</textarea></details>
+          <div class="btns"><button class="cp">Copier</button><a class="go" href="mailto:reception@hoteldoudou.com?subject=Une%20vid%C3%A9o%20de%2010%20secondes%20pour%20Doudou%20Hôtel" target="_blank" rel="noopener">Écrire</a><a class="lien" href="https://hoteldoudou.com/" target="_blank" rel="noopener">voir son site</a></div>
+        </div></li><li data-id="h5750591623">
+        <button class="case" aria-label="Marquer envoyé"><b></b></button>
+        <div class="c"><div class="tt">L'Arpège Austral</div><div class="ss">guest_house · arpegeaustral@orange.fr</div>
+          <details><summary>Voir le message</summary><textarea class="msg">Bonjour,
+
+Je suis Tony Payet, je suis basé à La Réunion et je fabrique des vidéos verticales pour les hébergeurs d'ici, à partir de leurs propres photos. Pas de tournage, pas de déplacement.
+
+J'ai regardé votre site avant d'écrire. Je vous propose une vidéo de dix secondes sur L'Arpège Austral, faite avec vos photos, gratuite et sans engagement. Si elle vous plaît, on parle de la suite ; sinon vous la gardez.
+
+Répondez-moi simplement avec deux ou trois photos et je vous l'envoie sous 48 heures.
+
+Tony Payet — AutomatisationBoost
+automatisationboost.com</textarea></details>
+          <div class="btns"><button class="cp">Copier</button><a class="go" href="mailto:arpegeaustral@orange.fr?subject=Une%20vid%C3%A9o%20de%2010%20secondes%20pour%20L'Arpège%20Austral" target="_blank" rel="noopener">Écrire</a><a class="lien" href="http://arpegeaustral.minisite.fr" target="_blank" rel="noopener">voir son site</a></div>
+        </div></li><li data-id="h5878806051">
+        <button class="case" aria-label="Marquer envoyé"><b></b></button>
+        <div class="c"><div class="tt">La Villa de la Plage</div><div class="ss">guest_house · Saint-Paul · contact@lavilladelaplage.fr</div>
+          <details><summary>Voir le message</summary><textarea class="msg">Bonjour,
+
+Je suis Tony Payet, je suis basé à La Réunion et je fabrique des vidéos verticales pour les hébergeurs d'ici, à partir de leurs propres photos. Pas de tournage, pas de déplacement.
+
+J'ai regardé votre site avant d'écrire. Je vous propose une vidéo de dix secondes sur La Villa de la Plage à Saint-Paul, faite avec vos photos, gratuite et sans engagement. Si elle vous plaît, on parle de la suite ; sinon vous la gardez.
+
+Répondez-moi simplement avec deux ou trois photos et je vous l'envoie sous 48 heures.
+
+Tony Payet — AutomatisationBoost
+automatisationboost.com</textarea></details>
+          <div class="btns"><button class="cp">Copier</button><a class="go" href="mailto:contact@lavilladelaplage.fr?subject=Une%20vid%C3%A9o%20de%2010%20secondes%20pour%20La%20Villa%20de%20la%20Plage" target="_blank" rel="noopener">Écrire</a><a class="lien" href="https://lavilladelaplage.fr" target="_blank" rel="noopener">voir son site</a></div>
+        </div></li><li data-id="h6089942285">
+        <button class="case" aria-label="Marquer envoyé"><b></b></button>
+        <div class="c"><div class="tt">Auberge d'Antan</div><div class="ss">guest_house · Saint-Pierre · aubergedantan@gmail.com</div>
+          <details><summary>Voir le message</summary><textarea class="msg">Bonjour,
+
+Je suis Tony Payet, je suis basé à La Réunion et je fabrique des vidéos verticales pour les hébergeurs d'ici, à partir de leurs propres photos. Pas de tournage, pas de déplacement.
+
+J'ai regardé votre site avant d'écrire. Je vous propose une vidéo de dix secondes sur Auberge d'Antan à Saint-Pierre, faite avec vos photos, gratuite et sans engagement. Si elle vous plaît, on parle de la suite ; sinon vous la gardez.
+
+Répondez-moi simplement avec deux ou trois photos et je vous l'envoie sous 48 heures.
+
+Tony Payet — AutomatisationBoost
+automatisationboost.com</textarea></details>
+          <div class="btns"><button class="cp">Copier</button><a class="go" href="mailto:aubergedantan@gmail.com?subject=Une%20vid%C3%A9o%20de%2010%20secondes%20pour%20Auberge%20d'Antan" target="_blank" rel="noopener">Écrire</a><a class="lien" href="https://www.aubergedantan.net/" target="_blank" rel="noopener">voir son site</a></div>
+        </div></li><li data-id="h6207271403">
+        <button class="case" aria-label="Marquer envoyé"><b></b></button>
+        <div class="c"><div class="tt">Araucaria</div><div class="ss">guest_house · Saint Gilles les Bains · valerieguth@zeop.re</div>
+          <details><summary>Voir le message</summary><textarea class="msg">Bonjour,
+
+Je suis Tony Payet, je suis basé à La Réunion et je fabrique des vidéos verticales pour les hébergeurs d'ici, à partir de leurs propres photos. Pas de tournage, pas de déplacement.
+
+Je n'ai pas trouvé de site à votre nom, dites-moi si je me trompe. Je vous propose une vidéo de dix secondes sur Araucaria à Saint Gilles les Bains, faite avec vos photos, gratuite et sans engagement. Si elle vous plaît, on parle de la suite ; sinon vous la gardez.
+
+Répondez-moi simplement avec deux ou trois photos et je vous l'envoie sous 48 heures.
+
+Tony Payet — AutomatisationBoost
+automatisationboost.com</textarea></details>
+          <div class="btns"><button class="cp">Copier</button><a class="go" href="mailto:valerieguth@zeop.re?subject=Une%20vid%C3%A9o%20de%2010%20secondes%20pour%20Araucaria" target="_blank" rel="noopener">Écrire</a></div>
+        </div></li><li data-id="h6418692386">
+        <button class="case" aria-label="Marquer envoyé"><b></b></button>
+        <div class="c"><div class="tt">Les Aigrettes</div><div class="ss">hotel · reception@hotel-les-aigrettes.com</div>
+          <details><summary>Voir le message</summary><textarea class="msg">Bonjour,
+
+Je suis Tony Payet, je suis basé à La Réunion et je fabrique des vidéos verticales pour les hébergeurs d'ici, à partir de leurs propres photos. Pas de tournage, pas de déplacement.
+
+J'ai regardé votre site avant d'écrire. Je vous propose une vidéo de dix secondes sur Les Aigrettes, faite avec vos photos, gratuite et sans engagement. Si elle vous plaît, on parle de la suite ; sinon vous la gardez.
+
+Répondez-moi simplement avec deux ou trois photos et je vous l'envoie sous 48 heures.
+
+Tony Payet — AutomatisationBoost
+automatisationboost.com</textarea></details>
+          <div class="btns"><button class="cp">Copier</button><a class="go" href="mailto:reception@hotel-les-aigrettes.com?subject=Une%20vid%C3%A9o%20de%2010%20secondes%20pour%20Les%20Aigrettes" target="_blank" rel="noopener">Écrire</a><a class="lien" href="http://www.hotel-les-aigrettes.com" target="_blank" rel="noopener">voir son site</a></div>
+        </div></li><li data-id="h6785885924">
+        <button class="case" aria-label="Marquer envoyé"><b></b></button>
+        <div class="c"><div class="tt">Le Prestige</div><div class="ss">apartment · Saint-Pierre · contact@le-prestige.re</div>
+          <details><summary>Voir le message</summary><textarea class="msg">Bonjour,
+
+Je suis Tony Payet, je suis basé à La Réunion et je fabrique des vidéos verticales pour les hébergeurs d'ici, à partir de leurs propres photos. Pas de tournage, pas de déplacement.
+
+J'ai regardé votre site avant d'écrire. Je vous propose une vidéo de dix secondes sur Le Prestige à Saint-Pierre, faite avec vos photos, gratuite et sans engagement. Si elle vous plaît, on parle de la suite ; sinon vous la gardez.
+
+Répondez-moi simplement avec deux ou trois photos et je vous l'envoie sous 48 heures.
+
+Tony Payet — AutomatisationBoost
+automatisationboost.com</textarea></details>
+          <div class="btns"><button class="cp">Copier</button><a class="go" href="mailto:contact@le-prestige.re?subject=Une%20vid%C3%A9o%20de%2010%20secondes%20pour%20Le%20Prestige" target="_blank" rel="noopener">Écrire</a><a class="lien" href="https://le-prestige.re" target="_blank" rel="noopener">voir son site</a></div>
+        </div></li><li data-id="h6840648885">
+        <button class="case" aria-label="Marquer envoyé"><b></b></button>
+        <div class="c"><div class="tt">Gîte Le Mafatais</div><div class="ss">guest_house · LA POSSESSION · ludodrums974@gmail.com</div>
+          <details><summary>Voir le message</summary><textarea class="msg">Bonjour,
+
+Je suis Tony Payet, je suis basé à La Réunion et je fabrique des vidéos verticales pour les hébergeurs d'ici, à partir de leurs propres photos. Pas de tournage, pas de déplacement.
+
+J'ai regardé votre site avant d'écrire. Je vous propose une vidéo de dix secondes sur Gîte Le Mafatais à LA POSSESSION, faite avec vos photos, gratuite et sans engagement. Si elle vous plaît, on parle de la suite ; sinon vous la gardez.
+
+Répondez-moi simplement avec deux ou trois photos et je vous l'envoie sous 48 heures.
+
+Tony Payet — AutomatisationBoost
+automatisationboost.com</textarea></details>
+          <div class="btns"><button class="cp">Copier</button><a class="go" href="mailto:ludodrums974@gmail.com?subject=Une%20vid%C3%A9o%20de%2010%20secondes%20pour%20Gîte%20Le%20Mafatais" target="_blank" rel="noopener">Écrire</a><a class="lien" href="https://gite-aurere-le-mafatais-chambre-dhote.jimdosite.com/" target="_blank" rel="noopener">voir son site</a></div>
+        </div></li><li data-id="h7139702740">
+        <button class="case" aria-label="Marquer envoyé"><b></b></button>
+        <div class="c"><div class="tt">Le Bras Sec</div><div class="ss">guest_house · gitelebrassec48@gmail.com</div>
+          <details><summary>Voir le message</summary><textarea class="msg">Bonjour,
+
+Je suis Tony Payet, je suis basé à La Réunion et je fabrique des vidéos verticales pour les hébergeurs d'ici, à partir de leurs propres photos. Pas de tournage, pas de déplacement.
+
+J'ai regardé votre site avant d'écrire. Je vous propose une vidéo de dix secondes sur Le Bras Sec, faite avec vos photos, gratuite et sans engagement. Si elle vous plaît, on parle de la suite ; sinon vous la gardez.
+
+Répondez-moi simplement avec deux ou trois photos et je vous l'envoie sous 48 heures.
+
+Tony Payet — AutomatisationBoost
+automatisationboost.com</textarea></details>
+          <div class="btns"><button class="cp">Copier</button><a class="go" href="mailto:gitelebrassec48@gmail.com?subject=Une%20vid%C3%A9o%20de%2010%20secondes%20pour%20Le%20Bras%20Sec" target="_blank" rel="noopener">Écrire</a><a class="lien" href="https://gite-le-bras-sec.webnode.fr/" target="_blank" rel="noopener">voir son site</a></div>
+        </div></li><li data-id="h8911329971">
+        <button class="case" aria-label="Marquer envoyé"><b></b></button>
+        <div class="c"><div class="tt">Côté Volcan</div><div class="ss">chalet · Bourg Murat · contact@cote-volcan.fr</div>
+          <details><summary>Voir le message</summary><textarea class="msg">Bonjour,
+
+Je suis Tony Payet, je suis basé à La Réunion et je fabrique des vidéos verticales pour les hébergeurs d'ici, à partir de leurs propres photos. Pas de tournage, pas de déplacement.
+
+J'ai regardé votre site avant d'écrire. Je vous propose une vidéo de dix secondes sur Côté Volcan à Bourg Murat, faite avec vos photos, gratuite et sans engagement. Si elle vous plaît, on parle de la suite ; sinon vous la gardez.
+
+Répondez-moi simplement avec deux ou trois photos et je vous l'envoie sous 48 heures.
+
+Tony Payet — AutomatisationBoost
+automatisationboost.com</textarea></details>
+          <div class="btns"><button class="cp">Copier</button><a class="go" href="mailto:contact@cote-volcan.fr?subject=Une%20vid%C3%A9o%20de%2010%20secondes%20pour%20Côté%20Volcan" target="_blank" rel="noopener">Écrire</a><a class="lien" href="https://www.cote-volcan.fr/" target="_blank" rel="noopener">voir son site</a></div>
+        </div></li><li data-id="h9355916737">
+        <button class="case" aria-label="Marquer envoyé"><b></b></button>
+        <div class="c"><div class="tt">Villa Angélique</div><div class="ss">hotel · Saint-Denis · contact@villa-angelique.fr</div>
+          <details><summary>Voir le message</summary><textarea class="msg">Bonjour,
+
+Je suis Tony Payet, je suis basé à La Réunion et je fabrique des vidéos verticales pour les hébergeurs d'ici, à partir de leurs propres photos. Pas de tournage, pas de déplacement.
+
+J'ai regardé votre site avant d'écrire. Je vous propose une vidéo de dix secondes sur Villa Angélique à Saint-Denis, faite avec vos photos, gratuite et sans engagement. Si elle vous plaît, on parle de la suite ; sinon vous la gardez.
+
+Répondez-moi simplement avec deux ou trois photos et je vous l'envoie sous 48 heures.
+
+Tony Payet — AutomatisationBoost
+automatisationboost.com</textarea></details>
+          <div class="btns"><button class="cp">Copier</button><a class="go" href="mailto:contact@villa-angelique.fr?subject=Une%20vid%C3%A9o%20de%2010%20secondes%20pour%20Villa%20Angélique" target="_blank" rel="noopener">Écrire</a><a class="lien" href="https://villa-angelique.fr/" target="_blank" rel="noopener">voir son site</a></div>
+        </div></li><li data-id="h10130481743">
+        <button class="case" aria-label="Marquer envoyé"><b></b></button>
+        <div class="c"><div class="tt">Ô Ruisseau Lodges</div><div class="ss">apartment · La Rivière · contact@oruisseaulodges.com</div>
+          <details><summary>Voir le message</summary><textarea class="msg">Bonjour,
+
+Je suis Tony Payet, je suis basé à La Réunion et je fabrique des vidéos verticales pour les hébergeurs d'ici, à partir de leurs propres photos. Pas de tournage, pas de déplacement.
+
+J'ai regardé votre site avant d'écrire. Je vous propose une vidéo de dix secondes sur Ô Ruisseau Lodges à La Rivière, faite avec vos photos, gratuite et sans engagement. Si elle vous plaît, on parle de la suite ; sinon vous la gardez.
+
+Répondez-moi simplement avec deux ou trois photos et je vous l'envoie sous 48 heures.
+
+Tony Payet — AutomatisationBoost
+automatisationboost.com</textarea></details>
+          <div class="btns"><button class="cp">Copier</button><a class="go" href="mailto:contact@oruisseaulodges.com?subject=Une%20vid%C3%A9o%20de%2010%20secondes%20pour%20Ô%20Ruisseau%20Lodges" target="_blank" rel="noopener">Écrire</a><a class="lien" href="https://www.oruisseaulodges.com;RESA@ORUISSEAULODGE.RE;" target="_blank" rel="noopener">voir son site</a></div>
+        </div></li><li data-id="h11023442019">
+        <button class="case" aria-label="Marquer envoyé"><b></b></button>
+        <div class="c"><div class="tt">La Villa Blanche</div><div class="ss">chalet · Hell-Bourg · lavillablanche.hellbourg@gmail.com</div>
+          <details><summary>Voir le message</summary><textarea class="msg">Bonjour,
+
+Je suis Tony Payet, je suis basé à La Réunion et je fabrique des vidéos verticales pour les hébergeurs d'ici, à partir de leurs propres photos. Pas de tournage, pas de déplacement.
+
+J'ai regardé votre site avant d'écrire. Je vous propose une vidéo de dix secondes sur La Villa Blanche à Hell-Bourg, faite avec vos photos, gratuite et sans engagement. Si elle vous plaît, on parle de la suite ; sinon vous la gardez.
+
+Répondez-moi simplement avec deux ou trois photos et je vous l'envoie sous 48 heures.
+
+Tony Payet — AutomatisationBoost
+automatisationboost.com</textarea></details>
+          <div class="btns"><button class="cp">Copier</button><a class="go" href="mailto:lavillablanche.hellbourg@gmail.com?subject=Une%20vid%C3%A9o%20de%2010%20secondes%20pour%20La%20Villa%20Blanche" target="_blank" rel="noopener">Écrire</a><a class="lien" href="https://www.lavillablanche.re/" target="_blank" rel="noopener">voir son site</a></div>
+        </div></li><li data-id="h11385015773">
+        <button class="case" aria-label="Marquer envoyé"><b></b></button>
+        <div class="c"><div class="tt">Villa Garriga</div><div class="ss">guest_house · Saint-Paul · contact@villagarriga.re</div>
+          <details><summary>Voir le message</summary><textarea class="msg">Bonjour,
+
+Je suis Tony Payet, je suis basé à La Réunion et je fabrique des vidéos verticales pour les hébergeurs d'ici, à partir de leurs propres photos. Pas de tournage, pas de déplacement.
+
+J'ai regardé votre site avant d'écrire. Je vous propose une vidéo de dix secondes sur Villa Garriga à Saint-Paul, faite avec vos photos, gratuite et sans engagement. Si elle vous plaît, on parle de la suite ; sinon vous la gardez.
+
+Répondez-moi simplement avec deux ou trois photos et je vous l'envoie sous 48 heures.
+
+Tony Payet — AutomatisationBoost
+automatisationboost.com</textarea></details>
+          <div class="btns"><button class="cp">Copier</button><a class="go" href="mailto:contact@villagarriga.re?subject=Une%20vid%C3%A9o%20de%2010%20secondes%20pour%20Villa%20Garriga" target="_blank" rel="noopener">Écrire</a><a class="lien" href="https://villagarriga.re/" target="_blank" rel="noopener">voir son site</a></div>
+        </div></li><li data-id="h11853772173">
+        <button class="case" aria-label="Marquer envoyé"><b></b></button>
+        <div class="c"><div class="tt">La Villa Kazuera</div><div class="ss">hotel · Cilaos · villa.kazuera@gmail.com</div>
+          <details><summary>Voir le message</summary><textarea class="msg">Bonjour,
+
+Je suis Tony Payet, je suis basé à La Réunion et je fabrique des vidéos verticales pour les hébergeurs d'ici, à partir de leurs propres photos. Pas de tournage, pas de déplacement.
+
+J'ai regardé votre site avant d'écrire. Je vous propose une vidéo de dix secondes sur La Villa Kazuera à Cilaos, faite avec vos photos, gratuite et sans engagement. Si elle vous plaît, on parle de la suite ; sinon vous la gardez.
+
+Répondez-moi simplement avec deux ou trois photos et je vous l'envoie sous 48 heures.
+
+Tony Payet — AutomatisationBoost
+automatisationboost.com</textarea></details>
+          <div class="btns"><button class="cp">Copier</button><a class="go" href="mailto:villa.kazuera@gmail.com?subject=Une%20vid%C3%A9o%20de%2010%20secondes%20pour%20La%20Villa%20Kazuera" target="_blank" rel="noopener">Écrire</a><a class="lien" href="https://www.villa-kazuera.fr/" target="_blank" rel="noopener">voir son site</a></div>
+        </div></li><li data-id="h12651709840">
+        <button class="case" aria-label="Marquer envoyé"><b></b></button>
+        <div class="c"><div class="tt">La Kaz Bellepierre</div><div class="ss">apartment · SAINT DENIS · kazmeubles@gmail.com</div>
+          <details><summary>Voir le message</summary><textarea class="msg">Bonjour,
+
+Je suis Tony Payet, je suis basé à La Réunion et je fabrique des vidéos verticales pour les hébergeurs d'ici, à partir de leurs propres photos. Pas de tournage, pas de déplacement.
+
+J'ai regardé votre site avant d'écrire. Je vous propose une vidéo de dix secondes sur La Kaz Bellepierre à SAINT DENIS, faite avec vos photos, gratuite et sans engagement. Si elle vous plaît, on parle de la suite ; sinon vous la gardez.
+
+Répondez-moi simplement avec deux ou trois photos et je vous l'envoie sous 48 heures.
+
+Tony Payet — AutomatisationBoost
+automatisationboost.com</textarea></details>
+          <div class="btns"><button class="cp">Copier</button><a class="go" href="mailto:kazmeubles@gmail.com?subject=Une%20vid%C3%A9o%20de%2010%20secondes%20pour%20La%20Kaz%20Bellepierre" target="_blank" rel="noopener">Écrire</a><a class="lien" href="https://www.reunion.fr/offres/kaz-bellepierre-la-saint-denis-fr-4442179/" target="_blank" rel="noopener">voir son site</a></div>
+        </div></li><li data-id="h12706454561">
+        <button class="case" aria-label="Marquer envoyé"><b></b></button>
+        <div class="c"><div class="tt">Chambres d'hôte Maillot Nicole</div><div class="ss">guest_house · Sainte-Marie · chambre54nicolemaillot@hotmail.com</div>
+          <details><summary>Voir le message</summary><textarea class="msg">Bonjour,
+
+Je suis Tony Payet, je suis basé à La Réunion et je fabrique des vidéos verticales pour les hébergeurs d'ici, à partir de leurs propres photos. Pas de tournage, pas de déplacement.
+
+J'ai regardé votre site avant d'écrire. Je vous propose une vidéo de dix secondes sur Chambres d'hôte Maillot Nicole à Sainte-Marie, faite avec vos photos, gratuite et sans engagement. Si elle vous plaît, on parle de la suite ; sinon vous la gardez.
+
+Répondez-moi simplement avec deux ou trois photos et je vous l'envoie sous 48 heures.
+
+Tony Payet — AutomatisationBoost
+automatisationboost.com</textarea></details>
+          <div class="btns"><button class="cp">Copier</button><a class="go" href="mailto:chambre54nicolemaillot@hotmail.com?subject=Une%20vid%C3%A9o%20de%2010%20secondes%20pour%20Chambres%20d'hôte%20Maillot%20Nicole" target="_blank" rel="noopener">Écrire</a><a class="lien" href="https://chambresdhotesnicolemaillot.jimdofree.com/" target="_blank" rel="noopener">voir son site</a></div>
+        </div></li><li data-id="h12706492005">
+        <button class="case" aria-label="Marquer envoyé"><b></b></button>
+        <div class="c"><div class="tt">Payet Renaud</div><div class="ss">chalet · Sainte-Suzanne · renaud.payet@yahoo.fr</div>
+          <details><summary>Voir le message</summary><textarea class="msg">Bonjour,
+
+Je suis Tony Payet, je suis basé à La Réunion et je fabrique des vidéos verticales pour les hébergeurs d'ici, à partir de leurs propres photos. Pas de tournage, pas de déplacement.
+
+Je n'ai pas trouvé de site à votre nom, dites-moi si je me trompe. Je vous propose une vidéo de dix secondes sur Payet Renaud à Sainte-Suzanne, faite avec vos photos, gratuite et sans engagement. Si elle vous plaît, on parle de la suite ; sinon vous la gardez.
+
+Répondez-moi simplement avec deux ou trois photos et je vous l'envoie sous 48 heures.
+
+Tony Payet — AutomatisationBoost
+automatisationboost.com</textarea></details>
+          <div class="btns"><button class="cp">Copier</button><a class="go" href="mailto:renaud.payet@yahoo.fr?subject=Une%20vid%C3%A9o%20de%2010%20secondes%20pour%20Payet%20Renaud" target="_blank" rel="noopener">Écrire</a></div>
+        </div></li><li data-id="h12706521414">
+        <button class="case" aria-label="Marquer envoyé"><b></b></button>
+        <div class="c"><div class="tt">Les Gîtes de la Renaissance</div><div class="ss">chalet · Sainte-Suzanne · lesgitesdelarenaissance@gmail.com</div>
+          <details><summary>Voir le message</summary><textarea class="msg">Bonjour,
+
+Je suis Tony Payet, je suis basé à La Réunion et je fabrique des vidéos verticales pour les hébergeurs d'ici, à partir de leurs propres photos. Pas de tournage, pas de déplacement.
+
+J'ai regardé votre site avant d'écrire. Je vous propose une vidéo de dix secondes sur Les Gîtes de la Renaissance à Sainte-Suzanne, faite avec vos photos, gratuite et sans engagement. Si elle vous plaît, on parle de la suite ; sinon vous la gardez.
+
+Répondez-moi simplement avec deux ou trois photos et je vous l'envoie sous 48 heures.
+
+Tony Payet — AutomatisationBoost
+automatisationboost.com</textarea></details>
+          <div class="btns"><button class="cp">Copier</button><a class="go" href="mailto:lesgitesdelarenaissance@gmail.com?subject=Une%20vid%C3%A9o%20de%2010%20secondes%20pour%20Les%20Gîtes%20de%20la%20Renaissance" target="_blank" rel="noopener">Écrire</a><a class="lien" href="https://www.lesgitesdelarenaissance.fr/" target="_blank" rel="noopener">voir son site</a></div>
+        </div></li><li data-id="h12852306157">
+        <button class="case" aria-label="Marquer envoyé"><b></b></button>
+        <div class="c"><div class="tt">La Maison d'Edith</div><div class="ss">guest_house · La Montagne · maisondedith@gmail.com</div>
+          <details><summary>Voir le message</summary><textarea class="msg">Bonjour,
+
+Je suis Tony Payet, je suis basé à La Réunion et je fabrique des vidéos verticales pour les hébergeurs d'ici, à partir de leurs propres photos. Pas de tournage, pas de déplacement.
+
+J'ai regardé votre site avant d'écrire. Je vous propose une vidéo de dix secondes sur La Maison d'Edith à La Montagne, faite avec vos photos, gratuite et sans engagement. Si elle vous plaît, on parle de la suite ; sinon vous la gardez.
+
+Répondez-moi simplement avec deux ou trois photos et je vous l'envoie sous 48 heures.
+
+Tony Payet — AutomatisationBoost
+automatisationboost.com</textarea></details>
+          <div class="btns"><button class="cp">Copier</button><a class="go" href="mailto:maisondedith@gmail.com?subject=Une%20vid%C3%A9o%20de%2010%20secondes%20pour%20La%20Maison%20d'Edith" target="_blank" rel="noopener">Écrire</a><a class="lien" href="https://www.maisondedith.com/" target="_blank" rel="noopener">voir son site</a></div>
+        </div></li><li data-id="h12864742711">
+        <button class="case" aria-label="Marquer envoyé"><b></b></button>
+        <div class="c"><div class="tt">Villa Acacias, piscine et vue panoramique</div><div class="ss">apartment · L'Étang-Salé · info@villa-salba.com</div>
+          <details><summary>Voir le message</summary><textarea class="msg">Bonjour,
+
+Je suis Tony Payet, je suis basé à La Réunion et je fabrique des vidéos verticales pour les hébergeurs d'ici, à partir de leurs propres photos. Pas de tournage, pas de déplacement.
+
+J'ai regardé votre site avant d'écrire. Je vous propose une vidéo de dix secondes sur Villa Acacias, piscine et vue panoramique à L'Étang-Salé, faite avec vos photos, gratuite et sans engagement. Si elle vous plaît, on parle de la suite ; sinon vous la gardez.
+
+Répondez-moi simplement avec deux ou trois photos et je vous l'envoie sous 48 heures.
+
+Tony Payet — AutomatisationBoost
+automatisationboost.com</textarea></details>
+          <div class="btns"><button class="cp">Copier</button><a class="go" href="mailto:info@villa-salba.com?subject=Une%20vid%C3%A9o%20de%2010%20secondes%20pour%20Villa%20Acacias,%20piscine%20et%20vue%20panoramique" target="_blank" rel="noopener">Écrire</a><a class="lien" href="https://villa-salba.com" target="_blank" rel="noopener">voir son site</a></div>
+        </div></li><li data-id="h12896774141">
+        <button class="case" aria-label="Marquer envoyé"><b></b></button>
+        <div class="c"><div class="tt">Maison Le Patio</div><div class="ss">apartment · Saint-Denis · maisonlepatio@gmail.com</div>
+          <details><summary>Voir le message</summary><textarea class="msg">Bonjour,
+
+Je suis Tony Payet, je suis basé à La Réunion et je fabrique des vidéos verticales pour les hébergeurs d'ici, à partir de leurs propres photos. Pas de tournage, pas de déplacement.
+
+J'ai regardé votre site avant d'écrire. Je vous propose une vidéo de dix secondes sur Maison Le Patio à Saint-Denis, faite avec vos photos, gratuite et sans engagement. Si elle vous plaît, on parle de la suite ; sinon vous la gardez.
+
+Répondez-moi simplement avec deux ou trois photos et je vous l'envoie sous 48 heures.
+
+Tony Payet — AutomatisationBoost
+automatisationboost.com</textarea></details>
+          <div class="btns"><button class="cp">Copier</button><a class="go" href="mailto:maisonlepatio@gmail.com?subject=Une%20vid%C3%A9o%20de%2010%20secondes%20pour%20Maison%20Le%20Patio" target="_blank" rel="noopener">Écrire</a><a class="lien" href="https://maisonlepatio.fr/" target="_blank" rel="noopener">voir son site</a></div>
+        </div></li><li data-id="h12919133301">
+        <button class="case" aria-label="Marquer envoyé"><b></b></button>
+        <div class="c"><div class="tt">Clos de la rivière</div><div class="ss">apartment · Saint-Denis · contact@closdelariviere.re</div>
+          <details><summary>Voir le message</summary><textarea class="msg">Bonjour,
+
+Je suis Tony Payet, je suis basé à La Réunion et je fabrique des vidéos verticales pour les hébergeurs d'ici, à partir de leurs propres photos. Pas de tournage, pas de déplacement.
+
+J'ai regardé votre site avant d'écrire. Je vous propose une vidéo de dix secondes sur Clos de la rivière à Saint-Denis, faite avec vos photos, gratuite et sans engagement. Si elle vous plaît, on parle de la suite ; sinon vous la gardez.
+
+Répondez-moi simplement avec deux ou trois photos et je vous l'envoie sous 48 heures.
+
+Tony Payet — AutomatisationBoost
+automatisationboost.com</textarea></details>
+          <div class="btns"><button class="cp">Copier</button><a class="go" href="mailto:contact@closdelariviere.re?subject=Une%20vid%C3%A9o%20de%2010%20secondes%20pour%20Clos%20de%20la%20rivière" target="_blank" rel="noopener">Écrire</a><a class="lien" href="https://www.closdelariviere.re/" target="_blank" rel="noopener">voir son site</a></div>
+        </div></li><li data-id="h12979078001">
+        <button class="case" aria-label="Marquer envoyé"><b></b></button>
+        <div class="c"><div class="tt">Villa Galabé et Tafia</div><div class="ss">guest_house · Sainte-Marie · villagalabeettafia@hotmail.com</div>
+          <details><summary>Voir le message</summary><textarea class="msg">Bonjour,
+
+Je suis Tony Payet, je suis basé à La Réunion et je fabrique des vidéos verticales pour les hébergeurs d'ici, à partir de leurs propres photos. Pas de tournage, pas de déplacement.
+
+J'ai regardé votre site avant d'écrire. Je vous propose une vidéo de dix secondes sur Villa Galabé et Tafia à Sainte-Marie, faite avec vos photos, gratuite et sans engagement. Si elle vous plaît, on parle de la suite ; sinon vous la gardez.
+
+Répondez-moi simplement avec deux ou trois photos et je vous l'envoie sous 48 heures.
+
+Tony Payet — AutomatisationBoost
+automatisationboost.com</textarea></details>
+          <div class="btns"><button class="cp">Copier</button><a class="go" href="mailto:villagalabeettafia@hotmail.com?subject=Une%20vid%C3%A9o%20de%2010%20secondes%20pour%20Villa%20Galabé%20et%20Tafia" target="_blank" rel="noopener">Écrire</a><a class="lien" href="https://www.villagalabeettafia.com/" target="_blank" rel="noopener">voir son site</a></div>
+        </div></li><li data-id="h13051426590">
+        <button class="case" aria-label="Marquer envoyé"><b></b></button>
+        <div class="c"><div class="tt">La Maison Dakoté</div><div class="ss">apartment · Sainte-Clotilde · lamaisondakote@yahoo.com</div>
+          <details><summary>Voir le message</summary><textarea class="msg">Bonjour,
+
+Je suis Tony Payet, je suis basé à La Réunion et je fabrique des vidéos verticales pour les hébergeurs d'ici, à partir de leurs propres photos. Pas de tournage, pas de déplacement.
+
+Je n'ai pas trouvé de site à votre nom, dites-moi si je me trompe. Je vous propose une vidéo de dix secondes sur La Maison Dakoté à Sainte-Clotilde, faite avec vos photos, gratuite et sans engagement. Si elle vous plaît, on parle de la suite ; sinon vous la gardez.
+
+Répondez-moi simplement avec deux ou trois photos et je vous l'envoie sous 48 heures.
+
+Tony Payet — AutomatisationBoost
+automatisationboost.com</textarea></details>
+          <div class="btns"><button class="cp">Copier</button><a class="go" href="mailto:lamaisondakote@yahoo.com?subject=Une%20vid%C3%A9o%20de%2010%20secondes%20pour%20La%20Maison%20Dakoté" target="_blank" rel="noopener">Écrire</a></div>
+        </div></li><li data-id="h13051541003">
+        <button class="case" aria-label="Marquer envoyé"><b></b></button>
+        <div class="c"><div class="tt">Le Cap Vert</div><div class="ss">hotel · Saint-Denis · lecapvert974@gmail.com</div>
+          <details><summary>Voir le message</summary><textarea class="msg">Bonjour,
+
+Je suis Tony Payet, je suis basé à La Réunion et je fabrique des vidéos verticales pour les hébergeurs d'ici, à partir de leurs propres photos. Pas de tournage, pas de déplacement.
+
+Je n'ai pas trouvé de site à votre nom, dites-moi si je me trompe. Je vous propose une vidéo de dix secondes sur Le Cap Vert à Saint-Denis, faite avec vos photos, gratuite et sans engagement. Si elle vous plaît, on parle de la suite ; sinon vous la gardez.
+
+Répondez-moi simplement avec deux ou trois photos et je vous l'envoie sous 48 heures.
+
+Tony Payet — AutomatisationBoost
+automatisationboost.com</textarea></details>
+          <div class="btns"><button class="cp">Copier</button><a class="go" href="mailto:lecapvert974@gmail.com?subject=Une%20vid%C3%A9o%20de%2010%20secondes%20pour%20Le%20Cap%20Vert" target="_blank" rel="noopener">Écrire</a></div>
+        </div></li></ul></section><section class="lot" id="lot-instagram">
+      <div class="tete"><h2>7 comptes Instagram à contacter à la main</h2><span class="cpt" id="cpt-instagram"></span></div>
+      <p class="but">Message direct, sans automatisation, sur des comptes locaux actifs.</p><p class="com">Repérés dans tes analyses de concurrents. Le bouton ouvre leur profil, le message est dans ton presse-papier.</p>
+      <ul><li data-id="ig1">
+        <button class="case" aria-label="Marquer envoyé"><b></b></button>
+        <div class="c"><div class="tt">@kombi_event</div><div class="ss">Événementiel 974 — publie régulièrement, aucun format vertical monté</div>
+          <details><summary>Voir le message</summary><textarea class="msg">Bonjour, je suis Tony, je suis à La Réunion. Je fabrique des vidéos verticales à partir de photos que vous avez déjà — pas de tournage, pas de déplacement.
+
+Je vous en fais une de dix secondes gratuitement, avec vos photos, pour que vous jugiez sur pièce. Si ça ne vous parle pas, vous ne me devez rien.
+
+Ça vous intéresse ?</textarea></details>
+          <div class="btns"><button class="cp">Copier</button><a class="go" href="https://www.instagram.com/kombi_event/" target="_blank" rel="noopener">Ouvrir le profil</a></div>
+        </div></li><li data-id="ig2">
+        <button class="case" aria-label="Marquer envoyé"><b></b></button>
+        <div class="c"><div class="tt">@combi.drink</div><div class="ss">Bar mobile 974 — photos produit, pas de vidéo</div>
+          <details><summary>Voir le message</summary><textarea class="msg">Bonjour, je suis Tony, je suis à La Réunion. Je fabrique des vidéos verticales à partir de photos que vous avez déjà — pas de tournage, pas de déplacement.
+
+Je vous en fais une de dix secondes gratuitement, avec vos photos, pour que vous jugiez sur pièce. Si ça ne vous parle pas, vous ne me devez rien.
+
+Ça vous intéresse ?</textarea></details>
+          <div class="btns"><button class="cp">Copier</button><a class="go" href="https://www.instagram.com/combi.drink/" target="_blank" rel="noopener">Ouvrir le profil</a></div>
+        </div></li><li data-id="ig3">
+        <button class="case" aria-label="Marquer envoyé"><b></b></button>
+        <div class="c"><div class="tt">@smootht_974</div><div class="ss">Jus/smoothies 974 — même créneau que BeFresh</div>
+          <details><summary>Voir le message</summary><textarea class="msg">Bonjour, je suis Tony, je suis à La Réunion. Je fabrique des vidéos verticales à partir de photos que vous avez déjà — pas de tournage, pas de déplacement.
+
+Je vous en fais une de dix secondes gratuitement, avec vos photos, pour que vous jugiez sur pièce. Si ça ne vous parle pas, vous ne me devez rien.
+
+Ça vous intéresse ?</textarea></details>
+          <div class="btns"><button class="cp">Copier</button><a class="go" href="https://www.instagram.com/smootht_974/" target="_blank" rel="noopener">Ouvrir le profil</a></div>
+        </div></li><li data-id="ig4">
+        <button class="case" aria-label="Marquer envoyé"><b></b></button>
+        <div class="c"><div class="tt">@cocktailisland974</div><div class="ss">Cocktails événementiels 974</div>
+          <details><summary>Voir le message</summary><textarea class="msg">Bonjour, je suis Tony, je suis à La Réunion. Je fabrique des vidéos verticales à partir de photos que vous avez déjà — pas de tournage, pas de déplacement.
+
+Je vous en fais une de dix secondes gratuitement, avec vos photos, pour que vous jugiez sur pièce. Si ça ne vous parle pas, vous ne me devez rien.
+
+Ça vous intéresse ?</textarea></details>
+          <div class="btns"><button class="cp">Copier</button><a class="go" href="https://www.instagram.com/cocktailisland974/" target="_blank" rel="noopener">Ouvrir le profil</a></div>
+        </div></li><li data-id="ig5">
+        <button class="case" aria-label="Marquer envoyé"><b></b></button>
+        <div class="c"><div class="tt">@your_fresh42</div><div class="ss">Jus frais — compte actif</div>
+          <details><summary>Voir le message</summary><textarea class="msg">Bonjour, je suis Tony, je suis à La Réunion. Je fabrique des vidéos verticales à partir de photos que vous avez déjà — pas de tournage, pas de déplacement.
+
+Je vous en fais une de dix secondes gratuitement, avec vos photos, pour que vous jugiez sur pièce. Si ça ne vous parle pas, vous ne me devez rien.
+
+Ça vous intéresse ?</textarea></details>
+          <div class="btns"><button class="cp">Copier</button><a class="go" href="https://www.instagram.com/your_fresh42/" target="_blank" rel="noopener">Ouvrir le profil</a></div>
+        </div></li><li data-id="ig6">
+        <button class="case" aria-label="Marquer envoyé"><b></b></button>
+        <div class="c"><div class="tt">@shakersaveur</div><div class="ss">Boissons/événementiel</div>
+          <details><summary>Voir le message</summary><textarea class="msg">Bonjour, je suis Tony, je suis à La Réunion. Je fabrique des vidéos verticales à partir de photos que vous avez déjà — pas de tournage, pas de déplacement.
+
+Je vous en fais une de dix secondes gratuitement, avec vos photos, pour que vous jugiez sur pièce. Si ça ne vous parle pas, vous ne me devez rien.
+
+Ça vous intéresse ?</textarea></details>
+          <div class="btns"><button class="cp">Copier</button><a class="go" href="https://www.instagram.com/shakersaveur/" target="_blank" rel="noopener">Ouvrir le profil</a></div>
+        </div></li><li data-id="ig7">
+        <button class="case" aria-label="Marquer envoyé"><b></b></button>
+        <div class="c"><div class="tt">@keepcool.fr</div><div class="ss">Salle de sport — réseau national, franchisés locaux à démarcher</div>
+          <details><summary>Voir le message</summary><textarea class="msg">Bonjour, je suis Tony, je suis à La Réunion. Je fabrique des vidéos verticales à partir de photos que vous avez déjà — pas de tournage, pas de déplacement.
+
+Je vous en fais une de dix secondes gratuitement, avec vos photos, pour que vous jugiez sur pièce. Si ça ne vous parle pas, vous ne me devez rien.
+
+Ça vous intéresse ?</textarea></details>
+          <div class="btns"><button class="cp">Copier</button><a class="go" href="https://www.instagram.com/keepcool.fr/" target="_blank" rel="noopener">Ouvrir le profil</a></div>
+        </div></li></ul></section>
+</div><div class="pied" id="pied">Prêt.</div>
+<script>
+(() => {
+  const URL_ETAT='https://n7n.automatisationboost.com/webhook/taches-validation';
+  let etat={}, envoyes={};
+  const jour=new Date().toISOString().slice(0,10);
+  document.getElementById('jour').textContent='aujourd\u2019hui : ' + jour.split('-').reverse().join('/');
+  try { envoyes=JSON.parse(localStorage.getItem('actions-envoyees')||'{}'); } catch(e) {}
+  const sauver=()=>{ try { localStorage.setItem('actions-envoyees',JSON.stringify(envoyes)); } catch(e) {} };
+  const total=document.querySelectorAll('li[data-id]').length;
+  const compter=()=>{
+    let n=0;
+    document.querySelectorAll('.lot').forEach(l=>{
+      const items=l.querySelectorAll('li[data-id]');
+      const f=[...items].filter(li=>envoyes[li.dataset.id]).length; n+=f;
+      l.querySelector('.cpt').textContent=f+' / '+items.length;
+    });
+    document.getElementById('fait').textContent=n;
+    document.getElementById('jauge').style.width=Math.round(n/total*100)+'%';
+  };
+  const marquer=(li,v)=>{ const id=li.dataset.id;
+    if(v) envoyes[id]={jour,t:Date.now()}; else delete envoyes[id];
+    li.classList.toggle('ok',!!v); sauver(); compter(); pousser(); };
+  document.querySelectorAll('li[data-id]').forEach(li=>{
+    if(envoyes[li.dataset.id]) li.classList.add('ok');
+    li.querySelector('.case').onclick=()=>marquer(li,!envoyes[li.dataset.id]);
+    li.querySelector('.cp').onclick=async(e)=>{
+      const t=li.querySelector('.msg').value;
+      try { await navigator.clipboard.writeText(t); e.target.textContent='Copié \u2713'; }
+      catch(_) { li.querySelector('details').open=true; li.querySelector('.msg').select(); e.target.textContent='Sélectionné'; }
+      setTimeout(()=>{ e.target.textContent='Copier'; },1600); };
+    const go=li.querySelector('.go');
+    if(go) go.addEventListener('click',()=>{ if(!envoyes[li.dataset.id]) setTimeout(()=>marquer(li,true),400); });
+  });
+  let enVol=false,duNeuf=false;
+  const pousser=async()=>{ duNeuf=true; if(enVol) return; enVol=true;
+    while(duNeuf) { duNeuf=false;
+      const parJour={};
+      Object.entries(envoyes).forEach(([id,v])=>{ (parJour[v.jour]=parJour[v.jour]||[]).push(id); });
+      etat['envois:'+jour]={etat:'envois',jour,ids:parJour[jour]||[],nb:(parJour[jour]||[]).length,maj:new Date().toISOString()};
+      try { await fetch(URL_ETAT,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify(etat)});
+        document.getElementById('pied').innerHTML='<b>Compté.</b> '+(parJour[jour]||[]).length+' envoi(s) enregistré(s) aujourd\u2019hui.'; }
+      catch(e) { duNeuf=true; document.getElementById('pied').textContent='Envoi du compteur impossible \u2014 je réessaie.'; await new Promise(r=>setTimeout(r,1500)); } }
+    enVol=false; };
+  (async()=>{ try {
+      const r=await fetch(URL_ETAT+'?t='+Date.now()); const j=await r.json();
+      const d=typeof j.donnees==='string'?JSON.parse(j.donnees||'{}'):(j.donnees||{});
+      etat=d&&typeof d==='object'?d:{};
+      document.getElementById('pied').innerHTML='<b>'+total+'</b> contacts prêts \u00b7 compteur synchronisé';
+    } catch(e) { document.getElementById('pied').textContent='Compteur hors ligne \u2014 tes coches restent sur ce téléphone.'; }
+    compter(); })();
+})();
+</script></body></html>
