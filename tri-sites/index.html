@@ -1,0 +1,213 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Trier les sites — au pouce</title>
+<style>
+:root{--bg:#0a0a0f;--carte:#15151c;--bord:#26262e;--or:#eab308;--vert:#4ade80;--rouge:#ef6461;--mut:#8b8b96;--txt:#f2f2f5}
+*{margin:0;padding:0;box-sizing:border-box}
+/* height, et pas seulement min-height : avec min-height seul, le flex:1 de la
+   zone image n'a aucune hauteur a distribuer et la carte s'ecrase a zero.
+   Le repli 100vh sert aux navigateurs sans dvh. */
+body{background:var(--bg);color:var(--txt);font:400 15px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  height:100vh;height:100dvh;display:flex;flex-direction:column;padding:10px 12px calc(12px + env(safe-area-inset-bottom))}
+header{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+h1{font-size:15px;font-weight:800;letter-spacing:-.01em}
+.tm{margin-left:auto;font-size:11.5px;color:var(--mut)}
+.tm.ok{color:var(--vert)} .tm.ko{color:var(--rouge)} .tm.encours{color:var(--or)}
+.jauge{height:3px;background:#1e1e26;border-radius:2px;overflow:hidden;margin-bottom:10px}
+.jauge i{display:block;height:100%;background:var(--or);width:0;transition:width .25s}
+.zone{position:relative;flex:1 1 auto;min-height:34vh;border-radius:16px;overflow:hidden;background:#000;border:1px solid var(--bord)}
+#ecran{display:flex;flex-direction:column;flex:1;min-height:0}
+.zone img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:top center}
+.zone img.av{opacity:0;transition:opacity .18s}
+.zone.avant img.av{opacity:1}
+.et{position:absolute;top:10px;left:10px;font-size:10.5px;font-weight:800;letter-spacing:.13em;text-transform:uppercase;
+  background:#0a0a0fd9;padding:5px 10px;border-radius:6px;color:var(--or)}
+.zone.avant .et{color:var(--mut)}
+.bascule{position:absolute;top:8px;right:8px;background:#0a0a0fd9;border:1px solid var(--bord);color:var(--txt);
+  border-radius:8px;padding:7px 11px;font:700 12px/1 inherit;letter-spacing:.05em}
+.zone .rien{position:absolute;inset:0;display:grid;place-items:center;color:var(--mut);font-size:13px;text-align:center;padding:0 24px}
+.info{padding:11px 2px 9px}
+.info h2{font-size:17px;letter-spacing:-.01em}
+.info p{font-size:12.5px;color:var(--mut);margin-top:2px}
+.info .f{color:var(--or)}
+.liens{display:flex;gap:7px;margin-top:8px;flex-wrap:wrap}
+.liens a{font-size:11.5px;font-weight:700;text-decoration:none;color:var(--txt);background:#1c1c25;
+  border:1px solid var(--bord);border-radius:7px;padding:6px 10px}
+.actes{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;margin-top:9px}
+.actes button{font:800 13px/1 inherit;letter-spacing:.03em;padding:15px 6px;border-radius:11px;
+  background:#16161d;border:1px solid var(--bord);color:var(--txt)}
+.actes .fix{border-color:#3c3826;color:var(--or)}
+.actes .ab{border-color:#3c2b2a;color:var(--rouge)}
+.actes .ok{border-color:#2a3d33;color:var(--vert)}
+.actes button small{display:block;font-weight:600;font-size:10px;color:var(--mut);margin-top:3px;letter-spacing:0}
+textarea{width:100%;margin-top:8px;background:#12121a;border:1px solid var(--bord);color:var(--txt);
+  border-radius:9px;padding:9px 11px;font:inherit;font-size:13.5px;resize:vertical}
+.pied{display:flex;gap:8px;align-items:center;margin-top:9px;font-size:11.5px;color:var(--mut)}
+.pied button{background:none;border:1px solid var(--bord);color:var(--mut);border-radius:7px;padding:6px 9px;font:600 11.5px/1 inherit}
+.fin{text-align:center;padding:38px 16px}
+.fin h2{font-size:20px;margin-bottom:8px}
+.fin p{color:var(--mut);font-size:14px;max-width:44ch;margin:0 auto 14px}
+</style>
+<header>
+  <h1>Trier les sites</h1>
+  <span class="tm" id="tm">lecture…</span>
+</header>
+<div class="jauge"><i id="jauge"></i></div>
+
+<div id="ecran">
+  <div class="zone" id="zone">
+    <img id="ap" alt="">
+    <img id="av" class="av" alt="">
+    <span class="et" id="etiq">Ma maquette</span>
+    <button class="bascule" id="bBasc" type="button">Voir avant</button>
+    <div class="rien" id="rien" hidden></div>
+  </div>
+  <div class="info">
+    <h2 id="nom"></h2>
+    <p id="meta"></p>
+    <p class="f" id="fait"></p>
+    <div class="liens" id="liens"></div>
+  </div>
+  <div class="actes">
+    <button class="fix" id="bFix" type="button">À corriger<small>flèche gauche</small></button>
+    <button class="ab" id="bAb" type="button">Abandonner<small>flèche bas</small></button>
+    <button class="ok" id="bOk" type="button">Envoyable<small>flèche droite</small></button>
+  </div>
+  <textarea id="note" rows="2" placeholder="Ce qu'il faut corriger — obligatoire pour abandonner…"></textarea>
+  <div class="pied">
+    <button id="bPasser" type="button">Passer</button>
+    <button id="bRevoir" type="button">Tout revoir</button>
+    <span id="cpt"></span>
+  </div>
+</div>
+
+<div class="fin" id="fin" hidden>
+  <h2>Fini.</h2>
+  <p id="finTxt"></p>
+  <button id="bRevoir2" type="button" style="background:var(--or);border:0;color:#1a1200;font:800 14px/1 inherit;padding:13px 18px;border-radius:10px">Tout revoir</button>
+</div>
+
+<script>
+var SITES = [{"dir":"arts-de-sante-formation","nom":"Arts de Santé","act":"Santé","tel":"","route":"client-arts-de-sante-formation","leur":"","vig":"/sites-clients/vignettes/arts-de-sante-formation.jpg","avant":"/sites-clients/avant/arts-de-sante-formation.jpg","mort":false,"fait":"déborde de 2570 px sur mobile"},{"dir":"au-comptoir-du-potager","nom":"Au Comptoir du Potager","act":"Restauration","tel":"+262262567437","route":"client-au-comptoir-du-potager","leur":"","vig":"/sites-clients/vignettes/au-comptoir-du-potager.jpg","avant":"","mort":false,"fait":""},{"dir":"beausejour-sportclub","nom":"Beauséjour SportClub","act":"Sport","tel":"+262262671081","route":"client-beausejour-sportclub","leur":"","vig":"/sites-clients/vignettes/beausejour-sportclub.jpg","avant":"/sites-clients/avant/beausejour-sportclub.jpg","mort":false,"fait":""},{"dir":"bigmat-brico400-quincaillerie-tampon","nom":"BIGMAT Brico 400","act":"Quincaillerie","tel":"+33974560144","route":"client-bigmat-brico400-quincaillerie-tampon","leur":"","vig":"/sites-clients/vignettes/bigmat-brico400-quincaillerie-tampon.jpg","avant":"","mort":false,"fait":""},{"dir":"blue-peche-au-gros","nom":"BLUE — Pêche au gros","act":"Pêche · Loisirs","tel":"+262692609010","route":"client-blue-peche-au-gros","leur":"","vig":"/sites-clients/vignettes/blue-peche-au-gros.jpg","avant":"/sites-clients/avant/blue-peche-au-gros.jpg","mort":false,"fait":"3 boutons sous 12 px"},{"dir":"bygladcafe-optimisation-seo","nom":"By Glad CAFÉ","act":"Boulangerie · Pâtisserie","tel":"+262262417403","route":"client-bygladcafe-optimisation-seo","leur":"","vig":"/sites-clients/vignettes/bygladcafe-optimisation-seo.jpg","avant":"/sites-clients/avant/bygladcafe-optimisation-seo.jpg","mort":false,"fait":"rien de mesurable à leur reprocher"},{"dir":"chemises-homme","nom":"Café Coton Réunion","act":"Café","tel":"+262262082942","route":"client-chemises-homme","leur":"","vig":"/sites-clients/vignettes/chemises-homme.jpg","avant":"/sites-clients/avant/chemises-homme.jpg","mort":false,"fait":""},{"dir":"centre-hospitalier-ouest-reunion","nom":"Centre Hospitalier Ouest Réunion","act":"Santé","tel":"0262453030","route":"client-centre-hospitalier-ouest-reunion","leur":"","vig":"/sites-clients/vignettes/centre-hospitalier-ouest-reunion.jpg","avant":"","mort":false,"fait":""},{"dir":"centre-sante-sport-performance-la-reunion","nom":"Centre Santé Sport &amp; Performance","act":"Santé","tel":"0262781487","route":"client-centre-sante-sport-performance-la-reunion","leur":"","vig":"/sites-clients/vignettes/centre-sante-sport-performance-la-reunion.jpg","avant":"","mort":false,"fait":""},{"dir":"clicknvan-location-vans-campingcars-pro","nom":"CLICKnVAN","act":"Location de véhicules","tel":"","route":"client-clicknvan-location-vans-campingcars-pro","leur":"","vig":"/sites-clients/vignettes/clicknvan-location-vans-campingcars-pro.jpg","avant":"/sites-clients/avant/clicknvan-location-vans-campingcars-pro.jpg","mort":false,"fait":"8 boutons pleine largeur"},{"dir":"clicknvan-location-vans-campingcars","nom":"CLICKnVAN (ancienne version)","act":"Location de véhicules","tel":"","route":"client-clicknvan-location-vans-campingcars","leur":"","vig":"/sites-clients/vignettes/clicknvan-location-vans-campingcars.jpg","avant":"/sites-clients/avant/clicknvan-location-vans-campingcars.jpg","mort":false,"fait":"8 boutons pleine largeur"},{"dir":"club-cafe-la-reunion","nom":"Club Café","act":"Restauration","tel":"+262692109181","route":"client-club-cafe-la-reunion","leur":"","vig":"/sites-clients/vignettes/club-cafe-la-reunion.jpg","avant":"/sites-clients/avant/club-cafe-la-reunion.jpg","mort":false,"fait":"2 boutons sous 12 px"},{"dir":"dan-cake-patisserie","nom":"Dan CaKe","act":"Boulangerie · Pâtisserie","tel":"+262692850959","route":"client-dan-cake-patisserie","leur":"","vig":"/sites-clients/vignettes/dan-cake-patisserie.jpg","avant":"/sites-clients/avant/dan-cake-patisserie.jpg","mort":false,"fait":"rien de mesurable à leur reprocher"},{"dir":"engen-reunion-optimisation-seo","nom":"Engen Réunion","act":"Énergie","tel":"+262262427676","route":"client-engen-reunion-optimisation-seo","leur":"","vig":"/sites-clients/vignettes/engen-reunion-optimisation-seo.jpg","avant":"/sites-clients/avant/engen-reunion-optimisation-seo.jpg","mort":false,"fait":"rien de mesurable à leur reprocher"},{"dir":"freedom-la-reunion-actualites","nom":"Free Dom","act":"Média · Presse","tel":"","route":"client-freedom-la-reunion-actualites","leur":"","vig":"/sites-clients/vignettes/freedom-la-reunion-actualites.jpg","avant":"/sites-clients/avant/freedom-la-reunion-actualites.jpg","mort":false,"fait":"12 boutons pleine largeur"},{"dir":"optimisation-site-seo","nom":"Gabarit SEO « SEO Expert »","act":"—","tel":"","route":"client-optimisation-site-seo","leur":"","vig":"/sites-clients/vignettes/optimisation-site-seo.jpg","avant":"","mort":false,"fait":""},{"dir":"optimisation-seo-site","nom":"Gabarit SEO « SEO Pro »","act":"—","tel":"","route":"client-optimisation-seo-site","leur":"","vig":"/sites-clients/vignettes/optimisation-seo-site.jpg","avant":"","mort":true,"fait":""},{"dir":"seo-optimisation-site","nom":"Gabarit SEO « SEOPro »","act":"—","tel":"","route":"client-seo-optimisation-site","leur":"","vig":"/sites-clients/vignettes/seo-optimisation-site.jpg","avant":"","mort":false,"fait":""},{"dir":"gep-sante-reunion","nom":"GEP Santé Réunion","act":"Santé","tel":"0262233826","route":"client-gep-sante-reunion","leur":"","vig":"/sites-clients/vignettes/gep-sante-reunion.jpg","avant":"","mort":false,"fait":""},{"dir":"gite-matilona-sainte-rose","nom":"Gîte Matilona","act":"Hébergement","tel":"+262692858686","route":"client-gite-matilona-sainte-rose","leur":"","vig":"/sites-clients/vignettes/gite-matilona-sainte-rose.jpg","avant":"/sites-clients/avant/gite-matilona-sainte-rose.jpg","mort":false,"fait":"1 bouton pleine largeur"},{"dir":"giulietta-pizzeria-saint-pierre","nom":"Giulietta","act":"Pizzeria","tel":"0262122019","route":"client-giulietta-pizzeria-saint-pierre","leur":"","vig":"/sites-clients/vignettes/giulietta-pizzeria-saint-pierre.jpg","avant":"/sites-clients/avant/giulietta-pizzeria-saint-pierre.jpg","mort":false,"fait":"1 bouton pleine largeur"},{"dir":"hotel-austral-saint-denis","nom":"Hôtel Austral Saint-Denis","act":"Hébergement","tel":"+262262948000","route":"client-hotel-austral-saint-denis","leur":"","vig":"/sites-clients/vignettes/hotel-austral-saint-denis.jpg","avant":"/sites-clients/avant/hotel-austral-saint-denis.jpg","mort":false,"fait":"1 bouton pleine largeur"},{"dir":"kmila-pizza-reunion","nom":"K'Mila Pizza","act":"Pizzeria","tel":"0262718879","route":"client-kmila-pizza-reunion","leur":"","vig":"/sites-clients/vignettes/kmila-pizza-reunion.jpg","avant":"","mort":false,"fait":""},{"dir":"l-andalouse-saint-joseph","nom":"L'andalouse à Saint Joseph","act":"Pizzeria","tel":"0262982312","route":"client-l-andalouse-saint-joseph","leur":"","vig":"/sites-clients/vignettes/l-andalouse-saint-joseph.jpg","avant":"","mort":true,"fait":""},{"dir":"latelier-de-ben-optimisation-seo","nom":"L'Atelier de Ben (doublon)","act":"—","tel":"","route":"client-latelier-de-ben-optimisation-seo","leur":"","vig":"/sites-clients/vignettes/latelier-de-ben-optimisation-seo.jpg","avant":"/sites-clients/avant/latelier-de-ben-optimisation-seo.jpg","mort":false,"fait":"rien de mesurable à leur reprocher"},{"dir":"latelier-traiteur-reunion","nom":"L'Atelier Traiteur","act":"Traiteur","tel":"+262692979730","route":"client-latelier-traiteur-reunion","leur":"","vig":"/sites-clients/vignettes/latelier-traiteur-reunion.jpg","avant":"/sites-clients/avant/latelier-traiteur-reunion.jpg","mort":false,"fait":"1 bouton pleine largeur"},{"dir":"latelier-traiteur-la-reunion","nom":"L'Atelier Traiteur (doublon)","act":"Traiteur","tel":"+262692979730","route":"client-latelier-traiteur-la-reunion","leur":"","vig":"/sites-clients/vignettes/latelier-traiteur-la-reunion.jpg","avant":"","mort":false,"fait":""},{"dir":"limperiale-kazumi-re","nom":"L'Impériale Kazumi","act":"Pizzeria","tel":"0693940380","route":"client-limperiale-kazumi-re","leur":"","vig":"/sites-clients/vignettes/limperiale-kazumi-re.jpg","avant":"","mort":false,"fait":""},{"dir":"educateur-canin-la-reunion","nom":"La bande à Clem","act":"Services animaliers","tel":"+33787249794","route":"client-educateur-canin-la-reunion","leur":"","vig":"/sites-clients/vignettes/educateur-canin-la-reunion.jpg","avant":"/sites-clients/avant/educateur-canin-la-reunion.jpg","mort":false,"fait":""},{"dir":"la-casa-blanca","nom":"La Casa Blanca","act":"—","tel":"+262262735090","route":"client-la-casa-blanca","leur":"","vig":"/sites-clients/vignettes/la-casa-blanca.jpg","avant":"/sites-clients/avant/la-casa-blanca.jpg","mort":false,"fait":"rien de mesurable à leur reprocher"},{"dir":"lagare-brasserie-optimisation-seo","nom":"La Gare Brasserie","act":"Restauration","tel":"+262262744973","route":"client-lagare-brasserie-optimisation-seo","leur":"","vig":"/sites-clients/vignettes/lagare-brasserie-optimisation-seo.jpg","avant":"/sites-clients/avant/lagare-brasserie-optimisation-seo.jpg","mort":false,"fait":"rien de mesurable à leur reprocher"},{"dir":"la-kantine-traiteur-oriental","nom":"LA KANTINE — traiteur oriental","act":"Traiteur","tel":"","route":"client-la-kantine-traiteur-oriental","leur":"","vig":"/sites-clients/vignettes/la-kantine-traiteur-oriental.jpg","avant":"/sites-clients/avant/la-kantine-traiteur-oriental.jpg","mort":false,"fait":"rien de mesurable à leur reprocher"},{"dir":"la-kantine-optimisation-seo","nom":"LA KANTINE (doublon SEO)","act":"Traiteur","tel":"","route":"client-la-kantine-optimisation-seo","leur":"","vig":"/sites-clients/vignettes/la-kantine-optimisation-seo.jpg","avant":"/sites-clients/avant/la-kantine-optimisation-seo.jpg","mort":false,"fait":"rien de mesurable à leur reprocher"},{"dir":"la-kantine-traiteur","nom":"LA KANTINE (doublon)","act":"Traiteur","tel":"","route":"client-la-kantine-traiteur","leur":"","vig":"/sites-clients/vignettes/la-kantine-traiteur.jpg","avant":"","mort":false,"fait":""},{"dir":"koytcha-conseil-landing-premium","nom":"Laplace / Koytcha Conseil","act":"Immobilier · Conseil","tel":"+262262979607","route":"client-koytcha-conseil-landing-premium","leur":"","vig":"/sites-clients/vignettes/koytcha-conseil-landing-premium.jpg","avant":"","mort":false,"fait":""},{"dir":"le-bao-restaurant-saint-pierre-974","nom":"Le BàO","act":"Restauration","tel":"+262262248201","route":"client-le-bao-restaurant-saint-pierre-974","leur":"","vig":"/sites-clients/vignettes/le-bao-restaurant-saint-pierre-974.jpg","avant":"","mort":true,"fait":""},{"dir":"le-bonbon-de-pain","nom":"Le Bonbon de Pain","act":"Boulangerie · Pâtisserie","tel":"","route":"client-le-bonbon-de-pain","leur":"","vig":"/sites-clients/vignettes/le-bonbon-de-pain.jpg","avant":"/sites-clients/avant/le-bonbon-de-pain.jpg","mort":false,"fait":"3 boutons pleine largeur"},{"dir":"restaurant-creole-lecaritologue","nom":"LE CARITOLOGUE","act":"Restauration","tel":"+262692799992","route":"client-restaurant-creole-lecaritologue","leur":"","vig":"/sites-clients/vignettes/restaurant-creole-lecaritologue.jpg","avant":"/sites-clients/avant/restaurant-creole-lecaritologue.jpg","mort":false,"fait":"rien de mesurable à leur reprocher"},{"dir":"le-comptoir-saint-michel-nancy","nom":"Le Comptoir Saint Michel","act":"Restauration","tel":"+33355400399","route":"client-le-comptoir-saint-michel-nancy","leur":"","vig":"/sites-clients/vignettes/le-comptoir-saint-michel-nancy.jpg","avant":"/sites-clients/avant/le-comptoir-saint-michel-nancy.jpg","mort":false,"fait":""},{"dir":"le-glacier-de-marie-b","nom":"Le Glacier de Marie B","act":"Boulangerie · Pâtisserie","tel":"0262245306","route":"client-le-glacier-de-marie-b","leur":"","vig":"/sites-clients/vignettes/le-glacier-de-marie-b.jpg","avant":"","mort":false,"fait":""},{"dir":"contact-le-gourmand","nom":"Le Gourmand","act":"Formation","tel":"+262262599853","route":"client-contact-le-gourmand","leur":"","vig":"/sites-clients/vignettes/contact-le-gourmand.jpg","avant":"/sites-clients/avant/contact-le-gourmand.jpg","mort":false,"fait":"rien de mesurable à leur reprocher"},{"dir":"le-majeur-nancy","nom":"Le Majeur 2.0","act":"Restauration","tel":"+33951135394","route":"client-le-majeur-nancy","leur":"","vig":"/sites-clients/vignettes/le-majeur-nancy.jpg","avant":"/sites-clients/avant/le-majeur-nancy.jpg","mort":false,"fait":"déborde de 65 px sur mobile"},{"dir":"boulangerie-le-mamita","nom":"Le Mamita","act":"Boulangerie · Pâtisserie","tel":"+262262212107","route":"client-boulangerie-le-mamita","leur":"","vig":"/sites-clients/vignettes/boulangerie-le-mamita.jpg","avant":"/sites-clients/avant/boulangerie-le-mamita.jpg","mort":false,"fait":"1 bouton sous 12 px"},{"dir":"relais-des-cimes","nom":"Le Relais des Cimes","act":"Hébergement","tel":"+262262478158","route":"client-relais-des-cimes","leur":"","vig":"/sites-clients/vignettes/relais-des-cimes.jpg","avant":"/sites-clients/avant/relais-des-cimes.jpg","mort":false,"fait":"rien de mesurable à leur reprocher"},{"dir":"restaurant-franco-portugais-coulommiers","nom":"Le Saint-Pierre — Coulommiers","act":"Restauration","tel":"+33974562539","route":"client-restaurant-franco-portugais-coulommiers","leur":"","vig":"/sites-clients/vignettes/restaurant-franco-portugais-coulommiers.jpg","avant":"","mort":false,"fait":""},{"dir":"le-somet-by-nono","nom":"Le So'Met By Nono","act":"Restauration","tel":"+262692765119","route":"client-le-somet-by-nono","leur":"","vig":"/sites-clients/vignettes/le-somet-by-nono.jpg","avant":"","mort":true,"fait":""},{"dir":"vieux-pressoir","nom":"Le Vieux Pressoir","act":"Restauration","tel":"","route":"client-vieux-pressoir","leur":"","vig":"/sites-clients/vignettes/vieux-pressoir.jpg","avant":"/sites-clients/avant/vieux-pressoir.jpg","mort":false,"fait":""},{"dir":"le786-halal-commande-en-ligne","nom":"Le786","act":"—","tel":"","route":"client-le786-halal-commande-en-ligne","leur":"","vig":"/sites-clients/vignettes/le786-halal-commande-en-ligne.jpg","avant":"/sites-clients/avant/le786-halal-commande-en-ligne.jpg","mort":false,"fait":""},{"dir":"lespetitesmainsdelisa-optimized","nom":"Les Petites Mains de Lisa","act":"—","tel":"","route":"client-lespetitesmainsdelisa-optimized","leur":"","vig":"/sites-clients/vignettes/lespetitesmainsdelisa-optimized.jpg","avant":"","mort":false,"fait":""},{"dir":"guide-peche-mouche-reunion-verdon-alpes","nom":"Les Sens de la Rivière","act":"Pêche · Loisirs","tel":"","route":"client-guide-peche-mouche-reunion-verdon-alpes","leur":"","vig":"/sites-clients/vignettes/guide-peche-mouche-reunion-verdon-alpes.jpg","avant":"/sites-clients/avant/guide-peche-mouche-reunion-verdon-alpes.jpg","mort":false,"fait":""},{"dir":"photographe-immobilier-reunion","nom":"Ludovic RIVIERE","act":"Immobilier · Conseil","tel":"","route":"client-photographe-immobilier-reunion","leur":"","vig":"/sites-clients/vignettes/photographe-immobilier-reunion.jpg","avant":"/sites-clients/avant/photographe-immobilier-reunion.jpg","mort":false,"fait":""},{"dir":"mamzelle-pizza-ile-de-la-reunion","nom":"Mam'Zelle Pizza","act":"Pizzeria","tel":"0262028442","route":"client-mamzelle-pizza-ile-de-la-reunion","leur":"","vig":"/sites-clients/vignettes/mamzelle-pizza-ile-de-la-reunion.jpg","avant":"/sites-clients/avant/mamzelle-pizza-ile-de-la-reunion.jpg","mort":false,"fait":"rien de mesurable à leur reprocher"},{"dir":"mamzelle-pizza-ile-reunion","nom":"Mam'Zelle Pizza (doublon)","act":"Pizzeria","tel":"+262262028442","route":"client-mamzelle-pizza-ile-reunion","leur":"","vig":"/sites-clients/vignettes/mamzelle-pizza-ile-reunion.jpg","avant":"","mort":false,"fait":""},{"dir":"mamzelle-pizza-optimisation","nom":"Mam'Zelle Pizza (doublon)","act":"Pizzeria","tel":"0262028442","route":"client-mamzelle-pizza-optimisation","leur":"","vig":"/sites-clients/vignettes/mamzelle-pizza-optimisation.jpg","avant":"/sites-clients/avant/mamzelle-pizza-optimisation.jpg","mort":false,"fait":"rien de mesurable à leur reprocher"},{"dir":"marie-blachere-possession","nom":"Marie Blachère — La Possession","act":"Boulangerie · Pâtisserie","tel":"","route":"client-marie-blachere-possession","leur":"","vig":"/sites-clients/vignettes/marie-blachere-possession.jpg","avant":"/sites-clients/avant/marie-blachere-possession.jpg","mort":false,"fait":"rien de mesurable à leur reprocher"},{"dir":"mediterraneo-restaurant-italien-saint-denis","nom":"Mediterraneo","act":"Restauration","tel":"+262262134702","route":"client-mediterraneo-restaurant-italien-saint-denis","leur":"","vig":"/sites-clients/vignettes/mediterraneo-restaurant-italien-saint-denis.jpg","avant":"/sites-clients/avant/mediterraneo-restaurant-italien-saint-denis.jpg","mort":false,"fait":"rien de mesurable à leur reprocher"},{"dir":"resto-automatisationboost","nom":"MenuAuto (produit interne)","act":"Restauration","tel":"","route":"client-resto-automatisationboost","leur":"","vig":"/sites-clients/vignettes/resto-automatisationboost.jpg","avant":"","mort":false,"fait":""},{"dir":"metisse-reception-saint-pierre","nom":"Métisse Réception","act":"Événementiel","tel":"+262692727736","route":"client-metisse-reception-saint-pierre","leur":"","vig":"/sites-clients/vignettes/metisse-reception-saint-pierre.jpg","avant":"/sites-clients/avant/metisse-reception-saint-pierre.jpg","mort":false,"fait":"3 boutons pleine largeur"},{"dir":"mio-pizza-la-reunion","nom":"MIO Pizza","act":"Pizzeria","tel":"+262262240011","route":"client-mio-pizza-la-reunion","leur":"","vig":"/sites-clients/vignettes/mio-pizza-la-reunion.jpg","avant":"/sites-clients/avant/mio-pizza-la-reunion.jpg","mort":false,"fait":"rien de mesurable à leur reprocher"},{"dir":"mrservices-optimized","nom":"Mr Services","act":"—","tel":"","route":"client-mrservices-optimized","leur":"","vig":"/sites-clients/vignettes/mrservices-optimized.jpg","avant":"","mort":false,"fait":""},{"dir":"ofim-reunion","nom":"OFIM Réunion","act":"Immobilier · Conseil","tel":"","route":"client-ofim-reunion","leur":"","vig":"/sites-clients/vignettes/ofim-reunion.jpg","avant":"","mort":false,"fait":""},{"dir":"osmose-saint-pierre","nom":"Osmose Bistro","act":"Restauration","tel":"+262693628829","route":"client-osmose-saint-pierre","leur":"","vig":"/sites-clients/vignettes/osmose-saint-pierre.jpg","avant":"/sites-clients/avant/osmose-saint-pierre.jpg","mort":false,"fait":"déborde de 190 px sur mobile"},{"dir":"peche-au-gros-reunion","nom":"Pêche au Gros Réunion","act":"Pêche · Loisirs","tel":"","route":"client-peche-au-gros-reunion","leur":"","vig":"/sites-clients/vignettes/peche-au-gros-reunion.jpg","avant":"/sites-clients/avant/peche-au-gros-reunion.jpg","mort":false,"fait":""},{"dir":"picard-moulin-la-possession","nom":"Picard Moulin Joli — La Possession","act":"Plats préparés","tel":"+262262493202","route":"client-picard-moulin-la-possession","leur":"","vig":"/sites-clients/vignettes/picard-moulin-la-possession.jpg","avant":"/sites-clients/avant/picard-moulin-la-possession.jpg","mort":false,"fait":"1 bouton pleine largeur"},{"dir":"pizza-club-saint-pierre","nom":"Pizza Club Saint-Pierre","act":"Pizzeria","tel":"0262668230","route":"client-pizza-club-saint-pierre","leur":"","vig":"/sites-clients/vignettes/pizza-club-saint-pierre.jpg","avant":"","mort":false,"fait":""},{"dir":"pizza-di-muro-optimisation-seo","nom":"Pizza Di Muro","act":"Pizzeria","tel":"","route":"client-pizza-di-muro-optimisation-seo","leur":"","vig":"/sites-clients/vignettes/pizza-di-muro-optimisation-seo.jpg","avant":"/sites-clients/avant/pizza-di-muro-optimisation-seo.jpg","mort":false,"fait":"3 boutons pleine largeur"},{"dir":"pizza-di-muro-optimisation","nom":"Pizza Di Muro (doublon)","act":"Pizzeria","tel":"","route":"client-pizza-di-muro-optimisation","leur":"","vig":"/sites-clients/vignettes/pizza-di-muro-optimisation.jpg","avant":"/sites-clients/avant/pizza-di-muro-optimisation.jpg","mort":false,"fait":"3 boutons pleine largeur"},{"dir":"pizza-di-muro-seo-optimisation","nom":"Pizza Di Muro (doublon)","act":"Pizzeria","tel":"","route":"client-pizza-di-muro-seo-optimisation","leur":"","vig":"/sites-clients/vignettes/pizza-di-muro-seo-optimisation.jpg","avant":"/sites-clients/avant/pizza-di-muro-seo-optimisation.jpg","mort":false,"fait":"3 boutons pleine largeur"},{"dir":"planb-restaurant-burgers-saint-denis","nom":"Plan B","act":"Restauration","tel":"0693771169","route":"client-planb-restaurant-burgers-saint-denis","leur":"","vig":"/sites-clients/vignettes/planb-restaurant-burgers-saint-denis.jpg","avant":"/sites-clients/avant/planb-restaurant-burgers-saint-denis.jpg","mort":false,"fait":"rien de mesurable à leur reprocher"},{"dir":"planet-pizza","nom":"Planet Pizza","act":"Pizzeria","tel":"","route":"client-planet-pizza","leur":"","vig":"/sites-clients/vignettes/planet-pizza.jpg","avant":"/sites-clients/avant/planet-pizza.jpg","mort":false,"fait":""},{"dir":"qualitropic-bioeconomie-tropicale","nom":"Qualitropic","act":"Agroalimentaire","tel":"+262262971088","route":"client-qualitropic-bioeconomie-tropicale","leur":"","vig":"/sites-clients/vignettes/qualitropic-bioeconomie-tropicale.jpg","avant":"/sites-clients/avant/qualitropic-bioeconomie-tropicale.jpg","mort":false,"fait":"rien de mesurable à leur reprocher"},{"dir":"reatchy-snack-bar","nom":"R'eat'Chy","act":"Restauration","tel":"+262692117273","route":"client-reatchy-snack-bar","leur":"","vig":"/sites-clients/vignettes/reatchy-snack-bar.jpg","avant":"/sites-clients/avant/reatchy-snack-bar.jpg","mort":false,"fait":"rien de mesurable à leur reprocher"},{"dir":"reatchy-snackbar-optimisation","nom":"R'eat'Chy (doublon)","act":"Restauration","tel":"+262692117273","route":"client-reatchy-snackbar-optimisation","leur":"","vig":"/sites-clients/vignettes/reatchy-snackbar-optimisation.jpg","avant":"/sites-clients/avant/reatchy-snackbar-optimisation.jpg","mort":false,"fait":"rien de mesurable à leur reprocher"},{"dir":"sunlight-fm-optimisation-seo","nom":"Radio SunLight FM","act":"Média · Radio","tel":"","route":"client-sunlight-fm-optimisation-seo","leur":"","vig":"/sites-clients/vignettes/sunlight-fm-optimisation-seo.jpg","avant":"/sites-clients/avant/sunlight-fm-optimisation-seo.jpg","mort":false,"fait":"rien de mesurable à leur reprocher"},{"dir":"bateau-pirate-restaurant","nom":"Restaurant Bateau Pirate","act":"Restauration","tel":"+262262125273","route":"client-bateau-pirate-restaurant","leur":"","vig":"/sites-clients/vignettes/bateau-pirate-restaurant.jpg","avant":"/sites-clients/avant/bateau-pirate-restaurant.jpg","mort":false,"fait":"rien de mesurable à leur reprocher"},{"dir":"restaurant-bateau-pirate","nom":"Restaurant Bateau Pirate (doublon)","act":"Restauration","tel":"+262262125273","route":"client-restaurant-bateau-pirate","leur":"","vig":"/sites-clients/vignettes/restaurant-bateau-pirate.jpg","avant":"/sites-clients/avant/restaurant-bateau-pirate.jpg","mort":false,"fait":"rien de mesurable à leur reprocher"},{"dir":"lartabiata-restaurant-fr","nom":"Restaurant L'Art Abiata","act":"Restauration","tel":"+262693536363","route":"client-lartabiata-restaurant-fr","leur":"","vig":"/sites-clients/vignettes/lartabiata-restaurant-fr.jpg","avant":"/sites-clients/avant/lartabiata-restaurant-fr.jpg","mort":false,"fait":"3 boutons sous 12 px"},{"dir":"restaurant-la-fabrique-saint-denis","nom":"Restaurant La Fabrique","act":"Restauration","tel":"+262262198060","route":"client-restaurant-la-fabrique-saint-denis","leur":"","vig":"/sites-clients/vignettes/restaurant-la-fabrique-saint-denis.jpg","avant":"/sites-clients/avant/restaurant-la-fabrique-saint-denis.jpg","mort":false,"fait":"pas de balise viewport"},{"dir":"restaurant-la-parenthese-latitude21","nom":"Restaurant La Parenthèse","act":"Restauration","tel":"+262262331333","route":"client-restaurant-la-parenthese-latitude21","leur":"","vig":"/sites-clients/vignettes/restaurant-la-parenthese-latitude21.jpg","avant":"/sites-clients/avant/restaurant-la-parenthese-latitude21.jpg","mort":false,"fait":"déborde de 15 px sur mobile"},{"dir":"restaurant-la-piscine-melun","nom":"Restaurant La Piscine","act":"Restauration","tel":"+33160990079","route":"client-restaurant-la-piscine-melun","leur":"","vig":"/sites-clients/vignettes/restaurant-la-piscine-melun.jpg","avant":"/sites-clients/avant/restaurant-la-piscine-melun.jpg","mort":false,"fait":"5 boutons pleine largeur"},{"dir":"restaurant-le-bourg-murat","nom":"Restaurant Le Bourg Murat","act":"Restauration","tel":"+262262593612","route":"client-restaurant-le-bourg-murat","leur":"","vig":"/sites-clients/vignettes/restaurant-le-bourg-murat.jpg","avant":"/sites-clients/avant/restaurant-le-bourg-murat.jpg","mort":false,"fait":"rien de mesurable à leur reprocher"},{"dir":"salaisons-de-bourbon","nom":"Salaisons de Bourbon","act":"Agroalimentaire","tel":"+262262250176","route":"client-salaisons-de-bourbon","leur":"","vig":"/sites-clients/vignettes/salaisons-de-bourbon.jpg","avant":"","mort":false,"fait":""},{"dir":"sistbi-optimisation-seo","nom":"SISTBI","act":"Santé","tel":"+262262572572","route":"client-sistbi-optimisation-seo","leur":"","vig":"/sites-clients/vignettes/sistbi-optimisation-seo.jpg","avant":"/sites-clients/avant/sistbi-optimisation-seo.jpg","mort":false,"fait":"3 boutons pleine largeur"},{"dir":"smokehouse-reunion","nom":"SMOK'EAT","act":"Restauration","tel":"+262693879840","route":"client-smokehouse-reunion","leur":"","vig":"/sites-clients/vignettes/smokehouse-reunion.jpg","avant":"/sites-clients/avant/smokehouse-reunion.jpg","mort":false,"fait":""},{"dir":"sphb-optimisation-seo","nom":"SPHB","act":"Agroalimentaire","tel":"+262262357696","route":"client-sphb-optimisation-seo","leur":"","vig":"/sites-clients/vignettes/sphb-optimisation-seo.jpg","avant":"/sites-clients/avant/sphb-optimisation-seo.jpg","mort":false,"fait":"3 boutons pleine largeur"},{"dir":"sphb-production-huiles-bourbon","nom":"SPHB (doublon)","act":"Agroalimentaire","tel":"+262262357696","route":"client-sphb-production-huiles-bourbon","leur":"","vig":"/sites-clients/vignettes/sphb-production-huiles-bourbon.jpg","avant":"/sites-clients/avant/sphb-production-huiles-bourbon.jpg","mort":false,"fait":"3 boutons pleine largeur"},{"dir":"sphb-production-huiles-optimisation","nom":"SPHB (doublon)","act":"Agroalimentaire","tel":"+262262357696","route":"client-sphb-production-huiles-optimisation","leur":"","vig":"/sites-clients/vignettes/sphb-production-huiles-optimisation.jpg","avant":"/sites-clients/avant/sphb-production-huiles-optimisation.jpg","mort":false,"fait":"3 boutons pleine largeur"},{"dir":"sphb-production-huiles-optimise","nom":"SPHB (doublon)","act":"Agroalimentaire","tel":"+262262357696","route":"client-sphb-production-huiles-optimise","leur":"","vig":"/sites-clients/vignettes/sphb-production-huiles-optimise.jpg","avant":"/sites-clients/avant/sphb-production-huiles-optimise.jpg","mort":false,"fait":"3 boutons pleine largeur"},{"dir":"sud-hotel-reunion","nom":"Sud Hôtel Le Tampon","act":"Hébergement","tel":"+262262270790","route":"client-sud-hotel-reunion","leur":"","vig":"/sites-clients/vignettes/sud-hotel-reunion.jpg","avant":"/sites-clients/avant/sud-hotel-reunion.jpg","mort":false,"fait":"déborde de 15 px sur mobile"},{"dir":"plats-frais-surgeles-saint-pierre","nom":"Sud Service Traiteur","act":"Traiteur","tel":"+262974563547","route":"client-plats-frais-surgeles-saint-pierre","leur":"","vig":"/sites-clients/vignettes/plats-frais-surgeles-saint-pierre.jpg","avant":"","mort":false,"fait":""},{"dir":"plat-frais-surgeles-saint-pierre","nom":"Sud Service Traiteur (doublon)","act":"Traiteur","tel":"0974563547","route":"client-plat-frais-surgeles-saint-pierre","leur":"","vig":"/sites-clients/vignettes/plat-frais-surgeles-saint-pierre.jpg","avant":"","mort":false,"fait":""},{"dir":"ti-terre-sainte-pizzeria","nom":"Ti' Terre Sainte","act":"Pizzeria","tel":"0692068688","route":"client-ti-terre-sainte-pizzeria","leur":"","vig":"/sites-clients/vignettes/ti-terre-sainte-pizzeria.jpg","avant":"","mort":false,"fait":""},{"dir":"transcontinents-voyages-ile-maurice","nom":"Transcontinents Voyages","act":"Transport · Voyage","tel":"","route":"client-transcontinents-voyages-ile-maurice","leur":"","vig":"/sites-clients/vignettes/transcontinents-voyages-ile-maurice.jpg","avant":"/sites-clients/avant/transcontinents-voyages-ile-maurice.jpg","mort":false,"fait":"1 bouton pleine largeur"},{"dir":"guide-peche-reunion-ttfishing","nom":"TTFishing","act":"Pêche · Loisirs","tel":"+262692638741","route":"client-guide-peche-reunion-ttfishing","leur":"","vig":"/sites-clients/vignettes/guide-peche-reunion-ttfishing.jpg","avant":"","mort":true,"fait":""},{"dir":"villa-fleurie-restaurant-seminaires","nom":"Villa Fleurié","act":"Restauration","tel":"0262803803","route":"client-villa-fleurie-restaurant-seminaires","leur":"","vig":"/sites-clients/vignettes/villa-fleurie-restaurant-seminaires.jpg","avant":"","mort":false,"fait":""},{"dir":"vtc-reunion-optimisation","nom":"VTC Réunion","act":"Transport · Voyage","tel":"+262692549074","route":"client-vtc-reunion-optimisation","leur":"","vig":"/sites-clients/vignettes/vtc-reunion-optimisation.jpg","avant":"/sites-clients/avant/vtc-reunion-optimisation.jpg","mort":false,"fait":""},{"dir":"vtc-reunion-felixtransports","nom":"VTC Réunion — Felix Transports","act":"Transport · Voyage","tel":"","route":"client-vtc-reunion-felixtransports","leur":"","vig":"/sites-clients/vignettes/vtc-reunion-felixtransports.jpg","avant":"","mort":false,"fait":""}];
+(function(){
+  var SERVEUR = 'https://n7n.automatisationboost.com/webhook/sites-etat';
+  var CLE = 'etat_sites_clients';           /* MÊME clé que vue.html : un seul cache */
+  var etat = {};
+  try { etat = JSON.parse(localStorage.getItem(CLE) || '{}'); } catch (_) { etat = {}; }
+
+  var tm = document.getElementById('tm');
+  function dire(t, c){ tm.textContent = t; tm.className = 'tm ' + (c || ''); }
+  function cache(){ try { localStorage.setItem(CLE, JSON.stringify(etat)); } catch (_) {} }
+
+  /* Un envoi à la fois, et un drapeau « sale » plutôt qu'une minuterie annulable :
+     si un envoi est en vol quand le suivant part, l'annuler perdrait la décision. */
+  var enVol = false, sale = false, minuterie = null;
+  function envoyer(){
+    if (enVol) { sale = true; return; }
+    enVol = true; sale = false; dire('enregistrement…', 'encours');
+    fetch(SERVEUR, { method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify(etat) })
+      .then(function(r){ if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+      .then(function(){ dire('enregistré', 'ok'); })
+      .catch(function(){ dire('hors ligne — gardé sur cet appareil', 'ko'); })
+      .then(function(){ enVol = false; if (sale) envoyer(); });
+  }
+  function sauver(){ cache(); if (minuterie) clearTimeout(minuterie);
+    minuterie = setTimeout(function(){ minuterie = null; envoyer(); }, 700); dire('modifié…', 'encours'); }
+
+  var file = [], k = 0, tousRevoir = false;
+  var zone = document.getElementById('zone'), ap = document.getElementById('ap'), av = document.getElementById('av');
+  var rien = document.getElementById('rien'), bBasc = document.getElementById('bBasc'), etiq = document.getElementById('etiq');
+  var nom = document.getElementById('nom'), meta = document.getElementById('meta'), fa = document.getElementById('fait');
+  var liens = document.getElementById('liens'), note = document.getElementById('note');
+  var jauge = document.getElementById('jauge'), cpt = document.getElementById('cpt');
+  var ecran = document.getElementById('ecran'), fin = document.getElementById('fin'), finTxt = document.getElementById('finTxt');
+
+  function construire(){
+    file = SITES.filter(function(s){ return tousRevoir || !(etat[s.dir] && etat[s.dir].etat); });
+    k = 0;
+  }
+  function peindre(){
+    var n = SITES.length, decides = SITES.filter(function(s){ return etat[s.dir] && etat[s.dir].etat; }).length;
+    jauge.style.width = Math.round(decides / n * 100) + '%';
+    cpt.textContent = decides + ' / ' + n + ' décidés';
+    if (k >= file.length){
+      ecran.hidden = true; fin.hidden = false;
+      finTxt.textContent = decides + ' sites sur ' + n + ' ont une décision. ' +
+        SITES.filter(function(s){ return etat[s.dir] && etat[s.dir].etat === 'fix'; }).length + ' à corriger.';
+      return;
+    }
+    ecran.hidden = false; fin.hidden = true;
+    var s = file[k];
+    zone.classList.remove('avant'); etiq.textContent = 'Ma maquette';
+    ap.src = s.vig; ap.alt = 'Maquette de ' + s.nom;
+    if (s.avant){ av.src = s.avant; av.alt = 'Site actuel de ' + s.nom; bBasc.hidden = false; rien.hidden = true; }
+    else { av.removeAttribute('src'); bBasc.hidden = true; }
+    nom.textContent = s.nom;
+    meta.textContent = [s.act, s.tel, s.mort ? 'leur site est hors ligne' : (s.avant ? '' : 'aucune capture de leur site')]
+      .filter(Boolean).join(' · ');
+    fa.textContent = s.fait ? 'Chez eux : ' + s.fait : '';
+    liens.innerHTML = '<a href="/' + s.route + '/" target="_blank" rel="noopener">Ma maquette en grand</a>'
+      + (s.leur && !s.mort ? '<a href="' + s.leur + '" target="_blank" rel="noopener">Leur site</a>' : '')
+      + (s.tel ? '<a href="tel:' + s.tel + '">Appeler</a>' : '');
+    note.value = (etat[s.dir] && etat[s.dir].note) || '';
+  }
+  function decider(e){
+    var s = file[k];
+    if (e === 'abandon' && !note.value.trim()){
+      note.placeholder = 'Dis pourquoi tu abandonnes — sinon dans trois semaines la raison est perdue.';
+      note.focus(); return;
+    }
+    var d = etat[s.dir] || { f: 0, note: '' };
+    d.etat = e; d.note = note.value;
+    etat[s.dir] = d; sauver();
+    k++; peindre();
+  }
+  document.getElementById('bFix').onclick = function(){ decider('fix'); };
+  document.getElementById('bAb').onclick  = function(){ decider('abandon'); };
+  document.getElementById('bOk').onclick  = function(){ decider('ok'); };
+  document.getElementById('bPasser').onclick = function(){ k++; peindre(); };
+  bBasc.onclick = function(){
+    zone.classList.toggle('avant');
+    var a = zone.classList.contains('avant');
+    etiq.textContent = a ? 'Leur site aujourd’hui' : 'Ma maquette';
+    bBasc.textContent = a ? 'Voir après' : 'Voir avant';
+  };
+  document.getElementById('bRevoir').onclick = document.getElementById('bRevoir2').onclick = function(){
+    tousRevoir = true; construire(); peindre();
+  };
+  document.addEventListener('keydown', function(ev){
+    if (ev.target === note) return;
+    if (ev.key === 'ArrowRight') decider('ok');
+    else if (ev.key === 'ArrowLeft') decider('fix');
+    else if (ev.key === 'ArrowDown') decider('abandon');
+    else if (ev.key === ' ') { ev.preventDefault(); bBasc.click(); }
+  });
+  /* Glissé horizontal : le geste du pouce, celui de /tri/. Le seuil est à 60 px
+     pour qu'un défilement vertical ne déclenche jamais une décision. */
+  var x0 = null, y0 = null;
+  zone.addEventListener('touchstart', function(e){ x0 = e.touches[0].clientX; y0 = e.touches[0].clientY; }, { passive: true });
+  zone.addEventListener('touchend', function(e){
+    if (x0 === null) return;
+    var dx = e.changedTouches[0].clientX - x0, dy = e.changedTouches[0].clientY - y0;
+    x0 = null;
+    if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy)) decider(dx > 0 ? 'ok' : 'fix');
+    else if (dy > 70 && Math.abs(dy) > Math.abs(dx)) decider('abandon');
+  }, { passive: true });
+
+  /* Au chargement le serveur écrase le cache — c'est ce qui permet de trier sur
+     le téléphone et de retrouver les mêmes décisions sur l'ordinateur. Filet :
+     un serveur vide face à un appareil qui a des décisions ne les efface pas. */
+  dire('lecture…', 'encours');
+  fetch(SERVEUR, { cache: 'no-store' })
+    .then(function(r){ if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+    .then(function(j){
+      var d = {}; try { d = JSON.parse(j.donnees || '{}'); } catch (_) { d = {}; }
+      if (Object.keys(d).length === 0 && Object.keys(etat).length > 0){ dire('appareil plus récent — envoi', 'encours'); envoyer(); }
+      else { etat = d; cache(); dire('à jour', 'ok'); }
+    })
+    .catch(function(){ dire('hors ligne — décisions locales', 'ko'); })
+    .then(function(){ construire(); peindre(); });
+})();
+</script>
