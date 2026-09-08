@@ -206,6 +206,33 @@ img{max-width:100%;display:block}
      une boite sale ; c est le backdrop-filter qui fait le verre. */
   backdrop-filter:blur(18px) saturate(115%);
   -webkit-backdrop-filter:blur(18px) saturate(115%)}
+/* ── Anneau neon rose autour du module au survol ────────────────────────
+   Meme mecanique que sur les vignettes de realisations : un degrade conique
+   dont l angle tourne. Il vit derriere la boite (z-index -1), on ne voit
+   donc que le liseré qui depasse. */
+.boite{position:relative;isolation:isolate}
+.boite::before,.boite::after{content:'';position:absolute;inset:-2px;border-radius:5px;
+  z-index:-1;opacity:0;pointer-events:none;transition:opacity .4s ease;
+  /* Le masque ne garde que le liseré. Sans lui le degrade remplissait le
+     rectangle entier et, la boite etant du verre translucide (fond a 13 %),
+     il se voyait AU TRAVERS : la moitie du module virait au rose plein. */
+  padding:2px;
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+          mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;mask-composite:exclude;
+  background:conic-gradient(from var(--tour),
+    rgba(230,0,126,0) 0deg 236deg,
+    rgba(230,0,126,.9) 286deg,
+    #ffa3de 312deg,
+    rgba(230,0,126,.9) 338deg,
+    rgba(230,0,126,0) 360deg)}
+.boite::after{inset:-5px;padding:3px;filter:blur(9px)}
+.boite:hover::before,.boite:focus-within::before{opacity:1;animation:tour-neon 3s linear infinite}
+.boite:hover::after,.boite:focus-within::after{opacity:.85;animation:tour-neon 3s linear infinite}
+@media (prefers-reduced-motion:reduce){
+  .boite:hover::before,.boite:hover::after,
+  .boite:focus-within::before,.boite:focus-within::after{animation:none}
+}
 .boite h2{font-family:var(--sans);font-weight:400;font-size:18px;margin:0 0 18px;color:#fff}
 .boite h2 b{color:#fff;font-weight:600}
 .boite h2 b{color:var(--magenta);font-weight:600}
@@ -311,13 +338,36 @@ img{max-width:100%;display:block}
 .boite .app .MuiToggleButton-root[aria-pressed="true"]{background:#fff;border-color:#fff;
   color:var(--magenta);font-weight:600}
 /* react-select : le champ blanc par defaut trouait le verre. */
+/* Le module heritait de la police du navigateur : react-select rend ses
+   propres noeuds et rien ne leur imposait la police du site. */
+.boite .app,.boite .app *{font-family:var(--sans)}
+/* ... mais une icone Font Awesome EST un caractere d une police dediee :
+   la regle ci-dessus la remplacait par Normatica et les pictogrammes
+   tombaient en carre vide. On la leur rend. */
+.boite .app .fa,.boite .app .fas,.boite .app .far,.boite .app .fab,
+.boite .app [class^="fa-"],.boite .app [class*=" fa-"]{
+  font-family:"Font Awesome 6 Free","Font Awesome 6 Brands","FontAwesome"}
 .boite .app [class*="-control"]{background:rgba(0,0,0,.18);border:1px solid rgba(255,255,255,.28);
-  border-radius:2px;box-shadow:none;min-height:44px;font-size:12.5px}
+  border-radius:2px;box-shadow:none;min-height:44px;font-size:12.5px;text-align:left}
 .boite .app [class*="-control"]:hover{border-color:#fff}
 .boite .app [class*="-singleValue"],.boite .app [class*="-Input"],.boite .app input{color:#fff}
 .boite .app [class*="-placeholder"]{color:rgba(255,255,255,.45)}
-.boite .app [class*="-menu"]{background:#1b1b1f;color:#fff;border-radius:2px}
+.boite .app [class*="-menu"]{background:#17171b;color:#fff;border-radius:3px;text-align:left;
+  box-shadow:0 22px 48px -14px rgba(0,0,0,.6);border:1px solid rgba(255,255,255,.14);
+  overflow:hidden;z-index:70}
+.boite .app [class*="-MenuList"]{max-height:236px}
+/* L option survolee etait BLANCHE SUR BLANC : react-select pose un fond clair
+   par defaut sur l option focalisee, illisible sur ce menu sombre. */
+.boite .app [class*="-option"]{background:transparent;color:rgba(255,255,255,.88);
+  padding:11px 16px;font-size:12.5px;cursor:pointer}
+.boite .app [class*="-option"]:active{background:rgba(230,0,126,.30)}
+.boite .app [class*="-option"][class*="focused"],
+.boite .app [class*="-option"]:hover{background:rgba(230,0,126,.22);color:#fff}
+.boite .app [class*="-option"][class*="selected"],
+.boite .app [class*="-option"][aria-selected="true"]{background:var(--magenta);color:#fff}
 .boite .app [class*="-indicatorSeparator"]{background:rgba(255,255,255,.28)}
+.boite .app [class*="-indicatorContainer"]{color:rgba(255,255,255,.7)}
+.boite .app [class*="-noOptionsMessage"]{color:rgba(255,255,255,.5)}
 /* Le bouton d action : meme carton plein que .bt, pleine largeur. */
 /* Respiration entre les etapes et entre les deux listes deroulantes, que la
    suppression des gouttieres Bootstrap avait collees. */
@@ -432,7 +482,11 @@ h2.tt i{font-style:italic}
 .lien-fleche svg{transition:transform .3s var(--ease)}
 .lien-fleche:hover svg{transform:translateX(5px)}
 .cartes{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(18px,2.4vw,32px)}
-.carte{text-decoration:none;display:block;group:card}
+/* `group:card` n'est pas une propriete CSS — reste d'un copier-coller
+   Tailwind, le navigateur la jette. Le soulignement revenait au survol
+   faute d'etre coupe la aussi. */
+.carte,.carte:hover,.carte:focus{text-decoration:none}
+.carte{display:block}
 .carte .vue{position:relative;overflow:hidden;aspect-ratio:4/3;background:var(--sourd)}
 .carte .vue img{width:100%;height:100%;object-fit:cover;transition:transform 1.1s var(--ease)}
 
@@ -1028,8 +1082,8 @@ footer a:hover{color:var(--magenta)}
    entière au lieu d'un dix-septième. Une seule animation au lieu de quatre. */
 .bati img{animation:none}
 .bati img.on{animation:kb-diapo 8.4s ease-out both}
-.carte .vue img{animation:kb-a 22s ease-in-out infinite alternate}
-.cartes .carte:nth-child(2n) .vue img{animation-name:kb-b;animation-duration:27s}
+.carte .vue img{animation:kb-a-fort 18s ease-in-out infinite alternate}
+.cartes .carte:nth-child(2n) .vue img{animation-name:kb-b-fort;animation-duration:21s}
 .realisations figure img{animation:kb-b-fort 16s ease-in-out infinite alternate}
 .realisations figure:nth-child(2n) img{animation-name:kb-a-fort;animation-duration:19s}
 .final .fond img{animation:kb-a 34s ease-in-out infinite alternate}
@@ -1047,7 +1101,37 @@ footer a:hover{color:var(--magenta)}
    Le dégradé ne laisse voir que le dernier dixième — au-delà ça fait
    vitrine de magasin. La marge basse empêche le reflet de mordre sur le
    texte : le reflet est peint hors du flux, il ne pousse rien. */
-.carte .vue{-webkit-box-reflect:below 8px linear-gradient(transparent 94%,rgba(0,0,0,.16));margin-bottom:30px}
+/* Meme defaut que sur les realisations : `transparent 94%` rendait le reflet
+   invisible sous l image et faiblement visible tout en bas. Remplace par un
+   miroir explicite (voir .realisations .miroir), qui marche aussi sous
+   Firefox et dont on fixe la hauteur au pixel. */
+.carte .vue{margin-bottom:6px}
+.carte .miroir{display:block;height:54px;margin:5px 0 14px;border-radius:0 0 4px 4px;
+  background:var(--photo) center bottom/100% auto no-repeat;
+  transform:scaleY(-1);
+  -webkit-mask-image:linear-gradient(rgba(0,0,0,0) 14%,rgba(0,0,0,.38));
+          mask-image:linear-gradient(rgba(0,0,0,0) 14%,rgba(0,0,0,.38))}
+
+/* ── Anneau neon rose au survol d une carte programme ──────────────────
+   Cale sur le rapport 4/3 de la vue, comme sur les vignettes : sinon il
+   engloberait le titre, le texte et le lien « Decouvrir ». */
+.cartes .carte{position:relative;isolation:isolate}
+.cartes .carte::before,.cartes .carte::after{content:'';position:absolute;
+  left:-2px;top:-2px;width:calc(100% + 4px);aspect-ratio:4/3;border-radius:6px;
+  z-index:-1;opacity:0;pointer-events:none;transition:opacity .35s ease;
+  background:conic-gradient(from var(--tour),
+    rgba(230,0,126,0) 0deg 244deg,
+    rgba(230,0,126,.9) 288deg,
+    #ffa3de 312deg,
+    rgba(230,0,126,.9) 336deg,
+    rgba(230,0,126,0) 360deg)}
+.cartes .carte::after{left:-6px;top:-6px;width:calc(100% + 12px);filter:blur(9px)}
+.cartes .carte:hover::before,.cartes .carte:focus-visible::before{opacity:1;animation:tour-neon 2.2s linear infinite}
+.cartes .carte:hover::after,.cartes .carte:focus-visible::after{opacity:.55;animation:tour-neon 2.2s linear infinite}
+@media (prefers-reduced-motion:reduce){
+  .cartes .carte:hover::before,.cartes .carte:hover::after{animation:none}
+  .carte .miroir{opacity:.7}
+}
 .carte h3{margin-top:10px}
 /* Le reflet etait degrade a l envers : `transparent 94%` le rendait invisible
    juste sous l image et faiblement visible tout en bas — l inverse d un
@@ -1149,6 +1233,17 @@ footer a:hover{color:var(--magenta)}
   /* L anneau reste, mais fixe : c est le mouvement qui gene, pas la couleur. */
   .realisations figure:hover::before,.realisations figure:hover::after{animation:none}
 }
+/* Decalage alterne : une vignette haute, une basse. C'est un decalage
+   VOULU et regulier, a ne pas confondre avec la derive accidentelle
+   corrigee plus haut — celle-la venait du Ken Burns non contenu et
+   changeait a chaque seconde. Porte par margin-top et non par transform :
+   le transform reste disponible pour le zoom au survol. */
+.realisations figure:nth-child(2n){margin-top:38px}
+@media(max-width:900px){
+  /* En carrousel, le decalage ferait sauter la ligne de base d'une carte a
+     l'autre pendant le defilement. */
+  .realisations figure:nth-child(2n){margin-top:0}
+}
 .realisations img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:6px;display:block}
 .realisations figcaption{margin-top:7px;font-size:12.5px;letter-spacing:.04em;color:var(--gris,#5b5b60)}
 
@@ -1234,9 +1329,21 @@ footer a:hover{color:var(--magenta)}
   <div class="scene">
     <div class="cadre">
       <div class="bati" id="bati">
-        <img class="on" src="../koytchaimmo-refonte/assets/alpha1.webp" alt="Résidence Koytcha Immo à La Réunion">
-        <img src="../koytchaimmo-refonte/assets/photo1.webp" alt="Programme immobilier à La Réunion">
-        <img src="../koytchaimmo-refonte/assets/drone.webp" alt="Vue aérienne d'un programme Koytcha Immo">
+        <!-- Fond en 1600x1066 : les fichiers servis jusqu'ici faisaient 1024 px
+             de large pour un affichage plein ecran, soit un etirement de 1,4x
+             sur un ecran 1440 et de 2,8x sur un ecran retina — c'etait la
+             cause du flou. 1600 px est le maximum que porte leur mediatheque
+             WordPress ; il n'existe pas de 4K a recuperer. Le srcset laisse
+             les telephones sur le 1024, inutile de leur envoyer 450 Ko. -->
+        <img class="on" src="assets/fond/alpha1.webp"
+             srcset="assets/fond/alpha1-1024.webp 1024w, assets/fond/alpha1.webp 1600w"
+             sizes="100vw" alt="Résidence Koytcha Immo à La Réunion">
+        <img src="assets/fond/photo1.webp"
+             srcset="assets/fond/photo1-1024.webp 1024w, assets/fond/photo1.webp 1600w"
+             sizes="100vw" alt="Programme immobilier à La Réunion">
+        <img src="assets/fond/drone.webp"
+             srcset="assets/fond/drone-1024.webp 1024w, assets/fond/drone.webp 1600w"
+             sizes="100vw" alt="Vue aérienne d'un programme Koytcha Immo">
       </div>
       <div class="voile"></div>
     </div>
@@ -1366,6 +1473,7 @@ footer a:hover{color:var(--magenta)}
       <a class="carte monte" href="https://koytchaimmo.re/nos-programmes/" target="_blank" rel="noopener">
         <div class="vue"><span class="ville">Écocité Ouest</span>
           <img src="../koytchaimmo-refonte/assets/alpha1-net.webp" alt="Cambaie Park, Saint-Paul" loading="lazy"></div>
+          <span class="miroir" aria-hidden="true" style="--photo:url(../koytchaimmo-refonte/assets/alpha1-net.webp)"></span>
         <h3>Cambaie Park</h3>
         <p>Nouveau pôle d’activités au cœur de l’Écocité Ouest.</p>
         <span class="dec">Découvrir
@@ -1376,6 +1484,7 @@ footer a:hover{color:var(--magenta)}
           <img src="assets/programmes/w4-1200.webp"
                srcset="assets/programmes/w4-600.webp 600w, assets/programmes/w4-1200.webp 1200w"
                sizes="(max-width:900px) 100vw, 31vw" alt="Ze Bure@u 2" loading="lazy"></div>
+               <span class="miroir" aria-hidden="true" style="--photo:url(assets/programmes/w4-600.webp)"></span>
         <h3>Ze Bure@u 2</h3>
         <p>La signature Koytcha Immo sur l’Éperon.</p>
         <span class="dec">Découvrir
@@ -1384,6 +1493,7 @@ footer a:hover{color:var(--magenta)}
       <a class="carte monte" href="https://koytchaimmo.re/nos-programmes/" target="_blank" rel="noopener">
         <div class="vue"><span class="ville">La Possession</span>
           <img src="../koytchaimmo-refonte/assets/drone-net.webp" alt="ZE Lokal, La Possession" loading="lazy"></div>
+          <span class="miroir" aria-hidden="true" style="--photo:url(../koytchaimmo-refonte/assets/drone-net.webp)"></span>
         <h3>Ze Lokal</h3>
         <p>Locaux d’activité à vendre ou à louer à La Possession.</p>
         <span class="dec">Découvrir
@@ -1594,6 +1704,42 @@ footer a:hover{color:var(--magenta)}
   document.addEventListener('keydown', function(e){
     if (e.key === 'Escape' && nav.classList.contains('ouvert')) { fermer(); burger.focus(); }
   });
+
+  /* ── Retour sonore au clic ────────────────────────────────────────────
+     Synthetise plutot que telecharge : deux oscillateurs de 50 a 120 ms,
+     zero fichier, zero requete. Le contexte audio n est cree qu au premier
+     clic — le creer au chargement le laisserait suspendu par la politique
+     de lecture automatique des navigateurs. Volume tres bas (0,035) : un
+     site immobilier qui bipe fort, on le quitte. Coupe si le visiteur a
+     demande moins d animations. */
+  var son = null;
+  var bip = function(freq, duree, force){
+    if (reduit) return;
+    try {
+      var AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return;
+      son = son || new AC();
+      if (son.state === 'suspended') son.resume();
+      var t = son.currentTime, o = son.createOscillator(), g = son.createGain();
+      o.type = 'triangle';
+      o.frequency.setValueAtTime(freq, t);
+      o.frequency.exponentialRampToValueAtTime(freq * 0.62, t + duree);
+      g.gain.setValueAtTime(0.0001, t);
+      g.gain.linearRampToValueAtTime(force, t + 0.006);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + duree);
+      o.connect(g); g.connect(son.destination);
+      o.start(t); o.stop(t + duree + 0.03);
+    } catch (e) { /* pas de son disponible : le site marche pareil */ }
+  };
+  document.addEventListener('click', function(e){
+    var c = e.target.closest ? e.target.closest(
+      'a.btn, .bt, .boite-repli .bt, button.puce, .MuiToggleButton-root, .puce, .chev, .burger, .plus') : null;
+    if (!c) return;
+    /* L action principale sonne plus grave et un peu plus long : l oreille
+       distingue « j ai choisi » de « je valide ». */
+    if (c.matches('a.btn, .bt')) bip(520, 0.13, 0.045);
+    else bip(880, 0.055, 0.032);
+  }, true);
 
   /* Apparition des blocs. IntersectionObserver plutôt qu'un calcul au scroll :
      le navigateur fait le travail hors du fil principal. */
