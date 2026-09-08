@@ -910,6 +910,38 @@ document.getElementById('famille').value = E.famille;
     } catch (e) { /* pas de fiche client : on garde la banque seule */ }
   }
   banque(PHOTOS_BANQUE, client);
+  /* Les photos du client ne suffisent pas dans la banque : tant qu'elles n'y
+     sont que disponibles, l'aperçu qu'on envoie montre des plats de stock —
+     c'est-à-dire le feed de quelqu'un d'autre. On les POSE donc dans la grille
+     dès l'ouverture, dans l'ordre, et la banque ne complète que ce qui reste.
+     On ne le refait pas si l'état gardé est déjà celui de ce client : sinon un
+     retour sur la page effacerait les vignettes que Tony vient de changer. */
+  if (client && client.photos && client.photos.length && E.client !== slug) {
+    /* Il n'y a que CINQ emplacements de photo, partages entre les stories et
+       les vignettes de la grille : on ne peut donc pas reserver les photos du
+       client aux stories et laisser les plats a la banque. Et le releve sur
+       arbradelis.com a ramene sept vues de salle et de terrasse, aucun plat —
+       posees partout, elles collaient « Menu du jour : rougail saucisse » sur
+       une photo de tables vides.
+       Seul l'emplacement 0 est pris : il porte la photo de profil et deux
+       vignettes sans accroche de plat. Le reste attend de vraies photos de
+       plats, et la banque du client reste en tete du selecteur pour que Tony
+       les pose lui-meme la ou elles vont. */
+    E.client = slug;
+    E.photos[0] = client.photos[0];
+    garder();
+    peindre();
+    const z = document.getElementById('banque');
+    if (z && z.parentNode) {
+      const p = document.createElement('p');
+      p.className = 'banque-titre';
+      p.innerHTML = '<b>' + client.photos.length + ' photos de ' + client.nom
+        + '</b> <em>\u00b7 relevees sur ' + client.source + '. Ce sont des vues de salle,'
+        + ' pas des plats : seule la photo de profil est posee. Pose les autres ou tu veux,'
+        + ' et demande-leur des photos de plats avant d\u2019envoyer.</em>';
+      z.parentNode.insertBefore(p, z);
+    }
+  }
 })();
 appliquerUrl();
 peindre();
