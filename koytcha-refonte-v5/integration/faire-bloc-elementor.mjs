@@ -42,13 +42,23 @@ if (iHead < 0 || iFinHead < 0 || iBody < 1 || iFinBody < 0) {
  * partout, un rechercher/remplacer suffit. */
 const BASE = process.env.KOYTCHA_BASE
   || 'https://previsualisation.automatisationboost.com/koytcha-refonte-v5/';
+/* WordPress met tous les fichiers a PLAT dans /uploads/AAAA/MM/ : le
+ * sous-dossier assets/programmes/ n existe plus apres televersement. Avec
+ * KOYTCHA_PLAT=1, on ne garde que le nom du fichier.
+ * Exemple, une fois la mediatheque remplie :
+ *   KOYTCHA_PLAT=1 KOYTCHA_BASE=https://koytchaimmo.re/app/uploads/2026/09/ \
+ *     node integration/faire-bloc-elementor.mjs
+ * A ne PAS faire a la main dans le HTML : les adresses apparaissent a plus de
+ * quarante endroits (src, srcset, url() dans le CSS), il en resterait une. */
+const PLAT = process.env.KOYTCHA_PLAT === '1';
+const cible = (u) => BASE + (PLAT ? u.split('/').pop() : u);
 const absolu = (t) => t
-  .replace(/(src|href)="(?!https?:|data:|#|\/)([^"]+)"/g, (m, a, u) => `${a}="${BASE}${u}"`)
+  .replace(/(src|href)="(?!https?:|data:|#|\/|mailto:|tel:)([^"]+)"/g, (m, a, u) => `${a}="${cible(u)}"`)
   .replace(/srcset="([^"]+)"/g, (m, v) => 'srcset="' + v.split(',').map((d) => {
     const s = d.trim();
-    return /^(https?:|data:|\/)/.test(s) ? s : BASE + s;
+    return /^(https?:|data:|\/)/.test(s) ? s : cible(s);
   }).join(', ') + '"')
-  .replace(/url\((?!['"]?(?:https?:|data:|#|\/))['"]?([^)'"]+)['"]?\)/g, (m, u) => `url(${BASE}${u})`);
+  .replace(/url\((?!['"]?(?:https?:|data:|#|\/))['"]?([^)'"]+)['"]?\)/g, (m, u) => `url(${cible(u)})`);
 
 /* Le <meta charset> doit etre le TOUT PREMIER octet du fichier, avant meme le
  * commentaire d en-tete : le navigateur ne renifle l encodage que dans les 1024
