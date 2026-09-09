@@ -492,13 +492,28 @@ function renderMusiques(){
   var sel=$('#mus'); if(!sel) return;
   var opt=document.createElement('option'); opt.value=''; opt.textContent='Aucune \u2014 silence'; sel.appendChild(opt);
   MUS_FILES.forEach(function(f){ var o=document.createElement('option'); o.value=f; o.textContent=labelMus(f); sel.appendChild(o); });
-  sel.addEventListener('change',function(){ etat.musique=sel.value||null; if(apercuMus){stopApercu();} });
-  var vol=$('#musvol'); vol.addEventListener('input',function(){ etat.musVol=vol.value/100; $('#musvolval').textContent=vol.value+' %'; if(guide)guide.volume=etat.musVol; if(apercuMus)apercuMus.volume=etat.musVol; });
+  sel.addEventListener('change',function(){
+    var tournait = !!guide;
+    etat.musique=sel.value||null;
+    stopMusique();
+    if (tournait) startMusique();   // on enchaine sur le nouveau morceau
+  });
+  var vol=$('#musvol'); vol.addEventListener('input',function(){ etat.musVol=vol.value/100; $('#musvolval').textContent=vol.value+' %'; if(guide)guide.volume=etat.musVol; });
 }
-var guide=null, apercuMus=null;
-function startMusique(){ if(!etat.musique) return; try{ guide=new Audio(MUSBASE+etat.musique); guide.loop=true; guide.volume=etat.musVol; guide.play().catch(function(){}); }catch(e){} }
-function stopMusique(){ if(guide){ try{guide.pause();}catch(e){} guide=null; } }
-function stopApercu(){ if(apercuMus){ try{apercuMus.pause();}catch(e){} apercuMus=null; } var b=$('#musecoute'); if(b)b.textContent='\u00c9couter'; }
+var guide=null;   // la SEULE lecture de musique de la page
+/* Une SEULE lecture, du chargement du script jusqu'a la fin de la prise.
+   Retour Tony le 2026-09-09 : il la veut des qu'il charge son script sur le
+   prompteur, pas a l'ouverture de l'ecran de tournage — donc elle demarre tot
+   et ne doit surtout pas etre relancee en route. Sans ce garde, chaque appel
+   creait un nouvel objet Audio et la meme boucle tournait en double, decalee. */
+function startMusique(){ if(!etat.musique || guide) return;
+  try{ guide=new Audio(MUSBASE+etat.musique); guide.loop=true; guide.volume=etat.musVol;
+    guide.play().catch(function(){}); majBoutonMus(); }catch(e){} }
+function majBoutonMus(){
+  var b=$('#musecoute'); if(b) b.textContent = guide ? 'Stop' : '\u00c9couter';
+  var m=$('#bmus'); if(m) m.textContent = guide ? '\u266a' : '\u266a\u0338';
+}
+function stopMusique(){ if(guide){ try{guide.pause();}catch(e){} guide=null; } majBoutonMus(); }
 
 function montrer(id){ $$('.ecran').forEach(e => e.classList.toggle('on', e.id === id)); }
 function erreur1(t){ const m = $('#msg1'); m.textContent = t; m.classList.add('on'); }
@@ -610,6 +625,10 @@ $('#ex').addEventListener('click', () => {
   /* Écraser un script en cours sans prévenir serait la pire des surprises. */
   if (txt.value.trim() && !confirm("Remplacer ton script par l'exemple ?")) return;
   txt.value = exempleCourant();
+  /* Le moment que Tony a designe : « quand je charge l'exemple ». Le clic est
+     un geste utilisateur, la lecture est donc autorisee par le navigateur —
+     lancer un son sans geste serait bloque en silence. */
+  startMusique();
   majApercu();
   txt.focus();
   txt.setSelectionRange(0, 0);
@@ -781,10 +800,7 @@ $('#bref').addEventListener('click', () => {
    le move » avant d'appuyer sur rouge, pas une fois la prise partie.
    Le bouton ♪ la coupe sur place : sans ecouteur elle passe dans le micro, et
    il faut pouvoir la faire taire sans quitter l'ecran de tournage. */
-$('#bmus').addEventListener('click', () => {
-  if (guide) { stopMusique(); $('#bmus').textContent = '♪̸'; }
-  else { startMusique(); $('#bmus').textContent = '♪'; }
-});
+$('#bmus').addEventListener('click', () => { if (guide) stopMusique(); else startMusique(); });
 const RENDUS = {
   aucun:  { nom: 'Aucun',   d: 'la caméra telle quelle' },
   net:    { nom: 'Net',     d: 'un cran de contraste',
@@ -932,8 +948,8 @@ $('#go').addEventListener('click', async () => {
   appliquerRendu();
   construirePiste();
   montrer('e2');
-  startMusique();          // avant la prise, pas au declenchement
-  $('#bmus').textContent = etat.musique ? '♪' : '♪̸';
+  startMusique();          // sans effet si elle tourne deja depuis l'ecran 1
+  majBoutonMus();
   try { verrou = await navigator.wakeLock.request('screen'); } catch(e){}
 });
 
@@ -1072,7 +1088,6 @@ function demarrer(){
     /* `startMusique()` etait appele ici. Il l'est desormais a l'ouverture de
        l'ecran de tournage : le rappeler creerait un SECOND objet Audio, et deux
        lectures decalees de la meme boucle. */
-    stopApercu();
     if (ref.src) { try { ref.currentTime = 0; ref.play().catch(()=>{}); } catch(e){} }
     rafId = requestAnimationFrame(boucle);
   };
@@ -1414,9 +1429,10 @@ window.addEventListener('pagehide', arreterTout);
 
 /* Studio tournage : template + musique */
 renderTemplates(); renderMusiques();
+/* « Ecouter » pilote la MEME lecture que le tournage. Avant, il ouvrait un
+   second objet Audio (`apercuMus`) : on pouvait donc se retrouver avec la
+   preecoute ET la musique de tournage en meme temps, decalees. */
 (function(){ var b=$('#musecoute'); if(!b) return; b.addEventListener('click', function(){
-  if(apercuMus){ stopApercu(); return; }
-  if(!etat.musique){ return; }
-  try{ apercuMus=new Audio(MUSBASE+etat.musique); apercuMus.loop=true; apercuMus.volume=etat.musVol; apercuMus.play().catch(function(){}); b.textContent='Stop'; }catch(e){}
+  if(guide) stopMusique(); else startMusique();
 }); })();
 </script>
