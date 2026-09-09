@@ -45,7 +45,14 @@ const absolu = (t) => t
   }).join(', ') + '"')
   .replace(/url\((?!['"]?(?:https?:|data:|#|\/))['"]?([^)'"]+)['"]?\)/g, (m, u) => `url(${BASE}${u})`);
 
-const bloc = fs.readFileSync(COMPAT, 'utf8')
+/* Le <meta charset> doit etre le TOUT PREMIER octet du fichier, avant meme le
+ * commentaire d en-tete : le navigateur ne renifle l encodage que dans les 1024
+ * premiers octets du flux. Place plus bas, il arrive trop tard et les accents
+ * sortent en Ã©. Dans un widget Elementor la balise est simplement ignoree —
+ * elle ne sert que si quelqu un ouvre ce fichier directement pour le copier,
+ * ce qui est justement l usage prevu. */
+const bloc = '<meta charset="utf-8">\n'
+  + fs.readFileSync(COMPAT, 'utf8')
   + absolu(h.slice(iHead, iFinHead) + '\n' + h.slice(iBody, iFinBody)) + '\n';
 fs.writeFileSync(OUT, bloc);
 console.error(`[bloc] ${OUT} · ${(bloc.length / 1024).toFixed(0)} Ko`);

@@ -1,3 +1,4 @@
+<meta charset="utf-8">
 <!-- ═══════════════════════════════════════════════════════════════════════
      KOYTCHA IMMO — bloc a coller dans un widget HTML Elementor.
      Genere depuis index.html : ne pas le modifier a la main, relancer
@@ -313,6 +314,20 @@ img{max-width:100%;display:block}
    dont l angle tourne. Il vit derriere la boite (z-index -1), on ne voit
    donc que le liseré qui depasse. */
 .boite{position:relative;isolation:isolate}
+/* Apparition. Le module met 2 a 3 s a s'hydrater — son bundle fait 5 Mo — et
+   on voyait le repli s'afficher puis se faire remplacer : une ouverture qui
+   sautait au rechargement. On garde donc la boite masquee et decalee vers la
+   droite, et on ne la revele qu'une fois le module en place (ou apres un delai
+   plafond, pour qu'un plugin en panne ne laisse jamais un trou). */
+.boite{opacity:0;transform:translateX(34px)}
+.boite.pret{opacity:1;transform:none;
+  transition:opacity .75s var(--ease),transform .75s var(--ease)}
+@media (prefers-reduced-motion:reduce){
+  .boite{transform:none}
+  .boite.pret{transition:opacity .3s ease}
+}
+/* Sans JavaScript la boite resterait invisible : ce serait pire que l'a-coup. */
+.no-js .boite{opacity:1;transform:none}
 .boite::before,.boite::after{content:'';position:absolute;inset:-1px;border-radius:5px;
   z-index:-1;opacity:0;pointer-events:none;transition:opacity .4s ease;
   /* Le masque ne garde que le liseré. Sans lui le degrade remplissait le
@@ -2436,9 +2451,19 @@ if (!window.wp.element && window.React && window.ReactDOM) {
 (function () {
   var cible = document.getElementById('458'), repli = document.querySelector('.boite-repli');
   if (!cible || !repli) return;
-  var vu = function () { if (cible.children.length) { repli.style.display = 'none'; return true; } return false; };
-  if (vu()) return;
-  new MutationObserver(function (_, o) { if (vu()) o.disconnect(); }).observe(cible, { childList: true, subtree: true });
+  var boite = document.querySelector('.boite');
+  var reveler = function () { if (boite) boite.classList.add('pret'); };
+  var vu = function () {
+    if (cible.children.length) { repli.style.display = 'none'; reveler(); return true; }
+    return false;
+  };
+  /* Plafond de 1,6 s : au-dela on montre ce qu'on a — le repli — plutot que de
+     laisser un vide. Une connexion lente ne doit pas donner une page trouee. */
+  var minuteur = setTimeout(reveler, 1600);
+  if (vu()) { clearTimeout(minuteur); return; }
+  new MutationObserver(function (_, o) {
+    if (vu()) { clearTimeout(minuteur); o.disconnect(); }
+  }).observe(cible, { childList: true, subtree: true });
 })();
 </script>
 <script>
