@@ -940,21 +940,59 @@ h2::after{content:"";position:absolute;left:0;bottom:-1.2mm;width:5mm;height:1px
 <script>
 (function () {
   var URL = 'https://n7n.automatisationboost.com/webhook/cv-clic';
+  /* Le suivi enregistrait CE QUI est clique, jamais PAR QUI. Avec un envoi a
+     cinquante entreprises, savoir qu'un lien a ete clique sans savoir lequel
+     des cinquante ne sert a rien. Chaque destinataire recoit donc son lien :
+     /cv/?r=<jeton>. Le jeton n'est pas une donnee personnelle — c'est une
+     etiquette d'envoi que Tony seul sait rattacher a une entreprise. */
+  var dest = new URLSearchParams(location.search).get('r') || '';
+
+  var envoyer = function (charge) {
+    try {
+      charge.r = dest;
+      fetch(URL, { method:'POST', headers:{ 'Content-Type':'application/json' },
+        keepalive:true, body: JSON.stringify(charge) }).catch(function(){});
+    } catch (e) {}
+  };
+
+  /* L'ouverture compte autant que le clic : quelqu'un qui lit le CV en entier
+     sans cliquer est un signal, et c'est le plus frequent. On l'envoie une
+     seule fois par session pour ne pas gonfler le journal a chaque retour. */
+  try {
+    var cle = 'cv-vu-' + dest;
+    if (!sessionStorage.getItem(cle)) {
+      sessionStorage.setItem(cle, '1');
+      envoyer({ quoi: 'ouverture', page: location.pathname,
+                source: document.referrer || '', date: new Date().toISOString() });
+    }
+  } catch (e) {}
+
+  /* Profondeur de lecture : atteindre le bas d'un CV, c'est un interet reel.
+     Une seule remontee, au premier passage. */
+  try {
+    var fond = false;
+    window.addEventListener('scroll', function () {
+      if (fond) return;
+      var h = document.documentElement;
+      if ((h.scrollTop + window.innerHeight) / h.scrollHeight > 0.85) {
+        fond = true;
+        envoyer({ quoi: 'lu-jusquau-bout', page: location.pathname,
+                  date: new Date().toISOString() });
+      }
+    }, { passive: true });
+  } catch (e) {}
+
+  /* Les clics passent par le meme envoi que l'ouverture, sinon ils partaient
+     sans le jeton et on retombait sur « quelqu'un a clique », sans savoir qui. */
   document.querySelectorAll('[data-suivi]').forEach(function (a) {
     a.addEventListener('click', function () {
-      try {
-        fetch(URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          keepalive: true,
-          body: JSON.stringify({
-            quoi: a.dataset.suivi,
-            page: location.pathname,
-            source: document.referrer || '',
-            date: new Date().toISOString()
-          })
-        }).catch(function () {});
-      } catch (e) { /* le clic passe avant tout : on n'empêche jamais l'appel */ }
+      envoyer({
+        quoi: a.dataset.suivi,
+        page: location.pathname,
+        source: document.referrer || '',
+        date: new Date().toISOString()
+      });
+      /* le clic passe avant tout : on n'empeche jamais l'appel ou le lien */
     });
   });
 })();
