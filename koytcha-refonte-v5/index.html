@@ -398,14 +398,46 @@ img{max-width:100%;display:block}
    Le plugin pose ses propres classes emotion (css-17zu2ew-…) : sans le
    `.boite .app` en tete ET les deux selecteurs (classe MUI + aria-pressed), sa
    regle a lui repasse devant et le bouton reste translucide. */
+/* Invite au clic, tant que le visiteur n'a rien touche. Le module ne dit pas
+   qu'il est vivant : deux boutons poses sur une photo peuvent passer pour un
+   simple libelle. Un halo lent sur le choix par defaut, et un frere qui
+   respire a contretemps, disent « ces deux-la se cliquent » sans crier.
+   L'animation s'arrete d'elle-meme au premier geste : la classe `pre-actif`
+   est retiree, et rien ne clignote pendant qu'on remplit le formulaire. */
+@keyframes ktp-invite{
+  0%,100%{box-shadow:0 6px 20px -10px rgba(0,0,0,.5), 0 0 0 0 rgba(255,255,255,.45)}
+  55%    {box-shadow:0 6px 20px -10px rgba(0,0,0,.5), 0 0 0 9px rgba(255,255,255,0)}
+}
+@keyframes ktp-invite-frere{
+  0%,100%{border-color:rgba(255,255,255,.30)}
+  55%    {border-color:rgba(255,255,255,.85)}
+}
+.boite .app .MuiToggleButton-root.pre-actif{animation:ktp-invite 2.6s var(--ease) infinite}
+.boite .app .MuiToggleButton-root.pre-actif ~ .MuiToggleButton-root{
+  animation:ktp-invite-frere 2.6s var(--ease) infinite;animation-delay:1.3s}
+/* Une invite clignotante peut gener : on la coupe pour qui demande moins de
+   mouvement. Le blanc, lui, reste — c'est l'information, pas la decoration. */
+@media (prefers-reduced-motion: reduce){
+  .boite .app .MuiToggleButton-root.pre-actif,
+  .boite .app .MuiToggleButton-root.pre-actif ~ .MuiToggleButton-root{animation:none}
+}
+/* `pre-actif` est NOTRE marque, posee avant tout clic : elle donne le blanc
+   sans toucher a l etat interne du module — donc sans deplier l etape suivante.
+   Retour Tony du 2026-09-09 : « le bouton doit etre blanc mais pas ouvrir la
+   section ». Elle disparait au premier geste du visiteur, et c est alors
+   Mui-selected qui prend le relais. */
+.boite .app .MuiToggleButton-root.pre-actif,
 .boite .app .MuiToggleButton-root.Mui-selected,
 .boite .app .MuiToggleButton-root[aria-pressed="true"]{background:#fff;
   border-color:#fff;color:var(--magenta);font-weight:600;
   box-shadow:0 6px 20px -10px rgba(0,0,0,.5)}
+.boite .app .MuiToggleButton-root.pre-actif .fa,
+.boite .app .MuiToggleButton-root.pre-actif svg,
 .boite .app .MuiToggleButton-root.Mui-selected .fa,
 .boite .app .MuiToggleButton-root.Mui-selected svg,
 .boite .app .MuiToggleButton-root[aria-pressed="true"] .fa,
 .boite .app .MuiToggleButton-root[aria-pressed="true"] svg{color:var(--magenta)}
+.boite .app .MuiToggleButton-root.pre-actif:hover,
 .boite .app .MuiToggleButton-root.Mui-selected:hover,
 .boite .app .MuiToggleButton-root[aria-pressed="true"]:hover{background:#fff;
   border-color:#fff;color:var(--magenta-deep)}
@@ -1681,32 +1713,11 @@ footer a:hover{color:var(--magenta)}
              photo. Les trois autres attendent sa confirmation. -->
         <div class="realisations">
           <figure>
-            <span class="cadre-real"><img src="assets/programmes/w1-1200.webp"
-                 srcset="assets/programmes/w1-600.webp 600w, assets/programmes/w1-1200.webp 1200w"
-                 sizes="(max-width:900px) 86vw, 20vw" alt="Ze Bure@u 1" loading="lazy"></span>
-            <span class="miroir" aria-hidden="true" style="--photo:url(assets/programmes/w1-600.webp)"></span>
-            <figcaption>Ze Bure@u 1</figcaption>
-          </figure>
-          <figure>
             <a href="https://koytchaimmo.re/programmes/ze-bureu-2/" target="_blank" rel="noopener"><span class="cadre-real"><img src="assets/programmes/w3-1200.webp"
                  srcset="assets/programmes/w3-600.webp 600w, assets/programmes/w3-1200.webp 1200w"
                  sizes="(max-width:900px) 86vw, 20vw" alt="Ze Bure@u 2" loading="lazy"></span>
             <span class="miroir" aria-hidden="true" style="--photo:url(assets/programmes/w3-600.webp)"></span></a>
             <figcaption><a href="https://koytchaimmo.re/programmes/ze-bureu-2/" target="_blank" rel="noopener">Ze Bure@u 2</a></figcaption>
-          </figure>
-          <figure>
-            <a href="https://koytchaimmo.re/programmes/le-kerval/" target="_blank" rel="noopener"><span class="cadre-real"><img src="assets/programmes/w5-1200.webp"
-                 srcset="assets/programmes/w5-600.webp 600w, assets/programmes/w5-1200.webp 1200w"
-                 sizes="(max-width:900px) 86vw, 20vw" alt="Kerval" loading="lazy"></span>
-            <span class="miroir" aria-hidden="true" style="--photo:url(assets/programmes/w5-600.webp)"></span></a>
-            <figcaption><a href="https://koytchaimmo.re/programmes/le-kerval/" target="_blank" rel="noopener">Kerval</a></figcaption>
-          </figure>
-          <figure>
-            <a href="https://koytchaimmo.re/programmes/espace-turquoise/" target="_blank" rel="noopener"><span class="cadre-real"><img src="assets/programmes/w2-1200.webp"
-                 srcset="assets/programmes/w2-600.webp 600w, assets/programmes/w2-1200.webp 1200w"
-                 sizes="(max-width:900px) 86vw, 20vw" alt="Espace Turquoise" loading="lazy"></span>
-            <span class="miroir" aria-hidden="true" style="--photo:url(assets/programmes/w2-600.webp)"></span></a>
-            <figcaption><a href="https://koytchaimmo.re/programmes/espace-turquoise/" target="_blank" rel="noopener">Espace Turquoise</a></figcaption>
           </figure>
           <figure>
             <!-- w4 et non w3 : la vignette reprenait la photo de Ze Bure@u 2, la
@@ -1717,6 +1728,27 @@ footer a:hover{color:var(--magenta)}
                  sizes="(max-width:900px) 86vw, 20vw" alt="Villas La Marine 2" loading="lazy"></span>
             <span class="miroir" aria-hidden="true" style="--photo:url(assets/programmes/w4-600.webp)"></span>
             <figcaption>Villas La Marine 2</figcaption>
+          </figure>
+          <figure>
+            <a href="https://koytchaimmo.re/programmes/espace-turquoise/" target="_blank" rel="noopener"><span class="cadre-real"><img src="assets/programmes/w2-1200.webp"
+                 srcset="assets/programmes/w2-600.webp 600w, assets/programmes/w2-1200.webp 1200w"
+                 sizes="(max-width:900px) 86vw, 20vw" alt="Espace Turquoise" loading="lazy"></span>
+            <span class="miroir" aria-hidden="true" style="--photo:url(assets/programmes/w2-600.webp)"></span></a>
+            <figcaption><a href="https://koytchaimmo.re/programmes/espace-turquoise/" target="_blank" rel="noopener">Espace Turquoise</a></figcaption>
+          </figure>
+          <figure>
+            <span class="cadre-real"><img src="assets/programmes/w1-1200.webp"
+                 srcset="assets/programmes/w1-600.webp 600w, assets/programmes/w1-1200.webp 1200w"
+                 sizes="(max-width:900px) 86vw, 20vw" alt="Ze Bure@u 1" loading="lazy"></span>
+            <span class="miroir" aria-hidden="true" style="--photo:url(assets/programmes/w1-600.webp)"></span>
+            <figcaption>Ze Bure@u 1</figcaption>
+          </figure>
+          <figure>
+            <a href="https://koytchaimmo.re/programmes/le-kerval/" target="_blank" rel="noopener"><span class="cadre-real"><img src="assets/programmes/w5-1200.webp"
+                 srcset="assets/programmes/w5-600.webp 600w, assets/programmes/w5-1200.webp 1200w"
+                 sizes="(max-width:900px) 86vw, 20vw" alt="Kerval" loading="lazy"></span>
+            <span class="miroir" aria-hidden="true" style="--photo:url(assets/programmes/w5-600.webp)"></span></a>
+            <figcaption><a href="https://koytchaimmo.re/programmes/le-kerval/" target="_blank" rel="noopener">Kerval</a></figcaption>
           </figure>
         </div>
         </div>
@@ -2246,29 +2278,34 @@ footer a:hover{color:var(--magenta)}
      y arrive. */
   /* Le module de recherche s'hydrate depuis koytchaimmo.re et arrive AUCUN
      bouton selectionne : les deux restent translucides, et rien ne dit au
-     visiteur qu'il doit choisir. Retour Tony du 2026-09-09 : « que ce soit
-     blanc au debut, et quand je change ca passe blanc pour l'autre bouton ».
-     On pose donc le choix par defaut — Residentiel, l'entree naturelle d'une
-     agence — par un VRAI clic : marquer la classe a la main mentirait, l'etat
-     interne de React ne contiendrait pas la valeur et « Voir les annonces »
-     partirait sans filtre. Le blanc est ensuite gere par le CSS, pour l'un
-     comme pour l'autre.
-     Le module met une a plusieurs secondes a s'hydrater : on sonde, et on
-     s'arrete des qu'un bouton est actif (y compris si le visiteur a clique
-     avant nous — on ne lui vole jamais son choix). */
+     visiteur qu'un choix l'attend. Retour Tony du 2026-09-09 : « que ce soit
+     blanc au debut », mais « pas ouvrir la section ».
+     Un vrai clic aurait fait les deux — il aurait aussi deplie l'etape 2 et
+     recalcule le compteur d'annonces. On se contente donc de POSER LE BLANC,
+     par une classe a nous. Consequence assumee, a redire si Florent la refuse :
+     tant que le visiteur n'a rien touche, le module n'a pas de valeur interne,
+     exactement comme aujourd'hui — « Voir les annonces » part sans filtre.
+     Au premier geste, on retire notre marque et l'etat MUI reprend la main :
+     le blanc suit alors le bouton reellement choisi. */
   (function () {
     var essais = 0;
     var t = setInterval(function () {
       if (++essais > 40) { clearInterval(t); return; }        // 40 x 250 ms = 10 s
       var btns = document.querySelectorAll('.boite .app .MuiToggleButton-root');
       if (!btns.length) return;
+      clearInterval(t);
       var deja = [].some.call(btns, function (b) {
         return b.classList.contains('Mui-selected') || b.getAttribute('aria-pressed') === 'true';
       });
-      clearInterval(t);
-      if (deja) return;
+      if (deja) return;                                       // on ne vole jamais son choix
       var res = [].filter.call(btns, function (b) { return /sidentiel/i.test(b.textContent || ''); })[0];
-      if (res) res.click();
+      if (!res) return;
+      res.classList.add('pre-actif');
+      var boite = res.closest('.app') || document;
+      boite.addEventListener('pointerdown', function retire() {
+        res.classList.remove('pre-actif');
+        boite.removeEventListener('pointerdown', retire);
+      }, true);
     }, 250);
   })();
 
