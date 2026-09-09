@@ -112,6 +112,25 @@ textarea{width:100%;min-height:190px;background:var(--carte);color:var(--texte);
 #grade.miroir{transform:scaleX(-1)}
 #flux.cache{visibility:hidden}
 
+/* La video de reference : en haut, petite, au-dessus du texte du prompteur.
+   Placee la et pas au milieu : c'est vers le haut que le regard va quand on
+   lit, donc on la trouve sans quitter la ligne des yeux, et elle ne couvre
+   aucun mot. `pointer-events:none` — on ne veut pas la toucher par erreur en
+   visant un bouton pendant une prise. */
+#ref{position:absolute;top:calc(50px + env(safe-area-inset-top));left:50%;transform:translateX(-50%);
+  width:32%;max-width:190px;border-radius:12px;background:#000;z-index:4;
+  box-shadow:0 10px 34px -12px rgba(0,0,0,.8);border:1px solid rgba(255,255,255,.16);
+  pointer-events:none}
+#ref[hidden]{display:none}
+/* La reference ne doit RIEN couvrir du texte : le premier essai la posait
+   par-dessus et les deux premieres lignes du prompteur disparaissaient
+   derriere elle. Le deuxieme essai calculait sa hauteur depuis sa largeur
+   (32vw) — faux des que la video n'est pas en 9:16, et faux meme en 9:16
+   puisque la hauteur vaut alors 16/9 fois la largeur. On MESURE donc sa
+   hauteur reelle une fois la video chargee, et la fenetre de lecture demarre
+   sous elle. */
+#e2.avec-ref .fenetre{top:calc(50px + env(safe-area-inset-top) + var(--hRef, 200px) + 14px)}
+
 /* Les rendus, en bas de l'ecran de tournage, au-dessus des commandes. Une
    rangee qui defile : sur un telephone etroit, cinq pastilles ne tiennent pas
    sur une ligne, et les empiler mangerait le prompteur. */
@@ -274,6 +293,19 @@ pre.json{margin-top:10px;background:#101016;border:1px solid var(--trait);border
   </div>
   <p class="aide">Elle tourne en boucle pendant que tu lis. <b>Mets un écouteur</b> — sinon elle passe dans le micro et pollue la banque de voix.</p>
 
+  <label class="lb">Vidéo de référence <i>facultatif</i></label>
+  <div class="reglage">
+    <input type="file" id="reffile" accept="video/*" style="flex:1;font:inherit;color:var(--txt,#eee)">
+  </div>
+  <div class="reglage">
+    <input type="url" id="refurl" placeholder="…ou colle une adresse de vidéo (https://…)"
+      style="flex:1;background:#0e1013;border:1px solid var(--trait);color:var(--txt,#eee);border-radius:9px;padding:9px 11px;font:inherit">
+  </div>
+  <p class="aide">Elle s'affiche en petit, en haut de l'écran, et se lance en même temps que ta
+    lecture : tu vois comment l'original enchaîne pendant que tu le refais. Elle est
+    <b>muette</b> — son audio passerait dans ton micro. Le bouton <b>Réf.</b> en haut à droite
+    la cache ou la montre pendant le tournage.</p>
+
   <label class="lb">Caméra</label>
   <div class="seg" id="segcam">
     <button data-cam="user" class="on">Frontale</button>
@@ -307,6 +339,7 @@ pre.json{margin-top:10px;background:#101016;border:1px solid var(--trait);border
 <section class="ecran" id="e2">
   <video id="flux" playsinline muted autoplay></video>
   <canvas id="grade"></canvas>
+  <video id="ref" playsinline muted loop hidden></video>
   <div class="voile"></div>
 
   <div class="fenetre">
@@ -319,6 +352,8 @@ pre.json{margin-top:10px;background:#101016;border:1px solid var(--trait);border
     <div class="esp">
       <button id="mvit">Vitesse −</button>
       <button id="pvit">+</button>
+      <button id="bmus" title="Couper ou remettre la musique">♪</button>
+      <button id="bref" title="Cacher ou montrer la vidéo de référence" hidden>Réf.</button>
       <button id="bcam">↺</button>
       <button id="quit">✕</button>
     </div>
@@ -680,6 +715,76 @@ const flux = $('#flux'), piste = $('#piste');
    il n'y a aucune raison de payer ce prix quand on ne demande aucun effet.
    ══════════════════════════════════════════════════════════════════════════ */
 const grade = $('#grade');
+
+/* ══════════════════════════════════════════════════════════════════════════
+   LA VIDEO DE REFERENCE
+   Demande de Tony le 2026-09-09 : voir l'original pendant qu'il refait la
+   prise, « pour voir comment il a fait ». Elle se lance en meme temps que la
+   lecture, en haut de l'ecran, MUETTE — son audio partirait droit dans le
+   micro et se retrouverait dans la banque de voix.
+   ══════════════════════════════════════════════════════════════════════════ */
+const ref = $('#ref');
+let refURL = null;                 // l'adresse blob que NOUS possedons, s'il y en a une
+
+/* `poserReference` revoque l'ancienne adresse blob avant d'en poser une
+   nouvelle. Le piege, paye le 2026-09-09 : en revoquant `refURL` juste apres
+   l'avoir cree, on detruit l'adresse qu'on s'appretait a utiliser — la balise
+   se retrouve avec `currentSrc` vide et `readyState` a 0, et `play()` repond
+   « The element has no supported sources ». On revoque donc l'ANCIENNE, jamais
+   celle qu'on vient de recevoir. */
+function poserReference(src, blob){
+  const ancienne = refURL;
+  refURL = blob ? src : null;
+  if (ancienne && ancienne !== src) { try { URL.revokeObjectURL(ancienne); } catch(e){} }
+  if (!src) { ref.removeAttribute('src'); ref.hidden = true; $('#bref').hidden = true;
+    $('#e2').classList.remove('avec-ref'); return; }
+  ref.src = src;
+  ref.load();
+  ref.hidden = false;
+  $('#bref').hidden = false;
+  $('#e2').classList.add('avec-ref');
+  /* On la met en pause sur sa premiere image : elle doit etre visible pour
+     qu'on la cadre du regard, mais ne pas tourner dans le vide avant la prise. */
+  ref.currentTime = 0;
+  ref.pause();
+}
+
+$('#reffile').addEventListener('change', (e) => {
+  const f = e.target.files && e.target.files[0];
+  if (!f) return;
+  $('#refurl').value = '';
+  poserReference(URL.createObjectURL(f), true);
+});
+$('#refurl').addEventListener('change', () => {
+  const u = $('#refurl').value.trim();
+  if (u) { $('#reffile').value = ''; poserReference(u, false); }
+});
+/* La hauteur reelle de la reference, mesuree des que le navigateur connait les
+   dimensions de la video — et re-mesuree si l'ecran tourne. */
+function mesurerReference(){
+  const h = Math.round(ref.getBoundingClientRect().height);
+  if (h > 0) $('#e2').style.setProperty('--hRef', h + 'px');
+}
+ref.addEventListener('loadedmetadata', mesurerReference);
+window.addEventListener('resize', () => { if (!ref.hidden) mesurerReference(); });
+
+$('#bref').addEventListener('click', () => {
+  ref.hidden = !ref.hidden;
+  /* La fenetre de lecture reprend toute la hauteur des qu'on cache la
+     reference : sinon on garde un vide en haut pour rien. */
+  $('#e2').classList.toggle('avec-ref', !ref.hidden);
+  $('#bref').setAttribute('aria-pressed', String(!ref.hidden));
+});
+
+/* La musique se lançait a `rec.onstart`. Elle demarre maintenant DES QUE LE
+   PROMPTEUR S'OUVRE — c'est ce que Tony demande : « pour me mettre un peu dans
+   le move » avant d'appuyer sur rouge, pas une fois la prise partie.
+   Le bouton ♪ la coupe sur place : sans ecouteur elle passe dans le micro, et
+   il faut pouvoir la faire taire sans quitter l'ecran de tournage. */
+$('#bmus').addEventListener('click', () => {
+  if (guide) { stopMusique(); $('#bmus').textContent = '♪̸'; }
+  else { startMusique(); $('#bmus').textContent = '♪'; }
+});
 const RENDUS = {
   aucun:  { nom: 'Aucun',   d: 'la caméra telle quelle' },
   net:    { nom: 'Net',     d: 'un cran de contraste',
@@ -827,6 +932,8 @@ $('#go').addEventListener('click', async () => {
   appliquerRendu();
   construirePiste();
   montrer('e2');
+  startMusique();          // avant la prise, pas au declenchement
+  $('#bmus').textContent = etat.musique ? '♪' : '♪̸';
   try { verrou = await navigator.wakeLock.request('screen'); } catch(e){}
 });
 
@@ -900,6 +1007,7 @@ function arreterTout(){
   enCours = false; cancelAnimationFrame(rafId);
   if (rafGrade){ cancelAnimationFrame(rafGrade); rafGrade = null; }
   if (fluxCanvas){ fluxCanvas.getTracks().forEach((t) => t.stop()); fluxCanvas = null; }
+  try { ref.pause(); } catch(e){}
   if (rec && rec.state !== 'inactive') { try { rec.stop(); } catch(e){} }
   if (stream) stream.getTracks().forEach(t => t.stop());
   if (verrou) { try { verrou.release(); } catch(e){} verrou = null; }
@@ -961,7 +1069,11 @@ function demarrer(){
     $('#past').classList.add('rec');
     $('#rec').classList.add('stop');
     $('#fait').disabled = false;
-    stopApercu(); startMusique();
+    /* `startMusique()` etait appele ici. Il l'est desormais a l'ouverture de
+       l'ecran de tournage : le rappeler creerait un SECOND objet Audio, et deux
+       lectures decalees de la meme boucle. */
+    stopApercu();
+    if (ref.src) { try { ref.currentTime = 0; ref.play().catch(()=>{}); } catch(e){} }
     rafId = requestAnimationFrame(boucle);
   };
   rec.start(1000);
