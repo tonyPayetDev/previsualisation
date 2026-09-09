@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="fr"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Human Atlas — le corps humain en 3D, libre et gratuit</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Fraunces:ital,opsz,wght@1,9..144,400&display=swap" rel="stylesheet">
+<style>
+:root{--noir:#0a0a0f;--carte:#13131a;--ligne:#26262f;--jaune:#eab308;--violet:#8b5cf6;
+  --texte:#f4f4f8;--gris:#8d8d9c;--sans:'Inter',system-ui,sans-serif;--serif:'Fraunces',Georgia,serif}
+*{box-sizing:border-box}
+body{margin:0;background:var(--noir);color:var(--texte);font-family:var(--sans);line-height:1.62;
+  -webkit-font-smoothing:antialiased;overflow-x:hidden}
+.wrap{max-width:740px;margin:0 auto;padding:0 22px}
+.halo{position:fixed;inset:0;pointer-events:none;z-index:0}
+.halo i{position:absolute;border-radius:50%;display:block}
+.halo .a{width:620px;height:620px;top:-250px;left:-210px;background:radial-gradient(circle,rgba(139,92,246,.15),transparent 66%)}
+.halo .b{width:680px;height:680px;top:44%;right:-290px;background:radial-gradient(circle,rgba(234,179,8,.09),transparent 66%)}
+main{position:relative;z-index:1}
+header{padding:70px 0 8px}
+.badge{display:inline-block;background:#1b1b24;border:1.5px solid var(--jaune);border-radius:8px;
+  padding:11px 22px;font-size:12.5px;font-weight:700;letter-spacing:.2em;text-transform:uppercase}
+h1{font-size:clamp(36px,7.6vw,64px);font-weight:800;letter-spacing:-.04em;line-height:1;margin:28px 0 0}
+h1 i{display:block;font-family:var(--serif);font-style:italic;font-weight:400;
+  font-size:clamp(40px,8.6vw,74px);line-height:.94;color:var(--jaune);letter-spacing:-.03em;margin-top:4px}
+.chapo{border-left:4px solid var(--violet);padding-left:22px;margin:30px 0 0;font-size:17px;color:#d6d6e0;max-width:40ch}
+section{padding:46px 0 0}
+h2{font-size:clamp(23px,4.2vw,30px);font-weight:800;letter-spacing:-.03em;margin:0 0 6px}
+h2 i{font-family:var(--serif);font-style:italic;font-weight:400;color:var(--jaune)}
+.intro{color:var(--gris);margin:0 0 22px}
+.chiffres{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin:22px 0}
+.k{background:var(--carte);border:1px solid var(--ligne);border-radius:14px;padding:18px}
+.k b{display:block;font-size:29px;font-weight:800;color:var(--jaune);letter-spacing:-.03em}
+.k span{color:var(--gris);font-size:13px}
+.etapes{display:grid;gap:12px}
+.e{background:var(--carte);border:1px solid var(--ligne);border-radius:15px;padding:20px 22px;display:flex;gap:16px}
+.e .n{flex:0 0 auto;width:34px;height:34px;border-radius:10px;display:grid;place-items:center;font-weight:800;
+  background:rgba(234,179,8,.14);color:var(--jaune);border:1px solid rgba(234,179,8,.4)}
+.e h3{margin:1px 0 4px;font-size:16.5px}
+.e p{margin:0;color:var(--gris);font-size:14.5px}
+pre{background:#101015;border:1px solid var(--ligne);border-radius:12px;padding:16px 18px;overflow-x:auto;
+  font-size:13.5px;font-family:ui-monospace,Menlo,Consolas,monospace;color:#d8d8e2}
+.liens{display:grid;gap:11px;margin-top:18px}
+.l{display:flex;align-items:center;gap:14px;background:var(--carte);border:1px solid var(--ligne);
+  border-radius:14px;padding:16px 18px;text-decoration:none;color:inherit;min-height:56px;
+  transition:border-color .2s ease,transform .2s ease}
+.l:hover{border-color:var(--jaune);transform:translateY(-1px)}
+.l b{display:block;font-size:15.5px}
+.l span{color:var(--gris);font-size:13.5px}
+.l .fl{margin-left:auto;color:var(--jaune);font-weight:800}
+.avert{border-left:3px solid var(--violet);padding-left:18px;color:var(--gris);font-size:14.5px;margin:26px 0 0}
+footer{border-top:1px solid var(--ligne);margin-top:52px;padding:26px 0 60px;color:var(--gris);font-size:13px}
+footer a{color:var(--jaune)}
+</style></head>
+<body>
+<div class="halo"><i class="a"></i><i class="b"></i></div>
+<main>
+
+<header class="wrap">
+  <span class="badge">Ressource · ASTRA</span>
+  <h1>Le corps humain,<i>pièce par pièce.</i></h1>
+  <p class="chapo">Un explorateur d'anatomie en 3D, <strong>libre et gratuit</strong>, qui tourne
+     dans le navigateur. Aucun compte, aucune clé d'API.</p>
+</header>
+
+<section class="wrap">
+  <div class="chiffres">
+    <div class="k"><b>2 234</b><span>pièces sélectionnables une par une</span></div>
+    <div class="k"><b>15</b><span>systèmes anatomiques</span></div>
+    <div class="k"><b>3 432</b><span>termes recherchables</span></div>
+  </div>
+  <p class="intro">Construit avec React et Three.js, sous licence MIT. Les données anatomiques
+     viennent de BodyParts3D 4.0, en licence CC BY 4.0.</p>
+</section>
+
+<section class="wrap">
+  <h2>Ce que tu peux <i>en faire.</i></h2>
+  <div class="etapes">
+    <div class="e"><span class="n">1</span><div>
+      <h3>Explorer et démonter</h3>
+      <p>Tu tournes autour du corps, tu cliques sur une structure, tu l'isoles. La vue éclatée
+         étale toutes les pièces visibles comme un inventaire.</p></div></div>
+    <div class="e"><span class="n">2</span><div>
+      <h3>Filtrer par système</h3>
+      <p>Squelette seul, organes seuls, ou un système précis. Les préréglages font le tri
+         sans que tu décoches quoi que ce soit.</p></div></div>
+    <div class="e"><span class="n">3</span><div>
+      <h3>Chercher un terme</h3>
+      <p>Tu tapes un nom anatomique, il t'amène dessus et affiche sa fiche. Pratique pour
+         réviser, expliquer, ou illustrer.</p></div></div>
+    <div class="e"><span class="n">4</span><div>
+      <h3>Le faire tourner chez toi</h3>
+      <p>Node 22.13 ou plus récent, deux commandes, et c'est sur ta machine. Aucun compte à créer.</p></div></div>
+  </div>
+</section>
+
+<section class="wrap">
+  <h2>L'installer en <i>deux lignes.</i></h2>
+  <pre>npm ci
+npm run dev</pre>
+  <p class="intro">Puis <code>http://localhost:3016</code>. Pour un site statique :
+     <code>npm run build</code>, et tout sort dans <code>dist/</code> — déployable sur
+     n'importe quel hébergeur statique.</p>
+  <p class="avert">À savoir avant de télécharger : la géométrie pèse environ <strong>33 Mo</strong>
+     compressés. C'est le prix de 2,3 millions de triangles dans un navigateur.</p>
+</section>
+
+<section class="wrap">
+  <h2>Les liens.</h2>
+  <div class="liens">
+    <a class="l" href="https://github.com/ashemag/human-atlas" target="_blank" rel="noopener" data-suivi="github">
+      <div><b>Le dépôt GitHub</b><span>ashemag/human-atlas · MIT</span></div><span class="fl">→</span></a>
+    <a class="l" href="https://human-atlas-seven.vercel.app" target="_blank" rel="noopener" data-suivi="demo">
+      <div><b>La démo en ligne</b><span>à essayer sans rien installer</span></div><span class="fl">→</span></a>
+    <a class="l" href="https://x.com/ashebytes" target="_blank" rel="noopener" data-suivi="x-auteur">
+      <div><b>L'auteur sur X</b><span>Ashe Magalhaes · @ashebytes</span></div><span class="fl">→</span></a>
+  </div>
+  <p class="avert">C'est un outil <strong>pédagogique</strong>, pas un instrument de diagnostic
+     ni de chirurgie. Le modèle est une référence masculine adulte : il ne représente ni toutes
+     les structures, ni toutes les variations.</p>
+</section>
+
+<footer class="wrap">
+  Ressource partagée par <strong>Tony PAYET</strong> · <a href="https://automatisationboost.com">automatisationboost.com</a><br>
+  Le projet ne m'appartient pas — tout le mérite revient à son auteur.
+</footer>
+
+</main></body></html>
