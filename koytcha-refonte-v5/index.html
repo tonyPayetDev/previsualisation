@@ -304,6 +304,13 @@ img{max-width:100%;display:block}
 .puce[aria-pressed="true"]{background:var(--magenta);border-color:var(--magenta);color:#fff;
   font-weight:600;box-shadow:0 6px 20px -8px rgba(230,0,126,.75)}
 .puce[aria-pressed="true"]:hover{background:var(--magenta-deep);border-color:var(--magenta-deep)}
+/* Le seul choix exclusif du repli — pro ou residentiel — suit la meme regle que
+   le module reel : blanc plein pour l actif. Les autres puces restent magenta,
+   ce sont des cases a cocher multiples et non un choix entre deux. */
+.choix[data-champ="pro_res"] .puce[aria-pressed="true"]{background:#fff;border-color:#fff;
+  color:var(--magenta);box-shadow:0 6px 20px -10px rgba(0,0,0,.5)}
+.choix[data-champ="pro_res"] .puce[aria-pressed="true"]:hover{background:#fff;
+  border-color:#fff;color:var(--magenta-deep)}
 .plus{display:block;width:100%;background:none;border:0;border-top:1px solid rgba(255,255,255,.22);
   margin:16px 0 0;padding:12px 0 0;font:inherit;font-size:12px;letter-spacing:.12em;
   text-transform:uppercase;color:rgba(255,255,255,.72);cursor:pointer;text-align:left}
@@ -385,16 +392,23 @@ img{max-width:100%;display:block}
   letter-spacing:.09em;text-transform:none;color:#fff;white-space:normal;text-align:center;
   transition:all .22s var(--ease)}
 .boite .app .MuiToggleButton-root:hover{background:rgba(255,255,255,.18);border-color:#fff;color:#fff}
-/* Selectionne : le rose de la marque, pas le blanc. Sur une photo de ciel, un
-   bouton blanc se confond avec le fond flou de la boite — le magenta, lui, dit
-   sans ambiguite lequel des deux est actif. */
+/* Selectionne : BLANC plein, texte magenta — meme etat que .onglet plus haut.
+   Le magenta plein avait ete essaye ; retour Tony du 2026-09-09 : c est le blanc
+   qui doit marquer le choix actif, et il doit passer d un bouton a l autre.
+   Le plugin pose ses propres classes emotion (css-17zu2ew-…) : sans le
+   `.boite .app` en tete ET les deux selecteurs (classe MUI + aria-pressed), sa
+   regle a lui repasse devant et le bouton reste translucide. */
 .boite .app .MuiToggleButton-root.Mui-selected,
-.boite .app .MuiToggleButton-root[aria-pressed="true"]{background:var(--magenta);
-  border-color:var(--magenta);color:#fff;font-weight:600;
-  box-shadow:0 6px 20px -8px rgba(230,0,126,.75)}
+.boite .app .MuiToggleButton-root[aria-pressed="true"]{background:#fff;
+  border-color:#fff;color:var(--magenta);font-weight:600;
+  box-shadow:0 6px 20px -10px rgba(0,0,0,.5)}
+.boite .app .MuiToggleButton-root.Mui-selected .fa,
+.boite .app .MuiToggleButton-root.Mui-selected svg,
+.boite .app .MuiToggleButton-root[aria-pressed="true"] .fa,
+.boite .app .MuiToggleButton-root[aria-pressed="true"] svg{color:var(--magenta)}
 .boite .app .MuiToggleButton-root.Mui-selected:hover,
-.boite .app .MuiToggleButton-root[aria-pressed="true"]:hover{background:var(--magenta-deep);
-  border-color:var(--magenta-deep);color:#fff}
+.boite .app .MuiToggleButton-root[aria-pressed="true"]:hover{background:#fff;
+  border-color:#fff;color:var(--magenta-deep)}
 /* react-select : le champ blanc par defaut trouait le verre. */
 /* Le module heritait de la police du navigateur : react-select rend ses
    propres noeuds et rien ne leur imposait la police du site. */
@@ -1495,8 +1509,8 @@ footer a:hover{color:var(--magenta)}
               <div class="etape">
                 <span class="lab" id="l-pro">Pro ou résidentiel&nbsp;?</span>
                 <div class="choix" role="group" aria-labelledby="l-pro" data-champ="pro_res">
-                  <button class="puce" type="button" aria-pressed="false">Residentiel</button>
-                  <button class="puce" type="button" aria-pressed="true">Professionnel</button>
+                  <button class="puce" type="button" aria-pressed="true">Residentiel</button>
+                  <button class="puce" type="button" aria-pressed="false">Professionnel</button>
                 </div>
               </div>
 
@@ -1695,10 +1709,13 @@ footer a:hover{color:var(--magenta)}
             <figcaption><a href="https://koytchaimmo.re/programmes/espace-turquoise/" target="_blank" rel="noopener">Espace Turquoise</a></figcaption>
           </figure>
           <figure>
-            <span class="cadre-real"><img src="assets/programmes/w3-1200.webp"
-                 srcset="assets/programmes/w3-600.webp 600w, assets/programmes/w3-1200.webp 1200w"
+            <!-- w4 et non w3 : la vignette reprenait la photo de Ze Bure@u 2, la
+                 meme image apparaissait donc deux fois dans la rangee. w4 est la
+                 vue aerienne du lotissement, deja dans les assets, inutilisee. -->
+            <span class="cadre-real"><img src="assets/programmes/w4-1200.webp"
+                 srcset="assets/programmes/w4-600.webp 600w, assets/programmes/w4-1200.webp 1200w"
                  sizes="(max-width:900px) 86vw, 20vw" alt="Villas La Marine 2" loading="lazy"></span>
-            <span class="miroir" aria-hidden="true" style="--photo:url(assets/programmes/w3-600.webp)"></span>
+            <span class="miroir" aria-hidden="true" style="--photo:url(assets/programmes/w4-600.webp)"></span>
             <figcaption>Villas La Marine 2</figcaption>
           </figure>
         </div>
@@ -2227,6 +2244,34 @@ footer a:hover{color:var(--magenta)}
      chargement immediat des que la section approche a 600 px : rien n'est
      telecharge pour qui ne descend pas jusque-la, et tout est peint pour qui
      y arrive. */
+  /* Le module de recherche s'hydrate depuis koytchaimmo.re et arrive AUCUN
+     bouton selectionne : les deux restent translucides, et rien ne dit au
+     visiteur qu'il doit choisir. Retour Tony du 2026-09-09 : « que ce soit
+     blanc au debut, et quand je change ca passe blanc pour l'autre bouton ».
+     On pose donc le choix par defaut — Residentiel, l'entree naturelle d'une
+     agence — par un VRAI clic : marquer la classe a la main mentirait, l'etat
+     interne de React ne contiendrait pas la valeur et « Voir les annonces »
+     partirait sans filtre. Le blanc est ensuite gere par le CSS, pour l'un
+     comme pour l'autre.
+     Le module met une a plusieurs secondes a s'hydrater : on sonde, et on
+     s'arrete des qu'un bouton est actif (y compris si le visiteur a clique
+     avant nous — on ne lui vole jamais son choix). */
+  (function () {
+    var essais = 0;
+    var t = setInterval(function () {
+      if (++essais > 40) { clearInterval(t); return; }        // 40 x 250 ms = 10 s
+      var btns = document.querySelectorAll('.boite .app .MuiToggleButton-root');
+      if (!btns.length) return;
+      var deja = [].some.call(btns, function (b) {
+        return b.classList.contains('Mui-selected') || b.getAttribute('aria-pressed') === 'true';
+      });
+      clearInterval(t);
+      if (deja) return;
+      var res = [].filter.call(btns, function (b) { return /sidentiel/i.test(b.textContent || ''); })[0];
+      if (res) res.click();
+    }, 250);
+  })();
+
   var bande = document.querySelector('.realisations');
   if (bande && 'IntersectionObserver' in window) {
     var chauffe = new IntersectionObserver(function(es){
