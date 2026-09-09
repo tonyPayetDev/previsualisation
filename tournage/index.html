@@ -103,6 +103,26 @@ textarea{width:100%;min-height:190px;background:var(--carte);color:var(--texte);
 #e2{background:#000}
 #flux{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#000}
 #flux.miroir{transform:scaleX(-1)}
+/* Le canvas de rendu se superpose EXACTEMENT au flux camera et le remplace des
+   qu'un rendu est choisi. `object-fit:contain` des deux cotes : sans lui, le
+   canvas s'etire et le visage grossit d'un cran au changement de rendu. */
+#grade{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;
+  background:#000;display:none}
+#grade.on{display:block}
+#grade.miroir{transform:scaleX(-1)}
+#flux.cache{visibility:hidden}
+
+/* Les rendus, en bas de l'ecran de tournage, au-dessus des commandes. Une
+   rangee qui defile : sur un telephone etroit, cinq pastilles ne tiennent pas
+   sur une ligne, et les empiler mangerait le prompteur. */
+.rendus{position:absolute;left:0;right:0;bottom:calc(112px + env(safe-area-inset-bottom));
+  display:flex;gap:8px;padding:0 12px;overflow-x:auto;scrollbar-width:none;
+  -webkit-overflow-scrolling:touch}
+.rendus::-webkit-scrollbar{display:none}
+.rendus button{flex:0 0 auto;padding:7px 13px;border-radius:999px;border:1px solid rgba(255,255,255,.24);
+  background:rgba(19,19,24,.76);color:#dcdce4;font:inherit;font-size:12px;letter-spacing:.02em;
+  -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);cursor:pointer;white-space:nowrap}
+.rendus button[aria-pressed="true"]{background:#fff;border-color:#fff;color:#111;font-weight:600}
 .voile{position:absolute;inset:0;background:
   linear-gradient(180deg,rgba(10,10,10,.86) 0%,rgba(10,10,10,.42) 26%,
   rgba(10,10,10,.42) 68%,rgba(10,10,10,.9) 100%)}
@@ -286,6 +306,7 @@ pre.json{margin-top:10px;background:#101016;border:1px solid var(--trait);border
 <!-- ═══════════ 2 · LE TOURNAGE ═══════════ -->
 <section class="ecran" id="e2">
   <video id="flux" playsinline muted autoplay></video>
+  <canvas id="grade"></canvas>
   <div class="voile"></div>
 
   <div class="fenetre">
@@ -305,6 +326,8 @@ pre.json{margin-top:10px;background:#101016;border:1px solid var(--trait);border
 
   <div class="mvt" id="mvt"><span class="ic" id="mvtic"></span>
     <span class="tx" id="mvttx"></span></div>
+
+  <div class="rendus" id="rendus" role="group" aria-label="Rendu de l'image"></div>
 
   <div class="bas">
     <button class="declic" id="rec" aria-label="Enregistrer"></button>
@@ -641,6 +664,130 @@ $('#fic').addEventListener('change', (e) => {
 
 /* ═══ 2 · Tournage ═════════════════════════════════════════════════════ */
 const flux = $('#flux'), piste = $('#piste');
+
+/* ══════════════════════════════════════════════════════════════════════════
+   LES RENDUS D'IMAGE
+   Demande de Tony le 2026-09-09 : pouvoir choisir un rendu au moment de se
+   filmer, pour que la video paraisse de meilleure qualite sans retouche apres.
+
+   Comment : la camera est dessinee dans un canvas, image par image, avec un
+   filtre. C'est CE canvas qui est enregistre — le rendu est donc dans le
+   fichier, pas seulement a l'ecran. Tout tient en canvas 2D : une page qui
+   embarquerait du WebGL pour ca ferait tomber la cadence sur telephone.
+
+   Rendu « Aucun » : on n'allume rien du tout et on enregistre le flux camera
+   d'origine. C'est important — passer par le canvas re-encode chaque image, et
+   il n'y a aucune raison de payer ce prix quand on ne demande aucun effet.
+   ══════════════════════════════════════════════════════════════════════════ */
+const grade = $('#grade');
+const RENDUS = {
+  aucun:  { nom: 'Aucun',   d: 'la caméra telle quelle' },
+  net:    { nom: 'Net',     d: 'un cran de contraste',
+            css: 'contrast(1.07) saturate(1.08)' },
+  studio: { nom: 'Studio',  d: 'peau adoucie, lumière chaude',
+            css: 'contrast(1.06) saturate(1.06)',
+            doux: 0.22, teinte: { c: '255,178,110', a: 0.06, mode: 'soft-light' },
+            vignette: 0.12 },
+  cinema: { nom: 'Cinéma',  d: 'ombres froides, hautes lumières chaudes',
+            css: 'contrast(1.12) saturate(1.02)', doux: 0.12,
+            ombre:  { c: '30,95,122',  a: 0.13, mode: 'soft-light' },
+            teinte: { c: '255,150,70', a: 0.07, mode: 'soft-light' },
+            vignette: 0.24 },
+  froid:  { nom: 'Froid',   d: 'gris bleuté, sobre',
+            css: 'contrast(1.10) saturate(0.88)',
+            teinte: { c: '120,170,205', a: 0.10, mode: 'soft-light' },
+            vignette: 0.18 },
+};
+let rendu = localStorage.getItem('tournage-rendu') || 'aucun';
+if (!RENDUS[rendu]) rendu = 'aucun';
+let gctx = null, tampon = null, fluxCanvas = null, rafGrade = null;
+
+function dessinerRendu(){
+  rafGrade = requestAnimationFrame(dessinerRendu);
+  const L = RENDUS[rendu];
+  if (!L || !L.css || !flux.videoWidth) return;
+  const w = flux.videoWidth, h = flux.videoHeight;
+  if (grade.width !== w || grade.height !== h){
+    grade.width = w; grade.height = h;
+    gctx = grade.getContext('2d', { alpha:false });
+    /* Le flou se calcule sur une copie REDUITE au quart : un `blur()` sur
+       1080x1920 a 30 i/s fait chuter la cadence sur telephone, alors que le
+       meme flou, vu a taille reelle, ne se distingue pas de celui calcule en
+       pleine definition. */
+    tampon = document.createElement('canvas');
+    tampon.width = Math.max(1, Math.round(w/4)); tampon.height = Math.max(1, Math.round(h/4));
+  }
+  const ctx = gctx; if (!ctx) return;
+  ctx.setTransform(1,0,0,1,0,0);
+  ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1;
+  ctx.filter = L.css; ctx.drawImage(flux, 0, 0, w, h); ctx.filter = 'none';
+
+  /* Adoucissement : une copie floue reposee en OPACITE SIMPLE, pas en
+     « soft-light ». Mesure du 2026-09-09 : en soft-light la copie floue
+     eclaircit tellement que le visage part en blanc — joli sur une vignette,
+     illisible en grand. En source-over a faible opacite on obtient un vrai
+     flou de portrait : le grain de peau s'efface, les yeux et la bouche
+     restent nets parce qu'ils sont plus contrastes que leur voisinage. */
+  if (L.doux && tampon){
+    const t = tampon.getContext('2d');
+    t.setTransform(1,0,0,1,0,0); t.filter = 'none';
+    t.drawImage(grade, 0, 0, tampon.width, tampon.height);
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.globalAlpha = L.doux; ctx.filter = 'blur(3px)';
+    ctx.drawImage(tampon, 0, 0, w, h);
+    ctx.filter = 'none';
+  }
+  const teindre = (t) => { if (!t) return;
+    ctx.globalCompositeOperation = t.mode; ctx.globalAlpha = t.a;
+    ctx.fillStyle = 'rgb(' + t.c + ')'; ctx.fillRect(0,0,w,h); };
+  teindre(L.ombre); teindre(L.teinte);
+  if (L.vignette){
+    const g = ctx.createRadialGradient(w/2, h/2, Math.min(w,h)*0.30, w/2, h/2, Math.max(w,h)*0.72);
+    g.addColorStop(0,'rgba(0,0,0,0)');
+    g.addColorStop(1,'rgba(0,0,0,' + L.vignette + ')');
+    ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1;
+    ctx.fillStyle = g; ctx.fillRect(0,0,w,h);
+  }
+  ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1;
+}
+
+function appliquerRendu(){
+  const actif = rendu !== 'aucun';
+  grade.classList.toggle('on', actif);
+  flux.classList.toggle('cache', actif);
+  grade.classList.toggle('miroir', cam === 'user');
+  [].forEach.call($('#rendus').children, (b) => {
+    b.setAttribute('aria-pressed', String(b.dataset.k === rendu));
+  });
+  localStorage.setItem('tournage-rendu', rendu);
+  if (actif && !rafGrade) rafGrade = requestAnimationFrame(dessinerRendu);
+  if (!actif && rafGrade){ cancelAnimationFrame(rafGrade); rafGrade = null; }
+}
+
+(function construireRendus(){
+  const bo = $('#rendus');
+  Object.keys(RENDUS).forEach((k) => {
+    const b = document.createElement('button');
+    b.type = 'button'; b.dataset.k = k; b.textContent = RENDUS[k].nom;
+    b.title = RENDUS[k].d;
+    b.addEventListener('click', () => { rendu = k; appliquerRendu(); });
+    bo.appendChild(b);
+  });
+})();
+
+/* Le flux reellement enregistre. Avec un rendu, c'est le canvas — plus la
+   piste AUDIO d'origine, que `captureStream` d'un canvas ne fournit evidemment
+   pas : sans cette ligne, la video sort muette, et on ne s'en apercoit qu'a la
+   relecture. On garde le meme objet d'un enregistrement a l'autre : rappeler
+   `captureStream` cree un second flux et le premier continue de tourner. */
+function fluxAEnregistrer(){
+  if (rendu === 'aucun') return stream;
+  if (!fluxCanvas){
+    fluxCanvas = grade.captureStream(30);
+    stream.getAudioTracks().forEach((t) => fluxCanvas.addTrack(t));
+  }
+  return fluxCanvas;
+}
 let stream = null, rec = null, morceaux = [];
 let t0 = 0, enCours = false, rafId = 0, y = 0, y0 = 0, pxParSec = 0, dernier = 0;
 let cues = [], iActif = -1, verrou = null;
@@ -677,6 +824,7 @@ $('#go').addEventListener('click', async () => {
   }
   flux.srcObject = stream;
   flux.classList.toggle('miroir', cam === 'user');
+  appliquerRendu();
   construirePiste();
   montrer('e2');
   try { verrou = await navigator.wakeLock.request('screen'); } catch(e){}
@@ -739,12 +887,19 @@ $('#bcam').addEventListener('click', async () => {
     stream = await navigator.mediaDevices.getUserMedia({
       video:{ facingMode:cam, width:{ideal:1080}, height:{ideal:1920} }, audio:true });
     flux.srcObject = stream; flux.classList.toggle('miroir', cam === 'user');
+    /* La camera a change : l'ancien flux de canvas porte la piste audio du
+       flux precedent, qui vient d'etre coupee. On le jette pour qu'il soit
+       reconstruit sur la nouvelle. */
+    fluxCanvas = null;
+    appliquerRendu();
   } catch(e){}
 });
 $('#quit').addEventListener('click', () => { arreterTout(); montrer('e1'); });
 
 function arreterTout(){
   enCours = false; cancelAnimationFrame(rafId);
+  if (rafGrade){ cancelAnimationFrame(rafGrade); rafGrade = null; }
+  if (fluxCanvas){ fluxCanvas.getTracks().forEach((t) => t.stop()); fluxCanvas = null; }
   if (rec && rec.state !== 'inactive') { try { rec.stop(); } catch(e){} }
   if (stream) stream.getTracks().forEach(t => t.stop());
   if (verrou) { try { verrou.release(); } catch(e){} verrou = null; }
@@ -790,7 +945,7 @@ function demarrer(){
   morceaux = [];
   const mime = choisirFormat();
   try {
-    rec = new MediaRecorder(stream, mime ? { mimeType:mime, videoBitsPerSecond: 6000000 } : undefined);
+    rec = new MediaRecorder(fluxAEnregistrer(), mime ? { mimeType:mime, videoBitsPerSecond: 6000000 } : undefined);
   } catch(e){
     return alert("Enregistrement impossible sur ce navigateur : " + e.message
       + "\nUtilise « J'ai déjà la vidéo » après avoir filmé avec l'app Caméra.");
