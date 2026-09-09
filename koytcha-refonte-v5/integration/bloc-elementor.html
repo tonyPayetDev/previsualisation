@@ -1,0 +1,2473 @@
+<!-- ═══════════════════════════════════════════════════════════════════════
+     KOYTCHA IMMO — bloc a coller dans un widget HTML Elementor.
+     Genere depuis index.html : ne pas le modifier a la main, relancer
+     integration/faire-bloc-elementor.mjs a la place.
+
+     A LIRE AVANT DE COLLER
+     1. Sur la page : Elementor → roue crantee en bas a gauche → Mise en page
+        → Modele de page → **Elementor Canvas**. Canvas retire l en-tete et le
+        pied du theme : la page a deja sa propre barre de navigation, et deux
+        menus superposes, c est le probleme qu on cherche a eviter.
+        « Elementor Pleine largeur » garde l en-tete du theme : ce n est pas
+        celui-la qu il faut ici.
+     2. La section qui contient ce widget : Mise en page → Largeur du contenu
+        = **Pleine largeur**, et Etirer la section = **Oui**.
+     3. La colonne : Avance → Marge interieure = 0 partout.
+
+     Le bloc <style> ci-dessous est un FILET DE SECURITE : il refait ces trois
+     reglages en CSS, au cas ou le modele Canvas ne serait pas disponible
+     (certains themes filtrent la liste des modeles). Si Canvas est bien
+     applique, il ne sert a rien et ne gene rien.
+     ═══════════════════════════════════════════════════════════════════════ -->
+<style id="koytcha-compat-elementor">
+/* Elementor enferme chaque section dans un conteneur de largeur fixe et pose
+   des marges internes par defaut. La page, elle, gere ses propres gouttieres
+   (.wrap) : sans ca, tout est deux fois en retrait et le plein ecran du haut
+   n en est plus un. */
+.elementor-section.elementor-section-boxed > .elementor-container{max-width:none}
+.elementor-widget-html > .elementor-widget-container{padding:0;margin:0}
+.elementor-column-gap-default > .elementor-row > .elementor-column > .elementor-element-populated{padding:0}
+body.elementor-page{margin:0;padding:0;overflow-x:hidden}
+
+/* Filet de securite : masque l en-tete et le pied du theme SI le modele
+   Canvas n a pas pu etre applique. La page porte deja sa propre navigation.
+   A retirer si Canvas fonctionne — mieux vaut ne pas afficher un menu que le
+   cacher apres coup. */
+.site-header, #masthead, header.site-header, .elementor-location-header,
+.site-footer, #colophon, .elementor-location-footer{display:none}
+
+/* Connecte a WordPress, la barre d administration occupe 32 px en haut de
+   l ecran. La navigation de la page est en position fixe : sans ce decalage
+   elle passe dessous, et le logo se retrouve coupe. */
+body.admin-bar .nav{top:32px}
+@media (max-width:782px){ body.admin-bar .nav{top:46px} }
+</style>
+
+<!-- ORDRE IMPORTANT : ces deux feuilles passent AVANT le <style> de la page.
+     Le CSS du plugin est un Bootstrap complet (148 Ko) qui redefinit body,
+     les titres et les liens ; charge apres, il ecrasait la charte — mesure :
+     body tombait sur -apple-system au lieu de Normatica, et le menu sautait.
+     Devant, il ne sert plus qu au module, que la page rehabille ensuite. -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin>
+<link rel="stylesheet" href="https://koytchaimmo.re/app/plugins/elementor-search-react-ktp-v2/build/index.css">
+<style>
+:root{
+  --ease:cubic-bezier(.16,1,.3,1);
+  --noir:#141414;
+  --gris:#6B6B6B;
+  --gris-clair:#A8A8A8;
+  --ligne:#E4E2DF;
+  --papier:#FFFFFF;
+  --sourd:#F6F5F3;
+  --magenta:#E6007E;
+  --magenta-deep:#B80065;
+  --display:'Bebas Neue',Impact,sans-serif;
+  --serif:'Optima LT Pro','Normatica',Georgia,serif;
+  --sans:'Normatica','Optima LT Pro',Helvetica,Arial,sans-serif;
+  --wrap:1340px;
+  --gouttiere:clamp(20px,4vw,56px);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--papier);color:var(--noir);
+  font-family:var(--sans);font-weight:300;line-height:1.6;
+  -webkit-font-smoothing:antialiased;overflow-x:hidden;
+}
+.wrap{max-width:var(--wrap);margin:0 auto;padding:0 var(--gouttiere)}
+a{color:inherit}
+img{max-width:100%;display:block}
+
+/* ── Barre de navigation ─────────────────────────────────────────────── */
+.nav{position:fixed;inset:0 0 auto;z-index:60;padding:18px 0;
+  transition:background .4s var(--ease),padding .4s var(--ease),box-shadow .4s var(--ease)}
+/* Le flou etait deja la mais invisible : a 96 % d'opacite, il n'y avait plus
+   rien a flouter derriere. En descendant a 82 % on voit la photo passer sous la
+   barre, tres legerement adoucie. `-webkit-` en premier pour Safari iOS. */
+.nav.pose{background:rgba(255,255,255,.82);padding:11px 0;box-shadow:0 1px 0 var(--ligne);
+  -webkit-backdrop-filter:blur(14px) saturate(150%);backdrop-filter:blur(14px) saturate(150%)}
+.nav .wrap{display:flex;align-items:center;justify-content:space-between;gap:24px}
+.logo{display:flex;align-items:center;gap:11px;text-decoration:none;flex:0 0 auto}
+.logo img{height:34px;width:auto;display:block;transition:height .4s var(--ease)}
+.nav.pose .logo img{height:29px}
+/* Deux versions du logo : claire sur la photo, d origine une fois la barre
+   posee sur blanc. On les permute, on ne teinte pas — un filtre CSS qui
+   blanchit tout ferait disparaitre le magenta de la marque. */
+.logo .l-sombre{display:none}
+.nav.pose .logo .l-clair{display:none}
+.nav.pose .logo .l-sombre{display:block}
+/* Panneau mobile ouvert = barre blanche : il faut le logo sombre, sinon la
+   version blanche disparait sur le blanc (seule la pastille restait visible). */
+.nav.ouvert .logo .l-clair{display:none}
+.nav.ouvert .logo .l-sombre{display:block}
+
+/* Reseaux : vraies couleurs de marque, pas un gris uniforme. Elles ne sont
+   visibles qu au survol — en permanence, quatre pastilles colorees sur une
+   photo tireraient l oeil avant le titre. */
+.reseaux-hero{display:flex;align-items:center;gap:11px;margin-top:34px}
+/* Le libelle n'apparait qu'au survol du groupe, pas de chaque icone : une
+   infobulle par pastille ferait clignoter trois fois le meme message.
+   aria-hidden et pointer-events:none — c'est de la decoration, un lecteur
+   d'ecran a deja les aria-label de chaque lien. */
+.rs-txt{opacity:0;transform:translateX(-8px);
+  transition:opacity .32s var(--ease),transform .32s var(--ease);
+  font-size:13px;letter-spacing:.02em;color:rgba(255,255,255,.92);
+  white-space:nowrap;pointer-events:none;margin-left:3px}
+.reseaux-hero:hover .rs-txt,.reseaux-hero:focus-within .rs-txt{opacity:1;transform:translateX(0)}
+@media (prefers-reduced-motion:reduce){.rs-txt{transition:opacity .2s ease;transform:none}}
+@media(max-width:620px){
+  /* Sur telephone il n'y a pas de survol, et le libelle pousserait les
+     pastilles hors de l'ecran. */
+  .rs-txt{display:none}
+}
+.rs{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;
+  color:#fff;background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.24);
+  text-decoration:none;transition:all .28s var(--ease)}
+.rs:hover{transform:translateY(-3px);border-color:transparent}
+.rs.fb:hover{background:#1877F2}
+.rs.ig:hover{background:linear-gradient(45deg,#F58529,#DD2A7B 55%,#8134AF)}
+.rs.li:hover{background:#0A66C2}
+.rs.wa:hover{background:#25D366}
+.logo .im{color:var(--magenta)}
+.pastille{width:34px;height:34px;border-radius:50%;background:var(--magenta);display:grid;place-items:center;
+  color:#fff;font-family:var(--sans);font-weight:600;font-size:17px;line-height:1}
+.liens{display:flex;gap:26px;list-style:none;margin:0;padding:0;font-size:14px;font-weight:400}
+.liens a{text-decoration:none;opacity:.82;transition:opacity .2s}
+.liens a:hover{opacity:1;color:var(--magenta)}
+/* Sur l en-tete transparent, .nav:not(.pose) .liens a force le blanc : sans
+   cette ligne le rose au survol n avait aucune chance de passer. */
+.nav:not(.pose) .liens a:hover{color:var(--magenta)}
+.nav:not(.pose) .liens a,.nav:not(.pose) .logo b{color:#fff}
+.nav:not(.pose) .logo .im{color:#fff}
+.bt{display:inline-flex;align-items:center;gap:9px;background:var(--magenta);color:#fff;
+  text-decoration:none;font-weight:500;font-size:14px;padding:12px 24px;border:0;border-radius:2px;
+  cursor:pointer;font-family:inherit;transition:background .25s var(--ease)}
+.bt:hover{background:var(--magenta-deep)}
+.bt.ligne{background:transparent;border:1px solid currentColor;color:inherit}
+.bt.ligne:hover{background:var(--noir);color:#fff;border-color:var(--noir)}
+.burger{display:none;background:none;border:0;cursor:pointer;padding:8px;color:inherit}
+.burger span{display:block;width:22px;height:1.5px;background:currentColor;margin:5px 0;
+  transition:transform .3s var(--ease),opacity .2s ease}
+/* Le burger devient une croix : sans ce retour, rien ne dit que le panneau
+   ouvert peut se refermer par le meme bouton. */
+.nav.ouvert .burger span:nth-child(1){transform:translateY(6.5px) rotate(45deg)}
+.nav.ouvert .burger span:nth-child(2){opacity:0}
+.nav.ouvert .burger span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg)}
+
+/* ── Sous-menus ─────────────────────────────────────────────────────────
+   Les entrees Acheter / Louer / Vendre / A propos ouvrent les memes
+   destinations que le site actuel — les liens Acheter et Louer pointent
+   vers leur page de recherche deja filtree (prestation_type + pro_res). */
+.liens{align-items:center}
+.liens > li{position:relative;display:flex;align-items:center}
+.chev{background:none;border:0;padding:2px 0 2px 6px;margin:0;cursor:pointer;color:inherit;
+  display:inline-flex;align-items:center;opacity:.82}
+/* .nav:not(.pose) ne repeint que les <a> : sans cette ligne la fleche restait
+   noire sur l en-tete sombre, donc invisible. */
+.nav:not(.pose) .chev{color:#fff}
+/* Meme oubli que pour la fleche : le burger heritait du noir et se perdait
+   sur la photo sombre du premier ecran. */
+.nav:not(.pose) .burger{color:#fff}
+/* ...sauf panneau ouvert : la barre passe alors au blanc, et un burger blanc
+   sur fond blanc rendait la croix de fermeture invisible. Regression
+   introduite en corrigeant sa visibilite sur la photo sombre. */
+.nav.ouvert .burger{color:var(--noir)}
+.nav.ouvert .chev{color:var(--noir)}
+.chev svg{width:10px;height:6px;transition:transform .25s var(--ease)}
+.a-sous:hover .chev svg,.a-sous:focus-within .chev svg{transform:rotate(180deg)}
+/* Le survol doit survivre au trajet entre l onglet et le panneau : sans ce
+   pont invisible, le menu se referme dans les 8 px de vide. */
+.a-sous::after{content:'';position:absolute;left:0;right:-10px;top:100%;height:16px}
+.sous{position:absolute;top:calc(100% + 14px);left:-18px;min-width:308px;
+  margin:0;padding:8px 0;list-style:none;background:#fff;border-radius:4px;
+  box-shadow:0 20px 46px -14px rgba(0,0,0,.32);
+  opacity:0;visibility:hidden;transform:translateY(7px);
+  transition:opacity .22s ease,transform .22s var(--ease),visibility .22s;z-index:60}
+.a-sous:hover > .sous,.a-sous:focus-within > .sous{opacity:1;visibility:visible;transform:translateY(0)}
+.sous li{display:block}
+/* Sur l en-tete transparent, .liens a passe en blanc : le panneau etant
+   blanc, il faut lui rendre l encre sombre. */
+.sous a,.nav:not(.pose) .sous a{display:block;padding:11px 20px;font-size:13px;line-height:1.4;
+  color:var(--noir);opacity:1}
+.sous a:hover{background:rgba(230,0,126,.07);color:var(--magenta)}
+@media (prefers-reduced-motion:reduce){
+  .sous,.chev svg,.burger span{transition:none}
+}
+
+/* ── 1. En-tête, avec le bâtiment qui pivote au scroll ───────────────── */
+/* La scène est en `sticky` sur une piste haute : c'est ce qui donne la course
+   de scroll nécessaire au pivot sans allonger la page perçue. */
+.piste{height:210vh;position:relative}
+.scene{position:sticky;top:0;height:100vh;background:var(--noir);
+  perspective:1500px;perspective-origin:50% 45%}
+/* Le rognage vit ICI, pas sur .scene. Posé sur .scene, il coupait net la
+   boîte de recherche qui dépasse volontairement sous l'en-tête — défaut
+   constaté à la capture pleine page, invisible sur un écran seul. */
+.cadre{position:absolute;inset:0;overflow:hidden}
+/* Pas de `will-change` ici : .bati ne bouge pas (animation:none), ce sont ses
+   images qui derivent. La ligne promouvait en permanence une couche plein
+   ecran pour un element qui n'anime rien. */
+.bati{position:absolute;inset:-9% -9%;
+  animation:none}
+/* 38 s aller, 38 s retour : assez lent pour qu on ne voie jamais le mouvement
+   commencer ni finir. En dessous de ~25 s ca devient un effet, au-dessus de
+   ~50 s ca ne se percoit plus du tout. */
+@keyframes kenburns{
+  0%  {transform:scale(1.00) translate3d(0,0,0)}
+  100%{transform:scale(1.11) translate3d(-2.2%,-1.6%,0)}
+}
+@media(prefers-reduced-motion:reduce){ .bati{animation:none} }
+/* Trois fonds qui se succedent. Ils sont empiles et on croise l opacite :
+   changer l attribut source ferait clignoter le temps du chargement, et la
+   deuxieme image ne serait pas encore decodee au moment de l echange. */
+.bati img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+  opacity:0;transition:opacity 1.6s var(--ease)}
+.bati img.on{opacity:1}
+/* Voile de lisibilité : sans lui le texte blanc sur photo claire disparaît.
+   Dégradé et pas aplat — un aplat éteindrait la photo, qui est l'argument. */
+.voile{position:absolute;inset:0;
+  background:linear-gradient(100deg,rgba(10,10,10,.88) 0%,rgba(10,10,10,.66) 30%,rgba(10,10,10,.34) 58%,rgba(10,10,10,.62) 100%)}
+/* Le hero centre son contenu verticalement. Tant que la boite de recherche est
+   repliee, tout tient. Des que l'utilisateur filtre, la boite grandit de deux
+   champs et d'un bouton : le contenu devient plus haut que le hero, et un
+   centrage fait deborder AUTANT en haut qu'en bas — le titre passait donc sous
+   la barre de navigation fixe. C'est ce que Tony a vu.
+   `safe center` centre tant que ca rentre, et bascule sur le haut des que ca
+   deborde. Le padding degage la hauteur de la barre pour ce cas-la. */
+.hero{position:absolute;inset:0;display:flex;align-items:center;align-items:safe center;
+  padding:84px 0 24px;z-index:3;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.hero .wrap{width:100%}
+/* Retour a la disposition d origine : texte a gauche, module dessous.
+   La version en deux colonnes poussait le module sur la partie la plus
+   claire de la photo et rognait le titre a droite. */
+.grille-hero{display:block;padding-top:2vh}
+.grille-hero .boite{max-width:660px;margin-top:34px}
+@media(max-width:980px){
+  .grille-hero{grid-template-columns:1fr;gap:26px;padding-top:0}
+  .boite{margin-top:8px}
+}
+.sur{font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:rgba(255,255,255,.72);margin:0 0 22px;font-weight:500}
+.hero h1{font-family:var(--serif);font-weight:300;color:#fff;margin:0;
+  font-size:clamp(40px,6.6vw,86px);line-height:1.02;letter-spacing:-.02em;max-width:15ch}
+.hero h1 i{font-style:italic;display:block}
+.hero h1 .pt{color:var(--magenta);font-style:normal}
+/* Mot qui défile. La hauteur est verrouillée sur une ligne et le débordement
+   masqué : sans ça, le remplacement d'un mot long par un court fait sauter
+   toute la ligne à chaque rotation. */
+.roule{display:inline-block;overflow:hidden;vertical-align:bottom;
+  height:1.05em;position:relative;color:var(--magenta)}
+.roule span{display:block;transition:transform .55s var(--ease),opacity .55s var(--ease)}
+.roule.part span{transform:translateY(-105%);opacity:0}
+.roule.entre span{transform:translateY(105%);opacity:0;transition:none}
+.hero p{color:rgba(255,255,255,.86);max-width:44ch;margin:26px 0 0;font-size:16.5px}
+
+/* Module de recherche — volontairement réduit à l'essentiel.
+   La version précédente demandait type, localisation, budget min ET max avant
+   même de savoir ce que cherche le visiteur. Deux boutons et un bouton d'action :
+   le filtrage fin appartient à la page de résultats, pas à l'accueil. */
+/* 16 % et pas 24 : mesure sur 4 hauteurs d ecran (1080/900/800/720), la
+   marge sous le bouton reste de 24 px partout. A 24 % il tombait a 2 px du
+   bord — coupe des qu un navigateur ajoute une barre d outils. */
+/* Le module vit desormais DANS la grille de l en-tete, colonne de droite,
+   aligne haut. Il ne flotte plus sous la photo : il fait partie du premier
+   ecran, a hauteur du titre. */
+.boite{background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.30);
+  border-radius:4px;box-shadow:0 26px 70px -22px rgba(0,0,0,.55);
+  padding:clamp(24px,2.4vw,32px);
+  /* Le flou blanc demande : verre depoli. Le fond translucide seul donnerait
+     une boite sale ; c est le backdrop-filter qui fait le verre. */
+  backdrop-filter:blur(18px) saturate(115%);
+  -webkit-backdrop-filter:blur(18px) saturate(115%)}
+/* ── Anneau neon rose autour du module au survol ────────────────────────
+   Meme mecanique que sur les vignettes de realisations : un degrade conique
+   dont l angle tourne. Il vit derriere la boite (z-index -1), on ne voit
+   donc que le liseré qui depasse. */
+.boite{position:relative;isolation:isolate}
+.boite::before,.boite::after{content:'';position:absolute;inset:-1px;border-radius:5px;
+  z-index:-1;opacity:0;pointer-events:none;transition:opacity .4s ease;
+  /* Le masque ne garde que le liseré. Sans lui le degrade remplissait le
+     rectangle entier et, la boite etant du verre translucide (fond a 13 %),
+     il se voyait AU TRAVERS : la moitie du module virait au rose plein. */
+  padding:1px;
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+          mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;mask-composite:exclude;
+  background:conic-gradient(from var(--tour),
+    rgba(230,0,126,0) 0deg 236deg,
+    rgba(230,0,126,.9) 286deg,
+    #ffa3de 312deg,
+    rgba(230,0,126,.9) 338deg,
+    rgba(230,0,126,0) 360deg)}
+.boite::after{inset:-4px;padding:2px;filter:blur(7px)}
+.boite:hover::before,.boite:focus-within::before{opacity:1;animation:tour-neon 3s linear infinite}
+.boite:hover::after,.boite:focus-within::after{opacity:.6;animation:tour-neon 3s linear infinite}
+@media (prefers-reduced-motion:reduce){
+  .boite:hover::before,.boite:hover::after,
+  .boite:focus-within::before,.boite:focus-within::after{animation:none}
+}
+.boite h2{font-family:var(--sans);font-weight:400;font-size:18px;margin:0 0 18px;color:#fff}
+.boite h2 b{color:#fff;font-weight:600}
+.boite h2 b{color:var(--magenta);font-weight:600}
+.onglets{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
+.onglet{background:rgba(0,0,0,.18);border:1px solid rgba(255,255,255,.28);border-radius:2px;padding:14px;
+  font:inherit;font-size:12.5px;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;
+  color:#fff;transition:all .22s var(--ease)}
+.onglet:hover{border-color:#fff;color:#fff;background:rgba(255,255,255,.18)}
+.onglet[aria-pressed="true"]{background:#fff;border-color:#fff;color:var(--magenta);font-weight:600}
+.boite .bt{width:100%;justify-content:center;padding:16px;letter-spacing:.12em;text-transform:uppercase;font-size:13px}
+.ref{display:block;text-align:center;margin-top:13px;font-size:12.5px;color:rgba(255,255,255,.62);text-decoration:none}
+.ref:hover{color:#fff}
+
+/* Repli fidele — reconstruit a partir de l'export Elementor de la section
+   « search ktp » (widget popular-posts, post 458). Memes etapes, memes
+   libelles, meme logique conditionnelle et memes valeurs par defaut que le
+   module reel, pour que l'apercu montre ce que Florent verra une fois le
+   bloc colle dans Elementor. Le vrai module remplace tout ceci des qu'il
+   s'hydrate ; ce repli n'existe que hors WordPress. */
+.boite-repli .etape{margin-bottom:14px}
+.boite-repli .lab{display:block;font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;
+  color:rgba(255,255,255,.62);margin:0 0 8px}
+.choix{display:flex;flex-wrap:wrap;gap:8px}
+/* Verre depoli au repos : le bouton laisse voir la photo derriere, floutee.
+   `-webkit-` en premier — sans lui, Safari iOS n'applique rien et les boutons
+   redeviennent des rectangles plats. */
+.puce{background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.30);border-radius:3px;
+  -webkit-backdrop-filter:blur(9px) saturate(120%);backdrop-filter:blur(9px) saturate(120%);
+  padding:9px 13px;font:inherit;font-size:12px;letter-spacing:.06em;color:#fff;cursor:pointer;
+  transition:all .22s var(--ease)}
+.puce:hover{border-color:#fff;background:rgba(255,255,255,.18)}
+.puce[aria-pressed="true"]{background:var(--magenta);border-color:var(--magenta);color:#fff;
+  font-weight:600;box-shadow:0 6px 20px -8px rgba(230,0,126,.75)}
+.puce[aria-pressed="true"]:hover{background:var(--magenta-deep);border-color:var(--magenta-deep)}
+/* Le seul choix exclusif du repli — pro ou residentiel — suit la meme regle que
+   le module reel : blanc plein pour l actif. Les autres puces restent magenta,
+   ce sont des cases a cocher multiples et non un choix entre deux. */
+.choix[data-champ="pro_res"] .puce[aria-pressed="true"]{background:#fff;border-color:#fff;
+  color:var(--magenta);box-shadow:0 6px 20px -10px rgba(0,0,0,.5)}
+.choix[data-champ="pro_res"] .puce[aria-pressed="true"]:hover{background:#fff;
+  border-color:#fff;color:var(--magenta-deep)}
+.plus{display:block;width:100%;background:none;border:0;border-top:1px solid rgba(255,255,255,.22);
+  margin:16px 0 0;padding:12px 0 0;font:inherit;font-size:12px;letter-spacing:.12em;
+  text-transform:uppercase;color:rgba(255,255,255,.72);cursor:pointer;text-align:left}
+.plus:hover{color:#fff}
+.plus .chev{float:right;transition:transform .25s var(--ease)}
+.plus[aria-expanded="true"] .chev{transform:rotate(180deg)}
+.crit{padding-top:14px}
+.paire{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.champ{position:relative}
+.champ input{width:100%;background:rgba(0,0,0,.18);border:1px solid rgba(255,255,255,.28);
+  border-radius:2px;padding:11px 34px 11px 12px;font:inherit;font-size:13px;color:#fff}
+.champ input::placeholder{color:rgba(255,255,255,.45)}
+.champ input:focus{outline:none;border-color:#fff}
+/* Les fleches natives du champ nombre passaient PAR-DESSUS le « m2 » et le
+   « EUR » : on les retire, l'unite est deja l'indication. */
+.champ input{appearance:textfield;-moz-appearance:textfield}
+.champ input::-webkit-outer-spin-button,
+.champ input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.champ .unite{position:absolute;right:11px;top:50%;transform:translateY(-50%);
+  font-size:12px;color:rgba(255,255,255,.55);pointer-events:none}
+.amgs{display:flex;flex-wrap:wrap;gap:7px}
+.amgs .puce{font-size:11.5px;padding:7px 11px}
+@media (prefers-reduced-motion:reduce){.puce,.plus .chev{transition:none}}
+
+/* Mobile : mesure a 390x844, la boite depassait de 27 px sous la ligne de
+   flottaison. On resserre les interlignes plutot que de retirer une etape —
+   le visiteur doit voir le bouton sans faire defiler. */
+@media (max-width:640px){
+  .boite-repli .etape{margin-bottom:10px}
+  .boite-repli .lab{margin-bottom:6px}
+  .choix{gap:7px}
+  .puce{padding:8px 11px}
+  .plus{margin-top:12px;padding-top:10px}
+  .boite-repli h2{margin-bottom:12px}
+  .boite-repli .bt{padding:13px}
+}
+
+/* ── Habillage du module reel a la charte de la refonte ─────────────────
+   Le plugin arrive avec son propre CSS (Material-UI + Bootstrap), dessine
+   pour un fond blanc : sur le verre depoli sombre le titre ressortait gris
+   et les libelles debordaient de leurs boutons (col-5 fige la largeur alors
+   que « PROFESSIONNEL » est plus long). Tout est porte par .boite .app :
+   rien ne fuit vers le reste de la page. A recopier dans le CSS du theme si
+   le meme rendu est voulu sur koytchaimmo.re. */
+.boite .app h3{font-family:var(--sans);font-weight:400;font-size:18px;margin:0 0 18px}
+/* Le gris (#54595F) est un style EN DUR dans les parametres du widget, pas
+   une regle CSS : mesure a l ecran, span.style.color = rgb(84,89,95). Un
+   selecteur ordinaire ne peut pas gagner contre du style en ligne, d ou le
+   seul !important du fichier. Sur leur site actuel ce gris convient — le
+   fond y est blanc ; ici le titre est sur du verre sombre. */
+.boite .app h3,.boite .app h3 div{color:#fff}
+.boite .app h3 span{color:#fff!important}
+.boite .app h3 .row{justify-content:center!important;margin:0}
+.boite .app h3 .col-10{flex:0 0 100%;max-width:100%;padding:0;text-align:center}
+.boite .app h3 strong{color:var(--magenta);font-weight:600}
+.boite .app .row{margin-left:0;margin-right:0}
+.boite .app [class*="col-"]{padding-left:0;padding-right:0}
+/* Centrage : la ligne Bootstrap demande deja .justify-content-center, mais
+   chaque etape vit dans une .col-12 pleine largeur — c est donc elle qui doit
+   centrer son contenu. text-align + inline-flex plutot que :has(), qui n est
+   pas connu de Safari avant 15.4. */
+.boite .app .col-12{text-align:center}
+/* Les puces reprennent .puce en plus genereux : assez de matiere pour etre
+   visees au pouce (44 px de haut, la cible tactile de reference) et une
+   largeur plancher pour que « A l achat » ne soit pas deux fois plus etroit
+   que « A la location ». */
+/* Le conteneur du module est un `div.col-12` en display:block, pas un
+   ToggleButtonGroup : c'est LUI qu'il faut passer en flex pour ranger les
+   boutons deux par ligne. Et les boutons portent eux-memes `col-md-4 col-5`,
+   les largeurs Bootstrap : sans les neutraliser, ils reprennent la largeur de
+   la grille et se remettent en colonne. */
+.boite .app .col-12:has(> .MuiToggleButton-root){display:flex;flex-wrap:wrap;
+  justify-content:center;gap:10px}
+.boite .app .MuiToggleButton-root{display:inline-flex;justify-content:center;align-items:center;
+  flex:1 1 calc(50% - 10px);max-width:none;width:auto;min-width:0;min-height:46px;
+  background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.30);border-radius:3px;
+  -webkit-backdrop-filter:blur(9px) saturate(120%);backdrop-filter:blur(9px) saturate(120%);
+  padding:12px 14px;margin:0;font-family:var(--sans);font-size:12.5px;font-weight:400;
+  letter-spacing:.09em;text-transform:none;color:#fff;white-space:normal;text-align:center;
+  transition:all .22s var(--ease)}
+.boite .app .MuiToggleButton-root:hover{background:rgba(255,255,255,.18);border-color:#fff;color:#fff}
+/* Selectionne : BLANC plein, texte magenta — meme etat que .onglet plus haut.
+   Le magenta plein avait ete essaye ; retour Tony du 2026-09-09 : c est le blanc
+   qui doit marquer le choix actif, et il doit passer d un bouton a l autre.
+   Le plugin pose ses propres classes emotion (css-17zu2ew-…) : sans le
+   `.boite .app` en tete ET les deux selecteurs (classe MUI + aria-pressed), sa
+   regle a lui repasse devant et le bouton reste translucide. */
+/* Invite au clic, tant que le visiteur n'a rien touche. Le module ne dit pas
+   qu'il est vivant : deux boutons poses sur une photo peuvent passer pour un
+   simple libelle. Un halo lent sur le choix par defaut, et un frere qui
+   respire a contretemps, disent « ces deux-la se cliquent » sans crier.
+   L'animation s'arrete d'elle-meme au premier geste : la classe `pre-actif`
+   est retiree, et rien ne clignote pendant qu'on remplit le formulaire. */
+@keyframes ktp-invite{
+  0%,100%{box-shadow:0 6px 20px -10px rgba(0,0,0,.5), 0 0 0 0 rgba(255,255,255,.45)}
+  55%    {box-shadow:0 6px 20px -10px rgba(0,0,0,.5), 0 0 0 9px rgba(255,255,255,0)}
+}
+@keyframes ktp-invite-frere{
+  0%,100%{border-color:rgba(255,255,255,.30)}
+  55%    {border-color:rgba(255,255,255,.85)}
+}
+.boite .app .MuiToggleButton-root.pre-actif{animation:ktp-invite 2.6s var(--ease) infinite}
+.boite .app .MuiToggleButton-root.pre-actif ~ .MuiToggleButton-root{
+  animation:ktp-invite-frere 2.6s var(--ease) infinite;animation-delay:1.3s}
+/* Une invite clignotante peut gener : on la coupe pour qui demande moins de
+   mouvement. Le blanc, lui, reste — c'est l'information, pas la decoration. */
+@media (prefers-reduced-motion: reduce){
+  .boite .app .MuiToggleButton-root.pre-actif,
+  .boite .app .MuiToggleButton-root.pre-actif ~ .MuiToggleButton-root{animation:none}
+}
+/* `pre-actif` est NOTRE marque, posee avant tout clic : elle donne le blanc
+   sans toucher a l etat interne du module — donc sans deplier l etape suivante.
+   Retour Tony du 2026-09-09 : « le bouton doit etre blanc mais pas ouvrir la
+   section ». Elle disparait au premier geste du visiteur, et c est alors
+   Mui-selected qui prend le relais. */
+.boite .app .MuiToggleButton-root.pre-actif,
+.boite .app .MuiToggleButton-root.Mui-selected,
+.boite .app .MuiToggleButton-root[aria-pressed="true"]{background:#fff;
+  border-color:#fff;color:var(--magenta);font-weight:600;
+  box-shadow:0 6px 20px -10px rgba(0,0,0,.5)}
+.boite .app .MuiToggleButton-root.pre-actif .fa,
+.boite .app .MuiToggleButton-root.pre-actif svg,
+.boite .app .MuiToggleButton-root.Mui-selected .fa,
+.boite .app .MuiToggleButton-root.Mui-selected svg,
+.boite .app .MuiToggleButton-root[aria-pressed="true"] .fa,
+.boite .app .MuiToggleButton-root[aria-pressed="true"] svg{color:var(--magenta)}
+.boite .app .MuiToggleButton-root.pre-actif:hover,
+.boite .app .MuiToggleButton-root.Mui-selected:hover,
+.boite .app .MuiToggleButton-root[aria-pressed="true"]:hover{background:#fff;
+  border-color:#fff;color:var(--magenta-deep)}
+/* react-select : le champ blanc par defaut trouait le verre. */
+/* Le module heritait de la police du navigateur : react-select rend ses
+   propres noeuds et rien ne leur imposait la police du site. */
+.boite .app,.boite .app *{font-family:var(--sans)}
+/* ... mais une icone Font Awesome EST un caractere d une police dediee :
+   la regle ci-dessus la remplacait par Normatica et les pictogrammes
+   tombaient en carre vide. On la leur rend. */
+.boite .app .fa,.boite .app .fas,.boite .app .far,.boite .app .fab,
+.boite .app [class^="fa-"],.boite .app [class*=" fa-"]{
+  font-family:"Font Awesome 6 Free","Font Awesome 6 Brands","FontAwesome"}
+.boite .app [class*="-control"]{background:rgba(0,0,0,.18);border:1px solid rgba(255,255,255,.28);
+  border-radius:2px;box-shadow:none;min-height:44px;font-size:12.5px;text-align:left}
+.boite .app [class*="-control"]:hover{border-color:#fff}
+.boite .app [class*="-singleValue"],.boite .app [class*="-Input"],.boite .app input{color:#fff}
+.boite .app [class*="-placeholder"]{color:rgba(255,255,255,.45)}
+.boite .app [class*="-menu"]{background:#17171b;color:#fff;border-radius:3px;text-align:left;
+  box-shadow:0 22px 48px -14px rgba(0,0,0,.6);border:1px solid rgba(255,255,255,.14);
+  overflow:hidden;z-index:70}
+.boite .app [class*="-MenuList"]{max-height:236px}
+/* L option survolee etait BLANCHE SUR BLANC : react-select pose un fond clair
+   par defaut sur l option focalisee, illisible sur ce menu sombre. */
+.boite .app [class*="-option"]{background:transparent;color:rgba(255,255,255,.88);
+  padding:11px 16px;font-size:12.5px;cursor:pointer}
+.boite .app [class*="-option"]:active{background:rgba(230,0,126,.30)}
+.boite .app [class*="-option"][class*="focused"],
+.boite .app [class*="-option"]:hover{background:rgba(230,0,126,.22);color:#fff}
+.boite .app [class*="-option"][class*="selected"],
+.boite .app [class*="-option"][aria-selected="true"]{background:var(--magenta);color:#fff}
+.boite .app [class*="-indicatorSeparator"]{background:rgba(255,255,255,.28)}
+.boite .app [class*="-indicatorContainer"]{color:rgba(255,255,255,.7)}
+.boite .app [class*="-noOptionsMessage"]{color:rgba(255,255,255,.5)}
+/* Le bouton d action : meme carton plein que .bt, pleine largeur. */
+/* Respiration entre les etapes et entre les deux listes deroulantes, que la
+   suppression des gouttieres Bootstrap avait collees. */
+.boite .app .row > .col-12 + .col-12{margin-top:2px}
+/* Bootstrap donne 33 % a ces colonnes, soit ~117 px une fois les gouttieres
+   retirees : « Type de bien ? » passait a la ligne. On les cale sur la
+   largeur des puces pour que la boite lise en colonnes regulieres. */
+.boite .app .col-md-4{flex:0 0 auto;max-width:none;width:158px;padding:0;margin:0 6px 12px}
+.boite .app .col-md-5{flex:0 0 100%;max-width:100%;margin-top:18px}
+.boite .app a.btn{display:block;width:100%;background:var(--magenta);border:0;border-radius:2px;
+  padding:16px;color:#fff;font-family:var(--sans);font-size:13px;font-weight:600;
+  letter-spacing:.12em;text-transform:uppercase;text-align:center;text-decoration:none;
+  transition:background .22s var(--ease)}
+.boite .app a.btn:hover{background:var(--magenta-deep);color:#fff}
+.boite .app a.btn .row{justify-content:center!important}
+@media (max-width:640px){
+  /* 158 px x2 + marges ne tiennent pas dans 390 px : on laisse la largeur
+     suivre le texte plutot que de casser la ligne en deux. */
+  /* Deux par ligne, pas empiles. Une etape n'offre que deux choix : les mettre
+     l'un au-dessus de l'autre allongeait la boite d'un ecran entier et cachait
+     le bouton « voir les annonces ». A deux par ligne, chaque cible fait encore
+     la moitie de la largeur du telephone — largement le pouce — et tout le
+     module tient dans un seul regard. */
+  .boite .app .MuiToggleButtonGroup-root{display:flex;flex-wrap:wrap;gap:10px;width:100%}
+  /* `!important` a contrecoeur, et pour une raison precise : les boutons portent
+     les classes utilitaires Bootstrap `mr-1 mb-3`, et Bootstrap declare ses
+     marges en `!important`. Sans lui, ces 4 px de marge droite s'ajoutent aux
+     50 % de base et au gap : le total depasse la ligne, et les deux boutons
+     repassent l'un sous l'autre. C'est exactement ce que Tony voyait. */
+  .boite .app .MuiToggleButton-root{display:flex;flex:1 1 calc(50% - 5px);min-width:0;
+    padding:15px 12px;margin:0 !important}
+  /* NE PAS remettre width:100% ici : les boutons portent eux-memes col-md-4,
+     et cette regle les repassait en colonne — c'est ce que Tony voyait. */
+  .boite .app .col-md-4:not(.MuiToggleButton-root){width:100%;min-width:0;margin:0 0 10px}
+  .boite-repli .choix{display:flex;flex-wrap:wrap;gap:10px}
+  .boite-repli .puce{flex:1 1 calc(50% - 5px);min-width:0;justify-content:center;
+    text-align:center;padding:13px 10px}
+}
+@media (prefers-reduced-motion:reduce){
+  .boite .app .MuiToggleButton-root,.boite .app a.btn{transition:none}
+  .boite .app .animated{animation:none}
+}
+
+/* ── Section cinématique (mécanique reprise de koytcha-reveal) ───────── */
+/* Une scène collante dans une piste haute : c'est la hauteur de la piste
+   qui donne la course de scroll, et la scène reste à l'écran pendant que
+   les chapitres se succèdent par-dessus. */
+.cine{position:relative;height:300svh;background:var(--noir)}
+.cine .scene2{position:sticky;top:0;height:100svh;overflow:hidden;background:var(--noir)}
+.cine .plan{position:absolute;inset:0;opacity:0;transition:opacity 1.1s var(--ease)}
+.cine .plan.on{opacity:1}
+.cine .plan img{width:100%;height:100%;object-fit:cover}
+.cine .vign{position:absolute;inset:0;pointer-events:none;
+  background:
+    linear-gradient(100deg,rgba(8,8,10,.90) 0%,rgba(8,8,10,.72) 34%,rgba(8,8,10,.30) 68%,rgba(8,8,10,.52) 100%),
+    radial-gradient(120% 85% at 50% 45%,transparent 30%,rgba(0,0,0,.55) 100%)}
+.cine .chap{position:absolute;inset:0;display:flex;align-items:center;z-index:5;
+  opacity:0;transform:translateY(26px);transition:opacity .8s var(--ease),transform .8s var(--ease);
+  pointer-events:none}
+.cine .chap.on{opacity:1;transform:none}
+.cine .chap .n{font-size:11px;letter-spacing:.3em;color:var(--magenta);margin:0 0 16px;font-weight:500}
+.cine .chap h2{font-family:var(--serif);font-weight:300;color:#fff;margin:0;
+  font-size:clamp(28px,4.4vw,54px);line-height:1.06;max-width:17ch;letter-spacing:-.02em}
+.cine .chap h2 i{font-style:italic;color:rgba(255,255,255,.66)}
+.cine .chap p{color:rgba(255,255,255,.8);max-width:44ch;margin:20px 0 0;font-size:16px}
+.cine .jauge{position:absolute;left:50%;transform:translateX(-50%);bottom:26px;z-index:6;
+  display:flex;gap:8px}
+.cine .jauge i{width:26px;height:2px;background:rgba(255,255,255,.24);display:block;transition:background .4s}
+.cine .jauge i.on{background:var(--magenta)}
+
+/* ── Galerie (reprise de koytcha-reveal) ─────────────────────────────── */
+.gal{display:grid;gap:12px;grid-template-columns:repeat(2,1fr);margin-top:clamp(34px,4.4vw,52px)}
+.gal figure{position:relative;overflow:hidden;border-radius:14px;background:#111;aspect-ratio:4/3;margin:0}
+.gal figure:first-child{grid-column:1/-1;aspect-ratio:16/10}
+.gal img{width:100%;height:100%;object-fit:cover;transition:transform .8s var(--ease)}
+.gal figure:hover img{transform:scale(1.05)}
+.gal figcaption{position:absolute;left:0;right:0;bottom:0;padding:26px 16px 13px;color:#fff;
+  font-size:13px;letter-spacing:.02em;
+  background:linear-gradient(transparent,rgba(0,0,0,.72))}
+@media(min-width:760px){
+  .gal{grid-template-columns:repeat(3,1fr);grid-auto-rows:clamp(190px,18vw,250px)}
+  .gal figure{aspect-ratio:auto}
+  .gal figure:first-child{grid-column:1/3;grid-row:span 2;aspect-ratio:auto}
+  .gal figure:nth-child(4){grid-column:span 2}
+}
+/* ── Correctif v4.2 · la galerie passe aussi en carrousel sur mobile ──────
+   En grille à deux colonnes sur un écran de 390 px, chaque photo tombait à
+   ~178 px de large. Sur des vues d'intérieur, on ne distingue plus rien.
+   Même mécanique que la planche : scroll-snap natif, cartes à 86 %, le bord
+   de la suivante qui dépasse pour dire qu'on peut faire glisser.
+   La première image garde son cadrage 16:10 en grille ; en carrousel toutes
+   passent en 4:3, sinon les hauteurs sautent d'une vue à l'autre. */
+@media(max-width:620px){
+  .gal{
+    display:flex; gap:10px;
+    overflow-x:auto; overscroll-behavior-x:contain;
+    scroll-snap-type:x mandatory; -webkit-overflow-scrolling:touch;
+    margin-inline:calc(var(--gouttiere) * -1);
+    padding-inline:var(--gouttiere);
+    scroll-padding-inline:var(--gouttiere);
+    scrollbar-width:none;
+  }
+  .gal::-webkit-scrollbar{display:none}
+  .gal figure{flex:0 0 86%; scroll-snap-align:start; aspect-ratio:4/3}
+  .gal figure:first-child{grid-column:auto; aspect-ratio:4/3}
+}
+
+/* ── 2. Programmes ───────────────────────────────────────────────────── */
+.sect{padding:clamp(90px,11vw,150px) 0}
+.sect.haut{padding-top:clamp(80px,9vw,120px)}
+.eyebrow{font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:var(--magenta);margin:0 0 16px;font-weight:500}
+h2.tt{font-family:var(--serif);font-weight:300;font-size:clamp(30px,4.2vw,52px);line-height:1.08;
+  letter-spacing:-.02em;margin:0 0 12px;max-width:20ch}
+h2.tt i{font-style:italic}
+/* Apparition des titres, mot a mot. Chaque mot est enveloppe par le script
+   au chargement : ecrire les span a la main dans le HTML rendrait le texte
+   illisible a la relecture et casserait la cesure des lignes. */
+.mot{display:inline-block;opacity:0;transform:translateY(.5em) rotate(1.2deg);
+  transition:opacity .62s var(--ease),transform .62s var(--ease);
+  transition-delay:var(--dm,0ms)}
+.vu .mot,.monte.vu .mot{opacity:1;transform:none}
+/* Mots mis en avant dans le corps de texte. Le magenta est reserve a ce qui
+   compte : un mot sur vingt, pas un mot sur trois — sinon plus rien ne
+   ressort et la page devient criarde. */
+.f{color:var(--magenta);font-weight:500}
+.corps p .f,.txt p .f{font-weight:500}
+.tete{display:flex;align-items:flex-end;justify-content:space-between;gap:30px;flex-wrap:wrap;margin-bottom:clamp(24px,3vw,36px)}
+.lien-fleche{text-decoration:none;font-size:14px;font-weight:500;display:inline-flex;align-items:center;gap:10px;white-space:nowrap}
+.lien-fleche svg{transition:transform .3s var(--ease)}
+.lien-fleche:hover svg{transform:translateX(5px)}
+.cartes{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(18px,2.4vw,32px)}
+/* `group:card` n'est pas une propriete CSS — reste d'un copier-coller
+   Tailwind, le navigateur la jette. Le soulignement revenait au survol
+   faute d'etre coupe la aussi. */
+.carte,.carte:hover,.carte:focus{text-decoration:none}
+.carte{display:block}
+.carte .vue{position:relative;overflow:hidden;aspect-ratio:4/3;background:var(--sourd)}
+.carte .vue img{width:100%;height:100%;object-fit:cover;transition:transform 1.1s var(--ease)}
+
+.ville{position:absolute;top:14px;left:14px;background:rgba(20,20,20,.78);color:#fff;
+  font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;padding:7px 12px;backdrop-filter:blur(4px)}
+.carte h3{font-family:var(--serif);font-weight:400;font-size:22px;margin:20px 0 8px;letter-spacing:-.01em;
+  transition:color .25s var(--ease)}
+/* Le titre passe au rose quand on survole la carte — c'est la carte entiere
+   qui est le lien, pas seulement le mot « Decouvrir ». */
+.carte:hover h3{color:var(--magenta)}
+.lien-fleche{transition:color .25s var(--ease)}
+.lien-fleche:hover{color:var(--magenta)}
+.carte p{margin:0 0 16px;font-size:14.5px;color:var(--gris);min-height:3em}
+.carte .dec{font-size:13.5px;font-weight:500;color:var(--magenta);display:inline-flex;align-items:center;gap:8px}
+
+/* ── Carrousel de biens (coverflow) ──────────────────────────────────── */
+.cf{--cf-carte:clamp(190px,24vw,300px)}
+.cf .cf-cadre{cursor:grab;overflow:hidden;padding:22px 0;outline:none;touch-action:pan-y}
+.cf .cf-cadre:active{cursor:grabbing}
+.cf .cf-cadre:focus-visible{box-shadow:inset 0 0 0 2px var(--magenta)}
+.cf .piste{position:relative;height:var(--cf-carte);transform-style:preserve-3d}
+.cf .c{position:absolute;left:50%;top:0;width:var(--cf-carte);aspect-ratio:1;
+  overflow:hidden;border-radius:16px;background:var(--sourd);
+  box-shadow:0 22px 50px -18px rgba(0,0,0,.42);will-change:transform;text-decoration:none;display:block}
+.cf .c img{width:100%;height:100%;object-fit:cover;user-select:none;-webkit-user-drag:none}
+.cf .leg{text-align:center;margin-top:6px;min-height:96px}
+.cf .leg b{display:block;font-family:var(--serif);font-weight:400;font-size:23px;letter-spacing:-.01em}
+.cf .leg span{display:block;font-size:13.5px;color:var(--gris);margin-top:5px}
+.cf .leg .bt{margin-top:18px}
+.cf .points{display:flex;justify-content:center;gap:8px;margin-top:22px}
+.cf .points button{width:8px;height:8px;border-radius:50%;border:0;background:var(--noir);
+  opacity:.22;cursor:pointer;padding:0;transition:opacity .3s,background .3s}
+.cf .points button[aria-current="true"]{opacity:1;background:var(--magenta)}
+.cf .fleches{display:flex;justify-content:center;gap:10px;margin-top:16px}
+.cf .fleches button{width:42px;height:42px;border-radius:50%;border:1px solid var(--ligne);
+  background:#fff;cursor:pointer;display:grid;place-items:center;color:var(--noir);
+  transition:all .25s var(--ease)}
+.cf .fleches button:hover{border-color:var(--magenta);color:var(--magenta)}
+
+/* ── 3. À propos, la planche de trois vues ───────────────────────────── */
+.apropos{background:var(--sourd)}
+/* Rythme demande : blanc, gris clair, rose, blanc, gris clair. Le rose n est
+   pas un aplat mais un voile flou — un aplat magenta ecraserait la page et
+   sortirait de la charte quasi-monochrome. */
+.rose{position:relative;background:#fff;overflow:hidden}
+.rose::before{content:'';position:absolute;inset:-20% -10%;pointer-events:none;
+  background:
+    radial-gradient(46% 52% at 18% 28%,rgba(230,0,126,.20),transparent 62%),
+    radial-gradient(40% 46% at 82% 72%,rgba(230,0,126,.14),transparent 64%),
+    radial-gradient(58% 40% at 52% 110%,rgba(230,0,126,.10),transparent 60%);
+  filter:blur(46px)}
+.rose>*{position:relative;z-index:1}
+/* Section a fond revele : l image reste fixe derriere pendant que le contenu
+   glisse dessus. background-attachment:fixed est ignore sur iOS — on passe
+   donc par une couche en position:fixed rognee par la section. */
+/* ── LA MARQUE EN FENÊTRE ────────────────────────────────────────────────
+   L'image ne se révèle plus en plein cadre mais À TRAVERS le logo : la
+   silhouette de « Koytcha immo » sert de masque, et un filtre de turbulence
+   ronge ses bords pour qu'ils aient l'irrégularité d'un coup de pinceau.
+   Le masque vient du canal alpha du PNG blanc — pas besoin de tracé vectoriel.
+   Le balayage se déclenche à l'entrée dans la section : la peinture se pose
+   de gauche à droite, elle n'apparaît pas d'un bloc. */
+/* Sélecteur plus fort que `.revele>*{position:relative}`, qui existe déjà plus
+   bas et remettait la marque DANS LE FLUX : elle se plantait en haut de la
+   section, poussait le texte et rallongeait le bloc de 260 px. */
+.revele .pinceau{position:absolute;left:0;right:0;bottom:clamp(30px,7vw,90px);
+  z-index:0;display:grid;place-items:center;pointer-events:none}
+.pinceau .fenetre{width:min(860px,72vw);aspect-ratio:300/72;
+  -webkit-mask:url(https://previsualisation.automatisationboost.com/koytcha-refonte-v5/assets/logo-blanc.png) center/contain no-repeat;
+  mask:url(https://previsualisation.automatisationboost.com/koytcha-refonte-v5/assets/logo-blanc.png) center/contain no-repeat;
+  filter:url(#brosse);
+  clip-path:inset(0 100% 0 0);
+  transition:clip-path 1.5s cubic-bezier(.16,1,.3,1) .15s}
+.pinceau.vu .fenetre{clip-path:inset(0 0 0 0)}
+.pinceau .fenetre img{width:100%;height:100%;object-fit:cover;display:block;
+  filter:saturate(.86) contrast(1.06)}
+/* Au survol, la photo derrière le logo s'éclaircit — le geste reste le même
+   que sur le reste de la page, mais il est désormais tenu par la marque. */
+.revele:hover .pinceau .fenetre img{filter:saturate(1) contrast(1) brightness(1.12)}
+.pinceau .fenetre img{transition:filter .8s var(--ease)}
+@media(prefers-reduced-motion:reduce){
+  .pinceau .fenetre{clip-path:inset(0);transition:none}
+}
+/* ── Correctif v3.1 · le brush mangeait le dernier paragraphe ─────────────
+   La marque en fenêtre est posée en absolu au bas de la section, à z-index 0 ;
+   le texte passe au-dessus (`.revele>*{z-index:1}`) mais reste écrit en sombre
+   sur une photo claire : là où les deux se croisent, plus rien n'est lisible.
+   On réserve donc la hauteur du brush en bas de la section. Elle se calcule :
+   largeur min(860px,72vw), rapport 300/72 → hauteur ≈ 24 % de la largeur,
+   plus l'écart au bord. Aucune valeur inventée. */
+.revele{position:relative;overflow:hidden;background:transparent}
+/* `.sect` est déclaré PLUS BAS avec la même spécificité et son padding l'emportait :
+   la réserve calculée ici était écrasée par les 7vw génériques. D'où `.sect.revele`. */
+.sect.revele{padding-bottom:calc(min(860px,72vw) * 0.24 + clamp(30px,7vw,90px) + 40px)}
+.revele .derriere{position:absolute;inset:0;z-index:0;clip-path:inset(0)}
+.revele .derriere img{position:fixed;top:0;left:0;width:100%;height:100vh;
+  object-fit:cover}
+/* Le voile est BLANC PLEIN en permanence : dans le rythme de la page
+   (blanc, gris clair, rose, blanc, gris clair) cette section est une section
+   blanche, et elle doit le rester. L'ancien dégradé montait à .88 seulement :
+   la photo transparaissait partout en filigrane, mesuré à 228 de luminosité
+   au lieu de 255 — ce n'était pas du blanc. */
+.revele .derriere::after{content:'';position:absolute;inset:0;background:#fff}
+
+/* ── LE PINCEAU QUI SUIT LA SOURIS ───────────────────────────────────────
+   Avant : survoler n'importe où levait le voile sur TOUTE la section, qui
+   devenait une photo pleine page — le fond blanc disparaissait et le rythme
+   de la page avec.
+   Maintenant : le fond reste blanc, et seule une tache autour du curseur
+   laisse voir la photo. C'est la même photo que `.derriere`, posée par-dessus
+   le voile et découpée par un masque radial centré sur le curseur.
+   `filter:url(#brosse)` déforme le bord du masque avec la même turbulence que
+   la marque en fenêtre : le bord n'est pas un cercle net mais un coup de
+   pinceau.
+   Placé APRÈS `.derriere` dans le DOM — les deux sont en z-index 0, c'est
+   donc l'ordre du document qui met la tache au-dessus du voile, et le texte
+   (z-index 1) reste au-dessus de tout. */
+.revele .brosse-curseur{position:absolute;inset:0;z-index:0;pointer-events:none;
+  opacity:0;transition:opacity .4s var(--ease);
+  -webkit-mask-image:radial-gradient(circle var(--br,170px) at var(--bx,-999px) var(--by,-999px),
+    #000 0%,rgba(0,0,0,.72) 48%,transparent 100%);
+  mask-image:radial-gradient(circle var(--br,170px) at var(--bx,-999px) var(--by,-999px),
+    #000 0%,rgba(0,0,0,.72) 48%,transparent 100%);
+  filter:url(#brosse)}
+.revele.brosse-active .brosse-curseur{opacity:1}
+.revele .brosse-curseur img{position:fixed;top:0;left:0;width:100%;height:100vh;
+  object-fit:cover;
+  /* La photo est sombre (luminosité moyenne 110). Révélée telle quelle sous un
+     paragraphe, elle rend le texte gris illisible. On l'éclaircit et on pose
+     par-dessus un lavis blanc : la trace de pinceau se voit, la section reste
+     claire, et le texte garde son contraste. */
+  filter:saturate(.88) contrast(.94) brightness(1.5)}
+.revele .brosse-curseur::after{content:'';position:absolute;inset:0;
+  background:rgba(255,255,255,.42)}
+@media(prefers-reduced-motion:reduce){.revele .brosse-curseur{transition:none}}
+/* Sans souris (téléphone, tablette) il n'y a pas de survol : la section reste
+   blanche, ce qui est le comportement voulu — on n'invente pas un déclencheur
+   tactile qui ferait clignoter la photo au scroll. */
+@media(hover:none),(pointer:coarse){.revele .brosse-curseur{display:none}}
+
+/* Le filigrane de bas de section répétait le logo à trente centimètres de la
+   marque en fenêtre. Un seul des deux doit rester. */
+.revele .filigrane,.revele .marque-bas{display:none}
+.revele>*{position:relative;z-index:1}
+.duo{display:grid;grid-template-columns:1fr 1fr;gap:clamp(40px,6vw,90px);align-items:center}
+.txt p{color:var(--gris);font-size:15.5px;max-width:46ch}
+.txt p+p{margin-top:17px}
+/* ── La planche de l'agence ────────────────────────────────────────────
+   v4 — remplace le motif « cercle + satellites ronds » de la v3.
+   Le masque rond coupait les lignes droites des bâtiments : sur téléphone,
+   les trois disques se chevauchaient et un tracé ovale blanc barrait les
+   photos. On revient au langage d'image validé : des RECTANGLES, de l'air,
+   une ombre portée — pas de masque, rien par-dessus l'image.
+
+   Les trois fichiers font tous 1024×682, soit exactement 3:2. En cadrant les
+   trois blocs en aspect-ratio 3/2, object-fit:cover ne recadre RIEN : chaque
+   bâtiment est montré en entier. C'est la raison du choix de format, pas une
+   préférence esthétique.
+
+   Disposition : une vue large en haut (la vitrine), puis deux vues plus
+   petites dessous, de largeurs inégales et décalées en hauteur — une planche
+   contact d'agence, pas une grille symétrique. */
+.planche{display:grid;grid-template-columns:1.28fr 1fr;gap:clamp(10px,1.1vw,15px);
+  align-items:start}
+.planche figure{margin:0;position:relative;overflow:hidden;border-radius:0;
+  /* Correctif v4.1 : les images recadrées font 1024×578, soit 1,772 — 16:9 à
+     0,3 % près. Rester en 3:2 aurait fait rogner 15 % des côtés par `cover`,
+     c'est-à-dire remettre un recadrage là où on venait de l'enlever. */
+  background:var(--ligne);aspect-ratio:16/9;
+  box-shadow:0 8px 40px rgba(0,0,0,.12)}
+.planche img{width:100%;height:100%;object-fit:cover;display:block;
+  transition:transform .8s var(--ease)}
+/* La vue large tient toute la colonne : c'est elle qu'on lit en premier. */
+.planche .p1{grid-column:1/-1}
+/* Le décalage vertical de la troisième vue casse l'alignement au cordeau sans
+   rien ajouter par-dessus les photos. */
+.planche .p3{margin-top:clamp(18px,2.4vw,34px)}
+/* Entrée en décalé, dans la même grammaire que le reste de la page (`--retard`
+   est déjà posé par le script sur les enfants d'une grille observée). Le
+   survol est écrit dans la même règle que l'entrée : deux règles concurrentes
+   sur `transform` s'annuleraient l'une l'autre. */
+/* `.monte` n'est porté par la planche que pour DÉCLENCHER l'observateur (il
+   n'observe que `.monte` et `.pinceau`). Le conteneur lui-même ne doit pas
+   fondre : sinon la planche fond une première fois, puis chaque figure une
+   seconde — deux opacités empilées, et l'entrée devient molle. */
+.planche.monte{opacity:1;transform:none;transition:none}
+.planche figure{opacity:0;transform:translateY(24px);
+  transition:opacity .7s var(--ease),transform .55s var(--ease),box-shadow .55s var(--ease);
+  transition-delay:var(--retard,0ms)}
+.planche.vu figure{opacity:1;transform:none;transition-delay:var(--retard,0ms)}
+/* Survol : la planche se soulève, l'image respire d'un cheveu. Aucun filtre
+   n'est appliqué à la photo — ni saturation, ni voile, ni cadre coloré. */
+.planche.vu figure:hover{transform:translateY(-4px);transition-delay:0ms;
+  box-shadow:0 16px 56px rgba(0,0,0,.18)}
+.planche figure:hover img{transform:scale(1.035)}
+/* Sur téléphone, deux vignettes côte à côte retombent à ~110 px de haut : le
+   bâtiment redevient un timbre-poste. Les trois vues passent donc en pleine
+   largeur, empilées. C'est le format où l'architecture se lit. */
+/* ── Correctif v4.2 · carrousel sur mobile ────────────────────────────────
+   Empilées, les trois vues coûtaient 616 px de hauteur sur téléphone. En
+   carrousel elles n'en coûtent qu'une, et la photo garde sa pleine largeur —
+   on ne revient donc PAS aux vignettes illisibles qu'on vient de supprimer.
+
+   Fait en `scroll-snap` natif, sans une ligne de JavaScript : le défilement
+   tactile reste celui du système, il ne rame pas et il marche au clavier.
+
+   Les cartes font 86 % de la largeur, pas 100 % : le bord de la suivante
+   dépasse, et c'est CE dépassement qui dit qu'on peut faire glisser. Des
+   points sous le carrousel demanderaient du JS pour rester justes ; un bord
+   qui dépasse ne peut pas mentir. */
+@media(max-width:620px){
+  .planche{
+    display:flex; grid-template-columns:none; gap:10px;
+    overflow-x:auto; overscroll-behavior-x:contain;
+    scroll-snap-type:x mandatory; -webkit-overflow-scrolling:touch;
+    /* Les marges négatives font sortir la piste des gouttières de la page :
+       la première image commence au bord de l'écran, comme dans une galerie
+       d'application. Le padding remet l'alignement du texte sur la première. */
+    margin-inline:calc(var(--gouttiere) * -1);
+    padding-inline:var(--gouttiere);
+    scroll-padding-inline:var(--gouttiere);
+    scrollbar-width:none;
+  }
+  .planche::-webkit-scrollbar{display:none}
+  .planche figure{flex:0 0 86%; scroll-snap-align:start}
+  .planche .p1{grid-column:auto}
+  .planche .p3{margin-top:0}
+  /* En carrousel, l'entrée en cascade décalerait des images hors écran, qui
+     resteraient invisibles une fois qu'on fait glisser jusqu'à elles. */
+  .planche figure{opacity:1;transform:none;transition:none;transition-delay:0s !important}
+}
+@media(prefers-reduced-motion:reduce){
+  .planche figure{opacity:1;transform:none;transition:none}
+  .planche.vu figure:hover{transform:none}
+  .planche figure:hover img{transform:none}
+  .planche{scroll-behavior:auto}
+}
+.chiffres{display:grid;grid-template-columns:repeat(4,1fr);gap:24px;
+  margin-top:clamp(60px,8vw,100px);padding-top:clamp(40px,5vw,60px);border-top:1px solid var(--ligne)}
+.chiffre b{display:block;font-family:var(--serif);font-weight:300;font-size:clamp(28px,3.6vw,44px);line-height:1}
+.chiffre span{display:block;font-size:13px;color:var(--gris);margin-top:8px}
+
+/* ── Sections de texte (contenu fourni par l'agence) ─────────────────── */
+.chapo{font-family:var(--serif);font-weight:300;font-size:clamp(20px,2.2vw,27px);
+  line-height:1.35;color:var(--noir);margin:0 0 26px;max-width:26ch}
+.corps{max-width:62ch}
+/* Notre metier : deux colonnes, le texte cale a gauche et la galerie a
+   droite. En pleine largeur, le texte partait a 62 caracteres par ligne et
+   la galerie tombait dessous, ce qui allongeait la section pour rien. */
+/* Une seule colonne depuis le retrait de la galerie d'intérieurs : garder les
+   deux colonnes laisserait une moitié de section vide à droite du texte. */
+.metier{display:grid;grid-template-columns:1fr;gap:clamp(34px,5vw,72px);align-items:start}
+.metier .corps{max-width:52ch}
+.metier .gal{margin-top:0;grid-template-columns:repeat(2,1fr)}
+.metier .gal figure:first-child{grid-column:1/-1;aspect-ratio:16/10}
+.metier .gal figure:nth-child(4){grid-column:auto}
+/* Les quatre images entrent UNE À UNE, pas ensemble. Le décalage était déjà
+   posé en `--retard` par le script, mais seul le bloc `.gal` portait la
+   transition : les figures arrivaient donc toutes au même instant. La
+   transition descend ici, sur chaque figure. */
+.metier .gal figure{opacity:0;transform:translateY(26px) scale(.985);
+  transition:opacity .7s var(--ease),transform .7s var(--ease);
+  transition-delay:var(--retard,0ms)}
+.metier .gal.vu figure{opacity:1;transform:none}
+@media(prefers-reduced-motion:reduce){
+  .metier .gal figure{opacity:1;transform:none;transition:none}
+}
+@media(max-width:900px){.metier{grid-template-columns:1fr}.metier .gal{margin-top:30px}}
+.corps p{color:var(--gris);font-size:15.5px;margin:0 0 17px}
+.puces{list-style:none;margin:26px 0 0;padding:0;display:grid;gap:13px}
+.puces li{position:relative;padding-left:30px;font-size:15.5px;color:var(--noir)}
+/* Un tiret plutot qu une puce ronde : dans une charte quasi-monochrome, le
+   point colore attire plus que le mot qu il annonce. */
+.puces li::before{content:'';position:absolute;left:0;top:.72em;width:16px;height:1.5px;background:var(--magenta)}
+.piliers{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(22px,3vw,40px);margin-top:clamp(40px,5vw,60px)}
+.pilier{border-top:1px solid var(--ligne);padding-top:22px}
+.pilier h4{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--magenta);margin:0 0 12px;font-weight:500}
+.pilier p{margin:0;font-size:15px;color:var(--gris)}
+.fin-txt{margin-top:clamp(38px,5vw,56px);padding-top:clamp(28px,3.4vw,40px);border-top:1px solid var(--ligne);
+  font-size:15.5px;color:var(--gris);max-width:78ch}
+.trois-chiffres{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:clamp(36px,4.6vw,54px)}
+.tc b{display:block;font-family:var(--serif);font-weight:300;font-size:clamp(22px,2.6vw,32px);line-height:1.1}
+.tc span{display:block;font-size:13px;color:var(--gris);margin-top:7px}
+@media(max-width:900px){ .piliers,.trois-chiffres{grid-template-columns:1fr} }
+
+/* ── 4. Dernière section — l'image qui se révèle au scroll ───────────── */
+/* Deux effets combinés : la photo remonte plus lentement que la page
+   (parallaxe) et le cadre s'ouvre en hauteur. L'un sans l'autre paraît soit
+   plat, soit mécanique. */
+/* Hauteur réduite : 68vh sur un grand écran donnait un bloc de 720 px pour
+   trois lignes de texte. 46vh suffit à porter le message sans forcer un
+   scroll de plus. */
+.final{position:relative;height:clamp(340px,46vh,470px);overflow:hidden;background:var(--noir)}
+.final .fond{position:absolute;inset:-14% 0;will-change:transform}
+/* Flou leger sur la photo. `scale(1.05)` avec : un `filter: blur()` etale les
+   pixels au-dela du cadre et laisse un liseré transparent sur les quatre bords
+   — l'agrandissement le mange. Le texte passe devant, la photo devient un
+   decor et cesse de se disputer la lecture. */
+.final .fond img{width:100%;height:100%;object-fit:cover;
+  filter:blur(3.5px) saturate(108%);transform:scale(1.05)}
+/* Le reseau de noeuds, le meme vocabulaire que sur le site restaurant : des
+   pieces qui se relient toutes seules. Au canvas et non en DOM — une centaine
+   de div animees ferait recalculer la mise en page a chaque image. */
+#toile-final{position:absolute;inset:0;width:100%;height:100%;z-index:1;
+  opacity:.42;pointer-events:none}
+@media (prefers-reduced-motion:reduce){#toile-final{display:none}}
+.final .teinte,.final .dedans{z-index:2}
+/* ── Correctif v3.1 · le rose redevient un accent ─────────────────────────
+   Le correctif v3 avait retiré le grand dégradé de la section « À propos »,
+   mais celle-ci gardait un voile magenta sur TOUTE sa largeur — à 80 % d'opacité
+   au bord gauche. C'est exactement ce qu'on voulait supprimer : un magenta
+   étalé perd son autorité et la photo disparaît dessous.
+   Désormais deux couches distinctes : un voile SOMBRE et neutre qui rend le
+   texte lisible sur la photo, et une bande magenta franche, saturée et étroite,
+   calée derrière le seul bloc de texte. */
+.final .teinte{position:absolute;inset:0;
+  background:linear-gradient(90deg,rgba(12,12,14,.78) 0%,rgba(12,12,14,.62) 34%,rgba(12,12,14,.18) 62%,rgba(12,12,14,.05) 100%)}
+.final .teinte::before{content:'';position:absolute;left:0;top:0;bottom:0;width:6px;
+  background:var(--magenta);box-shadow:0 0 34px rgba(230,0,126,.55)}
+/* Un effet simple sur le rose : une seule bande de lumière qui traverse
+   lentement le dégradé. Pas d'animation sur le dégradé lui-même — animer
+   `background` force un repaint de toute la surface à chaque image ; une
+   couche à part translatée reste sur le compositeur. */
+.final .teinte::after{content:'';position:absolute;top:-30%;bottom:-30%;width:55%;
+  left:-60%;pointer-events:none;
+  background:linear-gradient(100deg,transparent,rgba(255,255,255,.16) 42%,rgba(255,255,255,.24) 52%,transparent);
+  filter:blur(14px);transform:skewX(-14deg);
+  animation:balayage 7.5s var(--ease) infinite}
+@keyframes balayage{
+  0%,100%{transform:translateX(0) skewX(-14deg);opacity:0}
+  12%{opacity:1}
+  62%{opacity:1}
+  75%,100%{transform:translateX(340%) skewX(-14deg);opacity:0}
+}
+@media(prefers-reduced-motion:reduce){ .final .teinte::after{animation:none;opacity:0} }
+.final .dedans{position:absolute;inset:0;display:flex;align-items:center;z-index:3}
+.final h2{font-family:var(--serif);font-weight:300;color:#fff;font-size:clamp(30px,4.6vw,58px);
+  line-height:1.06;margin:0;max-width:14ch}
+.final h2 i{font-style:italic;color:rgba(255,255,255,.72)}
+.final p{color:rgba(255,255,255,.9);max-width:40ch;margin:22px 0 30px;font-size:16px}
+.final .bt{background:#fff;color:var(--noir)}
+.final .bt:hover{background:var(--noir);color:#fff}
+
+/* ── Pied de page ────────────────────────────────────────────────────── */
+footer{background:var(--noir);color:#fff;padding:clamp(56px,7vw,84px) 0 30px}
+.pied{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:clamp(30px,5vw,64px)}
+footer .logo b{color:#fff}
+footer .logo .im{color:var(--magenta)}
+.bas-logo .logo img{height:38px}
+.bas-logo p{color:rgba(255,255,255,.5);font-size:13.5px;margin:18px 0 0;max-width:32ch}
+footer h4{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:rgba(255,255,255,.45);margin:0 0 18px;font-weight:500}
+footer ul{list-style:none;margin:0;padding:0;font-size:14px}
+footer li{margin-bottom:11px;color:rgba(255,255,255,.78)}
+footer a{text-decoration:none;color:rgba(255,255,255,.78);transition:color .2s}
+footer a:hover{color:var(--magenta)}
+.reseaux{display:flex;gap:10px;margin-top:24px}
+.reseaux a{width:36px;height:36px;border:1px solid rgba(255,255,255,.18);border-radius:50%;
+  display:grid;place-items:center;transition:all .25s var(--ease)}
+.reseaux a:hover{border-color:transparent;color:#fff;transform:translateY(-3px)}
+.reseaux a:nth-child(1):hover{background:#1877F2}
+.reseaux a:nth-child(2):hover{background:linear-gradient(45deg,#F58529,#DD2A7B 55%,#8134AF)}
+.reseaux a:nth-child(3):hover{background:#0A66C2}
+.reseaux a{transition:all .28s var(--ease)}
+.tout-en-bas{margin-top:clamp(44px,6vw,64px);padding-top:26px;border-top:1px solid rgba(255,255,255,.1);
+  display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;
+  font-size:12.5px;color:rgba(255,255,255,.42)}
+
+/* ── Apparition au scroll ────────────────────────────────────────────── */
+/* Révélation en cascade : les enfants directs entrent l'un après l'autre
+   plutôt que le bloc entier d'un coup. Le décalage est posé en variable par
+   le script — écrit en CSS, il faudrait une règle par rang. */
+.monte{opacity:0;transform:translateY(30px);
+  transition:opacity .85s var(--ease),transform .85s var(--ease);
+  transition-delay:var(--retard,0ms)}
+.monte.vu{opacity:1;transform:none}
+/* Un trait qui se tire sous les titres de section, au moment où ils entrent. */
+.tete .eyebrow,.monte>.eyebrow{position:relative;display:inline-block}
+.monte>.eyebrow::after{content:'';position:absolute;left:0;bottom:-7px;height:1px;
+  width:0;background:var(--magenta);transition:width .9s var(--ease) .25s}
+.monte.vu>.eyebrow::after{width:100%}
+/* Les cartes de programme entrent en décalé les unes des autres. */
+.cartes .carte{transition-delay:var(--retard,0ms)}
+
+@media(max-width:980px){
+  /* Sur telephone les trois programmes s'empilaient : il fallait faire defiler
+     un ecran et demi pour voir le troisieme, et la plupart s'arretaient au
+     premier. En carrousel horizontal, les trois sont a portee de pouce et le
+     deuxieme depasse volontairement du bord — c'est ce qui dit qu'il y en a
+     d'autres, mieux que n'importe quelle fleche.
+     `scroll-snap` cale chaque carte proprement ; la barre de defilement est
+     masquee mais le geste, lui, reste natif. */
+  .cartes{display:flex;grid-template-columns:none;gap:14px;overflow-x:auto;
+    /* `proximity` et non `mandatory` : en mandatory, le navigateur ramene la
+       piste sur le point d'ancrage a chaque micro-deplacement, et le
+       defilement automatique de 0,4 px etait annule a chaque image — la
+       carrousel restait fige a zero. En proximity, il avance, et le geste du
+       doigt cale quand meme proprement. */
+    scroll-snap-type:x proximity;
+    padding:2px 20px 14px;margin:0 -20px;
+    scrollbar-width:none;-ms-overflow-style:none}
+  .cartes::-webkit-scrollbar{display:none}
+  .cartes .carte{flex:0 0 82%;scroll-snap-align:center;max-width:82%}
+  .duo{grid-template-columns:1fr}
+  .chiffres{grid-template-columns:1fr 1fr;gap:30px}
+  .pied{grid-template-columns:1fr 1fr}
+  /* ── Menu mobile ──────────────────────────────────────────────────────
+     Le bouton burger existait mais n avait AUCUN gestionnaire : sur telephone
+     le menu etait simplement inatteignable. Le panneau occupe l ecran sous la
+     barre, les sous-menus deviennent des accordeons. */
+  .liens{display:none}
+  .burger{display:block}
+  /* Le panneau est en position:fixed et doit se caler sur l'ECRAN. Or
+     .nav.pose porte un backdrop-filter, et un backdrop-filter cree un bloc
+     conteneur pour ses descendants fixes : le panneau se calait alors sur la
+     barre de 54 px et paraissait ne pas s'ouvrir — mais seulement APRES avoir
+     defile, puisque .pose n'existe pas en haut de page. Le fond etant opaque
+     quand le menu est ouvert, retirer le flou ne change rien a l'oeil. */
+  .nav.ouvert{background:#fff;backdrop-filter:none;-webkit-backdrop-filter:none}
+  .nav.ouvert .liens{display:block;position:fixed;left:0;right:0;top:70px;bottom:0;
+    background:#fff;margin:0;padding:6px 0 48px;overflow-y:auto;
+    -webkit-overflow-scrolling:touch;z-index:55}
+  .nav.ouvert .liens > li{display:block;position:relative;
+    border-bottom:1px solid rgba(0,0,0,.07)}
+  .nav.ouvert .liens > li > a{display:block;padding:16px 22px;font-size:15px;
+    color:var(--noir);opacity:1}
+  /* La fleche est une cible a part, assez large pour le pouce : on doit
+     pouvoir ouvrir le sous-menu SANS declencher le lien parent. */
+  /* height:100% suivait la hauteur du <li> une fois deploye : la fleche
+     descendait au milieu du sous-menu. On la fixe sur la hauteur de ligne. */
+  .nav.ouvert .chev{position:absolute;top:0;right:0;height:56px;width:58px;
+    justify-content:center;padding:0}
+  .nav.ouvert .chev svg{width:12px;height:8px}
+  .nav.ouvert .a-sous::after{display:none}
+  .nav.ouvert .sous{position:static;display:none;opacity:1;visibility:visible;
+    transform:none;box-shadow:none;border-radius:0;min-width:0;padding:2px 0 10px;
+    background:rgba(0,0,0,.035)}
+  .nav.ouvert li.deploye > .sous{display:block}
+  .nav.ouvert li.deploye > .chev svg{transform:rotate(180deg)}
+  .nav.ouvert .sous a{padding:12px 22px 12px 34px;font-size:13.5px}
+  body.bloque{overflow:hidden}
+  .piste{height:150vh}
+}
+@media(max-width:620px){
+  .onglets{grid-template-columns:1fr}
+  .recherche{transform:translateY(18%)}
+  .pied{grid-template-columns:1fr}
+  .nav .bt{display:none}
+}
+/* Sur un écran court, un en-tête à 100vh mange tout : on le raccourcit et on
+   remonte le module de recherche pour qu'il reste visible sans scroller. */
+@media(max-height:640px) and (min-width:621px){
+  .scene{height:min(100vh,560px)}
+}
+@media(prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .monte{opacity:1;transform:none;transition:none}
+  .bati,.final .fond{transform:none !important}
+  .bati img,.carte .vue img,.realisations figure img,.final .fond img,.vivre-ill img{animation:none !important}
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   ── Correctif v3 ────────────────────────────────────────────────────────
+   Six corrections mesurées sur la v2. Tout est regroupé ici, en fin de
+   feuille, pour que la comparaison v2/v3 se lise d'un seul bloc — et pour
+   qu'une correction se retire en supprimant ses lignes, sans aller
+   déterrer la règle d'origine.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* ── Correctif v3 · 1 — La page tenait sur 12,7 écrans ─────────────────
+   Mesuré en 1280×900 : 11 427 px de haut. Trois postes portaient presque
+   tout le surpoids, et aucun des trois ne montrait quoi que ce soit de plus
+   en étant long. */
+
+/* La piste de l'en-tête faisait 210vh. Ces 110vh supplémentaires servaient
+   à donner de la course au pivot du bâtiment — pivot qui a été RETIRÉ (le
+   script le dit lui-même : il entrait en conflit avec le Ken Burns). Il
+   restait donc un écran entier de défilement qui ne pilotait plus rien.
+   L'id plutôt que la classe : `.piste` sert AUSSI de rail au carrousel. */
+#piste{height:100vh}
+
+/* La cinématique tenait sur 300svh : trois écrans pleins pour faire défiler
+   trois phrases sur une photo. L'effet est gardé entier, c'est son moteur
+   qui change (voir le script) — le temps et la jauge remplacent le scroll. */
+.cine{height:100svh}
+/* Le `.wrap` de ces deux sections est un enfant de flex AVEC `margin:0 auto`
+   et SANS `width:100%` : il se réduit à son contenu et se centre, au lieu de
+   caler à gauche comme partout ailleurs. Sur trois écrans de scroll ça se
+   remarquait peu ; sur un seul écran, le chapitre tombait pile sur la zone
+   claire de la photo alors que la vignette est sombre à gauche — surtitre
+   magenta illisible. Même cause, même correctif dans la dernière section,
+   où la bande magenta doit passer SOUS le texte (correctif 6). */
+.cine .chap .wrap,.final .dedans .wrap{width:100%}
+.cine .jauge{gap:10px;bottom:30px}
+.cine .jauge button{width:30px;height:3px;padding:0;border:0;border-radius:2px;
+  background:rgba(255,255,255,.28);cursor:pointer;display:block;
+  transition:background .4s var(--ease),width .4s var(--ease)}
+.cine .jauge button.on{background:var(--magenta);width:44px}
+/* Zone de clic confortable sans grossir le trait : un rail de 3 px de haut
+   est intouchable au doigt, mais l'agrandir casserait la finesse voulue. */
+.cine .jauge button::before{content:'';position:absolute;margin:-16px -5px;
+  width:calc(100% + 10px);height:calc(100% + 32px)}
+.cine .jauge button{position:relative}
+.cine .jauge button:focus-visible{outline:2px solid #fff;outline-offset:6px}
+
+/* Respiration générale des sections : 11vw de padding vertical donnaient
+   282 px de vide par section sur un écran de 1280. À 7vw le rythme reste
+   aéré (180 px) et six sections rendent ~600 px à la page. */
+.sect{padding:clamp(64px,7vw,104px) 0}
+.sect.haut{padding-top:clamp(58px,6vw,90px)}
+
+/* « Notre métier » pesait 1 403 px, l'essentiel venant de la galerie de
+   droite. On resserre la galerie et l'interligne de la liste : le texte de
+   l'agence n'est pas touché, seul le vide autour l'est. */
+#accompagne .metier{gap:clamp(28px,4vw,56px);align-items:start}
+#accompagne .gal{gap:10px;grid-auto-rows:clamp(128px,12vw,168px)}
+#accompagne .corps p{margin-bottom:14px}
+#accompagne .puces{margin-top:20px;gap:10px}
+
+/* La bande de chiffres respirait comme une section à elle seule. */
+.chiffres{margin-top:clamp(42px,5vw,64px);padding-top:clamp(28px,3.2vw,40px)}
+
+/* Sur téléphone, les clamps retombent tous sur leur borne basse et le vide
+   vertical redevient proportionnellement le poste le plus lourd : c'est le
+   seul endroit où il faut descendre sous les 64 px. La disposition, elle,
+   n'est pas touchée. */
+@media(max-width:620px){
+  .sect{padding:52px 0}
+  .sect.haut{padding-top:46px}
+  .cartes{gap:22px}
+}
+
+/* ── Correctif v3 · 2 — Le formulaire de recherche, sur ordinateur ─────
+   Sur mobile il occupe déjà un tiers du premier écran : cette version-là
+   n'est pas touchée, tout ce bloc est sous `min-width:981px`.
+   Sur ordinateur il était relégué SOUS le titre, en bas à gauche, dans un
+   encadré de 660 px sur fond sombre — soit l'élément le plus rentable de la
+   page traité comme une note de bas de page. Il remonte en colonne de
+   droite, calé au centre vertical (hauteur de regard), et il grossit. */
+@media(min-width:981px){
+  .grille-hero{
+    display:grid;
+    grid-template-columns:minmax(0,1fr) clamp(400px,32vw,470px);
+    gap:clamp(40px,5vw,76px);
+    align-items:center;
+    padding-top:0;
+  }
+  .grille-hero .boite{max-width:none;margin-top:0}
+
+  /* La tentative précédente de mise en deux colonnes avait été abandonnée
+     parce que le module tombait sur la partie CLAIRE de la photo et devenait
+     illisible. On corrige la cause au lieu de renoncer à la disposition :
+     le voile est reprofilé pour rendre le bord droit exploitable. */
+  .voile{background:linear-gradient(100deg,
+    rgba(10,10,10,.88) 0%,rgba(10,10,10,.70) 28%,
+    rgba(10,10,10,.50) 52%,rgba(10,10,10,.76) 100%)}
+
+  .boite{padding:clamp(30px,2.9vw,40px);
+    background:rgba(255,255,255,.15);border-color:rgba(255,255,255,.38);
+    box-shadow:0 34px 90px -26px rgba(0,0,0,.62)}
+  .boite h2{font-size:21px;margin-bottom:22px}
+  .onglets{gap:12px;margin-bottom:16px}
+  .onglet{padding:17px 14px;font-size:12.5px}
+  .boite .bt{padding:19px;font-size:14px}
+  .ref{font-size:13px;margin-top:15px}
+
+  /* Le titre perd de la largeur en cédant une colonne : sans ce plafond il
+     descendait sur quatre lignes et repoussait tout le bloc gauche. */
+  .hero h1{font-size:clamp(40px,5.4vw,72px);max-width:11ch}
+  /* `:not(.sur)` obligatoire : la règle d'origine `.hero p` s'applique AUSSI
+     au surtitre (qui est un <p>) et l'emporte sur `.sur`. Réduire la largeur
+     sans l'exclure cassait « Immobilier d'exception · La Réunion » en deux. */
+  .hero p:not(.sur){max-width:38ch;font-size:16px;margin-top:22px}
+  .reseaux-hero{margin-top:28px}
+}
+
+/* ── Correctif v3 · 3 — Un seul bouton plein ───────────────────────────
+   « Estimation gratuite » (vendeur) et « Voir les annonces » (acheteur)
+   étaient au même rose, au même poids, à la même taille. Le plein va au
+   parcours acheteur, le plus volumineux ; le vendeur passe en contour.
+   Le contour hérite `color:inherit`, qui vaut noir : au-dessus de la photo
+   sombre, avant que la barre ne se pose, il faut donc l'inverser. */
+.nav .bt.ligne{background:transparent;border:1px solid rgba(20,20,20,.32);color:var(--noir)}
+.nav .bt.ligne:hover{background:var(--noir);border-color:var(--noir);color:#fff}
+.nav:not(.pose) .bt.ligne{border-color:rgba(255,255,255,.55);color:#fff}
+.nav:not(.pose) .bt.ligne:hover{background:#fff;border-color:#fff;color:var(--noir)}
+
+/* ── Correctif v3 · 5 — Trois chiffres, pas quatre ─────────────────────
+   La quatrième colonne (« La Réunion ») a été retirée du HTML. Rien ne la
+   remplace : inventer un chiffre pour tenir la grille serait inventer du
+   contenu client. */
+.chiffres{grid-template-columns:repeat(3,1fr)}
+@media(max-width:980px){ .chiffres{grid-template-columns:repeat(3,1fr);gap:16px} }
+@media(max-width:620px){ .chiffre b{font-size:23px} .chiffre span{font-size:12px} }
+
+/* ── Correctif v3 · 6 — Le magenta redevient rare ──────────────────────
+   Le dégradé rose pâle couvrait toute la section « À propos » : étalé et
+   désaturé, le magenta de la marque n'y avait plus aucune autorité. Le fond
+   redevient neutre ; le magenta ne subsiste que là où il désigne quelque
+   chose (surtitres, mots en avant, tirets de liste, jauge, bouton acheteur). */
+.rose{background:var(--sourd)}
+.rose::before{content:none}
+
+/* Dernière section — correctif v3.1.
+   La v3 avait déjà réduit le voile, mais son dégradé restait magenta à 94 %
+   puis 62 % jusqu'à 46 % de la largeur : à l'écran, ça se lit encore comme un
+   fond rose sur un tiers de la section, et la photo disparaît dessous.
+   Ici le voile est ENTIÈREMENT neutre — il ne sert qu'à rendre le texte
+   lisible — et le magenta se réduit à un filet vertical saturé au bord gauche
+   (`.teinte::before`). C'est ça, « saturé et rare ». */
+.final .teinte{background:linear-gradient(90deg,
+  rgba(12,12,14,.80) 0%,rgba(12,12,14,.66) 30%,
+  rgba(12,12,14,.28) 58%,rgba(12,12,14,.08) 100%)}
+
+/* ── Ken Burns : les photos ne sont jamais tout à fait immobiles ────────
+   Deux courses opposées, alternées d'une image à l'autre, pour que deux
+   photos voisines ne dérivent pas dans le même sens. Durées longues et
+   volontairement non multiples : rien ne se resynchronise à l'œil. */
+@keyframes kb-a{from{transform:scale(1.05) translate3d(0,0,0)}
+                 to{transform:scale(1.13) translate3d(-1.6%,-1.3%,0)}}
+@keyframes kb-diapo{from{transform:scale(1.015) translate3d(0,0,0)}
+                     to{transform:scale(1.115) translate3d(-2.0%,-1.5%,0)}}
+@keyframes kb-b{from{transform:scale(1.12) translate3d(1.4%,1.0%,0)}
+                 to{transform:scale(1.04) translate3d(0,0,0)}}
+/* Course plus ample et plus rapide pour la bande de realisations : sur des
+   vignettes de 238 px, la derive d origine (4 a 13 %) se lisait a peine.
+   Les translations restent sous la marge que le zoom degage — a l amplitude
+   maximale (scale 1,22) le decalage effectif est de 2,7 % pour 11 % de
+   marge : aucune chance de decouvrir un bord. */
+@keyframes kb-a-fort{from{transform:scale(1.06) translate3d(-1.2%,-0.8%,0)}
+                       to{transform:scale(1.22) translate3d(2.2%,1.8%,0)}}
+@keyframes kb-b-fort{from{transform:scale(1.20) translate3d(2.0%,1.6%,0)}
+                       to{transform:scale(1.05) translate3d(-1.4%,-1.0%,0)}}
+/* Portée par .on : elle repart à zéro à chaque diapo, donc on voit la course
+   entière au lieu d'un dix-septième. Une seule animation au lieu de quatre. */
+.bati img{animation:none}
+.bati img.on{animation:kb-diapo 8.4s ease-out both}
+.carte .vue img{animation:kb-a-fort 18s ease-in-out infinite alternate}
+.cartes .carte:nth-child(2n) .vue img{animation-name:kb-b-fort;animation-duration:21s}
+.realisations figure img{animation:kb-b-fort 16s ease-in-out infinite alternate}
+.realisations figure:nth-child(2n) img{animation-name:kb-a-fort;animation-duration:19s}
+.final .fond img{animation:kb-a 34s ease-in-out infinite alternate}
+/* Au survol, la dérive se fige : le geste de l'utilisateur reprend la main. */
+.carte:hover .vue img,.realisations figure:hover img{animation-play-state:paused}
+/* Hors champ, on coupe : douze images qui dérivent en même temps derrière
+   l'écran, c'est douze calques repeints pour personne. */
+.fige,.fige img{animation-play-state:paused !important}
+/* Le balayage de la derniere section vit dans un ::after : sans cette ligne
+   il tournait en boucle du haut de la page jusqu'en bas, releve a chaque
+   position par `document.getAnimations()`. */
+.fige::after,.fige::before{animation-play-state:paused !important}
+
+/* ── Reflet : le miroir du carrousel, en discret, sous les autres images.
+   Le dégradé ne laisse voir que le dernier dixième — au-delà ça fait
+   vitrine de magasin. La marge basse empêche le reflet de mordre sur le
+   texte : le reflet est peint hors du flux, il ne pousse rien. */
+/* Pas de reflet sur les cartes programmes : elles portent un titre, un
+   texte et un lien juste dessous — le miroir venait s'intercaler au milieu
+   du bloc de lecture. Il reste sur la bande de realisations, qui n'a qu'une
+   legende d'un mot. */
+.carte .vue{margin-bottom:14px}
+
+/* ── Anneau neon rose au survol d une carte programme ──────────────────
+   Cale sur le rapport 4/3 de la vue, comme sur les vignettes : sinon il
+   engloberait le titre, le texte et le lien « Decouvrir ». */
+.cartes .carte{position:relative;isolation:isolate}
+.cartes .carte::before,.cartes .carte::after{content:'';position:absolute;
+  left:-2px;top:-2px;width:calc(100% + 4px);aspect-ratio:4/3;border-radius:6px;
+  z-index:-1;opacity:0;pointer-events:none;transition:opacity .35s ease;
+  background:conic-gradient(from var(--tour),
+    rgba(230,0,126,0) 0deg 244deg,
+    rgba(230,0,126,.9) 288deg,
+    #ffa3de 312deg,
+    rgba(230,0,126,.9) 336deg,
+    rgba(230,0,126,0) 360deg)}
+.cartes .carte::after{left:-6px;top:-6px;width:calc(100% + 12px);filter:blur(9px)}
+.cartes .carte:hover::before,.cartes .carte:focus-visible::before{opacity:1;animation:tour-neon 2.2s linear infinite}
+.cartes .carte:hover::after,.cartes .carte:focus-visible::after{opacity:.55;animation:tour-neon 2.2s linear infinite}
+@media (prefers-reduced-motion:reduce){
+  .cartes .carte:hover::before,.cartes .carte:hover::after{animation:none}
+}
+.carte h3{margin-top:10px}
+/* Le reflet etait degrade a l envers : `transparent 94%` le rendait invisible
+   juste sous l image et faiblement visible tout en bas — l inverse d un
+   miroir. Il part maintenant franc au contact de l image et s eteint.
+   Il est porte par le cadre, pas par l image : un reflet est peint hors de
+   la boite, donc il survit au rognage du Ken Burns. */
+/* Miroir explicite plutot que -webkit-box-reflect : celui-ci posait le reflet
+   110 px trop bas (mesure a l ecran) et Firefox ne le connait pas du tout.
+   Ici le reflet est un element a part, dont on fixe la hauteur au pixel.
+   Il reprend le fichier 600w deja telecharge pour la vignette : aucune
+   requete supplementaire. Retourne par scaleY(-1) — le degrade du masque
+   est donc defini a l envers lui aussi, le plus dense finissant en haut,
+   au contact de la photo. */
+.realisations .miroir{display:block;height:56px;margin:5px 0 10px;
+  border-radius:0 0 6px 6px;
+  background:var(--photo) center bottom/100% auto no-repeat;
+  transform:scaleY(-1);
+  -webkit-mask-image:linear-gradient(rgba(0,0,0,0) 12%,rgba(0,0,0,.46));
+          mask-image:linear-gradient(rgba(0,0,0,0) 12%,rgba(0,0,0,.46))}
+@media (prefers-reduced-motion:reduce){.realisations .miroir{opacity:.7}}
+.realisations figcaption{margin-top:0}
+.realisations a{color:inherit;text-decoration:none}
+/* Les `sizes` des photos de programmes annoncent la largeur AFFICHEE, pas la
+   largeur de mise en page : le Ken Burns pousse l'image a 112 % de sa boite.
+   Carrousel 77 vw -> 86 vw annonces ; carte 90 vw -> 100 vw. Sans cette marge
+   le navigateur choisit le fichier du dessous et l'image redevient molle. */
+/* `content-visibility:auto` a ete pose ici puis RETIRE. Il faisait bien ce
+   qu'on lui demandait — sauter la mise en page des sections hors champ —
+   mais il sautait aussi le chargement des photos qu'elles contiennent.
+   Mesure a l'arrivee dans #accompagne (saut instantane, echantillon a 0 ms) :
+   1 vignette sur 5 peinte au lieu de 5. La bande de realisations est
+   precisement ce qu'on voit en premier en arrivant : elle arrivait vide. */
+.realisations figcaption a:hover{color:var(--magenta)}
+
+</style>
+
+<style id="polices-koytcha">
+/* NORMATICA — la police de la marque, reprise du site d'origine
+   (plugin Elementor de koytchaimmo.re). Optima en seconde famille,
+   fournie par Florent le 25/08. */
+@font-face{font-family:'Normatica';src:url(https://previsualisation.automatisationboost.com/koytcha-refonte-v5/fonts/CarnokyType-Normatica-Regular.otf) format('opentype');font-weight:400;font-display:swap}
+@font-face{font-family:'Normatica';src:url(https://previsualisation.automatisationboost.com/koytcha-refonte-v5/fonts/CarnokyType-Normatica-Medium.otf) format('opentype');font-weight:500 700;font-display:swap}
+@font-face{font-family:'Optima LT Pro';src:url(https://previsualisation.automatisationboost.com/koytcha-refonte-v5/fonts/OptimaLTProRoman.otf) format('opentype');font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:'Optima LT Pro';src:url(https://previsualisation.automatisationboost.com/koytcha-refonte-v5/fonts/OptimaLTProItalic.otf) format('opentype');font-weight:400;font-style:italic;font-display:swap}
+@font-face{font-family:'Optima LT Pro';src:url(https://previsualisation.automatisationboost.com/koytcha-refonte-v5/fonts/OptimaLTProMedium.otf) format('opentype');font-weight:500;font-style:normal;font-display:swap}
+@font-face{font-family:'Optima LT Pro';src:url(https://previsualisation.automatisationboost.com/koytcha-refonte-v5/fonts/OptimaLTProDemiBold.otf) format('opentype');font-weight:600;font-style:normal;font-display:swap}
+@font-face{font-family:'Optima LT Pro';src:url(https://previsualisation.automatisationboost.com/koytcha-refonte-v5/fonts/OptimaLTProBold.otf) format('opentype');font-weight:700;font-style:normal;font-display:swap}
+@font-face{font-family:'Optima LT Pro';src:url(https://previsualisation.automatisationboost.com/koytcha-refonte-v5/fonts/OptimaLTProBoldItalic.otf) format('opentype');font-weight:700;font-style:italic;font-display:swap}
+@font-face{font-family:'Optima LT Pro';src:url(https://previsualisation.automatisationboost.com/koytcha-refonte-v5/fonts/OptimaLTProBlack.otf) format('opentype');font-weight:800;font-style:normal;font-display:swap}
+.intro-prog{margin-top:14px;max-width:62ch;font-size:15.5px;line-height:1.75;color:var(--gris,#5b5b60)}
+.promoteur-note{margin-top:18px;max-width:70ch;font-size:15.5px;line-height:1.75;color:var(--gris,#5b5b60)}
+.realisations{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-top:30px}
+/* decalage corrige — la cause : les images portent un Ken Burns (kb-a/kb-b,
+   scale 1,04 vers 1,13 + translation) mais la figure ne le contenait pas. Chaque
+   image debordait donc de sa case, a un instant different de son cycle (24 s
+   contre 29 s, en alternance) : d ou les vignettes en escalier, de tailles
+   inegales. overflow:hidden recadre le zoom dans un cadre fixe — l effet reste,
+   le decalage disparait. Le cadre porte l arrondi, sinon les angles
+   reapparaissent quand l image grandit. */
+/* Le rognage descend sur le cadre : la figure doit rester debordante pour
+   laisser passer le reflet ET l anneau neon, tous deux peints hors de sa
+   boite. */
+.realisations figure{margin:0;position:relative;isolation:isolate}
+.realisations .cadre-real{display:block;overflow:hidden;border-radius:6px;position:relative}
+/* Leger zoom au survol, en plus du Ken Burns qui se fige (regle plus bas).
+   Il porte sur la FIGURE et non sur l image : superposer une transformation a
+   celle d une animation en cours ne marche pas, l animation gagne toujours. */
+/* Le zoom porte sur le CADRE, pas sur la figure : porte par la figure il
+   emmenait le reflet avec lui, et un miroir qui grossit avec son objet ne
+   ressemble plus a un miroir. */
+.realisations .cadre-real{transition:transform .45s cubic-bezier(.22,.61,.36,1),box-shadow .45s ease}
+.realisations figure:hover{z-index:2}
+.realisations figure:hover .cadre-real{transform:scale(1.03);box-shadow:0 10px 26px rgba(0,0,0,.16)}
+
+/* ── Anneau neon rose qui tourne autour du cadre au survol ───────────────
+   Un degrade conique dont l angle est anime : l arc clair fait le tour du
+   rectangle. Anime un angle demande @property — sans lui (Firefox < 128) la
+   regle degrade proprement en halo rose fixe, ce qui reste correct.
+   Deux couches : ::before pose le trait net, ::after la meme chose floutee
+   pour la lueur. Les deux vivent DERRIERE l image (z-index -1), on ne voit
+   donc que les 2 px qui depassent. */
+@property --tour{syntax:'<angle>';initial-value:0deg;inherits:false}
+/* L anneau doit epouser le CADRE, pas la figure : `inset` sur la figure
+   l etirait jusque sous la legende et le halo la noyait de rose. On le cale
+   donc sur le haut de la figure avec le meme rapport 4/3 que l image. */
+.realisations figure::before,
+.realisations figure::after{content:'';position:absolute;left:-2px;top:-2px;
+  width:calc(100% + 4px);aspect-ratio:4/3;border-radius:8px;
+  z-index:-1;opacity:0;pointer-events:none;transition:opacity .35s ease;
+  background:conic-gradient(from var(--tour),
+    rgba(230,0,126,0) 0deg 244deg,
+    rgba(230,0,126,.9) 288deg,
+    #ffa3de 312deg,
+    rgba(230,0,126,.9) 336deg,
+    rgba(230,0,126,0) 360deg)}
+.realisations figure::after{left:-6px;top:-6px;width:calc(100% + 12px);filter:blur(9px)}
+.realisations figure:hover::before{opacity:1;animation:tour-neon 2.2s linear infinite}
+.realisations figure:hover::after{opacity:.55;animation:tour-neon 2.2s linear infinite}
+@keyframes tour-neon{to{--tour:360deg}}
+
+@media (prefers-reduced-motion:reduce){
+  .realisations figure:hover .cadre-real{transform:none}
+  /* L anneau reste, mais fixe : c est le mouvement qui gene, pas la couleur. */
+  .realisations figure:hover::before,.realisations figure:hover::after{animation:none}
+}
+/* Decalage alterne : une vignette haute, une basse. C'est un decalage
+   VOULU et regulier, a ne pas confondre avec la derive accidentelle
+   corrigee plus haut — celle-la venait du Ken Burns non contenu et
+   changeait a chaque seconde. Porte par margin-top et non par transform :
+   le transform reste disponible pour le zoom au survol. */
+.realisations figure:nth-child(2n){margin-top:38px}
+@media(max-width:900px){
+  /* En carrousel, le decalage ferait sauter la ligne de base d'une carte a
+     l'autre pendant le defilement. */
+  .realisations figure:nth-child(2n){margin-top:0}
+}
+.realisations img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:6px;display:block}
+.realisations figcaption{margin-top:7px;font-size:12.5px;letter-spacing:.04em;color:var(--gris,#5b5b60)}
+
+/* ── Les réalisations passent en carrousel sur écran étroit ───────────────
+   En grille de deux colonnes sur 390 px, chaque photo tombe à ~178 px : sur
+   des vues aériennes de programmes, on ne distingue plus le bâtiment. Même
+   mécanique que la galerie qu'elle remplace — scroll-snap natif, cartes à
+   86 % pour que le bord de la suivante dépasse et dise qu'on peut glisser.
+   Les marges négatives font déborder le carrousel jusqu'aux bords de l'écran
+   sans casser la gouttière du reste de la section. */
+@media(max-width:900px){
+  .realisations{
+    display:flex; gap:10px;
+    overflow-x:auto; overscroll-behavior-x:contain;
+    scroll-snap-type:x mandatory; -webkit-overflow-scrolling:touch;
+    margin-inline:calc(var(--gouttiere) * -1);
+    padding-inline:var(--gouttiere);
+    scroll-padding-inline:var(--gouttiere);
+    scrollbar-width:none;
+  }
+  .realisations::-webkit-scrollbar{display:none}
+  .realisations figure{flex:0 0 86%; scroll-snap-align:start}
+}
+</style>
+
+
+
+<nav class="nav" id="nav">
+  <div class="wrap">
+    <a class="logo" href="https://koytchaimmo.re/" target="_blank" rel="noopener">
+      <img class="l-clair" src="https://previsualisation.automatisationboost.com/koytcha-refonte-v5/assets/logo-blanc.png" alt="Koytcha Immo">
+      <img class="l-sombre" src="https://previsualisation.automatisationboost.com/koytcha-refonte-v5/assets/logo.png" alt="Koytcha Immo">
+    </a>
+    <ul class="liens" id="nav-liens">
+      <li class="a-sous">
+        <a href="#programmes">Acheter</a>
+        <button class="chev" type="button" aria-expanded="false" aria-controls="sm-acheter" aria-label="Ouvrir le sous-menu Acheter"><svg viewBox="0 0 10 6" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M1 1l4 4 4-4"/></svg></button>
+        <ul class="sous" id="sm-acheter">
+        <li><a href="https://koytchaimmo.re/index.php/recherche/?prestation_type=vente&amp;pro_res=residentiel" target="_blank" rel="noopener">Vous souhaitez acheter dans le résidentiel&nbsp;?</a></li>
+        <li><a href="https://koytchaimmo.re/index.php/recherche/?prestation_type=vente&amp;pro_res=professionnel" target="_blank" rel="noopener">Vous souhaitez acheter dans le pro&nbsp;?</a></li>
+        </ul>
+      </li>
+      <li class="a-sous">
+        <a href="#programmes">Louer</a>
+        <button class="chev" type="button" aria-expanded="false" aria-controls="sm-louer" aria-label="Ouvrir le sous-menu Louer"><svg viewBox="0 0 10 6" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M1 1l4 4 4-4"/></svg></button>
+        <ul class="sous" id="sm-louer">
+        <li><a href="https://koytchaimmo.re/index.php/recherche/?prestation_type=location&amp;pro_res=residentiel" target="_blank" rel="noopener">Vous souhaitez louer dans le résidentiel&nbsp;?</a></li>
+        <li><a href="https://koytchaimmo.re/index.php/recherche/?prestation_type=location&amp;pro_res=professionnel" target="_blank" rel="noopener">Vous souhaitez louer dans le professionnel&nbsp;?</a></li>
+        </ul>
+      </li>
+      <li class="a-sous">
+        <a href="#accompagne">Vendre</a>
+        <button class="chev" type="button" aria-expanded="false" aria-controls="sm-vendre" aria-label="Ouvrir le sous-menu Vendre"><svg viewBox="0 0 10 6" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M1 1l4 4 4-4"/></svg></button>
+        <ul class="sous" id="sm-vendre">
+        <li><a href="https://koytchaimmo.re/index.php/vendre/?pro_res=r%C3%A9sidentiel" target="_blank" rel="noopener">Vous souhaitez vendre dans le résidentiel&nbsp;?</a></li>
+        <li><a href="https://koytchaimmo.re/index.php/vendre/?pro_res=professionnel" target="_blank" rel="noopener">Vous souhaitez vendre dans le pro&nbsp;?</a></li>
+        </ul>
+      </li>
+      <li><a href="#accompagne">Confier la gestion de mon bien</a></li>
+      <li class="a-sous">
+        <a href="#accompagne">À propos</a>
+        <button class="chev" type="button" aria-expanded="false" aria-controls="sm-apropos" aria-label="Ouvrir le sous-menu À propos"><svg viewBox="0 0 10 6" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M1 1l4 4 4-4"/></svg></button>
+        <ul class="sous" id="sm-apropos">
+        <li><a href="https://koytchaimmo.re/qui-sommes-nous/" target="_blank" rel="noopener">Qui sommes-nous&nbsp;?</a></li>
+        <li><a href="https://koytchaimmo.re/notre-equipe/" target="_blank" rel="noopener">L’équipe Koytcha Immo</a></li>
+        <li><a href="https://www.koytchaconseil.com/" target="_blank" rel="noopener">Koytcha Conseil</a></li>
+        <li><a href="https://www.koytchaconseil.com/" target="_blank" rel="noopener">Koytcha Corporate</a></li>
+        <li><a href="https://www.koytchaconseil.com/" target="_blank" rel="noopener">Groupe Koytcha</a></li>
+        </ul>
+      </li>
+      <li><a href="#contact">Contact</a></li>
+      <!-- Le bouton « Remonter en haut » vivait ici, en fin de panneau. Retire
+           a la demande de Tony : il n'apparaissait qu'au bas du menu deja
+           ouvert, la ou personne ne le cherche, et il doublait le geste de
+           defilement que le telephone fait deja tres bien. -->
+    </ul>
+    <!-- Correctif v3 · 3 : passé en contour. Deux boutons roses pleins se
+         disputaient le clic alors qu'ils mènent à deux parcours opposés
+         (je vends / j'achète). Le plein reste au parcours acheteur. -->
+    
+    <button class="burger" type="button" aria-label="Menu" aria-expanded="false" aria-controls="nav-liens"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+
+<!-- 1 · EN-TÊTE — le bâtiment pivote pendant qu'on descend -->
+<div class="piste" id="piste">
+  <div class="scene">
+    <div class="cadre">
+      <div class="bati" id="bati">
+        <!-- Fond en 1600x1066 : les fichiers servis jusqu'ici faisaient 1024 px
+             de large pour un affichage plein ecran, soit un etirement de 1,4x
+             sur un ecran 1440 et de 2,8x sur un ecran retina — c'etait la
+             cause du flou. 1600 px est le maximum que porte leur mediatheque
+             WordPress ; il n'existe pas de 4K a recuperer. Le srcset laisse
+             les telephones sur le 1024, inutile de leur envoyer 450 Ko. -->
+        <img class="on" src="https://previsualisation.automatisationboost.com/koytcha-refonte-v5/assets/fond/alpha1.webp"
+             srcset="https://previsualisation.automatisationboost.com/koytcha-refonte-v5/assets/fond/alpha1-1024.webp 1024w, https://previsualisation.automatisationboost.com/koytcha-refonte-v5/assets/fond/alpha1.webp 1600w"
+             sizes="100vw" alt="Résidence Koytcha Immo à La Réunion">
+        <img src="https://previsualisation.automatisationboost.com/koytcha-refonte-v5/assets/fond/photo1.webp"
+             srcset="https://previsualisation.automatisationboost.com/koytcha-refonte-v5/assets/fond/photo1-1024.webp 1024w, https://previsualisation.automatisationboost.com/koytcha-refonte-v5/assets/fond/photo1.webp 1600w"
+             sizes="100vw" alt="Programme immobilier à La Réunion">
+        <img src="https://previsualisation.automatisationboost.com/koytcha-refonte-v5/assets/fond/drone.webp"
+             srcset="https://previsualisation.automatisationboost.com/koytcha-refonte-v5/assets/fond/drone-1024.webp 1024w, https://previsualisation.automatisationboost.com/koytcha-refonte-v5/assets/fond/drone.webp 1600w"
+             sizes="100vw" alt="Vue aérienne d'un programme Koytcha Immo">
+      </div>
+      <div class="voile"></div>
+    </div>
+    <div class="hero">
+      <div class="wrap">
+        <div class="grille-hero">
+          <div>
+            
+            <h1>L'exigence<span class="pt">.</span><i>Notre <span class="roule" id="roule"
+              data-mots="signature, méthode, engagement, promesse"><span>signature</span></span><span class="pt">.</span></i></h1>
+            <p>30 ans d'expertise locale. Biens rares, accompagnement sur mesure,
+               résultats durables.</p>
+            <div class="reseaux-hero">
+              <a href="https://www.facebook.com/Koytchaimmo" target="_blank" rel="noopener" title="Suivez-nous sur Facebook" aria-label="Facebook" class="rs fb"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M14 9h3V6h-3c-2.2 0-4 1.8-4 4v2H8v3h2v7h3v-7h3l1-3h-4v-2c0-.6.4-1 1-1z"/></svg></a>
+              <a href="https://www.instagram.com/koytchaimmo.re/" target="_blank" rel="noopener" title="Suivez-nous sur Instagram" aria-label="Instagram" class="rs ig"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.4" cy="6.6" r=".7" fill="currentColor"/></svg></a>
+              <a href="https://linkedin.com/company/16168910/" target="_blank" rel="noopener" title="Suivez-nous sur LinkedIn" aria-label="LinkedIn" class="rs li"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M5 4a2 2 0 100 4 2 2 0 000-4zM3.5 9.5h3V21h-3zM10 9.5h2.9v1.6c.5-.9 1.6-1.8 3.3-1.8 3 0 3.8 1.8 3.8 4.6V21h-3v-6c0-1.5-.5-2.5-1.9-2.5-1 0-1.7.7-2 1.4-.1.2-.1.6-.1.9V21h-3z"/></svg></a>
+              
+              <span class="rs-txt" aria-hidden="true">Suivez-nous sur nos réseaux</span>
+            </div>
+          </div>
+          <div class="boite">
+            <!-- LE MODULE RÉEL. Dans Elementor, ce seul <div> suffit : le plugin
+                 elementor-search-react-ktp-v2 est déjà installé sur koytchaimmo.re
+                 et l'hydrate tout seul. Ici on charge son CSS et son JS depuis leur
+                 domaine pour que l'aperçu montre le vrai module, pas une image. -->
+            <div id="458" class="app" params='W3siaWQiOiI0NTgiLCJpZF9hY3RpdmUiOiJodHRwczpcL1wva295dGNoYWltbW8ucmVcLyIsInR5cGUiOlt7InR5cGUiOiJzdGVwIiwiY29uZGl0aW9uIjoicHJvX3JlcyIsInN0ZXAiOiIxIiwic3ltYm9sZSI6IiIsIm5hbWUiOiJwcm9fcmVzIiwiY29sIjoiY29sLW1kLTQiLCJjb2xfbW9iaWxlIjoiY29sLTUiLCJjcml0ZXJlIjoiIiwibGFiZWwiOiJQcm8gb3UgcmVzaWRlbnRpZWwgPyIsInZhbHVlIjpbeyJ2YWx1ZSI6IlJlc2lkZW50aWVsIiwibGFiZWwiOiJSZXNpZGVudGllbCIsImVraXRfdGFiX2FjdGl2ZSI6IiIsImljb24iOnsidmFsdWUiOiJmYXMgZmEtaG9tZSIsImxpYnJhcnkiOiJmYS1zb2xpZCJ9LCJjb25kaXRpb24iOiIifSx7InZhbHVlIjoiUHJvZmVzc2lvbm5lbCIsImxhYmVsIjoiUHJvZmVzc2lvbm5lbCIsImVraXRfdGFiX2FjdGl2ZSI6InllcyIsImljb24iOnsidmFsdWUiOiJmYXIgZmEtYnVpbGRpbmciLCJsaWJyYXJ5IjoiZmEtcmVndWxhciJ9LCJjb25kaXRpb24iOiIifV19LHsidHlwZSI6InN0ZXAiLCJjb25kaXRpb24iOiIiLCJzdGVwIjoiMiIsInN5bWJvbGUiOiIiLCJuYW1lIjoicHJlc3RhdGlvbl90eXBlIiwiY29sIjoiY29sLW1kLTQiLCJjb2xfbW9iaWxlIjoiY29sLTUiLCJjcml0ZXJlIjoiIiwibGFiZWwiOiJWb3RyZSBwcm9qZXQgPyIsInZhbHVlIjpbeyJ2YWx1ZSI6ImxvY2F0aW9uIiwibGFiZWwiOiJcdTAwYzAgbGEgbG9jYXRpb24gIiwiZWtpdF90YWJfYWN0aXZlIjoieWVzIiwiaWNvbiI6eyJ2YWx1ZSI6IiIsImxpYnJhcnkiOiIifSwiY29uZGl0aW9uIjoiIn0seyJ2YWx1ZSI6InZlbnRlIiwibGFiZWwiOiJcdTAwYzAgbFx1MjAxOWFjaGF0ICIsImVraXRfdGFiX2FjdGl2ZSI6IiIsImljb24iOnsidmFsdWUiOiIiLCJsaWJyYXJ5IjoiIn0sImNvbmRpdGlvbiI6IiJ9XX0seyJ0eXBlIjoic2VsZWN0IiwiY29uZGl0aW9uIjoicHJvX3JlcyIsInN0ZXAiOiIzIiwic3ltYm9sZSI6IiIsIm5hbWUiOiJiaWVuX3R5cGUiLCJjb2wiOiJjb2wtbWQtNCIsImNvbF9tb2JpbGUiOiJjb2wtOCIsImNyaXRlcmUiOiIiLCJsYWJlbCI6IlR5cGUgZGUgYmllbiA/IiwidmFsdWUiOlt7InZhbHVlIjoiQXBwYXJ0ZW1lbnQiLCJsYWJlbCI6IkFwcGFydGVtZW50IiwiZWtpdF90YWJfYWN0aXZlIjoiIiwiaWNvbiI6eyJ2YWx1ZSI6IiIsImxpYnJhcnkiOiIifSwiY29uZGl0aW9uIjoiUmVzaWRlbnRpZWwifSx7InZhbHVlIjoiTWFpc29uXC9WaWxsYSIsImxhYmVsIjoiTWFpc29uXC9WaWxsYSIsImVraXRfdGFiX2FjdGl2ZSI6IiIsImljb24iOnsidmFsdWUiOiIiLCJsaWJyYXJ5IjoiIn0sImNvbmRpdGlvbiI6IlJlc2lkZW50aWVsIn0seyJ2YWx1ZSI6IlRlcnJhaW4iLCJsYWJlbCI6IlRlcnJhaW4iLCJla2l0X3RhYl9hY3RpdmUiOiIiLCJpY29uIjp7InZhbHVlIjoiIiwibGlicmFyeSI6IiJ9LCJjb25kaXRpb24iOiJSZXNpZGVudGllbCJ9LHsidmFsdWUiOiJCdXJlYXV4IiwibGFiZWwiOiJCdXJlYXV4IiwiZWtpdF90YWJfYWN0aXZlIjoiIiwiaWNvbiI6eyJ2YWx1ZSI6IiIsImxpYnJhcnkiOiIifSwiY29uZGl0aW9uIjoiUHJvZmVzc2lvbm5lbCJ9LHsidmFsdWUiOiJFbnRyZXBcdTAwZjR0IiwibGFiZWwiOiJFbnRyZXBcdTAwZjR0IiwiZWtpdF90YWJfYWN0aXZlIjoiIiwiaWNvbiI6eyJ2YWx1ZSI6IiIsImxpYnJhcnkiOiIifSwiY29uZGl0aW9uIjoiUHJvZmVzc2lvbm5lbCJ9LHsidmFsdWUiOiJMb2NhbCBjb21tZXJjaWFsIiwibGFiZWwiOiJMb2NhbCBjb21tZXJjaWFsIiwiZWtpdF90YWJfYWN0aXZlIjoiIiwiaWNvbiI6eyJ2YWx1ZSI6IiIsImxpYnJhcnkiOiIifSwiY29uZGl0aW9uIjoiUHJvZmVzc2lvbm5lbCJ9LHsidmFsdWUiOiJJbW1ldWJsZSIsImxhYmVsIjoiSW1tZXVibGUiLCJla2l0X3RhYl9hY3RpdmUiOiIiLCJpY29uIjp7InZhbHVlIjoiIiwibGlicmFyeSI6IiJ9LCJjb25kaXRpb24iOiJQcm9mZXNzaW9ubmVsIn0seyJ2YWx1ZSI6IlBhcmNlbGxlIiwibGFiZWwiOiJUZXJyYWluIiwiZWtpdF90YWJfYWN0aXZlIjoiIiwiaWNvbiI6eyJ2YWx1ZSI6IiIsImxpYnJhcnkiOiIifSwiY29uZGl0aW9uIjoiUHJvZmVzc2lvbm5lbCJ9LHsidmFsdWUiOiJGb25kcyBkZSBjb21tZXJjZSIsImxhYmVsIjoiRm9uZHMgZGUgY29tbWVyY2UiLCJla2l0X3RhYl9hY3RpdmUiOiIiLCJpY29uIjp7InZhbHVlIjoiIiwibGlicmFyeSI6IiJ9LCJjb25kaXRpb24iOiJQcm9mZXNzaW9ubmVsIn1dfSx7InR5cGUiOiJzZWxlY3QiLCJjb25kaXRpb24iOiIiLCJzdGVwIjoiMyIsInN5bWJvbGUiOiIiLCJuYW1lIjoic2VjdGV1ciIsImNvbCI6ImNvbC1tZC00IiwiY29sX21vYmlsZSI6ImNvbC04IiwiY3JpdGVyZSI6IiIsImxhYmVsIjoiVm90cmUgc2VjdGV1ciA/IiwidmFsdWUiOlt7InZhbHVlIjoiTm9yZCIsImxhYmVsIjoiTm9yZCIsImVraXRfdGFiX2FjdGl2ZSI6IiIsImljb24iOnsidmFsdWUiOiIiLCJsaWJyYXJ5IjoiIn0sImNvbmRpdGlvbiI6IiJ9LHsidmFsdWUiOiJPdWVzdCIsImxhYmVsIjoiT3Vlc3QiLCJla2l0X3RhYl9hY3RpdmUiOiIiLCJpY29uIjp7InZhbHVlIjoiIiwibGlicmFyeSI6IiJ9LCJjb25kaXRpb24iOiIifSx7InZhbHVlIjoiU3VkIiwibGFiZWwiOiJTdWQiLCJla2l0X3RhYl9hY3RpdmUiOiIiLCJpY29uIjp7InZhbHVlIjoiIiwibGlicmFyeSI6IiJ9LCJjb25kaXRpb24iOiIifSx7InZhbHVlIjoiRXN0IiwibGFiZWwiOiJFc3QiLCJla2l0X3RhYl9hY3RpdmUiOiIiLCJpY29uIjp7InZhbHVlIjoiIiwibGlicmFyeSI6IiJ9LCJjb25kaXRpb24iOiIifV19LHsidHlwZSI6ImxlZ2VuZCIsImNvbmRpdGlvbiI6IiIsInN0ZXAiOiIzIiwic3ltYm9sZSI6IiIsIm5hbWUiOiJzdXJmYWNlLW1heCIsImNvbCI6ImNvbC1tZC0zIiwiY29sX21vYmlsZSI6ImNvbC04IiwiY3JpdGVyZSI6InllcyIsImxhYmVsIjoiUXVlbCBlc3QgbGEgc3VyZmFjZSA/IiwidmFsdWUiOm51bGx9LHsidHlwZSI6InRleHQiLCJjb25kaXRpb24iOiIiLCJzdGVwIjoiMyIsInN5bWJvbGUiOiJtMiIsIm5hbWUiOiJzdXJmYWNlLW1pbiIsImNvbCI6ImNvbC1tZC00IiwiY29sX21vYmlsZSI6ImNvbC04IiwiY3JpdGVyZSI6InllcyIsImxhYmVsIjoibWluaW11bSIsInZhbHVlIjpudWxsfSx7InR5cGUiOiJ0ZXh0IiwiY29uZGl0aW9uIjoiIiwic3RlcCI6IiIsInN5bWJvbGUiOiJtMiIsIm5hbWUiOiJzdXJmYWNlLW1heCIsImNvbCI6ImNvbC1tZC00IiwiY29sX21vYmlsZSI6ImNvbC04IiwiY3JpdGVyZSI6InllcyIsImxhYmVsIjoibWF4aW11bSIsInZhbHVlIjpudWxsfSx7InR5cGUiOiJsZWdlbmQiLCJjb25kaXRpb24iOiIiLCJzdGVwIjoiIiwic3ltYm9sZSI6IiIsIm5hbWUiOiJzdXJmYWNlLW1heCIsImNvbCI6ImNvbC1tZC0zIiwiY29sX21vYmlsZSI6ImNvbC04IiwiY3JpdGVyZSI6InllcyIsImxhYmVsIjoiUXVlbCBlc3Qgdm90cmUgYnVkZ2V0ICA/IiwidmFsdWUiOm51bGx9LHsidHlwZSI6InRleHQiLCJjb25kaXRpb24iOiIiLCJzdGVwIjoiIiwic3ltYm9sZSI6Ilx1MjBhYyIsIm5hbWUiOiJ0YXJpZi1taW4iLCJjb2wiOiJjb2wtbWQtNCIsImNvbF9tb2JpbGUiOiJjb2wtOCIsImNyaXRlcmUiOiJ5ZXMiLCJsYWJlbCI6Im1pbmltdW0iLCJ2YWx1ZSI6bnVsbH0seyJ0eXBlIjoidGV4dCIsImNvbmRpdGlvbiI6IiIsInN0ZXAiOiIiLCJzeW1ib2xlIjoiXHUyMGFjIiwibmFtZSI6InN1cmZhY2UtbWF4IiwiY29sIjoiY29sLW1kLTQiLCJjb2xfbW9iaWxlIjoiY29sLTgiLCJjcml0ZXJlIjoieWVzIiwibGFiZWwiOiJtYXhpbXVtIiwidmFsdWUiOm51bGx9LHsidHlwZSI6ImxlZ2VuZCIsImNvbmRpdGlvbiI6IiIsInN0ZXAiOiIiLCJzeW1ib2xlIjoiIiwibmFtZSI6InN1cmZhY2UtbWF4IiwiY29sIjoiY29sLW1kLTEyIiwiY29sX21vYmlsZSI6ImNvbC04IiwiY3JpdGVyZSI6InllcyIsImxhYmVsIjoiUXVlbHMgYW1cdTAwZTluYWdlbWVudHMgPyIsInZhbHVlIjpudWxsfSx7InR5cGUiOiJjaGVja2JveCIsImNvbmRpdGlvbiI6IiIsInN0ZXAiOiIiLCJzeW1ib2xlIjoiIiwibmFtZSI6ImRldGFpbHMiLCJjb2wiOiJjb2wtbWQtMiIsImNvbF9tb2JpbGUiOiJjb2wtOCIsImNyaXRlcmUiOiJ5ZXMiLCJsYWJlbCI6ImRldGFpbHMiLCJ2YWx1ZSI6W3sidmFsdWUiOiJHYXJhZ2UiLCJsYWJlbCI6IkdhcmFnZSIsImVraXRfdGFiX2FjdGl2ZSI6IiIsImljb24iOnsidmFsdWUiOiIiLCJsaWJyYXJ5IjoiIn0sImNvbmRpdGlvbiI6IiJ9LHsidmFsdWUiOiJDbGltYXRpc2F0aW9uIiwibGFiZWwiOiJDbGltYXRpc2F0aW9uIiwiZWtpdF90YWJfYWN0aXZlIjoiIiwiaWNvbiI6eyJ2YWx1ZSI6IiIsImxpYnJhcnkiOiIifSwiY29uZGl0aW9uIjoiIn0seyJ2YWx1ZSI6IlBsYWZvbmQiLCJsYWJlbCI6IlBsYWZvbmQiLCJla2l0X3RhYl9hY3RpdmUiOiIiLCJpY29uIjp7InZhbHVlIjoiIiwibGlicmFyeSI6IiJ9LCJjb25kaXRpb24iOiIifSx7InZhbHVlIjoiQWxhcm1lIiwibGFiZWwiOiJBbGFybWUiLCJla2l0X3RhYl9hY3RpdmUiOiIiLCJpY29uIjp7InZhbHVlIjoiIiwibGlicmFyeSI6IiJ9LCJjb25kaXRpb24iOiIifSx7InZhbHVlIjoiUGFya2luZyIsImxhYmVsIjoiUGFya2luZyIsImVraXRfdGFiX2FjdGl2ZSI6IiIsImljb24iOnsidmFsdWUiOiIiLCJsaWJyYXJ5IjoiIn0sImNvbmRpdGlvbiI6IiJ9LHsidmFsdWUiOiJQaXNjaW5lIiwibGFiZWwiOiJQaXNjaW5lIiwiZWtpdF90YWJfYWN0aXZlIjoiIiwiaWNvbiI6eyJ2YWx1ZSI6IiIsImxpYnJhcnkiOiIifSwiY29uZGl0aW9uIjoiIn0seyJ2YWx1ZSI6IlRlcnJhc3NlIiwibGFiZWwiOiJUZXJyYXNzZSIsImVraXRfdGFiX2FjdGl2ZSI6IiIsImljb24iOnsidmFsdWUiOiIiLCJsaWJyYXJ5IjoiIn0sImNvbmRpdGlvbiI6IiJ9LHsidmFsdWUiOiJDbFx1MDBmNHR1clx1MDBlOSIsImxhYmVsIjoiQ2xcdTAwZjR0dXJcdTAwZTkiLCJla2l0X3RhYl9hY3RpdmUiOiIiLCJpY29uIjp7InZhbHVlIjoiIiwibGlicmFyeSI6IiJ9LCJjb25kaXRpb24iOiIifSx7InZhbHVlIjoiU29sIiwibGFiZWwiOiJTb2wiLCJla2l0X3RhYl9hY3RpdmUiOiIiLCJpY29uIjp7InZhbHVlIjoiIiwibGlicmFyeSI6IiJ9LCJjb25kaXRpb24iOiIifSx7InZhbHVlIjoiVmlhYmlsaXNcdTAwZTkiLCJsYWJlbCI6IlZpYWJpbGlzXHUwMGU5IiwiZWtpdF90YWJfYWN0aXZlIjoiIiwiaWNvbiI6eyJ2YWx1ZSI6IiIsImxpYnJhcnkiOiIifSwiY29uZGl0aW9uIjoiIn0seyJ2YWx1ZSI6IkVsZWN0cmljaXRcdTAwZTkiLCJsYWJlbCI6IkVsZWN0cmljaXRcdTAwZTkiLCJla2l0X3RhYl9hY3RpdmUiOiIiLCJpY29uIjp7InZhbHVlIjoiIiwibGlicmFyeSI6IiJ9LCJjb25kaXRpb24iOiIifSx7InZhbHVlIjoiUGxhZm9uZCIsImxhYmVsIjoiUGxhZm9uZCIsImVraXRfdGFiX2FjdGl2ZSI6IiIsImljb24iOnsidmFsdWUiOiIiLCJsaWJyYXJ5IjoiIn0sImNvbmRpdGlvbiI6IiJ9XX1dLCJwb3N0Ijp7IjEiOlt7ImZpZWxkIjoidmlsbGUiLCJjb2xvciI6IiNGQUZBRkEiLCJiYWNrZ3JvdW5kIjoiI0ZGRkZGRiIsImNvbCI6ImNvbC0xMiIsIiI6ImF1dG8iLCJpbl90aGVfcGhvdG8iOiJubyIsImRpcmVjdGlvbl9lbGVtZW50IjoidGV4dCIsInR5cGUiOiJ0ZXh0IiwidXJsIjoiIiwiZm9udC1zaXplIjoiMTJweCIsInVybF9wYXJhbSI6ImlkIiwidGV4dCI6IiIsImljb24iOnsidmFsdWUiOiJmYXIgZmEtYWRkcmVzcy1ib29rIiwibGlicmFyeSI6ImZhLXJlZ3VsYXIifSwiY29uZGl0aW9uIjoiIn1dLCIyIjpbeyJmaWVsZCI6InRpdHJlIiwiY29sb3IiOiIjRkFGQUZBIiwiYmFja2dyb3VuZCI6IiNGRkZGRkYiLCJjb2wiOiJjb2wtMTIiLCIiOiJhdXRvIiwiaW5fdGhlX3Bob3RvIjoibm8iLCJkaXJlY3Rpb25fZWxlbWVudCI6InRleHQiLCJ0eXBlIjoidGV4dCIsInVybCI6IiIsImZvbnQtc2l6ZSI6IjEycHgiLCJ1cmxfcGFyYW0iOiJpZCIsInRleHQiOiIiLCJpY29uIjp7InZhbHVlIjoiIiwibGlicmFyeSI6IiJ9LCJjb25kaXRpb24iOiIifV0sIjMiOlt7ImZpZWxkIjoic2VjdGV1ciIsImNvbG9yIjoiI0ZBRkFGQSIsImJhY2tncm91bmQiOiIjRkZGRkZGIiwiY29sIjoiY29sLTEyIiwiIjoiYXV0byIsImluX3RoZV9waG90byI6Im5vIiwiZGlyZWN0aW9uX2VsZW1lbnQiOiJ0ZXh0IiwidHlwZSI6InRleHQiLCJ1cmwiOiIiLCJmb250LXNpemUiOiIxMnB4IiwidXJsX3BhcmFtIjoiaWQiLCJ0ZXh0IjoiIiwiaWNvbiI6eyJ2YWx1ZSI6IiIsImxpYnJhcnkiOiIifSwiY29uZGl0aW9uIjoiIn1dLCI0IjpbeyJmaWVsZCI6ImJpZW5fdHlwZSIsImNvbG9yIjoiI0ZBRkFGQSIsImJhY2tncm91bmQiOiIjRkZGRkZGIiwiY29sIjoiY29sLTEyIiwiIjoiYXV0byIsImluX3RoZV9waG90byI6Im5vIiwiZGlyZWN0aW9uX2VsZW1lbnQiOiJ0ZXh0IiwidHlwZSI6InRleHQiLCJ1cmwiOiIiLCJmb250LXNpemUiOiIxMnB4IiwidXJsX3BhcmFtIjoiaWQiLCJ0ZXh0IjoiIiwiaWNvbiI6eyJ2YWx1ZSI6IiIsImxpYnJhcnkiOiIifSwiY29uZGl0aW9uIjoiIn1dLCI1IjpbeyJmaWVsZCI6InBob3RvcyIsImNvbG9yIjoiI0U2MDA3RSIsImJhY2tncm91bmQiOiIjRkZGRkZGIiwiY29sIjoiY29sLTYiLCIiOiJhdXRvIiwiaW5fdGhlX3Bob3RvIjoibm8iLCJkaXJlY3Rpb25fZWxlbWVudCI6InRleHQiLCJ0eXBlIjoicGhvdG9zIiwidXJsIjoicG9zdF9uYW1lIiwiZm9udC1zaXplIjoiMTJweCIsInVybF9wYXJhbSI6ImlkIiwidGV4dCI6IiIsImljb24iOnsidmFsdWUiOiIiLCJsaWJyYXJ5IjoiIn0sImNvbmRpdGlvbiI6IiJ9XSwiNiI6W3siZmllbGQiOiJwaG90b3MiLCJjb2xvciI6IiNFNjAwN0UiLCJiYWNrZ3JvdW5kIjoiI0ZGRkZGRiIsImNvbCI6ImNvbC02IiwiIjoiYXV0byIsImluX3RoZV9waG90byI6Im5vIiwiZGlyZWN0aW9uX2VsZW1lbnQiOiJ0ZXh0IiwidHlwZSI6InBob3RvcyIsInVybCI6InBvc3RfbmFtZSIsImZvbnQtc2l6ZSI6IjEycHgiLCJ1cmxfcGFyYW0iOiJpZCIsInRleHQiOiIiLCJpY29uIjp7InZhbHVlIjoiIiwibGlicmFyeSI6IiJ9LCJjb25kaXRpb24iOiIifV0sIjciOlt7ImZpZWxkIjoiaWQiLCJjb2xvciI6IiNFNjAwN0UiLCJiYWNrZ3JvdW5kIjoiI0ZGRkZGRiIsImNvbCI6ImNvbC02IiwiIjoiYXV0byIsImluX3RoZV9waG90byI6Im5vIiwiZGlyZWN0aW9uX2VsZW1lbnQiOiJ0ZXh0IiwidHlwZSI6ImJ1dHRvbiIsInVybCI6InBvc3RfbmFtZSIsImZvbnQtc2l6ZSI6IjEycHgiLCJ1cmxfcGFyYW0iOiJpZCIsInRleHQiOiIiLCJpY29uIjp7InZhbHVlIjoiZmFzIGZhLWNoZXZyb24tcmlnaHQiLCJsaWJyYXJ5IjoiZmEtc29saWQifSwiY29uZGl0aW9uIjoiIn1dLCJjb3VudCI6N30sInN0ZXAiOnRydWUsImVraXRfcmVzdWx0YXQiOiIiLCJjYXJkYm9keSI6IntcclxuICAgIFwicG9zaXRpb25cIjogXCJhYnNvbHV0ZVwiLFxyXG4gICAgXCJwYWRkaW5nXCI6IFwiNTBweCAxMHB4XCIsXHJcbiAgICBcIm1heFdpZHRoXCI6IFwiMjAwcHhcIixcclxuICAgIFwidG9wXCI6IFwiNTAlXCIsXHJcbiAgICBcImxlZnRcIjogXCItMjBweFwiLFxyXG4gICAgXCJ3aWR0aFwiOiBcIjEwNSVcIixcclxuICAgIFwiaGVpZ2h0XCI6IFwiNjAlXCIsXHJcbiAgICBcInRyYW5zZm9ybVwiOiBcInRyYW5zbGF0ZVkoLTUwJSlcIixcclxuICAgICBcIi13ZWJraXQtdHJhbnNmb3JtXCI6IFwidHJhbnNsYXRlWSgtNTAgJSlcIixcclxuICAgIFwiLW1vei10cmFuc2Zvcm1cIjogXCIgdHJhbnNsYXRlWSgtNTAgJSlcIixcclxuICAgIFwiLW8tdHJhbnNmb3JtXCI6IFwidHJhbnNsYXRlWSgtNTAgJSlcIixcclxuICAgIFwiLW1zLXRyYW5zZm9ybVwiOiBcInRyYW5zbGF0ZVkoLTUwICUpXCIsXHJcbiAgICBcImJhY2tncm91bmRcIjogXCIjRUExMDk2REVcIixcclxuICAgIFwiY29sb3JcIjogXCIjRkFGQUZBXCIsXHJcbiAgICBcInRleHRBbGlnblwiOiBcImNlbnRlclwiLFxyXG4gICAgXCJib3JkZXJcIjogXCIgMXB4IHNvbGlkICNkZGRcIixcclxuICAgIFwiYm9yZGVyV2lkdGhcIjogXCIwcHggMHB4IDNweCAwcHggXCIsXHJcbiAgICBcImJvcmRlclJhZGl1c1wiOiBcIjBweCAwcHggMHB4IDE0cHhcIixcclxuICAgIFwiYm94U2hhZG93XCI6IFwiIDAgNHB4IDhweCAwIHJnYmEoMCwgMCwgMCwgMC4yKSwgMCA2cHggMjBweCAwIHJnYmEoMCwgMCwgMCwgMC4xOSlcIlxyXG4gIH0iLCJjYXJkIjoie1xyXG4gICAgXCJtYXJnaW5cIjogXCIxMHB4ICAxMHB4IDEwcHggMTBweCAgXCIsXHJcbiAgICBcImJhY2tncm91bmRcIjogXCIjRkFGQUZBXCIsXHJcbiAgICBcImJvcmRlclwiOiBcIiAxcHggc29saWQgI2RkZFwiLFxyXG4gICAgXCJwYWRkaW5nXCI6IFwiMHB4XCIsXHJcbiAgICBcIndpZHRoXCI6IFwiMTA1JVwiLFxyXG4gICAgXCJoZWlnaHRcIjogXCI2MCVcIixcclxuICAgIFwiYm9yZGVyQ29sb3JcIjogXCIjRUExMDk2REVcIixcclxuICAgIFwiYm9yZGVyV2lkdGhcIjogXCIwcHggMHB4IDFweCAwcHggXCIsXHJcbiAgICBcImJvcmRlclJhZGl1c1wiOiBcIjBweCAwcHggMHB4IDE0cHhcIixcclxuICAgIFwiYm94U2hhZG93XCI6IFwiIDAgNHB4IDhweCAwIHJnYmEoMCwgMCwgMCwgMC4yKSwgMCA2cHggMjBweCAwIHJnYmEoMCwgMCwgMCwgMC4xOSlcIlxyXG4gIH0iLCJjYXJkaW1hZ2UiOiIiLCJla2l0X3NlYXJjaF9idG4iOiJ5ZXMiLCJzZWFyY2hfdGV4dCI6IlZPSVIgTEVTIEFOTk9OQ0VTICIsImhlYWRpbmdfdGV4dCI6IlZvdXMgcmVjaGVyY2hleiA8c3Ryb25nIHN0eWxlPVwiY29sb3I6I0U2MDA3RVwiPiB1biBiaWVuPFwvc3Ryb25nPiAgPyAiLCJ1cmwiOiJodHRwczpcL1wva295dGNoYWltbW8ucmVcL2luZGV4LnBocFwvcmVjaGVyY2hlXC8iLCJyZWRpcmVjdF9jb250YWN0IjoiIiwia2V5X21hcCI6IiIsIkFQSV9VUkkiOiJodHRwczpcL1wva295dGNoYWltbW8ucmVcL3dwLWpzb25cL3dwXC92MlwvZGF0YT90eXBlPWJpZW5zIiwiQXV0aG9yaXphdGlvbiI6IkJlYXJlciBleUpoYkdjaU9pSklVekkxTmlJc0luUjVjQ0k2SWtwWFZDSjkuZXlKemRXSWlPakVzSW01aGJXVWlPaUpyYjNsMFkyaGhhVzF0YjBCbmJXRnBiQzVqYjIwaUxDSnBZWFFpT2pFMk5USXdPREV5TWpBc0ltVjRjQ0k2TVRnd09UYzJNVEl5TUgwLlVXM0xjZTMxazgtNTNKYjdfaGJtR0t6bmpRbVlGd0p2SEVfOUVGV2ZIb1UiLCJVUkxfUE9TVCI6IiIsImNvbG9yIjoiI0U2MDA3RSIsInZpc2libGUiOiIiLCJ2aXNpYmxlX3NlYXJjaF9tYXAiOiIiLCJla2l0X3diXzM5NzZfZm9udCI6Im5vcm1hdGljYSBtZWRpdW0iLCJla2l0X21lbnVfYnV0dG9uX2NvbG9yX2NyaXRlcmUiOiIjMDAwIiwiZWtpdF9jcml0ZXJlX2J0biI6IiIsImVraXRfbWVudV9hY3RpdmUiOiIiLCJla2l0X21lbnVfYnV0dG9uX2NvbG9yX2FsZXJ0ZSI6IiMwMDAiLCJla2l0X2FsZXJ0ZV9idG4iOiJ5ZXMiLCJla2l0X21hcF9idG4iOiIiLCJjb2xfaGVhZGluZ190ZXh0IjoiMTAiLCJjb2xfcG9zdCI6ImNvbC02IiwiZWtpdF9keW5hbWljX3RleHQiOiIiLCJmaXJzdF9sb2FkIjoiIiwicGFnaW5hdG9yIjoiIn0seyJpZCI6IjQwMCIsImlkX2FjdGl2ZSI6Imh0dHBzOlwvXC9rb3l0Y2hhaW1tby5yZVwvcmVjaGVyY2hlXC8iLCJ0eXBlIjpbeyJ0eXBlIjoiYnV0dG9uIiwiY29uZGl0aW9uIjoiIiwic3RlcCI6IiIsInN5bWJvbGUiOiIiLCJuYW1lIjoicHJlc3RhdGlvbl90eXBlIiwiY29sIjoiY29sLW1kLTEiLCJjb2xfbW9iaWxlIjoiY29sLTQiLCJjcml0ZXJlIjoiIiwibGFiZWwiOiJBY2hldGVyIG91IExvdWVyIiwidmFsdWUiOlt7InZhbHVlIjoidmVudGUiLCJsYWJlbCI6IkFjaGV0ZXIiLCJla2l0X3RhYl9hY3RpdmUiOiJ5ZXMiLCJpY29uIjp7InZhbHVlIjoiIiwibGlicmFyeSI6IiJ9LCJjb25kaXRpb24iOiIifSx7InZhbHVlIjoibG9jYXRpb24iLCJsYWJlbCI6IkxvdWVyIiwiZWtpdF90YWJfYWN0aXZlIjoiIiwiaWNvbiI6eyJ2YWx1ZSI6IiIsImxpYnJhcnkiOiIifSwiY29uZGl0aW9uIjoiIn1dfSx7InR5cGUiOiJzZWxlY3QiLCJjb25kaXRpb24iOiIiLCJzdGVwIjoiIiwic3ltYm9sZSI6IiIsIm5hbWUiOiJzZWN0ZXVyIiwiY29sIjoiY29sLW1kLTMiLCJjb2xfbW9iaWxlIjoiY29sLTgiLCJjcml0ZXJlIjoiIiwibGFiZWwiOiJWb3RyZSBzZWN0ZXVyID8iLCJ2YWx1ZSI6W3sidmFsdWUiOiJOb3JkIiwibGFiZWwiOiJOb3JkIiwiZWtpdF90YWJfYWN0aXZlIjoiIiwiaWNvbiI6eyJ2YWx1ZSI6IiIsImxpYnJhcnkiOiIifSwiY29uZGl0aW9uIjoiIn0seyJ2YWx1ZSI6Ik91ZXN0IiwibGFiZWwiOiJPdWVzdCIsImVraXRfdGFiX2FjdGl2ZSI6IiIsImljb24iOnsidmFsdWUiOiIiLCJsaWJyYXJ5IjoiIn0sImNvbmRpdGlvbiI6IiJ9LHsidmFsdWUiOiJTdWQiLCJsYWJlbCI6IlN1ZCIsImVraXRfdGFiX2FjdGl2ZSI6IiIsImljb24iOnsidmFsdWUiOiIiLCJsaWJyYXJ5IjoiIn0sImNvbmRpdGlvbiI6IiJ9LHsidmFsdWUiOiJFc3QiLCJsYWJlbCI6IkVzdCIsImVraXRfdGFiX2FjdGl2ZSI6IiIsImljb24iOnsidmFsdWUiOiIiLCJsaWJyYXJ5IjoiIn0sImNvbmRpdGlvbiI6IiJ9XX0seyJ0eXBlIjoic2VsZWN0IiwiY29uZGl0aW9uIjoiIiwic3RlcCI6IiIsInN5bWJvbGUiOiIiLCJuYW1lIjoicHJvX3JlcyIsImNvbCI6ImNvbC1tZC0zIiwiY29sX21vYmlsZSI6ImNvbC04IiwiY3JpdGVyZSI6IiIsImxhYmVsIjoiVm90cmUgcHJvamV0ID8iLCJ2YWx1ZSI6W3sidmFsdWUiOiJSXHUwMGU5c2lkZW50aWVsIiwibGFiZWwiOiJSXHUwMGU5c2lkZW50aWVsIiwiZWtpdF90YWJfYWN0aXZlIjoiIiwiaWNvbiI6eyJ2YWx1ZSI6IiIsImxpYnJhcnkiOiIifSwiY29uZGl0aW9uIjoiIn0seyJ2YWx1ZSI6IlByb2Zlc3Npb25uZWwiLCJsYWJlbCI6IlByb2Zlc3Npb25uZWwiLCJla2l0X3RhYl9hY3RpdmUiOiIiLCJpY29uIjp7InZhbHVlIjoiIiwibGlicmFyeSI6IiJ9LCJjb25kaXRpb24iOiIifV19LHsidHlwZSI6InNlbGVjdCIsImNvbmRpdGlvbiI6InByb19yZXMiLCJzdGVwIjoiIiwic3ltYm9sZSI6IiIsIm5hbWUiOiJiaWVuX3R5cGUiLCJjb2wiOiJjb2wtbWQtMyIsImNvbF9tb2JpbGUiOiJjb2wtOCIsImNyaXRlcmUiOiIiLCJsYWJlbCI6IlR5cGUgZGUgYmllbiA/IiwidmFsdWUiOlt7InZhbHVlIjoiQXBwYXJ0ZW1lbnQgIiwibGFiZWwiOiJBcHBhcnRlbWVudCAiLCJla2l0X3RhYl9hY3RpdmUiOiIiLCJpY29uIjp7InZhbHVlIjoiIiwibGlicmFyeSI6IiJ9LCJjb25kaXRpb24iOiJSXHUwMGU5c2lkZW50aWVsIn0seyJ2YWx1ZSI6Ik1haXNvblwvVmlsbGEiLCJsYWJlbCI6Ik1haXNvblwvVmlsbGEiLCJla2l0X3RhYl9hY3RpdmUiOiIiLCJpY29uIjp7InZhbHVlIjoiIiwibGlicmFyeSI6IiJ9LCJjb25kaXRpb24iOiJSXHUwMGU5c2lkZW50aWVsIn0seyJ2YWx1ZSI6IlRlcnJhaW4iLCJsYWJlbCI6IlRlcnJhaW4iLCJla2l0X3RhYl9hY3RpdmUiOiIiLCJpY29uIjp7InZhbHVlIjoiIiwibGlicmFyeSI6IiJ9LCJjb25kaXRpb24iOiJSXHUwMGU5c2lkZW50aWVsIn0seyJ2YWx1ZSI6IkJ1cmVhdXgiLCJsYWJlbCI6IkJ1cmVhdXgiLCJla2l0X3RhYl9hY3RpdmUiOiIiLCJpY29uIjp7InZhbHVlIjoiIiwibGlicmFyeSI6IiJ9LCJjb25kaXRpb24iOiJQcm9mZXNzaW9ubmVsIn0seyJ2YWx1ZSI6IkVudHJlcFx1MDBmNHQiLCJsYWJlbCI6IkVudHJlcFx1MDBmNHQiLCJla2l0X3RhYl9hY3RpdmUiOiIiLCJpY29uIjp7InZhbHVlIjoiIiwibGlicmFyeSI6IiJ9LCJjb25kaXRpb24iOiJQcm9mZXNzaW9ubmVsIn0seyJ2YWx1ZSI6IkxvY2FsIGNvbW1lcmNpYWwiLCJsYWJlbCI6IkxvY2FsIGNvbW1lcmNpYWwiLCJla2l0X3RhYl9hY3RpdmUiOiIiLCJpY29uIjp7InZhbHVlIjoiIiwibGlicmFyeSI6IiJ9LCJjb25kaXRpb24iOiJQcm9mZXNzaW9ubmVsIn0seyJ2YWx1ZSI6IkZvbmRzIGRlIGNvbW1lcmNlIiwibGFiZWwiOiJGb25kcyBkZSBjb21tZXJjZSIsImVraXRfdGFiX2FjdGl2ZSI6IiIsImljb24iOnsidmFsdWUiOiIiLCJsaWJyYXJ5IjoiIn0sImNvbmRpdGlvbiI6IlByb2Zlc3Npb25uZWwifSx7InZhbHVlIjoiSW1tZXVibGUiLCJsYWJlbCI6IkltbWV1YmxlIiwiZWtpdF90YWJfYWN0aXZlIjoiIiwiaWNvbiI6eyJ2YWx1ZSI6IiIsImxpYnJhcnkiOiIifSwiY29uZGl0aW9uIjoiUHJvZmVzc2lvbm5lbCJ9XX0seyJ0eXBlIjoibGVnZW5kIiwiY29uZGl0aW9uIjoiIiwic3RlcCI6IiIsInN5bWJvbGUiOiIiLCJuYW1lIjoic3VyZmFjZS1tYXgiLCJjb2wiOiJjb2wtbWQtMiIsImNvbF9tb2JpbGUiOiJjb2wtMyIsImNyaXRlcmUiOiJ5ZXMiLCJsYWJlbCI6IlF1ZWxsZSBlc3QgbGEgc3VyZmFjZSAgPyIsInZhbHVlIjpudWxsfSx7InR5cGUiOiJ0ZXh0IiwiY29uZGl0aW9uIjoiIiwic3RlcCI6IiIsInN5bWJvbGUiOiIiLCJuYW1lIjoic3VyZmFjZS1taW4iLCJjb2wiOiJjb2wtbWQtMiIsImNvbF9tb2JpbGUiOiJjb2wtMyIsImNyaXRlcmUiOiJ5ZXMiLCJsYWJlbCI6IiBtaW4iLCJ2YWx1ZSI6bnVsbH0seyJ0eXBlIjoidGV4dCIsImNvbmRpdGlvbiI6IiIsInN0ZXAiOiIiLCJzeW1ib2xlIjoiIiwibmFtZSI6InN1cmZhY2UtbWF4IiwiY29sIjoiY29sLW1kLTIiLCJjb2xfbW9iaWxlIjoiY29sLTMiLCJjcml0ZXJlIjoieWVzIiwibGFiZWwiOiJtYXgiLCJ2YWx1ZSI6bnVsbH0seyJ0eXBlIjoibGVnZW5kIiwiY29uZGl0aW9uIjoiIiwic3RlcCI6IiIsInN5bWJvbGUiOiIiLCJuYW1lIjoiS2V5IiwiY29sIjoiY29sLW1kLTIiLCJjb2xfbW9iaWxlIjoiY29sLTMiLCJjcml0ZXJlIjoieWVzIiwibGFiZWwiOiJRdWVsIGVzdCB2b3RyZSBidWRnZXQgPyIsInZhbHVlIjpudWxsfSx7InR5cGUiOiJ0ZXh0IiwiY29uZGl0aW9uIjoiIiwic3RlcCI6IiIsInN5bWJvbGUiOiIiLCJuYW1lIjoidGFyaWYtbWluIiwiY29sIjoiY29sLW1kLTIiLCJjb2xfbW9iaWxlIjoiY29sLTMiLCJjcml0ZXJlIjoieWVzIiwibGFiZWwiOiJtaW4iLCJ2YWx1ZSI6bnVsbH0seyJ0eXBlIjoidGV4dCIsImNvbmRpdGlvbiI6IiIsInN0ZXAiOiIiLCJzeW1ib2xlIjoiIiwibmFtZSI6InRhcmlmLW1heCIsImNvbCI6ImNvbC1tZC0yIiwiY29sX21vYmlsZSI6ImNvbC0zIiwiY3JpdGVyZSI6InllcyIsImxhYmVsIjoibWF4IiwidmFsdWUiOm51bGx9LHsidHlwZSI6ImxlZ2VuZCIsImNvbmRpdGlvbiI6IiIsInN0ZXAiOiIiLCJzeW1ib2xlIjoiIiwibmFtZSI6IktleSIsImNvbCI6ImNvbC1tZC0xMiIsImNvbF9tb2JpbGUiOiJjb2wtMyIsImNyaXRlcmUiOiJ5ZXMiLCJsYWJlbCI6IlF1ZWxzIGFtXHUwMGU5bmFnZW1lbnRzID8iLCJ2YWx1ZSI6bnVsbH0seyJ0eXBlIjoiY2hlY2tib3giLCJjb25kaXRpb24iOiIiLCJzdGVwIjoiIiwic3ltYm9sZSI6IiIsIm5hbWUiOiJkZXRhaWxzIiwiY29sIjoiY29sLW1kLTIiLCJjb2xfbW9iaWxlIjoiY29sLTQiLCJjcml0ZXJlIjoieWVzIiwibGFiZWwiOiJkZXRhaWxzIiwidmFsdWUiOlt7InZhbHVlIjoiR2FyYWdlIiwibGFiZWwiOiJHYXJhZ2UiLCJla2l0X3RhYl9hY3RpdmUiOiIiLCJpY29uIjp7InZhbHVlIjoiIiwibGlicmFyeSI6IiJ9LCJjb25kaXRpb24iOiIifSx7InZhbHVlIjoiQ2xpbWF0aXNhdGlvbiIsImxhYmVsIjoiQ2xpbWF0aXNhdGlvbiIsImVraXRfdGFiX2FjdGl2ZSI6IiIsImljb24iOnsidmFsdWUiOiIiLCJsaWJyYXJ5IjoiIn0sImNvbmRpdGlvbiI6IiJ9LHsidmFsdWUiOiJBc2NlbnNldXIiLCJsYWJlbCI6IkFzY2Vuc2V1ciIsImVraXRfdGFiX2FjdGl2ZSI6IiIsImljb24iOnsidmFsdWUiOiIiLCJsaWJyYXJ5IjoiIn0sImNvbmRpdGlvbiI6IiJ9LHsidmFsdWUiOiJBbGFybWUiLCJsYWJlbCI6IkFsYXJtZSIsImVraXRfdGFiX2FjdGl2ZSI6IiIsImljb24iOnsidmFsdWUiOiIiLCJsaWJyYXJ5IjoiIn0sImNvbmRpdGlvbiI6IiJ9LHsidmFsdWUiOiJQYXJraW5nIiwibGFiZWwiOiJQYXJraW5nIiwiZWtpdF90YWJfYWN0aXZlIjoiIiwiaWNvbiI6eyJ2YWx1ZSI6IiIsImxpYnJhcnkiOiIifSwiY29uZGl0aW9uIjoiIn0seyJ2YWx1ZSI6IlBpc2NpbmUiLCJsYWJlbCI6IlBpc2NpbmUiLCJla2l0X3RhYl9hY3RpdmUiOiIiLCJpY29uIjp7InZhbHVlIjoiIiwibGlicmFyeSI6IiJ9LCJjb25kaXRpb24iOiIifSx7InZhbHVlIjoiVGVycmFzc2UiLCJsYWJlbCI6IlRlcnJhc3NlIiwiZWtpdF90YWJfYWN0aXZlIjoiIiwiaWNvbiI6eyJ2YWx1ZSI6IiIsImxpYnJhcnkiOiIifSwiY29uZGl0aW9uIjoiIn0seyJ2YWx1ZSI6IkFjY1x1MDBlOXNQTVIiLCJsYWJlbCI6IkFjY2Vzc2liaWxpdFx1MDBlOSBQTVIiLCJla2l0X3RhYl9hY3RpdmUiOiIiLCJpY29uIjp7InZhbHVlIjoiIiwibGlicmFyeSI6IiJ9LCJjb25kaXRpb24iOiIifSx7InZhbHVlIjoiQ2xvdHVyXHUwMGU5IiwibGFiZWwiOiJDbG90dXJcdTAwZTkiLCJla2l0X3RhYl9hY3RpdmUiOiIiLCJpY29uIjp7InZhbHVlIjoiIiwibGlicmFyeSI6IiJ9LCJjb25kaXRpb24iOiIifSx7InZhbHVlIjoiU29sIiwibGFiZWwiOiJTb2wiLCJla2l0X3RhYl9hY3RpdmUiOiIiLCJpY29uIjp7InZhbHVlIjoiIiwibGlicmFyeSI6IiJ9LCJjb25kaXRpb24iOiIifSx7InZhbHVlIjoiVmlhYmlsaXNcdTAwZTkiLCJsYWJlbCI6IlZpYWJpbGlzXHUwMGU5IiwiZWtpdF90YWJfYWN0aXZlIjoiIiwiaWNvbiI6eyJ2YWx1ZSI6IiIsImxpYnJhcnkiOiIifSwiY29uZGl0aW9uIjoiIn0seyJ2YWx1ZSI6IkVsZWN0cmljaXRcdTAwZTkiLCJsYWJlbCI6IkVsZWN0cmljaXRcdTAwZTkiLCJla2l0X3RhYl9hY3RpdmUiOiIiLCJpY29uIjp7InZhbHVlIjoiIiwibGlicmFyeSI6IiJ9LCJjb25kaXRpb24iOiIifSx7InZhbHVlIjoiUGxhZm9uZCIsImxhYmVsIjoiUGxhZm9uZCIsImVraXRfdGFiX2FjdGl2ZSI6IiIsImljb24iOnsidmFsdWUiOiIiLCJsaWJyYXJ5IjoiIn0sImNvbmRpdGlvbiI6IiJ9LHsidmFsdWUiOiJQbGFpbi1waWVkIiwibGFiZWwiOiJQbGFpbi1waWVkIiwiZWtpdF90YWJfYWN0aXZlIjoiIiwiaWNvbiI6eyJ2YWx1ZSI6IiIsImxpYnJhcnkiOiIifSwiY29uZGl0aW9uIjoiIn0seyJ2YWx1ZSI6IkphcmRpbiIsImxhYmVsIjoiSmFyZGluIiwiZWtpdF90YWJfYWN0aXZlIjoiIiwiaWNvbiI6eyJ2YWx1ZSI6IiIsImxpYnJhcnkiOiIifSwiY29uZGl0aW9uIjoiIn0seyJ2YWx1ZSI6IkRpZ2ljb2RlIiwibGFiZWwiOiJEaWdpY29kZSIsImVraXRfdGFiX2FjdGl2ZSI6IiIsImljb24iOnsidmFsdWUiOiIiLCJsaWJyYXJ5IjoiIn0sImNvbmRpdGlvbiI6IiJ9LHsidmFsdWUiOiJWdWVtZXIiLCJsYWJlbCI6IlZ1ZSBtZXIiLCJla2l0X3RhYl9hY3RpdmUiOiIiLCJpY29uIjp7InZhbHVlIjoiIiwibGlicmFyeSI6IiJ9LCJjb25kaXRpb24iOiIifSx7InZhbHVlIjoiUGlzY2luYWJsZSIsImxhYmVsIjoiUGlzY2luYWJsZSIsImVraXRfdGFiX2FjdGl2ZSI6IiIsImljb24iOnsidmFsdWUiOiIiLCJsaWJyYXJ5IjoiIn0sImNvbmRpdGlvbiI6IiJ9LHsidmFsdWUiOiJHYXJkaWVuIiwibGFiZWwiOiJHYXJkaWVuIiwiZWtpdF90YWJfYWN0aXZlIjoiIiwiaWNvbiI6eyJ2YWx1ZSI6IiIsImxpYnJhcnkiOiIifSwiY29uZGl0aW9uIjoiIn1dfV0sInBvc3QiOnsiMSI6W3siZmllbGQiOiJwaG90byIsImNvbG9yIjoiIzUxMDkwOSIsImJhY2tncm91bmQiOiIjRkZGRkZGIiwiY29sIjoiY29sLTMiLCIiOiJhdXRvIiwiaW5fdGhlX3Bob3RvIjoibm8iLCJkaXJlY3Rpb25fZWxlbWVudCI6InRleHQiLCJ0eXBlIjoicGhvdG9zIiwidXJsIjoicG9zdF9uYW1lIiwiZm9udC1zaXplIjoiMTJweCIsInVybF9wYXJhbSI6ImlkIiwidGV4dCI6IiIsImljb24iOnsidmFsdWUiOiIiLCJsaWJyYXJ5IjoiIn0sImNvbmRpdGlvbiI6IiJ9LHsiZmllbGQiOiJiaWVuX3R5cGUiLCJjb2xvciI6IiM1NDU5NUYiLCJiYWNrZ3JvdW5kIjoiI0ZGRkZGRjAwIiwiY29sIjoiICIsIiAiOiJhdXRvIiwiaW5fdGhlX3Bob3RvIjoibm8iLCJkaXJlY3Rpb25fZWxlbWVudCI6InRleHQiLCJ0eXBlIjoidGV4dCIsInVybCI6IiIsImZvbnQtc2l6ZSI6IjE0cHgiLCJ1cmxfcGFyYW0iOiJpZCIsInRleHQiOiItIiwiaWNvbiI6eyJ2YWx1ZSI6IiIsImxpYnJhcnkiOiIifSwiY29uZGl0aW9uIjoiIn0seyJmaWVsZCI6Ik5vbWJyZWRlcGlcdTAwZThjZXMiLCJjb2xvciI6IiM3QTdBN0EiLCJiYWNrZ3JvdW5kIjoiI0ZGRkZGRjAwIiwiY29sIjoiICIsIm1hcmdpbi1yaWdodCI6ImF1dG8iLCJpbl90aGVfcGhvdG8iOiJubyIsImRpcmVjdGlvbl9lbGVtZW50IjoidGV4dCIsInR5cGUiOiJ0ZXh0IiwidXJsIjoiIiwiZm9udC1zaXplIjoiMTNweCIsInVybF9wYXJhbSI6ImlkIiwidGV4dCI6InBpZWNlcyAiLCJpY29uIjp7InZhbHVlIjoiIiwibGlicmFyeSI6IiJ9LCJjb25kaXRpb24iOiIifSx7ImZpZWxkIjoic3VyZmFjZSIsImNvbG9yIjoiIzdBN0E3QSIsImJhY2tncm91bmQiOiIjRkZGRkZGMDAiLCJjb2wiOiIgIiwibWFyZ2luLXJpZ2h0IjoiYXV0byIsImluX3RoZV9waG90byI6Im5vIiwiZGlyZWN0aW9uX2VsZW1lbnQiOiJ0ZXh0IiwidHlwZSI6Im1pbGxpZXIiLCJ1cmwiOiIiLCJmb250LXNpemUiOiIxM3B4IiwidXJsX3BhcmFtIjoiaWQiLCJ0ZXh0IjoibTIiLCJpY29uIjp7InZhbHVlIjoiIiwibGlicmFyeSI6IiJ9LCJjb25kaXRpb24iOiIifSx7ImZpZWxkIjoidGFyaWYiLCJjb2xvciI6IiNFNjAwN0UiLCJiYWNrZ3JvdW5kIjoiI0ZGRkZGRjAwIiwiY29sIjoiICIsIm1hcmdpbi1sZWZ0IjoiYXV0byIsImluX3RoZV9waG90byI6Im5vIiwiZGlyZWN0aW9uX2VsZW1lbnQiOiJ0ZXh0IiwidHlwZSI6Im1pbGxpZXIiLCJ1cmwiOiIiLCJmb250LXNpemUiOiIxOHB4IiwidXJsX3BhcmFtIjoiaWQiLCJ0ZXh0IjoiXHUyMGFjIiwiaWNvbiI6eyJ2YWx1ZSI6IiIsImxpYnJhcnkiOiIifSwiY29uZGl0aW9uIjoiIn1dLCIyIjpbeyJmaWVsZCI6InZpbGxlIiwiY29sb3IiOiIjN0E3QTdBIiwiYmFja2dyb3VuZCI6IiIsImNvbCI6IiAiLCIgIjoiYXV0byIsImluX3RoZV9waG90byI6Im5vIiwiZGlyZWN0aW9uX2VsZW1lbnQiOiJ0ZXh0IiwidHlwZSI6InRleHQiLCJ1cmwiOiIiLCJmb250LXNpemUiOiIxNXB4IiwidXJsX3BhcmFtIjoiaWQiLCJ0ZXh0IjoiIiwiaWNvbiI6eyJ2YWx1ZSI6IiIsImxpYnJhcnkiOiIifSwiY29uZGl0aW9uIjoiIn1dLCIzIjpbeyJmaWVsZCI6ImV4Y2x1c2lmIiwiY29sb3IiOiIjRTYwMDdFIiwiYmFja2dyb3VuZCI6IiNGQUZBRkFGQSIsImNvbCI6IiAiLCIgIjoiYXV0byIsImluX3RoZV9waG90byI6InllcyIsImRpcmVjdGlvbl9lbGVtZW50IjoidG9wLWxlZnQiLCJ0eXBlIjoiY29uZGl0aW9uIiwidXJsIjoiIiwiZm9udC1zaXplIjoiMTVweCIsInVybF9wYXJhbSI6ImlkIiwidGV4dCI6IkVYQ0xVU0lWSVRcdTAwYzkiLCJpY29uIjp7InZhbHVlIjoiIiwibGlicmFyeSI6IiJ9LCJjb25kaXRpb24iOiIxIn1dLCI0IjpbeyJmaWVsZCI6Im5iX3Bob3RvIiwiY29sb3IiOiIjN0E3QTdBIiwiYmFja2dyb3VuZCI6IiIsImNvbCI6IiAiLCIgIjoiYXV0byIsImluX3RoZV9waG90byI6InllcyIsImRpcmVjdGlvbl9lbGVtZW50IjoiYm90dG9tLXJpZ2h0IiwidHlwZSI6InRleHQiLCJ1cmwiOiIiLCJmb250LXNpemUiOiIxNXB4IiwidXJsX3BhcmFtIjoiaWQiLCJ0ZXh0IjoiIiwiaWNvbiI6eyJ2YWx1ZSI6Imljb24gaWNvbi1waG90by1jYW1lcmEiLCJsaWJyYXJ5IjoiZWtpdGljb25zIn0sImNvbmRpdGlvbiI6IiJ9XSwiNSI6W3siZmllbGQiOiJwaG90byIsImNvbG9yIjoiI0ZGRkZGRiIsImJhY2tncm91bmQiOiIjRkZGRkZGIiwiY29sIjoiICIsIiAiOiJhdXRvIiwiaW5fdGhlX3Bob3RvIjoiIiwiZGlyZWN0aW9uX2VsZW1lbnQiOiJ0b3AtcmlnaHQiLCJ0eXBlIjoic2hhcmUiLCJ1cmwiOiJwb3N0X25hbWUiLCJmb250LXNpemUiOiIxNXB4IiwidXJsX3BhcmFtIjoiaWQiLCJ0ZXh0IjoiIiwiaWNvbiI6eyJ2YWx1ZSI6Imljb24gaWNvbi1zaGFyZS0xIiwibGlicmFyeSI6ImVraXRpY29ucyJ9LCJjb25kaXRpb24iOiIifSx7ImZpZWxkIjoicmVmZXJlbmNlIiwiY29sb3IiOiIjRkZGRkZGIiwiYmFja2dyb3VuZCI6IiNGRkZGRkYiLCJjb2wiOiIiLCIgIjoiYXV0byIsImluX3RoZV9waG90byI6Im5vIiwiZGlyZWN0aW9uX2VsZW1lbnQiOiJ0ZXh0IiwidHlwZSI6ImJ1dHRvbl9wYXJhbSIsInVybCI6Imh0dHBzOlwvXC9rb3l0Y2hhaW1tby5yZVwvY29udGFjdC1iaWVuc1wvP3R5cGU9YmllbnMiLCJmb250LXNpemUiOiIxMi41cHgiLCJ1cmxfcGFyYW0iOiJyZWZlcmVuY2UiLCJ0ZXh0IjoiQ29udGFjdGVyIHVuIGNvbW1lcmNpYWwiLCJpY29uIjp7InZhbHVlIjoiZmFzIGZhLXVzZXItdGllIiwibGlicmFyeSI6ImZhLXNvbGlkIn0sImNvbmRpdGlvbiI6IiJ9XSwiY291bnQiOjV9LCJzdGVwIjp0cnVlLCJla2l0X3Jlc3VsdGF0IjoieWVzIiwiY2FyZGJvZHkiOiIiLCJjYXJkIjoiIiwiY2FyZGltYWdlIjoiIiwiZWtpdF9zZWFyY2hfYnRuIjoiIiwic2VhcmNoX3RleHQiOiIiLCJoZWFkaW5nX3RleHQiOiJWb3VzIHNvdWhhaXRleiBhY2hldGV6IHVuIGJpZW4gPyIsInVybCI6IiIsInJlZGlyZWN0X2NvbnRhY3QiOiJodHRwczpcL1wva295dGNoYWltbW8ucmVcL2NvbnRhY3RcLz95b3VyLXJlcXVlc3Q9YWNoYXRcL3ZlbnRlXC9sb2NhdGlvbiIsImtleV9tYXAiOiJBSXphU3lBdlgwSFlvQ3ZWTUZjekRnTGxBX25VZC1MREVBNkRwS1kiLCJBUElfVVJJIjoiaHR0cHM6XC9cL2tveXRjaGFpbW1vLnJlXC93cC1qc29uXC93cFwvdjJcL2RhdGE/dHlwZT1iaWVucyIsIkF1dGhvcml6YXRpb24iOiJCZWFyZXIgZXlKaGJHY2lPaUpJVXpJMU5pSXNJblI1Y0NJNklrcFhWQ0o5LmV5SnpkV0lpT2pFc0ltNWhiV1VpT2lKcmIzbDBZMmhoYVcxdGIwQm5iV0ZwYkM1amIyMGlMQ0pwWVhRaU9qRTJOVEl3T0RFeU1qQXNJbVY0Y0NJNk1UZ3dPVGMyTVRJeU1IMC5VVzNMY2UzMWs4LTUzSmI3X2hibUdLem5qUW1ZRndKdkhFXzlFRldmSG9VIiwiVVJMX1BPU1QiOiJodHRwczpcL1wva295dGNoYWltbW8ucmVcL2luZGV4LnBocFwvYmllbnNcLyIsImNvbG9yIjoiI0U2MDA3RSIsInZpc2libGUiOiJ5ZXMiLCJ2aXNpYmxlX3NlYXJjaF9tYXAiOiIiLCJla2l0X3diXzM5NzZfZm9udCI6Im5vcm1hdGljYSByZWd1bGFyIiwiZWtpdF9tZW51X2J1dHRvbl9jb2xvcl9jcml0ZXJlIjoiI0U2MDA3RSIsImVraXRfY3JpdGVyZV9idG4iOiJ5ZXMiLCJla2l0X21lbnVfYWN0aXZlIjoieWVzIiwiZWtpdF9tZW51X2J1dHRvbl9jb2xvcl9hbGVydGUiOiIjRTYwMDdFIiwiZWtpdF9hbGVydGVfYnRuIjoieWVzIiwiZWtpdF9tYXBfYnRuIjoieWVzIiwiY29sX2hlYWRpbmdfdGV4dCI6IjEyIiwiY29sX3Bvc3QiOiJjb2wtMyIsImVraXRfZHluYW1pY190ZXh0IjoieWVzIiwiZmlyc3RfbG9hZCI6InllcyIsInBhZ2luYXRvciI6InllcyJ9LHsiaWQiOiI0NTkiLCJpZF9hY3RpdmUiOiJodHRwczpcL1wva295dGNoYWltbW8ucmVcL25vcy1wcm9ncmFtbWVzXC8iLCJ0eXBlIjpbeyJ0eXBlIjoiYnV0dG9uIiwiY29uZGl0aW9uIjoiIiwic3RlcCI6IiIsInN5bWJvbGUiOiIiLCJuYW1lIjoic3RhdHV0IiwiY29sIjoiY29sLTUiLCJjb2xfbW9iaWxlIjoiY29sLTMiLCJjcml0ZXJlIjoieWVzIiwibGFiZWwiOiJFbiBjb3VycyAiLCJ2YWx1ZSI6W3sidmFsdWUiOiJlbmNvdXJzIiwibGFiZWwiOiJFbiBjb3VycyIsImVraXRfdGFiX2FjdGl2ZSI6InllcyIsImljb24iOnsidmFsdWUiOiIiLCJsaWJyYXJ5IjoiIn0sImNvbmRpdGlvbiI6IiJ9XX1dLCJwb3N0Ijp7IjEiOlt7ImZpZWxkIjoiZXhjbHVzaWYiLCJjb2xvciI6IiNGRkZGRkYiLCJiYWNrZ3JvdW5kIjoiI0U2MDA3RSIsImNvbCI6ImNvbC0xMiIsIiI6ImF1dG8iLCJpbl90aGVfcGhvdG8iOiJubyIsImRpcmVjdGlvbl9lbGVtZW50IjoidGV4dCIsInR5cGUiOiJ0ZXh0IiwidXJsIjoiIiwiZm9udC1zaXplIjoiMTJweCIsInVybF9wYXJhbSI6ImlkIiwidGV4dCI6IiIsImljb24iOnsidmFsdWUiOiIiLCJsaWJyYXJ5IjoiIn0sImNvbmRpdGlvbiI6IiJ9XSwiMiI6W3siZmllbGQiOiJwcm9fcmVzIiwiY29sb3IiOiIjN0E5QTAxRTAiLCJiYWNrZ3JvdW5kIjoiI0ZGRkZGRiIsImNvbCI6ImNvbC0xMiIsIiI6ImF1dG8iLCJpbl90aGVfcGhvdG8iOiJubyIsImRpcmVjdGlvbl9lbGVtZW50IjoidGV4dCIsInR5cGUiOiJjb25kaXRpb24iLCJ1cmwiOiIiLCJmb250LXNpemUiOiIxMnB4IiwidXJsX3BhcmFtIjoiaWQiLCJ0ZXh0IjoiUlx1MDBlOXNpZGVudGllbCIsImljb24iOnsidmFsdWUiOiJmYXMgZmEtaG9tZSIsImxpYnJhcnkiOiJmYS1zb2xpZCJ9LCJjb25kaXRpb24iOiJyXHUwMGU5c2lkZW50aWVsIn1dLCIzIjpbeyJmaWVsZCI6InByb19yZXMiLCJjb2xvciI6IiNFNjAwN0UiLCJiYWNrZ3JvdW5kIjoiI0ZGRkZGRiIsImNvbCI6ImNvbC0xMiIsIiI6ImF1dG8iLCJpbl90aGVfcGhvdG8iOiJubyIsImRpcmVjdGlvbl9lbGVtZW50IjoidGV4dCIsInR5cGUiOiJjb25kaXRpb24iLCJ1cmwiOiIiLCJmb250LXNpemUiOiIxMnB4IiwidXJsX3BhcmFtIjoiaWQiLCJ0ZXh0IjoiUHJvIiwiaWNvbiI6eyJ2YWx1ZSI6ImZhciBmYS1idWlsZGluZyIsImxpYnJhcnkiOiJmYS1yZWd1bGFyIn0sImNvbmRpdGlvbiI6InByb2Zlc3Npb25uZWwifV0sIjQiOlt7ImZpZWxkIjoidGl0cmUiLCJjb2xvciI6IiM1NDU5NUYiLCJiYWNrZ3JvdW5kIjoiIiwiY29sIjoiY29sLTEyIiwiIjoiYXV0byIsImluX3RoZV9waG90byI6Im5vIiwiZGlyZWN0aW9uX2VsZW1lbnQiOiJ0ZXh0IiwidHlwZSI6InRleHQiLCJ1cmwiOiIiLCJmb250LXNpemUiOiIxMnB4IiwidXJsX3BhcmFtIjoiaWQiLCJ0ZXh0IjoiIiwiaWNvbiI6eyJ2YWx1ZSI6IiIsImxpYnJhcnkiOiIifSwiY29uZGl0aW9uIjoiIn1dLCI1IjpbeyJmaWVsZCI6InZpbGxlIiwiY29sb3IiOiIjNTQ1OTVGIiwiYmFja2dyb3VuZCI6IiIsImNvbCI6ImNvbC0xMiIsIiI6ImF1dG8iLCJpbl90aGVfcGhvdG8iOiJubyIsImRpcmVjdGlvbl9lbGVtZW50IjoidGV4dCIsInR5cGUiOiJ0ZXh0IiwidXJsIjoiIiwiZm9udC1zaXplIjoiMTJweCIsInVybF9wYXJhbSI6ImlkIiwidGV4dCI6IiIsImljb24iOnsidmFsdWUiOiJmYXIgZmEtYWRkcmVzcy1jYXJkIiwibGlicmFyeSI6ImZhLXJlZ3VsYXIifSwiY29uZGl0aW9uIjoiIn1dLCI2IjpbeyJmaWVsZCI6ImJpZW5fdHlwZSIsImNvbG9yIjoiIzU0NTk1RiIsImJhY2tncm91bmQiOiIiLCJjb2wiOiJjb2wtMTIiLCIiOiJhdXRvIiwiaW5fdGhlX3Bob3RvIjoibm8iLCJkaXJlY3Rpb25fZWxlbWVudCI6InRleHQiLCJ0eXBlIjoidGV4dCIsInVybCI6IiIsImZvbnQtc2l6ZSI6IjEycHgiLCJ1cmxfcGFyYW0iOiJpZCIsInRleHQiOiIiLCJpY29uIjp7InZhbHVlIjoiZmFzIGZhLWhvbWUiLCJsaWJyYXJ5IjoiZmEtc29saWQifSwiY29uZGl0aW9uIjoiIn1dLCI3IjpbeyJmaWVsZCI6InN1cmZhY2UiLCJjb2xvciI6IiM1NDU5NUYiLCJiYWNrZ3JvdW5kIjoiIiwiY29sIjoiY29sLTEyIiwiIjoiYXV0byIsImluX3RoZV9waG90byI6Im5vIiwiZGlyZWN0aW9uX2VsZW1lbnQiOiJ0ZXh0IiwidHlwZSI6InRleHQiLCJ1cmwiOiIiLCJmb250LXNpemUiOiIxMnB4IiwidXJsX3BhcmFtIjoiaWQiLCJ0ZXh0IjoibTIiLCJpY29uIjp7InZhbHVlIjoiZmFyIGZhLXBhcGVyLXBsYW5lIiwibGlicmFyeSI6ImZhLXJlZ3VsYXIifSwiY29uZGl0aW9uIjoiIn1dLCI4IjpbeyJmaWVsZCI6InBob3RvIiwiY29sb3IiOiIjRTYwMDdFIiwiYmFja2dyb3VuZCI6IiNGRkZGRkYiLCJjb2wiOiJjb2wtNiIsIiI6ImF1dG8iLCJpbl90aGVfcGhvdG8iOiJubyIsImRpcmVjdGlvbl9lbGVtZW50IjoidGV4dCIsInR5cGUiOiJwaG90b3MiLCJ1cmwiOiJwb3N0X25hbWUiLCJmb250LXNpemUiOiIxMnB4IiwidXJsX3BhcmFtIjoiaWQiLCJ0ZXh0IjoiIiwiaWNvbiI6eyJ2YWx1ZSI6IiIsImxpYnJhcnkiOiIifSwiY29uZGl0aW9uIjoiIn1dLCI5IjpbeyJmaWVsZCI6ImlkIiwiY29sb3IiOiIjRTYwMDdFIiwiYmFja2dyb3VuZCI6IiNGRkZGRkYiLCJjb2wiOiIgIiwiIjoiYXV0byIsImluX3RoZV9waG90byI6Im5vIiwiZGlyZWN0aW9uX2VsZW1lbnQiOiJ0ZXh0IiwidHlwZSI6ImJ1dHRvbiIsInVybCI6InBvc3RfbmFtZSIsImZvbnQtc2l6ZSI6IjEycHgiLCJ1cmxfcGFyYW0iOiJpZCIsInRleHQiOiJEXHUwMGU5Y291dnJpciBwcm9ncmFtbWVzIiwiaWNvbiI6eyJ2YWx1ZSI6ImZhcyBmYS1jaGV2cm9uLXJpZ2h0IiwibGlicmFyeSI6ImZhLXNvbGlkIn0sImNvbmRpdGlvbiI6IiJ9XSwiY291bnQiOjl9LCJzdGVwIjp0cnVlLCJla2l0X3Jlc3VsdGF0IjoiIiwiY2FyZGJvZHkiOiJ7XHJcbiAgICBcInBvc2l0aW9uXCI6IFwiYWJzb2x1dGVcIixcclxuICAgIFwicGFkZGluZ1wiOiBcIjE1cHggMTBweFwiLFxyXG4gICAgXCJtYXhXaWR0aFwiOiBcIjIwMHB4XCIsXHJcbiAgICBcInRvcFwiOiBcIjUwJVwiLFxyXG4gICAgXCJvcGFjaXR5XCI6XCIwLjg3XCIsXHJcblxyXG4gICAgXCJ3aWR0aFwiOiBcIjUwJVwiLFxyXG4gICAgXCJoZWlnaHRcIjogXCJhdXRvXCIsXHJcbiAgICBcInRyYW5zZm9ybVwiOiBcInRyYW5zbGF0ZVkoLTUwJSlcIixcclxuICAgICBcIi13ZWJraXQtdHJhbnNmb3JtXCI6IFwidHJhbnNsYXRlWSgtNTAgJSlcIixcclxuICAgIFwiLW1vei10cmFuc2Zvcm1cIjogXCIgdHJhbnNsYXRlWSgtNTAgJSlcIixcclxuICAgIFwiLW8tdHJhbnNmb3JtXCI6IFwidHJhbnNsYXRlWSgtNTAgJSlcIixcclxuICAgIFwiLW1zLXRyYW5zZm9ybVwiOiBcInRyYW5zbGF0ZVkoLTUwICUpXCIsXHJcbiAgICBcImJhY2tncm91bmRcIjogXCIjRkFGQUZBXCIsXHJcbiAgICBcImNvbG9yXCI6IFwiI0ZBRkFGQVwiLFxyXG4gICAgXCJ0ZXh0QWxpZ25cIjogXCJjZW50ZXJcIixcclxuICAgIFwiYm9yZGVyXCI6IFwic29saWQgM3B4ICNGRkZcIixcclxuICAgIFwiYm9yZGVyV2lkdGhcIjogXCIwcHggMHB4IDNweCAwcHggXCIsXHJcbiAgICBcImJvcmRlclN0eWxlXCI6IFwic29saWRcIixcclxuXHJcbiAgICBcImJvcmRlckNvbG9yXCI6XCJcIixcclxuICAgIFwiYm9yZGVyUmFkaXVzXCI6IFwiMHB4IDBweCAwcHggMTRweFwiLFxyXG4gICAgXCJib3hTaGFkb3dcIjogXCIgMCA0cHggOHB4IDAgcmdiYSgwLCAwLCAwLCAwLjIpLCAwIDZweCAyMHB4IDAgcmdiYSgwLCAwLCAwLCAwLjE5KVwiXHJcbiAgfSIsImNhcmQiOiJ7XHJcbiAgICAgICAgICAgIFwibWFyZ2luXCI6IFwiMHB4IDEwcHggLTE1cHggLTIwcHhcIixcclxuICAgICAgICAgICAgXCJib3JkZXJXaWR0aFwiOiBcIjBweCAwcHggM3B4IDBweCBcIixcclxuICAgICAgICAgICAgXCJsZWZ0XCI6XCIwcHhcIixcclxuICAgICAgICAgICAgXCJyaWdodFwiOlwiMHB4XCIsXHJcbiAgICBcImJvcmRlclJhZGl1c1wiOiBcIjBweCAwcHggMHB4IDBweFwiXHJcblxyXG4gICAgICAgICAgfSIsImNhcmRpbWFnZSI6IntcclxuICAgICAgIFwid2lkdGhcIjogXCI0MDBweFwiLFxyXG4gICAgICBcImhlaWdodFwiOiBcIjI1MHB4XCJcclxuICAgICAgICAgIH0iLCJla2l0X3NlYXJjaF9idG4iOiIiLCJzZWFyY2hfdGV4dCI6IlZvaXIgbGVzIGFubm9uY2VzICIsImhlYWRpbmdfdGV4dCI6IiIsInVybCI6Imh0dHBzOlwvXC9rb3l0Y2hhaW1tby5yZVwvaW5kZXgucGhwXC9zZWFyY2hcLyIsInJlZGlyZWN0X2NvbnRhY3QiOiIiLCJrZXlfbWFwIjoiQUl6YVN5QXZYMEhZb0N2Vk1GY3pEZ0xsQV9uVWQtTERFQTZEcEtZIiwiQVBJX1VSSSI6Imh0dHBzOlwvXC9rb3l0Y2hhaW1tby5yZVwvd3AtanNvblwvd3BcL3YyXC9kYXRhP3R5cGU9cHJvZ3JhbW1lcyIsIkF1dGhvcml6YXRpb24iOiJCZWFyZXIgZXlKaGJHY2lPaUpJVXpJMU5pSXNJblI1Y0NJNklrcFhWQ0o5LmV5SnpkV0lpT2pFc0ltNWhiV1VpT2lKcmIzbDBZMmhoYVcxdGIwQm5iV0ZwYkM1amIyMGlMQ0pwWVhRaU9qRTJOVEl3TnpVMU5EY3NJbVY0Y0NJNk1UZ3dPVGMxTlRVME4zMC5lY0xUM0VYcTI5bzdWdlQxVWhDSjk5dGZ1aUlibHV3Z0lNNlg3cmFCd29VIiwiVVJMX1BPU1QiOiIiLCJjb2xvciI6IiNFNjAwN0UiLCJ2aXNpYmxlIjoieWVzIiwidmlzaWJsZV9zZWFyY2hfbWFwIjoiIiwiZWtpdF93Yl8zOTc2X2ZvbnQiOiJub3JtYXRpY2EgcmVndWxhciIsImVraXRfbWVudV9idXR0b25fY29sb3JfY3JpdGVyZSI6IiMwMDAiLCJla2l0X2NyaXRlcmVfYnRuIjoiIiwiZWtpdF9tZW51X2FjdGl2ZSI6IiIsImVraXRfbWVudV9idXR0b25fY29sb3JfYWxlcnRlIjoiIzAwMCIsImVraXRfYWxlcnRlX2J0biI6IiIsImVraXRfbWFwX2J0biI6InllcyIsImNvbF9oZWFkaW5nX3RleHQiOiI2IiwiY29sX3Bvc3QiOiJjb2wtMTIgY29sLW1kLTYiLCJla2l0X2R5bmFtaWNfdGV4dCI6IiIsImZpcnN0X2xvYWQiOiJ5ZXMiLCJwYWdpbmF0b3IiOiIifSx7ImlkIjoiNDAxIiwiaWRfYWN0aXZlIjoiaHR0cHM6XC9cL2tveXRjaGFpbW1vLnJlXC9jb250YWN0LWJpZW5zXC8iLCJ0eXBlIjpbeyJ0eXBlIjoidGV4dCIsImNvbmRpdGlvbiI6IiIsInN0ZXAiOiIiLCJzeW1ib2xlIjoiIiwibmFtZSI6InJlZmVyZW5jZSIsImNvbCI6ImNvbC0zIiwiY29sX21vYmlsZSI6ImNvbC0zIiwiY3JpdGVyZSI6InllcyIsImxhYmVsIjoicmVmZXJlbmNlIiwidmFsdWUiOm51bGx9XSwicG9zdCI6eyIxIjpbeyJmaWVsZCI6InBob3RvIiwiY29sb3IiOiIjNTEwOTA5IiwiYmFja2dyb3VuZCI6IiIsImNvbCI6ImNvbC0zIiwiIjoiYXV0byIsImluX3RoZV9waG90byI6Im5vIiwiZGlyZWN0aW9uX2VsZW1lbnQiOiJ0ZXh0IiwidHlwZSI6InBob3RvcyIsInVybCI6InBvc3RfbmFtZSIsImZvbnQtc2l6ZSI6IjEycHgiLCJ1cmxfcGFyYW0iOiJpZCIsInRleHQiOiIiLCJpY29uIjp7InZhbHVlIjoiIiwibGlicmFyeSI6IiJ9LCJjb25kaXRpb24iOiIifSx7ImZpZWxkIjoiYmllbl90eXBlIiwiY29sb3IiOiIjNTQ1OTVGIiwiYmFja2dyb3VuZCI6IiIsImNvbCI6IiAiLCIgIjoiYXV0byIsImluX3RoZV9waG90byI6Im5vIiwiZGlyZWN0aW9uX2VsZW1lbnQiOiJ0ZXh0IiwidHlwZSI6InRleHQiLCJ1cmwiOiIiLCJmb250LXNpemUiOiIxNHB4IiwidXJsX3BhcmFtIjoiaWQiLCJ0ZXh0IjoiLSIsImljb24iOnsidmFsdWUiOiIiLCJsaWJyYXJ5IjoiIn0sImNvbmRpdGlvbiI6IiJ9LHsiZmllbGQiOiJOb21icmVkZXBpXHUwMGU4Y2VzIiwiY29sb3IiOiIjN0E3QTdBIiwiYmFja2dyb3VuZCI6IiIsImNvbCI6IiAiLCJtYXJnaW4tcmlnaHQiOiJhdXRvIiwiaW5fdGhlX3Bob3RvIjoibm8iLCJkaXJlY3Rpb25fZWxlbWVudCI6InRleHQiLCJ0eXBlIjoidGV4dCIsInVybCI6IiIsImZvbnQtc2l6ZSI6IjEzcHgiLCJ1cmxfcGFyYW0iOiJpZCIsInRleHQiOiJwaWVjZXMgIiwiaWNvbiI6eyJ2YWx1ZSI6IiIsImxpYnJhcnkiOiIifSwiY29uZGl0aW9uIjoiIn0seyJmaWVsZCI6InN1cmZhY2UiLCJjb2xvciI6IiM3QTdBN0EiLCJiYWNrZ3JvdW5kIjoiIiwiY29sIjoiICIsIm1hcmdpbi1yaWdodCI6ImF1dG8iLCJpbl90aGVfcGhvdG8iOiJubyIsImRpcmVjdGlvbl9lbGVtZW50IjoidGV4dCIsInR5cGUiOiJtaWxsaWVyIiwidXJsIjoiIiwiZm9udC1zaXplIjoiMTNweCIsInVybF9wYXJhbSI6ImlkIiwidGV4dCI6Im0yIiwiaWNvbiI6eyJ2YWx1ZSI6IiIsImxpYnJhcnkiOiIifSwiY29uZGl0aW9uIjoiIn0seyJmaWVsZCI6InRhcmlmIiwiY29sb3IiOiIjRTYwMDdFIiwiYmFja2dyb3VuZCI6IiIsImNvbCI6IiAiLCJtYXJnaW4tbGVmdCI6ImF1dG8iLCJpbl90aGVfcGhvdG8iOiJubyIsImRpcmVjdGlvbl9lbGVtZW50IjoidGV4dCIsInR5cGUiOiJtaWxsaWVyIiwidXJsIjoiIiwiZm9udC1zaXplIjoiMTVweCIsInVybF9wYXJhbSI6ImlkIiwidGV4dCI6Ilx1MjBhYyIsImljb24iOnsidmFsdWUiOiIiLCJsaWJyYXJ5IjoiIn0sImNvbmRpdGlvbiI6IiJ9XSwiMiI6W3siZmllbGQiOiJ2aWxsZSIsImNvbG9yIjoiIzdBN0E3QSIsImJhY2tncm91bmQiOiIiLCJjb2wiOiIgIiwiICI6ImF1dG8iLCJpbl90aGVfcGhvdG8iOiJubyIsImRpcmVjdGlvbl9lbGVtZW50IjoidGV4dCIsInR5cGUiOiJ0ZXh0IiwidXJsIjoiIiwiZm9udC1zaXplIjoiMTVweCIsInVybF9wYXJhbSI6ImlkIiwidGV4dCI6IiIsImljb24iOnsidmFsdWUiOiIiLCJsaWJyYXJ5IjoiIn0sImNvbmRpdGlvbiI6IiJ9XSwiY291bnQiOjJ9LCJzdGVwIjp0cnVlLCJla2l0X3Jlc3VsdGF0IjoiIiwiY2FyZGJvZHkiOiIiLCJjYXJkIjoiIiwiY2FyZGltYWdlIjoiIiwiZWtpdF9zZWFyY2hfYnRuIjoiIiwic2VhcmNoX3RleHQiOiJWb2lyIGxlcyBhbm5vbmNlcyIsImhlYWRpbmdfdGV4dCI6IiIsInVybCI6Imh0dHBzOlwvXC9rb3l0Y2hhaW1tby5yZVwvaW5kZXgucGhwXC9zZWFyY2hcLyIsInJlZGlyZWN0X2NvbnRhY3QiOiIiLCJrZXlfbWFwIjoiIiwiQVBJX1VSSSI6Imh0dHBzOlwvXC9rb3l0Y2hhaW1tby5yZVwvd3AtanNvblwvd3BcL3YyXC9kYXRhP3R5cGU9YmllbnMiLCJBdXRob3JpemF0aW9uIjoiQmVhcmVyIGV5SmhiR2NpT2lKSVV6STFOaUlzSW5SNWNDSTZJa3BYVkNKOS5leUp6ZFdJaU9qRXNJbTVoYldVaU9pSnJiM2wwWTJoaGFXMXRiMEJuYldGcGJDNWpiMjBpTENKcFlYUWlPakUyTlRJd09ERXlNakFzSW1WNGNDSTZNVGd3T1RjMk1USXlNSDAuVVczTGNlMzFrOC01M0piN19oYm1HS3pualFtWUZ3SnZIRV85RUZXZkhvVSIsIlVSTF9QT1NUIjoiaHR0cHM6XC9cL2tveXRjaGFpbW1vLnJlXC9pbmRleC5waHBcL2JpZW5zXC8iLCJjb2xvciI6IiNFNjAwN0UiLCJ2aXNpYmxlIjoieWVzIiwidmlzaWJsZV9zZWFyY2hfbWFwIjoiIiwiZWtpdF93Yl8zOTc2X2ZvbnQiOiJub3JtYXRpY2EgcmVndWxhciIsImVraXRfbWVudV9idXR0b25fY29sb3JfY3JpdGVyZSI6IiNFNjAwN0UiLCJla2l0X2NyaXRlcmVfYnRuIjoiIiwiZWtpdF9tZW51X2FjdGl2ZSI6IiIsImVraXRfbWVudV9idXR0b25fY29sb3JfYWxlcnRlIjoiI0U2MDA3RSIsImVraXRfYWxlcnRlX2J0biI6InllcyIsImVraXRfbWFwX2J0biI6IiIsImNvbF9oZWFkaW5nX3RleHQiOiIxMiAiLCJjb2xfcG9zdCI6ImNvbC0xMCIsImVraXRfZHluYW1pY190ZXh0IjoiIiwiZmlyc3RfbG9hZCI6InllcyIsInBhZ2luYXRvciI6IiJ9LHsiaWQiOiI0ODAiLCJpZF9hY3RpdmUiOiJodHRwczpcL1wva295dGNoYWltbW8ucmVcL2NvbnRhY3QtcHJvZ3JhbW1lc1wvIiwidHlwZSI6W3sidHlwZSI6InRleHQiLCJjb25kaXRpb24iOiIiLCJzdGVwIjoiIiwic3ltYm9sZSI6IiIsIm5hbWUiOiJyZWZlcmVuY2UiLCJjb2wiOiJjb2wtNSIsImNvbF9tb2JpbGUiOiJjb2wtMyIsImNyaXRlcmUiOiJ5ZXMiLCJsYWJlbCI6InJlZmVyZW5jZSIsInZhbHVlIjpudWxsfV0sInBvc3QiOnsiMSI6W3siZmllbGQiOiJwcm9fcmVzIiwiY29sb3IiOiIjN0E5QTAxRTAiLCJiYWNrZ3JvdW5kIjoiIiwiY29sIjoiY29sLTEyIiwiIjoiYXV0byIsImluX3RoZV9waG90byI6Im5vIiwiZGlyZWN0aW9uX2VsZW1lbnQiOiJ0ZXh0IiwidHlwZSI6ImNvbmRpdGlvbiIsInVybCI6IiIsImZvbnQtc2l6ZSI6IjEycHgiLCJ1cmxfcGFyYW0iOiJpZCIsInRleHQiOiJSXHUwMGU5c2lkZW50aWVsIiwiaWNvbiI6eyJ2YWx1ZSI6ImZhcyBmYS1ob21lIiwibGlicmFyeSI6ImZhLXNvbGlkIn0sImNvbmRpdGlvbiI6InJcdTAwZTlzaWRlbnRpZWwifV0sIjIiOlt7ImZpZWxkIjoicHJvX3JlcyIsImNvbG9yIjoiI0U2MDA3RSIsImJhY2tncm91bmQiOiIiLCJjb2wiOiJjb2wtMTIiLCIiOiJhdXRvIiwiaW5fdGhlX3Bob3RvIjoibm8iLCJkaXJlY3Rpb25fZWxlbWVudCI6InRleHQiLCJ0eXBlIjoiY29uZGl0aW9uIiwidXJsIjoiIiwiZm9udC1zaXplIjoiMTJweCIsInVybF9wYXJhbSI6ImlkIiwidGV4dCI6IlBybyIsImljb24iOnsidmFsdWUiOiJmYXIgZmEtYnVpbGRpbmciLCJsaWJyYXJ5IjoiZmEtcmVndWxhciJ9LCJjb25kaXRpb24iOiJwcm9mZXNzaW9ubmVsIn1dLCIzIjpbeyJmaWVsZCI6InRpdHJlIiwiY29sb3IiOiIjNTQ1OTVGIiwiYmFja2dyb3VuZCI6IiIsImNvbCI6ImNvbC0xMiIsIiI6ImF1dG8iLCJpbl90aGVfcGhvdG8iOiJubyIsImRpcmVjdGlvbl9lbGVtZW50IjoidGV4dCIsInR5cGUiOiJ0ZXh0IiwidXJsIjoiIiwiZm9udC1zaXplIjoiMTJweCIsInVybF9wYXJhbSI6ImlkIiwidGV4dCI6IiIsImljb24iOnsidmFsdWUiOiIiLCJsaWJyYXJ5IjoiIn0sImNvbmRpdGlvbiI6IiJ9XSwiNCI6W3siZmllbGQiOiJjb2RlX3Bvc3RhbCIsImNvbG9yIjoiIzU0NTk1RiIsImJhY2tncm91bmQiOiIiLCJjb2wiOiJjb2wtMTIiLCIiOiJhdXRvIiwiaW5fdGhlX3Bob3RvIjoibm8iLCJkaXJlY3Rpb25fZWxlbWVudCI6InRleHQiLCJ0eXBlIjoidGV4dCIsInVybCI6IiIsImZvbnQtc2l6ZSI6IjEycHgiLCJ1cmxfcGFyYW0iOiJpZCIsInRleHQiOiIiLCJpY29uIjp7InZhbHVlIjoiZmFyIGZhLWFkZHJlc3MtY2FyZCIsImxpYnJhcnkiOiJmYS1yZWd1bGFyIn0sImNvbmRpdGlvbiI6IiJ9XSwiNSI6W3siZmllbGQiOiJiaWVuX3R5cGUiLCJjb2xvciI6IiM1NDU5NUYiLCJiYWNrZ3JvdW5kIjoiIiwiY29sIjoiY29sLTEyIiwiIjoiYXV0byIsImluX3RoZV9waG90byI6Im5vIiwiZGlyZWN0aW9uX2VsZW1lbnQiOiJ0ZXh0IiwidHlwZSI6InRleHQiLCJ1cmwiOiIiLCJmb250LXNpemUiOiIxMnB4IiwidXJsX3BhcmFtIjoiaWQiLCJ0ZXh0IjoiIiwiaWNvbiI6eyJ2YWx1ZSI6ImZhcyBmYS1ob21lIiwibGlicmFyeSI6ImZhLXNvbGlkIn0sImNvbmRpdGlvbiI6IiJ9XSwiNiI6W3siZmllbGQiOiJzdXJmYWNlIiwiY29sb3IiOiIjNTQ1OTVGIiwiYmFja2dyb3VuZCI6IiIsImNvbCI6ImNvbC0xMiIsIiI6ImF1dG8iLCJpbl90aGVfcGhvdG8iOiJubyIsImRpcmVjdGlvbl9lbGVtZW50IjoidGV4dCIsInR5cGUiOiJ0ZXh0IiwidXJsIjoiIiwiZm9udC1zaXplIjoiMTJweCIsInVybF9wYXJhbSI6ImlkIiwidGV4dCI6Im0yIiwiaWNvbiI6eyJ2YWx1ZSI6ImZhciBmYS1wYXBlci1wbGFuZSIsImxpYnJhcnkiOiJmYS1yZWd1bGFyIn0sImNvbmRpdGlvbiI6IiJ9XSwiNyI6W3siZmllbGQiOiJwaG90byIsImNvbG9yIjoiI0U2MDA3RSIsImJhY2tncm91bmQiOiIiLCJjb2wiOiJjb2wtNiIsIiI6ImF1dG8iLCJpbl90aGVfcGhvdG8iOiJubyIsImRpcmVjdGlvbl9lbGVtZW50IjoidGV4dCIsInR5cGUiOiJwaG90b3MiLCJ1cmwiOiJwb3N0X25hbWUiLCJmb250LXNpemUiOiIxMnB4IiwidXJsX3BhcmFtIjoiaWQiLCJ0ZXh0IjoiIiwiaWNvbiI6eyJ2YWx1ZSI6IiIsImxpYnJhcnkiOiIifSwiY29uZGl0aW9uIjoiIn1dLCI4IjpbeyJmaWVsZCI6ImlkIiwiY29sb3IiOiIjRTYwMDdFIiwiYmFja2dyb3VuZCI6IiIsImNvbCI6IiAiLCIiOiJhdXRvIiwiaW5fdGhlX3Bob3RvIjoibm8iLCJkaXJlY3Rpb25fZWxlbWVudCI6InRleHQiLCJ0eXBlIjoiYnV0dG9uIiwidXJsIjoicG9zdF9uYW1lIiwiZm9udC1zaXplIjoiMTJweCIsInVybF9wYXJhbSI6InRpdHJlIiwidGV4dCI6IiIsImljb24iOnsidmFsdWUiOiJmYXMgZmEtY2hldnJvbi1yaWdodCIsImxpYnJhcnkiOiJmYS1zb2xpZCJ9LCJjb25kaXRpb24iOiIifV0sImNvdW50Ijo4fSwic3RlcCI6dHJ1ZSwiZWtpdF9yZXN1bHRhdCI6IiIsImNhcmRib2R5Ijoie1xyXG4gICAgXCJwb3NpdGlvblwiOiBcImFic29sdXRlXCIsXHJcbiAgICBcInBhZGRpbmdcIjogXCIxNXB4IDEwcHhcIixcclxuICAgIFwibWF4V2lkdGhcIjogXCIyMDBweFwiLFxyXG4gICAgXCJ0b3BcIjogXCI1MCVcIixcclxuICAgIFwib3BhY2l0eVwiOlwiMC44N1wiLFxyXG5cclxuICAgIFwid2lkdGhcIjogXCI1MCVcIixcclxuICAgIFwiaGVpZ2h0XCI6IFwiYXV0b1wiLFxyXG4gICAgXCJ0cmFuc2Zvcm1cIjogXCJ0cmFuc2xhdGVZKC01MCUpXCIsXHJcbiAgICAgXCItd2Via2l0LXRyYW5zZm9ybVwiOiBcInRyYW5zbGF0ZVkoLTUwICUpXCIsXHJcbiAgICBcIi1tb3otdHJhbnNmb3JtXCI6IFwiIHRyYW5zbGF0ZVkoLTUwICUpXCIsXHJcbiAgICBcIi1vLXRyYW5zZm9ybVwiOiBcInRyYW5zbGF0ZVkoLTUwICUpXCIsXHJcbiAgICBcIi1tcy10cmFuc2Zvcm1cIjogXCJ0cmFuc2xhdGVZKC01MCAlKVwiLFxyXG4gICAgXCJiYWNrZ3JvdW5kXCI6IFwiI0ZBRkFGQVwiLFxyXG4gICAgXCJjb2xvclwiOiBcIiNGQUZBRkFcIixcclxuICAgIFwidGV4dEFsaWduXCI6IFwiY2VudGVyXCIsXHJcbiAgICBcImJvcmRlclwiOiBcInNvbGlkIDNweCAjRkZGXCIsXHJcbiAgICBcImJvcmRlcldpZHRoXCI6IFwiMHB4IDBweCAzcHggMHB4IFwiLFxyXG4gICAgXCJib3JkZXJTdHlsZVwiOiBcInNvbGlkXCIsXHJcblxyXG4gICAgXCJib3JkZXJDb2xvclwiOlwiXCIsXHJcbiAgICBcImJvcmRlclJhZGl1c1wiOiBcIjBweCAwcHggMHB4IDE0cHhcIixcclxuICAgIFwiYm94U2hhZG93XCI6IFwiIDAgNHB4IDhweCAwIHJnYmEoMCwgMCwgMCwgMC4yKSwgMCA2cHggMjBweCAwIHJnYmEoMCwgMCwgMCwgMC4xOSlcIlxyXG4gIH0iLCJjYXJkIjoie1xyXG4gICAgICAgICAgICBcIm1hcmdpblwiOiBcIjBweCAxMHB4IC0xNXB4IC0yMHB4XCIsXHJcbiAgICAgICAgICAgIFwiYm9yZGVyV2lkdGhcIjogXCIwcHggMHB4IDNweCAwcHggXCIsXHJcbiAgICAgICAgICAgIFwibGVmdFwiOlwiMHB4XCIsXHJcbiAgICAgICAgICAgIFwicmlnaHRcIjpcIjBweFwiLFxyXG4gICAgXCJib3JkZXJSYWRpdXNcIjogXCIwcHggMHB4IDBweCAwcHhcIlxyXG5cclxuICAgICAgICAgIH0iLCJjYXJkaW1hZ2UiOiJ7XHJcbiAgICAgICBcIndpZHRoXCI6IFwiNDAwcHhcIixcclxuICAgICAgXCJoZWlnaHRcIjogXCIyNTBweFwiXHJcbiAgICAgICAgICB9IiwiZWtpdF9zZWFyY2hfYnRuIjoiIiwic2VhcmNoX3RleHQiOiJWb2lyIGxlcyBhbm5vbmNlcyAiLCJoZWFkaW5nX3RleHQiOiIiLCJ1cmwiOiJodHRwczpcL1wva295dGNoYWltbW8ucmVcL2luZGV4LnBocFwvc2VhcmNoXC8iLCJyZWRpcmVjdF9jb250YWN0IjoiIiwia2V5X21hcCI6IiIsIkFQSV9VUkkiOiJodHRwczpcL1wva295dGNoYWltbW8ucmVcL3dwLWpzb25cL3dwXC92MlwvZGF0YT90eXBlPXByb2dyYW1tZXMiLCJBdXRob3JpemF0aW9uIjoiQmVhcmVyIGV5SmhiR2NpT2lKSVV6STFOaUlzSW5SNWNDSTZJa3BYVkNKOS5leUp6ZFdJaU9qRXNJbTVoYldVaU9pSnJiM2wwWTJoaGFXMXRiMEJuYldGcGJDNWpiMjBpTENKcFlYUWlPakUyTlRJd056VTFORGNzSW1WNGNDSTZNVGd3T1RjMU5UVTBOMzAuZWNMVDNFWHEyOW83VnZUMVVoQ0o5OXRmdWlJYmx1d2dJTTZYN3JhQndvVSIsIlVSTF9QT1NUIjoiIiwiY29sb3IiOiIjRTYwMDdFIiwidmlzaWJsZSI6InllcyIsInZpc2libGVfc2VhcmNoX21hcCI6IiIsImVraXRfd2JfMzk3Nl9mb250Ijoibm9ybWF0aWNhIHJlZ3VsYXIiLCJla2l0X21lbnVfYnV0dG9uX2NvbG9yX2NyaXRlcmUiOiIjMDAwIiwiZWtpdF9jcml0ZXJlX2J0biI6IiIsImVraXRfbWVudV9hY3RpdmUiOiIiLCJla2l0X21lbnVfYnV0dG9uX2NvbG9yX2FsZXJ0ZSI6IiMwMDAiLCJla2l0X2FsZXJ0ZV9idG4iOiIiLCJla2l0X21hcF9idG4iOiIiLCJjb2xfaGVhZGluZ190ZXh0IjoiNiIsImNvbF9wb3N0IjoiY29sLTEyIiwiZWtpdF9keW5hbWljX3RleHQiOiIiLCJmaXJzdF9sb2FkIjoieWVzIiwicGFnaW5hdG9yIjoiIn1d'></div>
+            <!-- Repli : affiché tant que le module n'a pas pris la main. -->
+            <div class="boite-repli">
+              <h2>Vous recherchez <b>un bien</b> ?</h2>
+
+              <div class="etape">
+                <span class="lab" id="l-pro">Pro ou résidentiel&nbsp;?</span>
+                <div class="choix" role="group" aria-labelledby="l-pro" data-champ="pro_res">
+                  <button class="puce" type="button" aria-pressed="true">Residentiel</button>
+                  <button class="puce" type="button" aria-pressed="false">Professionnel</button>
+                </div>
+              </div>
+
+              <div class="etape">
+                <span class="lab" id="l-proj">Votre projet&nbsp;?</span>
+                <div class="choix" role="group" aria-labelledby="l-proj" data-champ="prestation_type">
+                  <button class="puce" type="button" aria-pressed="true" data-val="location">À la location</button>
+                  <button class="puce" type="button" aria-pressed="false" data-val="vente">À l’achat</button>
+                </div>
+              </div>
+
+              <div class="etape">
+                <span class="lab" id="l-bien">Type de bien&nbsp;?</span>
+                <div class="choix" role="group" aria-labelledby="l-bien" data-champ="bien_type" id="bien-type"></div>
+              </div>
+
+              <div class="etape">
+                <span class="lab" id="l-sect">Votre secteur&nbsp;?</span>
+                <div class="choix" role="group" aria-labelledby="l-sect" data-champ="secteur">
+                  <button class="puce" type="button" aria-pressed="false">Nord</button>
+                  <button class="puce" type="button" aria-pressed="false">Ouest</button>
+                  <button class="puce" type="button" aria-pressed="false">Sud</button>
+                  <button class="puce" type="button" aria-pressed="false">Est</button>
+                </div>
+              </div>
+
+              <button class="plus" type="button" aria-expanded="false" aria-controls="criteres">
+                Plus de critères <span class="chev" aria-hidden="true">▾</span>
+              </button>
+              <div class="crit" id="criteres" hidden>
+                <div class="etape">
+                  <span class="lab">Quelle est la surface&nbsp;?</span>
+                  <div class="paire">
+                    <span class="champ"><input type="number" min="0" name="surface-min" placeholder="minimum" aria-label="Surface minimum"><span class="unite">m²</span></span>
+                    <span class="champ"><input type="number" min="0" name="surface-max" placeholder="maximum" aria-label="Surface maximum"><span class="unite">m²</span></span>
+                  </div>
+                </div>
+                <div class="etape">
+                  <span class="lab">Quel est votre budget&nbsp;?</span>
+                  <div class="paire">
+                    <span class="champ"><input type="number" min="0" name="tarif-min" placeholder="minimum" aria-label="Budget minimum"><span class="unite">€</span></span>
+                    <span class="champ"><input type="number" min="0" name="tarif-max" placeholder="maximum" aria-label="Budget maximum"><span class="unite">€</span></span>
+                  </div>
+                </div>
+                <div class="etape">
+                  <span class="lab" id="l-amg">Quels aménagements&nbsp;?</span>
+                  <div class="choix amgs" role="group" aria-labelledby="l-amg" data-champ="details" data-multi="1">
+                    <button class="puce" type="button" aria-pressed="false">Garage</button>
+                    <button class="puce" type="button" aria-pressed="false">Climatisation</button>
+                    <button class="puce" type="button" aria-pressed="false">Plafond</button>
+                    <button class="puce" type="button" aria-pressed="false">Alarme</button>
+                    <button class="puce" type="button" aria-pressed="false">Parking</button>
+                    <button class="puce" type="button" aria-pressed="false">Piscine</button>
+                    <button class="puce" type="button" aria-pressed="false">Terrasse</button>
+                    <button class="puce" type="button" aria-pressed="false">Accessibilité PMR</button>
+                    <button class="puce" type="button" aria-pressed="false">Clôturé</button>
+                    <button class="puce" type="button" aria-pressed="false">Sol</button>
+                    <button class="puce" type="button" aria-pressed="false">Viabilisé</button>
+                    <button class="puce" type="button" aria-pressed="false">Electricité</button>
+                  </div>
+                </div>
+              </div>
+
+              <a class="bt" id="voir-annonces" href="https://koytchaimmo.re/index.php/recherche/">Voir les annonces</a>
+              <a class="ref" href="https://koytchaimmo.re/index.php/recherche/">Rechercher par référence</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Carrousel de biens — chaque carte mène à la page de recherche -->
+
+
+<!-- 2 · PROGRAMMES -->
+<section class="sect apropos" id="programmes">
+  <div class="wrap">
+    <div class="tete monte">
+      <div>
+        <p class="eyebrow">Sélectionnés pour vous</p>
+        <h2 class="tt">Nos opportunités <i>exclusives.</i></h2>
+          <p class="intro-prog">Que vous souhaitiez développer votre activité professionnelle,
+            investir pour défiscaliser, diversifier votre patrimoine ou préparer votre retraite,
+            Koytcha Immo vous accompagne et vous délivre toutes les clés pour réussir votre
+            investissement. Découvrez sans plus attendre nos opportunités exclusives du moment&nbsp;!</p>
+      </div>
+      <a class="lien-fleche" href="https://koytchaimmo.re/recherche/" target="_blank" rel="noopener">Découvrir tous nos biens
+        <svg width="20" height="11" viewBox="0 0 20 11" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M0 5.5h18M13.5 1l4.5 4.5-4.5 4.5"/></svg></a>
+    </div>
+    <div class="cartes">
+      <a class="carte monte" href="https://koytchaimmo.re/nos-programmes/" target="_blank" rel="noopener">
+        <div class="vue"><span class="ville">Écocité Ouest</span>
+          <img src="https://previsualisation.automatisationboost.com/koytcha-refonte-v5/assets/programmes/cambaie-1200.webp"
+                 srcset="https://previsualisation.automatisationboost.com/koytcha-refonte-v5/assets/programmes/cambaie-600.webp 600w, https://previsualisation.automatisationboost.com/koytcha-refonte-v5/assets/programmes/cambaie-1200.webp 1200w"
+                 sizes="(max-width:900px) 100vw, 31vw" alt="Cambaie Park, Saint-Paul" loading="lazy"></div>
+        <h3>Cambaie Park</h3>
+        <p>Nouveau pôle d’activités au cœur de l’Écocité Ouest.</p>
+        <span class="dec">Découvrir
+          <svg width="16" height="9" viewBox="0 0 20 11" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M0 5.5h18M13.5 1l4.5 4.5-4.5 4.5"/></svg></span>
+      </a>
+      <a class="carte monte" href="https://koytchaimmo.re/programmes/ze-bureu-2/" target="_blank" rel="noopener">
+        <div class="vue"><span class="ville">L’Éperon</span>
+          <img src="https://previsualisation.automatisationboost.com/koytcha-refonte-v5/assets/programmes/w3-1200.webp"
+               srcset="https://previsualisation.automatisationboost.com/koytcha-refonte-v5/assets/programmes/w3-600.webp 600w, https://previsualisation.automatisationboost.com/koytcha-refonte-v5/assets/programmes/w3-1200.webp 1200w"
+               sizes="(max-width:900px) 100vw, 31vw" alt="Ze Bure@u 2" loading="lazy"></div>
+        <h3>Ze Bure@u 2</h3>
+        <p>La signature Koytcha Immo sur l’Éperon.</p>
+        <span class="dec">Découvrir
+          <svg width="16" height="9" viewBox="0 0 20 11" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M0 5.5h18M13.5 1l4.5 4.5-4.5 4.5"/></svg></span>
+      </a>
+      <a class="carte monte" href="https://koytchaimmo.re/nos-programmes/" target="_blank" rel="noopener">
+        <div class="vue"><span class="ville">La Possession</span>
+          <img src="https://previsualisation.automatisationboost.com/koytcha-refonte-v5/assets/programmes/zelokal-1200.webp"
+                 srcset="https://previsualisation.automatisationboost.com/koytcha-refonte-v5/assets/programmes/zelokal-600.webp 600w, https://previsualisation.automatisationboost.com/koytcha-refonte-v5/assets/programmes/zelokal-1200.webp 1200w"
+                 sizes="(max-width:900px) 100vw, 31vw" alt="Ze Lokal, La Possession" loading="lazy"></div>
+        <h3>Ze Lokal</h3>
+        <p>Locaux d’activité à vendre ou à louer à La Possession.</p>
+        <span class="dec">Découvrir
+          <svg width="16" height="9" viewBox="0 0 20 11" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M0 5.5h18M13.5 1l4.5 4.5-4.5 4.5"/></svg></span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- Section cinématique — la scène reste, les chapitres défilent -->
+
+
+
+<!-- 3 · À PROPOS — la planche de trois vues rectangulaires (v4) -->
+
+
+
+<!-- Sections de texte — contenu de l'agence, decoupe en trois temps -->
+<section class="sect" id="accompagne">
+  <div class="wrap">
+    <div class="monte">
+      <p class="eyebrow">Notre métier</p>
+      <h2 class="tt">Koytcha Immo vous accompagne <i>depuis 2004.</i></h2>
+    </div>
+    <div class="metier">
+    <div class="corps monte">
+      <p>Koytcha Immo accompagne depuis 2004 avec le même niveau d'exigence les entreprises, propriétaires et investisseurs sur l'ensemble de leurs enjeux immobiliers.</p>
+      <p>Que vous cherchiez à investir, à vendre, ou que vous soyez tout simplement à la recherche d'un achat ou d'une location, Koytcha Immo vous apporte toute son expertise et son savoir-faire afin de vous faciliter la vie tout en optimisant votre projet.</p>
+      <p>Grâce à notre équipe, nous sommes en mesure de répondre à tous vos besoins tant en résidentiel qu'en professionnel :</p>
+      <ul class="puces">
+        <li>Valorisation du patrimoine</li>
+        <li>Transactions dans des délais mesurés et conditions optimales</li>
+        <li>Recherche de locaux adaptés à l'activité, aux employés et à l'image de l'entreprise</li>
+        <li>Accompagnement du client par un conseil global</li>
+      </ul>
+    </div>
+    <!-- La galerie d'intérieurs qui était ici (façade, varangue, séjour,
+         jardin) est retirée : elle doublonnait avec le carrousel de biens plus
+         haut dans la page, et sur téléphone elle imposait un second glissement
+         horizontal juste avant celui des réalisations. C'est désormais le bloc
+         « réalisations » ci-dessous qui porte le carrousel. -->
+    </div>
+  
+          <p class="promoteur-note">Agissant également en tant que promoteur immobilier, Koytcha Immo commercialise de
+  nombreux projets innovants et adaptés aux spécificités locales, tels que des immeubles
+  résidentiels, des bureaux, des locaux d'activités, ou encore des centres d'affaires comme les
+  projets phares Ze Bure@u 1 et 2 (plus de 3 000 m² chacun) situés à l'Éperon.</p>
+        
+        <!-- Les 5 réalisations demandées par Florent (25/08).
+             Ze Bure@u 1 et 2 sont certains : leur panneau est lisible sur la
+             photo. Les trois autres attendent sa confirmation. -->
+        <div class="realisations">
+          <figure>
+            <a href="https://koytchaimmo.re/programmes/ze-bureu-2/" target="_blank" rel="noopener"><span class="cadre-real"><img src="https://previsualisation.automatisationboost.com/koytcha-refonte-v5/assets/programmes/w3-1200.webp"
+                 srcset="https://previsualisation.automatisationboost.com/koytcha-refonte-v5/assets/programmes/w3-600.webp 600w, https://previsualisation.automatisationboost.com/koytcha-refonte-v5/assets/programmes/w3-1200.webp 1200w"
+                 sizes="(max-width:900px) 86vw, 20vw" alt="Ze Bure@u 2" loading="lazy"></span>
+            <span class="miroir" aria-hidden="true" style="--photo:url(https://previsualisation.automatisationboost.com/koytcha-refonte-v5/assets/programmes/w3-600.webp)"></span></a>
+            <figcaption><a href="https://koytchaimmo.re/programmes/ze-bureu-2/" target="_blank" rel="noopener">Ze Bure@u 2</a></figcaption>
+          </figure>
+          <figure>
+            <!-- w4 et non w3 : la vignette reprenait la photo de Ze Bure@u 2, la
+                 meme image apparaissait donc deux fois dans la rangee. w4 est la
+                 vue aerienne du lotissement, deja dans les assets, inutilisee. -->
+            <span class="cadre-real"><img src="https://previsualisation.automatisationboost.com/koytcha-refonte-v5/assets/programmes/w4-1200.webp"
+                 srcset="https://previsualisation.automatisationboost.com/koytcha-refonte-v5/assets/programmes/w4-600.webp 600w, https://previsualisation.automatisationboost.com/koytcha-refonte-v5/assets/programmes/w4-1200.webp 1200w"
+                 sizes="(max-width:900px) 86vw, 20vw" alt="Villas La Marine 2" loading="lazy"></span>
+            <span class="miroir" aria-hidden="true" style="--photo:url(https://previsualisation.automatisationboost.com/koytcha-refonte-v5/assets/programmes/w4-600.webp)"></span>
+            <figcaption>Villas La Marine 2</figcaption>
+          </figure>
+          <figure>
+            <a href="https://koytchaimmo.re/programmes/espace-turquoise/" target="_blank" rel="noopener"><span class="cadre-real"><img src="https://previsualisation.automatisationboost.com/koytcha-refonte-v5/assets/programmes/w2-1200.webp"
+                 srcset="https://previsualisation.automatisationboost.com/koytcha-refonte-v5/assets/programmes/w2-600.webp 600w, https://previsualisation.automatisationboost.com/koytcha-refonte-v5/assets/programmes/w2-1200.webp 1200w"
+                 sizes="(max-width:900px) 86vw, 20vw" alt="Espace Turquoise" loading="lazy"></span>
+            <span class="miroir" aria-hidden="true" style="--photo:url(https://previsualisation.automatisationboost.com/koytcha-refonte-v5/assets/programmes/w2-600.webp)"></span></a>
+            <figcaption><a href="https://koytchaimmo.re/programmes/espace-turquoise/" target="_blank" rel="noopener">Espace Turquoise</a></figcaption>
+          </figure>
+          <figure>
+            <span class="cadre-real"><img src="https://previsualisation.automatisationboost.com/koytcha-refonte-v5/assets/programmes/w1-1200.webp"
+                 srcset="https://previsualisation.automatisationboost.com/koytcha-refonte-v5/assets/programmes/w1-600.webp 600w, https://previsualisation.automatisationboost.com/koytcha-refonte-v5/assets/programmes/w1-1200.webp 1200w"
+                 sizes="(max-width:900px) 86vw, 20vw" alt="Ze Bure@u 1" loading="lazy"></span>
+            <span class="miroir" aria-hidden="true" style="--photo:url(https://previsualisation.automatisationboost.com/koytcha-refonte-v5/assets/programmes/w1-600.webp)"></span>
+            <figcaption>Ze Bure@u 1</figcaption>
+          </figure>
+          <figure>
+            <a href="https://koytchaimmo.re/programmes/le-kerval/" target="_blank" rel="noopener"><span class="cadre-real"><img src="https://previsualisation.automatisationboost.com/koytcha-refonte-v5/assets/programmes/w5-1200.webp"
+                 srcset="https://previsualisation.automatisationboost.com/koytcha-refonte-v5/assets/programmes/w5-600.webp 600w, https://previsualisation.automatisationboost.com/koytcha-refonte-v5/assets/programmes/w5-1200.webp 1200w"
+                 sizes="(max-width:900px) 86vw, 20vw" alt="Kerval" loading="lazy"></span>
+            <span class="miroir" aria-hidden="true" style="--photo:url(https://previsualisation.automatisationboost.com/koytcha-refonte-v5/assets/programmes/w5-600.webp)"></span></a>
+            <figcaption><a href="https://koytchaimmo.re/programmes/le-kerval/" target="_blank" rel="noopener">Kerval</a></figcaption>
+          </figure>
+        </div>
+        </div>
+</section>
+
+
+
+<section class="sect" id="philosophie">
+  <div class="wrap">
+    <div class="monte">
+      <p class="eyebrow">Notre philosophie</p>
+      <h2 class="tt">Une approche globale <i>axée sur le conseil.</i></h2>
+      <p class="chapo">Le client au cœur de nos engagements.</p>
+    </div>
+    <div class="corps monte">
+      <p>Que vous soyez investisseurs, utilisateurs, particuliers à la recherche d'un bien à acheter ou particuliers investisseurs, vos problématiques sont variées. Nous y apportons des expertises spécifiques.</p>
+    </div>
+    <div class="piliers monte">
+      <div class="pilier"><h4>Notre objectif</h4><p>Créer de la valeur à chaque étape de la vie d'un bien immobilier.</p></div>
+      <div class="pilier"><h4>Notre engagement</h4><p>Accompagner durablement nos clients tout au long du cycle de vie immobilier.</p></div>
+      <div class="pilier"><h4>Nos ambitions</h4><p>Proposer des solutions pertinentes et originales dans une optique de long terme.</p></div>
+    </div>
+    <p class="fin-txt monte">Grâce à une offre diversifiée de produits immobiliers implantés sur des emplacements de choix, Koytcha Immo vous aide à optimiser vos investissements professionnels à La Réunion. Particuliers comme investisseurs, nos équipes sont à vos côtés pour comprendre vos enjeux, vous conseiller et vous aider à concrétiser votre stratégie immobilière.</p>
+  </div>
+</section>
+
+<!-- 4 · DERNIÈRE SECTION — la photo se révèle au scroll -->
+<section class="final" id="contact">
+  <div class="fond" id="fondFinal">
+    <!-- 1600 px au lieu de 1024 : la section fait toute la largeur, et sur un
+         telephone recent (3x) le 1024 etait etire. Le fichier existait deja
+         dans assets/fond/, il n'etait simplement pas utilise. -->
+    <img src="https://previsualisation.automatisationboost.com/koytcha-refonte-v5/assets/fond/photo1.webp"
+         srcset="https://previsualisation.automatisationboost.com/koytcha-refonte-v5/assets/fond/photo1-1024.webp 1024w, https://previsualisation.automatisationboost.com/koytcha-refonte-v5/assets/fond/photo1.webp 1600w"
+         sizes="100vw" alt="Vivre à La Réunion" loading="lazy" decoding="async">
+  </div>
+  <canvas id="toile-final" aria-hidden="true"></canvas>
+  <div class="teinte"></div>
+  <div class="dedans">
+    <div class="wrap">
+      <h2>Vivre La Réunion, <i>imaginer demain.</i></h2>
+      <p>Plus qu'un lieu, une expérience. Découvrons ensemble le projet qui vous ressemble.</p>
+      <a class="bt" href="#contact">Contactez-nous</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="pied">
+      <div class="bas-logo">
+        <a class="logo" href="https://koytchaimmo.re/" target="_blank" rel="noopener"><img class="l-clair" src="https://previsualisation.automatisationboost.com/koytcha-refonte-v5/assets/logo-blanc.png" alt="Koytcha Immo"></a>
+        <p>Conseil &amp; expertise en immobilier à La Réunion depuis 2004.</p>
+        <div class="reseaux">
+          <a href="https://www.facebook.com/Koytchaimmo" target="_blank" rel="noopener" title="Suivez-nous sur Facebook" aria-label="Facebook"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M14 9h3V6h-3c-2.2 0-4 1.8-4 4v2H8v3h2v7h3v-7h3l1-3h-4v-2c0-.6.4-1 1-1z"/></svg></a>
+          <a href="https://www.instagram.com/koytchaimmo.re/" target="_blank" rel="noopener" title="Suivez-nous sur Instagram" aria-label="Instagram"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r=".6" fill="currentColor"/></svg></a>
+          
+          <a href="https://linkedin.com/company/16168910/" target="_blank" rel="noopener" title="Suivez-nous sur LinkedIn" aria-label="LinkedIn"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M5 4a2 2 0 100 4 2 2 0 000-4zM3.5 9.5h3V21h-3zM10 9.5h2.9v1.6c.5-.9 1.6-1.8 3.3-1.8 3 0 3.8 1.8 3.8 4.6V21h-3v-6c0-1.5-.5-2.5-1.9-2.5-1 0-1.7.7-2 1.4-.1.2-.1.6-.1.9V21h-3z"/></svg></a>
+        </div>
+      </div>
+      <div>
+        <h4>Navigation</h4>
+        <ul>
+          <li><a href="#programmes">Acheter</a></li>
+          <li><a href="#programmes">Louer</a></li>
+          <li><a href="#apropos">Vendre</a></li>
+          <li><a href="#apropos">Confier mon bien</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Contact</h4>
+        <ul>
+          <li>45 rue Alexis de Villeneuve<br>97400 Saint-Denis, La Réunion</li>
+          <li><a href="https://previsualisation.automatisationboost.com/koytcha-refonte-v5/tel:+262262979607">0262 97 96 07</a></li>
+          <li><a href="https://previsualisation.automatisationboost.com/koytcha-refonte-v5/mailto:anjalee@koytchaimmo.re">anjalee@koytchaimmo.re</a></li>
+          <li>Lun – Ven : 8h – 17h</li>
+        </ul>
+      </div>
+    </div>
+    <div class="tout-en-bas">
+      <span>© 2026 Koytcha Immo. Tous droits réservés.</span>
+      <span><a href="https://koytchaimmo.re/mentions/" target="_blank" rel="noopener">Mentions légales</a> &nbsp;·&nbsp; <a href="#">Politique de confidentialité</a></span>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var reduit = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* Barre de navigation : elle se pose dès qu'on quitte l'en-tête. */
+  var nav = document.getElementById('nav');
+  var poser = function(){ nav.classList.toggle('pose', window.scrollY > window.innerHeight * 0.62); };
+  poser();
+
+  /* Menu mobile. Le bouton existait sans gestionnaire : le panneau ne s ouvrait
+     jamais. On bloque aussi le defilement du fond, sinon le doigt fait glisser
+     la page DERRIERE le panneau. */
+  var burger = document.querySelector('.burger');
+  var fermer = function(){
+    nav.classList.remove('ouvert');
+    document.body.classList.remove('bloque');
+    burger.setAttribute('aria-expanded', 'false');
+  };
+  burger.addEventListener('click', function(){
+    var ouvert = nav.classList.toggle('ouvert');
+    document.body.classList.toggle('bloque', ouvert);
+    burger.setAttribute('aria-expanded', ouvert ? 'true' : 'false');
+  });
+
+  /* Sous-menus : au survol sur grand ecran (CSS seul), au clic sur la fleche
+     en dessous de 980 px. Le bouton est distinct du lien parent, donc ouvrir
+     le sous-menu ne declenche pas la navigation. */
+  [].forEach.call(document.querySelectorAll('.chev'), function(b){
+    b.addEventListener('click', function(e){
+      e.preventDefault();
+      var li = b.parentNode, on = li.classList.toggle('deploye');
+      b.setAttribute('aria-expanded', on ? 'true' : 'false');
+    });
+  });
+
+  /* Choisir une destination referme le panneau — sinon il masque la page
+     d arrivee apres un lien d ancre. */
+  [].forEach.call(nav.querySelectorAll('.liens a'), function(a){
+    a.addEventListener('click', fermer);
+  });
+  document.addEventListener('keydown', function(e){
+    if (e.key === 'Escape' && nav.classList.contains('ouvert')) { fermer(); burger.focus(); }
+  });
+
+  /* ── Le carrousel des programmes, sur telephone ────────────────────────
+     Il avance tout seul, lentement, et s'arrete des que quelqu'un le touche.
+     Trois precautions qui font la difference entre un carrousel et une gene :
+       · on n'anime QUE si la piste deborde (sur ordinateur c'est une grille) ;
+       · le defilement s'arrete au premier geste — doigt, souris ou molette —
+         et ne repart pas : reprendre la main a l'utilisateur, c'est le lui
+         reprendre deux fois ;
+       · rien ne bouge si la section n'est pas a l'ecran, ni si le visiteur a
+         demande moins d'animation.
+     Le pas est de 0,4 px toutes les 16 ms — environ 25 px par seconde. C'est
+     volontairement lent : on doit avoir le temps de lire un nom de programme
+     sans le poursuivre du regard. */
+  (function () {
+    var piste = document.querySelector('.cartes');
+    if (!piste || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    var VITESSE = 0.4, main = false, vu = false, tic = null;
+
+    /* On tient la position en flottant DANS le script, et on ne fait qu'ecrire
+       dans scrollLeft. En lisant `piste.scrollLeft` a chaque image pour lui
+       rajouter 0,4 px, on repartait de la valeur ARRONDIE que rend le
+       navigateur : 0 + 0,4 relu comme 0, indefiniment. La piste ne bougeait
+       pas d'un pixel — c'est ce que la verification a montre. */
+    /* LE point qui bloquait tout, mesure dans le navigateur : avec
+       `scroll-snap-type` actif, ecrire `piste.scrollLeft = 42` rend 0 — le
+       navigateur ramene aussitot la piste sur son point d'ancrage. Le
+       defilement automatique n'avait donc aucun effet, quelle que soit la
+       valeur du pas. On coupe le snap pendant l'animation et on le rend des
+       que l'utilisateur prend la main : il avance tout seul, et le geste du
+       doigt cale quand meme proprement. */
+    var pos = 0;
+    piste.style.scrollSnapType = 'none';
+    function debordement() { return piste.scrollWidth - piste.clientWidth; }
+    function pas() {
+      var d = debordement();
+      if (main || !vu || d < 8) return;
+      pos += VITESSE;
+      if (pos >= d) pos = 0;                                  // on reboucle au debut
+      piste.scrollLeft = pos;
+    }
+    function demarrer() { if (!tic) tic = setInterval(pas, 16); }
+    function arreter() { if (tic) { clearInterval(tic); tic = null; } }
+
+    ['pointerdown', 'touchstart', 'wheel', 'keydown'].forEach(function (e) {
+      piste.addEventListener(e, function () {
+        main = true; pos = piste.scrollLeft; arreter();
+        piste.style.scrollSnapType = '';        // on rend le calage au pouce
+      }, { passive: true });
+    });
+
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver(function (entrees) {
+        vu = entrees[0].isIntersecting;
+        if (vu && !main) demarrer(); else arreter();
+      }, { threshold: 0.25 }).observe(piste);
+    } else { vu = true; demarrer(); }
+  })();
+
+  /* ── Le reseau de noeuds de la section contact ─────────────────────────
+     Des points qui derivent et se relient quand ils se rapprochent. Discret :
+     opacite 42 %, trait fin, et le magenta de la marque plutot qu'un blanc qui
+     mangerait la photo. Il ne tourne que lorsque la section est a l'ecran, et
+     pas du tout si le visiteur a demande moins d'animation. */
+  (function () {
+    var c = document.getElementById('toile-final');
+    if (!c || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    var x = c.getContext('2d'), sec = c.parentElement, n = [], vu = false, boucle = null;
+    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+    function dimensionner() {
+      var r = sec.getBoundingClientRect();
+      c.width = Math.max(1, r.width * dpr); c.height = Math.max(1, r.height * dpr);
+      var densite = r.width < 600 ? 22 : (r.width < 1000 ? 36 : 52);
+      n = [];
+      for (var i = 0; i < densite; i++) {
+        n.push({ x: Math.random() * c.width, y: Math.random() * c.height,
+                 vx: (Math.random() - .5) * .18 * dpr, vy: (Math.random() - .5) * .18 * dpr,
+                 r: (1 + Math.random() * 1.5) * dpr });
+      }
+    }
+    function dessiner() {
+      x.clearRect(0, 0, c.width, c.height);
+      var lien = (c.width < 900 ? 110 : 140) * dpr;
+      for (var i = 0; i < n.length; i++) {
+        var a = n[i];
+        a.x += a.vx; a.y += a.vy;
+        if (a.x < 0 || a.x > c.width) a.vx *= -1;
+        if (a.y < 0 || a.y > c.height) a.vy *= -1;
+        for (var j = i + 1; j < n.length; j++) {
+          var b = n[j], dx = a.x - b.x, dy = a.y - b.y, d = Math.hypot(dx, dy);
+          if (d > lien) continue;
+          x.strokeStyle = 'rgba(255,255,255,' + (0.18 * (1 - d / lien)).toFixed(3) + ')';
+          x.lineWidth = dpr * .6;
+          x.beginPath(); x.moveTo(a.x, a.y); x.lineTo(b.x, b.y); x.stroke();
+        }
+        x.fillStyle = 'rgba(230,0,126,.62)';
+        x.beginPath(); x.arc(a.x, a.y, a.r, 0, 6.2832); x.fill();
+      }
+      boucle = requestAnimationFrame(dessiner);
+    }
+    function relancer() {
+      if (boucle) { cancelAnimationFrame(boucle); boucle = null; }
+      if (vu) boucle = requestAnimationFrame(dessiner);
+    }
+    dimensionner();
+    addEventListener('resize', function () { dimensionner(); }, { passive: true });
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver(function (e) { vu = e[0].isIntersecting; relancer(); },
+        { threshold: 0 }).observe(sec);
+    } else { vu = true; relancer(); }
+  })();
+
+  /* ── Retour sonore au clic ────────────────────────────────────────────
+     Synthetise, pas telecharge : zero fichier, zero requete. Le contexte audio
+     n est cree qu au premier clic — le creer au chargement le laisserait
+     suspendu par la politique de lecture automatique des navigateurs.
+
+     Le premier jet etait un bip : une onde triangle qui descend. Ca sonnait
+     electronique, et un site immobilier haut de gamme qui bipe fait penser a un
+     distributeur de billets. Deux sons remplacent le bip, tous les deux courts
+     et bas :
+
+     · le CHOIX est un petit coup mat — une bouffee de bruit filtree tres court
+       (28 ms) posee sur une sinusoide grave. L oreille l entend comme un objet
+       qu on pose, pas comme une machine ;
+     · l ACTION PRINCIPALE est un intervalle de quinte qui monte (440 puis 660
+       Hz), en sinusoide pure et tres douce. Ca dit « valide » sans crier.
+
+     Volume tres bas dans les deux cas, et rien du tout si le visiteur a demande
+     moins d animations. */
+  var son = null;
+  var contexte = function(){
+    if (reduit) return null;
+    try {
+      var AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return null;
+      son = son || new AC();
+      if (son.state === 'suspended') son.resume();
+      return son;
+    } catch (e) { return null; }
+  };
+
+  /* Le coup mat : bruit blanc court passe dans un filtre passe-bande, plus une
+     sinusoide grave pour lui donner du corps. */
+  var toc = function(force){
+    var c = contexte(); if (!c) return;
+    try {
+      var t = c.currentTime, duree = 0.028;
+      var n = c.createBuffer(1, Math.ceil(c.sampleRate * duree), c.sampleRate);
+      var d = n.getChannelData(0);
+      for (var i = 0; i < d.length; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / d.length);
+      var src = c.createBufferSource(); src.buffer = n;
+      var f = c.createBiquadFilter(); f.type = 'bandpass'; f.frequency.value = 1700; f.Q.value = 1.1;
+      var g = c.createGain();
+      g.gain.setValueAtTime(force, t);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + duree);
+      src.connect(f); f.connect(g); g.connect(c.destination);
+      src.start(t); src.stop(t + duree);
+
+      var o = c.createOscillator(), go = c.createGain();
+      o.type = 'sine'; o.frequency.setValueAtTime(190, t);
+      o.frequency.exponentialRampToValueAtTime(130, t + 0.05);
+      go.gain.setValueAtTime(0.0001, t);
+      go.gain.linearRampToValueAtTime(force * 0.8, t + 0.004);
+      go.gain.exponentialRampToValueAtTime(0.0001, t + 0.06);
+      o.connect(go); go.connect(c.destination);
+      o.start(t); o.stop(t + 0.09);
+    } catch (e) { /* pas de son : le site marche pareil */ }
+  };
+
+  /* La quinte qui monte : deux sinusoides, la seconde decalee de 60 ms. */
+  var quinte = function(force){
+    var c = contexte(); if (!c) return;
+    try {
+      var t = c.currentTime;
+      [[440, 0, 0.16], [660, 0.06, 0.20]].forEach(function (v) {
+        var o = c.createOscillator(), g = c.createGain();
+        o.type = 'sine'; o.frequency.setValueAtTime(v[0], t + v[1]);
+        g.gain.setValueAtTime(0.0001, t + v[1]);
+        g.gain.linearRampToValueAtTime(force, t + v[1] + 0.012);
+        g.gain.exponentialRampToValueAtTime(0.0001, t + v[1] + v[2]);
+        o.connect(g); g.connect(c.destination);
+        o.start(t + v[1]); o.stop(t + v[1] + v[2] + 0.03);
+      });
+    } catch (e) { /* idem */ }
+  };
+
+  document.addEventListener('click', function(e){
+    var c = e.target.closest ? e.target.closest(
+      'a.btn, .bt, .boite-repli .bt, button.puce, .MuiToggleButton-root, .puce, .chev, .burger, .plus') : null;
+    if (!c) return;
+    /* L action principale et le choix ne sonnent pas pareil : l oreille
+       distingue « j ai choisi » de « je valide » sans y penser. */
+    if (c.matches('a.btn, .bt')) quinte(0.030);
+    else toc(0.028);
+  }, true);
+
+  /* Apparition des blocs. IntersectionObserver plutôt qu'un calcul au scroll :
+     le navigateur fait le travail hors du fil principal. */
+  var vus = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){ if (e.isIntersecting){ e.target.classList.add('vu'); vus.unobserve(e.target); } });
+  }, { threshold: .12, rootMargin: '0px 0px -8% 0px' });
+  [].forEach.call(document.querySelectorAll('.monte, .pinceau'), function(el){ vus.observe(el); });
+
+  if (reduit) { window.addEventListener('scroll', poser, { passive:true }); return; }
+
+  var piste = document.getElementById('piste');
+  var fond  = document.getElementById('fondFinal');
+
+  /* Un seul rendez-vous par image, et tout est peint dedans.
+     Écrire le style directement dans l'écouteur de scroll déclenche un
+     recalcul de mise en page par événement — la page saccade dès qu'on a
+     deux effets. */
+  var enVol = false;
+  function peindre(){
+    enVol = false;
+    poser();
+
+    /* Le pivot au scroll a ete retire : il ecrivait un transform en ligne sur
+       .bati, qui l emporte sur l animation CSS du Ken Burns. Les deux effets
+       visaient la meme propriete — garder les deux revenait a n en avoir aucun.
+       Le mouvement de l en-tete est desormais le Ken Burns seul, continu. */
+
+    /* Dernière section : la photo remonte moins vite que la page. Le facteur
+       reste faible (0,18) — au-delà, le bord de l'image entre dans le cadre
+       et il faut sur-dimensionner le bloc, ce qui gâche la définition. */
+    if (fond){
+      var f = fond.parentElement.getBoundingClientRect();
+      if (f.bottom > 0 && f.top < window.innerHeight){
+        var q = (window.innerHeight - f.top) / (window.innerHeight + f.height);
+        fond.style.transform = 'translateY(' + ((q - .5) * f.height * 0.18).toFixed(1) + 'px)';
+      }
+    }
+
+    /* v4 — La dérive de la photo dans le cercle a disparu avec le cercle.
+       Elle n'a pas d'équivalent sur la planche : un `transform` écrit en ligne
+       sur les images tuerait le zoom au survol, exactement comme le pivot de
+       l'en-tête tuait le Ken Burns plus haut. */
+  }
+  function auScroll(){ if (!enVol){ enVol = true; requestAnimationFrame(peindre); } }
+  window.addEventListener('scroll', auScroll, { passive:true });
+  window.addEventListener('resize', auScroll);
+  peindre();
+
+  /* Titres mot a mot. On enveloppe au chargement plutot que dans le HTML :
+     ecrire les span a la main rendrait le texte illisible en relecture, et
+     surtout la cesure des lignes casserait — un inline-block ne se coupe
+     pas au milieu, donc on n enveloppe QUE les mots, jamais les espaces. */
+  [].forEach.call(document.querySelectorAll('h2.tt'), function(h){
+    if (h.querySelector('.mot')) return;
+    var parcourir = function(noeud){
+      [].slice.call(noeud.childNodes).forEach(function(n){
+        if (n.nodeType === 3) {
+          var frag = document.createDocumentFragment();
+          n.textContent.split(/(\s+)/).forEach(function(bout){
+            if (!bout) return;
+            if (/^\s+$/.test(bout)) { frag.appendChild(document.createTextNode(bout)); return; }
+            var sp = document.createElement('span');
+            sp.className = 'mot'; sp.textContent = bout;
+            frag.appendChild(sp);
+          });
+          n.parentNode.replaceChild(frag, n);
+        } else if (n.nodeType === 1) parcourir(n);
+      });
+    };
+    parcourir(h);
+    [].forEach.call(h.querySelectorAll('.mot'), function(m,i){ m.style.setProperty('--dm',(i*62)+'ms'); });
+  });
+
+  /* ── L'en-tete continuait de travailler onze ecrans plus bas ────────────
+     Sonde `document.getAnimations()` a chaque position de la page : `kb-diapo`
+     — une image plein ecran qui se deplace — repartait toutes les 6,5 s meme
+     tout en bas, et le mot du titre changeait toutes les 2,9 s pour personne.
+     Les deux effets sont conserves a l'identique ; on suspend seulement leur
+     horloge tant que la scene est hors champ, et elle reprend en remontant. */
+  var scene = document.querySelector('.scene');
+  var sceneVue = true;
+  if (scene && 'IntersectionObserver' in window) {
+    new IntersectionObserver(function(es){ sceneVue = es[0].isIntersecting; },
+                             { threshold: 0 }).observe(scene);
+  }
+
+  /* Les trois fonds de l en-tete se succedent. */
+  var fonds = [].slice.call(document.querySelectorAll('#bati img'));
+  if (fonds.length > 1 && !reduit) {
+    var iF = 0;
+    setInterval(function(){
+      if (!sceneVue) return;
+      fonds[iF].classList.remove('on');
+      iF = (iF + 1) % fonds.length;
+      fonds[iF].classList.add('on');
+    }, 6500);
+  }
+
+  /* Mots qui défilent dans le titre. La liste vit dans data-mots : ajouter
+     un mot ne demande pas de toucher au script. */
+  var roule = document.getElementById('roule');
+  if (roule && !reduit) {
+    var mots = (roule.dataset.mots || '').split(',').map(function(m){ return m.trim(); }).filter(Boolean);
+    if (mots.length > 1) {
+      var iMot = 0, dedans = roule.querySelector('span');
+      setInterval(function(){
+        if (!sceneVue) return;
+        iMot = (iMot + 1) % mots.length;
+        roule.classList.add('part');
+        setTimeout(function(){
+          dedans.textContent = mots[iMot];
+          // On saute sous la ligne SANS transition, puis on remonte : sinon
+          // le mot traverse le cadre de haut en bas et l'effet se voit.
+          roule.classList.remove('part');
+          roule.classList.add('entre');
+          void roule.offsetWidth;
+          roule.classList.remove('entre');
+        }, 560);
+      }, 2900);
+    }
+  }
+
+  /* Cascade : chaque enfant direct d'un bloc révélé entre à son tour. */
+  [].forEach.call(document.querySelectorAll('.cartes, .gal, .planche, .piliers, .trois-chiffres, .puces'), function(g){
+    // La galerie de « Notre métier » monte à 190 ms : à 90 ms les quatre
+    // images se chevauchent et l'oeil lit une seule apparition. Au-delà de
+    // 200 ms, la derniere se fait attendre.
+    // La planche de « Notre histoire » ne compte que trois vues : à 90 ms
+    // elles arrivent quasi ensemble, à 190 ms la troisième se fait attendre.
+    var pas = g.classList.contains('gal') ? 190 : g.classList.contains('planche') ? 130 : 90;
+    [].forEach.call(g.children, function(el, i){ el.style.setProperty('--retard', (i * pas) + 'ms'); });
+  });
+
+  /* Correctif v3 · 1 — Section cinématique dans UN écran.
+     Avant : la piste faisait 300svh et c'est le scroll qui avançait les
+     chapitres. Trois écrans pleins pour trois phrases, sur une page qui en
+     comptait déjà treize. L'effet (les plans qui se croisent, le chapitre qui
+     monte, la jauge) est conservé à l'identique — seul le MOTEUR change :
+     ce n'est plus la position de scroll qui avance, c'est le temps, et le
+     visiteur peut reprendre la main sur la jauge. */
+  var cine = document.getElementById('cine');
+  if (cine) {
+    var plans  = [].slice.call(cine.querySelectorAll('.plan'));
+    var chaps  = [].slice.call(cine.querySelectorAll('.chap'));
+    var jauges = [].slice.call(cine.querySelectorAll('.jauge button'));
+    var actif = -1, minuteur = null;
+
+    var poserChap = function(i){
+      if (i === actif) return;
+      actif = i;
+      plans.forEach(function(x,k){ x.classList.toggle('on', k === i); });
+      chaps.forEach(function(x,k){ x.classList.toggle('on', k === i); });
+      jauges.forEach(function(x,k){
+        x.classList.toggle('on', k === i);
+        x.setAttribute('aria-current', String(k === i));
+      });
+    };
+    var arreter  = function(){ if (minuteur){ clearInterval(minuteur); minuteur = null; } };
+    /* 5,2 s par chapitre : la transition d'opacité dure 1,1 s, il faut donc
+       laisser au moins 4 s de lecture stable derrière elle. */
+    var relancer = function(){
+      arreter();
+      if (reduit) return;
+      minuteur = setInterval(function(){ poserChap((actif + 1) % chaps.length); }, 5200);
+    };
+
+    poserChap(0);
+    jauges.forEach(function(b,k){
+      b.addEventListener('click', function(){ poserChap(k); relancer(); });
+    });
+    /* Le minuteur ne tourne que quand la section est à l'écran : sinon les
+       chapitres défilent dans le vide et le visiteur arrive au milieu de la
+       séquence au lieu du chapitre 01. */
+    new IntersectionObserver(function(es){
+      es.forEach(function(e){
+        if (e.isIntersecting) { relancer(); } else { arreter(); poserChap(0); }
+      });
+    }, { threshold: .4 }).observe(cine);
+  }
+
+
+  /* Fige les photos qui sortent du champ : le Ken Burns ne coûte plus rien
+     quand personne ne le regarde. Le seuil à 0 suffit — dès qu'un pixel de
+     la section est visible, on relance. */
+  var anime = [].slice.call(document.querySelectorAll('.scene, .piste, .cartes .carte, .realisations figure, .final .fond, .final .teinte'));
+  if (anime.length && 'IntersectionObserver' in window) {
+    var veille = new IntersectionObserver(function(es){
+      es.forEach(function(e){ e.target.classList.toggle('fige', !e.isIntersecting); });
+    }, { rootMargin: '120px' });
+    anime.forEach(function(el){ veille.observe(el); });
+  }
+
+  /* ── Le carrousel arrivait a moitie vide ───────────────────────────────
+     Mesure en 390x844 : a l'arrivee dans la section, 2 vignettes sur 5 etaient
+     peintes — et les trois autres ne se chargeaient JAMAIS, meme apres 3 s.
+     `loading="lazy"` ne reclame que ce qui approche de l'ecran ; dans un
+     defilement horizontal, les vignettes 3 a 5 attendent a droite, hors champ,
+     et n'y entrent qu'au moment ou le doigt glisse. On repasse la bande en
+     chargement immediat des que la section approche a 600 px : rien n'est
+     telecharge pour qui ne descend pas jusque-la, et tout est peint pour qui
+     y arrive. */
+  /* Le module de recherche s'hydrate depuis koytchaimmo.re et arrive AUCUN
+     bouton selectionne : les deux restent translucides, et rien ne dit au
+     visiteur qu'un choix l'attend. Retour Tony du 2026-09-09 : « que ce soit
+     blanc au debut », mais « pas ouvrir la section ».
+     Un vrai clic aurait fait les deux — il aurait aussi deplie l'etape 2 et
+     recalcule le compteur d'annonces. On se contente donc de POSER LE BLANC,
+     par une classe a nous. Consequence assumee, a redire si Florent la refuse :
+     tant que le visiteur n'a rien touche, le module n'a pas de valeur interne,
+     exactement comme aujourd'hui — « Voir les annonces » part sans filtre.
+     Au premier geste, on retire notre marque et l'etat MUI reprend la main :
+     le blanc suit alors le bouton reellement choisi. */
+  (function () {
+    var essais = 0;
+    var t = setInterval(function () {
+      if (++essais > 40) { clearInterval(t); return; }        // 40 x 250 ms = 10 s
+      var btns = document.querySelectorAll('.boite .app .MuiToggleButton-root');
+      if (!btns.length) return;
+      clearInterval(t);
+      var deja = [].some.call(btns, function (b) {
+        return b.classList.contains('Mui-selected') || b.getAttribute('aria-pressed') === 'true';
+      });
+      if (deja) return;                                       // on ne vole jamais son choix
+      var res = [].filter.call(btns, function (b) { return /sidentiel/i.test(b.textContent || ''); })[0];
+      if (!res) return;
+      res.classList.add('pre-actif');
+      var boite = res.closest('.app') || document;
+      boite.addEventListener('pointerdown', function retire() {
+        res.classList.remove('pre-actif');
+        boite.removeEventListener('pointerdown', retire);
+      }, true);
+    }, 250);
+  })();
+
+  var bande = document.querySelector('.realisations');
+  if (bande && 'IntersectionObserver' in window) {
+    var chauffe = new IntersectionObserver(function(es){
+      if (!es.some(function(e){ return e.isIntersecting; })) return;
+      chauffe.disconnect();
+      [].forEach.call(bande.querySelectorAll('img'), function(im){
+        if (im.complete && im.naturalWidth) return;
+        im.loading = 'eager';
+        /* Repasser `loading` a eager suffit sur Chrome ; ailleurs c'est la
+           reaffectation de srcset qui relance la selection, donc le telechargement. */
+        if (im.srcset) im.srcset = im.srcset;
+      });
+    }, { rootMargin: '600px 0px' });
+    chauffe.observe(bande);
+  }
+
+  /* Les deux onglets du module de recherche. */
+  var onglets = [].slice.call(document.querySelectorAll('.onglet'));
+  onglets.forEach(function(b){
+    b.addEventListener('click', function(){
+      onglets.forEach(function(x){ x.setAttribute('aria-pressed', String(x === b)); });
+    });
+  });
+})();
+</script>
+<!-- Pourquoi ces trois lignes : le bundle du plugin declare UN seul external,
+     window["wp"]["element"] — le React que WordPress injecte via wp-element.
+     Hors WordPress il vaut undefined et le bundle meurt au demarrage
+     (TypeError: Cannot read properties of undefined (reading 'element')),
+     d'ou le module vide dans l'apercu. On lui fournit le meme React 18 que
+     WP 6.x. Cote koytchaimmo.re ces lignes sont inutiles mais inoffensives :
+     wp.element y existe deja et on ne l'ecrase pas. -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js" crossorigin></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js" crossorigin></script>
+<script>
+window.wp = window.wp || {};
+if (!window.wp.element && window.React && window.ReactDOM) {
+  window.wp.element = Object.assign({}, window.React, window.ReactDOM, {
+    createRoot: window.ReactDOM.createRoot,
+    createPortal: window.ReactDOM.createPortal,
+    findDOMNode: window.ReactDOM.findDOMNode,
+    flushSync: window.ReactDOM.flushSync,
+    render: window.ReactDOM.render,
+    unmountComponentAtNode: window.ReactDOM.unmountComponentAtNode,
+    Platform: { OS: 'web', select: function (s) { return s.web; }, isWeb: true },
+    RawHTML: function (p) { return window.React.createElement('div', { dangerouslySetInnerHTML: { __html: p.children } }); }
+  });
+}
+</script>
+<script src="https://koytchaimmo.re/app/plugins/elementor-search-react-ktp-v2/build/index.js" defer></script>
+<script>
+/* Le repli disparaît dès que le plugin insère quelque chose dans #458.
+   On observe le nœud au lieu d'attendre un délai fixe : le bundle fait 5 Mo,
+   son temps de chargement dépend de la connexion du visiteur. */
+(function () {
+  var cible = document.getElementById('458'), repli = document.querySelector('.boite-repli');
+  if (!cible || !repli) return;
+  var vu = function () { if (cible.children.length) { repli.style.display = 'none'; return true; } return false; };
+  if (vu()) return;
+  new MutationObserver(function (_, o) { if (vu()) o.disconnect(); }).observe(cible, { childList: true, subtree: true });
+})();
+</script>
+<script>
+/* Repli interactif. Les valeurs viennent de l'export Elementor de la section
+   « search ktp » : les types de bien dependent de pro_res exactement comme
+   dans la configuration du widget (service_condition). Le bouton recompose
+   une URL vers leur page de recherche avec les noms de champs du plugin. */
+(function () {
+  var boite = document.querySelector('.boite-repli');
+  if (!boite) return;
+
+  var TYPES = {
+    Residentiel: ['Appartement', 'Maison/Villa', 'Terrain'],
+    Professionnel: ['Bureaux', 'Entrepôt', 'Local commercial', 'Immeuble', 'Parcelle', 'Fonds de commerce']
+  };
+
+  function actif(groupe) {
+    var b = groupe.querySelector('.puce[aria-pressed="true"]');
+    return b ? (b.dataset.val || b.textContent.trim()) : '';
+  }
+
+  function peupleTypes() {
+    var pro = boite.querySelector('[data-champ="pro_res"]'), hote = document.getElementById('bien-type');
+    hote.innerHTML = '';
+    TYPES[actif(pro)].forEach(function (t) {
+      var b = document.createElement('button');
+      b.type = 'button'; b.className = 'puce'; b.setAttribute('aria-pressed', 'false'); b.textContent = t;
+      hote.appendChild(b);
+    });
+  }
+
+  boite.addEventListener('click', function (e) {
+    var b = e.target.closest('.puce'); if (!b) return;
+    var groupe = b.parentNode, on = b.getAttribute('aria-pressed') === 'true';
+    if (groupe.dataset.multi) { b.setAttribute('aria-pressed', on ? 'false' : 'true'); return; }
+    /* Un seul choix par etape, et on peut deselectionner : le visiteur doit
+       pouvoir revenir a « peu importe » sans recharger la page. */
+    Array.prototype.forEach.call(groupe.children, function (x) { x.setAttribute('aria-pressed', 'false'); });
+    b.setAttribute('aria-pressed', on ? 'false' : 'true');
+    if (groupe.dataset.champ === 'pro_res') peupleTypes();
+  });
+
+  var plus = boite.querySelector('.plus'), crit = document.getElementById('criteres');
+  plus.addEventListener('click', function () {
+    var ouvert = plus.getAttribute('aria-expanded') === 'true';
+    plus.setAttribute('aria-expanded', ouvert ? 'false' : 'true');
+    crit.hidden = ouvert;
+  });
+
+  document.getElementById('voir-annonces').addEventListener('click', function (e) {
+    var p = new URLSearchParams();
+    boite.querySelectorAll('.choix').forEach(function (g) {
+      if (g.dataset.multi) {
+        g.querySelectorAll('.puce[aria-pressed="true"]').forEach(function (b) { p.append(g.dataset.champ + '[]', b.textContent.trim()); });
+      } else {
+        var v = actif(g); if (v) p.set(g.dataset.champ, v);
+      }
+    });
+    boite.querySelectorAll('.crit input').forEach(function (i) { if (i.value) p.set(i.name, i.value); });
+    var q = p.toString();
+    if (q) e.currentTarget.href = 'https://koytchaimmo.re/index.php/recherche/?' + q;
+  });
+
+  peupleTypes();
+})();
+</script>
+

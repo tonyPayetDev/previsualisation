@@ -1,0 +1,45 @@
+<!-- ═══════════════════════════════════════════════════════════════════════
+     KOYTCHA IMMO — bloc a coller dans un widget HTML Elementor.
+     Genere depuis index.html : ne pas le modifier a la main, relancer
+     integration/faire-bloc-elementor.mjs a la place.
+
+     A LIRE AVANT DE COLLER
+     1. Sur la page : Elementor → roue crantee en bas a gauche → Mise en page
+        → Modele de page → **Elementor Canvas**. Canvas retire l en-tete et le
+        pied du theme : la page a deja sa propre barre de navigation, et deux
+        menus superposes, c est le probleme qu on cherche a eviter.
+        « Elementor Pleine largeur » garde l en-tete du theme : ce n est pas
+        celui-la qu il faut ici.
+     2. La section qui contient ce widget : Mise en page → Largeur du contenu
+        = **Pleine largeur**, et Etirer la section = **Oui**.
+     3. La colonne : Avance → Marge interieure = 0 partout.
+
+     Le bloc <style> ci-dessous est un FILET DE SECURITE : il refait ces trois
+     reglages en CSS, au cas ou le modele Canvas ne serait pas disponible
+     (certains themes filtrent la liste des modeles). Si Canvas est bien
+     applique, il ne sert a rien et ne gene rien.
+     ═══════════════════════════════════════════════════════════════════════ -->
+<style id="koytcha-compat-elementor">
+/* Elementor enferme chaque section dans un conteneur de largeur fixe et pose
+   des marges internes par defaut. La page, elle, gere ses propres gouttieres
+   (.wrap) : sans ca, tout est deux fois en retrait et le plein ecran du haut
+   n en est plus un. */
+.elementor-section.elementor-section-boxed > .elementor-container{max-width:none}
+.elementor-widget-html > .elementor-widget-container{padding:0;margin:0}
+.elementor-column-gap-default > .elementor-row > .elementor-column > .elementor-element-populated{padding:0}
+body.elementor-page{margin:0;padding:0;overflow-x:hidden}
+
+/* Filet de securite : masque l en-tete et le pied du theme SI le modele
+   Canvas n a pas pu etre applique. La page porte deja sa propre navigation.
+   A retirer si Canvas fonctionne — mieux vaut ne pas afficher un menu que le
+   cacher apres coup. */
+.site-header, #masthead, header.site-header, .elementor-location-header,
+.site-footer, #colophon, .elementor-location-footer{display:none}
+
+/* Connecte a WordPress, la barre d administration occupe 32 px en haut de
+   l ecran. La navigation de la page est en position fixe : sans ce decalage
+   elle passe dessous, et le logo se retrouve coupe. */
+body.admin-bar .nav{top:32px}
+@media (max-width:782px){ body.admin-bar .nav{top:46px} }
+</style>
+

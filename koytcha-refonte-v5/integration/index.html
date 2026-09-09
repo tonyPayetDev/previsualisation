@@ -72,6 +72,13 @@ a{color:var(--magenta)}
     <a href="../export/koytcha-accueil.html" target="_blank" rel="noopener">Ouvrir dans un onglet</a>
   </p>
 
+  <a class="tele" href="bloc-elementor.html" download="bloc-elementor.html">
+    <p class="t">⬇ Télécharger le bloc pour Elementor (widget HTML)</p>
+    <p class="d">Le contenu de la page, sans &lt;html&gt; ni &lt;head&gt;, avec les chemins d'images déjà
+      en adresses absolues et un bloc de compatibilité Elementor en tête. À coller tel quel dans un
+      widget <em>HTML</em>. Voir la méthode C plus bas.</p>
+  </a>
+
   <div class="enc att">
     <strong>Avant de commencer : faites une sauvegarde.</strong>
     <p style="margin:8px 0 0">Une sauvegarde complète du site <em>et</em> de la base de données. Si un
@@ -88,6 +95,12 @@ a{color:var(--magenta)}
       <td><strong>A — Modèle de page</strong><br><span style="color:var(--gris);font-size:13px">recommandée</span></td>
       <td>La page reste du HTML/CSS pur. Rendu identique au pixel près, le plus rapide à charger.
         En revanche Florent ne pourra pas la modifier depuis Elementor.</td>
+    </tr>
+    <tr>
+      <td><strong>C — Widget HTML Elementor</strong><br><span style="color:var(--gris);font-size:13px">le plus rapide</span></td>
+      <td>La page entière dans un seul widget <em>HTML</em>, sur une page en modèle
+        <strong>Elementor Canvas</strong>. Même rendu que la méthode A, sans toucher au thème enfant.
+        C'est la voie à prendre si vous travaillez déjà dans Elementor.</td>
     </tr>
     <tr>
       <td><strong>B — Reconstruction Elementor</strong></td>
@@ -136,7 +149,69 @@ a{color:var(--magenta)}
   </ol>
   <p>Un « Rechercher / Remplacer » dans un éditeur de texte suffit, c'est la même chaîne partout.</p>
 
-  <h2><span class="n">3</span>Le module de recherche</h2>
+  <h2><span class="n">3</span>Méthode C — le widget HTML d'Elementor</h2>
+
+  <p>C'est la voie où l'on se fait piéger le plus souvent : la page s'affiche, mais elle n'occupe
+    qu'une colonne au milieu de l'écran, et le menu du thème reste au-dessus de celui de la page.
+    Deux menus superposés, deux fois la même navigation. Les trois réglages ci-dessous règlent ça.</p>
+
+  <h3>a. Mettre la page en modèle « Elementor Canvas »</h3>
+  <p>Dans l'éditeur Elementor : <strong>roue crantée en bas à gauche</strong> → <em>Mise en page</em>
+    → <em>Modèle de page</em> → <strong>Elementor Canvas</strong>. Puis mettez à jour.</p>
+  <table>
+    <tr><th style="width:38%">Modèle</th><th>Ce qu'il fait</th></tr>
+    <tr><td><strong>Elementor Canvas</strong></td>
+      <td>Page nue : <strong>ni en-tête ni pied de page du thème</strong>, aucune largeur imposée.
+        C'est celui qu'il faut ici — la page apporte déjà sa propre barre de navigation.</td></tr>
+    <tr><td>Elementor Pleine largeur</td>
+      <td>Pleine largeur, mais <strong>garde l'en-tête et le pied du thème</strong>. D'où le menu en
+        double. Ce n'est pas celui-là.</td></tr>
+    <tr><td>Par défaut / du thème</td>
+      <td>En-tête, pied, et contenu borné à la largeur du thème. C'est le réglage de départ, celui
+        qui écrase la page.</td></tr>
+  </table>
+
+  <div class="enc att">
+    <strong>Le choix « Elementor Canvas » n'apparaît pas dans la liste ?</strong>
+    <p style="margin:8px 0 0">Trois causes, dans l'ordre où il faut les vérifier :</p>
+    <ul style="margin-top:8px">
+      <li>La page n'est pas éditée <em>avec Elementor</em> : hors de l'éditeur Elementor, le réglage
+        se trouve dans <em>Attributs de page → Modèle</em>, colonne de droite. S'il n'y est pas non
+        plus, cliquez d'abord sur <em>Modifier avec Elementor</em>.</li>
+      <li>Le thème filtre la liste des modèles. Testez avec un thème neutre (Hello Elementor) sur
+        une page temporaire : si Canvas réapparaît, c'est le thème.</li>
+      <li>Elementor n'est pas activé pour le type de contenu <em>Page</em> :
+        <em>Elementor → Réglages → Général → Types de publication</em>.</li>
+    </ul>
+    <p style="margin:8px 0 0">Dans tous les cas, le bloc livré contient un filet de sécurité en CSS
+      qui masque l'en-tête et le pied du thème et rend la pleine largeur. Il dépanne, mais mieux
+      vaut le vrai modèle Canvas : masquer un menu, ce n'est pas la même chose que ne pas le charger.</p>
+  </div>
+
+  <h3>b. Dé-brider la section et la colonne</h3>
+  <p>Même en Canvas, Elementor borne le contenu de chaque section et pose des marges internes.</p>
+  <ul>
+    <li><strong>Section</strong> → <em>Mise en page</em> → <em>Largeur du contenu</em> =
+      <strong>Pleine largeur</strong>, et <em>Étirer la section</em> = <strong>Oui</strong>.</li>
+    <li><strong>Colonne</strong> → <em>Avancé</em> → <em>Marge intérieure</em> = <strong>0</strong> sur
+      les quatre côtés.</li>
+    <li>La page gère ses propres gouttières (la classe <code>.wrap</code>) : si vous laissez celles
+      d'Elementor, tout est en retrait deux fois et le plein écran du haut n'en est plus un.</li>
+  </ul>
+
+  <h3>c. Coller le bloc</h3>
+  <p>Ajoutez un widget <strong>HTML</strong> dans la colonne, et collez-y le contenu de
+    <code>bloc-elementor.html</code> (lien de téléchargement en haut de cette page). Il contient déjà
+    les feuilles de style, les images en adresses absolues et le filet de sécurité.</p>
+  <div class="enc imp">
+    <strong>Barre d'administration WordPress.</strong>
+    <p style="margin:8px 0 0">Connecté, WordPress ajoute une barre de 32 px en haut de l'écran. La
+      navigation de la page étant en position fixe, elle passerait dessous et le logo serait coupé.
+      Le bloc décale la barre de navigation quand cette barre est présente — c'est pour ça que la
+      page ne se pose pas au même endroit selon que vous êtes connecté ou non.</p>
+  </div>
+
+  <h2><span class="n">4</span>Le module de recherche</h2>
   <div class="enc imp">
     <p style="margin:0 0 10px"><strong>Sur WordPress, ne gardez pas le bloc tel quel — mettez le widget Elementor.</strong></p>
     <p style="margin:0">Le fichier livré contient une copie du module qui fonctionne hors WordPress
@@ -151,7 +226,7 @@ a{color:var(--magenta)}
     <code>.boite .app</code>. Gardez-les si vous voulez le même rendu sombre ; supprimez-les pour
     retrouver l'apparence d'origine du module.</p>
 
-  <h2><span class="n">4</span>Vérifier avant de basculer</h2>
+  <h2><span class="n">5</span>Vérifier avant de basculer</h2>
   <ul>
     <li>Le module de recherche affiche un nombre de résultats et le bouton mène bien aux annonces.</li>
     <li>Le menu s'ouvre sur téléphone et les sous-menus se déplient.</li>
@@ -160,7 +235,7 @@ a{color:var(--magenta)}
     <li>Aucune erreur rouge dans la console du navigateur (touche F12, onglet <em>Console</em>).</li>
   </ul>
 
-  <h2><span class="n">5</span>Si quelque chose casse</h2>
+  <h2><span class="n">6</span>Si quelque chose casse</h2>
   <table>
     <tr><th style="width:38%">Symptôme</th><th>Cause la plus probable</th></tr>
     <tr><td>Les polices ne sont pas les bonnes</td>
@@ -177,7 +252,7 @@ a{color:var(--magenta)}
           l'habillage du thème autour.</td></tr>
   </table>
 
-  <h2><span class="n">6</span>Deux corrections à faire en même temps</h2>
+  <h2><span class="n">7</span>Deux corrections à faire en même temps</h2>
   <p>Elles ne concernent pas la page d'accueil, mais elles sont en production aujourd'hui.</p>
   <ol>
     <li><strong>Le formulaire de contact.</strong> Deux des trois destinataires pointent vers
