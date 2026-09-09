@@ -1,23 +1,10 @@
 <!doctype html>
-<!--
-  ============================================================================
-  KOYTCHA IMMO — page d'accueil, version autonome pour integration WordPress
-  Exportee le 2026-09-08 depuis previsualisation.automatisationboost.com
-
-  Ce fichier fonctionne seul : toutes les images, polices et feuilles de style
-  pointent vers des adresses absolues. Vous pouvez l'ouvrir en double-cliquant
-  dessus pour verifier avant integration.
-
-  A LIRE AVANT DE COLLER DANS WORDPRESS : le tutoriel d'integration est ici
-  https://previsualisation.automatisationboost.com/koytcha-refonte-v5/integration/
-  ============================================================================
--->
 <html lang="fr">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
-<title>Koytcha Immo — refonte v4</title>
+<title>Koytcha Immo — Conseil &amp; expertise en immobilier</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Poppins:wght@300;400;500;600&family=Fraunces:ital,opsz,wght@0,9..144,300..600;1,9..144,300..600&display=swap" rel="stylesheet">
@@ -59,7 +46,11 @@ img{max-width:100%;display:block}
 /* ── Barre de navigation ─────────────────────────────────────────────── */
 .nav{position:fixed;inset:0 0 auto;z-index:60;padding:18px 0;
   transition:background .4s var(--ease),padding .4s var(--ease),box-shadow .4s var(--ease)}
-.nav.pose{background:rgba(255,255,255,.96);padding:11px 0;box-shadow:0 1px 0 var(--ligne);backdrop-filter:blur(8px)}
+/* Le flou etait deja la mais invisible : a 96 % d'opacite, il n'y avait plus
+   rien a flouter derriere. En descendant a 82 % on voit la photo passer sous la
+   barre, tres legerement adoucie. `-webkit-` en premier pour Safari iOS. */
+.nav.pose{background:rgba(255,255,255,.82);padding:11px 0;box-shadow:0 1px 0 var(--ligne);
+  -webkit-backdrop-filter:blur(14px) saturate(150%);backdrop-filter:blur(14px) saturate(150%)}
 .nav .wrap{display:flex;align-items:center;justify-content:space-between;gap:24px}
 .logo{display:flex;align-items:center;gap:11px;text-decoration:none;flex:0 0 auto}
 .logo img{height:34px;width:auto;display:block;transition:height .4s var(--ease)}
@@ -78,7 +69,22 @@ img{max-width:100%;display:block}
 /* Reseaux : vraies couleurs de marque, pas un gris uniforme. Elles ne sont
    visibles qu au survol — en permanence, quatre pastilles colorees sur une
    photo tireraient l oeil avant le titre. */
-.reseaux-hero{display:flex;gap:11px;margin-top:34px}
+.reseaux-hero{display:flex;align-items:center;gap:11px;margin-top:34px}
+/* Le libelle n'apparait qu'au survol du groupe, pas de chaque icone : une
+   infobulle par pastille ferait clignoter trois fois le meme message.
+   aria-hidden et pointer-events:none — c'est de la decoration, un lecteur
+   d'ecran a deja les aria-label de chaque lien. */
+.rs-txt{opacity:0;transform:translateX(-8px);
+  transition:opacity .32s var(--ease),transform .32s var(--ease);
+  font-size:13px;letter-spacing:.02em;color:rgba(255,255,255,.92);
+  white-space:nowrap;pointer-events:none;margin-left:3px}
+.reseaux-hero:hover .rs-txt,.reseaux-hero:focus-within .rs-txt{opacity:1;transform:translateX(0)}
+@media (prefers-reduced-motion:reduce){.rs-txt{transition:opacity .2s ease;transform:none}}
+@media(max-width:620px){
+  /* Sur telephone il n'y a pas de survol, et le libelle pousserait les
+     pastilles hors de l'ecran. */
+  .rs-txt{display:none}
+}
 .rs{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;
   color:#fff;background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.24);
   text-decoration:none;transition:all .28s var(--ease)}
@@ -124,6 +130,13 @@ img{max-width:100%;display:block}
 /* .nav:not(.pose) ne repeint que les <a> : sans cette ligne la fleche restait
    noire sur l en-tete sombre, donc invisible. */
 .nav:not(.pose) .chev{color:#fff}
+/* Meme oubli que pour la fleche : le burger heritait du noir et se perdait
+   sur la photo sombre du premier ecran. */
+.nav:not(.pose) .burger{color:#fff}
+/* ...sauf panneau ouvert : la barre passe alors au blanc, et un burger blanc
+   sur fond blanc rendait la croix de fermeture invisible. Regression
+   introduite en corrigeant sa visibilite sur la photo sombre. */
+.nav.ouvert .burger{color:var(--noir)}
 .nav.ouvert .chev{color:var(--noir)}
 .chev svg{width:10px;height:6px;transition:transform .25s var(--ease)}
 .a-sous:hover .chev svg,.a-sous:focus-within .chev svg{transform:rotate(180deg)}
@@ -179,7 +192,15 @@ img{max-width:100%;display:block}
    Dégradé et pas aplat — un aplat éteindrait la photo, qui est l'argument. */
 .voile{position:absolute;inset:0;
   background:linear-gradient(100deg,rgba(10,10,10,.88) 0%,rgba(10,10,10,.66) 30%,rgba(10,10,10,.34) 58%,rgba(10,10,10,.62) 100%)}
-.hero{position:absolute;inset:0;display:flex;align-items:center;z-index:3}
+/* Le hero centre son contenu verticalement. Tant que la boite de recherche est
+   repliee, tout tient. Des que l'utilisateur filtre, la boite grandit de deux
+   champs et d'un bouton : le contenu devient plus haut que le hero, et un
+   centrage fait deborder AUTANT en haut qu'en bas — le titre passait donc sous
+   la barre de navigation fixe. C'est ce que Tony a vu.
+   `safe center` centre tant que ca rentre, et bascule sur le haut des que ca
+   deborde. Le padding degage la hauteur de la barre pour ce cas-la. */
+.hero{position:absolute;inset:0;display:flex;align-items:center;align-items:safe center;
+  padding:84px 0 24px;z-index:3;overflow-y:auto;-webkit-overflow-scrolling:touch}
 .hero .wrap{width:100%}
 /* Retour a la disposition d origine : texte a gauche, module dessous.
    La version en deux colonnes poussait le module sur la partie la plus
@@ -227,6 +248,20 @@ img{max-width:100%;display:block}
    dont l angle tourne. Il vit derriere la boite (z-index -1), on ne voit
    donc que le liseré qui depasse. */
 .boite{position:relative;isolation:isolate}
+/* Apparition. Le module met 2 a 3 s a s'hydrater — son bundle fait 5 Mo — et
+   on voyait le repli s'afficher puis se faire remplacer : une ouverture qui
+   sautait au rechargement. On garde donc la boite masquee et decalee vers la
+   droite, et on ne la revele qu'une fois le module en place (ou apres un delai
+   plafond, pour qu'un plugin en panne ne laisse jamais un trou). */
+.boite{opacity:0;transform:translateX(34px)}
+.boite.pret{opacity:1;transform:none;
+  transition:opacity .75s var(--ease),transform .75s var(--ease)}
+@media (prefers-reduced-motion:reduce){
+  .boite{transform:none}
+  .boite.pret{transition:opacity .3s ease}
+}
+/* Sans JavaScript la boite resterait invisible : ce serait pire que l'a-coup. */
+.no-js .boite{opacity:1;transform:none}
 .boite::before,.boite::after{content:'';position:absolute;inset:-1px;border-radius:5px;
   z-index:-1;opacity:0;pointer-events:none;transition:opacity .4s ease;
   /* Le masque ne garde que le liseré. Sans lui le degrade remplissait le
@@ -272,11 +307,24 @@ img{max-width:100%;display:block}
 .boite-repli .lab{display:block;font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;
   color:rgba(255,255,255,.62);margin:0 0 8px}
 .choix{display:flex;flex-wrap:wrap;gap:8px}
-.puce{background:rgba(0,0,0,.18);border:1px solid rgba(255,255,255,.28);border-radius:2px;
+/* Verre depoli au repos : le bouton laisse voir la photo derriere, floutee.
+   `-webkit-` en premier — sans lui, Safari iOS n'applique rien et les boutons
+   redeviennent des rectangles plats. */
+.puce{background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.30);border-radius:3px;
+  -webkit-backdrop-filter:blur(9px) saturate(120%);backdrop-filter:blur(9px) saturate(120%);
   padding:9px 13px;font:inherit;font-size:12px;letter-spacing:.06em;color:#fff;cursor:pointer;
   transition:all .22s var(--ease)}
 .puce:hover{border-color:#fff;background:rgba(255,255,255,.18)}
-.puce[aria-pressed="true"]{background:#fff;border-color:#fff;color:var(--magenta);font-weight:600}
+.puce[aria-pressed="true"]{background:var(--magenta);border-color:var(--magenta);color:#fff;
+  font-weight:600;box-shadow:0 6px 20px -8px rgba(230,0,126,.75)}
+.puce[aria-pressed="true"]:hover{background:var(--magenta-deep);border-color:var(--magenta-deep)}
+/* Le seul choix exclusif du repli — pro ou residentiel — suit la meme regle que
+   le module reel : blanc plein pour l actif. Les autres puces restent magenta,
+   ce sont des cases a cocher multiples et non un choix entre deux. */
+.choix[data-champ="pro_res"] .puce[aria-pressed="true"]{background:#fff;border-color:#fff;
+  color:var(--magenta);box-shadow:0 6px 20px -10px rgba(0,0,0,.5)}
+.choix[data-champ="pro_res"] .puce[aria-pressed="true"]:hover{background:#fff;
+  border-color:#fff;color:var(--magenta-deep)}
 .plus{display:block;width:100%;background:none;border:0;border-top:1px solid rgba(255,255,255,.22);
   margin:16px 0 0;padding:12px 0 0;font:inherit;font-size:12px;letter-spacing:.12em;
   text-transform:uppercase;color:rgba(255,255,255,.72);cursor:pointer;text-align:left}
@@ -343,16 +391,70 @@ img{max-width:100%;display:block}
    visees au pouce (44 px de haut, la cible tactile de reference) et une
    largeur plancher pour que « A l achat » ne soit pas deux fois plus etroit
    que « A la location ». */
-.boite .app .MuiToggleButton-root{display:inline-flex;justify-content:center;
-  flex:0 0 auto;max-width:none;width:auto;min-width:158px;min-height:44px;
-  background:rgba(0,0,0,.18);border:1px solid rgba(255,255,255,.28);border-radius:2px;
-  padding:12px 22px;margin:0 6px 12px;font-family:var(--sans);font-size:12.5px;font-weight:400;
-  letter-spacing:.09em;text-transform:none;color:#fff;white-space:nowrap;
+/* Le conteneur du module est un `div.col-12` en display:block, pas un
+   ToggleButtonGroup : c'est LUI qu'il faut passer en flex pour ranger les
+   boutons deux par ligne. Et les boutons portent eux-memes `col-md-4 col-5`,
+   les largeurs Bootstrap : sans les neutraliser, ils reprennent la largeur de
+   la grille et se remettent en colonne. */
+.boite .app .col-12:has(> .MuiToggleButton-root){display:flex;flex-wrap:wrap;
+  justify-content:center;gap:10px}
+.boite .app .MuiToggleButton-root{display:inline-flex;justify-content:center;align-items:center;
+  flex:1 1 calc(50% - 10px);max-width:none;width:auto;min-width:0;min-height:46px;
+  background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.30);border-radius:3px;
+  -webkit-backdrop-filter:blur(9px) saturate(120%);backdrop-filter:blur(9px) saturate(120%);
+  padding:12px 14px;margin:0;font-family:var(--sans);font-size:12.5px;font-weight:400;
+  letter-spacing:.09em;text-transform:none;color:#fff;white-space:normal;text-align:center;
   transition:all .22s var(--ease)}
 .boite .app .MuiToggleButton-root:hover{background:rgba(255,255,255,.18);border-color:#fff;color:#fff}
+/* Selectionne : BLANC plein, texte magenta — meme etat que .onglet plus haut.
+   Le magenta plein avait ete essaye ; retour Tony du 2026-09-09 : c est le blanc
+   qui doit marquer le choix actif, et il doit passer d un bouton a l autre.
+   Le plugin pose ses propres classes emotion (css-17zu2ew-…) : sans le
+   `.boite .app` en tete ET les deux selecteurs (classe MUI + aria-pressed), sa
+   regle a lui repasse devant et le bouton reste translucide. */
+/* Invite au clic, tant que le visiteur n'a rien touche. Le module ne dit pas
+   qu'il est vivant : deux boutons poses sur une photo peuvent passer pour un
+   simple libelle. Un halo lent sur le choix par defaut, et un frere qui
+   respire a contretemps, disent « ces deux-la se cliquent » sans crier.
+   L'animation s'arrete d'elle-meme au premier geste : la classe `pre-actif`
+   est retiree, et rien ne clignote pendant qu'on remplit le formulaire. */
+@keyframes ktp-invite{
+  0%,100%{box-shadow:0 6px 20px -10px rgba(0,0,0,.5), 0 0 0 0 rgba(255,255,255,.45)}
+  55%    {box-shadow:0 6px 20px -10px rgba(0,0,0,.5), 0 0 0 9px rgba(255,255,255,0)}
+}
+@keyframes ktp-invite-frere{
+  0%,100%{border-color:rgba(255,255,255,.30)}
+  55%    {border-color:rgba(255,255,255,.85)}
+}
+.boite .app .MuiToggleButton-root.pre-actif{animation:ktp-invite 2.6s var(--ease) infinite}
+.boite .app .MuiToggleButton-root.pre-actif ~ .MuiToggleButton-root{
+  animation:ktp-invite-frere 2.6s var(--ease) infinite;animation-delay:1.3s}
+/* Une invite clignotante peut gener : on la coupe pour qui demande moins de
+   mouvement. Le blanc, lui, reste — c'est l'information, pas la decoration. */
+@media (prefers-reduced-motion: reduce){
+  .boite .app .MuiToggleButton-root.pre-actif,
+  .boite .app .MuiToggleButton-root.pre-actif ~ .MuiToggleButton-root{animation:none}
+}
+/* `pre-actif` est NOTRE marque, posee avant tout clic : elle donne le blanc
+   sans toucher a l etat interne du module — donc sans deplier l etape suivante.
+   Retour Tony du 2026-09-09 : « le bouton doit etre blanc mais pas ouvrir la
+   section ». Elle disparait au premier geste du visiteur, et c est alors
+   Mui-selected qui prend le relais. */
+.boite .app .MuiToggleButton-root.pre-actif,
 .boite .app .MuiToggleButton-root.Mui-selected,
-.boite .app .MuiToggleButton-root[aria-pressed="true"]{background:#fff;border-color:#fff;
-  color:var(--magenta);font-weight:600}
+.boite .app .MuiToggleButton-root[aria-pressed="true"]{background:#fff;
+  border-color:#fff;color:var(--magenta);font-weight:600;
+  box-shadow:0 6px 20px -10px rgba(0,0,0,.5)}
+.boite .app .MuiToggleButton-root.pre-actif .fa,
+.boite .app .MuiToggleButton-root.pre-actif svg,
+.boite .app .MuiToggleButton-root.Mui-selected .fa,
+.boite .app .MuiToggleButton-root.Mui-selected svg,
+.boite .app .MuiToggleButton-root[aria-pressed="true"] .fa,
+.boite .app .MuiToggleButton-root[aria-pressed="true"] svg{color:var(--magenta)}
+.boite .app .MuiToggleButton-root.pre-actif:hover,
+.boite .app .MuiToggleButton-root.Mui-selected:hover,
+.boite .app .MuiToggleButton-root[aria-pressed="true"]:hover{background:#fff;
+  border-color:#fff;color:var(--magenta-deep)}
 /* react-select : le champ blanc par defaut trouait le verre. */
 /* Le module heritait de la police du navigateur : react-select rend ses
    propres noeuds et rien ne leur imposait la police du site. */
@@ -402,8 +504,25 @@ img{max-width:100%;display:block}
 @media (max-width:640px){
   /* 158 px x2 + marges ne tiennent pas dans 390 px : on laisse la largeur
      suivre le texte plutot que de casser la ligne en deux. */
-  .boite .app .MuiToggleButton-root{min-width:0;padding:12px 18px;margin:0 4px 10px}
-  .boite .app .col-md-4{width:auto;min-width:150px;margin:0 4px 10px}
+  /* Deux par ligne, pas empiles. Une etape n'offre que deux choix : les mettre
+     l'un au-dessus de l'autre allongeait la boite d'un ecran entier et cachait
+     le bouton « voir les annonces ». A deux par ligne, chaque cible fait encore
+     la moitie de la largeur du telephone — largement le pouce — et tout le
+     module tient dans un seul regard. */
+  .boite .app .MuiToggleButtonGroup-root{display:flex;flex-wrap:wrap;gap:10px;width:100%}
+  /* `!important` a contrecoeur, et pour une raison precise : les boutons portent
+     les classes utilitaires Bootstrap `mr-1 mb-3`, et Bootstrap declare ses
+     marges en `!important`. Sans lui, ces 4 px de marge droite s'ajoutent aux
+     50 % de base et au gap : le total depasse la ligne, et les deux boutons
+     repassent l'un sous l'autre. C'est exactement ce que Tony voyait. */
+  .boite .app .MuiToggleButton-root{display:flex;flex:1 1 calc(50% - 5px);min-width:0;
+    padding:15px 12px;margin:0 !important}
+  /* NE PAS remettre width:100% ici : les boutons portent eux-memes col-md-4,
+     et cette regle les repassait en colonne — c'est ce que Tony voyait. */
+  .boite .app .col-md-4:not(.MuiToggleButton-root){width:100%;min-width:0;margin:0 0 10px}
+  .boite-repli .choix{display:flex;flex-wrap:wrap;gap:10px}
+  .boite-repli .puce{flex:1 1 calc(50% - 5px);min-width:0;justify-content:center;
+    text-align:center;padding:13px 10px}
 }
 @media (prefers-reduced-motion:reduce){
   .boite .app .MuiToggleButton-root,.boite .app a.btn{transition:none}
@@ -571,8 +690,8 @@ h2.tt i{font-style:italic}
 .revele .pinceau{position:absolute;left:0;right:0;bottom:clamp(30px,7vw,90px);
   z-index:0;display:grid;place-items:center;pointer-events:none}
 .pinceau .fenetre{width:min(860px,72vw);aspect-ratio:300/72;
-  -webkit-mask:url(assets/logo-blanc.png) center/contain no-repeat;
-  mask:url(assets/logo-blanc.png) center/contain no-repeat;
+  -webkit-mask:url(https://previsualisation.automatisationboost.com/koytcha-refonte-v5/assets/logo-blanc.png) center/contain no-repeat;
+  mask:url(https://previsualisation.automatisationboost.com/koytcha-refonte-v5/assets/logo-blanc.png) center/contain no-repeat;
   filter:url(#brosse);
   clip-path:inset(0 100% 0 0);
   transition:clip-path 1.5s cubic-bezier(.16,1,.3,1) .15s}
@@ -797,7 +916,19 @@ h2.tt i{font-style:italic}
    scroll de plus. */
 .final{position:relative;height:clamp(340px,46vh,470px);overflow:hidden;background:var(--noir)}
 .final .fond{position:absolute;inset:-14% 0;will-change:transform}
-.final .fond img{width:100%;height:100%;object-fit:cover}
+/* Flou leger sur la photo. `scale(1.05)` avec : un `filter: blur()` etale les
+   pixels au-dela du cadre et laisse un liseré transparent sur les quatre bords
+   — l'agrandissement le mange. Le texte passe devant, la photo devient un
+   decor et cesse de se disputer la lecture. */
+.final .fond img{width:100%;height:100%;object-fit:cover;
+  filter:blur(3.5px) saturate(108%);transform:scale(1.05)}
+/* Le reseau de noeuds, le meme vocabulaire que sur le site restaurant : des
+   pieces qui se relient toutes seules. Au canvas et non en DOM — une centaine
+   de div animees ferait recalculer la mise en page a chaque image. */
+#toile-final{position:absolute;inset:0;width:100%;height:100%;z-index:1;
+  opacity:.42;pointer-events:none}
+@media (prefers-reduced-motion:reduce){#toile-final{display:none}}
+.final .teinte,.final .dedans{z-index:2}
 /* ── Correctif v3.1 · le rose redevient un accent ─────────────────────────
    Le correctif v3 avait retiré le grand dégradé de la section « À propos »,
    mais celle-ci gardait un voile magenta sur TOUTE sa largeur — à 80 % d'opacité
@@ -875,7 +1006,24 @@ footer a:hover{color:var(--magenta)}
 .cartes .carte{transition-delay:var(--retard,0ms)}
 
 @media(max-width:980px){
-  .cartes{grid-template-columns:1fr}
+  /* Sur telephone les trois programmes s'empilaient : il fallait faire defiler
+     un ecran et demi pour voir le troisieme, et la plupart s'arretaient au
+     premier. En carrousel horizontal, les trois sont a portee de pouce et le
+     deuxieme depasse volontairement du bord — c'est ce qui dit qu'il y en a
+     d'autres, mieux que n'importe quelle fleche.
+     `scroll-snap` cale chaque carte proprement ; la barre de defilement est
+     masquee mais le geste, lui, reste natif. */
+  .cartes{display:flex;grid-template-columns:none;gap:14px;overflow-x:auto;
+    /* `proximity` et non `mandatory` : en mandatory, le navigateur ramene la
+       piste sur le point d'ancrage a chaque micro-deplacement, et le
+       defilement automatique de 0,4 px etait annule a chaque image — la
+       carrousel restait fige a zero. En proximity, il avance, et le geste du
+       doigt cale quand meme proprement. */
+    scroll-snap-type:x proximity;
+    padding:2px 20px 14px;margin:0 -20px;
+    scrollbar-width:none;-ms-overflow-style:none}
+  .cartes::-webkit-scrollbar{display:none}
+  .cartes .carte{flex:0 0 82%;scroll-snap-align:center;max-width:82%}
   .duo{grid-template-columns:1fr}
   .chiffres{grid-template-columns:1fr 1fr;gap:30px}
   .pied{grid-template-columns:1fr 1fr}
@@ -885,7 +1033,13 @@ footer a:hover{color:var(--magenta)}
      barre, les sous-menus deviennent des accordeons. */
   .liens{display:none}
   .burger{display:block}
-  .nav.ouvert{background:#fff}
+  /* Le panneau est en position:fixed et doit se caler sur l'ECRAN. Or
+     .nav.pose porte un backdrop-filter, et un backdrop-filter cree un bloc
+     conteneur pour ses descendants fixes : le panneau se calait alors sur la
+     barre de 54 px et paraissait ne pas s'ouvrir — mais seulement APRES avoir
+     defile, puisque .pose n'existe pas en haut de page. Le fond etant opaque
+     quand le menu est ouvert, retirer le flou ne change rien a l'oeil. */
+  .nav.ouvert{background:#fff;backdrop-filter:none;-webkit-backdrop-filter:none}
   .nav.ouvert .liens{display:block;position:fixed;left:0;right:0;top:70px;bottom:0;
     background:#fff;margin:0;padding:6px 0 48px;overflow-y:auto;
     -webkit-overflow-scrolling:touch;z-index:55}
@@ -1188,15 +1342,15 @@ footer a:hover{color:var(--magenta)}
 /* NORMATICA — la police de la marque, reprise du site d'origine
    (plugin Elementor de koytchaimmo.re). Optima en seconde famille,
    fournie par Florent le 25/08. */
-@font-face{font-family:'Normatica';src:url('fonts/CarnokyType-Normatica-Regular.otf') format('opentype');font-weight:400;font-display:swap}
-@font-face{font-family:'Normatica';src:url('fonts/CarnokyType-Normatica-Medium.otf') format('opentype');font-weight:500 700;font-display:swap}
-@font-face{font-family:'Optima LT Pro';src:url('fonts/OptimaLTProRoman.otf') format('opentype');font-weight:400;font-style:normal;font-display:swap}
-@font-face{font-family:'Optima LT Pro';src:url('fonts/OptimaLTProItalic.otf') format('opentype');font-weight:400;font-style:italic;font-display:swap}
-@font-face{font-family:'Optima LT Pro';src:url('fonts/OptimaLTProMedium.otf') format('opentype');font-weight:500;font-style:normal;font-display:swap}
-@font-face{font-family:'Optima LT Pro';src:url('fonts/OptimaLTProDemiBold.otf') format('opentype');font-weight:600;font-style:normal;font-display:swap}
-@font-face{font-family:'Optima LT Pro';src:url('fonts/OptimaLTProBold.otf') format('opentype');font-weight:700;font-style:normal;font-display:swap}
-@font-face{font-family:'Optima LT Pro';src:url('fonts/OptimaLTProBoldItalic.otf') format('opentype');font-weight:700;font-style:italic;font-display:swap}
-@font-face{font-family:'Optima LT Pro';src:url('fonts/OptimaLTProBlack.otf') format('opentype');font-weight:800;font-style:normal;font-display:swap}
+@font-face{font-family:'Normatica';src:url(https://previsualisation.automatisationboost.com/koytcha-refonte-v5/fonts/CarnokyType-Normatica-Regular.otf) format('opentype');font-weight:400;font-display:swap}
+@font-face{font-family:'Normatica';src:url(https://previsualisation.automatisationboost.com/koytcha-refonte-v5/fonts/CarnokyType-Normatica-Medium.otf) format('opentype');font-weight:500 700;font-display:swap}
+@font-face{font-family:'Optima LT Pro';src:url(https://previsualisation.automatisationboost.com/koytcha-refonte-v5/fonts/OptimaLTProRoman.otf) format('opentype');font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:'Optima LT Pro';src:url(https://previsualisation.automatisationboost.com/koytcha-refonte-v5/fonts/OptimaLTProItalic.otf) format('opentype');font-weight:400;font-style:italic;font-display:swap}
+@font-face{font-family:'Optima LT Pro';src:url(https://previsualisation.automatisationboost.com/koytcha-refonte-v5/fonts/OptimaLTProMedium.otf) format('opentype');font-weight:500;font-style:normal;font-display:swap}
+@font-face{font-family:'Optima LT Pro';src:url(https://previsualisation.automatisationboost.com/koytcha-refonte-v5/fonts/OptimaLTProDemiBold.otf) format('opentype');font-weight:600;font-style:normal;font-display:swap}
+@font-face{font-family:'Optima LT Pro';src:url(https://previsualisation.automatisationboost.com/koytcha-refonte-v5/fonts/OptimaLTProBold.otf) format('opentype');font-weight:700;font-style:normal;font-display:swap}
+@font-face{font-family:'Optima LT Pro';src:url(https://previsualisation.automatisationboost.com/koytcha-refonte-v5/fonts/OptimaLTProBoldItalic.otf) format('opentype');font-weight:700;font-style:italic;font-display:swap}
+@font-face{font-family:'Optima LT Pro';src:url(https://previsualisation.automatisationboost.com/koytcha-refonte-v5/fonts/OptimaLTProBlack.otf) format('opentype');font-weight:800;font-style:normal;font-display:swap}
 .intro-prog{margin-top:14px;max-width:62ch;font-size:15.5px;line-height:1.75;color:var(--gris,#5b5b60)}
 .promoteur-note{margin-top:18px;max-width:70ch;font-size:15.5px;line-height:1.75;color:var(--gris,#5b5b60)}
 .realisations{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-top:30px}
@@ -1334,7 +1488,11 @@ footer a:hover{color:var(--magenta)}
         <li><a href="https://www.koytchaconseil.com/" target="_blank" rel="noopener">Groupe Koytcha</a></li>
         </ul>
       </li>
-      <li><a href="#contact">Contact</a></li>
+      <li><a href="https://koytchaimmo.re/contact">Contact</a></li>
+      <!-- Le bouton « Remonter en haut » vivait ici, en fin de panneau. Retire
+           a la demande de Tony : il n'apparaissait qu'au bas du menu deja
+           ouvert, la ou personne ne le cherche, et il doublait le geste de
+           defilement que le telephone fait deja tres bien. -->
     </ul>
     <!-- Correctif v3 · 3 : passé en contour. Deux boutons roses pleins se
          disputaient le clic alors qu'ils mènent à deux parcours opposés
@@ -1377,10 +1535,11 @@ footer a:hover{color:var(--magenta)}
             <p>30 ans d'expertise locale. Biens rares, accompagnement sur mesure,
                résultats durables.</p>
             <div class="reseaux-hero">
-              <a href="https://www.facebook.com/koytchaimmo" target="_blank" rel="noopener" aria-label="Facebook" class="rs fb"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M14 9h3V6h-3c-2.2 0-4 1.8-4 4v2H8v3h2v7h3v-7h3l1-3h-4v-2c0-.6.4-1 1-1z"/></svg></a>
-              <a href="https://www.instagram.com/koytchaimmo" target="_blank" rel="noopener" aria-label="Instagram" class="rs ig"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.4" cy="6.6" r=".7" fill="currentColor"/></svg></a>
-              <a href="https://www.linkedin.com/company/koytcha-immo" target="_blank" rel="noopener" aria-label="LinkedIn" class="rs li"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M5 4a2 2 0 100 4 2 2 0 000-4zM3.5 9.5h3V21h-3zM10 9.5h2.9v1.6c.5-.9 1.6-1.8 3.3-1.8 3 0 3.8 1.8 3.8 4.6V21h-3v-6c0-1.5-.5-2.5-1.9-2.5-1 0-1.7.7-2 1.4-.1.2-.1.6-.1.9V21h-3z"/></svg></a>
+              <a href="https://www.facebook.com/Koytchaimmo" target="_blank" rel="noopener" title="Suivez-nous sur Facebook" aria-label="Facebook" class="rs fb"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M14 9h3V6h-3c-2.2 0-4 1.8-4 4v2H8v3h2v7h3v-7h3l1-3h-4v-2c0-.6.4-1 1-1z"/></svg></a>
+              <a href="https://www.instagram.com/koytchaimmo.re/" target="_blank" rel="noopener" title="Suivez-nous sur Instagram" aria-label="Instagram" class="rs ig"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.4" cy="6.6" r=".7" fill="currentColor"/></svg></a>
+              <a href="https://linkedin.com/company/16168910/" target="_blank" rel="noopener" title="Suivez-nous sur LinkedIn" aria-label="LinkedIn" class="rs li"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M5 4a2 2 0 100 4 2 2 0 000-4zM3.5 9.5h3V21h-3zM10 9.5h2.9v1.6c.5-.9 1.6-1.8 3.3-1.8 3 0 3.8 1.8 3.8 4.6V21h-3v-6c0-1.5-.5-2.5-1.9-2.5-1 0-1.7.7-2 1.4-.1.2-.1.6-.1.9V21h-3z"/></svg></a>
               
+              <span class="rs-txt" aria-hidden="true">Suivez-nous sur nos réseaux</span>
             </div>
           </div>
           <div class="boite">
@@ -1396,8 +1555,8 @@ footer a:hover{color:var(--magenta)}
               <div class="etape">
                 <span class="lab" id="l-pro">Pro ou résidentiel&nbsp;?</span>
                 <div class="choix" role="group" aria-labelledby="l-pro" data-champ="pro_res">
-                  <button class="puce" type="button" aria-pressed="false">Residentiel</button>
-                  <button class="puce" type="button" aria-pressed="true">Professionnel</button>
+                  <button class="puce" type="button" aria-pressed="true">Residentiel</button>
+                  <button class="puce" type="button" aria-pressed="false">Professionnel</button>
                 </div>
               </div>
 
@@ -1486,7 +1645,12 @@ footer a:hover{color:var(--magenta)}
             Koytcha Immo vous accompagne et vous délivre toutes les clés pour réussir votre
             investissement. Découvrez sans plus attendre nos opportunités exclusives du moment&nbsp;!</p>
       </div>
-      <a class="lien-fleche" href="https://koytchaimmo.re/recherche/" target="_blank" rel="noopener">Découvrir tous nos biens
+      <!-- « nos programmes » et non « nos biens » : cette section montre les
+           programmes neufs (Cambaie, Ze Bure@u 2, Ze Lokal), pas le catalogue
+           d'annonces. Le lien suit le libelle et pointe desormais sur la page
+           des programmes, comme les cartes juste en dessous — un lien qui
+           annonce les programmes et ouvre la recherche generale trompe. -->
+      <a class="lien-fleche" href="https://koytchaimmo.re/nos-programmes/" target="_blank" rel="noopener">Découvrez nos programmes
         <svg width="20" height="11" viewBox="0 0 20 11" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M0 5.5h18M13.5 1l4.5 4.5-4.5 4.5"/></svg></a>
     </div>
     <div class="cartes">
@@ -1568,25 +1732,21 @@ footer a:hover{color:var(--magenta)}
              photo. Les trois autres attendent sa confirmation. -->
         <div class="realisations">
           <figure>
-            <span class="cadre-real"><img src="https://previsualisation.automatisationboost.com/koytcha-refonte-v5/assets/programmes/w1-1200.webp"
-                 srcset="https://previsualisation.automatisationboost.com/koytcha-refonte-v5/assets/programmes/w1-600.webp 600w, https://previsualisation.automatisationboost.com/koytcha-refonte-v5/assets/programmes/w1-1200.webp 1200w"
-                 sizes="(max-width:900px) 86vw, 20vw" alt="Ze Bure@u 1" loading="lazy"></span>
-            <span class="miroir" aria-hidden="true" style="--photo:url(https://previsualisation.automatisationboost.com/koytcha-refonte-v5/assets/programmes/w1-600.webp)"></span>
-            <figcaption>Ze Bure@u 1</figcaption>
-          </figure>
-          <figure>
-            <a href="https://koytchaimmo.re/programmes/ze-bureu-2/" target="_blank" rel="noopener"><span class="cadre-real"><img src="https://previsualisation.automatisationboost.com/koytcha-refonte-v5/assets/programmes/w3-1200.webp"
-                 srcset="https://previsualisation.automatisationboost.com/koytcha-refonte-v5/assets/programmes/w3-600.webp 600w, https://previsualisation.automatisationboost.com/koytcha-refonte-v5/assets/programmes/w3-1200.webp 1200w"
-                 sizes="(max-width:900px) 86vw, 20vw" alt="Ze Bure@u 2" loading="lazy"></span>
-            <span class="miroir" aria-hidden="true" style="--photo:url(https://previsualisation.automatisationboost.com/koytcha-refonte-v5/assets/programmes/w3-600.webp)"></span></a>
-            <figcaption><a href="https://koytchaimmo.re/programmes/ze-bureu-2/" target="_blank" rel="noopener">Ze Bure@u 2</a></figcaption>
-          </figure>
-          <figure>
             <a href="https://koytchaimmo.re/programmes/le-kerval/" target="_blank" rel="noopener"><span class="cadre-real"><img src="https://previsualisation.automatisationboost.com/koytcha-refonte-v5/assets/programmes/w5-1200.webp"
                  srcset="https://previsualisation.automatisationboost.com/koytcha-refonte-v5/assets/programmes/w5-600.webp 600w, https://previsualisation.automatisationboost.com/koytcha-refonte-v5/assets/programmes/w5-1200.webp 1200w"
                  sizes="(max-width:900px) 86vw, 20vw" alt="Kerval" loading="lazy"></span>
             <span class="miroir" aria-hidden="true" style="--photo:url(https://previsualisation.automatisationboost.com/koytcha-refonte-v5/assets/programmes/w5-600.webp)"></span></a>
             <figcaption><a href="https://koytchaimmo.re/programmes/le-kerval/" target="_blank" rel="noopener">Kerval</a></figcaption>
+          </figure>
+          <figure>
+            <!-- w4 et non w3 : la vignette reprenait la photo de Ze Bure@u 2, la
+                 meme image apparaissait donc deux fois dans la rangee. w4 est la
+                 vue aerienne du lotissement, deja dans les assets, inutilisee. -->
+            <span class="cadre-real"><img src="https://previsualisation.automatisationboost.com/koytcha-refonte-v5/assets/programmes/w4-1200.webp"
+                 srcset="https://previsualisation.automatisationboost.com/koytcha-refonte-v5/assets/programmes/w4-600.webp 600w, https://previsualisation.automatisationboost.com/koytcha-refonte-v5/assets/programmes/w4-1200.webp 1200w"
+                 sizes="(max-width:900px) 86vw, 20vw" alt="Villas La Marine 2" loading="lazy"></span>
+            <span class="miroir" aria-hidden="true" style="--photo:url(https://previsualisation.automatisationboost.com/koytcha-refonte-v5/assets/programmes/w4-600.webp)"></span>
+            <figcaption>Villas La Marine 2</figcaption>
           </figure>
           <figure>
             <a href="https://koytchaimmo.re/programmes/espace-turquoise/" target="_blank" rel="noopener"><span class="cadre-real"><img src="https://previsualisation.automatisationboost.com/koytcha-refonte-v5/assets/programmes/w2-1200.webp"
@@ -1596,11 +1756,18 @@ footer a:hover{color:var(--magenta)}
             <figcaption><a href="https://koytchaimmo.re/programmes/espace-turquoise/" target="_blank" rel="noopener">Espace Turquoise</a></figcaption>
           </figure>
           <figure>
-            <span class="cadre-real"><img src="https://previsualisation.automatisationboost.com/koytcha-refonte-v5/assets/programmes/w3-1200.webp"
+            <a href="https://koytchaimmo.re/programmes/ze-bureu-2/" target="_blank" rel="noopener"><span class="cadre-real"><img src="https://previsualisation.automatisationboost.com/koytcha-refonte-v5/assets/programmes/w3-1200.webp"
                  srcset="https://previsualisation.automatisationboost.com/koytcha-refonte-v5/assets/programmes/w3-600.webp 600w, https://previsualisation.automatisationboost.com/koytcha-refonte-v5/assets/programmes/w3-1200.webp 1200w"
-                 sizes="(max-width:900px) 86vw, 20vw" alt="Villas La Marine 2" loading="lazy"></span>
-            <span class="miroir" aria-hidden="true" style="--photo:url(https://previsualisation.automatisationboost.com/koytcha-refonte-v5/assets/programmes/w3-600.webp)"></span>
-            <figcaption>Villas La Marine 2</figcaption>
+                 sizes="(max-width:900px) 86vw, 20vw" alt="Ze Bure@u 2" loading="lazy"></span>
+            <span class="miroir" aria-hidden="true" style="--photo:url(https://previsualisation.automatisationboost.com/koytcha-refonte-v5/assets/programmes/w3-600.webp)"></span></a>
+            <figcaption><a href="https://koytchaimmo.re/programmes/ze-bureu-2/" target="_blank" rel="noopener">Ze Bure@u 2</a></figcaption>
+          </figure>
+          <figure>
+            <span class="cadre-real"><img src="https://previsualisation.automatisationboost.com/koytcha-refonte-v5/assets/programmes/w1-1200.webp"
+                 srcset="https://previsualisation.automatisationboost.com/koytcha-refonte-v5/assets/programmes/w1-600.webp 600w, https://previsualisation.automatisationboost.com/koytcha-refonte-v5/assets/programmes/w1-1200.webp 1200w"
+                 sizes="(max-width:900px) 86vw, 20vw" alt="Ze Bure@u 1" loading="lazy"></span>
+            <span class="miroir" aria-hidden="true" style="--photo:url(https://previsualisation.automatisationboost.com/koytcha-refonte-v5/assets/programmes/w1-600.webp)"></span>
+            <figcaption>Ze Bure@u 1</figcaption>
           </figure>
         </div>
         </div>
@@ -1630,14 +1797,23 @@ footer a:hover{color:var(--magenta)}
 <!-- 4 · DERNIÈRE SECTION — la photo se révèle au scroll -->
 <section class="final" id="contact">
   <div class="fond" id="fondFinal">
-    <img src="https://previsualisation.automatisationboost.com/koytchaimmo-refonte/assets/photo1.webp" alt="Vivre à La Réunion">
+    <!-- 1600 px au lieu de 1024 : la section fait toute la largeur, et sur un
+         telephone recent (3x) le 1024 etait etire. Le fichier existait deja
+         dans assets/fond/, il n'etait simplement pas utilise. -->
+    <img src="https://previsualisation.automatisationboost.com/koytcha-refonte-v5/assets/fond/photo1.webp"
+         srcset="https://previsualisation.automatisationboost.com/koytcha-refonte-v5/assets/fond/photo1-1024.webp 1024w, https://previsualisation.automatisationboost.com/koytcha-refonte-v5/assets/fond/photo1.webp 1600w"
+         sizes="100vw" alt="Vivre à La Réunion" loading="lazy" decoding="async">
   </div>
+  <canvas id="toile-final" aria-hidden="true"></canvas>
   <div class="teinte"></div>
   <div class="dedans">
     <div class="wrap">
       <h2>Vivre La Réunion, <i>imaginer demain.</i></h2>
       <p>Plus qu'un lieu, une expérience. Découvrons ensemble le projet qui vous ressemble.</p>
-      <a class="bt" href="#contact">Contactez-nous</a>
+      <!-- La page de contact du site, et non l'ancre #contact : ce bouton vit
+           DANS la section id="contact", il pointait donc sur lui-meme et ne
+           faisait rien. -->
+      <a class="bt" href="https://koytchaimmo.re/contact">Contactez-nous</a>
     </div>
   </div>
 </section>
@@ -1649,10 +1825,10 @@ footer a:hover{color:var(--magenta)}
         <a class="logo" href="https://koytchaimmo.re/" target="_blank" rel="noopener"><img class="l-clair" src="https://previsualisation.automatisationboost.com/koytcha-refonte-v5/assets/logo-blanc.png" alt="Koytcha Immo"></a>
         <p>Conseil &amp; expertise en immobilier à La Réunion depuis 2004.</p>
         <div class="reseaux">
-          <a href="https://www.facebook.com/Koytchaimmo" target="_blank" rel="noopener" aria-label="Facebook"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M14 9h3V6h-3c-2.2 0-4 1.8-4 4v2H8v3h2v7h3v-7h3l1-3h-4v-2c0-.6.4-1 1-1z"/></svg></a>
-          <a href="https://www.instagram.com/koytchaimmo/" target="_blank" rel="noopener" aria-label="Instagram"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r=".6" fill="currentColor"/></svg></a>
+          <a href="https://www.facebook.com/Koytchaimmo" target="_blank" rel="noopener" title="Suivez-nous sur Facebook" aria-label="Facebook"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M14 9h3V6h-3c-2.2 0-4 1.8-4 4v2H8v3h2v7h3v-7h3l1-3h-4v-2c0-.6.4-1 1-1z"/></svg></a>
+          <a href="https://www.instagram.com/koytchaimmo.re/" target="_blank" rel="noopener" title="Suivez-nous sur Instagram" aria-label="Instagram"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r=".6" fill="currentColor"/></svg></a>
           
-          <a href="https://linkedin.com/company/16168910/" target="_blank" rel="noopener" aria-label="LinkedIn"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M5 4a2 2 0 100 4 2 2 0 000-4zM3.5 9.5h3V21h-3zM10 9.5h2.9v1.6c.5-.9 1.6-1.8 3.3-1.8 3 0 3.8 1.8 3.8 4.6V21h-3v-6c0-1.5-.5-2.5-1.9-2.5-1 0-1.7.7-2 1.4-.1.2-.1.6-.1.9V21h-3z"/></svg></a>
+          <a href="https://linkedin.com/company/16168910/" target="_blank" rel="noopener" title="Suivez-nous sur LinkedIn" aria-label="LinkedIn"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M5 4a2 2 0 100 4 2 2 0 000-4zM3.5 9.5h3V21h-3zM10 9.5h2.9v1.6c.5-.9 1.6-1.8 3.3-1.8 3 0 3.8 1.8 3.8 4.6V21h-3v-6c0-1.5-.5-2.5-1.9-2.5-1 0-1.7.7-2 1.4-.1.2-.1.6-.1.9V21h-3z"/></svg></a>
         </div>
       </div>
       <div>
@@ -1662,15 +1838,15 @@ footer a:hover{color:var(--magenta)}
           <li><a href="#programmes">Louer</a></li>
           <li><a href="#apropos">Vendre</a></li>
           <li><a href="#apropos">Confier mon bien</a></li>
-          <li><a href="#contact">Contact</a></li>
+          <li><a href="https://koytchaimmo.re/contact">Contact</a></li>
         </ul>
       </div>
       <div>
         <h4>Contact</h4>
         <ul>
           <li>45 rue Alexis de Villeneuve<br>97400 Saint-Denis, La Réunion</li>
-          <li><a href="tel:+262262979607">0262 97 96 07</a></li>
-          <li><a href="mailto:anjalee@koytchaimmo.re">anjalee@koytchaimmo.re</a></li>
+          <li><a href="https://previsualisation.automatisationboost.com/koytcha-refonte-v5/tel:+262262979607">0262 97 96 07</a></li>
+          <li><a href="https://previsualisation.automatisationboost.com/koytcha-refonte-v5/mailto:anjalee@koytchaimmo.re">anjalee@koytchaimmo.re</a></li>
           <li>Lun – Ven : 8h – 17h</li>
         </ul>
       </div>
@@ -1726,40 +1902,219 @@ footer a:hover{color:var(--magenta)}
     if (e.key === 'Escape' && nav.classList.contains('ouvert')) { fermer(); burger.focus(); }
   });
 
+  /* ── Les carrousels, sur telephone ────────────────────────────────────
+     Ils avancent tout seuls, lentement, et s'arretent des que quelqu'un les
+     touche. Quatre pistes sont concernees : les programmes, la galerie, la
+     planche photo et les realisations. Sur ordinateur ce sont des grilles :
+     elles ne debordent pas, et le garde-fou `debordement() < 8` suffit a les
+     laisser tranquilles — pas besoin de dupliquer les points de rupture CSS
+     ici, ou ils finiraient par diverger.
+
+     Trois precautions qui font la difference entre un carrousel et une gene :
+       · on n'anime QUE si la piste deborde ;
+       · le defilement s'arrete au premier geste — doigt, souris ou molette —
+         et ne repart pas : reprendre la main a l'utilisateur, c'est le lui
+         reprendre deux fois ;
+       · rien ne bouge si la piste n'est pas a l'ecran, ni si le visiteur a
+         demande moins d'animation.
+     Le pas est de 0,4 px toutes les 16 ms — environ 25 px par seconde. C'est
+     volontairement lent : on doit avoir le temps de lire un nom de programme
+     sans le poursuivre du regard. */
+  (function () {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    var VITESSE = 0.4;
+
+    function animer(piste) {
+      if (!piste) return;
+      var main = false, vu = false, tic = null;
+
+      /* On tient la position en flottant DANS le script, et on ne fait qu'ecrire
+         dans scrollLeft. En lisant `piste.scrollLeft` a chaque image pour lui
+         rajouter 0,4 px, on repartait de la valeur ARRONDIE que rend le
+         navigateur : 0 + 0,4 relu comme 0, indefiniment. La piste ne bougeait
+         pas d'un pixel — c'est ce que la verification a montre. */
+      /* LE point qui bloquait tout, mesure dans le navigateur : avec
+         `scroll-snap-type` actif, ecrire `piste.scrollLeft = 42` rend 0 — le
+         navigateur ramene aussitot la piste sur son point d'ancrage. Le
+         defilement automatique n'avait donc aucun effet, quelle que soit la
+         valeur du pas. On coupe le snap pendant l'animation et on le rend des
+         que l'utilisateur prend la main : il avance tout seul, et le geste du
+         doigt cale quand meme proprement. */
+      var pos = 0;
+      piste.style.scrollSnapType = 'none';
+      function debordement() { return piste.scrollWidth - piste.clientWidth; }
+      function pas() {
+        var d = debordement();
+        if (main || !vu || d < 8) return;
+        pos += VITESSE;
+        if (pos >= d) pos = 0;                                  // on reboucle au debut
+        piste.scrollLeft = pos;
+      }
+      function demarrer() { if (!tic) tic = setInterval(pas, 16); }
+      function arreter() { if (tic) { clearInterval(tic); tic = null; } }
+
+      ['pointerdown', 'touchstart', 'wheel', 'keydown'].forEach(function (e) {
+        piste.addEventListener(e, function () {
+          main = true; pos = piste.scrollLeft; arreter();
+          piste.style.scrollSnapType = '';        // on rend le calage au pouce
+        }, { passive: true });
+      });
+
+      if ('IntersectionObserver' in window) {
+        new IntersectionObserver(function (entrees) {
+          vu = entrees[0].isIntersecting;
+          if (vu && !main) demarrer(); else arreter();
+        }, { threshold: 0.25 }).observe(piste);
+      } else { vu = true; demarrer(); }
+    }
+
+    /* Les deux pistes reellement presentes, mesurees a 390 px de large :
+       .cartes deborde de 555 px, .realisations de 1195. `.gal` et `.planche`
+       ont leur CSS de carrousel dans la feuille mais plus aucun balisage dans
+       cette version — les laisser ici donnerait un selecteur qui ne designe
+       rien, et laisserait croire qu'ils sont animes. */
+    ['.cartes', '.realisations'].forEach(function (sel) {
+      [].forEach.call(document.querySelectorAll(sel), animer);
+    });
+  })();
+
+  /* ── Le reseau de noeuds de la section contact ─────────────────────────
+     Des points qui derivent et se relient quand ils se rapprochent. Discret :
+     opacite 42 %, trait fin, et le magenta de la marque plutot qu'un blanc qui
+     mangerait la photo. Il ne tourne que lorsque la section est a l'ecran, et
+     pas du tout si le visiteur a demande moins d'animation. */
+  (function () {
+    var c = document.getElementById('toile-final');
+    if (!c || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    var x = c.getContext('2d'), sec = c.parentElement, n = [], vu = false, boucle = null;
+    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+    function dimensionner() {
+      var r = sec.getBoundingClientRect();
+      c.width = Math.max(1, r.width * dpr); c.height = Math.max(1, r.height * dpr);
+      var densite = r.width < 600 ? 22 : (r.width < 1000 ? 36 : 52);
+      n = [];
+      for (var i = 0; i < densite; i++) {
+        n.push({ x: Math.random() * c.width, y: Math.random() * c.height,
+                 vx: (Math.random() - .5) * .18 * dpr, vy: (Math.random() - .5) * .18 * dpr,
+                 r: (1 + Math.random() * 1.5) * dpr });
+      }
+    }
+    function dessiner() {
+      x.clearRect(0, 0, c.width, c.height);
+      var lien = (c.width < 900 ? 110 : 140) * dpr;
+      for (var i = 0; i < n.length; i++) {
+        var a = n[i];
+        a.x += a.vx; a.y += a.vy;
+        if (a.x < 0 || a.x > c.width) a.vx *= -1;
+        if (a.y < 0 || a.y > c.height) a.vy *= -1;
+        for (var j = i + 1; j < n.length; j++) {
+          var b = n[j], dx = a.x - b.x, dy = a.y - b.y, d = Math.hypot(dx, dy);
+          if (d > lien) continue;
+          x.strokeStyle = 'rgba(255,255,255,' + (0.18 * (1 - d / lien)).toFixed(3) + ')';
+          x.lineWidth = dpr * .6;
+          x.beginPath(); x.moveTo(a.x, a.y); x.lineTo(b.x, b.y); x.stroke();
+        }
+        x.fillStyle = 'rgba(230,0,126,.62)';
+        x.beginPath(); x.arc(a.x, a.y, a.r, 0, 6.2832); x.fill();
+      }
+      boucle = requestAnimationFrame(dessiner);
+    }
+    function relancer() {
+      if (boucle) { cancelAnimationFrame(boucle); boucle = null; }
+      if (vu) boucle = requestAnimationFrame(dessiner);
+    }
+    dimensionner();
+    addEventListener('resize', function () { dimensionner(); }, { passive: true });
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver(function (e) { vu = e[0].isIntersecting; relancer(); },
+        { threshold: 0 }).observe(sec);
+    } else { vu = true; relancer(); }
+  })();
+
   /* ── Retour sonore au clic ────────────────────────────────────────────
-     Synthetise plutot que telecharge : deux oscillateurs de 50 a 120 ms,
-     zero fichier, zero requete. Le contexte audio n est cree qu au premier
-     clic — le creer au chargement le laisserait suspendu par la politique
-     de lecture automatique des navigateurs. Volume tres bas (0,035) : un
-     site immobilier qui bipe fort, on le quitte. Coupe si le visiteur a
-     demande moins d animations. */
+     Synthetise, pas telecharge : zero fichier, zero requete. Le contexte audio
+     n est cree qu au premier clic — le creer au chargement le laisserait
+     suspendu par la politique de lecture automatique des navigateurs.
+
+     Le premier jet etait un bip : une onde triangle qui descend. Ca sonnait
+     electronique, et un site immobilier haut de gamme qui bipe fait penser a un
+     distributeur de billets. Deux sons remplacent le bip, tous les deux courts
+     et bas :
+
+     · le CHOIX est un petit coup mat — une bouffee de bruit filtree tres court
+       (28 ms) posee sur une sinusoide grave. L oreille l entend comme un objet
+       qu on pose, pas comme une machine ;
+     · l ACTION PRINCIPALE est un intervalle de quinte qui monte (440 puis 660
+       Hz), en sinusoide pure et tres douce. Ca dit « valide » sans crier.
+
+     Volume tres bas dans les deux cas, et rien du tout si le visiteur a demande
+     moins d animations. */
   var son = null;
-  var bip = function(freq, duree, force){
-    if (reduit) return;
+  var contexte = function(){
+    if (reduit) return null;
     try {
       var AC = window.AudioContext || window.webkitAudioContext;
-      if (!AC) return;
+      if (!AC) return null;
       son = son || new AC();
       if (son.state === 'suspended') son.resume();
-      var t = son.currentTime, o = son.createOscillator(), g = son.createGain();
-      o.type = 'triangle';
-      o.frequency.setValueAtTime(freq, t);
-      o.frequency.exponentialRampToValueAtTime(freq * 0.62, t + duree);
-      g.gain.setValueAtTime(0.0001, t);
-      g.gain.linearRampToValueAtTime(force, t + 0.006);
-      g.gain.exponentialRampToValueAtTime(0.0001, t + duree);
-      o.connect(g); g.connect(son.destination);
-      o.start(t); o.stop(t + duree + 0.03);
-    } catch (e) { /* pas de son disponible : le site marche pareil */ }
+      return son;
+    } catch (e) { return null; }
   };
+
+  /* Le coup mat : bruit blanc court passe dans un filtre passe-bande, plus une
+     sinusoide grave pour lui donner du corps. */
+  var toc = function(force){
+    var c = contexte(); if (!c) return;
+    try {
+      var t = c.currentTime, duree = 0.028;
+      var n = c.createBuffer(1, Math.ceil(c.sampleRate * duree), c.sampleRate);
+      var d = n.getChannelData(0);
+      for (var i = 0; i < d.length; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / d.length);
+      var src = c.createBufferSource(); src.buffer = n;
+      var f = c.createBiquadFilter(); f.type = 'bandpass'; f.frequency.value = 1700; f.Q.value = 1.1;
+      var g = c.createGain();
+      g.gain.setValueAtTime(force, t);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + duree);
+      src.connect(f); f.connect(g); g.connect(c.destination);
+      src.start(t); src.stop(t + duree);
+
+      var o = c.createOscillator(), go = c.createGain();
+      o.type = 'sine'; o.frequency.setValueAtTime(190, t);
+      o.frequency.exponentialRampToValueAtTime(130, t + 0.05);
+      go.gain.setValueAtTime(0.0001, t);
+      go.gain.linearRampToValueAtTime(force * 0.8, t + 0.004);
+      go.gain.exponentialRampToValueAtTime(0.0001, t + 0.06);
+      o.connect(go); go.connect(c.destination);
+      o.start(t); o.stop(t + 0.09);
+    } catch (e) { /* pas de son : le site marche pareil */ }
+  };
+
+  /* La quinte qui monte : deux sinusoides, la seconde decalee de 60 ms. */
+  var quinte = function(force){
+    var c = contexte(); if (!c) return;
+    try {
+      var t = c.currentTime;
+      [[440, 0, 0.16], [660, 0.06, 0.20]].forEach(function (v) {
+        var o = c.createOscillator(), g = c.createGain();
+        o.type = 'sine'; o.frequency.setValueAtTime(v[0], t + v[1]);
+        g.gain.setValueAtTime(0.0001, t + v[1]);
+        g.gain.linearRampToValueAtTime(force, t + v[1] + 0.012);
+        g.gain.exponentialRampToValueAtTime(0.0001, t + v[1] + v[2]);
+        o.connect(g); g.connect(c.destination);
+        o.start(t + v[1]); o.stop(t + v[1] + v[2] + 0.03);
+      });
+    } catch (e) { /* idem */ }
+  };
+
   document.addEventListener('click', function(e){
     var c = e.target.closest ? e.target.closest(
       'a.btn, .bt, .boite-repli .bt, button.puce, .MuiToggleButton-root, .puce, .chev, .burger, .plus') : null;
     if (!c) return;
-    /* L action principale sonne plus grave et un peu plus long : l oreille
-       distingue « j ai choisi » de « je valide ». */
-    if (c.matches('a.btn, .bt')) bip(520, 0.13, 0.045);
-    else bip(880, 0.055, 0.032);
+    /* L action principale et le choix ne sonnent pas pareil : l oreille
+       distingue « j ai choisi » de « je valide » sans y penser. */
+    if (c.matches('a.btn, .bt')) quinte(0.030);
+    else toc(0.028);
   }, true);
 
   /* Apparition des blocs. IntersectionObserver plutôt qu'un calcul au scroll :
@@ -1962,6 +2317,39 @@ footer a:hover{color:var(--magenta)}
      chargement immediat des que la section approche a 600 px : rien n'est
      telecharge pour qui ne descend pas jusque-la, et tout est peint pour qui
      y arrive. */
+  /* Le module de recherche s'hydrate depuis koytchaimmo.re et arrive AUCUN
+     bouton selectionne : les deux restent translucides, et rien ne dit au
+     visiteur qu'un choix l'attend. Retour Tony du 2026-09-09 : « que ce soit
+     blanc au debut », mais « pas ouvrir la section ».
+     Un vrai clic aurait fait les deux — il aurait aussi deplie l'etape 2 et
+     recalcule le compteur d'annonces. On se contente donc de POSER LE BLANC,
+     par une classe a nous. Consequence assumee, a redire si Florent la refuse :
+     tant que le visiteur n'a rien touche, le module n'a pas de valeur interne,
+     exactement comme aujourd'hui — « Voir les annonces » part sans filtre.
+     Au premier geste, on retire notre marque et l'etat MUI reprend la main :
+     le blanc suit alors le bouton reellement choisi. */
+  (function () {
+    var essais = 0;
+    var t = setInterval(function () {
+      if (++essais > 40) { clearInterval(t); return; }        // 40 x 250 ms = 10 s
+      var btns = document.querySelectorAll('.boite .app .MuiToggleButton-root');
+      if (!btns.length) return;
+      clearInterval(t);
+      var deja = [].some.call(btns, function (b) {
+        return b.classList.contains('Mui-selected') || b.getAttribute('aria-pressed') === 'true';
+      });
+      if (deja) return;                                       // on ne vole jamais son choix
+      var res = [].filter.call(btns, function (b) { return /sidentiel/i.test(b.textContent || ''); })[0];
+      if (!res) return;
+      res.classList.add('pre-actif');
+      var boite = res.closest('.app') || document;
+      boite.addEventListener('pointerdown', function retire() {
+        res.classList.remove('pre-actif');
+        boite.removeEventListener('pointerdown', retire);
+      }, true);
+    }, 250);
+  })();
+
   var bande = document.querySelector('.realisations');
   if (bande && 'IntersectionObserver' in window) {
     var chauffe = new IntersectionObserver(function(es){
@@ -2019,9 +2407,19 @@ if (!window.wp.element && window.React && window.ReactDOM) {
 (function () {
   var cible = document.getElementById('458'), repli = document.querySelector('.boite-repli');
   if (!cible || !repli) return;
-  var vu = function () { if (cible.children.length) { repli.style.display = 'none'; return true; } return false; };
-  if (vu()) return;
-  new MutationObserver(function (_, o) { if (vu()) o.disconnect(); }).observe(cible, { childList: true, subtree: true });
+  var boite = document.querySelector('.boite');
+  var reveler = function () { if (boite) boite.classList.add('pret'); };
+  var vu = function () {
+    if (cible.children.length) { repli.style.display = 'none'; reveler(); return true; }
+    return false;
+  };
+  /* Plafond de 1,6 s : au-dela on montre ce qu'on a — le repli — plutot que de
+     laisser un vide. Une connexion lente ne doit pas donner une page trouee. */
+  var minuteur = setTimeout(reveler, 1600);
+  if (vu()) { clearTimeout(minuteur); return; }
+  new MutationObserver(function (_, o) {
+    if (vu()) { clearTimeout(minuteur); o.disconnect(); }
+  }).observe(cible, { childList: true, subtree: true });
 })();
 </script>
 <script>

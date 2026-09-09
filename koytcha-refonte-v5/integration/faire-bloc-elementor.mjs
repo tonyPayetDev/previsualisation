@@ -1,5 +1,9 @@
 #!/usr/bin/env node
-/* Fabrique integration/bloc-elementor.html a partir de index.html.
+/* Fabrique DEUX livrables a partir de index.html :
+ *   · integration/bloc-elementor.html — le fragment a coller dans un widget
+ *     HTML Elementor (methode C) ;
+ *   · export/koytcha-accueil.html — la page complete et autonome (methode A).
+ *
  *
  * On genere plutot qu on recopie : la page evolue (ordre des realisations,
  * etat des boutons, animations), et un bloc recopie a la main aurait diverge
@@ -17,6 +21,7 @@ import { fileURLToPath } from 'node:url';
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const SRC = path.join(HERE, '..', 'index.html');
 const OUT = path.join(HERE, 'bloc-elementor.html');
+const EXPORT = path.join(HERE, '..', 'export', 'koytcha-accueil.html');
 const COMPAT = path.join(HERE, 'compat-elementor.html');
 
 const h = fs.readFileSync(SRC, 'utf8');
@@ -51,6 +56,13 @@ const absolu = (t) => t
  * sortent en Ã©. Dans un widget Elementor la balise est simplement ignoree —
  * elle ne sert que si quelqu un ouvre ce fichier directement pour le copier,
  * ce qui est justement l usage prevu. */
+/* La page complete : meme fichier, chemins rendus absolus, rien d autre.
+ * Elle etait fabriquee a la main et avait pris huit versions de retard — d ou
+ * sa regeneration ici, dans le meme geste que le bloc. */
+fs.mkdirSync(path.dirname(EXPORT), { recursive: true });
+fs.writeFileSync(EXPORT, absolu(h));
+console.error(`[export] ${EXPORT} · ${(absolu(h).length / 1024).toFixed(0)} Ko`);
+
 const bloc = '<meta charset="utf-8">\n'
   + fs.readFileSync(COMPAT, 'utf8')
   + absolu(h.slice(iHead, iFinHead) + '\n' + h.slice(iBody, iFinBody)) + '\n';
