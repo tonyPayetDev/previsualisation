@@ -1968,61 +1968,80 @@ footer a:hover{color:var(--magenta)}
     if (e.key === 'Escape' && nav.classList.contains('ouvert')) { fermer(); burger.focus(); }
   });
 
-  /* ── Le carrousel des programmes, sur telephone ────────────────────────
-     Il avance tout seul, lentement, et s'arrete des que quelqu'un le touche.
+  /* ── Les carrousels, sur telephone ────────────────────────────────────
+     Ils avancent tout seuls, lentement, et s'arretent des que quelqu'un les
+     touche. Quatre pistes sont concernees : les programmes, la galerie, la
+     planche photo et les realisations. Sur ordinateur ce sont des grilles :
+     elles ne debordent pas, et le garde-fou `debordement() < 8` suffit a les
+     laisser tranquilles — pas besoin de dupliquer les points de rupture CSS
+     ici, ou ils finiraient par diverger.
+
      Trois precautions qui font la difference entre un carrousel et une gene :
-       · on n'anime QUE si la piste deborde (sur ordinateur c'est une grille) ;
+       · on n'anime QUE si la piste deborde ;
        · le defilement s'arrete au premier geste — doigt, souris ou molette —
          et ne repart pas : reprendre la main a l'utilisateur, c'est le lui
          reprendre deux fois ;
-       · rien ne bouge si la section n'est pas a l'ecran, ni si le visiteur a
+       · rien ne bouge si la piste n'est pas a l'ecran, ni si le visiteur a
          demande moins d'animation.
      Le pas est de 0,4 px toutes les 16 ms — environ 25 px par seconde. C'est
      volontairement lent : on doit avoir le temps de lire un nom de programme
      sans le poursuivre du regard. */
   (function () {
-    var piste = document.querySelector('.cartes');
-    if (!piste || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    var VITESSE = 0.4, main = false, vu = false, tic = null;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    var VITESSE = 0.4;
 
-    /* On tient la position en flottant DANS le script, et on ne fait qu'ecrire
-       dans scrollLeft. En lisant `piste.scrollLeft` a chaque image pour lui
-       rajouter 0,4 px, on repartait de la valeur ARRONDIE que rend le
-       navigateur : 0 + 0,4 relu comme 0, indefiniment. La piste ne bougeait
-       pas d'un pixel — c'est ce que la verification a montre. */
-    /* LE point qui bloquait tout, mesure dans le navigateur : avec
-       `scroll-snap-type` actif, ecrire `piste.scrollLeft = 42` rend 0 — le
-       navigateur ramene aussitot la piste sur son point d'ancrage. Le
-       defilement automatique n'avait donc aucun effet, quelle que soit la
-       valeur du pas. On coupe le snap pendant l'animation et on le rend des
-       que l'utilisateur prend la main : il avance tout seul, et le geste du
-       doigt cale quand meme proprement. */
-    var pos = 0;
-    piste.style.scrollSnapType = 'none';
-    function debordement() { return piste.scrollWidth - piste.clientWidth; }
-    function pas() {
-      var d = debordement();
-      if (main || !vu || d < 8) return;
-      pos += VITESSE;
-      if (pos >= d) pos = 0;                                  // on reboucle au debut
-      piste.scrollLeft = pos;
+    function animer(piste) {
+      if (!piste) return;
+      var main = false, vu = false, tic = null;
+
+      /* On tient la position en flottant DANS le script, et on ne fait qu'ecrire
+         dans scrollLeft. En lisant `piste.scrollLeft` a chaque image pour lui
+         rajouter 0,4 px, on repartait de la valeur ARRONDIE que rend le
+         navigateur : 0 + 0,4 relu comme 0, indefiniment. La piste ne bougeait
+         pas d'un pixel — c'est ce que la verification a montre. */
+      /* LE point qui bloquait tout, mesure dans le navigateur : avec
+         `scroll-snap-type` actif, ecrire `piste.scrollLeft = 42` rend 0 — le
+         navigateur ramene aussitot la piste sur son point d'ancrage. Le
+         defilement automatique n'avait donc aucun effet, quelle que soit la
+         valeur du pas. On coupe le snap pendant l'animation et on le rend des
+         que l'utilisateur prend la main : il avance tout seul, et le geste du
+         doigt cale quand meme proprement. */
+      var pos = 0;
+      piste.style.scrollSnapType = 'none';
+      function debordement() { return piste.scrollWidth - piste.clientWidth; }
+      function pas() {
+        var d = debordement();
+        if (main || !vu || d < 8) return;
+        pos += VITESSE;
+        if (pos >= d) pos = 0;                                  // on reboucle au debut
+        piste.scrollLeft = pos;
+      }
+      function demarrer() { if (!tic) tic = setInterval(pas, 16); }
+      function arreter() { if (tic) { clearInterval(tic); tic = null; } }
+
+      ['pointerdown', 'touchstart', 'wheel', 'keydown'].forEach(function (e) {
+        piste.addEventListener(e, function () {
+          main = true; pos = piste.scrollLeft; arreter();
+          piste.style.scrollSnapType = '';        // on rend le calage au pouce
+        }, { passive: true });
+      });
+
+      if ('IntersectionObserver' in window) {
+        new IntersectionObserver(function (entrees) {
+          vu = entrees[0].isIntersecting;
+          if (vu && !main) demarrer(); else arreter();
+        }, { threshold: 0.25 }).observe(piste);
+      } else { vu = true; demarrer(); }
     }
-    function demarrer() { if (!tic) tic = setInterval(pas, 16); }
-    function arreter() { if (tic) { clearInterval(tic); tic = null; } }
 
-    ['pointerdown', 'touchstart', 'wheel', 'keydown'].forEach(function (e) {
-      piste.addEventListener(e, function () {
-        main = true; pos = piste.scrollLeft; arreter();
-        piste.style.scrollSnapType = '';        // on rend le calage au pouce
-      }, { passive: true });
+    /* Les deux pistes reellement presentes, mesurees a 390 px de large :
+       .cartes deborde de 555 px, .realisations de 1195. `.gal` et `.planche`
+       ont leur CSS de carrousel dans la feuille mais plus aucun balisage dans
+       cette version — les laisser ici donnerait un selecteur qui ne designe
+       rien, et laisserait croire qu'ils sont animes. */
+    ['.cartes', '.realisations'].forEach(function (sel) {
+      [].forEach.call(document.querySelectorAll(sel), animer);
     });
-
-    if ('IntersectionObserver' in window) {
-      new IntersectionObserver(function (entrees) {
-        vu = entrees[0].isIntersecting;
-        if (vu && !main) demarrer(); else arreter();
-      }, { threshold: 0.25 }).observe(piste);
-    } else { vu = true; demarrer(); }
   })();
 
   /* ── Le reseau de noeuds de la section contact ─────────────────────────
