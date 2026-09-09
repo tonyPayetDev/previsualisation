@@ -20,21 +20,51 @@
      applique, il ne sert a rien et ne gene rien.
      ═══════════════════════════════════════════════════════════════════════ -->
 <style id="koytcha-compat-elementor">
-/* Elementor enferme chaque section dans un conteneur de largeur fixe et pose
-   des marges internes par defaut. La page, elle, gere ses propres gouttieres
-   (.wrap) : sans ca, tout est deux fois en retrait et le plein ecran du haut
-   n en est plus un. */
+/* MESURE SUR LA PAGE EN PRODUCTION (koytchaimmo.re/elementor-573736/, 2026-09-09),
+   pas sur une supposition. Ce qui bride la page :
+     div.e-con-full.e-flex .......... gauche 51 px, largeur 1337 sur 1440
+     div.elementor-widget-html ...... gauche 61 px, largeur 1317
+   Elementor 3.16+ n utilise plus .elementor-section / .elementor-column mais des
+   conteneurs flex `.e-con`. Des regles ecrites pour l ancienne structure ne
+   touchent donc RIEN sur ce site. Les deux jeux sont gardes : l ancien pour les
+   pages construites avant, le nouveau pour celles d aujourd hui. */
+
+/* Conteneurs Elementor modernes (.e-con) */
+.elementor-element.e-con, .e-con-full, .e-con-inner, .e-con > .e-con-inner{
+  --container-max-width:100%; --padding-inline-start:0px; --padding-inline-end:0px;
+  --padding-block-start:0px; --padding-block-end:0px;
+  max-width:100%; width:100%; padding:0; margin-inline:0}
+/* Conteneurs Elementor classiques (sections / colonnes) */
 .elementor-section.elementor-section-boxed > .elementor-container{max-width:none}
-.elementor-widget-html > .elementor-widget-container{padding:0;margin:0}
 .elementor-column-gap-default > .elementor-row > .elementor-column > .elementor-element-populated{padding:0}
+/* Le widget HTML lui-meme */
+.elementor-widget-html > .elementor-widget-container{padding:0;margin:0}
 body.elementor-page{margin:0;padding:0;overflow-x:hidden}
 
-/* Filet de securite : masque l en-tete et le pied du theme SI le modele
-   Canvas n a pas pu etre applique. La page porte deja sa propre navigation.
-   A retirer si Canvas fonctionne — mieux vaut ne pas afficher un menu que le
-   cacher apres coup. */
-.site-header, #masthead, header.site-header, .elementor-location-header,
-.site-footer, #colophon, .elementor-location-footer{display:none}
+/* Le theme classique (ici Twenty Eleven) enveloppe encore le contenu dans
+   #page / #primary / #content, et reserve une colonne laterale. Sur un modele
+   « Elementor Canvas » rien de tout ca n existe — ces lignes ne servent que
+   tant que la page reste en modele par defaut. */
+#page, #main, #primary, #content, .entry-content, article.page{
+  max-width:none;width:auto;margin:0;padding:0;float:none}
+#secondary, .widget-area{display:none}
+/* Le theme reaffiche aussi, au-dessus du contenu, son lien d evitement et le
+   titre de la page — mesure du 2026-09-09 : « Skip to primary content » sur
+   26 px, puis « Elementor #573736 » sur 48 px, qui repoussaient la page vers le
+   bas et passaient devant la barre de navigation. */
+.skip-link, .assistive-text, #branding, #access,
+article.page > .entry-header, article.page > .entry-header > .entry-title{display:none}
+
+/* En-tete et pied du theme. Mesures du 2026-09-09 : ils viennent du
+   constructeur de theme d Elementor — header.elementor-location-header et
+   footer.elementor-location-footer — et NON des classes classiques
+   .site-header / #masthead. Les deux familles sont visees.
+   FILET DE SECURITE seulement : la vraie solution est le modele « Elementor
+   Canvas », qui ne les charge pas du tout. Masquer un menu n est pas la meme
+   chose que ne pas le servir — il reste dans le HTML, dans le poids de la page
+   et pour les lecteurs d ecran. */
+.elementor-location-header, .elementor-location-footer,
+.site-header, #masthead, header.site-header, .site-footer, #colophon{display:none}
 
 /* Connecte a WordPress, la barre d administration occupe 32 px en haut de
    l ecran. La navigation de la page est en position fixe : sans ce decalage
