@@ -885,5 +885,830 @@ footer{border-top:1px solid var(--ligne);padding:30px 0 60px;color:var(--mut);fo
   jauge(); setInterval(jauge, 5000);
 })();
 </script>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     L'ASSISTANT VOCAL — ajouté le 10 septembre 2026.
+
+     Trois briques indépendantes, empilées, chacune dégradable seule :
+       1. l'orbe   — WebGL brut, un triangle plein écran et un shader. Aucune
+                     librairie, donc aucun CDN à atteindre et rien à casser si
+                     le réseau tousse. Repli en canvas 2D si WebGL manque.
+       2. l'oreille — SpeechRecognition (Chrome/Edge). Absente de Firefox et de
+                     Safari : c'est écrit à l'écran, on ne fait pas semblant.
+       3. la bouche — speechSynthesis, immédiat et gratuit. La voix clonée de
+                     Tony (webhook tts-gen) est proposée en option : elle est
+                     plus belle mais met plusieurs secondes, ce qui tue une
+                     conversation.
+
+     Le cerveau ne fait AUCUN appel à un modèle de langage : les crédits de
+     l'API Anthropic sont épuisés, un cerveau qui appelle Claude mourrait au
+     premier tour. Il lit cerveau.json, construit par carte/cerveau.mjs à
+     partir des fichiers qui portent déjà la vérité (taches.json, TASKLOG.md,
+     le fichier de leads, le suivi d'appels, l'API n8n en direct).
+
+     DONNÉES : cette page et cerveau.json sont derrière le mot de passe nginx
+     (bloc `location ^~ /carte/`, vérifié : 401 sans identifiants). Les chiffres
+     de prospects, de relances et de ratés ne sont donc jamais publics.
+     ═══════════════════════════════════════════════════════════════════════ -->
+<style>
+#vx-lanceur{
+  position:fixed;right:20px;bottom:20px;z-index:60;
+  display:flex;align-items:center;gap:11px;
+  padding:11px 18px 11px 13px;border:1px solid var(--ligne);border-radius:999px;
+  background:rgba(20,20,28,.86);backdrop-filter:blur(10px);
+  color:var(--texte);font:inherit;font-size:13px;cursor:pointer;
+  box-shadow:0 10px 34px rgba(0,0,0,.5);
+  transition:border-color .2s,transform .2s,box-shadow .2s;
+}
+#vx-lanceur:hover{border-color:var(--or);transform:translateY(-2px);
+  box-shadow:0 14px 40px rgba(0,0,0,.6)}
+#vx-lanceur .pastille{
+  width:26px;height:26px;border-radius:50%;flex:0 0 26px;
+  background:radial-gradient(circle at 34% 30%,#fde68a,var(--or) 42%,var(--violet) 100%);
+  box-shadow:0 0 16px rgba(234,179,8,.5);
+  animation:vx-respire 3.4s ease-in-out infinite;
+}
+@keyframes vx-respire{0%,100%{transform:scale(1);opacity:.92}50%{transform:scale(1.13);opacity:1}}
+@media (prefers-reduced-motion:reduce){
+  #vx-lanceur .pastille{animation:none}
+}
+
+#vx-scene{
+  position:fixed;inset:0;z-index:70;display:none;
+  background:rgba(6,6,10,.93);backdrop-filter:blur(16px);
+}
+#vx-scene.ouvert{display:grid;grid-template-rows:auto 1fr auto}
+/* L'orbe vit dans SA boîte, elle ne sert pas de fond.
+   Premier montage : un canvas en position:absolute;inset:0 — magnifique, et
+   toute la réponse se lisait par-dessus le plasma. Ici elle a une taille propre
+   et le texte passe dessous, sur le noir. */
+#vx-orbe-boite{
+  position:relative;flex:0 0 auto;
+  width:min(32vh,250px);height:min(32vh,250px);
+}
+#vx-toile{width:100%;height:100%;display:block}
+
+#vx-tete{position:relative;z-index:2;display:flex;justify-content:space-between;
+  align-items:flex-start;gap:16px;padding:20px 22px 0}
+#vx-tete .mono{color:var(--mut)}
+#vx-fermer{background:none;border:1px solid var(--ligne);border-radius:999px;
+  color:var(--mut);font:inherit;font-size:12px;padding:6px 14px;cursor:pointer}
+#vx-fermer:hover{border-color:var(--rouge);color:var(--texte)}
+
+#vx-centre{position:relative;z-index:2;display:flex;flex-direction:column;
+  justify-content:flex-start;align-items:center;gap:12px;
+  /* 30px en bas : la réponse défile dans cette boîte, et sans marge la
+     dernière ligne se colle sous les raccourcis et paraît coupée. */
+  padding:6px 22px 30px;text-align:center;overflow-y:auto;
+  scrollbar-width:thin;scrollbar-color:var(--ligne) transparent}
+#vx-etat{font-family:var(--mno);font-size:11px;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--or)}
+#vx-dit{color:var(--mut);font-size:15px;min-height:1.5em;max-width:640px;font-style:italic}
+#vx-reponse{max-width:660px;font-size:17px;line-height:1.5;text-wrap:balance}
+#vx-reponse b{color:var(--or);font-weight:600}
+#vx-reponse .src{display:block;margin-top:12px;font-family:var(--mno);font-size:10px;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--mut)}
+#vx-liste{list-style:none;margin:12px auto 0;max-width:660px;text-align:left;
+  font-size:14px;color:var(--mut);display:grid;gap:7px}
+#vx-liste li{padding-left:16px;position:relative;line-height:1.45}
+#vx-liste li::before{content:'';position:absolute;left:0;top:.55em;
+  width:6px;height:6px;border-radius:50%;background:var(--violet)}
+#vx-liste li.rouge::before{background:var(--rouge)}
+#vx-liste li.or::before{background:var(--or)}
+
+#vx-pied{position:relative;z-index:2;display:flex;flex-wrap:wrap;gap:10px;
+  justify-content:center;align-items:center;padding:14px 22px 22px}
+.vx-b{background:rgba(20,20,28,.8);border:1px solid var(--ligne);border-radius:999px;
+  color:var(--texte);font:inherit;font-size:13px;padding:9px 17px;cursor:pointer;
+  transition:border-color .18s,color .18s}
+.vx-b:hover{border-color:var(--or)}
+.vx-b[aria-pressed="true"]{border-color:var(--or);color:var(--or)}
+.vx-b.principal{border-color:var(--or);color:var(--or)}
+.vx-b.principal.actif{background:var(--or);color:#14141c;font-weight:600}
+.vx-b:disabled{opacity:.4;cursor:not-allowed}
+#vx-suggestions{position:relative;z-index:2;display:flex;flex-wrap:wrap;gap:8px;
+  justify-content:center;padding:0 22px}
+.vx-sug{background:none;border:1px solid var(--ligne);border-radius:999px;
+  color:var(--mut);font:inherit;font-size:12px;padding:6px 13px;cursor:pointer}
+.vx-sug:hover{border-color:var(--violet);color:var(--texte)}
+#vx-alerte{position:relative;z-index:2;margin:0 auto;max-width:620px;
+  padding:11px 15px;border:1px solid var(--rouge);border-radius:10px;
+  color:var(--texte);font-size:13.5px;line-height:1.45;display:none}
+#vx-alerte.on{display:block}
+@media(max-width:640px){
+  #vx-reponse{font-size:15.5px}
+  #vx-orbe-boite{width:min(22vh,150px);height:min(22vh,150px)}
+  #vx-lanceur span.txt{display:none}
+  #vx-lanceur{padding:12px}
+}
+</style>
+
+<button id="vx-lanceur" type="button" aria-haspopup="dialog">
+  <span class="pastille" aria-hidden="true"></span>
+  <span class="txt">Parle-moi de mon business</span>
+</button>
+
+<div id="vx-scene" role="dialog" aria-modal="true" aria-label="Assistant vocal">
+  <div id="vx-tete">
+    <span class="mono" id="vx-fraicheur">Chargement des données…</span>
+    <button id="vx-fermer" type="button">Fermer&nbsp;·&nbsp;Échap</button>
+  </div>
+
+  <div id="vx-centre">
+    <div id="vx-orbe-boite"><canvas id="vx-toile" aria-hidden="true"></canvas></div>
+    <div id="vx-alerte"></div>
+    <div id="vx-etat">Au repos</div>
+    <div id="vx-dit"></div>
+    <div id="vx-reponse"></div>
+    <ul id="vx-liste"></ul>
+  </div>
+
+  <div>
+    <div id="vx-suggestions"></div>
+    <div id="vx-pied">
+      <!-- Icône dessinée plutôt qu'un emoji : sur une machine sans police
+           emoji (dont le Chrome headless qui sert à vérifier cette page),
+           🎙️ se rend en carré vide, sans la moindre erreur. -->
+      <button class="vx-b principal" id="vx-parler" type="button">
+        <svg width="12" height="15" viewBox="0 0 12 15" fill="none" aria-hidden="true"
+             style="vertical-align:-2px;margin-right:6px">
+          <rect x="3.6" y="0.8" width="4.8" height="8.4" rx="2.4" fill="currentColor"/>
+          <path d="M1 7.2v1.2a5 5 0 0 0 10 0V7.2" stroke="currentColor" stroke-width="1.4"
+                stroke-linecap="round" fill="none"/>
+          <path d="M6 13.4v1" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+        </svg>Parler</button>
+      <button class="vx-b" id="vx-stop" type="button">Couper la voix</button>
+      <button class="vx-b" id="vx-clone" type="button" aria-pressed="false"
+        title="Plus belle mais plusieurs secondes d'attente, et le webhook lâche par intermittence">
+        Voix clonée
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+'use strict';
+
+/* ─────────────────────────────────────────────────────────────────────────
+   1. L'ORBE — WebGL brut.
+
+   Le composant d'origine (21st.dev, « voice powered orb ») s'appuie sur `ogl`
+   et sur une chaîne shadcn/React. Ce dépôt n'a ni bundler, ni package.json, ni
+   React : c'est du HTML statique servi par nginx. L'orbe est donc réécrite ici
+   telle qu'elle est vraiment — un triangle plein écran et un shader piloté par
+   iTime, hue, hover, rot, plus le niveau du micro. Zéro dépendance : rien à
+   télécharger, donc rien qui puisse manquer au chargement.
+   ───────────────────────────────────────────────────────────────────────── */
+var SOMMET = [
+  'attribute vec2 position;',
+  'void main(){ gl_Position = vec4(position, 0.0, 1.0); }'
+].join('\n');
+
+var FRAGMENT = [
+  'precision highp float;',
+  'uniform vec2  iResolution;',
+  'uniform float iTime;',   // seconds
+  'uniform float hue;       // degrees, charte : 48 = or, 258 = violet',
+  'uniform float hover;     // 0..1, intensité générale',
+  'uniform float rot;       // radians accumulés',
+  'uniform float niveau;    // 0..1, RMS du micro',
+
+  // Rotation de teinte en YIQ : moins cher qu'un aller-retour RGB->HSV->RGB,
+  // et suffisant ici puisqu'on ne fait que tourner autour de l'axe des gris.
+  'vec3 tourneTeinte(vec3 c, float a){',
+  '  float s = sin(a), k = cos(a);',
+  '  mat3 m = mat3(0.299+0.701*k+0.168*s, 0.587-0.587*k+0.330*s, 0.114-0.114*k-0.497*s,',
+  '                0.299-0.299*k-0.328*s, 0.587+0.413*k+0.035*s, 0.114-0.114*k+0.292*s,',
+  '                0.299-0.300*k+1.250*s, 0.587-0.588*k-1.050*s, 0.114+0.886*k-0.203*s);',
+  '  return clamp(c * m, 0.0, 1.0);',
+  '}',
+
+  'float alea(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }',
+  'float bruit(vec2 p){',
+  '  vec2 i = floor(p), f = fract(p);',
+  '  vec2 u = f * f * (3.0 - 2.0 * f);',
+  '  return mix(mix(alea(i), alea(i + vec2(1.0, 0.0)), u.x),',
+  '             mix(alea(i + vec2(0.0, 1.0)), alea(i + vec2(1.0, 1.0)), u.x), u.y);',
+  '}',
+  'float fbm(vec2 p){',
+  '  float v = 0.0, a = 0.5;',
+  '  for (int i = 0; i < 5; i++){ v += a * bruit(p); p *= 2.02; a *= 0.5; }',
+  '  return v;',
+  '}',
+
+  'void main(){',
+  '  vec2 uv = (gl_FragCoord.xy * 2.0 - iResolution) / min(iResolution.x, iResolution.y);',
+  '  float r = length(uv);',
+  '  float a = atan(uv.y, uv.x) + rot;',
+
+  // Le rayon respire avec la voix : c'est le seul endroit où le micro pilote
+  // la géométrie, tout le reste ne fait que gagner en intensité.
+  '  float rayon = 0.62 + 0.10 * niveau + 0.03 * sin(iTime * 0.7);',
+
+  // Plasma interne : deux couches de fbm tournant en sens contraires.
+  '  vec2 q = vec2(cos(a), sin(a)) * r;',
+  '  float n1 = fbm(q * 2.6 + vec2(iTime * 0.16, -iTime * 0.11));',
+  '  float n2 = fbm(q * 4.7 - vec2(iTime * 0.09, iTime * 0.21) + n1);',
+  '  float plasma = mix(n1, n2, 0.55);',
+
+  '  float dedans = smoothstep(rayon, rayon - 0.30, r);',
+  // Le liseré : fin, très lumineux, il donne le volume de la sphère.
+  '  float lisere  = smoothstep(rayon + 0.035, rayon, r) * smoothstep(rayon - 0.075, rayon - 0.02, r);',
+  // Le halo déborde largement et porte la réaction à la voix.
+  '  float halo    = pow(max(0.0, 1.0 - abs(r - rayon) / (0.85 + 0.5 * niveau)), 3.0);',
+
+  '  vec3 froid = vec3(0.34, 0.18, 0.86);',   // violet #8b5cf6
+  '  vec3 chaud = vec3(0.92, 0.70, 0.05);',   // or #eab308
+  '  vec3 corps = mix(froid, chaud, clamp(plasma * 1.35 - 0.15 + 0.30 * niveau, 0.0, 1.0));',
+
+  // Éclairage rasant : la sphère reçoit sa lumière d'en haut à gauche.
+  '  float lumiere = pow(max(0.0, 1.0 - length(uv - vec2(-0.22, 0.26)) / (rayon * 1.7)), 2.2);',
+
+  '  vec3 col = vec3(0.0);',
+  '  col += corps * dedans * (0.30 + 0.75 * plasma + 0.55 * lumiere);',
+  '  col += mix(chaud, vec3(1.0), 0.45) * lisere * (1.10 + 1.60 * niveau);',
+  '  col += mix(froid, chaud, 0.35) * halo * (0.16 + 0.40 * niveau);',
+
+  // Grain : sans lui, les grands aplats sombres se bandent sur un écran 8 bits.
+  '  col += (alea(gl_FragCoord.xy + iTime) - 0.5) * 0.022;',
+
+  '  col = tourneTeinte(col, radians(hue));',
+  '  col *= 0.42 + 0.78 * hover;',
+  // Le canvas est composé SUR la page, pas à la place du fond : l'opacité suit
+  // la luminance, donc le halo se fond dans le noir de la scène au lieu de
+  // dessiner un carré sombre autour de l'orbe.
+  '  float opacite = clamp(max(max(col.r, col.g), col.b) * 1.7, 0.0, 1.0);',
+  '  gl_FragColor = vec4(col, opacite);',
+  '}'
+].join('\n');
+
+function Orbe(toile){
+  var gl = null;
+  try {
+    gl = toile.getContext('webgl', {
+      antialias:false, alpha:true, premultipliedAlpha:false, powerPreference:'low-power'
+    }) || toile.getContext('experimental-webgl');
+  } catch (_) { gl = null; }
+
+  var api = { niveau:0, hover:0.35, actif:false, webgl:!!gl };
+  var rot = 0, dpr = Math.min(window.devicePixelRatio || 1, 2);
+  var debut = performance.now();
+
+  /* Repli : pas de WebGL (machine sans accélération, pilote refusé, headless
+     mal équipé). On dessine une orbe honnête en 2D plutôt que d'afficher un
+     rectangle noir sans jamais dire pourquoi. */
+  if (!gl){
+    var ctx = toile.getContext('2d');
+    api.boucle = function(){
+      if (!api.actif) return;
+      var w = toile.width, h = toile.height, t = (performance.now() - debut) / 1000;
+      ctx.clearRect(0, 0, w, h);
+      var cx = w / 2, cy = h * 0.44;
+      var R = Math.min(w, h) * (0.22 + 0.05 * api.niveau + 0.012 * Math.sin(t * 0.7));
+      var g = ctx.createRadialGradient(cx - R * 0.3, cy - R * 0.3, R * 0.05, cx, cy, R * 2.1);
+      g.addColorStop(0,   'rgba(253,230,138,' + (0.85 * (0.4 + 0.6 * api.hover)) + ')');
+      g.addColorStop(0.32,'rgba(234,179,8,'   + (0.55 * (0.4 + 0.6 * api.hover)) + ')');
+      g.addColorStop(0.62,'rgba(139,92,246,'  + (0.30 * (0.4 + 0.6 * api.hover)) + ')');
+      g.addColorStop(1,   'rgba(11,11,16,0)');
+      ctx.fillStyle = g;
+      ctx.beginPath(); ctx.arc(cx, cy, R * 2.1, 0, Math.PI * 2); ctx.fill();
+      requestAnimationFrame(api.boucle);
+    };
+    api.taille = function(){
+      toile.width  = Math.floor(toile.clientWidth  * dpr);
+      toile.height = Math.floor(toile.clientHeight * dpr);
+    };
+    return api;
+  }
+
+  function compile(type, src){
+    var s = gl.createShader(type);
+    gl.shaderSource(s, src); gl.compileShader(s);
+    if (!gl.getShaderParameter(s, gl.COMPILE_STATUS))
+      throw new Error(gl.getShaderInfoLog(s));
+    return s;
+  }
+  var prog = gl.createProgram();
+  gl.attachShader(prog, compile(gl.VERTEX_SHADER, SOMMET));
+  gl.attachShader(prog, compile(gl.FRAGMENT_SHADER, FRAGMENT));
+  gl.linkProgram(prog);
+  if (!gl.getProgramParameter(prog, gl.LINK_STATUS))
+    throw new Error(gl.getProgramInfoLog(prog));
+  gl.useProgram(prog);
+
+  // Un seul triangle qui déborde de l'écran : deux fois moins de sommets qu'un
+  // quad, et pas de couture sur la diagonale.
+  var buf = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 3,-1, -1,3]), gl.STATIC_DRAW);
+  var loc = gl.getAttribLocation(prog, 'position');
+  gl.enableVertexAttribArray(loc);
+  gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+
+  var u = {};
+  ['iResolution','iTime','hue','hover','rot','niveau'].forEach(function(n){
+    u[n] = gl.getUniformLocation(prog, n);
+  });
+
+  api.taille = function(){
+    toile.width  = Math.floor(toile.clientWidth  * dpr);
+    toile.height = Math.floor(toile.clientHeight * dpr);
+    gl.viewport(0, 0, toile.width, toile.height);
+  };
+
+  api.boucle = function(){
+    if (!api.actif) return;
+    var t = (performance.now() - debut) / 1000;
+    // La rotation accélère avec la voix : c'est la lecture visuelle du niveau.
+    rot += 0.0035 + api.niveau * 0.055;
+    gl.uniform2f(u.iResolution, toile.width, toile.height);
+    gl.uniform1f(u.iTime, t);
+    gl.uniform1f(u.hue, api.hue || 0);
+    gl.uniform1f(u.hover, api.hover);
+    gl.uniform1f(u.rot, rot);
+    gl.uniform1f(u.niveau, api.niveau);
+    gl.drawArrays(gl.TRIANGLES, 0, 3);
+    requestAnimationFrame(api.boucle);
+  };
+  return api;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   2. LE MICRO — AnalyserNode, fftSize 512, RMS lissé.
+   Flux séparé de celui de SpeechRecognition : les deux cohabitent sans se
+   gêner sous Chrome. Le refus du micro n'empêche PAS de parler — la
+   reconnaissance a son propre flux — l'orbe cesse simplement de réagir.
+   ───────────────────────────────────────────────────────────────────────── */
+function Micro(orbe){
+  var ctxAudio = null, analyse = null, tampon = null, flux = null, rafId = 0;
+  var api = { ok:false, erreur:null };
+
+  api.demarrer = function(){
+    if (api.ok) return Promise.resolve(true);
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
+      api.erreur = 'micro-indisponible';
+      return Promise.resolve(false);
+    }
+    return navigator.mediaDevices.getUserMedia({ audio:true }).then(function(s){
+      flux = s;
+      var AC = window.AudioContext || window.webkitAudioContext;
+      ctxAudio = new AC();
+      var src = ctxAudio.createMediaStreamSource(s);
+      analyse = ctxAudio.createAnalyser();
+      analyse.fftSize = 512;                 // 256 échantillons temporels
+      analyse.smoothingTimeConstant = 0.75;
+      src.connect(analyse);
+      tampon = new Uint8Array(analyse.fftSize);
+      api.ok = true;
+      mesurer();
+      return true;
+    }).catch(function(e){
+      api.erreur = e && e.name ? e.name : 'refus';
+      return false;
+    });
+  };
+
+  function mesurer(){
+    if (!api.ok) return;
+    analyse.getByteTimeDomainData(tampon);
+    var somme = 0;
+    for (var i = 0; i < tampon.length; i++){
+      var v = (tampon[i] - 128) / 128;
+      somme += v * v;
+    }
+    var rms = Math.sqrt(somme / tampon.length);
+    // ×7 : la parole normale tourne autour de 0,03–0,12 de RMS, ce qui ne
+    // ferait presque rien bouger tel quel.
+    var cible = Math.min(1, rms * 7);
+    orbe.niveau += (cible - orbe.niveau) * 0.25;   // lissage d'attaque
+    rafId = requestAnimationFrame(mesurer);
+  }
+
+  api.arreter = function(){
+    api.ok = false;
+    cancelAnimationFrame(rafId);
+    if (flux) flux.getTracks().forEach(function(t){ t.stop(); });
+    if (ctxAudio && ctxAudio.state !== 'closed') ctxAudio.close();
+    flux = null; ctxAudio = null;
+  };
+  return api;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   3. LA BOUCHE.
+   speechSynthesis par défaut : instantané, c'est ce qui rend une conversation
+   possible. La voix clonée de Tony passe par le webhook tts-gen et reste en
+   option — plusieurs secondes d'attente, et le webhook lâche par intermittence
+   (une réponse 200 de moins d'1 Ko est un échec, pas un fichier).
+   ───────────────────────────────────────────────────────────────────────── */
+var TTS_GEN  = 'https://n7n.automatisationboost.com/webhook/tts-gen';
+var VOIX_URL = 'https://assets.automatisationboost.com/voix/archiviste_ZIl7EoOf.mp3';
+
+function Bouche(orbe){
+  var api = { clone:false, parle:false };
+  var voixFr = null, audio = null, pulse = 0;
+
+  function choisirVoix(){
+    if (!window.speechSynthesis) return;
+    var v = speechSynthesis.getVoices() || [];
+    voixFr = v.filter(function(x){ return /^fr(-|_)/i.test(x.lang); })
+              .sort(function(a, b){ return (b.localService ? 1 : 0) - (a.localService ? 1 : 0); })[0] || null;
+  }
+  if (window.speechSynthesis){
+    choisirVoix();
+    speechSynthesis.onvoiceschanged = choisirVoix;
+  }
+
+  // speechSynthesis ne donne accès à aucun signal audio : impossible d'en tirer
+  // un vrai niveau. L'orbe est donc animée par une enveloppe synthétique
+  // pendant qu'elle parle — c'est une animation, pas une mesure, et ça se dit.
+  function enveloppe(){
+    if (!api.parle) return;
+    pulse += 0.16;
+    orbe.niveau = 0.22 + 0.18 * Math.abs(Math.sin(pulse)) + 0.10 * Math.abs(Math.sin(pulse * 2.7));
+    requestAnimationFrame(enveloppe);
+  }
+
+  api.couper = function(){
+    api.parle = false;
+    if (window.speechSynthesis) speechSynthesis.cancel();
+    if (audio){ audio.pause(); audio = null; }
+    orbe.niveau = 0;
+  };
+
+  /** Reads sentences one after the other. Returns a promise resolved at the end
+   *  (or as soon as it is cut off), so the caller can re-open the mic. */
+  api.dire = function(phrases, surEtat){
+    api.couper();
+    var liste = phrases.slice();
+    api.parle = true;
+    enveloppe();
+
+    if (api.clone) return direClone(liste, surEtat);
+
+    if (!window.speechSynthesis){
+      api.parle = false;
+      if (surEtat) surEtat('sans-voix');
+      return Promise.resolve(false);
+    }
+    return new Promise(function(resoudre){
+      var i = 0;
+      (function suivante(){
+        if (!api.parle || i >= liste.length){ api.parle = false; orbe.niveau = 0; return resoudre(true); }
+        var u = new SpeechSynthesisUtterance(liste[i++]);
+        u.lang = 'fr-FR';
+        if (voixFr) u.voice = voixFr;
+        u.rate = 1.04; u.pitch = 1.0;
+        u.onend = suivante;
+        u.onerror = suivante;   // une phrase muette ne doit pas figer la file
+        speechSynthesis.speak(u);
+      })();
+    });
+  };
+
+  /** Voix clonée. Un 200 de moins d'1 Ko n'est PAS un fichier : le webhook
+   *  répond parfois vide. Deux tentatives, puis repli annoncé. */
+  function direClone(liste, surEtat){
+    var texte = liste.join(' ');
+    if (surEtat) surEtat('clone-attente');
+    return (function essai(reste){
+      return fetch(TTS_GEN, {
+        method:'POST',
+        headers:{ 'Content-Type':'application/json' },
+        // voixUrl est OBLIGATOIRE : sans lui la branche de repli du workflow
+        // est hors service et renvoie du vide.
+        body: JSON.stringify({ text:texte, voixUrl:VOIX_URL })
+      })
+      .then(function(r){ return r.blob(); })
+      .then(function(b){
+        if (!b || b.size < 1024) throw new Error('reponse-vide-' + (b ? b.size : 0));
+        return new Promise(function(resoudre){
+          audio = new Audio(URL.createObjectURL(b));
+          audio.onended = function(){ api.parle = false; orbe.niveau = 0; resoudre(true); };
+          audio.onerror = function(){ api.parle = false; orbe.niveau = 0; resoudre(false); };
+          audio.play().catch(function(){ resoudre(false); });
+        });
+      })
+      .catch(function(e){
+        if (reste > 0) return essai(reste - 1);
+        api.parle = false;
+        // Repli honnête : on le dit à l'écran et on lit quand même, en générique.
+        if (surEtat) surEtat('clone-echec:' + (e && e.message ? e.message : 'inconnu'));
+        api.clone = false;
+        var reprise = api.dire(liste, surEtat);
+        api.clone = true;
+        return reprise;
+      });
+    })(1);
+  }
+  return api;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   4. LE CERVEAU — appariement d'intentions, sans modèle de langage.
+
+   Chaque sujet porte une liste de mots. Le sujet qui en récolte le plus gagne.
+   Quand rien ne dépasse le seuil, on ne devine pas : on dit qu'on n'a pas
+   compris et on rappelle ce qu'on sait faire.
+   ───────────────────────────────────────────────────────────────────────── */
+var INTENTIONS = [
+  { sujet:'relances', mots:['relance','relancer','relances','rappeler','rappel','facture','facturer',
+      'facturable','argent','cash','vendre','vente','devis','client','clients','encaisser','signer'] },
+  { sujet:'rates',    mots:['mal','rate','rates','raté','ratés','probleme','problème','problemes',
+      'souci','soucis','casse','cassé','echec','échec','echoue','échoué','erreur','erreurs','plante',
+      'planté','bug','bugs','alerte','alertes','foire','foiré','marche pas','fonctionne pas','loupé','tort'] },
+  { sujet:'decisions',mots:['decision','décision','decisions','décisions','decider','décider','trancher',
+      'tranche','valider','validation','attend','attends','moi','choix','choisir'] },
+  { sujet:'taches',   mots:['tache','tâche','taches','tâches','chantier','chantiers','avancement','avance',
+      'bloque','bloqué','bloquer','blocage','blocages','cours','faire','todo','reste'] },
+  { sujet:'prospects',mots:['prospect','prospects','lead','leads','appel','appels','appeler','telephone',
+      'téléphone','contact','contacts','restaurant','restaurants','numero','numéro','demarchage','démarchage'] },
+  { sujet:'workflows',mots:['workflow','workflows','automatisation','automatisations','automatise',
+      'execution','exécution','executions','exécutions','robot','robots','scenario','scénario'] },
+  { sujet:'resume',   mots:['resume','résumé','resumé','point','bilan','situation','tout','general','général',
+      'globale','bonjour','salut','coucou','neuf','va','etat','état','ou','où'] }
+];
+
+function normaliser(s){
+  return (s || '').toLowerCase()
+    .normalize('NFD').replace(/[̀-ͯ]/g, '')   // accents
+    .replace(/[^a-z0-9\s]/g, ' ')
+    .replace(/\s+/g, ' ').trim();
+}
+
+function trouverSujet(phrase){
+  var n = ' ' + normaliser(phrase) + ' ';
+  var meilleur = null, meilleurScore = 0;
+  INTENTIONS.forEach(function(it){
+    var score = 0;
+    it.mots.forEach(function(m){
+      if (n.indexOf(' ' + normaliser(m) + ' ') >= 0) score += 2;
+      else if (n.indexOf(normaliser(m)) >= 0) score += 1;
+    });
+    if (score > meilleurScore){ meilleurScore = score; meilleur = it.sujet; }
+  });
+  return meilleurScore >= 2 ? meilleur : null;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   5. LE MONTAGE
+   ───────────────────────────────────────────────────────────────────────── */
+var scene   = document.getElementById('vx-scene');
+var lanceur = document.getElementById('vx-lanceur');
+var toile   = document.getElementById('vx-toile');
+var elEtat  = document.getElementById('vx-etat');
+var elDit   = document.getElementById('vx-dit');
+var elRep   = document.getElementById('vx-reponse');
+var elListe = document.getElementById('vx-liste');
+var elFrais = document.getElementById('vx-fraicheur');
+var elAlerte= document.getElementById('vx-alerte');
+var elSug   = document.getElementById('vx-suggestions');
+var bParler = document.getElementById('vx-parler');
+var bStop   = document.getElementById('vx-stop');
+var bClone  = document.getElementById('vx-clone');
+
+var orbe, micro, bouche, cerveau = null, ecoute = null, ecouteActive = false;
+
+/* Rotation de teinte par état. Volontairement FAIBLE : la charte du projet est
+   or #eab308 + violet #8b5cf6, et une rotation franche (200° au premier essai)
+   sortait une orbe cyan qui n'appartient à aucun des deux. On reste dans la
+   famille ambre/magenta, assez pour lire l'état d'un coup d'œil. */
+var TEINTE = { repos:0, ecoute:28, cherche:-22, clone:52 };
+
+function etat(txt, teinte){
+  elEtat.textContent = txt;
+  if (orbe && teinte !== undefined) orbe.hue = teinte;
+}
+function alerte(html){
+  if (!html){ elAlerte.classList.remove('on'); elAlerte.innerHTML = ''; return; }
+  elAlerte.innerHTML = html;
+  elAlerte.classList.add('on');
+}
+
+var MOIS_COURT = ['janvier','février','mars','avril','mai','juin','juillet','août',
+                  'septembre','octobre','novembre','décembre'];
+
+function chargerCerveau(){
+  // ?v= : nginx pose no-store sur les .html mais pas sur les .json, et
+  // Cloudflare garde les assets 4 h. Sans ce paramètre on relit un cerveau
+  // d'avant-hier en croyant regarder aujourd'hui.
+  return fetch('./cerveau.json?v=' + Date.now(), { credentials:'same-origin' })
+    .then(function(r){ if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+    .then(function(j){
+      cerveau = j;
+      var d = new Date(j.genere_le);
+      elFrais.textContent = 'Données relevées le ' + d.getDate() + ' ' + MOIS_COURT[d.getMonth()] +
+        ' à ' + String(d.getHours()).padStart(2,'0') + 'h' + String(d.getMinutes()).padStart(2,'0') +
+        ' · ' + j.sources.length + ' sources';
+      if (j.avertissements && j.avertissements.length)
+        alerte('<b>Une source n\'a pas pu être lue :</b> ' + j.avertissements.join(' · ') +
+               '. Les autres réponses restent exactes.');
+      return j;
+    })
+    .catch(function(e){
+      elFrais.textContent = 'Données indisponibles';
+      alerte('<b>Je n\'ai pas pu charger tes données</b> (' + e.message + '). ' +
+             'Je peux te répondre, mais je n\'aurais rien de vrai à te dire — ' +
+             'donc je préfère me taire jusqu\'à ce que cerveau.json soit lisible.');
+      return null;
+    });
+}
+
+function afficher(sujet, phrases, details){
+  elRep.innerHTML = '<b>' + sujet + '</b><br>' + phrases.join('<br>') +
+    (cerveau ? '<span class="src">Source : ' + cerveau.sources.join(' · ') + '</span>' : '');
+  elListe.innerHTML = '';
+  (details || []).slice(0, 12).forEach(function(d){
+    var li = document.createElement('li');
+    var t = d.texte || d.nom || '';
+    if (d.genre === 'alerte' || d.etat === 'bloque' || d.echecs) li.className = 'rouge';
+    else if (d.etat === 'attente' || d.genre === 'ouvert') li.className = 'or';
+    if (d.echecs) t = d.nom + ' — ' + d.echecs + ' échecs, dernier le ' + (d.dernier || '?');
+    if (d.telephone) t = d.nom + ' — ' + (d.commune || '') + ' — ' + d.telephone;
+    if (d.suite) t = d.nom + ' — ' + d.suite;
+    li.textContent = t;
+    elListe.appendChild(li);
+  });
+}
+
+function repondre(phrase){
+  if (!cerveau){
+    var m = ['Je n\'ai pas tes données sous la main, donc je ne te dirai rien plutôt que de t\'inventer un chiffre.'];
+    afficher('Données absentes', m, []);
+    return bouche.dire(m).then(reprendre);
+  }
+  var sujet = trouverSujet(phrase);
+  var s = sujet && cerveau.sujets[sujet];
+  if (!s){
+    var r = ['Je n\'ai pas compris. Demande-moi les relances à faire, ce qui s\'est mal passé, ' +
+             'les décisions qui t\'attendent, tes prospects, tes chantiers ou tes automatisations.'];
+    afficher('Je n\'ai pas compris', r, []);
+    return bouche.dire(r).then(reprendre);
+  }
+  etat('Je réponds', 0);
+  afficher(s.titre, s.phrases, s.details);
+  return bouche.dire(s.phrases, surEtatVoix).then(reprendre);
+}
+
+function surEtatVoix(code){
+  if (code === 'clone-attente') etat('Je génère ta voix clonée…', TEINTE.clone);
+  else if (code === 'sans-voix')
+    alerte('<b>Ce navigateur ne sait pas parler.</b> La réponse reste lisible à l\'écran.');
+  else if (code && code.indexOf('clone-echec') === 0)
+    alerte('<b>La voix clonée n\'a pas répondu</b> (' + code.split(':')[1] + '). ' +
+           'Je bascule sur la voix du navigateur pour cette réponse — le webhook tts-gen lâche par intermittence.');
+}
+
+/* --- L'oreille ---------------------------------------------------------- */
+var Reco = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+function preparerEcoute(){
+  if (!Reco) return null;
+  var r = new Reco();
+  r.lang = 'fr-FR';
+  r.continuous = true;
+  r.interimResults = true;
+  r.onresult = function(ev){
+    var fini = '', encours = '';
+    for (var i = ev.resultIndex; i < ev.results.length; i++){
+      if (ev.results[i].isFinal) fini += ev.results[i][0].transcript;
+      else encours += ev.results[i][0].transcript;
+    }
+    elDit.textContent = '« ' + (fini || encours) + ' »';
+    if (!fini) return;
+    if (/\b(stop|arr[eê]te|tais.toi|chut)\b/i.test(fini)){ bouche.couper(); etat('Coupé', 0); return; }
+    if (/\b(au revoir|ferme|merci c.est tout)\b/i.test(fini)){ fermer(); return; }
+    // On coupe l'oreille pendant la réponse, sinon la voix de synthèse
+    // se réentend elle-même et déclenche une deuxième question.
+    stopEcoute();
+    etat('Je cherche', TEINTE.cherche);
+    repondre(fini);
+  };
+  r.onerror = function(ev){
+    if (ev.error === 'not-allowed' || ev.error === 'service-not-allowed'){
+      alerte('<b>Le micro est refusé par le navigateur.</b> Autorise-le dans la barre d\'adresse, ' +
+             'puis rappuie sur Parler. Les boutons ci-dessous marchent sans micro.');
+      etat('Micro refusé', 0);
+    } else if (ev.error !== 'no-speech' && ev.error !== 'aborted'){
+      etat('Erreur : ' + ev.error, 0);
+    }
+    ecouteActive = false;
+    bParler.classList.remove('actif');
+  };
+  r.onend = function(){
+    ecouteActive = false;
+    bParler.classList.remove('actif');
+    if (!bouche.parle) etat('Au repos', 0);
+  };
+  return r;
+}
+
+function demarrerEcoute(){
+  if (!Reco){
+    alerte('<b>Ce navigateur ne reconnaît pas la parole.</b> ' +
+           'L\'API SpeechRecognition n\'existe que sur Chrome et Edge — ni Firefox, ni Safari. ' +
+           'Les boutons ci-dessous te donnent les mêmes réponses, à la voix et à l\'écrit.');
+    return;
+  }
+  if (ecouteActive) { stopEcoute(); return; }
+  bouche.couper();
+  micro.demarrer().then(function(ok){
+    if (!ok && micro.erreur !== 'micro-indisponible'){
+      alerte('<b>L\'orbe ne réagira pas à ta voix</b> (micro : ' + micro.erreur + '), ' +
+             'mais la reconnaissance vocale a son propre accès et peut fonctionner.');
+    }
+    try { ecoute.start(); ecouteActive = true; bParler.classList.add('actif'); etat('Je t\'écoute', TEINTE.ecoute); }
+    catch (_) { /* start() lancé deux fois de suite : sans conséquence */ }
+  });
+}
+function stopEcoute(){
+  ecouteActive = false;
+  bParler.classList.remove('actif');
+  try { ecoute && ecoute.stop(); } catch (_) {}
+}
+function reprendre(){
+  // Après une réponse, on rouvre l'oreille : c'est ce qui fait une
+  // conversation plutôt qu'une suite de questions isolées.
+  etat('Au repos', 0);
+  if (scene.classList.contains('ouvert') && Reco && !bouche.parle) setTimeout(demarrerEcoute, 350);
+}
+
+/* --- Les raccourcis, pour tester sans micro et sans Chrome --------------- */
+var SUGGESTIONS = [
+  ['resume',    'Fais-moi le point'],
+  ['relances',  'Quelles relances ?'],
+  ['rates',     "Qu'est-ce qui s'est mal passé ?"],
+  ['decisions', 'Qu\'est-ce qui attend ma décision ?'],
+  ['prospects', 'Mes prospects'],
+  ['workflows', 'Mes automatisations']
+];
+SUGGESTIONS.forEach(function(s){
+  var b = document.createElement('button');
+  b.type = 'button'; b.className = 'vx-sug'; b.textContent = s[1];
+  b.addEventListener('click', function(){
+    stopEcoute();
+    elDit.textContent = '« ' + s[1] + ' »';
+    repondre(s[1]);
+  });
+  elSug.appendChild(b);
+});
+
+/* --- Ouverture / fermeture ---------------------------------------------- */
+function ouvrir(){
+  scene.classList.add('ouvert');
+  if (!orbe){
+    try { orbe = Orbe(toile); }
+    catch (e){
+      orbe = { niveau:0, hover:0, actif:false, taille:function(){}, boucle:function(){}, webgl:false };
+      alerte('<b>L\'orbe ne peut pas s\'afficher</b> (' + e.message + '). Le dialogue fonctionne quand même.');
+    }
+    micro  = Micro(orbe);
+    bouche = Bouche(orbe);
+    ecoute = preparerEcoute();
+    if (!orbe.webgl) console.info('[vocal] WebGL indisponible — orbe en repli canvas 2D');
+  }
+  orbe.actif = true; orbe.hue = 0; orbe.hover = 0.55;
+  orbe.taille(); orbe.boucle();
+  if (!cerveau) chargerCerveau().then(function(j){
+    if (!j) return;
+    var r = j.sujets.resume;
+    afficher(r.titre, r.phrases, []);
+    // On ne parle pas tout seul à l'ouverture : le navigateur bloquerait
+    // l'audio sans geste utilisateur, et un assistant qui démarre en parlant
+    // par-dessus l'utilisateur est pénible. Le clic sur « Parler » l'autorise.
+    etat(Reco ? 'Appuie sur Parler' : 'Utilise les boutons', 0);
+  });
+  document.body.style.overflow = 'hidden';
+}
+function fermer(){
+  scene.classList.remove('ouvert');
+  document.body.style.overflow = '';
+  stopEcoute();
+  if (bouche) bouche.couper();
+  if (micro) micro.arreter();
+  if (orbe) orbe.actif = false;
+}
+
+lanceur.addEventListener('click', ouvrir);
+document.getElementById('vx-fermer').addEventListener('click', fermer);
+document.addEventListener('keydown', function(e){
+  if (e.key === 'Escape' && scene.classList.contains('ouvert')) fermer();
+});
+bParler.addEventListener('click', demarrerEcoute);
+bStop.addEventListener('click', function(){ bouche.couper(); etat('Coupé', 0); });
+bClone.addEventListener('click', function(){
+  bouche.clone = !bouche.clone;
+  bClone.setAttribute('aria-pressed', String(bouche.clone));
+  alerte(bouche.clone
+    ? '<b>Voix clonée activée.</b> Chaque réponse passe par le webhook tts-gen : ' +
+      'plusieurs secondes d\'attente, et il lâche par intermittence — le repli sur la voix ' +
+      'du navigateur est automatique et te sera dit.'
+    : '');
+});
+window.addEventListener('resize', function(){ if (orbe && orbe.actif) orbe.taille(); });
+})();
+</script>
+
 </body>
 </html>

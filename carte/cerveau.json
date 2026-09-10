@@ -1,0 +1,655 @@
+{
+ "genere_le": "2026-09-10T15:33:04.422Z",
+ "sources": [
+  "taches/taches.json",
+  "TASKLOG.md",
+  "taches/leads-qualifies-sheet.json",
+  "appels/resultats.json",
+  "sites-clients/data/sites.json",
+  "n8n (API REST, en direct)"
+ ],
+ "avertissements": [],
+ "sujets": {
+  "relances": {
+   "titre": "Les relances à faire",
+   "phrases": [
+    "6 chantiers ont un client ou un prospect nommé au bout, et ne sont pas finis. Ce sont ceux qui peuvent produire une facture cette semaine. Ils se ramènent à 3 dossiers.",
+    "Koytcha, 4 lignes du tableau : Prospect immobilier nommé. C’est la v4 qui s’envoie — la v2 avait été refusée, ne jamais repointer dessus.",
+    "Family Arena : Dossier complet, concurrents VR fermés. Site + vidéo prêts à montrer.",
+    "Projet Kripia : Tu as écrit toi-même « vendre le clip ou la méthode ». C’est une offre, pas un rendu."
+   ],
+   "details": [
+    {
+     "texte": "Koytcha — formulaire de contact : 2 destinataires sur 3 pointent vers example.com, les messages sont perdus",
+     "etat": "attente",
+     "pourquoi": "Prospect immobilier nommé. C’est la v4 qui s’envoie — la v2 avait été refusée, ne jamais repointer dessus.",
+     "lien": "https://koytchaimmo.re/contact/"
+    },
+    {
+     "texte": "Koytcha — comptes Administrateur suspects sur leur WordPress + jeton admin public valable jusqu'en 2027",
+     "etat": "attente",
+     "pourquoi": "Prospect immobilier nommé. C’est la v4 qui s’envoie — la v2 avait été refusée, ne jamais repointer dessus.",
+     "lien": null
+    },
+    {
+     "texte": "Koytcha — integrer les 3 photos que Florent a jointes (Cambaie Park, Ze Bure@u 2, Ze Lokal)",
+     "etat": "attente",
+     "pourquoi": "Prospect immobilier nommé. C’est la v4 qui s’envoie — la v2 avait été refusée, ne jamais repointer dessus.",
+     "lien": "/koytcha-refonte-v5/"
+    },
+    {
+     "texte": "Vidéo Koytcha v2 : sous-titres, textes animés HyperFrames (30 ans d'expérience + stats), un bien et un programme vers la fin, plus un b-roll de 3-4 s",
+     "etat": "attente",
+     "pourquoi": "Prospect immobilier nommé. C’est la v4 qui s’envoie — la v2 avait été refusée, ne jamais repointer dessus.",
+     "lien": "/koytcha-video/"
+    },
+    {
+     "texte": "Family Arena — vraie séquence HADO filmée",
+     "etat": "attente",
+     "pourquoi": "Dossier complet, concurrents VR fermés. Site + vidéo prêts à montrer.",
+     "lien": null
+    },
+    {
+     "texte": "Projet Kripia — orthographe, style, et vendre le clip ou la méthode",
+     "etat": "attente",
+     "pourquoi": "Tu as écrit toi-même « vendre le clip ou la méthode ». C’est une offre, pas un rendu.",
+     "lien": null
+    }
+   ]
+  },
+  "rates": {
+   "titre": "Ce qui s'est mal passé",
+   "phrases": [
+    "Le journal de bord porte 3 alertes et 4 points restés ouverts.",
+    "Le 10 septembre : À REGARDER : le remote git de resto-automatisationboost contient le PAT GitHub en clair dans l'URL (visible dès un git remote -v).",
+    "Le 10 septembre : L'attribution outil ↔ verdict est un choix éditorial de ma part, pas une mesure — Tony ne nomme aucun outil dans son rush.",
+    "Le 10 septembre : URL inventée, rattrapée avant publication.",
+    "Et ce sont ces points qui restent ouverts : EN COURS — analyse sécurité koytchaimmo.re. ; EN COURS — mail n8n à corriger. ; A DECIDER : ajouter le bloc « parle-moi de ton projet » (3 questions + email) au bas des 253 ressources qui n'en ont pas."
+   ],
+   "details": [
+    {
+     "genre": "alerte",
+     "date": "10/09",
+     "texte": "À REGARDER : le remote git de resto-automatisationboost contient le PAT GitHub en clair dans l'URL (visible dès un git remote -v). Déjà signalé en juillet, toujours là."
+    },
+    {
+     "genre": "alerte",
+     "date": "10/09",
+     "texte": "L'attribution outil ↔ verdict est un choix éditorial de ma part, pas une mesure — Tony ne nomme aucun outil dans son rush. Dit sur la page et à lui : notamment Claude est fait par Anthropic, qui me fait, donc cette ligne est la première qu'il doit trancher lui-même ; et Zapier en « BOF » est un concurrent nommé, à assumer. Tout est dans work/plan.mjs, permuter deux lignes suffit."
+    },
+    {
+     "genre": "alerte",
+     "date": "10/09",
+     "texte": "URL inventée, rattrapée avant publication. J'avais écrit human-atlas.vercel.app dans la page ressource sans l'avoir vérifiée : c'est un site totalement différent (une carte des émotions). La vraie est human-atlas-seven.vercel.app, retrouvée dans le transcript de la session où la capture a été faite, et confirmée par fetch. Leçon : ne jamais écrire une URL qu'on n'a pas ouverte."
+    },
+    {
+     "genre": "ouvert",
+     "date": "10/09",
+     "texte": "EN COURS — analyse sécurité koytchaimmo.re. Constats déjà mesurés, en lecture publique seulement : (1) aucun en-tête de sécurité — HSTS, CSP, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy tous absents ; (2) l'API REST expose le compte admin — /wp-json/wp/v2/users renvoie l'utilisateur 1 avec name = koytchaimmo@gmail.com, donc l'identifiant de connexion est public ; (3) /debug.log répond 200 à la racine ; (4) WordPress 6.9.4 et Elementor 3.35.6 annoncés en clair, PHP 8.4.24 via x-powered-by ; (5) xmlrpc.php en 503, wp-login.php en 302. Reste à vérifier : le jeton Bearer du widget de recherche (déjà connu, valable jusqu'en 2027), les sauvegardes exposées, les extensions."
+    },
+    {
+     "genre": "ouvert",
+     "date": "10/09",
+     "texte": "EN COURS — mail n8n à corriger. Le mail « Vos 3 publications sont programmées » que Tony reçoit ne vient PAS de mes envois : c'est le workflow HjrZVKFzfRRP3WRi, nœud Code « Mettre en forme », variable corpsEux. Il dit encore « connectez votre compte Instagram, sinon rien ne part » et pointe sur /editeur/ (le moignon). À remplacer par : la vidéo du client + bouton vers /foodboost-editeur/?client=<slug>&src=mail, en HTML branding FoodBoost (fond #0b0b0d, ambre #f0a500). Le lienEditeur du même nœud est aussi à corriger."
+    },
+    {
+     "genre": "ouvert",
+     "date": "08/09",
+     "texte": "A DECIDER : ajouter le bloc « parle-moi de ton projet » (3 questions + email) au bas des 253 ressources qui n'en ont pas. Analyse du concurrent Sophiene : sa force n'est pas le contenu (1 ressource contre 254) mais la fin de page. Le webhook de reception existe deja."
+    },
+    {
+     "genre": "ouvert",
+     "date": "08/09",
+     "texte": "BLOQUE cote Apify : le workflow PtT2qJqDXKpN2lPu appelle maintenant l'acteur apify/web-scraper (appel REST, meme montage que le workflow social qui tourne). Reponse 403 Forbidden avec les TROIS credentials (IDAmMHgyGsHcEFDu, vxEfA8J2qGSiMeBe, UCHrBkwNMBZcmtkC) alors que la meme credential UCHrBkwNMBZcmtkC a fait tourner 0WJ9rVlWAZdfiZPx avec succes le 08/09 a 08:32. Le jeton n'est donc pas mort : sa PORTEE exclut cet acteur. Remede cote Tony : console Apify > Settings > Integrations > API tokens > autoriser apify/web-scraper (ou creer un jeton sans restriction d'acteur). Le message d'erreur du workflow dit exactement ca."
+    }
+   ],
+   "bonnes": [
+    {
+     "genre": "bonne",
+     "date": "08/09",
+     "texte": "RDV DECROCHE avec un gerant qui cherche une solution d'automatisation — premier rendez-vous entrant depuis le debut du suivi. Nom, societe et date A RENSEIGNER par Tony."
+    }
+   ]
+  },
+  "decisions": {
+   "titre": "Ce qui attend une décision de toi",
+   "phrases": [
+    "7 décisions attendent que tu tranches. Personne ne peut les prendre à ta place.",
+    "Koytcha : repondre a Florent qui recoit quoi sur le formulaire (achat/vente, gestion locative, administratif) — et si contact@ doit arriver chez Anjali",
+    "Koytcha : trancher le montant de la refonte — recommandation forfait 1 299 EUR (voir FACTURATION-KOYTCHA.md)",
+    "Reconnecter LinkedIn dans Blotato — c'est ce qui bloque le plus de choses",
+    "Recharger WaveSpeed (le lip-sync coûte 2,07 $, il reste 1,54 $)",
+    "Enregistrer 30 à 45 s de voix parlée au calme, pour un clone propre",
+    "Demander à BeFresh son logo vectoriel et ses photos du mois",
+    "Dire si je programme les 5 prompt-reveal qui dorment depuis le 17"
+   ],
+   "details": [
+    {
+     "texte": "Koytcha : repondre a Florent qui recoit quoi sur le formulaire (achat/vente, gestion locative, administratif) — et si contact@ doit arriver chez Anjali"
+    },
+    {
+     "texte": "Koytcha : trancher le montant de la refonte — recommandation forfait 1 299 EUR (voir FACTURATION-KOYTCHA.md)"
+    },
+    {
+     "texte": "Reconnecter LinkedIn dans Blotato — c'est ce qui bloque le plus de choses"
+    },
+    {
+     "texte": "Recharger WaveSpeed (le lip-sync coûte 2,07 $, il reste 1,54 $)"
+    },
+    {
+     "texte": "Enregistrer 30 à 45 s de voix parlée au calme, pour un clone propre"
+    },
+    {
+     "texte": "Demander à BeFresh son logo vectoriel et ses photos du mois"
+    },
+    {
+     "texte": "Dire si je programme les 5 prompt-reveal qui dorment depuis le 17"
+    }
+   ]
+  },
+  "taches": {
+   "titre": "Les chantiers",
+   "phrases": [
+    "Ton tableau compte 62 chantiers, relevés le 8 septembre.",
+    "36 sont livrés et vérifiés en ligne, 16 attendent ton retour, et 4 sont bloqués.",
+    "Ce qui est bloqué : Comptes IA à zéro ; Un échantillon vocal propre ; Reconnecter LinkedIn dans Blotato ; Programmer les 4 prompt-reveal."
+   ],
+   "details": [
+    {
+     "texte": "Koytcha — formulaire de contact : 2 destinataires sur 3 pointent vers example.com, les messages sont perdus",
+     "etat": "attente",
+     "cash": "direct",
+     "lien": "https://koytchaimmo.re/contact/"
+    },
+    {
+     "texte": "Koytcha — comptes Administrateur suspects sur leur WordPress + jeton admin public valable jusqu'en 2027",
+     "etat": "attente",
+     "cash": "direct",
+     "lien": null
+    },
+    {
+     "texte": "Koytcha — integrer les 3 photos que Florent a jointes (Cambaie Park, Ze Bure@u 2, Ze Lokal)",
+     "etat": "attente",
+     "cash": "direct",
+     "lien": "/koytcha-refonte-v5/"
+    },
+    {
+     "texte": "Vidéo Koytcha v2 : sous-titres, textes animés HyperFrames (30 ans d'expérience + stats), un bien et un programme vers la fin, plus un b-roll de 3-4 s",
+     "etat": "attente",
+     "cash": "direct",
+     "lien": "/koytcha-video/"
+    },
+    {
+     "texte": "Landing matrix : recaler la boule d'énergie sur la main et le doigt, adapter au mobile, puis vidéo + planification",
+     "etat": "attente",
+     "cash": "loin",
+     "lien": "/automatisationboost-matrix/"
+    },
+    {
+     "texte": "Comptes IA à zéro — 3 workflows sur 4 repartent en rechargeant OpenAI, le 4e non",
+     "etat": "bloque",
+     "cash": "loin",
+     "lien": null
+    },
+    {
+     "texte": "Un échantillon vocal propre — 30 à 45 s, au calme, sans musique",
+     "etat": "bloque",
+     "cash": "loin",
+     "lien": null
+    },
+    {
+     "texte": "Reconnecter LinkedIn dans Blotato",
+     "etat": "bloque",
+     "cash": "proche",
+     "lien": null
+    },
+    {
+     "texte": "5 vidéos prompt-reveal jamais programmées",
+     "etat": "attente",
+     "cash": "proche",
+     "lien": null
+    },
+    {
+     "texte": "Vidéo BeFresh façon Crousty",
+     "etat": "attente",
+     "cash": "proche",
+     "lien": null
+    },
+    {
+     "texte": "Lip-sync du clip — 18 extraits chantés, 41,4 s",
+     "etat": "plus-tard",
+     "cash": "loin",
+     "lien": null
+    },
+    {
+     "texte": "Carrousel LinkedIn 6 cartes — récap de la semaine",
+     "etat": "attente",
+     "cash": "proche",
+     "lien": null
+    },
+    {
+     "texte": "Programmer les 4 prompt-reveal (sauf REGARD)",
+     "etat": "bloque",
+     "cash": "proche",
+     "lien": null
+    },
+    {
+     "texte": "Choisir la voix BeFresh",
+     "etat": "attente",
+     "cash": "proche",
+     "lien": null
+    },
+    {
+     "texte": "Family Arena — vraie séquence HADO filmée",
+     "etat": "attente",
+     "cash": "direct",
+     "lien": null
+    },
+    {
+     "texte": "Projet Kripia — orthographe, style, et vendre le clip ou la méthode",
+     "etat": "attente",
+     "cash": "direct",
+     "lien": null
+    },
+    {
+     "texte": "Clip de 3 minutes beat-sync",
+     "etat": "plus-tard",
+     "cash": "loin",
+     "lien": null
+    },
+    {
+     "texte": "Mot-clé et porte pour les 2 ressources écrites aujourd'hui",
+     "etat": "attente",
+     "cash": "proche",
+     "lien": null
+    },
+    {
+     "texte": "Planifier cron-watchdog en routine quotidienne",
+     "etat": "attente",
+     "cash": "loin",
+     "lien": null
+    },
+    {
+     "texte": "Repointer les 2 autres routines cloud en v3",
+     "etat": "attente",
+     "cash": "loin",
+     "lien": null
+    }
+   ],
+   "enCours": [
+    "Le 10 septembre : EN COURS — analyse sécurité koytchaimmo.re.",
+    "Le 10 septembre : EN COURS — mail n8n à corriger.",
+    "Le 8 septembre : A DECIDER : ajouter le bloc « parle-moi de ton projet » (3 questions + email) au bas des 253 ressources qui n'en ont pas.",
+    "Le 8 septembre : BLOQUE cote Apify : le workflow PtT2qJqDXKpN2lPu appelle maintenant l'acteur apify/web-scraper (appel REST, meme montage que le workflow social qui tourne)."
+   ]
+  },
+  "prospects": {
+   "titre": "Les prospects",
+   "phrases": [
+    "43 prospects qualifiés n'ont jamais été contactés, ni par téléphone, ni par email. 43 ont un numéro, 42 n'ont aucune adresse.",
+    "Le dernier relevé de ce fichier date du 27 avril. Depuis, le robinet de nouveaux prospects est fermé.",
+    "Le suivi d'appels contient 22 fiches remplies, la dernière le 1er septembre.",
+    "Toutes portent une suite à donner. Par exemple : m-donuts, Vérifier la réponse au message Instagram avant de rappeler ; marius, Piste de recommandation, pas de vente directe : lui demander à qui il pense ; le-p-ti-peche, Rappeler à un autre créneau.",
+    "Ton inventaire de sites clients compte 106 fiches, dont 73 avec un numéro de téléphone. C'est ta liste de rappel la plus courte."
+   ],
+   "details": [
+    {
+     "nom": "Diana Dea Lodge",
+     "commune": "Saint-Benoît",
+     "telephone": "+262 262 20 02 02",
+     "score": 68
+    },
+    {
+     "nom": "Pizza Del Forno",
+     "commune": "Saint-Pierre",
+     "telephone": "+262 692 93 67 21",
+     "score": 67
+    },
+    {
+     "nom": "Mafate Café",
+     "commune": "Saint-Denis",
+     "telephone": "+262 693 94 30 32",
+     "score": 63
+    },
+    {
+     "nom": "Nonna Luisa",
+     "commune": "Saint-Pierre",
+     "telephone": "+262 262 80 12 00",
+     "score": 62
+    },
+    {
+     "nom": "Le Nautile beach Hotel",
+     "commune": "La Saline Le Bains",
+     "telephone": "+262 262 33 88 88",
+     "score": 58
+    },
+    {
+     "nom": "Les Papi'es",
+     "commune": "Saint-Pierre",
+     "telephone": "+262 692 76 03 24",
+     "score": 55
+    },
+    {
+     "nom": "Coffee and Travel 974",
+     "commune": "Saint-Pierre",
+     "telephone": "+262 262 26 24 96",
+     "score": 55
+    },
+    {
+     "nom": "AVERNZA ST PIERRE",
+     "commune": "Saint-Pierre",
+     "telephone": "+262 262 91 12 80",
+     "score": 53
+    },
+    {
+     "nom": "Otent'ik Pizza",
+     "commune": "Saint-Pierre",
+     "telephone": "+262 692 94 63 01",
+     "score": 52
+    },
+    {
+     "nom": "Canoune",
+     "commune": "Saint-Denis",
+     "telephone": "+262 693 55 42 37",
+     "score": 52
+    },
+    {
+     "nom": "Ryokaï Café - Café à chats",
+     "commune": "Saint-Denis",
+     "telephone": "+262 692 40 40 34",
+     "score": 52
+    },
+    {
+     "nom": "Bugg's Buggy 974",
+     "commune": "Le Tampon",
+     "telephone": "+262 262 01 19 74",
+     "score": 52
+    },
+    {
+     "nom": "Super U",
+     "commune": "Saint-André",
+     "telephone": "+262 262 46 26 74",
+     "score": 48
+    },
+    {
+     "nom": "Le Ti Mezze",
+     "commune": "Saint-Paul",
+     "telephone": "+262 693 48 00 76",
+     "score": 47
+    },
+    {
+     "nom": "Boutique Traiteur par Kaz Nature - Etang St Leu",
+     "commune": "Etang",
+     "telephone": "+262 693 43 18 98",
+     "score": 47
+    },
+    {
+     "nom": "Abri joli / Mam'zelle Pizza Sainte-Anne",
+     "commune": "Saint-Benoît",
+     "telephone": "+262 693 62 56 62",
+     "score": 47
+    },
+    {
+     "nom": "Snack La Kafrine",
+     "commune": "Saint-Pierre",
+     "telephone": "+262 693 11 78 09",
+     "score": 47
+    },
+    {
+     "nom": "Maison Kaoni",
+     "commune": "Saint-Paul",
+     "telephone": "+262 693 44 39 00",
+     "score": 46
+    },
+    {
+     "nom": "Bodega saint pierre",
+     "commune": "Saint Pierre",
+     "telephone": "+262 262 25 94 68",
+     "score": 45
+    },
+    {
+     "nom": "Koru Café",
+     "commune": "Saint-Denis",
+     "telephone": "+262 693 48 58 03",
+     "score": 45
+    },
+    {
+     "nom": "M.Donuts et Bagels Saint-Pierre",
+     "commune": "Saint-Pierre",
+     "telephone": "+262 693 00 02 93",
+     "score": 44
+    },
+    {
+     "nom": "L'Artisan Glacier",
+     "commune": "Saint-Denis",
+     "telephone": "+262 262 31 67 54",
+     "score": 44
+    },
+    {
+     "nom": "La Mine d'Elo",
+     "commune": "St Pierre",
+     "telephone": "+262 262 81 78 88",
+     "score": 42
+    },
+    {
+     "nom": "Kazkfe",
+     "commune": "Saint-Pierre",
+     "telephone": "+262 262 02 54 13",
+     "score": 41
+    },
+    {
+     "nom": "Popine",
+     "commune": "Saint-Denis",
+     "telephone": "+262 262 37 52 91",
+     "score": 41
+    },
+    {
+     "nom": "m-donuts",
+     "dit": "Pas de réponse. Tony leur a envoyé la vidéo par message Instagram.",
+     "suite": "Vérifier la réponse au message Instagram avant de rappeler.",
+     "date": "2026-09-01"
+    },
+    {
+     "nom": "marius",
+     "dit": "Pas de réponse au premier appel. À la retraite, mais il a demandé s'il y avait des gens intéressés.",
+     "suite": "Piste de recommandation, pas de vente directe : lui demander à qui il pense.",
+     "date": "2026-08-25"
+    },
+    {
+     "nom": "le-p-ti-peche",
+     "dit": "Pas de réponse.",
+     "suite": "Rappeler à un autre créneau.",
+     "date": "2026-09-01"
+    },
+    {
+     "nom": "folies-burger",
+     "dit": "Pas de réponse — problème de numéro.",
+     "suite": "Le numéro de la base est douteux : retrouver le bon avant de rappeler.",
+     "date": "2026-08-25"
+    },
+    {
+     "nom": "la-saint-georges",
+     "dit": "Elle va transmettre en interne pour voir et regarder ça. Tony a dit que le site était à refaire et a présenté ce qu'il fait.",
+     "suite": "Rappeler pour savoir à qui ça a été transmis, et à qui parler directement.",
+     "date": "2026-09-01"
+    },
+    {
+     "nom": "vitaly",
+     "dit": "Pas de réponse.",
+     "suite": "Rappeler à une autre heure.",
+     "date": "2026-08-25"
+    },
+    {
+     "nom": "l-arbradelis",
+     "dit": "Pas de réponse.",
+     "suite": "Faire un site de démonstration, puis rappeler avec le lien.",
+     "date": "2026-09-01"
+    },
+    {
+     "nom": "choose-eat",
+     "dit": "Pas de réponse.",
+     "suite": "Rappeler à une autre heure.",
+     "date": "2026-08-25"
+    },
+    {
+     "nom": "les-bons-enfants",
+     "dit": "Appelé. Il faut rappeler sur l'établissement de Saint-Pierre.",
+     "suite": "Trouver le numéro de Saint-Pierre et rappeler là-bas.",
+     "date": "2026-09-01"
+    },
+    {
+     "nom": "that-s-eat",
+     "dit": "Pas de réponse.",
+     "suite": "Rappeler à une autre heure.",
+     "date": "2026-08-25"
+    },
+    {
+     "nom": "au-vieux-quimper",
+     "dit": "Pas encore appelé.",
+     "suite": "À faire.",
+     "date": null
+    },
+    {
+     "nom": "la-page-gourmande",
+     "dit": "À rappeler à 14 h. Tony a fait une vidéo rapide pour eux.",
+     "suite": "Rappeler à 14 h avec le lien de la vidéo déjà prête.",
+     "date": "2026-09-01"
+    },
+    {
+     "nom": "l-unisson",
+     "dit": "Appel abouti. A donné son numéro direct : 0692 24 21 40. Demande un site de démonstration et une vidéo. A déjà une agence à 300 € pour le marketing.",
+     "suite": "Envoyer la maquette. La vidéo n'est PAS à envoyer — aucune version validée (refus du 01/09). L'agence à 300 €/mois est le point de comparaison.",
+     "date": "2026-09-01"
+    },
+    {
+     "nom": "mediterraneo",
+     "dit": "Pas encore appelé.",
+     "suite": "À faire.",
+     "date": null
+    },
+    {
+     "nom": "pizza-etna",
+     "dit": "Pas encore appelé.",
+     "suite": "À faire.",
+     "date": null
+    },
+    {
+     "nom": "villa-fleurie",
+     "suite": "Il a ouvert SA maquette les 2 et 3 juillet, et le portfolio quatre fois. Le plus engagé du fichier de tracking. Sa maquette est toujours en ligne : previsualisation.automatisationboost.com/client-villa-fleurie-restaurant-seminaires/",
+     "date": "2026-07-03"
+    },
+    {
+     "nom": "boulangerie-le-mamita",
+     "suite": "A ouvert SA maquette le 2 juillet. Elle est en ligne : previsualisation.automatisationboost.com/client-boulangerie-le-mamita/",
+     "date": "2026-07-02"
+    },
+    {
+     "nom": "oxygene-event",
+     "dit": "Appel abouti. Ils ont déjà quelqu'un dessus et n'ont pas forcément besoin de quelqu'un.",
+     "suite": "Pas de relance commerciale. Leur envoyer des exemples récents — sites livrés et une vidéo — pour qu'ils sachent à quoi ressemble le travail le jour où leur prestataire actuel les lâche. Un « on a déjà quelqu'un » est un non de politesse tant qu'ils n'ont pas vu la différence.",
+     "date": "2026-08-28"
+    },
+    {
+     "nom": "tamarun",
+     "suite": "A regardé ta vidéo deux fois puis cliqué vers ton site, le 22 juin.",
+     "date": "2026-06-22"
+    },
+    {
+     "nom": "les-3-dragons",
+     "suite": "A cliqué sur ton lien Calendly le 18 juin. C'est l'adresse contact@kreol-factory.com qui apparaît dans le tracking — l'enseigne, elle, est Les 3 dragons.",
+     "date": "2026-06-18"
+    },
+    {
+     "nom": "engen",
+     "suite": "Calendly, puis ton site, puis ton portfolio — en une minute, le 2 juillet. L'adresse du tracking est re_contact@vivoenergy.com (Vivo Energy exploite la marque Engen). Une maquette existe déjà : previsualisation.automatisationboost.com/client-engen-reunion-optimisation-seo/",
+     "date": "2026-07-02"
+    },
+    {
+     "nom": "les-papi-es",
+     "dit": "Appel abouti. Ils veulent voir une démo vidéo avant de décider.",
+     "suite": "La démo est prête : previsualisation.automatisationboost.com/pour-papies/ — leur envoyer le lien, puis rappeler.",
+     "date": "2026-09-01"
+    }
+   ]
+  },
+  "workflows": {
+   "titre": "Les automatisations",
+   "phrases": [
+    "141 workflows sont actifs sur ton instance n8n, sur 595 au total.",
+    "221 exécutions ont échoué sur les quatorze derniers jours, réparties sur 30 workflows.",
+    "Validation Sheet - programme TikTok + Instagram a échoué 60 fois, la dernière le 10 septembre, sur le nœud Lire onglet 30 Videos : Service unavailable.",
+    "Récuperer lead chaud a échoué 46 fois, la dernière le 10 septembre, sur le nœud Lire Google Sheet2 : The service is receiving too many requests from you.",
+    "TTS Generator - Voice Clone + OpenAI Fallback a échoué 20 fois, la dernière le 6 septembre, sur le nœud Submit Voice Clone : Bad request.",
+    "FoodBoost — Démo : tuile, aperçu ou post a échoué 18 fois, la dernière le 31 août, sur le nœud Kie Record Info : The connection timed out, consider setting the 'Retry on Fail' option in the node settings.",
+    "Scraper Leads HoReCa Quotidien - Humian a échoué 10 fois, la dernière le 10 septembre, sur le nœud Sortie : The service is receiving too many requests from you."
+   ],
+   "details": [
+    {
+     "nom": "Validation Sheet - programme TikTok + Instagram",
+     "id": "soNcMKsz1ce7yDhA",
+     "echecs": 60,
+     "dernier": "2026-09-10",
+     "noeud": "Lire onglet 30 Videos",
+     "erreur": "Service unavailable - try again later or consider setting this node to retry automatically (in the node settings)"
+    },
+    {
+     "nom": "Récuperer lead chaud",
+     "id": "fHFZvB7XsTJJuXMa",
+     "echecs": 46,
+     "dernier": "2026-09-10",
+     "noeud": "Lire Google Sheet2",
+     "erreur": "The service is receiving too many requests from you"
+    },
+    {
+     "nom": "TTS Generator - Voice Clone + OpenAI Fallback",
+     "id": "6InNNRjMJxiteEkV",
+     "echecs": 20,
+     "dernier": "2026-09-06",
+     "noeud": "Submit Voice Clone",
+     "erreur": "Bad request - please check your parameters"
+    },
+    {
+     "nom": "FoodBoost — Démo : tuile, aperçu ou post",
+     "id": "Z10DjZWv7skokVrd",
+     "echecs": 18,
+     "dernier": "2026-08-31",
+     "noeud": "Kie Record Info",
+     "erreur": "The connection timed out, consider setting the 'Retry on Fail' option in the node settings"
+    },
+    {
+     "nom": "Scraper Leads HoReCa Quotidien - Humian",
+     "id": "t448DfTS6icIRTzy",
+     "echecs": 10,
+     "dernier": "2026-09-10",
+     "noeud": "Sortie",
+     "erreur": "The service is receiving too many requests from you"
+    },
+    {
+     "nom": "🍽️ Demo de feed resto — a partir de LEURS photos",
+     "id": "PtT2qJqDXKpN2lPu",
+     "echecs": 8,
+     "dernier": "2026-09-08",
+     "noeud": "Rendre la page (Apify)",
+     "erreur": "Forbidden - perhaps check your credentials?"
+    }
+   ],
+   "chiffres": {
+    "actifs": 141,
+    "echecs14j": 221,
+    "workflowsEnEchec": 30
+   }
+  },
+  "resume": {
+   "titre": "Le point complet",
+   "phrases": [
+    "6 chantiers ont un client ou un prospect nommé au bout, et ne sont pas finis. Ce sont ceux qui peuvent produire une facture cette semaine. Ils se ramènent à 3 dossiers.",
+    "7 décisions attendent que tu tranches. Personne ne peut les prendre à ta place.",
+    "Le journal de bord porte 3 alertes et 4 points restés ouverts.",
+    "43 prospects qualifiés n'ont jamais été contactés, ni par téléphone, ni par email. 43 ont un numéro, 42 n'ont aucune adresse.",
+    "221 exécutions ont échoué sur les quatorze derniers jours, réparties sur 30 workflows.",
+    "Demande-moi les relances, ce qui a mal tourné, tes décisions, tes prospects ou tes automatisations."
+   ],
+   "details": []
+  }
+ }
+}
