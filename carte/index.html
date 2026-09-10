@@ -995,6 +995,23 @@ footer{border-top:1px solid var(--ligne);padding:30px 0 60px;color:var(--mut);fo
   padding:11px 15px;border:1px solid var(--rouge);border-radius:10px;
   color:var(--texte);font-size:13.5px;line-height:1.45;display:none}
 #vx-alerte.on{display:block}
+.vx-barre{position:relative;z-index:2;display:flex;flex-wrap:wrap;gap:10px;
+  justify-content:center;align-items:center;padding:0 22px 14px;
+  font-size:13.5px;color:var(--mut)}
+/* `display:flex` bat la règle par défaut du navigateur pour [hidden] : sans
+   cette ligne, la barre « Annuler cette tâche » restait affichée même après un
+   ÉCHEC d'enregistrement — un bouton pour défaire ce qui n'existe pas. */
+.vx-barre[hidden], #vx-grammaire[hidden]{display:none}
+#vx-grammaire{position:relative;z-index:2;max-width:660px;text-align:left;
+  border:1px solid var(--ligne);border-radius:12px;padding:14px 18px;
+  background:rgba(20,20,28,.7);font-size:13.5px;line-height:1.5}
+#vx-grammaire .g-t{font-family:var(--mno);font-size:10px;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--or);margin:6px 0 5px}
+#vx-grammaire ul{list-style:none;display:grid;gap:5px}
+#vx-grammaire li{padding-left:14px;position:relative;color:var(--mut)}
+#vx-grammaire li::before{content:'';position:absolute;left:0;top:.6em;
+  width:5px;height:5px;border-radius:50%;background:var(--violet)}
+#vx-grammaire b{color:var(--texte);font-weight:600}
 @media(max-width:640px){
   #vx-reponse{font-size:15.5px}
   #vx-orbe-boite{width:min(22vh,150px);height:min(22vh,150px)}
@@ -1017,6 +1034,32 @@ footer{border-top:1px solid var(--ligne);padding:30px 0 60px;color:var(--mut);fo
   <div id="vx-centre">
     <div id="vx-orbe-boite"><canvas id="vx-toile" aria-hidden="true"></canvas></div>
     <div id="vx-alerte"></div>
+
+    <!-- La grammaire est fermée : sans modèle de langage, tout ce qui n'est
+         pas dans cette liste n'est pas compris. Elle est donc ÉCRITE, pas
+         devinée — sinon Tony parle dans le vide sans savoir pourquoi. -->
+    <div id="vx-grammaire" hidden>
+      <div class="g-t">Pour savoir</div>
+      <ul>
+        <li>« Fais-moi le point »</li>
+        <li>« Quelles relances ? » · « Qu'est-ce qui s'est mal passé ? »</li>
+        <li>« Qu'est-ce qui attend ma décision ? » · « Mes prospects » · « Mes automatisations »</li>
+      </ul>
+      <div class="g-t">Pour agir</div>
+      <ul>
+        <li><b>« Crée une tâche&nbsp;: rappeler Koytcha »</b> — ou <b>« fais-en une tâche »</b> juste
+            après une réponse, et je note ce que je viens de te dire.</li>
+        <li>Ajoute <b>« en direct »</b>, <b>« proche »</b> ou <b>« loin »</b> pour forcer l'axe cash.
+            Sinon je le déduis du sujet et je te le dis.</li>
+        <li><b>« Liste mes tâches dictées »</b></li>
+        <li><b>« Qui attend une réponse ? »</b> — les gens qui t'ont écrit par tes formulaires.</li>
+        <li><b>« Mets à jour »</b> — recalcule en direct ce que n8n sait&nbsp;; le reste garde sa date.</li>
+        <li><b>« Prépare un mail à … »</b> — <b>brouillon Gmail uniquement</b>, jamais un envoi,
+            et le destinataire doit déjà figurer dans tes données.</li>
+        <li>« Stop » coupe la voix. « Au revoir » ferme.</li>
+      </ul>
+    </div>
+
     <div id="vx-etat">Au repos</div>
     <div id="vx-dit"></div>
     <div id="vx-reponse"></div>
@@ -1042,6 +1085,22 @@ footer{border-top:1px solid var(--ligne);padding:30px 0 60px;color:var(--mut);fo
         title="Plus belle mais plusieurs secondes d'attente, et le webhook lâche par intermittence">
         Voix clonée
       </button>
+      <button class="vx-b" id="vx-aide" type="button" aria-expanded="false">Ce que je comprends</button>
+    </div>
+
+    <!-- Confirmation : n'apparaît que pour une action irréversible.
+         Le brouillon Gmail touche sa boîte, il exige un oui explicite. -->
+    <div id="vx-confirmation" class="vx-barre" hidden>
+      <span>Je le fais&nbsp;?</span>
+      <button class="vx-b principal" id="vx-oui" type="button">Confirmer</button>
+      <button class="vx-b" id="vx-non" type="button">Annuler</button>
+    </div>
+
+    <!-- Annulation : la tâche part tout de suite parce qu'elle est
+         réversible. Ce bouton est ce qui rend ce choix acceptable. -->
+    <div id="vx-annuler" class="vx-barre" hidden>
+      <span>Tâche enregistrée.</span>
+      <button class="vx-b" id="vx-defaire" type="button">Annuler cette tâche</button>
     </div>
   </div>
 </div>
@@ -1532,21 +1591,47 @@ function afficher(sujet, phrases, details){
   });
 }
 
+/* Le contexte de la conversation, en deux variables et pas plus.
+   `derniereAffirmation` est ce qui rend possible la phrase que Tony a
+   réellement dite : il entend « 43 prospects jamais contactés » et répond
+   « fais-en une tâche », sans répéter. « ça », c'est cette ligne-là. */
+var sujetCourant = null, derniereAffirmation = null, dernierIdTache = null;
+
 function repondre(phrase){
   if (!cerveau){
     var m = ['Je n\'ai pas tes données sous la main, donc je ne te dirai rien plutôt que de t\'inventer un chiffre.'];
     afficher('Données absentes', m, []);
     return bouche.dire(m).then(reprendre);
   }
+
+  // Les COMMANDES passent avant les questions : « crée une tâche sur les
+  // prospects » contient « prospects » et ne doit pas déclencher une lecture.
+  var cmd = analyserCommande(phrase);
+  if (cmd){
+    if (cmd.commande === 'liste')      return actionListe();
+    if (cmd.commande === 'tache')      return actionTache(cmd);
+    if (cmd.commande === 'leads')      return actionLeads();
+    if (cmd.commande === 'rafraichir') return actionRafraichir();
+    if (cmd.commande === 'brouillon')  return actionBrouillon(cmd);
+  }
+
   var sujet = trouverSujet(phrase);
   var s = sujet && cerveau.sujets[sujet];
   if (!s){
-    var r = ['Je n\'ai pas compris. Demande-moi les relances à faire, ce qui s\'est mal passé, ' +
-             'les décisions qui t\'attendent, tes prospects, tes chantiers ou tes automatisations.'];
+    // Jamais d'échec muet : on dit ce qu'on sait faire, mot pour mot.
+    var r = ['Je n\'ai pas compris.',
+             'Pour savoir : demande-moi les relances, ce qui s\'est mal passé, tes décisions, ' +
+             'tes prospects, tes chantiers ou tes automatisations.',
+             'Pour agir : dis « crée une tâche » suivi de ce que tu veux noter, ou « fais-en une tâche » ' +
+             'juste après une réponse. Dis « mets à jour » pour recalculer. Dis « prépare un mail à » ' +
+             'suivi du nom de quelqu\'un de tes données.'];
     afficher('Je n\'ai pas compris', r, []);
+    ouvrirAide(true);
     return bouche.dire(r).then(reprendre);
   }
   etat('Je réponds', 0);
+  sujetCourant = sujet;
+  derniereAffirmation = s.phrases[0] || null;
   afficher(s.titre, s.phrases, s.details);
   return bouche.dire(s.phrases, surEtatVoix).then(reprendre);
 }
@@ -1558,6 +1643,406 @@ function surEtatVoix(code){
   else if (code && code.indexOf('clone-echec') === 0)
     alerte('<b>La voix clonée n\'a pas répondu</b> (' + code.split(':')[1] + '). ' +
            'Je bascule sur la voix du navigateur pour cette réponse — le webhook tts-gen lâche par intermittence.');
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   LES ACTIONS — ajouté le 10 septembre 2026.
+
+   Jusqu'ici l'assistant ne faisait que lire ce qu'il savait. Ici Tony peut
+   RÉPONDRE : transformer ce qu'il entend en tâche, faire recalculer les
+   chiffres, demander un brouillon d'email.
+
+   TROIS RÈGLES QUI NE SE NÉGOCIENT PAS
+   1. Rien ne part vers un vrai prospect sur une commande vocale. Une
+      reconnaissance qui se trompe d'un mot et l'email est chez le client :
+      irréversible. L'email est donc TOUJOURS un brouillon Gmail, jamais un
+      envoi, et il demande une confirmation explicite avant même d'être écrit.
+   2. Aucun secret dans cette page. Elle est derrière le mot de passe nginx,
+      mais un mot de passe n'est pas un coffre : tout part vers un webhook n8n
+      qui, lui, détient les identifiants.
+   3. Aucun modèle de langage. Les crédits Anthropic ET OpenAI sont épuisés
+      (mesuré : les workflows qui les appellent échouent sur « no credits
+      remaining » / « credit balance too low »). La grammaire ci-dessous est
+      donc fermée et déterministe, et les formulations comprises sont écrites
+      À L'ÉCRAN — sinon Tony parle dans le vide sans savoir pourquoi.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* Un chemin par action, servi par le workflow n8n « Carte — actions vocales »
+   (IPPgOTaZxqcZ94Ty). Un chemin par action plutôt qu'un aiguillage interne :
+   chaque branche est une ligne droite, et c'est déjà le montage de
+   « Validation du jour » sur cette instance. */
+var N8N = 'https://n7n.automatisationboost.com/webhook/';
+var URL_TACHE_CREER = N8N + 'carte-tache';
+var URL_TACHE_LISTE = N8N + 'carte-taches';
+var URL_TACHE_SUPPR = N8N + 'carte-tache-suppr';
+var URL_RAFRAICHIR  = N8N + 'carte-rafraichir';
+var URL_LEADS       = N8N + 'carte-leads';
+var URL_BROUILLON   = N8N + 'carte-brouillon';
+
+/* Le corps part en text/plain. Ce n'est pas une négligence : text/plain est un
+   « type simple » au sens CORS, donc le navigateur n'envoie PAS de préflight.
+   C'est le montage déjà éprouvé par /taches/valider/ et /taches/actions/ contre
+   ce même n8n. Corollaire payé une fois : n8n livre alors `body` en CHAÎNE
+   BRUTE, pas en objet — le workflow le reparse, sinon la ligne s'écrit avec
+   des null sans qu'aucune erreur ne soit levée. */
+/* Le corps est lu en texte AVANT d'être parsé, exprès. Quand un garde-fou du
+   workflow refuse une action, n8n interrompt l'exécution avant le nœud de
+   réponse et renvoie un 200 AVEC UN CORPS VIDE — pas un 500. Un `r.json()`
+   direct lèverait alors une erreur de syntaxe incompréhensible ; ici on dit ce
+   qui s'est vraiment passé. (Mesuré : refus du brouillon → 200, corps vide,
+   nœud Gmail jamais exécuté.) */
+function reponse(r) {
+  return r.text().then(function (t) {
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    if (!t) throw new Error('le workflow s\'est arrêté avant de répondre — garde-fou, ou panne côté n8n');
+    try { return JSON.parse(t); }
+    catch (e) { throw new Error('réponse illisible du serveur'); }
+  });
+}
+function poster(url, charge) {
+  return fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain' },
+    body: JSON.stringify(charge),
+  }).then(reponse);
+}
+function lire(url) {
+  return fetch(url + '?t=' + Date.now()).then(reponse);
+}
+function idUnique() {
+  return 'v' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+}
+
+/* ── La grammaire ────────────────────────────────────────────────────────
+   Chaque règle : un test sur la phrase normalisée (sans accents), et ce
+   qu'elle produit. L'ORDRE COMPTE — « liste mes tâches » contient « tâche »
+   et ne doit pas créer une tâche nommée « liste mes ».                     */
+var GRAMMAIRE = [
+  {
+    nom: 'liste',
+    // Testé AVANT la création, sinon « montre-moi mes tâches » en crée une.
+    test: function (n) {
+      return /\b(liste|listes|montre|affiche|rappelle|relis|relire)\b/.test(n) &&
+             /\b(tache|taches|note|notes|dictee|dictees)\b/.test(n);
+    },
+  },
+  {
+    nom: 'tache',
+    test: function (n) {
+      return /\btache/.test(n) &&
+        /\b(cree|creer|cre|ajoute|ajouter|note|noter|mets|met|mettre|fais|faire|enregistre|enregistrer|transforme)\b/.test(n);
+    },
+  },
+  {
+    // Testé avant « brouillon » : « qui attend une réponse » contient
+    // « réponse » et ne doit pas déclencher l'écriture d'un mail.
+    nom: 'leads',
+    test: function (n) {
+      return /\b(attend|attendent|repondu|reponse|repondre|ecrit|ecrite)\b/.test(n) &&
+             /\b(qui|lead|leads|personne|personnes|message|messages|monde)\b/.test(n);
+    },
+  },
+  {
+    nom: 'rafraichir',
+    test: function (n) {
+      return /\b(mets? a jour|mise a jour|rafraichi|rafraichis|rafraichir|actualise|actualiser|recalcule|recalculer|recharge|recharger)\b/.test(n);
+    },
+  },
+  {
+    nom: 'brouillon',
+    test: function (n) {
+      return /\b(mail|mails|email|emails|e mail|courriel|brouillon)\b/.test(n) &&
+        /\b(prepare|preparer|ecris|ecrire|redige|rediger|brouillon|envoie|envoyer|repond|repondre)\b/.test(n);
+    },
+  },
+];
+
+function analyserCommande(phrase) {
+  var n = ' ' + normaliser(phrase) + ' ';
+  for (var i = 0; i < GRAMMAIRE.length; i++) {
+    if (GRAMMAIRE[i].test(n)) return { commande: GRAMMAIRE[i].nom, brut: phrase, n: n };
+  }
+  return null;
+}
+
+/* Le texte de la tâche. Deux cas, et le second est celui que Tony a décrit :
+   il entend « 43 prospects jamais contactés » et dit « fais-en une tâche »,
+   sans répéter la phrase. On reprend alors la première phrase de la dernière
+   réponse — c'est bien ce qu'il désigne par « ça ». */
+function texteDeLaTache(n, brut) {
+  // Tout ce qui suit le mot « tache », débarrassé des mots de liaison.
+  var apres = brut.replace(/^[\s\S]*?\bt[âa]che?s?\b/i, '').trim();
+  apres = apres.replace(/^[\s:,\-–—]*(?:de\s+|pour\s+|qui\s+est\s+|:)?/i, '').trim();
+  // « fais-en une tâche », « mets ça en tâche » : rien derrière, ou un résidu.
+  if (apres.length < 8) return null;
+  return apres.charAt(0).toUpperCase() + apres.slice(1);
+}
+
+/* L'axe « proximité du cash », la règle que Tony a écrite lui-même :
+   facturer > vendre > construire. Une tâche dictée hérite de l'axe du SUJET
+   d'où elle sort — c'est déterministe et explicable, et l'assistant l'annonce
+   à voix haute pour qu'il puisse le corriger. Une formule dictée l'emporte. */
+var AXE_PAR_SUJET = {
+  relances: 'direct', prospects: 'direct',
+  rates: 'proche', decisions: 'proche', taches: 'proche',
+  workflows: 'loin', resume: 'proche',
+};
+var LIBELLE_AXE = {
+  direct: 'cash direct — un client ou un prospect nommé est au bout',
+  proche: 'proche du cash — ça sert la vente sans facturer tel quel',
+  loin: 'loin du cash — de l\'outillage, personne ne paie pour ça aujourd\'hui',
+};
+function axeDeLaTache(n, sujetCourant) {
+  if (/\b(cash )?direct\b|\burgent\b|\bfacture\b|\brouge\b/.test(n)) return 'direct';
+  if (/\bproche\b|\borange\b/.test(n)) return 'proche';
+  if (/\bloin\b|\bplus tard\b|\bvert\b/.test(n)) return 'loin';
+  return AXE_PAR_SUJET[sujetCourant] || 'loin';
+}
+
+/* ── Confirmation ────────────────────────────────────────────────────────
+   Deux régimes, proportionnés au fait que l'action soit réversible ou non.
+   · La tâche part tout de suite : elle est réversible, et un « Annuler »
+     reste affiché. Demander « confirmes-tu ? » à chaque note tuerait l'usage.
+   · Le brouillon d'email demande un OUI explicite AVANT d'être écrit, parce
+     qu'il touche sa boîte Gmail. Et même confirmé, il reste un brouillon. */
+var enAttenteDeConfirmation = null;
+
+function demanderConfirmation(resume, faire) {
+  enAttenteDeConfirmation = faire;
+  afficher('À confirmer', [resume, 'Dis « oui » ou appuie sur Confirmer. Dis « non » pour annuler.'], []);
+  montrerConfirmation(true);
+  return bouche.dire([resume, 'Je le fais ? Dis oui, ou non.'], surEtatVoix).then(reprendre);
+}
+function repondreConfirmation(oui) {
+  var faire = enAttenteDeConfirmation;
+  enAttenteDeConfirmation = null;
+  montrerConfirmation(false);
+  if (!oui) {
+    afficher('Annulé', ['Je n\'ai rien fait.'], []);
+    return bouche.dire(['Annulé. Je n\'ai rien fait.']).then(reprendre);
+  }
+  return faire();
+}
+function montrerConfirmation(on) {
+  document.getElementById('vx-confirmation').hidden = !on;
+}
+
+/* ── 1. Créer une tâche ─────────────────────────────────────────────────── */
+function actionTache(cmd) {
+  var texte = texteDeLaTache(cmd.n, cmd.brut) || derniereAffirmation;
+  if (!texte) {
+    var r = ['Je n\'ai pas de quoi faire une tâche. Dis « crée une tâche » suivi de ce que tu veux noter, ' +
+             'ou pose-moi d\'abord une question et dis « fais-en une tâche ».'];
+    afficher('Rien à noter', r, []);
+    return bouche.dire(r).then(reprendre);
+  }
+  var axe = axeDeLaTache(cmd.n, sujetCourant);
+  var id = idUnique();
+  etat('J\'enregistre', TEINTE.cherche);
+
+  return poster(URL_TACHE_CREER, { id: id, texte: texte, cash: axe, sujet: sujetCourant || 'libre' })
+    .then(function (rep) {
+      if (!rep || !rep.ok) throw new Error(rep && rep.erreur ? rep.erreur : 'refus du serveur');
+      // On relit la liste au lieu de croire l'écriture sur parole : c'est la
+      // seule preuve que la ligne existe vraiment côté serveur.
+      return lire(URL_TACHE_LISTE).then(function (l) {
+        var vue = (l.taches || []).filter(function (t) { return t.id === id; })[0];
+        if (!vue) throw new Error('la tâche ne se relit pas après écriture');
+        dernierIdTache = id;
+        var phrases = [
+          'C\'est noté : ' + texte,
+          'Rangé en ' + LIBELLE_AXE[axe] + '.',
+          'Tu as ' + (l.taches.length > 1 ? l.taches.length + ' tâches dictées' : '1 tâche dictée') + '.',
+        ];
+        afficher('Tâche créée', phrases, l.taches.map(function (t) {
+          return { texte: t.texte, etat: t.cash === 'direct' ? 'bloque' : 'attente' };
+        }));
+        montrerAnnulation(true);
+        return bouche.dire(phrases, surEtatVoix).then(reprendre);
+      });
+    })
+    .catch(function (e) {
+      // Un échec d'écriture se dit. Une tâche qu'on croit notée et qui n'existe
+      // pas est pire qu'un refus franc.
+      var r = ['Je n\'ai pas réussi à enregistrer cette tâche : ' + e.message +
+               '. Elle n\'existe pas — ne compte pas dessus.'];
+      afficher('Échec de l\'enregistrement', r, []);
+      return bouche.dire(r).then(reprendre);
+    });
+}
+
+function annulerDerniereTache() {
+  if (!dernierIdTache) return;
+  var id = dernierIdTache;
+  dernierIdTache = null;
+  montrerAnnulation(false);
+  poster(URL_TACHE_SUPPR, { id: id })
+    .then(function () {
+      afficher('Tâche annulée', ['Je l\'ai retirée de tes tâches dictées.'], []);
+      bouche.dire(['Tâche annulée.']);
+    })
+    .catch(function (e) {
+      afficher('Annulation impossible', ['La tâche est toujours là : ' + e.message], []);
+    });
+}
+function montrerAnnulation(on) {
+  document.getElementById('vx-annuler').hidden = !on;
+}
+
+/* ── 2. Rafraîchir ───────────────────────────────────────────────────────
+   Honnêteté sur ce qui se rafraîchit VRAIMENT. Le webhook n8n tourne sur une
+   autre machine : il ne voit ni taches.json, ni TASKLOG.md, qui vivent dans le
+   dépôt. Ce qu'il PEUT recalculer en direct, c'est ce qu'il a sous la main —
+   les échecs de sa propre instance et les tâches dictées. Et c'est justement
+   ce qui vieillit le plus vite. Le reste garde sa date d'instantané, et
+   l'assistant la dit au lieu de laisser croire que tout est frais. */
+function actionRafraichir() {
+  etat('Je recalcule', TEINTE.cherche);
+  afficher('Recalcul en cours', ['J\'interroge n8n en direct…'], []);
+  return poster(URL_RAFRAICHIR, {})
+    .then(function (rep) {
+      if (!rep || !rep.ok) throw new Error(rep && rep.erreur ? rep.erreur : 'refus du serveur');
+      if (rep.workflows) {
+        cerveau.sujets.workflows = rep.workflows;      // remplace l'instantané
+        cerveau.sujets.workflows.frais = true;
+      }
+      var d = new Date(cerveau.genere_le);
+      var phrases = (rep.workflows ? rep.workflows.phrases.slice(0, 3) : [])
+        .concat([
+          'Ça, c\'est de maintenant. Le reste — tes chantiers, tes décisions, ton journal — ' +
+          'date toujours du ' + d.getDate() + ' ' + MOIS_COURT[d.getMonth()] +
+          ' : ces fichiers vivent dans le dépôt, le webhook ne les voit pas.',
+        ]);
+      afficher('Recalculé à l\'instant', phrases, (rep.workflows && rep.workflows.details) || []);
+      return bouche.dire(phrases, surEtatVoix).then(reprendre);
+    })
+    .catch(function (e) {
+      var r = ['Le recalcul a échoué : ' + e.message + '. Les chiffres affichés restent ceux de l\'instantané.'];
+      afficher('Recalcul impossible', r, []);
+      return bouche.dire(r).then(reprendre);
+    });
+}
+
+/* ── 3. Brouillon d'email ────────────────────────────────────────────────
+   Le destinataire n'est JAMAIS une adresse dictée : il est choisi dans les
+   contacts que porte déjà cerveau.json, par correspondance de nom. Une
+   reconnaissance vocale qui entend « arobase » de travers ne doit pas pouvoir
+   fabriquer une adresse. Et ça reste un brouillon, dans SA boîte, qu'il relit
+   et envoie lui-même. */
+/* Les seules VRAIES adresses que Tony possède sont celles des gens qui lui ont
+   écrit — la table LeadsAutoBoost. Ses prospects qualifiés, eux, n'ont presque
+   aucun email (42 sur 43 sont vides) : proposer de leur écrire serait du
+   théâtre. Ce sont donc ces leads-là qu'on vise, et c'est exactement le cas
+   qui fait mal : des gens qui ont demandé quelque chose et n'ont pas eu de
+   réponse. */
+var leadsEnCache = null;
+
+function chargerLeads() {
+  if (leadsEnCache) return Promise.resolve(leadsEnCache);
+  return lire(URL_LEADS).then(function (r) {
+    leadsEnCache = (r && r.leads) || [];
+    return leadsEnCache;
+  });
+}
+
+function chercherLead(n, leads) {
+  for (var i = 0; i < leads.length; i++) {
+    var nom = normaliser(leads[i].nom || '');
+    if (nom.length > 2 && n.indexOf(nom) >= 0) return leads[i];
+  }
+  return null;
+}
+
+/* « Qui attend une réponse ? » — la question que Tony n'a pas posée mais dont
+   la réponse est la plus chère : des gens ont écrit, personne ne leur a
+   répondu. On la lit, puis on propose le brouillon. */
+function actionLeads() {
+  etat('Je regarde qui a écrit', TEINTE.cherche);
+  return chargerLeads().then(function (leads) {
+    if (!leads.length) {
+      var v = ['Personne n\'a écrit, ou la table est vide.'];
+      afficher('Personne en attente', v, []);
+      return bouche.dire(v).then(reprendre);
+    }
+    var avecMessage = leads.filter(function (l) { return (l.message || '').trim(); });
+    var phrases = [
+      leads.length + (leads.length > 1 ? ' personnes t\'ont écrit' : ' personne t\'a écrit') + '.',
+    ];
+    if (avecMessage.length) {
+      phrases.push('Celles qui ont laissé un message : ' +
+        avecMessage.slice(0, 3).map(function (l) {
+          return (l.nom || l.email) + ', le ' + l.date + ', par ' + (l.source || 'un formulaire') +
+                 (l.message ? ', et qui dit : ' + l.message : '');
+        }).join(' ; ') + '.');
+    }
+    phrases.push('Dis « prépare un mail à » suivi du prénom, et je t\'écris un brouillon. ' +
+                 'Un brouillon seulement — rien ne partira sans toi.');
+    sujetCourant = 'prospects';
+    derniereAffirmation = phrases[0];
+    afficher('Qui attend une réponse', phrases, leads.map(function (l) {
+      return { nom: (l.nom || l.email) + ' — ' + l.date + ' — ' + (l.source || ''), etat: 'attente' };
+    }));
+    return bouche.dire(phrases, surEtatVoix).then(reprendre);
+  }).catch(function (e) {
+    var r = ['Je n\'ai pas pu lire qui t\'a écrit : ' + e.message];
+    afficher('Lecture impossible', r, []);
+    return bouche.dire(r).then(reprendre);
+  });
+}
+
+function actionBrouillon(cmd) {
+  return chargerLeads().then(function (leads) {
+    var lead = chercherLead(cmd.n, leads);
+    if (!lead) {
+      var r = ['Je ne vois pas de qui tu parles. Je n\'écris qu\'à quelqu\'un qui t\'a déjà écrit — ' +
+               'une adresse dictée, une syllabe de travers, et le mail part chez le mauvais client.',
+               'Demande-moi d\'abord « qui attend une réponse », puis nomme la personne.'];
+      afficher('Destinataire introuvable', r, []);
+      return bouche.dire(r).then(reprendre);
+    }
+    return demanderConfirmation(
+      'Je prépare un brouillon pour ' + (lead.nom || lead.email) + ', à l\'adresse ' + lead.email + '. ' +
+      'Ce sera un BROUILLON dans ta boîte Gmail : rien ne part, tu le relis et tu l\'envoies toi-même.',
+      function () {
+        etat('J\'écris le brouillon', TEINTE.cherche);
+        return poster(URL_BROUILLON, { email: lead.email })
+          .then(function (rep) {
+            if (!rep || !rep.ok) throw new Error('refus du serveur');
+            var phrases = ['Le brouillon est dans ta boîte, adressé à ' + (lead.nom || lead.email) + '.',
+                           'Il reprend son message et laisse un blanc pour ta réponse.',
+                           'Il n\'est pas envoyé.'];
+            afficher('Brouillon préparé', phrases, []);
+            return bouche.dire(phrases, surEtatVoix).then(reprendre);
+          })
+          .catch(function (e) {
+            var r2 = ['Je n\'ai pas pu écrire le brouillon : ' + e.message + '. Rien n\'a été créé.'];
+            afficher('Brouillon impossible', r2, []);
+            return bouche.dire(r2).then(reprendre);
+          });
+      }
+    );
+  });
+}
+
+/* ── Lister ce qui a été dicté ──────────────────────────────────────────── */
+function actionListe() {
+  etat('Je regarde', TEINTE.cherche);
+  return lire(URL_TACHE_LISTE)
+    .then(function (rep) {
+      var t = (rep && rep.taches) || [];
+      var phrases = t.length
+        ? ['Tu as dicté ' + t.length + (t.length > 1 ? ' tâches' : ' tâche') + '.']
+            .concat(t.slice(0, 6).map(function (x) { return x.texte; }))
+        : ['Tu n\'as encore rien dicté.'];
+      afficher('Tes tâches dictées', phrases,
+        t.map(function (x) { return { texte: x.texte, etat: x.cash === 'direct' ? 'bloque' : 'attente' }; }));
+      return bouche.dire(phrases, surEtatVoix).then(reprendre);
+    })
+    .catch(function (e) {
+      var r = ['Je n\'ai pas pu lire tes tâches dictées : ' + e.message];
+      afficher('Lecture impossible', r, []);
+      return bouche.dire(r).then(reprendre);
+    });
 }
 
 /* --- L'oreille ---------------------------------------------------------- */
@@ -1579,6 +2064,12 @@ function preparerEcoute(){
     if (!fini) return;
     if (/\b(stop|arr[eê]te|tais.toi|chut)\b/i.test(fini)){ bouche.couper(); etat('Coupé', 0); return; }
     if (/\b(au revoir|ferme|merci c.est tout)\b/i.test(fini)){ fermer(); return; }
+    // Une confirmation en attente capte le oui/non AVANT toute autre lecture :
+    // « oui » ne doit pas être interprété comme une nouvelle question.
+    if (enAttenteDeConfirmation){
+      if (/\b(oui|ok|d.accord|vas.y|confirme|c.est bon)\b/i.test(fini)){ stopEcoute(); repondreConfirmation(true); return; }
+      if (/\b(non|annule|laisse|surtout pas)\b/i.test(fini)){ stopEcoute(); repondreConfirmation(false); return; }
+    }
     // On coupe l'oreille pendant la réponse, sinon la voix de synthèse
     // se réentend elle-même et déclenche une deuxième question.
     stopEcoute();
@@ -1641,7 +2132,12 @@ var SUGGESTIONS = [
   ['rates',     "Qu'est-ce qui s'est mal passé ?"],
   ['decisions', 'Qu\'est-ce qui attend ma décision ?'],
   ['prospects', 'Mes prospects'],
-  ['workflows', 'Mes automatisations']
+  ['workflows', 'Mes automatisations'],
+  // Les deux dernières sont des ACTIONS, pas des questions. Elles servent
+  // aussi de secours : sans micro ni Chrome, Tony peut quand même agir.
+  ['action',    'Fais-en une tâche'],
+  ['action',    'Mets à jour'],
+  ['action',    'Qui attend une réponse ?']
 ];
 SUGGESTIONS.forEach(function(s){
   var b = document.createElement('button');
@@ -1706,6 +2202,19 @@ bClone.addEventListener('click', function(){
       'du navigateur est automatique et te sera dit.'
     : '');
 });
+document.getElementById('vx-oui').addEventListener('click', function(){ stopEcoute(); repondreConfirmation(true); });
+document.getElementById('vx-non').addEventListener('click', function(){ stopEcoute(); repondreConfirmation(false); });
+document.getElementById('vx-defaire').addEventListener('click', annulerDerniereTache);
+
+var bAide = document.getElementById('vx-aide');
+function ouvrirAide(on){
+  var g = document.getElementById('vx-grammaire');
+  var ouvert = on === undefined ? g.hidden : on;
+  g.hidden = !ouvert;
+  bAide.setAttribute('aria-expanded', String(ouvert));
+}
+bAide.addEventListener('click', function(){ ouvrirAide(); });
+
 window.addEventListener('resize', function(){ if (orbe && orbe.actif) orbe.taille(); });
 })();
 </script>
