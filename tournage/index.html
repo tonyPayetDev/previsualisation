@@ -403,9 +403,9 @@ pre.json{margin-top:10px;background:#101016;border:1px solid var(--trait);border
        telephones rendent le ratio natif du capteur quoi qu'on demande. Donc on
        regarde ce qui arrive vraiment, et on le dit avant la prise. -->
   <div class="paysage" id="paysage" hidden>
-    <b>Ton téléphone filme en paysage.</b>
+    <b id="paysagetitre">Ton téléphone filme en paysage.</b>
     <span id="paysagedim"></span>
-    <span>Tourne-le à la verticale — sinon le montage devra jeter la moitié du cadre.</span>
+    <span id="paysageaide">Tourne-le à la verticale — sinon le montage devra jeter la moitié du cadre.</span>
     <button type="button" id="paysageok">Filmer quand même</button>
   </div>
 
@@ -1098,10 +1098,23 @@ function verifierCadrage(fluxCam){
     const t = fluxCam.getVideoTracks()[0]; if (!t) return;
     const appliquer = () => {
       const st = t.getSettings() || {};
-      const l = st.width || 0, h = st.height || 0;
+      const l = st.width || 0, h = st.height || 0, ips = Math.round(st.frameRate || 0);
       if (!l || !h) return;
-      $('#paysagedim').textContent = l + ' x ' + h + ' \u2014 il faudrait plus haut que large';
-      b.hidden = (h >= l) || cadrageVu;
+      const paysage = l > h;
+      /* La cadence compte autant que le cadrage. La contrainte dure de 24 i/s a
+         ete retiree le 2026-09-10 pour que la camera s'ouvre en faible lumiere —
+         mais une prise a 16 i/s saccade et rien ne le rattrape au montage. Alors
+         on ne refuse plus, on previent. */
+      const lent = ips > 0 && ips < 24;
+      if (!paysage && !lent) { b.hidden = true; return; }
+      $('#paysagetitre').textContent = paysage
+        ? 'Ton t\u00e9l\u00e9phone filme en paysage.'
+        : 'Ta cam\u00e9ra tourne au ralenti.';
+      $('#paysagedim').textContent = l + ' x ' + h + (ips ? ' \u00b7 ' + ips + ' i/s' : '');
+      $('#paysageaide').textContent = paysage
+        ? 'Tourne-le \u00e0 la verticale \u2014 sinon le montage devra jeter la moiti\u00e9 du cadre.'
+        : 'Sous 24 images par seconde le mouvement saccade, et \u00e7a ne se rattrape pas au montage. Plus de lumi\u00e8re, ou ferme les autres applications.';
+      b.hidden = cadrageVu;
     };
     appliquer();
     /* Certains telephones ne renseignent les dimensions qu'une fois la premiere
