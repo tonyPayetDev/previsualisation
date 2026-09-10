@@ -1,0 +1,49 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow">
+<title>Lettre Anthropic — v2, « écoute ce qu'il dit »</title>
+<style>body{margin:0;background:#0a0a0f;color:#e9e9f2;font:400 15px/1.6 system-ui,sans-serif;
+display:grid;place-items:center;min-height:100vh;padding:26px}.b{width:min(420px,92vw)}
+video{width:100%;border-radius:12px;display:block;background:#000}h1{font-size:19px;margin:0 0 4px}
+p{color:#8b8b99;font-size:13.5px;margin:6px 0 18px}ul{color:#8b8b99;font-size:13px;padding-left:18px}
+li{margin-bottom:6px}b{color:#eab308}h2{font-size:12px;letter-spacing:.08em;text-transform:uppercase;
+color:#8b5cf6;margin:20px 0 6px}table{width:100%;border-collapse:collapse;font-size:12.5px;margin:8px 0}
+td{padding:4px 6px;border-bottom:1px solid #23232e;color:#8b8b99;vertical-align:top}
+td.q{color:#eab308;white-space:nowrap;font-weight:600}
+.att{border-left:3px solid #ef4444;padding-left:12px;margin-top:20px}.att h2{color:#fca5a5}</style>
+</head><body><div class="b">
+<h1>Lettre Anthropic — v2, « écoute ce qu'il dit »</h1>
+<p>47,2 s · 1080×1920 · deux voix · onde réelle · lit horror · −15,1 LUFS</p>
+<video src="https://assets.automatisationboost.com/previsualisation/lettre-anthropic-v2/video.mp4?v=1" controls playsinline></video>
+
+<h2>La construction que tu voulais</h2>
+<table>
+<tr><td class="q">1 — TOI</td><td>Tu ouvres : « je te lis son message, écoute »</td></tr>
+<tr><td class="q">2 — LUI</td><td>La démission, en <b>plein cadre</b>, autre voix, onde qui bouge</td></tr>
+<tr><td class="q">3 — TOI</td><td><b>Rebond 1</b> : ce n'est pas un risque lointain, c'est son employeur</td></tr>
+<tr><td class="q">4 — LUI</td><td>« elles jouent avec nos vies »</td></tr>
+<tr><td class="q">5 — TOI</td><td><b>Rebond 2</b> : le dérangeant, ce n'est pas l'accusation, c'est sa raison</td></tr>
+<tr><td class="q">6 — LUI</td><td>La course pour arriver les premiers</td></tr>
+<tr><td class="q">7 — TOI</td><td><b>Rebond 3</b> + la réserve + « dis-moi ce que tu en penses »</td></tr>
+</table>
+
+<h2>Ce qui n'est pas copié sur elle</h2>
+<ul>
+<li><b>Deux voix qu'on ne confond pas.</b> Toi en voix clonée ; le message lu par une voix de synthèse distincte (edge-tts, Henri). On entend tout de suite que ce n'est plus toi qui parles</li>
+<li><b>L'onde n'est pas un décor.</b> Elle est calculée par <code>showwaves</code> sur le signal audio réel de chaque segment : elle bouge parce qu'il parle, pas parce qu'une animation tourne</li>
+<li>Ni sa photo à elle, ni la photo de l'auteur du tweet ne sont reprises. Les cartes sont les nôtres</li>
+<li>Le bandeau « compte non vérifié · lu par une voix de synthèse » reste affiché pendant toute la lecture</li>
+</ul>
+
+<h2>Corrigé après mesure</h2>
+<ul>
+<li>Premier jet : l'onde plafonnait à <b>71 de luminance sur 255</b>, invisible sur un téléphone. Dessinée en 500×210 puis agrandie ×2 au plus proche voisin (trait 2 px au lieu de 1) et doublée d'une copie floutée pour le halo. Après : <b>134 de luminance, 27 586 pixels allumés contre 274</b></li>
+<li>Les deux calques passent par <b>deux passes ffmpeg</b>, pas deux overlays dans le même graphe : les empiler fait tuer le processus sans message ni image</li>
+</ul>
+
+<div class="att">
+<h2>Toujours pas vérifié</h2>
+<ul>
+<li>Le compte <b>@hilbertspaess</b> reste invérifiable depuis ici. La v1 est déjà programmée pour 15 h ; si tu ouvres le compte et que ça ne tient pas, dis-le-moi et je déprogramme</li>
+</ul>
+</div>
+</div></body></html>
