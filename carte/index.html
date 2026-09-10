@@ -986,6 +986,12 @@ footer{border-top:1px solid var(--ligne);padding:30px 0 60px;color:var(--mut);fo
 .vx-b.principal{border-color:var(--or);color:var(--or)}
 .vx-b.principal.actif{background:var(--or);color:#14141c;font-weight:600}
 .vx-b:disabled{opacity:.4;cursor:not-allowed}
+#vx-forme{position:relative;z-index:2;display:flex;gap:8px;margin:10px 0 4px}
+#vx-texte{flex:1;min-width:0;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.16);
+  border-radius:999px;padding:11px 16px;color:inherit;font:inherit;font-size:15px}
+#vx-texte::placeholder{color:rgba(255,255,255,.34)}
+#vx-texte:focus{outline:none;border-color:var(--or,#e8b923)}
+#vx-envoyer{flex:0 0 auto}
 #vx-suggestions{position:relative;z-index:2;display:flex;flex-wrap:wrap;gap:8px;
   justify-content:center;padding:0 22px}
 .vx-sug{background:none;border:1px solid var(--ligne);border-radius:999px;
@@ -1068,6 +1074,16 @@ footer{border-top:1px solid var(--ligne);padding:30px 0 60px;color:var(--mut);fo
 
   <div>
     <div id="vx-suggestions"></div>
+    <!-- Écrire, quand parler ne marche pas. La reconnaissance vocale dépend du
+         navigateur, du téléphone et des services vocaux du système : trois
+         choses hors de portée de cette page. Le clavier, lui, marche partout.
+         Ajouté le 10/09/2026 : « tonton Serge, ça marche pas » — sans champ de
+         saisie, impossible de savoir si c'est l'oreille ou l'escouade qui rate. -->
+    <form id="vx-forme" autocomplete="off">
+      <input id="vx-texte" type="text" enterkeyhint="send"
+             placeholder="…ou écris : « Tonton Serge », « mes prospects »" aria-label="Écrire une question">
+      <button class="vx-b" id="vx-envoyer" type="submit">Envoyer</button>
+    </form>
     <div id="vx-pied">
       <!-- Icône dessinée plutôt qu'un emoji : sur une machine sans police
            emoji (dont le Chrome headless qui sert à vérifier cette page),
@@ -2396,6 +2412,28 @@ function orbeEnEcouteFactice(on){
     requestAnimationFrame(battre);
   })();
 }
+
+/* Le texte emprunte EXACTEMENT le même chemin que la parole : même fonction,
+   même escouade, même voix en sortie. Rien de spécial, sinon ce serait une
+   deuxième logique à maintenir — et deux logiques finissent toujours par
+   diverger. */
+(function brancherSaisie(){
+  var forme = document.getElementById('vx-forme');
+  var champ = document.getElementById('vx-texte');
+  if (!forme || !champ) return;
+  forme.addEventListener('submit', function(ev){
+    ev.preventDefault();
+    var t = (champ.value || '').trim();
+    if (!t) return;
+    champ.value = '';
+    champ.blur();                       // referme le clavier du téléphone
+    if (typeof stopEcoute === 'function') stopEcoute();
+    bouche.couper();
+    if (elDit) elDit.textContent = '« ' + t + ' »';
+    etat('Je cherche', TEINTE.cherche);
+    repondre(t);
+  });
+})();
 
 function stopEcoute(){
   battementFactice = 0;
