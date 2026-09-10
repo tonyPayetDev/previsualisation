@@ -16,13 +16,22 @@
   header{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px}
   a.retour{color:var(--gris);text-decoration:none;font-size:12.5px}
   .cpt{font-size:12.5px;color:var(--gris);font-variant-numeric:tabular-nums}
-  main{flex:1;display:flex;flex-direction:column;justify-content:center;gap:13px;min-height:0;overflow-y:auto}
+  /* `safe` : sans lui, un ecran plus haut que la fenetre est centre ET rogne
+     par le haut — le nom du prospect disparait hors d'atteinte. */
+  main{flex:1;display:flex;flex-direction:column;justify-content:center;
+       justify-content:safe center;gap:13px;min-height:0;overflow-y:auto}
   h1{font-size:clamp(26px,7vw,40px);line-height:1.06;letter-spacing:-.025em}
   .meta{color:var(--gris);font-size:14px}
   .badge{align-self:flex-start;font-size:11px;letter-spacing:.2em;text-transform:uppercase;
     border:1px solid var(--ligne);border-radius:999px;padding:4px 11px;color:var(--bleu)}
   .vu{background:var(--carte);border:1px solid var(--ligne);border-left:2px solid var(--bleu);
       border-radius:9px;padding:11px 13px;font-size:14px;color:#c2cbd9}
+  /* La page deja prete se distingue du simple lien vers leur site : c'est
+     l'argument d'ouverture, pas une note de contexte. */
+  .pret{display:block;background:#1a1405;border:1px solid #6b5410;border-left:2px solid var(--jaune);
+      border-radius:9px;padding:11px 13px;font-size:14px;color:#f2e6b0;text-decoration:none}
+  .pret b{display:block;color:var(--jaune);font-size:12px;letter-spacing:.16em;text-transform:uppercase;margin-bottom:3px}
+  .pret span{color:#c9bd8a;font-size:13px}
   .dire{background:#0d1626;border:1px solid #22354f;border-radius:12px;padding:16px 17px}
   .dire .t{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--gris);margin-bottom:8px}
   .dire p{font-size:clamp(17px,4.6vw,21px);line-height:1.42}
@@ -137,10 +146,14 @@
     /* Pas de WhatsApp sur un echauffement : la page dit elle-meme que le but
        y est d entendre sa voix, pas de vendre. */
     if (!num || l.cat === 'echauffement') return '';
-    const msg = messageWa(l);
+    /* Quand la page existe, on la met dans le message : c'est la seule phrase
+       qui prouve le travail deja fait avant meme la reponse. */
+    const ap = A[l.id];
+    const msg = messageWa(l) + (ap ? ' J\u2019ai d\u00e9j\u00e0 pr\u00e9par\u00e9 une page avec vos propres photos, vous pouvez la regarder ici : ' + ap.url : '');
     const lien = 'https://wa.me/' + num + '?text=' + encodeURIComponent(msg);
     return '<div class="wa' + (gros ? ' gros' : '') + '">'
-      + '<a class="wa-envoi" href="' + lien + '" target="_blank" rel="noopener">'
+      + '<a class="wa-envoi" data-msg="' + msg.replace(/"/g, '&quot;') + '"'
+      + ' href="' + lien + '" target="_blank" rel="noopener">'
       + (gros ? 'Envoyer sur WhatsApp' : 'WhatsApp') + '</a>'
       + '<button type="button" class="wa-copie" data-msg="' + msg.replace(/"/g, '&quot;') + '">Copier</button>'
       + '</div>';
@@ -148,7 +161,27 @@
 
   /* Le presse-papier est refusé hors contexte sécurisé : on montre le texte
      au lieu d'échouer sans rien dire. */
+  /* Retour de Tony le 2026-09-10 : sur telephone, le texte pre-rempli de wa.me
+     n'arrive pas toujours dans la conversation — WhatsApp ouvre le fil et le
+     message est perdu. Il fallait alors revenir en arriere, appuyer sur
+     « Copier », rouvrir. Desormais le simple fait d'appuyer sur « Envoyer »
+     met AUSSI le message dans le presse-papier : s'il n'est pas la, un appui
+     long suffit a le coller. On ne bloque jamais l'ouverture de WhatsApp pour
+     autant — la copie est un filet, pas une etape. */
+  const brancherEnvoi = (racine) => {
+    racine.querySelectorAll('.wa-envoi').forEach((a) => {
+      a.addEventListener('click', () => {
+        const t = a.dataset.msg; if (!t) return;
+        try { navigator.clipboard.writeText(t); } catch (e) {}
+        const d = a.parentNode.querySelector('.wa-copie');
+        if (d){ d.textContent = 'Copié'; d.classList.add('ok');
+          setTimeout(() => { d.textContent = 'Copier'; d.classList.remove('ok'); }, 2600); }
+      });
+    });
+  };
+
   const brancherCopie = (racine) => {
+    brancherEnvoi(racine);
     racine.querySelectorAll('.wa-copie').forEach((b) => {
       b.onclick = async () => {
         const t = b.dataset.msg;
@@ -241,11 +274,20 @@
       '<h1>Qui tu appelles ?</h1><p class="meta">Un restaurant ne d\u00e9croche pas entre 10 h et 14 h. Ces secteurs-l\u00e0, si.</p>'
       +'<div class="choix">'+D.secteurs.map(s=>{
         const n=D.leads.filter(l=>l.secteur===s.id&&!fait(l)).length;
-        return n? '<button data-s="'+s.id+'"><span>'+s.nom+'<span class="h">'+s.heure+'</span></span><span class="n">'+n+'</span></button>':''; }).join('')
+        /* Le nombre de pages deja pretes decide par quel secteur commencer. */
+        const pr=D.leads.filter(l=>l.secteur===s.id&&!fait(l)&&A[l.id]).length;
+        return n? '<button data-s="'+s.id+'"><span>'+s.nom+'<span class="h">'+s.heure
+          +(pr?' \u00b7 '+pr+' page'+(pr>1?'s':'')+' pr\u00eate'+(pr>1?'s':''):'')
+          +'</span></span><span class="n">'+n+'</span></button>':''; }).join('')
       +'</div>';
     document.getElementById('pied').innerHTML='';
     document.querySelectorAll('.choix button').forEach(b=>b.onclick=()=>{
-      sect=b.dataset.s; liste=D.leads.filter(l=>l.secteur===sect&&!fait(l)); i=0; peindre(); });
+      sect=b.dataset.s;
+      liste=D.leads.filter(l=>l.secteur===sect&&!fait(l))
+        /* Ceux dont la page est prete passent devant : c'est la seule liste ou
+           Tony a quelque chose a montrer avant meme qu'on decroche. */
+        .sort((x,y)=>(A[y.id]?1:0)-(A[x.id]?1:0));
+      i=0; peindre(); });
   };
 
   const marquer=(l,q)=>{ const n=lireNote();
@@ -265,6 +307,8 @@
     pi.querySelector('.wa-envoi').addEventListener('click',()=>setTimeout(()=>marquer(l,'repondu'),400));
   };
 
+  let A={};
+
   const peindre=()=>{
     if(!sect) return menu();
     const ec=document.getElementById('ecran'), pi=document.getElementById('pied');
@@ -277,6 +321,9 @@
     ec.innerHTML='<span class="badge">'+s.nom+'</span><h1>'+l.nom+'</h1>'
       +'<div class="meta">'+[l.commune,l.site?'a un site':'aucun site trouv\u00e9'].filter(Boolean).join(' \u00b7 ')+'</div>'
       +(l.site?'<div class="vu"><a href="'+l.site+'" target="_blank" rel="noopener" style="color:#60a5fa">Ouvrir leur site \u2197</a></div>':'')
+      +(A[l.id]?'<a class="pret" href="'+A[l.id].url+'" target="_blank" rel="noopener">'
+        +'<b>Sa page est d\u00e9j\u00e0 pr\u00eate</b>'
+        +'\u00c0 ouvrir pendant que \u00e7a sonne \u2014 '+A[l.id].photos+' de ses photos, remises en page \u2197</a>':'')
       +'<div class="dire"><div class="t">\u00c0 lire, mot pour mot</div><p>'+ouvre[1]+'</p></div>'
       +'<details><summary>La suite, si \u00e7a s\u2019ouvre</summary>'
       +reste.map(x=>'<p><b>'+x[0]+'</b>'+x[1]+'</p>').join('')+'</details>';
@@ -296,6 +343,9 @@
 
   (async()=>{
     D=await (await fetch('leads.json?t='+Date.now())).json();
+    /* Les apercus sont dans un fichier a part : leads.json est regenere par
+       secteurs-osm.mjs et ecraserait tout ce qu'on y ajouterait. */
+    try{ A=await (await fetch('../apercus.json?t='+Date.now())).json(); }catch(e){ A={}; }
     try{ const j=await (await fetch(URL_ETAT+'?t='+Date.now())).json();
       const d=typeof j.donnees==='string'?JSON.parse(j.donnees||'{}'):(j.donnees||{});
       etat=d&&typeof d==='object'?d:{}; }catch(e){}

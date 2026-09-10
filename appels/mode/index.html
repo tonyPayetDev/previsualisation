@@ -148,7 +148,8 @@
     const msg = messageWa(l);
     const lien = 'https://wa.me/' + num + '?text=' + encodeURIComponent(msg);
     return '<div class="wa' + (gros ? ' gros' : '') + '">'
-      + '<a class="wa-envoi" href="' + lien + '" target="_blank" rel="noopener">'
+      + '<a class="wa-envoi" data-msg="' + msg.replace(/"/g, '&quot;') + '"'
+      + ' href="' + lien + '" target="_blank" rel="noopener">'
       + (gros ? 'Envoyer sur WhatsApp' : 'WhatsApp') + '</a>'
       + '<button type="button" class="wa-copie" data-msg="' + msg.replace(/"/g, '&quot;') + '">Copier</button>'
       + '</div>';
@@ -156,7 +157,27 @@
 
   /* Le presse-papier est refusé hors contexte sécurisé : on montre le texte
      au lieu d'échouer sans rien dire. */
+  /* Retour de Tony le 2026-09-10 : sur telephone, le texte pre-rempli de wa.me
+     n'arrive pas toujours dans la conversation — WhatsApp ouvre le fil et le
+     message est perdu. Il fallait alors revenir en arriere, appuyer sur
+     « Copier », rouvrir. Desormais le simple fait d'appuyer sur « Envoyer »
+     met AUSSI le message dans le presse-papier : s'il n'est pas la, un appui
+     long suffit a le coller. On ne bloque jamais l'ouverture de WhatsApp pour
+     autant — la copie est un filet, pas une etape. */
+  const brancherEnvoi = (racine) => {
+    racine.querySelectorAll('.wa-envoi').forEach((a) => {
+      a.addEventListener('click', () => {
+        const t = a.dataset.msg; if (!t) return;
+        try { navigator.clipboard.writeText(t); } catch (e) {}
+        const d = a.parentNode.querySelector('.wa-copie');
+        if (d){ d.textContent = 'Copié'; d.classList.add('ok');
+          setTimeout(() => { d.textContent = 'Copier'; d.classList.remove('ok'); }, 2600); }
+      });
+    });
+  };
+
   const brancherCopie = (racine) => {
+    brancherEnvoi(racine);
     racine.querySelectorAll('.wa-copie').forEach((b) => {
       b.onclick = async () => {
         const t = b.dataset.msg;
