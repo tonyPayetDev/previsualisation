@@ -125,7 +125,16 @@ textarea{width:100%;min-height:190px;background:var(--carte);color:var(--texte);
 #ref{position:absolute;top:calc(50px + env(safe-area-inset-top));left:50%;transform:translateX(-50%);
   width:32%;max-width:190px;border-radius:12px;background:#000;z-index:4;
   box-shadow:0 10px 34px -12px rgba(0,0,0,.8);border:1px solid rgba(255,255,255,.16);
+  /* Touchable AVANT la prise : c'est comme ca qu'on l'ecoute. Pendant la prise
+     elle redevient intouchable — on ne veut pas la couper d'un doigt egare. */
+  pointer-events:auto;cursor:pointer}
+#e2.tourne #ref{pointer-events:none;cursor:default}
+/* L'indice « appuie pour ecouter », le temps qu'on ait compris une fois. */
+#refaide{position:absolute;top:calc(50px + env(safe-area-inset-top) + var(--hRef,200px) + 4px);
+  left:50%;transform:translateX(-50%);z-index:5;font-size:11px;letter-spacing:.04em;
+  background:rgba(10,10,10,.78);color:#e9e9ef;border-radius:999px;padding:4px 10px;white-space:nowrap;
   pointer-events:none}
+#refaide[hidden]{display:none}
 #ref[hidden]{display:none}
 /* La reference ne doit RIEN couvrir du texte : le premier essai la posait
    par-dessus et les deux premieres lignes du prompteur disparaissaient
@@ -373,7 +382,8 @@ pre.json{margin-top:10px;background:#101016;border:1px solid var(--trait);border
 <section class="ecran" id="e2">
   <video id="flux" playsinline muted autoplay></video>
   <canvas id="grade"></canvas>
-  <video id="ref" playsinline muted loop hidden></video>
+  <video id="ref" playsinline loop hidden></video>
+  <div id="refaide" hidden>appuie pour l'écouter</div>
   <div class="voile"></div>
 
   <div class="fenetre">
@@ -905,7 +915,25 @@ function poserReference(src, blob){
      qu'on la cadre du regard, mais ne pas tourner dans le vide avant la prise. */
   ref.currentTime = 0;
   ref.pause();
+  /* Le son. L'element portait `muted` en dur : la reference etait donc MUETTE
+     en toutes circonstances, y compris quand on la regarde pour l'etudier —
+     or ce qu'on vient y chercher, c'est autant la voix que l'image. Retour de
+     Tony le 2026-09-10. Desormais : audible tant qu'on prepare, coupee des que
+     l'enregistrement demarre (sinon elle passe dans le micro, exactement comme
+     la musique). */
+  ref.muted = false;
+  ref.volume = 1;
+  const aide = $('#refaide'); if (aide) aide.hidden = false;
 }
+
+/* Un appui sur la reference la lance ou l'arrete, avec le son. Le geste de
+   l'utilisateur est ce qui autorise le navigateur a jouer du son : sans lui,
+   une lecture automatique sortirait muette de toute facon. */
+ref.addEventListener('click', () => {
+  const aide = $('#refaide'); if (aide) aide.hidden = true;
+  if (ref.paused) { ref.muted = false; ref.play().catch(()=>{}); }
+  else { ref.pause(); }
+});
 
 $('#reffile').addEventListener('change', (e) => {
   const f = e.target.files && e.target.files[0];
@@ -1266,6 +1294,7 @@ $('#quit').addEventListener('click', () => { arreterTout(); montrer('e1'); });
 function arreterTout(){
   enCours = false; cancelAnimationFrame(rafId);
   arreterVu();
+  $('#e2').classList.remove('tourne');
   if (rafGrade){ cancelAnimationFrame(rafGrade); rafGrade = null; }
   if (fluxCanvas){ fluxCanvas.getTracks().forEach((t) => t.stop()); fluxCanvas = null; }
   try { ref.pause(); } catch(e){}
@@ -1338,7 +1367,11 @@ function demarrer(){
        deux traitements cherchent a supprimer, et ils emportent la voix avec.
        On la coupe ici, on la remet des qu'on revient sur l'ecran de reglage. */
     stopMusique();
-    if (ref.src) { try { ref.currentTime = 0; ref.play().catch(()=>{}); } catch(e){} }
+    /* La reference tourne pendant la prise pour se caler dessus, mais MUETTE :
+       le micro est ouvert a 30 cm. */
+    $('#e2').classList.add('tourne');
+    var aideR = $('#refaide'); if (aideR) aideR.hidden = true;
+    if (ref.src) { try { ref.muted = true; ref.currentTime = 0; ref.play().catch(()=>{}); } catch(e){} }
     rafId = requestAnimationFrame(boucle);
   };
   rec.start(1000);
@@ -1426,6 +1459,8 @@ function stopper(){
 function finTournage(){
   stopMusique();
   arreterVu();
+  $('#e2').classList.remove('tourne');
+  try { ref.muted = false; } catch(e){}
   /* On jette le flux de canvas avec le flux camera : les deux partagent la
      meme piste audio, qui va etre coupee deux lignes plus bas. */
   if (fluxCanvas){ try { fluxCanvas.getTracks().forEach((t) => t.stop()); } catch(e){} fluxCanvas = null; }
