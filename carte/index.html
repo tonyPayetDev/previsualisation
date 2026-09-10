@@ -2231,6 +2231,35 @@ function actionListe() {
 /* --- L'oreille ---------------------------------------------------------- */
 var Reco = window.SpeechRecognition || window.webkitSpeechRecognition;
 
+/* ── Les navigateurs intégrés aux applications ──────────────────────────────
+   Constaté le 10/09/2026 : ouverte depuis TikTok, la page restait « au repos »
+   quoi qu'on appuie. Ce n'est pas une panne de la page. Dans le navigateur
+   intégré d'une application (TikTok, Instagram, Facebook, LinkedIn), l'objet
+   SpeechRecognition existe souvent MAIS le service de reconnaissance n'est pas
+   joignable : `start()` ne lève rien, aucun résultat n'arrive, `onend` se
+   déclenche aussitôt — et l'état retombe sur « au repos », en silence.
+   Un échec muet est le pire des échecs : on le nomme. */
+var APP_INTEGREE = (function(){
+  var ua = navigator.userAgent || '';
+  if (/BytedanceWebview|musical_ly|TikTok/i.test(ua)) return 'TikTok';
+  if (/Instagram/i.test(ua))                          return 'Instagram';
+  if (/FBAN|FBAV|FB_IAB/i.test(ua))                   return 'Facebook';
+  if (/LinkedInApp/i.test(ua))                        return 'LinkedIn';
+  if (/; wv\)/.test(ua))                              return 'une application';
+  return null;
+})();
+
+function direCommentSortir(){
+  alerte('<b>Tu es dans le navigateur de ' + APP_INTEGREE + '.</b> ' +
+         'La reconnaissance vocale n\'y fonctionne pas — c\'est une limite de ce navigateur-là, ' +
+         'pas de la page. Ouvre l\'adresse dans <b>Chrome</b> : appuie sur les trois points en haut ' +
+         'à droite, puis « Ouvrir dans le navigateur ». Les boutons ci-dessous marchent ici, eux, ' +
+         'et te donnent les mêmes réponses.');
+  etat('Navigateur intégré', 0);
+}
+
+var demarreLe = 0, aEntendu = false;
+
 function preparerEcoute(){
   if (!Reco) return null;
   var r = new Reco();
@@ -2238,6 +2267,7 @@ function preparerEcoute(){
   r.continuous = true;
   r.interimResults = true;
   r.onresult = function(ev){
+    aEntendu = true;
     var fini = '', encours = '';
     for (var i = ev.resultIndex; i < ev.results.length; i++){
       if (ev.results[i].isFinal) fini += ev.results[i][0].transcript;
@@ -2271,14 +2301,31 @@ function preparerEcoute(){
     bParler.classList.remove('actif');
   };
   r.onend = function(){
+    var eclair = (Date.now() - demarreLe) < 1200;
     ecouteActive = false;
     bParler.classList.remove('actif');
+    /* Fin instantanée SANS avoir rien entendu ni signalé d'erreur : le service
+       de reconnaissance n'a jamais démarré. C'est le cas des navigateurs
+       intégrés. On le dit plutôt que de retomber sur « au repos ». */
+    if (eclair && !aEntendu){
+      if (APP_INTEGREE) direCommentSortir();
+      else {
+        alerte('<b>La reconnaissance vocale n\'a pas démarré.</b> ' +
+               'Elle s\'est arrêtée aussitôt, sans erreur : c\'est en général un navigateur qui ne ' +
+               'la sert pas (navigateur intégré à une application, ou mode privé). ' +
+               'Essaie dans Chrome. Les boutons ci-dessous marchent sans micro.');
+        etat('Écoute impossible', 0);
+      }
+      return;
+    }
     if (!bouche.parle) etat('Au repos', 0);
   };
   return r;
 }
 
 function demarrerEcoute(){
+  /* Dans un navigateur intégré, on ne tente même pas : on explique tout de suite. */
+  if (APP_INTEGREE && !ecouteActive){ direCommentSortir(); return; }
   if (!Reco){
     alerte('<b>Ce navigateur ne reconnaît pas la parole.</b> ' +
            'L\'API SpeechRecognition n\'existe que sur Chrome et Edge — ni Firefox, ni Safari. ' +
@@ -2292,7 +2339,8 @@ function demarrerEcoute(){
       alerte('<b>L\'orbe ne réagira pas à ta voix</b> (micro : ' + micro.erreur + '), ' +
              'mais la reconnaissance vocale a son propre accès et peut fonctionner.');
     }
-    try { ecoute.start(); ecouteActive = true; bParler.classList.add('actif'); etat('Je t\'écoute', TEINTE.ecoute); }
+    try { demarreLe = Date.now(); aEntendu = false;
+          ecoute.start(); ecouteActive = true; bParler.classList.add('actif'); etat('Je t\'écoute', TEINTE.ecoute); }
     catch (_) { /* start() lancé deux fois de suite : sans conséquence */ }
   });
 }
