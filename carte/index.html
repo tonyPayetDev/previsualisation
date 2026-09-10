@@ -1604,6 +1604,10 @@ function repondre(phrase){
     return bouche.dire(m).then(reprendre);
   }
 
+  // « Annuler » vaut pour la tâche qu'on vient de créer, pas pour une autre
+  // trois questions plus loin : la barre se referme dès qu'on passe à la suite.
+  montrerAnnulation(false);
+
   // Les COMMANDES passent avant les questions : « crée une tâche sur les
   // prospects » contient « prospects » et ne doit pas déclencher une lecture.
   var cmd = analyserCommande(phrase);
