@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>VideoBoost — Choisir un style</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@600;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+:root{
+  --fond:#0B0C0E; --panneau:#141619; --panneau-haut:#1B1E23; --trait:#262A30;
+  --txt:#EEF0F2; --doux:#98A1AC; --faible:#6B747F;
+  --or:#EAB308; --violet:#A855F7; --cyan:#22D3EE;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{background:var(--fond);color:var(--txt);font:400 15px/1.55 "IBM Plex Sans",system-ui,-apple-system,sans-serif;
+  padding-bottom:env(safe-area-inset-bottom)}
+h1,h2,h3{font-family:Sora,system-ui,sans-serif;letter-spacing:-.01em}
+a{color:inherit}
+
+/* ── Barre du haut ─────────────────────────────────────────────── */
+.barre{position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:22px;
+  padding:14px max(18px,env(safe-area-inset-left)) 14px max(18px,env(safe-area-inset-left));
+  background:rgba(11,12,14,.86);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--trait)}
+.logo{display:flex;align-items:center;gap:9px;font-family:Sora;font-weight:800;font-size:17px;letter-spacing:-.02em;flex:0 0 auto}
+.logo i{width:26px;height:26px;border-radius:8px;display:grid;place-items:center;flex:0 0 auto;
+  background:linear-gradient(135deg,var(--violet),var(--cyan));font-style:normal;font-size:14px;color:#0B0C0E;font-weight:800}
+.logo b{font-weight:800}
+.logo b span{color:var(--or)}
+.nav{display:flex;gap:18px;font-size:13.5px;color:var(--doux);flex:1;min-width:0;overflow:hidden}
+.nav a:hover{color:var(--txt)}
+.compte{flex:0 0 auto;display:flex;align-items:center;gap:10px}
+.compte .b{border:1px solid var(--trait);background:var(--panneau);color:var(--txt);border-radius:999px;
+  padding:8px 15px;font:600 13px "IBM Plex Sans",sans-serif;cursor:pointer}
+.compte .b:hover{background:var(--panneau-haut)}
+
+/* ── Filtres ───────────────────────────────────────────────────── */
+.filtres{position:sticky;top:57px;z-index:25;background:rgba(11,12,14,.92);
+  -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border-bottom:1px solid var(--trait)}
+.filtres-piste{display:flex;gap:8px;align-items:center;overflow-x:auto;scrollbar-width:none;
+  padding:12px max(18px,env(safe-area-inset-left))}
+.filtres-piste::-webkit-scrollbar{display:none}
+.puce{flex:0 0 auto;border:1px solid var(--trait);background:transparent;color:var(--doux);
+  border-radius:999px;padding:7px 15px;font:500 13px "IBM Plex Sans",sans-serif;cursor:pointer;
+  transition:background .18s,color .18s,border-color .18s;white-space:nowrap}
+.puce:hover{color:var(--txt);border-color:#39404a}
+.puce.on{background:var(--txt);color:#0B0C0E;border-color:var(--txt);font-weight:600}
+.sep{flex:0 0 auto;width:1px;height:22px;background:var(--trait);margin:0 4px}
+
+/* ── Grille ────────────────────────────────────────────────────── */
+main{padding:26px max(18px,env(safe-area-inset-left)) 90px}
+.compte-ligne{color:var(--faible);font-size:12.5px;font-family:"IBM Plex Mono",monospace;margin-bottom:16px}
+.grille{display:grid;grid-template-columns:repeat(auto-fill,minmax(206px,1fr));gap:18px}
+.carte{position:relative;text-align:left;background:var(--panneau);border:1px solid var(--trait);
+  border-radius:16px;overflow:hidden;cursor:pointer;padding:0;color:inherit;
+  transition:border-color .18s,transform .18s}
+.carte:hover{border-color:#3a424d;transform:translateY(-2px)}
+.carte .vue{position:relative;aspect-ratio:9/16;background:#000 center/cover;display:block}
+.carte .vue.vide{display:grid;place-items:center;background:
+  repeating-linear-gradient(45deg,#15171b,#15171b 10px,#111316 10px,#111316 20px)}
+.carte .vue.vide span{font:500 12px "IBM Plex Mono",monospace;color:var(--faible);text-align:center;padding:0 14px}
+.badge{position:absolute;top:9px;left:9px;font:500 10px/1 "IBM Plex Mono",monospace;letter-spacing:.09em;
+  text-transform:uppercase;padding:5px 8px;border-radius:6px;background:rgba(11,12,14,.78);color:var(--doux);
+  -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+.badge.neuf{background:rgba(234,179,8,.16);color:var(--or)}
+.carte .bas{padding:12px 13px 14px}
+.carte .bas b{display:block;font-family:Sora;font-weight:600;font-size:14.5px;margin-bottom:3px}
+.carte .bas i{font-style:normal;font-size:12.5px;color:var(--doux)}
+
+/* ── Panneau de détail ─────────────────────────────────────────── */
+.voile{position:fixed;inset:0;z-index:60;background:rgba(5,6,7,.72);
+  -webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);display:none}
+.voile.on{display:block}
+.tiroir{position:fixed;z-index:61;right:0;top:0;bottom:0;width:min(480px,100%);background:var(--panneau);
+  border-left:1px solid var(--trait);overflow-y:auto;transform:translateX(102%);
+  transition:transform .28s cubic-bezier(.22,.61,.36,1);
+  padding:22px 22px calc(34px + env(safe-area-inset-bottom))}
+.tiroir.on{transform:translateX(0)}
+.tiroir .fermer{position:absolute;top:16px;right:16px;width:34px;height:34px;border-radius:50%;
+  border:1px solid var(--trait);background:var(--panneau-haut);color:var(--doux);font-size:17px;cursor:pointer;line-height:1}
+.tiroir h2{font-size:1.3rem;font-weight:800;margin:4px 46px 4px 0}
+.tiroir .cat{font:500 11px "IBM Plex Mono",monospace;letter-spacing:.11em;text-transform:uppercase;color:var(--or)}
+.tiroir .apercu{margin:16px 0;border-radius:13px;overflow:hidden;aspect-ratio:9/16;max-height:340px;
+  background:#000 center/cover;border:1px solid var(--trait)}
+.tiroir h3{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--faible);margin:20px 0 8px;font-weight:600}
+.tiroir p{color:var(--doux);font-size:14px;margin-bottom:10px}
+.tiroir ul{color:var(--doux);font-size:13.5px;padding-left:18px}
+.tiroir li{margin-bottom:5px}
+.rec{background:#08090A;border:1px solid var(--trait);border-radius:11px;padding:13px 14px;
+  font:500 12.5px/1.6 "IBM Plex Mono",monospace;color:#a3e635;white-space:pre-wrap;word-break:break-word}
+.actions{display:flex;gap:9px;margin-top:18px;flex-wrap:wrap}
+.actions button,.actions a{border:1px solid var(--trait);background:var(--panneau-haut);color:var(--txt);
+  border-radius:10px;padding:10px 15px;font:600 13.5px "IBM Plex Sans",sans-serif;cursor:pointer;text-decoration:none}
+.actions .prim{background:var(--or);border-color:var(--or);color:#0B0C0E}
+.vide-msg{color:var(--faible);font-size:14px;padding:28px 0}
+
+@media (max-width:640px){
+  .nav{display:none}
+  .grille{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:13px}
+  .filtres{top:53px}
+  main{padding-top:20px}
+}
+</style>
+</head>
+<body>
+
+<header class="barre">
+  <div class="logo"><i>▶</i><b>Video<span>Boost</span></b></div>
+  <nav class="nav">
+    <a href="#">Styles</a><a href="#">Mes vidéos</a><a href="#">Voix</a><a href="#">Programmation</a>
+  </nav>
+  <div class="compte">
+    <button class="b" type="button" id="btn-nouveau">Nouvelle vidéo</button>
+  </div>
+</header>
+
+<div class="filtres">
+  <div class="filtres-piste" id="puces"></div>
+</div>
+
+<main>
+  <p class="compte-ligne" id="ligne-compte"></p>
+  <div class="grille" id="grille"></div>
+  <p class="vide-msg" id="vide" hidden>Aucun style dans ce filtre.</p>
+</main>
+
+<div class="voile" id="voile"></div>
+<aside class="tiroir" id="tiroir" aria-hidden="true">
+  <button class="fermer" type="button" id="fermer" aria-label="Fermer">✕</button>
+  <p class="cat" id="d-cat"></p>
+  <h2 id="d-titre"></h2>
+  <div class="apercu" id="d-apercu"></div>
+  <p id="d-quoi"></p>
+  <h3>Quand le prendre</h3>
+  <ul id="d-quand"></ul>
+  <h3>La recette</h3>
+  <div class="rec" id="d-rec"></div>
+  <div class="actions">
+    <button class="prim" type="button" id="d-choisir">Choisir ce style</button>
+    <a id="d-exemple" href="#" target="_blank" rel="noopener">Voir l'exemple ↗</a>
+  </div>
+</aside>
+
+<script>
+/* ── Les styles ────────────────────────────────────────────────────────
+   Neuf sont illustres par une image tiree d'une video reellement produite —
+   la vignette n'est pas une maquette, c'est une image du rendu. Trois sont
+   proposes et n'ont pas encore d'exemple : ils sont marques comme tels.
+   Rien ici ne pretend exister alors que non. */
+var STYLES = [
+  { id:'cyberpunk', nom:'Cyberpunk néon', cat:'Cyberpunk', img:'img/cyberpunk.jpg', ex:'/prompt-reveal-neon/',
+    quoi:"Fond noir, silhouette detouree par des lisieres de neon violet et orange, sol mouille qui renvoie la lumiere. Le contraste est brutal : le sujet decoupe, tout le reste avale par le noir.",
+    quand:["Un sujet technique qu'on veut rendre desirable","Une annonce, une sortie, un lancement","Quand la video passe apres une vingtaine d'autres dans le fil"],
+    rec:"Fond noir · 2 sources neon en contre-jour (violet + ambre)\nSol reflechissant · brume legere\nSujet centre, plan large a mi-cuisse\nTypo Orbitron, jamais plus de 4 mots par carton" },
+
+  { id:'matrix', nom:'Terminal / Matrix', cat:'Technique', img:'img/matrix.jpg', ex:'/autoboost-matrix-revelation/',
+    quoi:"Du code qui defile, un curseur qui clignote, une revelation qui sort du terminal. On montre la machine au travail plutot que le resultat.",
+    quand:["Devoiler un workflow, un prompt, une astuce","Public technique : devs, freelances, no-code","Quand la preuve EST le code"],
+    rec:"Fond #0A0A0A · texte vert #A3E635 en monospace\nCurseur clignotant 1 Hz · defilement 3 lignes/s\nUn seul moment de rupture : le resultat qui s'affiche d'un coup" },
+
+  { id:'avatar', nom:'Talking head néon', cat:'Avatar', img:'img/avatar.jpg', ex:'/veille-to-avatar-v3/',
+    quoi:"Toi face camera, habille d'un cadre neon et de sous-titres larges. C'est le format le plus rapide a produire : la banque d'avatars fournit deja les plans.",
+    quand:["Veille quotidienne, opinion, prise de position","Quand le visage vaut plus que l'illustration","Production en serie : plusieurs par semaine"],
+    rec:"Avatar 9:16 · cadre neon 6 px\nSous-titres Inter Bold 40 px, 2 lignes maxi\nVoix clonee · atempo 1.06\nMot actif en jaune #FFE600" },
+
+  { id:'typo', nom:'Hooks empilés', cat:'Typographie', img:'img/typo.jpg', ex:'/hook-puissant/',
+    quoi:"Deux accroches d'affilee, chacune posee en typo tres grasse sous le visage, avec un mot en jaune. Le regard lit avant d'ecouter.",
+    quand:["Ouvrir fort quand le sujet est aride","Enchainer deux promesses sans respirer","Quand le premier hook risque de ne pas suffire"],
+    rec:"Bande typographique sous le cadre, jamais dessus\nUn seul mot accentue en jaune #FFE600\nDeux accroches maximum, 3 s chacune\nLe compte a rebours ne sert que si la promesse est datee" },
+
+  { id:'cinema', nom:'Cinéma produit', cat:'Cinéma', img:'img/cinema.jpg', ex:'/autoboost-55-twingo-remix-v3/',
+    quoi:"Plan large, mouvement de camera lent, lumiere de studio sur un objet. Genere par Seedance, sans tournage ni objet reel.",
+    quand:["Presenter un produit ou un concept","Quand il faut impressionner en 3 secondes","Publicite, page de vente, en-tete de site"],
+    rec:"Travelling lateral bas · golden hour ou studio sombre\nUn seul objet, jamais deux\n10 s maximum par plan genere\nAucune marque reelle, aucun logo" },
+
+  { id:'journal', nom:'Journal / cartes', cat:'Éditorial', img:'img/journal.jpg', ex:'/journal-ia-2026-09-10/',
+    quoi:"Des cartes qui entrent une par une, un titre, une source. Le format d'un journal televise, ramene a la verticale.",
+    quand:["Veille, recap, liste de plusieurs sujets","Quand il y a 5 ou 6 choses a dire, pas une","Publication quotidienne, meme gabarit"],
+    rec:"Une carte par sujet · entree laterale 0.4 s\nBandeau de source en bas de carte\nMusique lit a -22 dB sous la voix\nCarton final avec le mot-cle" },
+
+  { id:'split', nom:'Écran scindé', cat:'Preuve', img:'img/split.jpg', ex:'/split-prompts/',
+    quoi:"Toi en bas, la preuve en haut : un site, une interface, un avant/apres. Le spectateur voit ce dont tu parles pendant que tu en parles.",
+    quand:["Demonstration d'un outil ou d'un resultat","Comparaison avant / apres","Quand il faut prouver, pas raconter"],
+    rec:"Panneau haut 1080x1120 · toi 1080x800 en dessous\nLe panneau du haut est MUET\nSous-titres a y=960\nLe panneau est ton propre enregistrement, jamais celui d'un autre" },
+
+  { id:'food', nom:'Macro food', cat:'Food', img:'img/food.jpg', ex:'/foodboost-11-grillades/',
+    quoi:"Gros plan sur le plat, vapeur, braise, lumiere chaude rasante. Un plat par seconde, coupe sur le rythme.",
+    quand:["Restaurant, traiteur, boulangerie","Carte du jour, suggestion, nouveaute","Quand l'appetit fait tout le travail"],
+    rec:"Lumiere du jour rasante ou braise\nUn plat = un plan = 1 s\nCoupes calees sur le kick\nTitre du plat en bas, jamais sur le plat" },
+
+  { id:'feed', nom:'Feed animé', cat:'Grille', img:'img/feed.jpg', ex:'/feed-chez-marlene/',
+    quoi:"Une grille Instagram qui se remplit sous les yeux du client. Il voit son propre compte, monte avec ses propres photos.",
+    quand:["Demarchage : montrer avant de vendre","Presenter un resultat global plutot qu'un post","Premier contact avec un commerce"],
+    rec:"Grille 3 colonnes · remplissage une tuile a la fois\nLes photos sont CELLES du client\nMention « exemple, rien n'a ete publie »\nDuree 15-20 s" },
+
+  { id:'papier', nom:'Papier découpé', cat:'Artisanal', img:'', ex:'',
+    quoi:"Formes en papier decoupe, ombres portees nettes, animation image par image. Chaleureux, tres lisible en petit, et personne n'en fait sur ce marche.",
+    quand:["Expliquer une idee abstraite simplement","Se distinguer d'un fil sature de neon","Public non technique : commercants, artisans"],
+    rec:"Palette 3 papiers maximum · ombre portee 6 px, 20 % noir\nAnimation 12 images/s, pas 30 — le saccade fait partie du look\nTexte manuscrit ou grotesque tres grasse" },
+
+  { id:'blueprint', nom:'Plan technique', cat:'Technique', img:'', ex:'',
+    quoi:"Traits fins blancs sur bleu nuit, cotes, fleches, nomenclature. Le workflow dessine comme un plan d'ingenieur.",
+    quand:["Presenter une architecture, un enchainement","Vendre de la rigueur plutot que de l'effet","Devis, proposition, page d'offre"],
+    rec:"Fond #0B1B2B · traits 1 px blanc a 70 %\nGrille de fond 40 px a 8 %\nChaque bloc numerote · fleches a angle droit uniquement\nUne seule couleur d'accent, sur le bloc qui compte" },
+
+  { id:'riso', nom:'Risographie', cat:'Artisanal', img:'', ex:'',
+    quoi:"Deux encres qui se superposent mal, grain de papier, aplats decales. Le look d'une impression artisanale, en mouvement.",
+    quand:["Culture, evenement, restauration de quartier","Quand le propre et lisse dessert le propos","Affiche animee, annonce"],
+    rec:"Deux encres seulement (ex. bleu #2B4BFF + corail #FF4B3E)\nDecalage de 3 px entre les couches\nGrain 12 % · papier creme #F3EDE0\nAucun degrade, uniquement des aplats" }
+];
+
+var CATS = ['Tous','Cyberpunk','Avatar','Cinéma','Technique','Typographie','Éditorial','Preuve','Food','Grille','Artisanal'];
+var filtre = 'Tous';
+
+var elPuces = document.getElementById('puces');
+var elGrille = document.getElementById('grille');
+var elVide = document.getElementById('vide');
+var elCompte = document.getElementById('ligne-compte');
+
+CATS.forEach(function(c, i){
+  var b = document.createElement('button');
+  b.className = 'puce' + (i === 0 ? ' on' : '');
+  b.type = 'button'; b.textContent = c; b.dataset.cat = c;
+  elPuces.appendChild(b);
+  if (i === 0){ var s = document.createElement('span'); s.className = 'sep'; elPuces.appendChild(s); }
+});
+elPuces.addEventListener('click', function(ev){
+  var b = ev.target.closest('.puce'); if (!b) return;
+  filtre = b.dataset.cat;
+  elPuces.querySelectorAll('.puce').forEach(function(x){ x.classList.toggle('on', x === b); });
+  peindre();
+});
+
+function peindre(){
+  var lot = STYLES.filter(function(s){ return filtre === 'Tous' || s.cat === filtre; });
+  var prets = lot.filter(function(s){ return s.img; }).length;
+  elCompte.textContent = lot.length + ' style' + (lot.length > 1 ? 's' : '')
+    + ' · ' + prets + ' avec un exemple réel' + (lot.length - prets ? ' · ' + (lot.length - prets) + ' à produire' : '');
+  elGrille.innerHTML = '';
+  lot.forEach(function(s){
+    var b = document.createElement('button');
+    b.className = 'carte'; b.type = 'button'; b.dataset.id = s.id;
+    b.innerHTML =
+      (s.img
+        ? '<span class="vue" style="background-image:url(' + s.img + ')"></span>'
+        : '<span class="vue vide"><span>pas encore<br>d\'exemple tourné</span></span>')
+      + '<span class="badge' + (s.img ? '' : ' neuf') + '">' + (s.img ? s.cat : 'à produire') + '</span>'
+      + '<span class="bas"><b>' + s.nom + '</b><i>' + s.quoi.split('.')[0] + '.</i></span>';
+    elGrille.appendChild(b);
+  });
+  elVide.hidden = lot.length > 0;
+}
+
+/* ── Le tiroir de détail ───────────────────────────────────────────── */
+var tiroir = document.getElementById('tiroir'), voile = document.getElementById('voile');
+function ouvrir(s){
+  document.getElementById('d-cat').textContent = s.cat;
+  document.getElementById('d-titre').textContent = s.nom;
+  var ap = document.getElementById('d-apercu');
+  ap.style.backgroundImage = s.img ? 'url(' + s.img + ')' : 'none';
+  ap.style.display = s.img ? 'block' : 'none';
+  document.getElementById('d-quoi').textContent = s.quoi;
+  document.getElementById('d-quand').innerHTML = s.quand.map(function(q){ return '<li>' + q + '</li>'; }).join('');
+  document.getElementById('d-rec').textContent = s.rec;
+  var lien = document.getElementById('d-exemple');
+  if (s.ex){ lien.href = s.ex; lien.hidden = false; } else { lien.hidden = true; }
+  tiroir.classList.add('on'); voile.classList.add('on');
+  tiroir.setAttribute('aria-hidden', 'false');
+}
+function fermer(){
+  tiroir.classList.remove('on'); voile.classList.remove('on');
+  tiroir.setAttribute('aria-hidden', 'true');
+}
+elGrille.addEventListener('click', function(ev){
+  var c = ev.target.closest('.carte'); if (!c) return;
+  var s = STYLES.filter(function(x){ return x.id === c.dataset.id; })[0];
+  if (s) ouvrir(s);
+});
+document.getElementById('fermer').addEventListener('click', fermer);
+voile.addEventListener('click', fermer);
+document.addEventListener('keydown', function(e){ if (e.key === 'Escape') fermer(); });
+document.getElementById('d-choisir').addEventListener('click', function(){
+  var t = document.getElementById('d-titre').textContent;
+  this.textContent = 'Style retenu : ' + t;
+  this.disabled = true;
+  setTimeout(function(){ fermer(); }, 900);
+});
+document.getElementById('btn-nouveau').addEventListener('click', function(){
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+
+peindre();
+</script>
+</body>
+</html>
