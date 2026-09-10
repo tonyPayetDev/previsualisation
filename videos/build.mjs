@@ -65,6 +65,24 @@ for (const e of fs.readdirSync(RACINE, { withFileTypes: true })) {
     vignette: fs.existsSync(`${D}/vignettes/${e.name}.jpg`) ? `vignettes/${e.name}.jpg` : null,
   });
 }
+// Fusion avec sources.json (produit par sources.mjs).
+// Sans ça le tri ne voit QUE les routes portant un video.mp4 local : depuis que
+// les rendus vivent sur R2, ça excluait la quasi-totalité des vidéos finies.
+// 17 listées sur 46 rendues la semaine du 4 au 10 septembre.
+try {
+  const src = JSON.parse(fs.readFileSync(`${D}/sources.json`, 'utf8'));
+  const connues = new Set(videos.map((v) => v.route));
+  for (const v of src) {
+    if (connues.has(v.route) || !v.routeExiste) continue;
+    videos.push({
+      route: v.route, titre: titre(v.route), famille: famille(v.route),
+      duree: v.duree, poids: v.poids, date: v.date,
+      vignette: fs.existsSync(`${D}/vignettes/${v.route}.jpg`) ? `vignettes/${v.route}.jpg` : null,
+    });
+    connues.add(v.route);
+  }
+} catch { /* pas de sources.json : on reste sur le scan local */ }
+
 videos.sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
 fs.writeFileSync(`${D}/liste.json`, JSON.stringify(videos, null, 1) + '\n');
 
