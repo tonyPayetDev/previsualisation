@@ -11,8 +11,8 @@ td{padding:4px 6px;border-bottom:1px solid #23232e;color:#8b8b99}td.q{color:#eab
 .att{border-left:3px solid #ef4444;padding-left:12px;margin-top:20px}.att h2{color:#fca5a5}</style>
 </head><body><div class="b">
 <h1>Réaction outils IA — format A</h1>
-<p>21,1 s · 1080×1920 · 8 outils · −14,9 LUFS</p>
-<video src="https://assets.automatisationboost.com/previsualisation/reaction-outils/video.mp4?v=1" controls playsinline></video>
+<p>21,1 s · 1080×1920 · 8 outils · −14,7 LUFS</p>
+<video src="https://assets.automatisationboost.com/previsualisation/reaction-outils/video.mp4?v=2" controls playsinline></video>
 
 <div class="att">
 <h2>L'attribution est un choix, pas une mesure</h2>
@@ -54,6 +54,15 @@ td{padding:4px 6px;border-bottom:1px solid #23232e;color:#8b8b99}td.q{color:#eab
 <li>Whisper entendait « bauf » : le texte est écrit à la main, seuls les minutages viennent de lui</li>
 </ul>
 
+<h2>Voix reprise (10/09, « la voix est bof »)</h2>
+<ul>
+<li><b>Le diagnostic</b> : plancher de bruit à −45,7 dB pour un RMS de −40,6 — <b>5 dB d'écart seulement</b> entre sa voix et le souffle. En remontant de 25 dB je remontais le souffle autant que la voix, et le débruitage large ajoutait des artefacts</li>
+<li><b>Le remède</b> : passe-bande 100–8000 Hz, deux débruitages doux au lieu d'un fort, −4 dB à 260 Hz et +5 dB à 2,8 kHz. La clarté vient de l'égalisation, pas du gain brut</li>
+<li><b>Mesuré</b> : écart parole/blancs <b>29,6 dB</b> contre 24,8 avant, à volume identique (−14,7 LUFS)</li>
+<li>Deux pièges trouvés en route : <code>amix</code> <b>divise</b> par le nombre d'entrées (sans <code>normalize=0</code> on perd 6 dB), et <code>loudnorm</code> bute sur le pic vrai — il plafonnait à −19 LUFS quelles que soient les réglages de compression</li>
+</ul>
+<h2>Cadrage</h2>
+<ul><li>Caméra descendue : le recadrage partait trop bas et <b>coupait le haut du crâne</b>. Quatre cadrages comparés à l'image avant de trancher</li></ul>
 <h2>Le son</h2>
 <ul>
 <li>Ta voix était à <b>−40 dB</b> : débruitage d'abord, compression ensuite, normalisation en dernier. Musique légère en sidechain</li>
