@@ -1418,7 +1418,11 @@ function Bouche(orbe){
         var u = new SpeechSynthesisUtterance(liste[i++]);
         u.lang = 'fr-FR';
         if (voixFr) u.voice = voixFr;
-        u.rate = 1.04; u.pitch = 1.0;
+        /* Le timbre vient de l'agent qui parle. La synthèse du navigateur ne
+           sait pas changer de personne, mais elle sait changer de débit et de
+           hauteur — c'est assez pour qu'on les distingue à l'oreille. */
+        var vx = (typeof agentCourant === 'function' && agentCourant().voix) || { rate:1.04, pitch:1.0 };
+        u.rate = vx.rate; u.pitch = vx.pitch;
         u.onend = suivante;
         u.onerror = suivante;   // une phrase muette ne doit pas figer la file
         speechSynthesis.speak(u);
@@ -1597,6 +1601,160 @@ function afficher(sujet, phrases, details){
    « fais-en une tâche », sans répéter. « ça », c'est cette ligne-là. */
 var sujetCourant = null, derniereAffirmation = null, dernierIdTache = null;
 
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   L'ESCOUADE — ajoutée le 10 septembre 2026
+
+   Tony voulait pouvoir appeler ses agents par leur nom, ici, à la voix.
+   La spécification d'origine les fait vivre sur le VPS : Supabase pour la
+   configuration, ElevenLabs pour les voix, l'API Anthropic pour les réponses.
+   Aucun des trois n'est configuré. Plutôt que d'attendre, l'escouade vit ici :
+   la reconnaissance vocale et la synthèse sont déjà dans cette page, et les
+   données aussi.
+
+   Ce que ça donne : chaque agent a un timbre distinct (la synthèse du
+   navigateur accepte un débit et une hauteur), un domaine, et une façon de
+   parler. Ce qu'il n'a pas : de l'intelligence propre. Un agent lit ce que le
+   cerveau sait, dans son registre. Celui qui n'a pas de source le DIT — il
+   n'invente pas un chiffre pour avoir l'air occupé.
+   ─────────────────────────────────────────────────────────────────────────── */
+var ESCOUADE = [
+  { nom:'Orchestrarok', emoji:'🜂', alias:['orchestra','orchestrarock','orkestrarok','orchestrator','chef','patron'],
+    role:'Le routeur. Il voit tout, il répartit.', sujets:['resume'],
+    voix:{ rate:0.88, pitch:0.72 },
+    bonjour:'Orchestrarok. Je t\'écoute — dis-moi un nom, ou pose ta question.' },
+
+  { nom:'Scrapouille', emoji:'🕷', alias:['scrap','scrapouye','scrapouil','scrapouille','scrappy','scrapouyle'],
+    role:'Les prospects. Elle cherche, elle qualifie.', sujets:['prospects'],
+    voix:{ rate:1.28, pitch:1.55 },
+    bonjour:'Scrapouille ! Les prospects, c\'est moi. Qu\'est-ce que tu veux savoir ?' },
+
+  { nom:'Relancinet', emoji:'📨', alias:['relancine','relancinette','relance','relancinet','relancinnet'],
+    role:'Les relances et le suivi des envois.', sujets:['relances'],
+    voix:{ rate:1.14, pitch:1.32 },
+    bonjour:'Relancinet. On regarde qui attend une réponse ?' },
+
+  { nom:'Facturax', emoji:'🧾', alias:['factura','facturax','facture','factures','impayes','impayés'],
+    role:'Devis, factures, impayés.', sujets:[],
+    voix:{ rate:1.00, pitch:0.92 },
+    bonjour:'Facturax.',
+    sansSource:['Facturax.','Je n\'ai aucune source de facturation branchée sur cette carte : ni devis, ni factures, ni impayés.',
+                'Tant que ce n\'est pas connecté, je ne te dirai rien plutôt que d\'inventer un montant.'] },
+
+  { nom:'Alertoss', emoji:'🚨', alias:['alertos','alertosse','alerte','alertoss','alertes'],
+    role:'Les automatisations et ce qui casse.', sujets:['workflows'],
+    voix:{ rate:1.32, pitch:1.12 },
+    bonjour:'Alertoss. Je regarde ce qui tourne et ce qui est tombé.' },
+
+  { nom:'Mireille', emoji:'☕', alias:['mireil','mireille','mirey','mireye','sav'],
+    role:'Les réponses aux clients.', sujets:[],
+    voix:{ rate:0.98, pitch:1.22 },
+    bonjour:'Mireille.',
+    sansSource:['Mireille, bonjour.','Je n\'ai pas la boîte de réception sous la main depuis cette carte — je ne vois ni les messages reçus, ni ce qui attend une réponse.',
+                'Dis-moi ce que tu veux répondre et à qui, et je te prépare le texte.'] },
+
+  { nom:'Tonton Serge', emoji:'🪑', alias:['serge','tonton','tontonserge','tonton serge','sergio'],
+    role:'Le contradicteur. Il dit ce que personne ne dit.', sujets:['decisions','rates'],
+    voix:{ rate:0.82, pitch:0.68 },
+    bonjour:'Tonton Serge. Bon. Qu\'est-ce qu\'on se raconte aujourd\'hui ?' },
+
+  { nom:'Montana', emoji:'🎬', alias:['montanna','montan','montana','monta','directeur artistique'],
+    role:'Le montage, le motion, les sites.', sujets:[],
+    voix:{ rate:0.86, pitch:1.02 },
+    bonjour:'Montana.',
+    sansSource:['Montana.','Je ne lance aucun rendu depuis cette page : un montage prend deux à quinze minutes, et cette carte répond en trois secondes.',
+                'Le jour où la file de rendus existera sur le serveur, je prendrai les demandes ici et je te préviendrai quand ce sera prêt. Pour l\'instant, non.'] },
+];
+
+var agentActif = null;   // null = Orchestrarok
+
+/* Distance de Levenshtein bornée : la dictée écrit rarement « Orchestrarok »
+   correctement, et « Scrapouye » doit tomber sur Scrapouille. Au-delà de 2
+   écarts on refuse — sinon « Montana » attrape « montant ». */
+function distance(a, b){
+  if (a === b) return 0;
+  if (Math.abs(a.length - b.length) > 2) return 99;
+  var m = a.length, n = b.length, prec = [], cour = [], i, j;
+  for (j = 0; j <= n; j++) prec[j] = j;
+  for (i = 1; i <= m; i++){
+    cour[0] = i;
+    for (j = 1; j <= n; j++){
+      cour[j] = Math.min(prec[j] + 1, cour[j - 1] + 1,
+                         prec[j - 1] + (a.charAt(i - 1) === b.charAt(j - 1) ? 0 : 1));
+    }
+    for (j = 0; j <= n; j++) prec[j] = cour[j];
+  }
+  return prec[n];
+}
+function sansAccents(t){
+  return String(t || '').toLowerCase()
+    .normalize('NFD').replace(/[̀-ͯ]/g, '')
+    .replace(/[^a-z0-9 ]/g, ' ').replace(/\s+/g, ' ').trim();
+}
+
+/* On ne cherche le nom que dans les TROIS premiers mots. « Demande à Serge »
+   fonctionne ; « le serge de la semaine dernière » au milieu d'une phrase, non
+   — sinon un agent prend la main sur une conversation qui ne le concerne pas. */
+function trouverAgent(phrase){
+  var mots = sansAccents(phrase).split(' ').slice(0, 3);
+  if (!mots.length) return null;
+  for (var k = 0; k < ESCOUADE.length; k++){
+    var a = ESCOUADE[k];
+    var cles = [sansAccents(a.nom)].concat((a.alias || []).map(sansAccents));
+    for (var i = 0; i < mots.length; i++){
+      var mot = mots[i];
+      if (mot.length < 4) continue;
+      for (var c = 0; c < cles.length; c++){
+        var cle = cles[c];
+        if (mot === cle) return a;
+        if (distance(mot, cle) <= 2) return a;
+        /* « tontonserge » dicté en un seul mot, ou « tonton serge » en deux. */
+        if (i + 1 < mots.length && distance(mot + mots[i + 1], cle) <= 2) return a;
+      }
+    }
+  }
+  return null;
+}
+
+function agentCourant(){ return agentActif || ESCOUADE[0]; }
+
+function listerEscouade(){
+  var lignes = ['Ils sont huit.'];
+  ESCOUADE.forEach(function(a){ lignes.push(a.nom + ' — ' + a.role); });
+  lignes.push('Dis un nom pour lui parler. Dis « stop » pour revenir à Orchestrarok.');
+  afficher('Qui est là', lignes, []);
+  etat('L\'escouade', 0);
+  return bouche.dire(lignes, surEtatVoix).then(reprendre);
+}
+
+/* La réponse d'un agent : son domaine s'il en a un, son aveu sinon. */
+function repondreAgent(a, phrase){
+  agentActif = a;
+  etat(a.emoji + ' ' + a.nom, 0);
+
+  if (!a.sujets.length){
+    var m = a.sansSource || [a.nom + '.', 'Je n\'ai pas de source branchée ici.'];
+    afficher(a.emoji + ' ' + a.nom, m, []);
+    return bouche.dire(m, surEtatVoix).then(reprendre);
+  }
+
+  /* Si la phrase porte déjà une question, on y répond ; sinon l'agent se
+     présente et attend. On ne devine pas une question qui n'a pas été posée. */
+  var sujet = (typeof trouverSujet === 'function') ? trouverSujet(phrase) : null;
+  if (!sujet || a.sujets.indexOf(sujet) === -1) sujet = a.sujets[0];
+  var s = cerveau && cerveau.sujets && cerveau.sujets[sujet];
+  if (!s){
+    var r = [a.nom + '.', 'Mon domaine n\'est pas dans les données chargées. Je ne t\'invente rien.'];
+    afficher(a.emoji + ' ' + a.nom, r, []);
+    return bouche.dire(r, surEtatVoix).then(reprendre);
+  }
+  var phrases = [a.bonjour].concat(s.phrases);
+  sujetCourant = sujet;
+  derniereAffirmation = s.phrases[0] || null;
+  afficher(a.emoji + ' ' + a.nom + ' — ' + s.titre, phrases, s.details);
+  return bouche.dire(phrases, surEtatVoix).then(reprendre);
+}
+
 function repondre(phrase){
   if (!cerveau){
     var m = ['Je n\'ai pas tes données sous la main, donc je ne te dirai rien plutôt que de t\'inventer un chiffre.'];
@@ -1607,6 +1765,27 @@ function repondre(phrase){
   // « Annuler » vaut pour la tâche qu'on vient de créer, pas pour une autre
   // trois questions plus loin : la barre se referme dès qu'on passe à la suite.
   montrerAnnulation(false);
+
+  /* ── L'ESCOUADE, avant tout le reste ────────────────────────────────────
+     Un nom prononcé prend la main. Ensuite on continue à lui parler sans le
+     répéter, jusqu'à « stop ». C'est la seule règle qui compte : sans la
+     session, il faudrait renommer l'agent à chaque phrase. */
+  var brut = sansAccents(phrase);
+  if (/\b(qui est la|qui sont ils|l escouade|les agents|qui est present)\b/.test(brut)){
+    return listerEscouade();
+  }
+  if (/^(stop|merci|libre|retour|c est bon|laisse tomber)\b/.test(brut)){
+    var etaitLa = agentActif;
+    agentActif = null;
+    var f = etaitLa
+      ? [etaitLa.nom + ' se retire.', 'Orchestrarok reprend la main.']
+      : ['Orchestrarok. Je n\'avais pas quitté.'];
+    afficher('Orchestrarok', f, []);
+    etat('Orchestrarok', 0);
+    return bouche.dire(f, surEtatVoix).then(reprendre);
+  }
+  var appele = trouverAgent(phrase);
+  if (appele) return repondreAgent(appele, phrase);
 
   // Les COMMANDES passent avant les questions : « crée une tâche sur les
   // prospects » contient « prospects » et ne doit pas déclencher une lecture.
