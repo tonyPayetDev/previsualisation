@@ -2229,6 +2229,19 @@ function actionListe() {
 }
 
 /* --- L'oreille ---------------------------------------------------------- */
+/* Sur téléphone, UN SEUL programme peut tenir le micro à la fois.
+   Sur ordinateur, le flux de l'orbe et la reconnaissance vocale cohabitent —
+   c'est ce que dit le commentaire plus haut, et c'est vrai là-bas. Sur Android
+   c'est faux : le flux getUserMedia ouvert pour animer l'orbe garde le micro,
+   la reconnaissance ne démarre jamais, et l'état retombe sur « au repos » sans
+   un mot. Constaté le 10/09/2026 sur le téléphone de Tony, dans Chrome, hors
+   navigateur intégré. Donc sur mobile : l'orbe se passe de mesure, la
+   reconnaissance a le micro pour elle seule. */
+var SUR_MOBILE = (function(){
+  try { if (window.matchMedia && matchMedia('(pointer: coarse)').matches) return true; } catch(e){}
+  return /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent || '');
+})();
+
 var Reco = window.SpeechRecognition || window.webkitSpeechRecognition;
 
 /* ── Les navigateurs intégrés aux applications ──────────────────────────────
@@ -2264,7 +2277,12 @@ function preparerEcoute(){
   if (!Reco) return null;
   var r = new Reco();
   r.lang = 'fr-FR';
-  r.continuous = true;
+  /* `continuous` n'est pas servi par Chrome sur Android : la reconnaissance
+     s'y arrête d'elle-même apres la premiere phrase, et le demander la fait
+     parfois ne jamais demarrer. Sur telephone on prend donc le mode par
+     defaut — une phrase, une reponse — et l'oreille se rouvre ensuite, ce que
+     `reprendre()` fait deja. */
+  r.continuous = !SUR_MOBILE;
   r.interimResults = true;
   r.onresult = function(ev){
     aEntendu = true;
@@ -2295,6 +2313,14 @@ function preparerEcoute(){
              'puis rappuie sur Parler. Les boutons ci-dessous marchent sans micro.');
       etat('Micro refusé', 0);
     } else if (ev.error !== 'no-speech' && ev.error !== 'aborted'){
+      /* Sur téléphone le code d'erreur est la seule prise qu'on ait : l'écrire
+         en petit dans l'état ne sert à rien, personne ne le lit. On l'affiche
+         en clair pour qu'il soit lisible et rapportable tel quel. */
+      if (SUR_MOBILE){
+        alerte('<b>La reconnaissance a refusé de démarrer.</b> Code renvoyé par le navigateur : <b>' +
+               ev.error + '</b>. Dis-moi ce code, il dit exactement ce qui bloque. ' +
+               'Les boutons ci-dessous marchent sans micro.');
+      }
       etat('Erreur : ' + ev.error, 0);
     }
     ecouteActive = false;
@@ -2334,17 +2360,45 @@ function demarrerEcoute(){
   }
   if (ecouteActive) { stopEcoute(); return; }
   bouche.couper();
+  function lancer(){
+    try { demarreLe = Date.now(); aEntendu = false;
+          ecoute.start(); ecouteActive = true; bParler.classList.add('actif'); etat('Je t\'écoute', TEINTE.ecoute); }
+    catch (_) { /* start() lancé deux fois de suite : sans conséquence */ }
+  }
+
+  if (SUR_MOBILE){
+    /* On ne demande PAS le micro pour l'orbe : elle respirera toute seule
+       pendant l'écoute. Mieux vaut une orbe qui fait semblant qu'une
+       reconnaissance qui ne démarre pas. */
+    orbeEnEcouteFactice(true);
+    return lancer();
+  }
+
   micro.demarrer().then(function(ok){
     if (!ok && micro.erreur !== 'micro-indisponible'){
       alerte('<b>L\'orbe ne réagira pas à ta voix</b> (micro : ' + micro.erreur + '), ' +
              'mais la reconnaissance vocale a son propre accès et peut fonctionner.');
     }
-    try { demarreLe = Date.now(); aEntendu = false;
-          ecoute.start(); ecouteActive = true; bParler.classList.add('actif'); etat('Je t\'écoute', TEINTE.ecoute); }
-    catch (_) { /* start() lancé deux fois de suite : sans conséquence */ }
+    lancer();
   });
 }
+/* L'orbe pendant l'écoute sur mobile : une respiration, pas une mesure.
+   C'est une animation et ça se dit — on ne prétend pas afficher un niveau
+   sonore qu'on n'a pas. */
+var battementFactice = 0;
+function orbeEnEcouteFactice(on){
+  if (!on){ battementFactice = 0; if (orbe) orbe.niveau = 0; return; }
+  battementFactice = 1;
+  (function battre(){
+    if (!battementFactice || !ecouteActive){ if (orbe) orbe.niveau = 0; return; }
+    battementFactice += 0.09;
+    if (orbe) orbe.niveau = 0.14 + 0.10 * Math.abs(Math.sin(battementFactice));
+    requestAnimationFrame(battre);
+  })();
+}
+
 function stopEcoute(){
+  battementFactice = 0;
   ecouteActive = false;
   bParler.classList.remove('actif');
   try { ecoute && ecoute.stop(); } catch (_) {}
