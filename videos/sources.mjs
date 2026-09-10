@@ -33,7 +33,10 @@ const duree = (f) => { try {
 const candidat = (dir) => {
   for (const p of [`${dir}/public/video.mp4`, `${dir}/video.mp4`]) if (fs.existsSync(p)) return p;
   const vus = [];
-  for (const sous of ['', '/public']) {
+  // 'rendus'/'renders' : dix projets y rangent leur version finale (astra-gpt6,
+  // navier-stokes, reaction-outils, rush-presentation…). Sans eux ils restent
+  // invisibles au tri alors qu'ils sont finis.
+  for (const sous of ['', '/public', '/rendus', '/renders']) {
     const d = dir + sous;
     let noms = [];
     try { noms = fs.readdirSync(d); } catch { continue; }
