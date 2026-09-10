@@ -24,10 +24,30 @@ const duree = (f) => { try {
     ['-v','error','-show_entries','format=duration','-of','csv=p=0',f],{encoding:'utf8'}).trim()));
 } catch { return 0; } };
 
-// on ne garde qu'un rendu FINAL, jamais un intermédiaire de work/
+// Un rendu FINAL, jamais un intermédiaire de work/ ou de tmp/.
+// Piège payé : chercher uniquement `video.mp4` rate tous les projets qui
+// nomment autrement (autoboost-voxoff-pro rend `video-pro.mp4`, et il existe
+// des `final.mp4`, `montage.mp4`…). On prend donc le mp4 le plus récent à la
+// racine ou dans public/, en excluant public/media/ qui ne contient que des
+// fonds animés de quelques centaines de kilo-octets.
 const candidat = (dir) => {
   for (const p of [`${dir}/public/video.mp4`, `${dir}/video.mp4`]) if (fs.existsSync(p)) return p;
-  return null;
+  const vus = [];
+  for (const sous of ['', '/public']) {
+    const d = dir + sous;
+    let noms = [];
+    try { noms = fs.readdirSync(d); } catch { continue; }
+    for (const n of noms) {
+      if (!n.endsWith('.mp4')) continue;
+      const f = `${d}/${n}`;
+      let st; try { st = fs.statSync(f); } catch { continue; }
+      if (!st.isFile() || st.size < 1_500_000) continue;   // sous 1,5 Mo ce n'est pas un rendu
+      vus.push([st.mtimeMs, f]);
+    }
+  }
+  if (!vus.length) return null;
+  vus.sort((a, b) => b[0] - a[0]);
+  return vus[0][1];
 };
 
 const out = [];
