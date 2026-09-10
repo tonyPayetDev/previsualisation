@@ -38,7 +38,11 @@ const fiches = fs.readdirSync(DEMO).filter((d) => fs.existsSync(path.join(DEMO, 
     + `J'ai monté une page qui montre à quoi ressemblerait votre feed, avec vos propres photos. `
     + `Elle n'est visible que par vous, rien n'a été publié :\n${R}/demo/${slug}/\n\n`
     + `Si ça vous parle, vous pouvez le monter vous-même et choisir quand publier :\n`
-    + `${R}/foodboost-editeur/?client=${slug}\n\n`
+    /* Lien COURT, sans point d'interrogation. Une adresse nue avec « ?client= »
+       dans un mail se fait envelopper par Gmail dans son ecran « Avertissement
+       de redirection » : le restaurateur tombe sur une alerte avant d'avoir vu
+       quoi que ce soit. /e/<slug> redirige vers l'editeur et passe droit. */
+    + `${R}/e/${slug}/\n\n`   /* barre finale : sans elle nginx repond un 301 vers http:// */
     + `Trois publications offertes, vous validez avant que quoi que ce soit ne parte, et vous décidez `
     + `ensuite. Sinon dites-le-moi, ça se jette.\n\nTony PAYET — AutomatisationBoost\n06 92 41 77 49`;
   return { slug, nom, email, tel, note, avis, photos: ph.length,
