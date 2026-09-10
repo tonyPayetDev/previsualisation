@@ -139,6 +139,15 @@ textarea{width:100%;min-height:190px;background:var(--carte);color:var(--texte);
 /* Les rendus, en bas de l'ecran de tournage, au-dessus des commandes. Une
    rangee qui defile : sur un telephone etroit, cinq pastilles ne tiennent pas
    sur une ligne, et les empiler mangerait le prompteur. */
+/* Le temoin de niveau : vert quand la voix passe, gris quand rien n'entre.
+   Volontairement petit — il informe, il ne doit pas attirer l'oeil pendant
+   qu'on lit le prompteur. */
+.vu{width:52px;height:6px;border-radius:3px;background:rgba(255,255,255,.16);
+  overflow:hidden;margin-left:10px;flex:0 0 auto}
+.vu i{display:block;height:100%;width:0%;border-radius:3px;background:#22c55e;
+  transition:width .08s linear}
+.vu.muet i{background:#ef4444}
+
 .rendus{position:absolute;left:0;right:0;bottom:calc(112px + env(safe-area-inset-bottom));
   display:flex;gap:8px;padding:0 12px;overflow-x:auto;scrollbar-width:none;
   -webkit-overflow-scrolling:touch}
@@ -354,6 +363,10 @@ pre.json{margin-top:10px;background:#101016;border:1px solid var(--trait);border
 
   <div class="barre">
     <div class="chrono"><span class="pastille" id="past"></span><span id="chr">0:00</span></div>
+    <!-- Temoin de niveau du micro. Il existe pour une raison precise : le
+         2026-09-10, une prise entiere est repartie sans voix et rien a l'ecran
+         ne le disait. Maintenant ca se voit AVANT d'appuyer. -->
+    <div class="vu" id="vu" title="Niveau du micro"><i id="vubar"></i></div>
     <div class="esp">
       <button id="mvit">Vitesse −</button>
       <button id="pvit">+</button>
@@ -958,7 +971,18 @@ function appliquerRendu(){
    `captureStream` cree un second flux et le premier continue de tourner. */
 function fluxAEnregistrer(){
   if (rendu === 'aucun') return stream;
-  if (!fluxCanvas){
+  /* Le flux de canvas etait garde d'une prise a l'autre. Or la fin d'une prise
+     coupe TOUTES les pistes du flux camera — y compris la piste audio qui avait
+     ete greffee ici. A la prise suivante, le micro est un nouvel objet, mais ce
+     flux-la portait encore l'ancienne piste, morte : la video sortait sans voix.
+     C'est le defaut remonte par Tony le 2026-09-10, et il n'apparaissait qu'a
+     partir de la DEUXIEME prise, avec un rendu d'image actif.
+     On verifie donc que la piste audio est bien vivante ; sinon on rebatit. */
+  const vivante = fluxCanvas
+    && fluxCanvas.getAudioTracks().length
+    && fluxCanvas.getAudioTracks()[0].readyState === 'live';
+  if (!vivante){
+    if (fluxCanvas){ try { fluxCanvas.getTracks().forEach((t) => t.stop()); } catch(e){} }
     fluxCanvas = grade.captureStream(30);
     stream.getAudioTracks().forEach((t) => fluxCanvas.addTrack(t));
   }
@@ -968,6 +992,49 @@ let stream = null, rec = null, morceaux = [];
 let t0 = 0, enCours = false, rafId = 0, y = 0, y0 = 0, pxParSec = 0, dernier = 0;
 let cues = [], iActif = -1, verrou = null;
 let blocs = [], hFenetre = 0;   // mesures figees pendant la prise (voir `boucle`)
+
+/* ─── Temoin de niveau du micro ────────────────────────────────────────
+   Mesure a 10 Hz, dans son propre intervalle : la boucle d'image est deja
+   juste sur telephone quand un rendu tourne, on n'y ajoute rien. */
+let actx = null, ana = null, vuTimer = null, vuBuf = null;
+function demarrerVu(fluxMicro){
+  arreterVu();
+  try {
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC || !fluxMicro.getAudioTracks().length) return;
+    actx = new AC();
+    /* Sur iOS et sur Chrome, un AudioContext nait « suspendu » tant qu'un geste
+       de l'utilisateur ne l'a pas reveille. Sans ce resume, le temoin reste a
+       zero et laisse croire que le micro n'entre pas. */
+    if (actx.state === 'suspended') { actx.resume().catch(()=>{}); }
+    ana = actx.createAnalyser(); ana.fftSize = 256;
+    actx.createMediaStreamSource(fluxMicro).connect(ana);
+    vuBuf = new Uint8Array(ana.fftSize);
+    const barre = $('#vubar'), boite = $('#vu');
+    let muets = 0;
+    vuTimer = setInterval(() => {
+      ana.getByteTimeDomainData(vuBuf);
+      let pic = 0;
+      for (let i = 0; i < vuBuf.length; i++){
+        const e = Math.abs(vuBuf[i] - 128); if (e > pic) pic = e;
+      }
+      const pct = Math.min(100, Math.round((pic / 128) * 260));
+      barre.style.width = pct + '%';
+      /* Trois secondes de silence complet : ce n'est plus du silence, c'est un
+         micro qui n'entre pas. On le dit en rouge plutot que de laisser croire
+         que tout va bien. */
+      muets = pic < 2 ? muets + 1 : 0;
+      boite.classList.toggle('muet', muets > 30);
+    }, 100);
+  } catch(e){}
+}
+function arreterVu(){
+  if (vuTimer){ clearInterval(vuTimer); vuTimer = null; }
+  if (actx){ try { actx.close(); } catch(e){} actx = null; }
+  ana = null; vuBuf = null;
+  const b = $('#vubar'); if (b) b.style.width = '0%';
+  const v = $('#vu'); if (v) v.classList.remove('muet');
+}
 
 function nouveauRepere(b, i, t){
   const T = TAGS[b.tag];
@@ -991,9 +1058,15 @@ $('#go').addEventListener('click', async () => {
   if (!etat.blocs.length) return erreur1("Le script est vide — colle au moins une ligne.");
   try {
     stream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: cam, width:{ideal:1080}, height:{ideal:1920}, aspectRatio:{ideal:9/16}, frameRate:{ideal:30, min:24} },
+      /* `frameRate:{min:24}` etait une contrainte DURE : un telephone qui ne peut
+         pas garantir 24 images/s — typiquement en faible lumiere — se voyait
+         refuser la camera entierement, avec un « OverconstrainedError » que
+         l'ecran traduisait par « Camera indisponible ». On demande, on n'exige
+         pas : mieux vaut filmer a 20 images/s que ne pas filmer. */
+      video: { facingMode: cam, width:{ideal:1080}, height:{ideal:1920}, aspectRatio:{ideal:9/16}, frameRate:{ideal:30} },
       audio: { echoCancellation:true, noiseSuppression:true }
     });
+    demarrerVu(stream);
   } catch (err){
     return erreur1("Caméra indisponible (" + (err && err.name ? err.name : 'inconnu') + ") — "
       + (err && err.message ? err.message : '') + ". Ouvre la page dans Safari ou Chrome "
@@ -1071,6 +1144,7 @@ $('#bcam').addEventListener('click', async () => {
   try {
     stream = await navigator.mediaDevices.getUserMedia({
       video:{ facingMode:cam, width:{ideal:1080}, height:{ideal:1920} }, audio:true });
+    demarrerVu(stream);
     flux.srcObject = stream; flux.classList.toggle('miroir', cam === 'user');
     /* La camera a change : l'ancien flux de canvas porte la piste audio du
        flux precedent, qui vient d'etre coupee. On le jette pour qu'il soit
@@ -1083,6 +1157,7 @@ $('#quit').addEventListener('click', () => { arreterTout(); montrer('e1'); });
 
 function arreterTout(){
   enCours = false; cancelAnimationFrame(rafId);
+  arreterVu();
   if (rafGrade){ cancelAnimationFrame(rafGrade); rafGrade = null; }
   if (fluxCanvas){ fluxCanvas.getTracks().forEach((t) => t.stop()); fluxCanvas = null; }
   try { ref.pause(); } catch(e){}
@@ -1147,9 +1222,14 @@ function demarrer(){
     $('#past').classList.add('rec');
     $('#rec').classList.add('stop');
     $('#fait').disabled = false;
-    /* `startMusique()` etait appele ici. Il l'est desormais a l'ouverture de
-       l'ecran de tournage : le rappeler creerait un SECOND objet Audio, et deux
-       lectures decalees de la meme boucle. */
+    /* La musique se TAIT pendant la prise. Elle est la pour se mettre dans le
+       rythme au moment ou l'on charge son script — pas pour etre enregistree.
+       Retour de Tony le 2026-09-10 : sa voix avait disparu de l'enregistrement.
+       Le micro tourne avec annulation d'echo et reduction de bruit : une
+       musique continue jouee par le meme telephone est exactement ce que ces
+       deux traitements cherchent a supprimer, et ils emportent la voix avec.
+       On la coupe ici, on la remet des qu'on revient sur l'ecran de reglage. */
+    stopMusique();
     if (ref.src) { try { ref.currentTime = 0; ref.play().catch(()=>{}); } catch(e){} }
     rafId = requestAnimationFrame(boucle);
   };
@@ -1237,6 +1317,10 @@ function stopper(){
 
 function finTournage(){
   stopMusique();
+  arreterVu();
+  /* On jette le flux de canvas avec le flux camera : les deux partagent la
+     meme piste audio, qui va etre coupee deux lignes plus bas. */
+  if (fluxCanvas){ try { fluxCanvas.getTracks().forEach((t) => t.stop()); } catch(e){} fluxCanvas = null; }
   if (iActif >= 0 && cues[iActif].rep.tFin === null) cues[iActif].rep.tFin = etat.duree;
   const type = (rec && rec.mimeType) || 'video/webm';
   etat.video  = new Blob(morceaux, { type });
