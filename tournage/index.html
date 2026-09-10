@@ -142,6 +142,19 @@ textarea{width:100%;min-height:190px;background:var(--carte);color:var(--texte);
 /* Le temoin de niveau : vert quand la voix passe, gris quand rien n'entre.
    Volontairement petit — il informe, il ne doit pas attirer l'oeil pendant
    qu'on lit le prompteur. */
+/* Le bandeau de cadrage : au-dessus de tout, impossible a manquer, mais on
+   peut passer outre — c'est un avertissement, pas un verrou. */
+.paysage{position:absolute;left:12px;right:12px;top:calc(58px + env(safe-area-inset-top));
+  z-index:9;background:rgba(120,20,10,.94);border:1px solid #f87171;border-radius:12px;
+  padding:13px 15px;display:flex;flex-direction:column;gap:6px;font-size:14px;color:#ffe4e0;
+  box-shadow:0 14px 40px -14px rgba(0,0,0,.9)}
+.paysage[hidden]{display:none}
+.paysage b{font-size:16px;color:#fff}
+.paysage #paysagedim{font-size:12px;opacity:.75;font-variant-numeric:tabular-nums}
+.paysage button{align-self:flex-start;margin-top:4px;background:rgba(255,255,255,.14);
+  border:1px solid rgba(255,255,255,.3);color:#fff;border-radius:8px;padding:7px 13px;
+  font:inherit;font-weight:700}
+
 .vu{width:52px;height:6px;border-radius:3px;background:rgba(255,255,255,.16);
   overflow:hidden;margin-left:10px;flex:0 0 auto}
 .vu i{display:block;height:100%;width:0%;border-radius:3px;background:#22c55e;
@@ -382,6 +395,18 @@ pre.json{margin-top:10px;background:#101016;border:1px solid var(--trait);border
       <button id="bcam">↺</button>
       <button id="quit">✕</button>
     </div>
+  </div>
+
+  <!-- Alerte cadrage. La prise du 2026-09-10 est sortie en 1440x1080 — du
+       paysage — et personne ne l'a su avant le montage, qui a du jeter la
+       moitie du cadre. La page demande du 9:16 en PREFERENCE : beaucoup de
+       telephones rendent le ratio natif du capteur quoi qu'on demande. Donc on
+       regarde ce qui arrive vraiment, et on le dit avant la prise. -->
+  <div class="paysage" id="paysage" hidden>
+    <b>Ton téléphone filme en paysage.</b>
+    <span id="paysagedim"></span>
+    <span>Tourne-le à la verticale — sinon le montage devra jeter la moitié du cadre.</span>
+    <button type="button" id="paysageok">Filmer quand même</button>
   </div>
 
   <div class="mvt" id="mvt"><span class="ic" id="mvtic"></span>
@@ -1064,6 +1089,27 @@ function demarrerVu(fluxMicro){
     }, 100);
   } catch(e){}
 }
+/* On lit ce que la camera DONNE, pas ce qu'on lui a demande : `getSettings()`
+   renvoie les dimensions reelles de la piste. Plus large que haut = paysage. */
+let cadrageVu = false;
+function verifierCadrage(fluxCam){
+  const b = $('#paysage'); if (!b) return;
+  try {
+    const t = fluxCam.getVideoTracks()[0]; if (!t) return;
+    const appliquer = () => {
+      const st = t.getSettings() || {};
+      const l = st.width || 0, h = st.height || 0;
+      if (!l || !h) return;
+      $('#paysagedim').textContent = l + ' x ' + h + ' \u2014 il faudrait plus haut que large';
+      b.hidden = (h >= l) || cadrageVu;
+    };
+    appliquer();
+    /* Certains telephones ne renseignent les dimensions qu'une fois la premiere
+       image decodee : on repasse quand la video connait sa taille. */
+    flux.addEventListener('loadedmetadata', appliquer, { once: true });
+  } catch(e){}
+}
+
 function arreterVu(){
   if (vuTimer){ clearInterval(vuTimer); vuTimer = null; }
   if (actx){ try { actx.close(); } catch(e){} actx = null; }
@@ -1103,6 +1149,7 @@ $('#go').addEventListener('click', async () => {
       audio: { echoCancellation:true, noiseSuppression:true }
     });
     demarrerVu(stream);
+    verifierCadrage(stream);
   } catch (err){
     return erreur1("Caméra indisponible (" + (err && err.name ? err.name : 'inconnu') + ") — "
       + (err && err.message ? err.message : '') + ". Ouvre la page dans Safari ou Chrome "
@@ -1181,6 +1228,7 @@ $('#bcam').addEventListener('click', async () => {
     stream = await navigator.mediaDevices.getUserMedia({
       video:{ facingMode:cam, width:{ideal:1080}, height:{ideal:1920} }, audio:true });
     demarrerVu(stream);
+    verifierCadrage(stream);
     flux.srcObject = stream; flux.classList.toggle('miroir', cam === 'user');
     /* La camera a change : l'ancien flux de canvas porte la piste audio du
        flux precedent, qui vient d'etre coupee. On le jette pour qu'il soit
@@ -1189,6 +1237,7 @@ $('#bcam').addEventListener('click', async () => {
     appliquerRendu();
   } catch(e){}
 });
+$('#paysageok').addEventListener('click', () => { cadrageVu = true; $('#paysage').hidden = true; });
 $('#quit').addEventListener('click', () => { arreterTout(); montrer('e1'); });
 
 function arreterTout(){
