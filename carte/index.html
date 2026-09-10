@@ -2309,7 +2309,22 @@ function preparerEcoute(){
     }
     elDit.textContent = '« ' + (fini || encours) + ' »';
     if (!fini) return;
-    if (/\b(stop|arr[eê]te|tais.toi|chut)\b/i.test(fini)){ bouche.couper(); etat('Coupé', 0); return; }
+
+    var interruption = /\b(stop|arr[eê]te|arr[eê]t|tais.toi|chut|silence|ta gueule)\b/i.test(fini);
+
+    /* ── Pouvoir la couper de la voix ──────────────────────────────────────
+       Jusqu'ici l'oreille se fermait pendant que la synthèse parlait : une
+       réponse longue devenait impossible à arrêter autrement qu'en appuyant
+       sur un bouton. Retour de Tony le 10/09/2026 : « il ne s'arrête jamais ».
+       Maintenant l'oreille reste ouverte — mais tant que la bouche parle, on
+       n'accepte QUE l'interruption. Sinon la synthèse s'entend elle-même et
+       lance une deuxième question toute seule, ce qui est pire. */
+    if (bouche.parle){
+      if (interruption){ bouche.couper(); etat('Coupé', 0); }
+      return;                       // tout le reste est ignoré : c'est elle qui parle
+    }
+
+    if (interruption){ bouche.couper(); etat('Coupé', 0); return; }
     if (/\b(au revoir|ferme|merci c.est tout)\b/i.test(fini)){ fermer(); return; }
     // Une confirmation en attente capte le oui/non AVANT toute autre lecture :
     // « oui » ne doit pas être interprété comme une nouvelle question.
@@ -2317,9 +2332,10 @@ function preparerEcoute(){
       if (/\b(oui|ok|d.accord|vas.y|confirme|c.est bon)\b/i.test(fini)){ stopEcoute(); repondreConfirmation(true); return; }
       if (/\b(non|annule|laisse|surtout pas)\b/i.test(fini)){ stopEcoute(); repondreConfirmation(false); return; }
     }
-    // On coupe l'oreille pendant la réponse, sinon la voix de synthèse
-    // se réentend elle-même et déclenche une deuxième question.
-    stopEcoute();
+    /* L'oreille RESTE ouverte pendant la réponse — le filtre ci-dessus se
+       charge de n'y laisser passer qu'un « stop ». Sur téléphone, où le mode
+       continu n'existe pas, la reconnaissance s'arrêtera d'elle-même et
+       `reprendre()` la relancera : rien à faire de plus. */
     etat('Je cherche', TEINTE.cherche);
     repondre(fini);
   };
@@ -2375,7 +2391,8 @@ function demarrerEcoute(){
     return;
   }
   if (ecouteActive) { stopEcoute(); return; }
-  bouche.couper();
+  /* On ne coupe PLUS la voix en rouvrant l'oreille : les deux cohabitent
+     désormais, c'est tout l'intérêt. Seul un « stop » l'arrête. */
   function lancer(){
     try { demarreLe = Date.now(); aEntendu = false;
           ecoute.start(); ecouteActive = true; bParler.classList.add('actif'); etat('Je t\'écoute', TEINTE.ecoute); }
@@ -2445,7 +2462,11 @@ function reprendre(){
   // Après une réponse, on rouvre l'oreille : c'est ce qui fait une
   // conversation plutôt qu'une suite de questions isolées.
   etat('Au repos', 0);
-  if (scene.classList.contains('ouvert') && Reco && !bouche.parle) setTimeout(demarrerEcoute, 350);
+  /* `!bouche.parle` a disparu de la condition : sur téléphone la
+     reconnaissance se termine pendant que la réponse est encore en train
+     d'être dite, et cette garde empêchait alors toute relance — l'oreille
+     restait fermée jusqu'au prochain appui. */
+  if (scene.classList.contains('ouvert') && Reco && !ecouteActive) setTimeout(demarrerEcoute, 350);
 }
 
 /* --- Les raccourcis, pour tester sans micro et sans Chrome --------------- */
@@ -2493,11 +2514,24 @@ function ouvrir(){
     if (!j) return;
     var r = j.sujets.resume;
     afficher(r.titre, r.phrases, []);
-    // On ne parle pas tout seul à l'ouverture : le navigateur bloquerait
-    // l'audio sans geste utilisateur, et un assistant qui démarre en parlant
-    // par-dessus l'utilisateur est pénible. Le clic sur « Parler » l'autorise.
+    // On ne parle toujours pas tout seul à l'ouverture — un assistant qui
+    // démarre en parlant par-dessus toi est pénible, et le navigateur
+    // bloquerait l'audio sans geste. Mais ÉCOUTER, c'est autre chose : le clic
+    // qui vient d'ouvrir la scène est justement le geste qui l'autorise.
+    // Demande de Tony le 10/09/2026 : « il ne peut pas juste essayer de
+    // m'écouter avant ». Si ça échoue, le message d'erreur le dira — c'est
+    // toujours mieux que d'attendre un appui qui ne vient pas.
     etat(Reco ? 'Appuie sur Parler' : 'Utilise les boutons', 0);
+    if (Reco && !APP_INTEGREE) setTimeout(function(){
+      if (!ecouteActive && !bouche.parle) demarrerEcoute();
+    }, 500);
   });
+
+  /* Le cerveau était déjà chargé : la promesse ci-dessus ne se rejoue pas,
+     il faut donc ouvrir l'oreille ici aussi. */
+  if (cerveau && Reco && !APP_INTEGREE) setTimeout(function(){
+    if (!ecouteActive && !bouche.parle) demarrerEcoute();
+  }, 400);
   document.body.style.overflow = 'hidden';
 }
 function fermer(){
