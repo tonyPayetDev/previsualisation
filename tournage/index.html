@@ -87,8 +87,13 @@ textarea{width:100%;min-height:190px;background:var(--carte);color:var(--texte);
   text-align:right;font-size:13px}
 .duo{display:flex;gap:8px;margin-top:8px}
 .duo button{flex:1}
-.seg{display:flex;gap:0;border:1px solid var(--trait);border-radius:11px;overflow:hidden;margin-top:6px}
-.seg button{flex:1;padding:11px 8px;font-size:13.5px;font-weight:700;color:var(--doux)}
+/* `overflow:hidden` + `flex:1` coupait le 6e format et rendait le 7e
+   inatteignable sur un telephone etroit (constate le 2026-09-10). On enroule :
+   sept pastilles sur deux ou trois rangees, toutes cliquables. */
+.seg{display:flex;flex-wrap:wrap;gap:1px;border:1px solid var(--trait);border-radius:11px;
+  overflow:hidden;margin-top:6px;background:var(--trait)}
+.seg button{flex:1 1 30%;min-width:104px;padding:11px 8px;font-size:13.5px;font-weight:700;
+  color:var(--doux);background:var(--fond)}
 .seg button.on{background:var(--carte);color:var(--texte);box-shadow:inset 0 -2px 0 var(--or)}
 .apercu{margin-top:10px;border:1px dashed var(--trait);border-radius:11px;padding:11px;
   font-size:13px;color:var(--doux);line-height:1.6;max-height:150px;overflow:auto}
@@ -288,8 +293,8 @@ pre.json{margin-top:10px;background:#101016;border:1px solid var(--trait);border
     <button type="button" class="b fant" id="musecoute">Écouter</button>
   </div>
   <div class="reglage">
-    <input type="range" id="musvol" min="0" max="100" step="5" value="45">
-    <span class="val" id="musvolval">45 %</span>
+    <input type="range" id="musvol" min="0" max="100" step="5" value="18">
+    <span class="val" id="musvolval">18 %</span>
   </div>
   <p class="aide">Elle tourne en boucle pendant que tu lis. <b>Mets un écouteur</b> — sinon elle passe dans le micro et pollue la banque de voix.</p>
 
@@ -450,20 +455,39 @@ let etat = {
   source  : 'camera',
   template: 'libre',
   musique : null,
-  musVol  : 0.45,
+  musVol  : 0.18,   /* lit musical sous la voix, pas bande-son (retour Tony 10/09) */
   video   : null,   // Blob
   meta    : {},
 };
 
 /* ── Écrans ──────────────────────────────────────────────────────────── */
+const R2 = 'https://assets.automatisationboost.com/previsualisation/';
+/* Chaque format porte SON exemple reel : la page a revoir, la video qui se pose
+   en reference pendant la prise, et la musique du meme registre. Les six liens
+   ont ete verifies un par un le 2026-09-10 (page en 200, video servie par R2).
+   Sans ca, « charger un exemple » ne chargeait qu'un texte : on ne voyait jamais
+   a quoi le format ressemble une fois monte. */
 const TEMPLATES = [
-  { id:'libre', nom:'Aucun / libre', route:'', desc:'Tournage simple, sans format impose.' },
-  { id:'split-prompts', nom:'Split-prompts', route:'/split-prompts/', desc:'Ecran scinde : toi + un site/preuve.' },
-  { id:'hook-puissant-branded', nom:'Hook puissant', route:'/hook-puissant/', desc:'Chute, pile de hooks, countdown, slam GO.' },
-  { id:'veille-to-video-v3', nom:'VideoBoost v3', route:'/veille-to-avatar-v3/', desc:'Talking-head + habillage neon, voix clonee.' },
-  { id:'reel-remix', nom:'Reel Remix', route:'', desc:'Panneau screen-record en haut, toi en bas.' },
-  { id:'yapping-facecam-branded', nom:'Yapping face cam', route:'', desc:'Face camera, debit rapide, captions.' },
-  { id:'revelation-ab-branded', nom:'Revelation A/B', route:'', desc:'Une astuce vs le detail qui change tout.' }
+  { id:'libre', nom:'Aucun / libre', route:'', ref:'', mus:'',
+    desc:'Tournage simple, sans format impose.' },
+  { id:'split-prompts', nom:'Split-prompts', route:'/split-prompts-corrige/',
+    ref:R2+'split-prompts-corrige/apres-v2.mp4', mus:'journal-digital-clouds-128.mp3',
+    desc:'Ecran scinde : toi + un site/preuve.' },
+  { id:'hook-puissant-branded', nom:'Hook puissant', route:'/hook-puissant/',
+    ref:R2+'hook-puissant/video.mp4', mus:'hook-epical-drums-02-80.mp3',
+    desc:'Chute, pile de hooks, countdown, slam GO.' },
+  { id:'veille-to-video-v3', nom:'VideoBoost v3', route:'/veille-to-avatar-v3/',
+    ref:R2+'veille-to-avatar-v3/video.mp4', mus:'journal-moon-walk-88.mp3',
+    desc:'Talking-head + habillage neon, voix clonee.' },
+  { id:'reel-remix', nom:'Reel Remix', route:'/autoboost-55-twingo-remix-v3/',
+    ref:R2+'autoboost-55-twingo-remix-v3/video.mp4', mus:'food-cat-walk-128.mp3',
+    desc:'Panneau screen-record en haut, toi en bas.' },
+  { id:'yapping-facecam-branded', nom:'Yapping face cam', route:'/yapping-algo/',
+    ref:R2+'yapping-algo/video.mp4', mus:'mindset-epical-drums-03-80.mp3',
+    desc:'Face camera, debit rapide, captions.' },
+  { id:'revelation-ab-branded', nom:'Revelation A/B', route:'/autoboost-matrix-revelation/',
+    ref:R2+'autoboost-matrix-revelation/video.mp4', mus:'mindset-epical-drums-05-75.mp3',
+    desc:'Une astuce vs le detail qui change tout.' }
 ];
 const MUS_FILES = ['bgm-cyberpunk-city.mp3','flowers_horror.mp3','food-cat-walk-128.mp3','food-deep-urban-122.mp3','food-sunny-groove-120.mp3','hook-epical-drums-02-80.mp3','horror-echoes-ambient.mp3','horror-piano-horror-ambient.mp3','journal-digital-clouds-128.mp3','journal-moon-walk-88.mp3','mindset-epical-drums-03-80.mp3','mindset-epical-drums-05-75.mp3','valse-des-fleurs-integrale-71.mp3','valse-des-fleurs-maison-evidee.mp3','valse-des-fleurs-maison-tutti.mp3','vsl-voxscape-ambient.mp3'];
 const MUSBASE = '/studio/ecoute/';
@@ -482,6 +506,13 @@ function renderTemplates(){
       etat.template=t.id;
       Array.prototype.forEach.call(c.children,function(x){x.classList.toggle('on',x===b);});
       var v=$('#tplvoir'); if(t.route){ v.href=t.route; v.hidden=false; } else { v.hidden=true; }
+      /* La video du format se pose d'elle-meme en reference : c'est la demande
+         du 2026-09-10 — voir a quoi ressemble le format pendant qu'on le tourne,
+         sans avoir a coller une adresse a la main. */
+      if(t.ref){ var u=$('#refurl'); if(u) u.value=t.ref; poserReference(t.ref,false); }
+      /* Musique du meme registre, posee seulement si Tony n'a rien choisi
+         lui-meme : son choix explicite passe toujours avant le notre. */
+      if(t.mus && !etat.musChoisie){ var sm=$('#mus'); if(sm){ sm.value=t.mus; etat.musique=t.mus; } }
       var a=$('#tplaide'); a.firstChild.nodeValue=t.desc+' ';
       var ex=$('#ex'); if(ex) ex.textContent = (t.id!=='libre' && SCRIPTS[t.id]) ? 'charger un exemple '+t.nom : 'charger un exemple';
     });
@@ -493,6 +524,7 @@ function renderMusiques(){
   var opt=document.createElement('option'); opt.value=''; opt.textContent='Aucune \u2014 silence'; sel.appendChild(opt);
   MUS_FILES.forEach(function(f){ var o=document.createElement('option'); o.value=f; o.textContent=labelMus(f); sel.appendChild(o); });
   sel.addEventListener('change',function(){
+    etat.musChoisie = true;   // choix explicite : aucun format ne l'ecrasera
     var tournait = !!guide;
     etat.musique=sel.value||null;
     stopMusique();
@@ -547,6 +579,29 @@ const EXEMPLE = [
    template selectionne. C'est ce que corrige le retour de Tony : avant, le
    bouton remettait toujours le meme script quel que soit le template. */
 const SCRIPTS = {
+  /* La presentation de Tony, dictee le 2026-09-10 et mise en repères telle
+     qu'il l'a dite. Deux corrections : « tu commences sous cette vidéo » etait
+     « tu commentes », et il a dit « 10 ans d'experience, depuis 2012 » — les
+     deux ne collent pas, 2012 fait quatorze ans. On garde la date, qui est
+     verifiable, pas le compte approximatif. */
+  'libre': [
+    "[centre] Bonjour, moi c'est Tony PAYET. C'est moi qui fais AutomatisationBoost et VideoBoost.",
+    "",
+    "[gauche|l'écran de code] Je développe depuis 2012. Quatorze ans que j'écris du code.",
+    "",
+    "[montre|la formation] Aujourd'hui, je propose une formation à l'IA. Très simple, et interactive.",
+    "",
+    "[avance] Elle t'apprend à monter des vidéos vite. Exactement celles que tu vois sur ma chaîne.",
+    "",
+    "[pause] Je ne vais pas te mentir.",
+    "",
+    "[droite|ce qui reste à faire] Ce n'est pas nickel à cent pour cent. Comme tout, ça s'améliore.",
+    "",
+    "[compte|quatre-vingt-dix] Mais ça fait quatre-vingt-dix pour cent du travail à ta place.",
+    "",
+    "[centre] Tu veux le système complet et un accompagnement ? Commente FORMATION sous cette vidéo, je t'envoie tout."
+  ].join("\n"),
+
   'split-prompts': [
     "[centre] Trente mille prompts video. Et toi, tu fixes encore une page blanche.",
     "",
@@ -912,6 +967,7 @@ function fluxAEnregistrer(){
 let stream = null, rec = null, morceaux = [];
 let t0 = 0, enCours = false, rafId = 0, y = 0, y0 = 0, pxParSec = 0, dernier = 0;
 let cues = [], iActif = -1, verrou = null;
+let blocs = [], hFenetre = 0;   // mesures figees pendant la prise (voir `boucle`)
 
 function nouveauRepere(b, i, t){
   const T = TAGS[b.tag];
@@ -979,6 +1035,12 @@ function construirePiste(){
   f.textContent = '— fin du script —'; piste.appendChild(f);
   requestAnimationFrame(() => {
     cues.forEach(c => c.haut = c.el.offsetTop);
+    /* Meme passe de mesure pour les blocs de texte et pour la hauteur de la
+       fenetre : tout ce que `boucle` lit doit etre connu AVANT la prise. */
+    blocs = Array.from(piste.children)
+      .filter(el => el.classList.contains('bl'))
+      .map(el => ({ el, bas: el.offsetTop + el.offsetHeight, passe: false }));
+    hFenetre = $('.fenetre').clientHeight;
     recalculerVitesse();
     y0 = -($('.fenetre').clientHeight * 0.38);
     y = y0;
@@ -1103,10 +1165,17 @@ function boucle(now){
 
   /* Ligne de lecture à 38 % de la fenêtre : un bloc est « atteint » quand
      son haut la franchit. */
-  const seuil = y + $('.fenetre').clientHeight * 0.38;
-  Array.from(piste.children).forEach(el => {
-    if (el.classList.contains('bl')) el.classList.toggle('passe', el.offsetTop + el.offsetHeight < y + 20);
-  });
+  const seuil = y + hFenetre * 0.38;
+  /* Avant : `offsetTop`/`offsetHeight` etaient relus sur CHAQUE bloc a CHAQUE
+     image — autant de recalculs de mise en page forces par seconde. Tant que le
+     rendu d'image etait eteint ca passait ; avec le canvas qui dessine en
+     parallele, le budget d'une image explose et le prompteur saccade. C'est le
+     defaut remonte par Tony le 2026-09-10. Les blocs ne bougent pas pendant une
+     prise : on les mesure une fois, au meme endroit que les reperes. */
+  for (let i = 0; i < blocs.length; i++){
+    const b = blocs[i], passe = b.bas < y + 20;
+    if (b.passe !== passe){ b.passe = passe; b.el.classList.toggle('passe', passe); }
+  }
   for (let i = 0; i < cues.length; i++){
     if (i > iActif && cues[i].haut <= seuil){ activer(i); }
   }
