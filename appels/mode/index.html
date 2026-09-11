@@ -87,6 +87,8 @@
 
 .rang.trois{display:grid;grid-template-columns:1fr 1fr;gap:9px}
 .rang.trois .surplace{grid-column:1/-1;border-color:#4a3d10;background:#1d1706;color:#e8c98a}
+.rang.sortie{margin-top:9px}
+.rang.sortie button{width:100%;border-color:#3a2430;background:#1b1218;color:#d59aae;font-size:14px}
 </style></head>
 <body>
 <header>
@@ -270,7 +272,22 @@
     return t ? t.value.trim() : '';
   };
 
-  const suivant=()=>{ while(i<LEADS.length && etat[LEADS[i].id] && etat[LEADS[i].id].date===aujourdhui()) i++; peindre(); };
+  /* Regle de reprise. Avant, on ne sautait que ce qui datait D'AUJOURD'HUI :
+     tous ceux appeles hier revenaient le lendemain, y compris ceux a qui Tony
+     avait deja parle. C'est ce qui donnait la liste qui tourne en rond, et
+     pourquoi des gens « presque blacklistes » reapparaissaient. */
+  const JOURS_RAPPEL=3;
+  const ecarte=(l)=>{
+    const e=etat[l.id]; if(!e) return false;
+    if(e.etat==='jamais') return true;                        // sorti pour de bon
+    if(e.etat==='appele'||e.etat==='surplace') return true;   // on lui a deja parle
+    if(e.date===aujourdhui()) return true;
+    // pas decroche : on le repropose, mais pas des le lendemain
+    const j=(Date.now()-new Date(e.h||e.date).getTime())/86400000;
+    return j<JOURS_RAPPEL;
+  };
+  const masques=()=>LEADS.filter(ecarte).length;
+  const suivant=()=>{ while(i<LEADS.length && ecarte(LEADS[i])) i++; peindre(); };
 
   const marquer=(r,quoi)=>{ const n=lireNote();
     etat[r.id]={etat:quoi,date:aujourdhui(),h:new Date().toISOString()};
@@ -293,7 +310,9 @@
     const ec=document.getElementById('ecran'), pi=document.getElementById('pied');
     const fait=faitsAujourdhui();
     document.getElementById('barre').style.width=Math.min(100,(fait/Math.max(1,LEADS.length))*100)+'%';
-    document.getElementById('cpt').textContent=fait+' / '+LEADS.length;
+    const hors=masques();
+    document.getElementById('cpt').textContent=
+      fait+' / '+(LEADS.length-hors)+(hors?' \u00b7 '+hors+' \u00e9cart\u00e9s':'');
 
     if(i>=LEADS.length){
       ec.innerHTML='<div class="fini"><h2>C’est fini pour aujourd’hui.</h2>'
@@ -326,6 +345,8 @@
       +'<button class="surplace" data-q="surplace">À voir sur place</button>'
       +'</div>'
       +blocNote()
+      +'<div class="rang sortie"><button class="jamais" data-q="jamais">'
+      +'Ne plus jamais proposer celui-l\u00e0</button></div>'
       +'<div class="note">'+(r.cat==='echauffement'
         ? 'Celui-là ne compte pas. Le but est d’entendre ta voix, pas de vendre.'
         : 'Tu ne notes rien ici : deux boutons, et on passe au suivant.')+'</div>';
