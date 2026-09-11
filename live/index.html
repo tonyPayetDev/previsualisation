@@ -93,26 +93,67 @@ const montrer = (k) => {
     ? `à venir&nbsp;: <b>${suiv.h}</b>` : 'dernière slide';
 };
 
-/* On ne regarde que les 4 slides SUIVANTES : un mot prononcé en passant ne doit
-   pas faire revenir en arrière au milieu d'une démonstration. */
-const chercher = (txt) => {
-  const t = norm(txt);
-  for (let k = i + 1; k <= Math.min(i + 4, D.slides.length - 1); k++) {
-    for (const d of (D.slides[k].dit || [])) {
-      const n = norm(d);
-      if (n && t.includes(n)) return k;
-    }
+/* Recherche, pas défilement.
+ *
+ * Première version : on ne regardait que les 4 slides suivantes, donc l'ordre
+ * commandait. Tony veut l'inverse — il parle librement et la bonne fiche
+ * apparaît, où qu'elle soit. On score donc TOUT (le récit + les 200 fiches) et
+ * on montre la meilleure.
+ *
+ * Le score privilégie les expressions LONGUES : « cheat sheet » trouvé dans la
+ * phrase vaut plus que le mot « page » qui traîne partout. Sans ça, les fiches
+ * aux descriptions génériques sortaient tout le temps.
+ */
+const SEUIL = 4;              // en dessous, on ne bouge pas : mieux vaut rien que faux
+let BIB = [], montree = null;
+
+const score = (cible, t) => {
+  let pts = 0;
+  for (const d of cible) {
+    const n = norm(d);
+    if (n.length < 4) continue;
+    if (t.includes(n)) pts += n.includes(' ') ? n.length : Math.min(n.length, 8);
   }
-  return -1;
+  return pts;
 };
 
-const dire = (txt) => {                       // aussi appelable à la main pour tester
-  tampon = (tampon + ' ' + txt).split(' ').slice(-14).join(' ');
-  document.getElementById('entendu').textContent = '« ' + tampon + ' »';
-  if (Date.now() - dernier < 1100) return -1;  // anti-rebond : pas deux sauts d'affilée
-  const k = chercher(tampon);
-  if (k > -1) { dernier = Date.now(); tampon = ''; montrer(k); }
-  return k;
+const chercher = (txt) => {
+  const t = norm(txt);
+  let best = null, bestPts = SEUIL - 1;
+  D.slides.forEach((sl, k) => {
+    const p = score([...(sl.dit || []), sl.h], t) + (k === i ? -6 : 0);
+    if (p > bestPts) { bestPts = p; best = { type: 'deck', k }; }
+  });
+  BIB.forEach((f, k) => {
+    // la description ne sert qu'à départager : elle est trop générique pour décider
+    const p = score([f.h], t) + score([f.s], t) * 0.25;
+    if (p > bestPts) { bestPts = p; best = { type: 'bib', k }; }
+  });
+  return best;
+};
+
+/* Fiche composée à la volée à partir des données — c'est là qu'il n'y a rien
+   de pré-dessiné : 200 cartes ne s'écrivent pas à la main. */
+const montrerFiche = (f) => {
+  const sc = document.getElementById('scene');
+  sc.innerHTML = `<div class="s on"><div class="eyebrow">${f.cat}</div>`
+    + `<h1>${f.h}</h1><div class="sub">${f.s}</div>`
+    + `<div class="corps"><span>tape-la devant ton sujet</span></div></div>`;
+  document.getElementById('apres').innerHTML = 'fiche &middot; <b>' + f.cat + '</b>';
+  document.getElementById('jauge').style.width = '100%';
+  montree = 'bib';
+};
+
+const dire = (txt) => {
+  tampon = (tampon + ' ' + txt).split(' ').slice(-16).join(' ');
+  document.getElementById('entendu').textContent = '\u00ab ' + tampon + ' \u00bb';
+  if (Date.now() - dernier < 1100) return null;
+  const r = chercher(tampon);
+  if (!r) return null;
+  dernier = Date.now(); tampon = '';
+  if (r.type === 'deck') { if (montree === 'bib') rendre(); montree = 'deck'; montrer(r.k); }
+  else montrerFiche(BIB[r.k]);
+  return r;
 };
 window.__dire = dire;
 
@@ -143,7 +184,12 @@ addEventListener('keydown', (e) => {
 });
 addEventListener('click', () => montrer(i + 1));
 
-fetch('slides.json?t=' + Date.now()).then((r) => r.json()).then((d) => { D = d; rendre(); })
+Promise.all([
+  fetch('slides.json?t=' + Date.now()).then((r) => r.json()),
+  fetch('bibliotheque.json?t=' + Date.now()).then((r) => r.json()).catch(() => ({ bibliotheque: [] })),
+]).then(([d, b]) => { D = d; BIB = b.bibliotheque || []; rendre();
+  document.getElementById('mot').textContent = 'S pour \u00e9couter \u00b7 ' + BIB.length + ' fiches';
+})
   .catch(() => { document.getElementById('mot').textContent = 'slides.json illisible'; });
 </script>
 </body></html>
