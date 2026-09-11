@@ -1,0 +1,149 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow">
+<title>Live — slides pilotées à la voix</title>
+<style>
+:root{--nuit:#0a0a0f;--surf:#111117;--trait:#232330;--encre:#EDEDED;--doux:#8A8A8A;
+ --jaune:#eab308;--violet:#8b5cf6}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%}
+body{background:var(--nuit);color:var(--encre);overflow:hidden;
+ font:400 16px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+#scene{position:fixed;inset:0;display:grid;place-items:center;padding:6vh 7vw}
+.s{width:100%;max-width:1500px;opacity:0;transform:translateY(14px);
+ transition:opacity .34s ease,transform .34s ease;position:absolute}
+.s.on{opacity:1;transform:none;position:relative}
+.eyebrow{font-size:1.05vw;letter-spacing:.28em;text-transform:uppercase;color:var(--jaune);
+ font-weight:700;margin-bottom:1.6vh}
+h1{font-size:5.4vw;font-weight:800;letter-spacing:-.03em;line-height:1.06}
+h1 em{font-style:normal;color:var(--jaune)}
+.sub{margin-top:2.4vh;font-size:1.9vw;color:#C9C9C9;line-height:1.45}
+.li{display:flex;gap:1.6vw;align-items:baseline;padding:1.7vh 0;border-top:1px solid var(--trait)}
+.li b{font-size:2.3vw;color:var(--jaune);min-width:17vw;font-weight:800}
+.li span{font-size:1.8vw;color:#C9C9C9}
+.corps{margin-top:3vh;display:flex;flex-wrap:wrap;gap:1.1vw}
+.corps span{border:1px solid var(--trait);background:var(--surf);border-radius:.9vw;
+ padding:1.2vh 1.5vw;font-size:1.6vw;color:#C9C9C9}
+.nums{display:grid;grid-template-columns:repeat(3,1fr);gap:2vw;margin-top:1vh}
+.n{background:var(--surf);border:1px solid var(--trait);border-radius:1.1vw;padding:3vh 2vw}
+.n b{display:block;font-size:6vw;font-weight:800;color:var(--jaune);line-height:1;
+ letter-spacing:-.04em;font-variant-numeric:tabular-nums}
+.n span{display:block;margin-top:1.4vh;font-size:1.4vw;color:var(--doux)}
+.note{margin-top:3.4vh;font-size:1.5vw;color:#6E6E6E;border-left:3px solid var(--trait);
+ padding-left:1.2vw;line-height:1.5}
+.cta h1{color:var(--jaune)}
+/* barre du bas : état, ce qu'il a entendu, et ce qui vient */
+#bas{position:fixed;left:0;right:0;bottom:0;display:flex;align-items:center;gap:1.2vw;
+ padding:1.4vh 2vw;font-size:.95vw;color:var(--doux);
+ background:linear-gradient(to top,rgba(10,10,15,.96),rgba(10,10,15,0))}
+#etat{display:flex;align-items:center;gap:.5vw;white-space:nowrap}
+#pastille{width:.7vw;height:.7vw;border-radius:50%;background:#4a4a55}
+#pastille.on{background:#3ddc84;box-shadow:0 0 .8vw #3ddc84}
+#entendu{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;opacity:.75}
+#apres{white-space:nowrap;color:#C9C9C9}
+#apres b{color:var(--violet)}
+#jauge{position:fixed;top:0;left:0;height:3px;background:var(--jaune);width:0;transition:width .3s}
+</style></head>
+<body>
+<div id="jauge"></div>
+<div id="scene"></div>
+<div id="bas">
+  <span id="etat"><i id="pastille"></i><span id="mot">appuie sur S pour écouter</span></span>
+  <span id="entendu"></span>
+  <span id="apres"></span>
+</div>
+<script>
+/* Slides pilotées à la voix.
+ *
+ * L'idée : le design est généré AVANT. Pendant que Tony parle, on écoute, et on
+ * avance quand il prononce ce qui annonce la slide suivante. Il n'y a donc plus
+ * de rendu : on capture l'écran, et c'est la vidéo.
+ *
+ * Volontairement SANS modèle de langage : les crédits Anthropic sont à sec, et
+ * surtout une correspondance déterministe se débogue. La reconnaissance vocale
+ * se trompe (elle écrit « TchatGPT »), donc on compare sur du texte normalisé
+ * et on garde toujours la main au clavier.
+ */
+const norm = (s) => (s || '').toLowerCase()
+  .normalize('NFD').replace(/[̀-ͯ]/g, '')
+  .replace(/[^a-z0-9 ]/g, ' ').replace(/\s+/g, ' ').trim();
+
+let D = { slides: [] }, i = 0, ecoute = false, dernier = 0, tampon = '';
+
+const rendre = () => {
+  const sc = document.getElementById('scene');
+  sc.innerHTML = D.slides.map((s, k) => {
+    const eb = s.eyebrow ? `<div class="eyebrow">${s.eyebrow}</div>` : '';
+    let corps = '';
+    if (s.t === 'liste') corps = s.items.map(([a, b]) => `<div class="li"><b>${a}</b><span>${b}</span></div>`).join('');
+    else if (s.t === 'chiffres') corps = `<div class="nums">${s.nums.map(([v, l]) => `<div class="n"><b>${v}</b><span>${l}</span></div>`).join('')}</div>`;
+    else if (s.corps) corps = `<div class="corps">${s.corps.map((c) => `<span>${c}</span>`).join('')}</div>`;
+    return `<div class="s ${s.t === 'cta' ? 'cta' : ''}" data-k="${k}">${eb}<h1>${s.h}</h1>`
+      + (s.s ? `<div class="sub">${s.s}</div>` : '') + corps
+      + (s.note ? `<div class="note">${s.note}</div>` : '') + '</div>';
+  }).join('');
+  montrer(0);
+};
+
+const montrer = (k) => {
+  i = Math.max(0, Math.min(D.slides.length - 1, k));
+  document.querySelectorAll('.s').forEach((e, n) => e.classList.toggle('on', n === i));
+  document.getElementById('jauge').style.width = ((i + 1) / D.slides.length * 100) + '%';
+  const suiv = D.slides[i + 1];
+  document.getElementById('apres').innerHTML = suiv
+    ? `à venir&nbsp;: <b>${suiv.h}</b>` : 'dernière slide';
+};
+
+/* On ne regarde que les 4 slides SUIVANTES : un mot prononcé en passant ne doit
+   pas faire revenir en arrière au milieu d'une démonstration. */
+const chercher = (txt) => {
+  const t = norm(txt);
+  for (let k = i + 1; k <= Math.min(i + 4, D.slides.length - 1); k++) {
+    for (const d of (D.slides[k].dit || [])) {
+      const n = norm(d);
+      if (n && t.includes(n)) return k;
+    }
+  }
+  return -1;
+};
+
+const dire = (txt) => {                       // aussi appelable à la main pour tester
+  tampon = (tampon + ' ' + txt).split(' ').slice(-14).join(' ');
+  document.getElementById('entendu').textContent = '« ' + tampon + ' »';
+  if (Date.now() - dernier < 1100) return -1;  // anti-rebond : pas deux sauts d'affilée
+  const k = chercher(tampon);
+  if (k > -1) { dernier = Date.now(); tampon = ''; montrer(k); }
+  return k;
+};
+window.__dire = dire;
+
+let rec = null;
+const basculer = () => {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const mot = document.getElementById('mot'), p = document.getElementById('pastille');
+  if (!SR) { mot.textContent = "ce navigateur n'écoute pas — utilise Chrome, ou les flèches"; return; }
+  if (ecoute) { rec && rec.stop(); ecoute = false; p.classList.remove('on');
+    mot.textContent = 'en pause — S pour reprendre'; return; }
+  rec = new SR(); rec.lang = 'fr-FR'; rec.continuous = true; rec.interimResults = true;
+  rec.onresult = (e) => {
+    let t = '';
+    for (let n = e.resultIndex; n < e.results.length; n++) t += e.results[n][0].transcript + ' ';
+    dire(t);
+  };
+  rec.onerror = (e) => { mot.textContent = 'micro : ' + e.error; };
+  rec.onend = () => { if (ecoute) try { rec.start(); } catch (_) {} };  // Chrome coupe tout seul
+  try { rec.start(); ecoute = true; p.classList.add('on'); mot.textContent = 'écoute'; }
+  catch (_) { mot.textContent = 'micro refusé'; }
+};
+
+addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); montrer(i + 1); }
+  else if (e.key === 'ArrowLeft') montrer(i - 1);
+  else if (e.key.toLowerCase() === 's') basculer();
+  else if (e.key.toLowerCase() === 'f') document.documentElement.requestFullscreen?.();
+});
+addEventListener('click', () => montrer(i + 1));
+
+fetch('slides.json?t=' + Date.now()).then((r) => r.json()).then((d) => { D = d; rendre(); })
+  .catch(() => { document.getElementById('mot').textContent = 'slides.json illisible'; });
+</script>
+</body></html>
