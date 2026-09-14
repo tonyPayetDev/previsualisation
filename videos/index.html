@@ -2814,15 +2814,33 @@ li.v.e-abandon .actes button[data-e=abandon]{background:#241318;border-color:#4a
 (() => {
   const URL_ETAT = 'https://n7n.automatisationboost.com/webhook/videos-tri';
   let etat = {}, duNeuf = false, enVol = false, filtre = 'adecider', fam = null;
+  let chargeOK = false;   // la lecture initiale a-t-elle réussi ?
 
   /* On n'annule jamais un envoi en cours : on lève un drapeau et on renvoie
      après. Une minuterie annulée a déjà fait perdre une décision ailleurs. */
+  /* Le webhook REMPLACE tout l'objet — il ne fusionne pas. Deux conséquences
+     qu'on a payées : si la lecture initiale a échoué, le premier clic efface
+     TOUTES les décisions déjà prises ; et deux appareils ouverts en même temps
+     s'écrasent l'un l'autre. D'où les deux garde-fous ci-dessous. */
   const envoyer = async () => {
     if (enVol || !duNeuf) return;
-    enVol = true; duNeuf = false;
     const b = document.getElementById('bandeau');
+    if (!chargeOK) {                       // on n'écrit jamais par-dessus ce qu'on n'a pas lu
+      b.innerHTML = '<b>Rien n’est enregistré.</b> Tes décisions n’ont pas pu être lues au '
+        + 'départ : écrire maintenant les effacerait toutes. Recharge la page.';
+      return;
+    }
+    enVol = true; duNeuf = false;
     b.textContent = 'Enregistrement…';
     try {
+      // on relit juste avant d'écrire, et on pose nos changements par-dessus
+      let base = {};
+      try {
+        const j0 = await (await fetch(URL_ETAT + '?t=' + Date.now())).json();
+        const d0 = typeof j0.donnees === 'string' ? JSON.parse(j0.donnees || '{}') : (j0.donnees || {});
+        if (d0 && typeof d0 === 'object') base = d0;
+      } catch (_) { /* illisible : on garde ce qu'on a en mémoire */ }
+      etat = Object.assign(base, etat);
       await fetch(URL_ETAT, { method: 'POST', headers: { 'Content-Type': 'application/json' },
                               body: JSON.stringify(etat) });
       b.innerHTML = '<b>Enregistré.</b> Tes décisions sont sur le serveur.';
@@ -2934,12 +2952,13 @@ li.v.e-abandon .actes button[data-e=abandon]{background:#241318;border-color:#4a
       const j = await (await fetch(URL_ETAT + '?t=' + Date.now())).json();
       const d = typeof j.donnees === 'string' ? JSON.parse(j.donnees || '{}') : (j.donnees || {});
       etat = d && typeof d === 'object' ? d : {};
+      chargeOK = true;
       document.getElementById('bandeau').innerHTML =
         'Décisions enregistrées côté serveur · dernière écriture : <b>' +
         (j.maj ? new Date(j.maj).toLocaleString('fr-FR') : 'jamais') + '</b>';
     } catch (e) {
       document.getElementById('bandeau').textContent =
-        'Impossible de lire tes décisions — la page part de zéro, ne clique pas encore.';
+        'Impossible de lire tes décisions — les boutons n’enregistreront rien tant que la page n’aura pas été rechargée.';
     }
     peindre();
   })();
