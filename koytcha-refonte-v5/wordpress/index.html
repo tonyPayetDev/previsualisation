@@ -24,7 +24,8 @@ code{background:#15151d;color:#c9c9d4;padding:2px 7px;border-radius:5px;font-siz
 </style></head><body><div class="w">
 
 <h1>Mettre la page Koytcha dans WordPress</h1>
-<p class="chapo">Tout pointe désormais vers <b>ta médiathèque WordPress</b>, plus vers mon serveur de prévisualisation. Le site du client ne dépend plus de moi.</p>
+<p class="chapo">Tout pointe désormais vers <b>la médiathèque WordPress du site</b>, plus vers mon serveur de prévisualisation.</p>
+<div class="att"><b>Corrigé le 14/09 :</b> koytchaimmo.re est une installation <b>Bedrock</b> — ses médias vivent dans <code>/app/uploads/</code> et non dans <code>/wp-content/uploads/</code>. Ma première version pointait au mauvais endroit et aurait renvoyé 404 sur chaque image. Vérifié sur un média réel du site.</div>
 
 <h2>1 · À télécharger</h2>
 
@@ -45,13 +46,13 @@ code{background:#15151d;color:#c9c9d4;padding:2px 7px;border-radius:5px;font-siz
 
 <h2>2 · Dans quel ordre</h2>
 <ol>
-<li><b>Téléverse d'abord les fichiers.</b> Médias → Ajouter → tu déposes tout le contenu du zip. Ils doivent atterrir dans <code>/wp-content/uploads/2026/09/</code>.</li>
+<li><b>Téléverse d'abord les fichiers.</b> Médias → Ajouter → tu déposes tout le contenu du zip. Ils doivent atterrir dans <code>/app/uploads/2026/09/</code>.</li>
 <li><b>Vérifie une image au hasard.</b> Ouvre-la depuis la médiathèque : son adresse doit finir par <code>/2026/09/drone.webp</code>. Si le mois diffère, note-le, tu en auras besoin à l'étape 4.</li>
 <li><b>Crée la page</b>, édite-la avec Elementor, ajoute un widget <b>HTML</b> en pleine largeur, et colle le contenu du fichier « bloc à coller ».</li>
-<li><b>Seulement si le mois différait :</b> avant de coller, remplace dans le fichier <code>/wp-content/uploads/2026/09</code> par ton vrai chemin. C'est la seule chaîne à changer, elle revient 31 fois.</li>
+<li><b>Seulement si le mois différait :</b> avant de coller, remplace dans le fichier <code>/app/uploads/2026/09</code> par ton vrai chemin. C'est la seule chaîne à changer, elle revient 31 fois.</li>
 </ol>
 
-<div class="att"><b>WordPress refuse les polices <code>.otf</code> par défaut.</b> Si les 9 fichiers de police sont rejetés, dépose-les par FTP ou par le gestionnaire de fichiers de ton hébergeur, dans ce même dossier <code>/wp-content/uploads/2026/09/</code>. Le chemin reste identique, le HTML n'a pas besoin d'être retouché.</div>
+<div class="att"><b>WordPress refuse les polices <code>.otf</code> par défaut.</b> Si les 9 fichiers de police sont rejetés, dépose-les par FTP ou par le gestionnaire de fichiers de ton hébergeur, dans ce même dossier <code>/app/uploads/2026/09/</code>. Le chemin reste identique, le HTML n'a pas besoin d'être retouché.</div>
 
 <h2>3 · Ce que j'ai changé</h2>
 <p class="note">Les 31 adresses qui pointaient vers <code>previsualisation.automatisationboost.com</code> ont été remplacées. Vérifié : <b>il n'en reste aucune</b> dans les deux fichiers. Avant, si cette route bougeait, la page du client perdait ses images et ses polices d'un coup.</p>
