@@ -41,6 +41,8 @@ const carte = (t) => `
     <p class="pq">${esc(t.pourquoi)}</p>
     <p class="fi"><b>Fini quand :</b> ${esc(t.fini)}</p>
     <p class="co"><b>Coût :</b> ${esc(t.cout)}</p>
+    ${t.temps ? `<p class="co"><b>Temps :</b> ${esc(t.temps)}</p>` : ''}
+    ${t.energie ? `<p class="co"><b>Ton énergie :</b> <span class="en en-${esc(t.energie)}">${esc(t.energie)}</span></p>` : ''}
     ${t.note ? `<p class="no">${esc(t.note)}</p>` : ''}
     ${t.lien ? `<a class="lien" href="${esc(t.lien)}" target="_blank" rel="noopener">Voir le résultat ↗</a>` : ''}
     <div class="actes"></div>
@@ -94,7 +96,11 @@ fs.writeFileSync(`${D}/index.html`, `<!doctype html>
   .etat{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--gris);
         border:1px solid var(--ligne);border-radius:999px;padding:3px 9px;white-space:nowrap}
   .pq{color:#c3cad6;font-size:14.5px;margin-top:9px}
-  .fi,.co{color:var(--gris);font-size:13.5px;margin-top:7px}
+  .fi,.en{padding:1px 7px;border-radius:5px;font-weight:600}
+.en-legere{background:#12271e;color:#8ff0c4}
+.en-moyenne{background:#1d1706;color:#e8c98a}
+.en-lourde{background:#2a1218;color:#f2a0b0}
+.co{color:var(--gris);font-size:13.5px;margin-top:7px}
   .fi b,.co b{color:#aab3c2;font-weight:600}
   .no{color:var(--gris);font-size:13.5px;margin-top:8px;padding-left:11px;border-left:2px solid var(--ligne)}
   .lien{display:inline-block;margin-top:11px;color:var(--bleu);font-size:14px;text-decoration:none}
