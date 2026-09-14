@@ -1,0 +1,61 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow">
+<title>Koytcha — mettre la page dans WordPress</title>
+<style>
+:root{--nuit:#0a0a0f;--surf:#111117;--trait:#232330;--encre:#EDEDED;--doux:#8A8A8A;--jaune:#eab308;--violet:#8b5cf6}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--nuit);color:var(--encre);font:400 16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+ padding:34px 18px 70px}
+.w{max-width:760px;margin-inline:auto}
+h1{font-size:clamp(25px,5.4vw,34px);font-weight:800;letter-spacing:-.02em;line-height:1.12;margin-bottom:8px}
+.chapo{color:var(--doux);font-size:15px;margin-bottom:28px}
+h2{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--violet);margin:32px 0 12px}
+a.dl{display:flex;align-items:center;gap:14px;background:var(--surf);border:1px solid var(--trait);
+ border-radius:14px;padding:16px 18px;margin-bottom:11px;text-decoration:none;color:var(--encre)}
+a.dl:hover{border-color:var(--jaune)}
+a.dl .t{font-weight:700;font-size:16px}
+a.dl .q{display:block;color:var(--doux);font-size:13.5px;font-weight:400;margin-top:3px}
+a.dl .p{margin-left:auto;color:var(--jaune);font-size:13px;white-space:nowrap}
+ol{padding-left:20px;color:#C9C9C9}li{margin-bottom:13px}
+code{background:#15151d;color:#c9c9d4;padding:2px 7px;border-radius:5px;font-size:13.5px}
+.att{border-left:3px solid var(--jaune);background:#15130a;padding:13px 16px;border-radius:0 10px 10px 0;
+ margin:18px 0;font-size:14.5px;color:#e8d9a8}
+.note{color:var(--doux);font-size:14px;margin-top:10px}
+</style></head><body><div class="w">
+
+<h1>Mettre la page Koytcha dans WordPress</h1>
+<p class="chapo">Tout pointe désormais vers <b>ta médiathèque WordPress</b>, plus vers mon serveur de prévisualisation. Le site du client ne dépend plus de moi.</p>
+
+<h2>1 · À télécharger</h2>
+
+<a class="dl" href="../export/koytcha-wordpress.zip" download>
+  <span><span class="t">Les 31 fichiers + la notice</span>
+  <span class="q">22 images et 9 polices, à plat — « tout sélectionner » suffit.</span></span>
+  <span class="p">3,2 Mo</span></a>
+
+<a class="dl" href="../integration/bloc-elementor-wordpress.html" download>
+  <span><span class="t">Le bloc à coller dans Elementor</span>
+  <span class="q">Widget HTML. C'est celui-là qu'il te faut dans 99 % des cas.</span></span>
+  <span class="p">195 Ko</span></a>
+
+<a class="dl" href="../export/koytcha-accueil-wordpress.html" download>
+  <span><span class="t">La page complète, en secours</span>
+  <span class="q">Si tu préfères la servir hors d'Elementor.</span></span>
+  <span class="p">193 Ko</span></a>
+
+<h2>2 · Dans quel ordre</h2>
+<ol>
+<li><b>Téléverse d'abord les fichiers.</b> Médias → Ajouter → tu déposes tout le contenu du zip. Ils doivent atterrir dans <code>/wp-content/uploads/2026/09/</code>.</li>
+<li><b>Vérifie une image au hasard.</b> Ouvre-la depuis la médiathèque : son adresse doit finir par <code>/2026/09/drone.webp</code>. Si le mois diffère, note-le, tu en auras besoin à l'étape 4.</li>
+<li><b>Crée la page</b>, édite-la avec Elementor, ajoute un widget <b>HTML</b> en pleine largeur, et colle le contenu du fichier « bloc à coller ».</li>
+<li><b>Seulement si le mois différait :</b> avant de coller, remplace dans le fichier <code>/wp-content/uploads/2026/09</code> par ton vrai chemin. C'est la seule chaîne à changer, elle revient 31 fois.</li>
+</ol>
+
+<div class="att"><b>WordPress refuse les polices <code>.otf</code> par défaut.</b> Si les 9 fichiers de police sont rejetés, dépose-les par FTP ou par le gestionnaire de fichiers de ton hébergeur, dans ce même dossier <code>/wp-content/uploads/2026/09/</code>. Le chemin reste identique, le HTML n'a pas besoin d'être retouché.</div>
+
+<h2>3 · Ce que j'ai changé</h2>
+<p class="note">Les 31 adresses qui pointaient vers <code>previsualisation.automatisationboost.com</code> ont été remplacées. Vérifié : <b>il n'en reste aucune</b> dans les deux fichiers. Avant, si cette route bougeait, la page du client perdait ses images et ses polices d'un coup.</p>
+<p class="note">Les noms de fichiers sont mis à plat, parce que la médiathèque WordPress aplatit de toute façon. J'ai vérifié qu'aucun nom n'entre en collision.</p>
+<p class="note">Les polices Optima LT Pro et Normatica sont des polices commerciales : assure-toi que la licence couvre leur usage sur le site du client.</p>
+
+</div></body></html>
