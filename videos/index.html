@@ -2952,6 +2952,25 @@ li.v.e-abandon .actes button[data-e=abandon]{background:#241318;border-color:#4a
       const j = await (await fetch(URL_ETAT + '?t=' + Date.now())).json();
       const d = typeof j.donnees === 'string' ? JSON.parse(j.donnees || '{}') : (j.donnees || {});
       etat = d && typeof d === 'object' ? d : {};
+
+      /* Le VRAI registre est celui de /tri/ (webhook video-decision) : c'est la
+         page que Tony utilise. On le lit aussi, en lecture seule, pour que les
+         deux pages disent la même chose. Sans ça une vidéo refusée sur /tri/
+         reste « à décider » ici — c'est le doublon qu'on a payé le 14/09. */
+      try {
+        const jt = await (await fetch('https://n7n.automatisationboost.com/webhook/video-decision?t=' + Date.now())).json();
+        const lt = typeof jt.refus === 'string' ? JSON.parse(jt.refus || '[]') : (jt.refus || []);
+        for (const x of lt) {
+          if (!x || !x.route || etat[x.route]) continue;   // une décision d'ici reste prioritaire
+          etat[x.route] = {
+            etat: x.type === 'modifier' ? 'refaire' : 'abandon',
+            maj: x.date,
+            note: x.note || (x.tags ? x.tags.join(', ') : ''),
+            source: 'tri',
+          };
+        }
+      } catch (_) { /* registre injoignable : on reste sur celui d'ici */ }
+
       chargeOK = true;
       document.getElementById('bandeau').innerHTML =
         'Décisions enregistrées côté serveur · dernière écriture : <b>' +
