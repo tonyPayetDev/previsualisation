@@ -178,6 +178,28 @@ button.retour[hidden]{display:none}
 .merci a.tel{display:block;background:var(--turq);color:#06201f;font-weight:700;font-size:18px;
   text-decoration:none;padding:16px;border-radius:11px;text-align:center;margin-top:4px}
 
+/* ── Le bilan express : ce que les réponses montrent, avant même l'audit écrit ── */
+.bilan{background:var(--carte);border:1px solid var(--trait);border-radius:16px;
+  padding:28px 24px;display:flex;flex-direction:column;gap:16px;margin-top:36px}
+.bilan[hidden]{display:none}
+.bilan .label{font-size:11.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--turq)}
+.bilan h2{font-size:22px;font-weight:800;letter-spacing:-.02em;line-height:1.22}
+.bilan ul{list-style:none;display:flex;flex-direction:column;gap:11px;margin:2px 0 0}
+.bilan li{font-size:14.7px;line-height:1.5;color:var(--doux);padding-left:19px;position:relative}
+.bilan li::before{content:"";position:absolute;left:0;top:8px;width:7px;height:7px;
+  border-radius:50%;background:var(--jaune)}
+.bilan li b{color:var(--encre);font-weight:600}
+.bilan .temps{background:#101d24;border:1px solid #1d3a44;border-radius:12px;padding:18px 20px}
+.bilan .temps .chiffre{font-size:32px;font-weight:800;color:var(--turq);letter-spacing:-.02em;
+  font-variant-numeric:tabular-nums}
+.bilan .temps p{font-size:13.7px;color:var(--doux);line-height:1.55;margin-top:6px}
+.bilan .copier{background:var(--carte2);color:var(--encre);border:1px solid var(--trait);
+  border-radius:11px;padding:15px;font:inherit;font-size:15px;font-weight:600;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:9px;width:100%;
+  transition:border-color .16s,background .16s,color .16s}
+.bilan .copier:hover{border-color:var(--turq)}
+.bilan .copier.fait{background:#101d24;border-color:var(--turq);color:var(--turq)}
+
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 </head>
@@ -518,6 +540,18 @@ button.retour[hidden]{display:none}
 
 </form>
 
+<!-- ══ Bilan express ═════════════════════════════════════════════════════ -->
+<div class="bilan" id="bilan" hidden>
+  <div class="label">Votre bilan express</div>
+  <h2>Ce que vos réponses montrent, avant même l'audit écrit.</h2>
+  <ul id="bilanListe"></ul>
+  <div class="temps">
+    <div class="chiffre" id="bilanChiffre">—</div>
+    <p id="bilanTexte"></p>
+  </div>
+  <button type="button" class="copier" id="btnCopier">📋 Copier pour l'envoyer par e-mail</button>
+</div>
+
 <!-- ══ Confirmation ═════════════════════════════════════════════════════ -->
 <div class="merci" id="merci" hidden>
   <div class="coche" aria-hidden="true">✓</div>
@@ -644,6 +678,174 @@ button.retour[hidden]{display:none}
     var el = document.getElementById(id);
     return el ? el.value.trim() : '';
   }
+
+  /* ── Bilan express : les mêmes réponses, lues comme des constats. Chaque
+        règle porte une sévérité (0-3) ; on en garde les quatre plus fortes
+        pour ne pas noyer les deux ou trois qui comptent vraiment. ────────── */
+  var REGLES = {
+    appels: {
+      vide: [2, 'Le téléphone sonne dans le vide une bonne partie du temps — chaque sonnerie manquée est un client qui appelle ailleurs dans la minute.'],
+      rappel: [1, 'Les appels manqués sont rappelés plus tard, une fois vus — le temps que ça arrive, la réservation est souvent déjà prise ailleurs.'],
+      inconnu: [2, 'Personne ne sait combien d’appels sont manqués — ce qui n’est pas mesuré ne peut pas être corrigé.']
+    },
+    horsheures: {
+      mail: [1, 'Une demande hors horaires attend dans une boîte mail relevée le lendemain.'],
+      tel: [1, 'Une demande hors horaires atterrit sur un téléphone personnel — sans trace, sans suivi.'],
+      reseaux: [1, 'Une demande hors horaires arrive en message privé — facile à perdre dans le fil.'],
+      nullepart: [3, 'Une demande hors horaires n’atterrit nulle part de précis — elle se perd, tout simplement.'],
+      inconnu: [2, 'Personne ne sait où atterrit une demande hors horaires.']
+    },
+    sansreponse: {
+      '1a2': [1, 'Une à deux personnes sur dix repartent sans réponse.'],
+      '3a5': [2, 'Trois à cinq personnes sur dix repartent sans réponse — un client potentiel sur trois.'],
+      plus5: [3, 'Plus de la moitié des personnes qui vous contactent repartent sans réponse.'],
+      inconnu: [2, 'Impossible de savoir combien de contacts repartent sans réponse.']
+    },
+    delai: {
+      lendemain: [1, 'Vous répondez le lendemain — le temps de répondre, la réservation est souvent déjà prise ailleurs.'],
+      plustard: [2, 'Vous répondez au bout de plusieurs jours.'],
+      pastoujours: [2, 'Le délai de réponse n’est pas régulier.']
+    },
+    qui: {
+      patron: [1, 'C’est vous qui gérez les demandes, en plus du reste.'],
+      equipe: [1, 'Les demandes tombent sur toute l’équipe, sans responsable désigné.'],
+      personne: [3, 'Personne n’est chargé des demandes en particulier.']
+    },
+    reservation: {
+      tel: [1, 'On réserve uniquement par téléphone — impossible en dehors des horaires d’ouverture.'],
+      telmsg: [1, 'Les réservations se font au cas par cas, par téléphone ou message.'],
+      partiel: [1, 'La réservation en ligne ne couvre qu’une partie de l’offre.']
+    },
+    resasouci: {
+      horsheures: [2, 'Impossible de réserver quand vous êtes fermé.'],
+      double: [2, 'Des doubles réservations ou des créneaux qui se chevauchent.'],
+      confirmation: [1, 'Le client n’a rien par écrit, donc il rappelle pour vérifier.'],
+      outil: [1, 'L’outil en ligne n’affiche pas toute l’offre.'],
+      temps: [2, 'Réserver mobilise quelqu’un au téléphone en plein service.']
+    },
+    noshow: {
+      souvent: [2, 'Des créneaux non honorés assez souvent — sans rappel automatique, c’est structurel.'],
+      parfois: [1, 'Des rendez-vous non honorés de temps en temps.'],
+      inconnu: [1, 'Les rendez-vous non honorés ne sont pas comptés.']
+    },
+    avis: {
+      spontane: [1, 'Les avis Google arrivent seulement quand le client y pense.'],
+      demande: [1, 'Les avis sont demandés de vive voix, donc pas systématiquement.'],
+      jamais: [2, 'Les avis Google ne sont jamais demandés.']
+    },
+    outils: {
+      rien: [3, 'Aucun outil de base n’est encore en place — site, réservation, fichier client.']
+    }
+  };
+
+  function constatPublicite() {
+    var a = choisi('ads'), r = choisi('adsretour');
+    var paie = (a === 'google' || a === 'meta' || a === 'deux');
+    if (paie && r === 'non') return [3, 'De la publicité payante tourne, mais son retour n’est pas mesuré — l’argent part à l’aveugle.'];
+    if (paie && r === 'impression') return [2, 'Vous avez une impression sur le retour de votre publicité, pas un chiffre.'];
+    return null;
+  }
+
+  function genererConstats() {
+    var liste = [];
+    Object.keys(REGLES).forEach(function (champ) {
+      var regle = REGLES[champ];
+      var el = form.querySelector('[name="' + champ + '"]');
+      if (!el) return;
+      var valeurs = (el.type === 'checkbox') ? coches(champ) : [choisi(champ)];
+      valeurs.forEach(function (v) { if (regle[v]) liste.push(regle[v]); });
+    });
+    var pub = constatPublicite();
+    if (pub) liste.push(pub);
+    liste.sort(function (a, b) { return b[0] - a[0]; });
+    return liste.slice(0, 4).map(function (c) { return c[1]; });
+  }
+
+  var HEURES_SEMAINE = { moins2: 1.5, '2a5': 3.5, '5a10': 7.5, plus10: 12 };
+  function genererTemps() {
+    var h = HEURES_SEMAINE[choisi('heures')];
+    if (!h) return null;
+    var mois = Math.round(h * 4.33);
+    var jours = Math.round((mois / 7) * 10) / 10;
+    var t = coches('taches');
+    var libTaches = t.map(function (v) {
+      var lbl = form.querySelector('[name="taches"][value="' + v + '"]');
+      return lbl ? lbl.closest('label').textContent.trim().toLowerCase() : v;
+    });
+    return {
+      chiffre: mois + ' h / mois environ',
+      detail: 'D’après votre réponse, la gestion manuelle représente environ ' + h +
+        ' h par semaine — soit près de ' + jours + ' journée' + (jours >= 2 ? 's' : '') +
+        ' de travail complètes chaque mois' +
+        (libTaches.length ? ', surtout sur : ' + libTaches.join(', ') + '.' : '.') +
+        ' Une estimation à partir de votre réponse, pas un chronométrage — de quoi donner un ordre de grandeur.'
+    };
+  }
+
+  function afficherBilan() {
+    var constats = genererConstats();
+    var ul = document.getElementById('bilanListe');
+    ul.innerHTML = '';
+    constats.forEach(function (texte) {
+      var li = document.createElement('li');
+      li.innerHTML = texte;
+      ul.appendChild(li);
+    });
+    var t = genererTemps();
+    if (t) {
+      document.getElementById('bilanChiffre').textContent = t.chiffre;
+      document.getElementById('bilanTexte').textContent = t.detail;
+    } else {
+      document.getElementById('bilanChiffre').textContent = '—';
+      document.getElementById('bilanTexte').textContent = '';
+    }
+    document.getElementById('bilan').hidden = (constats.length === 0 && !t);
+    return { constats: constats, temps: t };
+  }
+
+  function texteBilan(b) {
+    var lignes = [];
+    lignes.push('BILAN EXPRESS — ' + (val('entreprise') || val('nom') || 'mon établissement'));
+    lignes.push('Généré le ' + new Date().toLocaleDateString('fr-FR') + ' via l’audit AutomatisationBoost');
+    lignes.push('');
+    b.constats.forEach(function (c) { lignes.push('• ' + c.replace(/<\/?b>/g, '')); });
+    if (b.temps) {
+      lignes.push('');
+      lignes.push('Temps estimé : ' + b.temps.chiffre);
+      lignes.push(b.temps.detail);
+    }
+    lignes.push('');
+    lignes.push('Dossier ' + reference() + ' — Tony PAYET, AutomatisationBoost — 06 92 41 77 49');
+    return lignes.join('\n');
+  }
+
+  function copierSecours(texte, callback) {
+    var z = document.createElement('textarea');
+    z.value = texte; z.style.position = 'fixed'; z.style.opacity = '0';
+    document.body.appendChild(z); z.focus(); z.select();
+    try { document.execCommand('copy'); callback(); } catch (e) {}
+    document.body.removeChild(z);
+  }
+
+  var dernierBilan = null;
+  var btnCopier = document.getElementById('btnCopier');
+  btnCopier.addEventListener('click', function () {
+    if (!dernierBilan) return;
+    var texte = texteBilan(dernierBilan);
+    var confirme = function () {
+      btnCopier.textContent = '✓ Copié — collez-le dans votre e-mail';
+      btnCopier.classList.add('fait');
+      setTimeout(function () {
+        btnCopier.textContent = '📋 Copier pour l’envoyer par e-mail';
+        btnCopier.classList.remove('fait');
+      }, 2600);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(texte).then(confirme).catch(function () { copierSecours(texte, confirme); });
+    } else {
+      copierSecours(texte, confirme);
+    }
+  });
 
   /* ── Questions conditionnelles : on n'affiche pas ce qui ne s'applique
         pas. C'est ce qui garde les écrans à trois questions. ───────────── */
@@ -853,6 +1055,7 @@ button.retour[hidden]{display:none}
         ecrans[0].hidden = true;
         progres.hidden = true;
         pied.hidden = true;
+        dernierBilan = afficherBilan();
         document.getElementById('refAffiche').textContent = reference();
         merci.hidden = false;
         window.scrollTo({ top: 0, behavior: 'smooth' });
