@@ -282,6 +282,110 @@ a{color:var(--magenta)}
       la liste des utilisateurs. À traiter avant toute mise en ligne.</li>
   </ol>
 
+  <h2><span class="n">8</span>Sécurité — cinq failles relevées, à corriger avant la mise en ligne</h2>
+  <p>Constats d'un audit en lecture publique sur <code>koytchaimmo.re</code> (rien de plus qu'un
+    navigateur). Deux se corrigent avec une extension, deux avec quelques lignes dans le thème enfant
+    (le même endroit que <code>page-accueil-koytcha.php</code>), un dernier au niveau du serveur.</p>
+
+  <table>
+    <tr><th style="width:30%">Constat</th><th>Portée</th></tr>
+    <tr><td>Aucun en-tête de sécurité (HSTS, CSP, X-Frame-Options, X-Content-Type-Options,
+      Referrer-Policy, Permissions-Policy)</td><td>Le navigateur des visiteurs n'a aucune consigne :
+      clickjacking, sniffing MIME, fuite du referrer tous possibles.</td></tr>
+    <tr><td><code>/wp-json/wp/v2/users</code> renvoie l'utilisateur 1 avec
+      <code>koytchaimmo@gmail.com</code> en clair</td><td>L'identifiant de connexion de l'admin est
+      public — première étape de n'importe quelle attaque par force brute.</td></tr>
+    <tr><td><code>/debug.log</code> répond <strong>200</strong> à la racine</td><td>Journal
+      d'erreurs public : peut contenir des chemins serveur, des requêtes SQL, parfois des mots de
+      passe si une extension logue mal.</td></tr>
+    <tr><td>WordPress 6.9.4, Elementor 3.35.6 et PHP 8.4.24 annoncés en clair (balise
+      <em>generator</em>, en-tête <code>x-powered-by</code>)</td><td>Ça dit à un attaquant
+      exactement quelles failles connues chercher.</td></tr>
+    <tr><td><code>xmlrpc.php</code> en 503, <code>wp-login.php</code> en 302</td><td>Déjà sain —
+      rien à faire ici, gardé pour mémoire de l'audit.</td></tr>
+  </table>
+
+  <h3>a. L'extension pour les en-têtes : <strong>HTTP Headers</strong></h3>
+  <p>Gratuite en totalité (pas de palier Pro caché), 50&nbsp;000+ installations actives, se règle
+    depuis l'admin sans toucher au code. C'est le seul point de la liste qui a vraiment intérêt à
+    passer par une extension plutôt qu'un fichier <code>.htaccess</code> : les 40+ en-têtes qu'elle
+    gère sont listés et modifiables un par un, alors qu'un en-tête mal formé dans <code>.htaccess</code>
+    peut faire planter tout Apache (erreur 500 sur tout le site) sans message clair.</p>
+<pre># Depuis le dossier racine WordPress, en SSH :
+wp plugin install http-headers --activate
+
+# Site en Bedrock (composer.json à la racine du projet, pas dans web/) :
+composer require wpackagist-plugin/http-headers
+wp plugin activate http-headers</pre>
+  <p>Réglages à poser dans <em>Réglages → HTTP Headers</em> (valeurs de départ raisonnables pour un
+    site Elementor + Contact Form 7 — testez avant de basculer en production, un CSP trop strict casse
+    des widgets avant de bloquer des attaquants) :</p>
+<pre>Strict-Transport-Security: max-age=31536000; includeSubDomains
+X-Frame-Options: SAMEORIGIN
+X-Content-Type-Options: nosniff
+Referrer-Policy: strict-origin-when-cross-origin
+Permissions-Policy: geolocation=(), microphone=(), camera=()
+Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https:; style-src 'self' 'unsafe-inline' https:; img-src 'self' data: https:; font-src 'self' data: https:; frame-ancestors 'self';</pre>
+  <div class="enc att">
+    <strong>Le CSP ci-dessus est volontairement permissif.</strong>
+    <p style="margin:8px 0 0">Elementor, Contact Form 7 et le widget de recherche KTP injectent du
+      CSS et du JS en ligne : un CSP strict (sans <code>unsafe-inline</code>) casse la mise en page
+      avant de gêner qui que ce soit. Si l'extension propose un mode « rapport seul », commencez par
+      là une semaine, regardez ce qui remonte, puis serrez la règle.</p>
+  </div>
+
+  <h3>b. Masquer les versions et fermer l'énumération REST — dans <code>functions.php</code> du
+    thème enfant</h3>
+  <p>Pas d'extension nécessaire : quatre filtres, au même endroit que le modèle de page déposé en
+    étape 2.</p>
+<pre>// Masquer la version WordPress (balise &lt;meta name="generator"&gt; + flux RSS)
+remove_action('wp_head', 'wp_generator');
+add_filter('the_generator', '__return_empty_string');
+
+// Fermer /wp-json/wp/v2/users pour les visiteurs non connectés
+add_filter('rest_endpoints', function ($endpoints) {
+    unset($endpoints['/wp/v2/users']);
+    unset($endpoints['/wp/v2/users/(?P<id>[\d]+)']);
+    return $endpoints;
+});</pre>
+  <p>Pour <code>x-powered-by: PHP/8.4.24</code>, WordPress n'y peut rien — c'est PHP qui l'ajoute.
+    Deux leviers, du plus simple au plus fiable :</p>
+  <ul>
+    <li>Si <code>mod_headers</code> est actif (Apache) : <code>Header unset X-Powered-By</code>
+      dans le <code>.htaccess</code> à la racine.</li>
+    <li>Sinon, demandez à l'hébergeur de passer <code>expose_php = Off</code> dans <code>php.ini</code>
+      — c'est le seul réglage qui marche à coup sûr, <code>.htaccess</code> ne le peut pas partout.</li>
+  </ul>
+
+  <h3>c. Fermer <code>/debug.log</code> — un réglage serveur, pas une extension</h3>
+  <p>Un fichier de log ne se « sécurise » pas avec un plugin : soit il est joignable en HTTP, soit
+    il ne l'est pas. Deux étapes, dans l'ordre.</p>
+  <p><strong>Immédiat</strong> — bloquer le fichier existant via <code>.htaccess</code> à la racine :</p>
+<pre>&lt;Files debug.log&gt;
+Require all denied
+&lt;/Files&gt;
+# Apache &lt; 2.4 : remplacer par "Deny from all"</pre>
+  <p><strong>Durable</strong> — dans <code>config/application.php</code> (Bedrock), pointer le log
+    vers un chemin hors de <code>web/</code>, le dossier servi publiquement, au lieu de le laisser à
+    <code>true</code> (ce qui l'écrit dans le dossier de contenu, donc accessible) :</p>
+<pre>define('WP_DEBUG_LOG', dirname(__DIR__) . '/storage/logs/debug.log');</pre>
+  <div class="enc imp">
+    <strong>Vérifiez le chemin réel avant de coller ce réglage.</strong>
+    <p style="margin:8px 0 0">L'audit a trouvé le fichier à la racine (<code>koytchaimmo.re/debug.log</code>),
+      pas à l'emplacement par défaut de Bedrock (<code>web/app/debug.log</code>) — la structure de ce
+      projet a peut-être été adaptée. Confirmez en SSH/FTP avant de choisir le nouveau chemin, et
+      supprimez l'ancien fichier une fois le nouveau en place.</p>
+  </div>
+
+  <h3>d. Vérifier après coup</h3>
+  <p>Depuis un terminal, sans rien d'autre qu'un navigateur en ligne de commande :</p>
+<pre>curl -sI https://koytchaimmo.re/ | grep -i "strict-transport\|x-frame\|x-content-type\|referrer-policy\|content-security\|x-powered-by"
+curl -s -o /dev/null -w "%{http_code}\n" https://koytchaimmo.re/debug.log
+curl -s https://koytchaimmo.re/wp-json/wp/v2/users</pre>
+  <p>Attendu : les cinq en-têtes présents, <code>debug.log</code> en <strong>403</strong> ou
+    <strong>404</strong>, <code>x-powered-by</code> absent, et <code>/wp-json/wp/v2/users</code> qui
+    ne renvoie plus <code>koytchaimmo@gmail.com</code>.</p>
+
 </main>
 
 <footer>
