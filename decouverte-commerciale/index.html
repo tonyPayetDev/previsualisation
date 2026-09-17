@@ -70,6 +70,36 @@ h1{font-size:clamp(24px,6.5vw,32px);line-height:1.1;font-weight:800;letter-spaci
 }
 .champOrg input:focus{outline:0;border-color:var(--turq)}
 
+/* ── Enregistreur vocal : reste local au navigateur, rien n'est envoyé
+      nulle part — c'est un blob mémoire tant que vous ne le téléchargez
+      pas. Fermer l'onglet avant de télécharger le perd, il faut le dire. */
+.voix{background:var(--carte);border:1px solid var(--trait);border-radius:13px;
+  padding:15px 16px;margin:14px 0 4px;display:flex;flex-direction:column;gap:11px}
+.voix .ligne{display:flex;align-items:center;gap:11px;flex-wrap:wrap}
+.btnVoix{
+  background:var(--carte2);color:var(--encre);border:1px solid var(--trait);
+  border-radius:10px;padding:11px 15px;font:inherit;font-size:14.3px;font-weight:700;
+  cursor:pointer;display:flex;align-items:center;gap:8px;
+  transition:border-color .16s,background .16s,color .16s;
+}
+.btnVoix:hover{border-color:var(--turq)}
+.btnVoix.actif{border-color:var(--rouge);background:#241318;color:var(--rouge)}
+.btnVoix .point{width:9px;height:9px;border-radius:50%;background:var(--rouge);display:none}
+.btnVoix.actif .point{display:inline-block;animation:clignote 1.1s ease-in-out infinite}
+@keyframes clignote{0%,100%{opacity:1}50%{opacity:.25}}
+.voixChrono{font-size:13.5px;color:var(--doux);font-variant-numeric:tabular-nums}
+.voixNote{font-size:12.3px;color:var(--faible);line-height:1.5}
+.voixLecteur{display:none;flex-direction:column;gap:9px}
+.voixLecteur.visible{display:flex}
+.voixLecteur audio{width:100%}
+.voixTelecharger{
+  background:var(--turq);color:#06201f;border:0;border-radius:10px;padding:11px 15px;
+  font:inherit;font-size:14px;font-weight:700;cursor:pointer;text-decoration:none;
+  text-align:center;
+}
+.voixErreur{color:var(--rouge);font-size:13px;display:none}
+.voixErreur.visible{display:block}
+
 /* ── Le texte à lire tel quel pendant l'appel ────────────────────────── */
 .lire{background:#0f1d1d;border:1px solid #1f4a49;border-left:3px solid var(--turq);
   border-radius:12px;padding:18px 19px;margin:14px 0;font-size:15.3px;line-height:1.62;
@@ -207,6 +237,20 @@ button.retour[hidden]{display:none}
   <div class="champOrg">
     <label for="org">Organisme / prospect</label>
     <input type="text" id="org" placeholder="ex. Focalys">
+  </div>
+
+  <div class="voix">
+    <div class="ligne">
+      <button type="button" class="btnVoix" id="btnVoix"><span class="point"></span><span id="btnVoixTexte">🎙️ Démarrer l'enregistrement vocal</span></button>
+      <span class="voixChrono" id="voixChrono" hidden>00:00</span>
+    </div>
+    <p class="voixNote">Reste dans votre navigateur — rien n'est envoyé nulle part.
+      <b>Téléchargez-le avant de fermer l'onglet</b>, sinon il est perdu.</p>
+    <p class="voixErreur" id="voixErreur"></p>
+    <div class="voixLecteur" id="voixLecteur">
+      <audio controls id="voixAudio"></audio>
+      <a class="voixTelecharger" id="voixTelecharger" download>⬇ Télécharger l'enregistrement</a>
+    </div>
   </div>
 </header>
 
@@ -618,6 +662,92 @@ button.retour[hidden]{display:none}
       navigator.clipboard.writeText(texte).then(confirme).catch(function () { copierSecours(texte, confirme); });
     } else {
       copierSecours(texte, confirme);
+    }
+  });
+
+  /* ── Enregistreur vocal (MediaRecorder) ───────────────────────────────── */
+  var btnVoix = document.getElementById('btnVoix');
+  var btnVoixTexte = document.getElementById('btnVoixTexte');
+  var voixChrono = document.getElementById('voixChrono');
+  var voixErreur = document.getElementById('voixErreur');
+  var voixLecteur = document.getElementById('voixLecteur');
+  var voixAudio = document.getElementById('voixAudio');
+  var voixTelecharger = document.getElementById('voixTelecharger');
+  var recorder = null, chunks = [], chronoId = null, chronoDebut = 0, flux = null;
+
+  function formatChrono(s) {
+    var m = Math.floor(s / 60), r = s % 60;
+    return (m < 10 ? '0' : '') + m + ':' + (r < 10 ? '0' : '') + r;
+  }
+  function typeSupporte() {
+    var choix = ['audio/webm;codecs=opus', 'audio/webm', 'audio/mp4', 'audio/ogg'];
+    for (var i = 0; i < choix.length; i++) {
+      if (window.MediaRecorder && MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported(choix[i])) return choix[i];
+    }
+    return '';
+  }
+
+  btnVoix.addEventListener('click', function () {
+    if (recorder && recorder.state === 'recording') { arreterEnregistrement(); return; }
+    demarrerEnregistrement();
+  });
+
+  function demarrerEnregistrement() {
+    voixErreur.classList.remove('visible');
+    if (!navigator.mediaDevices || !window.MediaRecorder) {
+      voixErreur.textContent = 'Ce navigateur ne permet pas l’enregistrement audio ici — essayez Chrome ou Safari récent.';
+      voixErreur.classList.add('visible');
+      return;
+    }
+    navigator.mediaDevices.getUserMedia({ audio: true }).then(function (stream) {
+      flux = stream;
+      chunks = [];
+      var type = typeSupporte();
+      try {
+        recorder = type ? new MediaRecorder(stream, { mimeType: type }) : new MediaRecorder(stream);
+      } catch (e) {
+        voixErreur.textContent = 'Impossible de démarrer l’enregistreur (' + e.message + ').';
+        voixErreur.classList.add('visible');
+        return;
+      }
+      recorder.addEventListener('dataavailable', function (e) { if (e.data && e.data.size > 0) chunks.push(e.data); });
+      recorder.addEventListener('stop', function () {
+        var blob = new Blob(chunks, { type: recorder.mimeType || 'audio/webm' });
+        var url = URL.createObjectURL(blob);
+        voixAudio.src = url;
+        var ext = (recorder.mimeType || '').indexOf('mp4') > -1 ? 'm4a' : 'webm';
+        var org = (document.getElementById('org').value || 'appel').trim().replace(/[^a-z0-9-]+/gi, '-');
+        voixTelecharger.href = url;
+        voixTelecharger.download = 'decouverte-' + org + '-' + new Date().toISOString().slice(0, 10) + '.' + ext;
+        voixLecteur.classList.add('visible');
+        flux.getTracks().forEach(function (t) { t.stop(); });
+        flux = null;
+      });
+      recorder.start();
+      chronoDebut = Date.now();
+      voixChrono.hidden = false;
+      voixChrono.textContent = '00:00';
+      chronoId = setInterval(function () {
+        voixChrono.textContent = formatChrono(Math.floor((Date.now() - chronoDebut) / 1000));
+      }, 1000);
+      btnVoix.classList.add('actif');
+      btnVoixTexte.textContent = 'Arrêter l’enregistrement';
+    }).catch(function (e) {
+      voixErreur.textContent = 'Micro refusé ou indisponible (' + e.name + ') — autorisez l’accès au micro pour ce site.';
+      voixErreur.classList.add('visible');
+    });
+  }
+
+  function arreterEnregistrement() {
+    if (recorder && recorder.state === 'recording') recorder.stop();
+    clearInterval(chronoId);
+    btnVoix.classList.remove('actif');
+    btnVoixTexte.textContent = '🎙️ Démarrer l’enregistrement vocal';
+  }
+
+  window.addEventListener('beforeunload', function (e) {
+    if (recorder && recorder.state === 'recording') {
+      e.preventDefault(); e.returnValue = '';
     }
   });
 
