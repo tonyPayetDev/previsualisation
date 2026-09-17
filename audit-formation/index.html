@@ -1,0 +1,979 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Audit — organismes de formation — AutomatisationBoost</title>
+<meta name="description" content="Six écrans, deux minutes. Vos réponses complètent ce que j'ai déjà relevé sur votre site.">
+<meta name="robots" content="noindex,nofollow">
+<style>
+/* Charte tony.automatisationboost.com : nuit #0c0d18, turquoise #3dc4c2,
+   bleu #26729f, jaune #eab308, lavande #d1c5e0.
+   Variante du questionnaire /audit/ adaptée aux organismes de formation B2B
+   (devis, sessions, financement OPCO/CPF, attestations) au lieu du commerce
+   local (réservations, avis Google) — même moteur, questions différentes. */
+:root{
+  --nuit:#0c0d18; --carte:#141626; --carte2:#1a1d30; --trait:#252943;
+  --encre:#eef0f7; --doux:#9298b3; --faible:#6b7191;
+  --turq:#3dc4c2; --bleu:#26729f; --jaune:#eab308; --lavande:#d1c5e0;
+  --rouge:#f2606f;
+  --barre: 56px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;background:var(--nuit)}
+body{
+  background:var(--nuit); color:var(--encre);
+  font:400 16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  padding:0 17px calc(var(--pied,132px) + 26px + env(safe-area-inset-bottom));
+  overflow-wrap:break-word;
+}
+.wrap{max-width:600px;margin-inline:auto}
+::selection{background:var(--turq);color:#06201f}
+
+.progres{
+  position:sticky;top:0;z-index:20;background:var(--nuit);
+  padding:14px 0 12px;margin-bottom:4px;
+}
+.progres[hidden]{display:none}
+.progres .rail{height:4px;background:var(--trait);border-radius:99px;overflow:hidden}
+.progres .jauge{height:100%;width:0;background:var(--turq);border-radius:99px;
+  transition:width .32s cubic-bezier(.2,.8,.3,1)}
+.progres .ligne{display:flex;justify-content:space-between;align-items:baseline;
+  margin-top:9px;font-size:13px;color:var(--faible)}
+.progres .ligne b{color:var(--doux);font-weight:600}
+
+header{display:flex;flex-direction:column;gap:10px;padding:28px 0 22px}
+.marque{font-size:17px;font-weight:800;letter-spacing:-.01em}
+.marque span{color:var(--jaune)}
+h1{font-size:clamp(27px,7.2vw,38px);line-height:1.07;font-weight:800;letter-spacing:-.03em;
+  text-wrap:balance;margin-top:4px}
+.intro{color:var(--doux);font-size:16px;line-height:1.62}
+.intro b{color:var(--encre);font-weight:600}
+
+.releve{background:var(--carte);border:1px solid var(--trait);border-radius:15px;
+  padding:19px 18px;margin:22px 0 4px}
+.releve[hidden]{display:none}
+.releve .oeil{font-size:11.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--turq)}
+.releve h2{font-size:18.5px;font-weight:800;letter-spacing:-.02em;line-height:1.25;margin:9px 0 4px}
+.releve .quand{font-size:13px;color:var(--faible)}
+.releve ul{list-style:none;margin:15px 0 0;display:flex;flex-direction:column;gap:11px}
+.releve li{font-size:14.7px;line-height:1.5;color:var(--doux);padding-left:19px;position:relative}
+.releve li::before{content:"";position:absolute;left:0;top:8px;width:7px;height:7px;
+  border-radius:50%;background:var(--rouge)}
+.releve li.bon::before{background:var(--turq)}
+.releve li b{color:var(--encre);font-weight:600}
+.releve .suite{margin-top:15px;padding-top:14px;border-top:1px dashed var(--trait);
+  font-size:14.3px;line-height:1.58;color:var(--doux)}
+.releve .suite b{color:var(--encre);font-weight:600}
+
+.etape{display:none}
+.etape.active{display:block;animation:entre .26s ease}
+@keyframes entre{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}
+.chapitre{padding:6px 0 2px}
+.chapitre .num{font-size:11.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--turq)}
+.chapitre h2{font-size:clamp(22px,5.8vw,28px);font-weight:800;letter-spacing:-.025em;
+  line-height:1.15;margin:8px 0 6px;text-wrap:balance}
+.chapitre p{color:var(--doux);font-size:15px;line-height:1.55}
+
+fieldset{border:0;padding:22px 0;border-top:1px solid var(--trait);
+  display:flex;flex-direction:column;gap:12px;margin-top:14px}
+fieldset[hidden]{display:none}
+legend{padding:0}
+.q{font-size:17.5px;font-weight:650;line-height:1.35;letter-spacing:-.012em;text-wrap:balance}
+.aide{color:var(--faible);font-size:13.5px;margin-top:-5px;line-height:1.5}
+
+.choix{display:flex;flex-direction:column;gap:9px}
+.choix.grille{display:grid;grid-template-columns:repeat(auto-fit,minmax(146px,1fr))}
+label.opt{
+  display:flex;align-items:center;gap:11px;cursor:pointer;
+  background:var(--carte);border:1px solid var(--trait);border-radius:11px;
+  padding:13px 15px;min-height:54px;font-size:15.3px;line-height:1.4;
+  transition:border-color .16s,background .16s;
+  -webkit-tap-highlight-color:transparent;
+}
+label.opt:hover{border-color:#39406b}
+label.opt input{
+  appearance:none;flex:0 0 auto;width:21px;height:21px;border:1.5px solid #3b4166;
+  background:var(--carte2);cursor:pointer;transition:border-color .16s,background .16s;
+}
+label.opt input[type=radio]{border-radius:50%}
+label.opt input[type=checkbox]{border-radius:5px}
+label.opt input:checked{border-color:var(--turq);background:var(--turq)}
+label.opt input[type=radio]:checked{box-shadow:inset 0 0 0 4px var(--carte2)}
+label.opt input[type=checkbox]:checked{
+  background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='none' stroke='%2306201f' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round' d='M3.5 8.5l3 3 6-7'/%3E%3C/svg%3E");
+  background-size:15px;background-repeat:no-repeat;background-position:center}
+label.opt:has(input:checked){border-color:var(--turq);background:#101d24}
+label.opt input:focus-visible{outline:2.5px solid var(--jaune);outline-offset:2px}
+
+.champs{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+.champ{display:flex;flex-direction:column;gap:6px}
+.champ.large{grid-column:1/-1}
+.champ label{font-size:13px;color:var(--doux);font-weight:500;letter-spacing:.01em}
+input[type=text],input[type=email],input[type=tel],textarea,select{
+  width:100%;font:inherit;font-size:16px;color:var(--encre);
+  background:var(--carte);border:1px solid var(--trait);border-radius:10px;
+  padding:13px 14px;min-height:52px;transition:border-color .16s;
+}
+textarea{min-height:96px;resize:vertical;line-height:1.55}
+input:focus,textarea:focus,select:focus{outline:0;border-color:var(--turq)}
+input::placeholder,textarea::placeholder{color:#5a6084}
+select{appearance:none;cursor:pointer;
+  background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3E%3Cpath fill='none' stroke='%239298b3' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round' d='M1 1.5l5 5 5-5'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 15px center;background-size:12px;
+  padding-right:40px}
+
+.pied{
+  position:fixed;left:0;right:0;bottom:0;z-index:30;
+  background:linear-gradient(to top,var(--nuit) 68%,rgba(12,13,24,0));
+  padding:22px 17px calc(16px + env(safe-area-inset-bottom));
+}
+.pied[hidden]{display:none}
+.pied{pointer-events:none}
+.pied .dedans{max-width:600px;margin-inline:auto;display:flex;gap:10px;align-items:stretch;
+  pointer-events:auto}
+button{
+  font:inherit;font-size:17px;font-weight:700;letter-spacing:-.01em;
+  background:var(--turq);color:#06201f;border:0;border-radius:12px;
+  padding:17px;min-height:58px;cursor:pointer;flex:1;
+  transition:transform .15s cubic-bezier(.2,.8,.3,1),opacity .16s;
+}
+button:active{transform:translateY(1px)}
+button:disabled{opacity:.55;cursor:default;transform:none}
+button:focus-visible{outline:2.5px solid var(--jaune);outline-offset:3px}
+button.retour{
+  flex:0 0 auto;width:58px;background:var(--carte);color:var(--doux);
+  border:1px solid var(--trait);font-size:20px;font-weight:400;padding:0;
+}
+button.retour[hidden]{display:none}
+.promesse{color:var(--faible);font-size:12.8px;line-height:1.5;text-align:center;
+  max-width:600px;margin:11px auto 0;pointer-events:none}
+
+.erreur{background:#241318;border:1px solid #4a222b;color:var(--rouge);border-radius:10px;
+  padding:13px 15px;font-size:14.5px;line-height:1.5;margin-top:18px}
+.erreur[hidden]{display:none}
+
+.merci{background:#0f1d1d;border:1px solid #1f4a49;border-radius:16px;padding:30px 24px;
+  display:flex;flex-direction:column;gap:14px;margin-top:36px}
+.merci[hidden]{display:none}
+.merci .coche{width:44px;height:44px;border-radius:50%;background:var(--turq);
+  display:flex;align-items:center;justify-content:center;font-size:23px;color:#06201f;
+  font-weight:800;line-height:1}
+.merci h2{font-size:25px;font-weight:800;letter-spacing:-.025em;line-height:1.15}
+.merci p{color:var(--doux);font-size:15.3px;line-height:1.62}
+.merci p b{color:var(--encre);font-weight:600}
+.merci .ref{background:#0b1616;border:1px dashed #2a5c5b;border-radius:10px;
+  padding:12px 14px;font-size:14px;color:var(--doux)}
+.merci .ref b{display:block;font-size:19px;color:var(--turq);font-weight:800;
+  letter-spacing:.08em;margin-top:3px;font-variant-numeric:tabular-nums}
+.merci ol{margin:2px 0 0 18px;color:var(--doux);font-size:15px;line-height:1.6}
+.merci ol li{margin:7px 0}
+.merci a.tel{display:block;background:var(--turq);color:#06201f;font-weight:700;font-size:18px;
+  text-decoration:none;padding:16px;border-radius:11px;text-align:center;margin-top:4px}
+
+.bilan{background:var(--carte);border:1px solid var(--trait);border-radius:16px;
+  padding:28px 24px;display:flex;flex-direction:column;gap:16px;margin-top:36px}
+.bilan[hidden]{display:none}
+.bilan .label{font-size:11.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--turq)}
+.bilan h2{font-size:22px;font-weight:800;letter-spacing:-.02em;line-height:1.22}
+.bilan ul{list-style:none;display:flex;flex-direction:column;gap:11px;margin:2px 0 0}
+.bilan li{font-size:14.7px;line-height:1.5;color:var(--doux);padding-left:19px;position:relative}
+.bilan li::before{content:"";position:absolute;left:0;top:8px;width:7px;height:7px;
+  border-radius:50%;background:var(--jaune)}
+.bilan li b{color:var(--encre);font-weight:600}
+.bilan .temps{background:#101d24;border:1px solid #1d3a44;border-radius:12px;padding:18px 20px}
+.bilan .temps .chiffre{font-size:32px;font-weight:800;color:var(--turq);letter-spacing:-.02em;
+  font-variant-numeric:tabular-nums}
+.bilan .temps p{font-size:13.7px;color:var(--doux);line-height:1.55;margin-top:6px}
+.bilan .copier{background:var(--carte2);color:var(--encre);border:1px solid var(--trait);
+  border-radius:11px;padding:15px;font:inherit;font-size:15px;font-weight:600;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:9px;width:100%;
+  transition:border-color .16s,background .16s,color .16s}
+.bilan .copier:hover{border-color:var(--turq)}
+.bilan .copier.fait{background:#101d24;border-color:var(--turq);color:var(--turq)}
+
+footer{padding:0}
+
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="progres" id="progres" hidden>
+  <div class="rail"><div class="jauge" id="jauge"></div></div>
+  <div class="ligne"><b id="etiquette">Étape 1 sur 6</b><span id="reste">2 minutes</span></div>
+</div>
+
+<!-- ══ Écran d'accueil ══════════════════════════════════════════════════ -->
+<section class="etape active" id="e0">
+  <header>
+    <div class="marque">Automation<span>Boost</span></div>
+    <h1 id="titre">Ce qui vous fait perdre des devis, en deux minutes</h1>
+    <p class="intro" id="chapo">Six écrans, trois questions chacun. Vous recevez
+    <b>un audit écrit</b> — pas une brochure.</p>
+  </header>
+
+  <div class="releve" id="releve" hidden>
+    <div class="oeil">Ce que j'ai déjà regardé</div>
+    <h2 id="releveTitre">Votre site, avant de vous écrire</h2>
+    <div class="quand" id="releveQuand"></div>
+    <ul id="releveListe"></ul>
+    <p class="suite">Ça, c'est ce qui se voit de l'extérieur. <b>Ce que je ne peux pas
+    voir, c'est ce qui se passe chez vous</b> : comment un devis part, où atterrit une
+    demande un vendredi soir, comment une attestation est vraiment délivrée.
+    Vos réponses ci-dessous complètent le constat — et c'est ce mélange des deux qui
+    fait l'audit.</p>
+  </div>
+</section>
+
+<form id="audit" novalidate>
+
+<!-- ══ Étape 1 — les demandes de devis ══════════════════════════════════ -->
+<section class="etape" id="e1">
+  <div class="chapitre">
+    <div class="num">Étape 1 · Les demandes de devis</div>
+    <h2>Commençons par ce qui se passe entre la demande et le devis envoyé.</h2>
+    <p>Aucune de ces réponses n'est un aveu — c'est le cas dans à peu près tous les
+    organismes de formation que j'ouvre.</p>
+  </div>
+
+  <fieldset>
+    <legend class="q">Une entreprise demande un devis (formulaire ou téléphone)&nbsp;: qui le reçoit, et en combien de temps répond-on&nbsp;?</legend>
+    <div class="choix">
+      <label class="opt"><input type="radio" name="delaidevis" value="immediat">Une réponse immédiate, automatique</label>
+      <label class="opt"><input type="radio" name="delaidevis" value="jour">Le jour même, par une personne</label>
+      <label class="opt"><input type="radio" name="delaidevis" value="lendemain">Le lendemain</label>
+      <label class="opt"><input type="radio" name="delaidevis" value="plusieursjours">Au bout de plusieurs jours</label>
+      <label class="opt"><input type="radio" name="delaidevis" value="pastoujours">Honnêtement, pas toujours</label>
+    </div>
+  </fieldset>
+
+  <fieldset>
+    <legend class="q">Le devis que vous envoyez, c'est plutôt&nbsp;?</legend>
+    <div class="choix">
+      <label class="opt"><input type="radio" name="typedevis" value="calculateur">Calculé instantanément en ligne, sans attendre un humain</label>
+      <label class="opt"><input type="radio" name="typedevis" value="main">Fait à la main après un échange (téléphone ou email)</label>
+      <label class="opt"><input type="radio" name="typedevis" value="fixe">Un tarif fixe envoyé par email, sans discussion</label>
+      <label class="opt"><input type="radio" name="typedevis" value="inconnu">Ça dépend de qui répond, on n'a pas vraiment de méthode</label>
+    </div>
+  </fieldset>
+
+  <fieldset>
+    <legend class="q">Sur dix demandes de devis, combien se transforment en inscription&nbsp;?</legend>
+    <p class="aide">C'est la question la plus utile des six écrans. Répondez de mémoire.</p>
+    <div class="choix">
+      <label class="opt"><input type="radio" name="tauxinscription" value="plus7">Sept ou plus</label>
+      <label class="opt"><input type="radio" name="tauxinscription" value="4a6">Quatre à six</label>
+      <label class="opt"><input type="radio" name="tauxinscription" value="1a3">Une à trois</label>
+      <label class="opt"><input type="radio" name="tauxinscription" value="inconnu">Je n'ai aucun moyen de le savoir</label>
+    </div>
+  </fieldset>
+</section>
+
+<!-- ══ Étape 2 — sessions et planning ═══════════════════════════════════ -->
+<section class="etape" id="e2">
+  <div class="chapitre">
+    <div class="num">Étape 2 · Sessions et planning</div>
+    <h2>Une entreprise pressée cherche une date — pas un catalogue.</h2>
+  </div>
+
+  <fieldset>
+    <legend class="q">Comment le planning des sessions est-il construit et partagé aujourd'hui&nbsp;?</legend>
+    <div class="choix">
+      <label class="opt"><input type="radio" name="planning" value="outil">Un outil dédié, mis à jour automatiquement</label>
+      <label class="opt"><input type="radio" name="planning" value="fichier">Un fichier (Excel, Sheets) mis à jour à la main</label>
+      <label class="opt"><input type="radio" name="planning" value="pdf">Un PDF qu'il faut régénérer et remplacer manuellement</label>
+      <label class="opt"><input type="radio" name="planning" value="rien">Pas de planning centralisé, ça se sait en interne</label>
+    </div>
+  </fieldset>
+
+  <fieldset>
+    <legend class="q">Une entreprise qui cherche une date de session sur votre site la trouve&nbsp;?</legend>
+    <div class="choix">
+      <label class="opt"><input type="radio" name="visibilite" value="clic">En un clic, lisible directement sur la page</label>
+      <label class="opt"><input type="radio" name="visibilite" value="pdf">En téléchargeant un PDF</label>
+      <label class="opt"><input type="radio" name="visibilite" value="appel">En appelant ou en remplissant un formulaire</label>
+      <label class="opt"><input type="radio" name="visibilite" value="nullepart">Nulle part en ligne, il faut demander</label>
+    </div>
+  </fieldset>
+
+  <fieldset>
+    <legend class="q">Vos sessions sont plutôt&nbsp;?</legend>
+    <p class="aide">Plusieurs réponses possibles.</p>
+    <div class="choix grille">
+      <label class="opt"><input type="checkbox" name="format" value="inter">Inter-entreprise</label>
+      <label class="opt"><input type="checkbox" name="format" value="intra">Intra-entreprise</label>
+      <label class="opt"><input type="checkbox" name="format" value="distance">À distance / e-learning</label>
+      <label class="opt"><input type="checkbox" name="format" value="inconnu">Je ne saurais pas dire la répartition</label>
+    </div>
+  </fieldset>
+</section>
+
+<!-- ══ Étape 3 — financement et paiement ════════════════════════════════ -->
+<section class="etape" id="e3">
+  <div class="chapitre">
+    <div class="num">Étape 3 · Financement et paiement</div>
+    <h2>C'est souvent ce qui débloque — ou bloque — la décision d'achat.</h2>
+  </div>
+
+  <fieldset>
+    <legend class="q">Vos clients financent leur formation surtout via&nbsp;?</legend>
+    <p class="aide">Plusieurs réponses possibles.</p>
+    <div class="choix grille">
+      <label class="opt"><input type="checkbox" name="financement" value="opco">Un OPCO</label>
+      <label class="opt"><input type="checkbox" name="financement" value="cpf">Le CPF</label>
+      <label class="opt"><input type="checkbox" name="financement" value="direct">Paiement direct par l'entreprise</label>
+      <label class="opt"><input type="checkbox" name="financement" value="inconnu">Je ne sais pas exactement</label>
+    </div>
+  </fieldset>
+
+  <fieldset>
+    <legend class="q">Le circuit de prise en charge (OPCO ou autre) aujourd'hui, c'est plutôt&nbsp;?</legend>
+    <div class="choix">
+      <label class="opt"><input type="radio" name="circuitfinancement" value="fluide">Rapide et fluide, ça ne ralentit rien</label>
+      <label class="opt"><input type="radio" name="circuitfinancement" value="ralentit">Ça ralentit souvent la mise en place de la session</label>
+      <label class="opt"><input type="radio" name="circuitfinancement" value="flou">On ne le propose pas clairement, chacun se débrouille</label>
+      <label class="opt"><input type="radio" name="circuitfinancement" value="inconnu">Je ne sais pas vraiment</label>
+    </div>
+  </fieldset>
+</section>
+
+<!-- ══ Étape 4 — attestations et conformité ═════════════════════════════ -->
+<section class="etape" id="e4">
+  <div class="chapitre">
+    <div class="num">Étape 4 · Attestations et conformité</div>
+    <h2>Ce qui compte le jour d'un contrôle, ou d'un renouvellement.</h2>
+  </div>
+
+  <fieldset>
+    <legend class="q">Une fois la session terminée, l'attestation est délivrée&nbsp;?</legend>
+    <div class="choix">
+      <label class="opt"><input type="radio" name="attestation" value="auto">Automatiquement, par email</label>
+      <label class="opt"><input type="radio" name="attestation" value="papier">Remise en main propre, en salle</label>
+      <label class="opt"><input type="radio" name="attestation" value="demande">Seulement si le client la redemande</label>
+      <label class="opt"><input type="radio" name="attestation" value="pastoujours">Pas toujours dans les temps</label>
+    </div>
+  </fieldset>
+
+  <fieldset>
+    <legend class="q">Gardez-vous une trace centralisée de qui a été formé, quand, et sur quel module&nbsp;?</legend>
+    <div class="choix">
+      <label class="opt"><input type="radio" name="tracecentrale" value="systeme">Oui, un système dédié</label>
+      <label class="opt"><input type="radio" name="tracecentrale" value="fichier">Oui, mais un fichier tenu à la main</label>
+      <label class="opt"><input type="radio" name="tracecentrale" value="non">Pas vraiment, non</label>
+      <label class="opt"><input type="radio" name="tracecentrale" value="inconnu">Je ne sais pas comment c'est fait aujourd'hui</label>
+    </div>
+  </fieldset>
+
+  <fieldset>
+    <legend class="q">Relancez-vous les entreprises quand une formation arrive à échéance de renouvellement&nbsp;?</legend>
+    <div class="choix">
+      <label class="opt"><input type="radio" name="relance" value="auto">Oui, automatiquement</label>
+      <label class="opt"><input type="radio" name="relance" value="manuel">Oui, mais quelqu'un doit y penser</label>
+      <label class="opt"><input type="radio" name="relance" value="non">Non, c'est à l'entreprise de revenir</label>
+      <label class="opt"><input type="radio" name="relance" value="inconnu">Je ne sais pas si ça arrive vraiment</label>
+    </div>
+  </fieldset>
+</section>
+
+<!-- ══ Étape 5 — votre temps ════════════════════════════════════════════ -->
+<section class="etape" id="e5">
+  <div class="chapitre">
+    <div class="num">Étape 5 · Votre temps</div>
+    <h2>Ce qui part chaque semaine et qu'on ne facture à personne.</h2>
+  </div>
+
+  <fieldset>
+    <legend class="q">Votre activité, c'est plutôt&nbsp;?</legend>
+    <div class="champ">
+      <select name="secteur" id="secteur">
+        <option value="">Choisissez…</option>
+        <option value="obligatoire">Formation obligatoire (hygiène, sécurité, habilitations)</option>
+        <option value="continue">Formation professionnelle continue</option>
+        <option value="certifiante">Formation certifiante / diplômante</option>
+        <option value="qualiopi">Organisme Qualiopi généraliste</option>
+        <option value="autre">Autre</option>
+      </select>
+    </div>
+  </fieldset>
+
+  <fieldset>
+    <legend class="q">Chaque semaine, votre temps part surtout dans quoi&nbsp;?</legend>
+    <p class="aide">Plusieurs réponses possibles.</p>
+    <div class="choix grille">
+      <label class="opt"><input type="checkbox" name="taches" value="devis">Répondre aux demandes de devis</label>
+      <label class="opt"><input type="checkbox" name="taches" value="calcul">Faire les devis à la main</label>
+      <label class="opt"><input type="checkbox" name="taches" value="planning">Organiser le planning des sessions</label>
+      <label class="opt"><input type="checkbox" name="taches" value="relances">Relancer les entreprises</label>
+      <label class="opt"><input type="checkbox" name="taches" value="attestations">Délivrer et envoyer les attestations</label>
+      <label class="opt"><input type="checkbox" name="taches" value="site">Mettre le site à jour</label>
+    </div>
+  </fieldset>
+
+  <fieldset>
+    <legend class="q">Combien d'heures par semaine, à peu près&nbsp;?</legend>
+    <div class="choix grille">
+      <label class="opt"><input type="radio" name="heures" value="moins2">Moins de 2 h</label>
+      <label class="opt"><input type="radio" name="heures" value="2a5">2 à 5 h</label>
+      <label class="opt"><input type="radio" name="heures" value="5a10">5 à 10 h</label>
+      <label class="opt"><input type="radio" name="heures" value="plus10">Plus de 10 h</label>
+    </div>
+  </fieldset>
+</section>
+
+<!-- ══ Étape 6 — pour vous répondre ═════════════════════════════════════ -->
+<section class="etape" id="e6">
+  <div class="chapitre">
+    <div class="num">Étape 6 · Pour vous répondre</div>
+    <h2>Dernier écran. C'est celui qui déclenche l'audit.</h2>
+    <p>Dès que vous validez, vos réponses sont enregistrées et je reçois le dossier.</p>
+  </div>
+
+  <fieldset>
+    <legend class="q">Si une seule chose devait changer cette année&nbsp;?</legend>
+    <div class="choix">
+      <label class="opt"><input type="radio" name="objectif" value="plusdevis">Transformer plus de devis en inscriptions</label>
+      <label class="opt"><input type="radio" name="objectif" value="gagnertemps">Récupérer du temps sur le suivi administratif</label>
+      <label class="opt"><input type="radio" name="objectif" value="conformite">Être plus solide sur la conformité et les attestations</label>
+      <label class="opt"><input type="radio" name="objectif" value="fideliser">Faire revenir les entreprises déjà clientes</label>
+    </div>
+  </fieldset>
+
+  <fieldset>
+    <legend class="q">Où je vous envoie l'audit</legend>
+    <div class="champs">
+      <div class="champ">
+        <label for="nom">Votre prénom</label>
+        <input type="text" id="nom" name="nom" autocomplete="given-name">
+      </div>
+      <div class="champ">
+        <label for="entreprise">Votre organisme</label>
+        <input type="text" id="entreprise" name="entreprise" autocomplete="organization">
+      </div>
+      <div class="champ large">
+        <label for="email">Votre email</label>
+        <input type="email" id="email" name="email" autocomplete="email" inputmode="email">
+      </div>
+      <div class="champ">
+        <label for="telephone">Votre téléphone</label>
+        <input type="tel" id="telephone" name="telephone" autocomplete="tel" inputmode="tel"
+               placeholder="0692…">
+      </div>
+      <div class="champ">
+        <label for="commune">Votre commune</label>
+        <input type="text" id="commune" name="commune" autocomplete="address-level2">
+      </div>
+      <div class="champ large">
+        <label for="message">Autre chose que je devrais savoir&nbsp;? (facultatif)</label>
+        <textarea id="message" name="message"
+          placeholder="Un exemple concret vaut mieux qu'une phrase générale."></textarea>
+      </div>
+    </div>
+  </fieldset>
+
+  <div class="erreur" id="erreur" hidden role="alert"></div>
+</section>
+
+</form>
+
+<!-- ══ Bilan express ═════════════════════════════════════════════════════ -->
+<div class="bilan" id="bilan" hidden>
+  <div class="label">Votre bilan express</div>
+  <h2>Ce que vos réponses montrent, avant même l'audit écrit.</h2>
+  <ul id="bilanListe"></ul>
+  <div class="temps">
+    <div class="chiffre" id="bilanChiffre">—</div>
+    <p id="bilanTexte"></p>
+  </div>
+  <button type="button" class="copier" id="btnCopier">📋 Copier pour l'envoyer par e-mail</button>
+</div>
+
+<!-- ══ Confirmation ═════════════════════════════════════════════════════ -->
+<div class="merci" id="merci" hidden>
+  <div class="coche" aria-hidden="true">✓</div>
+  <h2>C'est enregistré.</h2>
+  <div class="ref">Votre numéro de dossier<b id="refAffiche">—</b></div>
+  <p><b>Vos réponses sont arrivées chez moi</b>, pas dans une boîte automatique.
+  Gardez ce numéro : il suffit de me le citer si vous m'appelez.</p>
+  <ol>
+    <li>Vous recevez un accusé de réception par e-mail dans la minute.</li>
+    <li>Je croise vos réponses avec ce que j'ai relevé sur votre site.</li>
+    <li>Je vous renvoie <b>l'audit écrit sous 48 h ouvrées</b>, avec le point qui vous
+    coûte le plus cher et ce que ça demande de corriger.</li>
+  </ol>
+  <p>Si c'est urgent, ou si vous préférez que je vous explique de vive voix&nbsp;:</p>
+  <a class="tel" href="tel:+262692417749">06 92 41 77 49</a>
+</div>
+
+<!-- ══ Barre d'action ═══════════════════════════════════════════════════ -->
+<div class="pied" id="pied">
+  <div class="dedans">
+    <button type="button" class="retour" id="btnRetour" hidden aria-label="Écran précédent">←</button>
+    <button type="button" id="btnSuivant">Voir les questions</button>
+  </div>
+  <p class="promesse" id="promesse">Gratuit, sans engagement. Vos réponses ne servent qu'à
+  l'audit — aucune revente, aucune liste de diffusion.</p>
+</div>
+
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  var WEBHOOK = 'https://n7n.automatisationboost.com/webhook/audit-auto';
+  var CLE = 'audit-formation-v1';
+
+  /* ── Le relevé : affiché seulement si le lien porte un prospect connu ── */
+  var PROSPECTS = {
+    'focalys': {
+      titre: 'Focalys — ce qui vous fait perdre des devis',
+      chapo: 'J’ai passé votre site au crible avant de vous écrire. Six écrans, ' +
+             'trois questions chacun, et je vous renvoie l’audit complet.',
+      nom: 'Focalys',
+      site: 'focalys.re',
+      quand: 'Relevé du 16 septembre 2026 sur focalys.re — 5 pages lues en entier : accueil, ' +
+             'hygiène alimentaire, catalogue, contact, mentions légales.',
+      constats: [
+        ['Votre formation hygiène alimentaire (HACCP, <b>obligation légale</b> pour toute ' +
+         'entreprise qui manipule des denrées) n’affiche <b>ni prix, ni durée, ni date</b> — ' +
+         'juste un PDF de <b>16,3 Mo</b> à télécharger pour voir un calendrier.', 0],
+        ['Les chiffres se contredisent d’une page à l’autre&nbsp;: <b>+3 500 participants/an</b> ' +
+         'sur l’accueil contre <b>2 100/an</b> sur la page hygiène alimentaire.', 0],
+        ['La méta-description dit « depuis <b>10 ans</b> », le contenu de cette même page dit ' +
+         '« depuis <b>2009</b> » — 17 ans, pas 10.', 0],
+        ['Les mentions légales affirment ne pas collecter de données personnelles, alors que le ' +
+         'formulaire de contact demande nom, société, téléphone, email <b>avec une case de ' +
+         'consentement RGPD</b>.', 0],
+        ['La page la plus demandée du catalogue <b>ne mentionne aucun financement OPCO ni CPF</b> ' +
+         '— l’argument qui débloque souvent la décision d’achat.', 0],
+        ['Et ce qui va bien&nbsp;: <b>certifié Qualiopi</b>, contenu réglementaire précis ' +
+         '(règlement CE 852/2004, Code rural L.233-4), et des témoignages de vraies entreprises ' +
+         'nommées — pas de texte de remplissage.', 1]
+      ]
+    }
+  };
+
+  var form = document.getElementById('audit');
+  var pied = document.getElementById('pied');
+  var btn = document.getElementById('btnSuivant');
+  var btnRetour = document.getElementById('btnRetour');
+  var progres = document.getElementById('progres');
+  var jauge = document.getElementById('jauge');
+  var etiquette = document.getElementById('etiquette');
+  var reste = document.getElementById('reste');
+  var err = document.getElementById('erreur');
+  var merci = document.getElementById('merci');
+  var promesse = document.getElementById('promesse');
+
+  var ecrans = [];
+  for (var i = 0; i <= 6; i++) ecrans.push(document.getElementById('e' + i));
+  var TOTAL = 6;
+  var pos = 0;
+
+  var params = new URLSearchParams(window.location.search);
+  var cle = (params.get('p') || '').toLowerCase();
+  var P = PROSPECTS[cle] || null;
+
+  if (P) {
+    document.getElementById('titre').textContent = P.titre;
+    document.getElementById('chapo').innerHTML = P.chapo;
+    document.getElementById('releveTitre').textContent = P.site;
+    document.getElementById('releveQuand').textContent = P.quand;
+    var ul = document.getElementById('releveListe');
+    P.constats.forEach(function (c) {
+      var li = document.createElement('li');
+      li.innerHTML = c[0];
+      if (c[1]) li.className = 'bon';
+      ul.appendChild(li);
+    });
+    document.getElementById('releve').hidden = false;
+    var champEnt = document.getElementById('entreprise');
+    if (champEnt && !champEnt.value) champEnt.value = P.nom;
+  }
+
+  function choisi(nom) {
+    var el = form.querySelector('input[name="' + nom + '"]:checked');
+    return el ? el.value : '';
+  }
+  function coches(nom) {
+    return Array.prototype.map.call(
+      form.querySelectorAll('input[name="' + nom + '"]:checked'),
+      function (i) { return i.value; });
+  }
+  function val(id) {
+    var el = document.getElementById(id);
+    return el ? el.value.trim() : '';
+  }
+
+  /* ── Bilan express : les mêmes réponses, lues comme des constats. ────── */
+  var REGLES = {
+    delaidevis: {
+      lendemain: [1, 'Un devis demandé attend jusqu’au lendemain — le temps de répondre, l’entreprise a parfois déjà relancé un concurrent.'],
+      plusieursjours: [2, 'Un devis part au bout de plusieurs jours.'],
+      pastoujours: [2, 'Le délai de réponse à une demande de devis n’est pas régulier.']
+    },
+    typedevis: {
+      main: [1, 'Chaque devis est refait à la main après un échange — aucun n’est identique au précédent, et ça prend du temps à chaque fois.'],
+      inconnu: [2, 'Il n’y a pas de méthode fixe pour établir un devis — ça dépend de qui répond.']
+    },
+    tauxinscription: {
+      '1a3': [2, 'Sur dix demandes de devis, seules une à trois se transforment en inscription.'],
+      inconnu: [2, 'Impossible de savoir combien de devis se transforment réellement en inscription.']
+    },
+    planning: {
+      fichier: [1, 'Le planning des sessions vit dans un fichier mis à jour à la main.'],
+      pdf: [2, 'Le planning n’existe qu’en PDF à régénérer et remplacer manuellement.'],
+      rien: [3, 'Il n’existe pas de planning centralisé — ça se sait en interne, pas ailleurs.']
+    },
+    visibilite: {
+      pdf: [2, 'Trouver une date de session demande de télécharger un PDF.'],
+      appel: [2, 'Trouver une date de session demande d’appeler ou de remplir un formulaire.'],
+      nullepart: [3, 'Aucune date de session n’est visible en ligne — il faut demander.']
+    },
+    financement: {
+      inconnu: [1, 'Le mode de financement le plus utilisé par les clients n’est pas identifié.']
+    },
+    circuitfinancement: {
+      ralentit: [2, 'Le circuit de prise en charge (OPCO ou autre) ralentit souvent la mise en place d’une session.'],
+      flou: [2, 'Le financement n’est pas proposé clairement — chacun se débrouille.'],
+      inconnu: [1, 'Le fonctionnement réel du circuit de financement n’est pas connu précisément.']
+    },
+    attestation: {
+      demande: [2, 'L’attestation n’est délivrée que si le client la redemande.'],
+      pastoujours: [2, 'L’attestation n’arrive pas toujours dans les temps.']
+    },
+    tracecentrale: {
+      fichier: [1, 'Le suivi de qui a été formé tient dans un fichier tenu à la main.'],
+      non: [3, 'Il n’existe pas vraiment de trace centralisée de qui a été formé, quand, sur quel module.'],
+      inconnu: [2, 'La façon dont le suivi des formés est tenu aujourd’hui n’est pas claire.']
+    },
+    relance: {
+      manuel: [1, 'Les entreprises sont relancées à l’échéance, mais seulement si quelqu’un y pense.'],
+      non: [3, 'Aucune relance n’est faite à l’échéance de renouvellement — c’est à l’entreprise de revenir d’elle-même.'],
+      inconnu: [2, 'Il n’est pas certain qu’une relance d’échéance ait lieu aujourd’hui.']
+    }
+  };
+
+  function genererConstats() {
+    var liste = [];
+    Object.keys(REGLES).forEach(function (champ) {
+      var regle = REGLES[champ];
+      var el = form.querySelector('[name="' + champ + '"]');
+      if (!el) return;
+      var valeurs = (el.type === 'checkbox') ? coches(champ) : [choisi(champ)];
+      valeurs.forEach(function (v) { if (regle[v]) liste.push(regle[v]); });
+    });
+    liste.sort(function (a, b) { return b[0] - a[0]; });
+    return liste.slice(0, 4).map(function (c) { return c[1]; });
+  }
+
+  var HEURES_SEMAINE = { moins2: 1.5, '2a5': 3.5, '5a10': 7.5, plus10: 12 };
+  function genererTemps() {
+    var h = HEURES_SEMAINE[choisi('heures')];
+    if (!h) return null;
+    var mois = Math.round(h * 4.33);
+    var jours = Math.round((mois / 7) * 10) / 10;
+    var t = coches('taches');
+    var libTaches = t.map(function (v) {
+      var lbl = form.querySelector('[name="taches"][value="' + v + '"]');
+      return lbl ? lbl.closest('label').textContent.trim().toLowerCase() : v;
+    });
+    return {
+      chiffre: mois + ' h / mois environ',
+      detail: 'D’après votre réponse, le suivi administratif représente environ ' + h +
+        ' h par semaine — soit près de ' + jours + ' journée' + (jours >= 2 ? 's' : '') +
+        ' de travail complètes chaque mois' +
+        (libTaches.length ? ', surtout sur : ' + libTaches.join(', ') + '.' : '.') +
+        ' Une estimation à partir de votre réponse, pas un chronométrage — de quoi donner un ordre de grandeur.'
+    };
+  }
+
+  function afficherBilan() {
+    var constats = genererConstats();
+    var ul = document.getElementById('bilanListe');
+    ul.innerHTML = '';
+    constats.forEach(function (texte) {
+      var li = document.createElement('li');
+      li.innerHTML = texte;
+      ul.appendChild(li);
+    });
+    var t = genererTemps();
+    if (t) {
+      document.getElementById('bilanChiffre').textContent = t.chiffre;
+      document.getElementById('bilanTexte').textContent = t.detail;
+    } else {
+      document.getElementById('bilanChiffre').textContent = '—';
+      document.getElementById('bilanTexte').textContent = '';
+    }
+    document.getElementById('bilan').hidden = (constats.length === 0 && !t);
+    return { constats: constats, temps: t };
+  }
+
+  function texteBilan(b) {
+    var lignes = [];
+    lignes.push('BILAN EXPRESS — ' + (val('entreprise') || val('nom') || 'mon organisme'));
+    lignes.push('Généré le ' + new Date().toLocaleDateString('fr-FR') + ' via l’audit AutomatisationBoost');
+    lignes.push('');
+    b.constats.forEach(function (c) { lignes.push('• ' + c.replace(/<\/?b>/g, '')); });
+    if (b.temps) {
+      lignes.push('');
+      lignes.push('Temps estimé : ' + b.temps.chiffre);
+      lignes.push(b.temps.detail);
+    }
+    lignes.push('');
+    lignes.push('Dossier ' + reference() + ' — Tony PAYET, AutomatisationBoost — 06 92 41 77 49');
+    return lignes.join('\n');
+  }
+
+  function copierSecours(texte, callback) {
+    var z = document.createElement('textarea');
+    z.value = texte; z.style.position = 'fixed'; z.style.opacity = '0';
+    document.body.appendChild(z); z.focus(); z.select();
+    try { document.execCommand('copy'); callback(); } catch (e) {}
+    document.body.removeChild(z);
+  }
+
+  var dernierBilan = null;
+  var btnCopier = document.getElementById('btnCopier');
+  btnCopier.addEventListener('click', function () {
+    if (!dernierBilan) return;
+    var texte = texteBilan(dernierBilan);
+    var confirme = function () {
+      btnCopier.textContent = '✓ Copié — collez-le dans votre e-mail';
+      btnCopier.classList.add('fait');
+      setTimeout(function () {
+        btnCopier.textContent = '📋 Copier pour l’envoyer par e-mail';
+        btnCopier.classList.remove('fait');
+      }, 2600);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(texte).then(confirme).catch(function () { copierSecours(texte, confirme); });
+    } else {
+      copierSecours(texte, confirme);
+    }
+  });
+
+  function conditions() { /* aucune question conditionnelle dans cette variante */ }
+  form.addEventListener('change', function () { sauver(); });
+  form.addEventListener('input', sauver);
+
+  function sauver() {
+    try {
+      var d = {};
+      Array.prototype.forEach.call(form.elements, function (el) {
+        if (!el.name && !el.id) return;
+        if (el.type === 'checkbox' || el.type === 'radio') {
+          if (el.checked) { d[el.name] = (d[el.name] || []).concat(el.value); }
+        } else if (el.value) { d['#' + (el.id || el.name)] = el.value; }
+      });
+      localStorage.setItem(CLE, JSON.stringify(d));
+    } catch (e) { /* navigation privée : tant pis, on continue */ }
+  }
+  function relire() {
+    try {
+      var d = JSON.parse(localStorage.getItem(CLE) || '{}');
+      Object.keys(d).forEach(function (k) {
+        if (k.charAt(0) === '#') {
+          var el = document.getElementById(k.slice(1));
+          if (el) el.value = d[k];
+        } else {
+          d[k].forEach(function (v) {
+            var el = form.querySelector('[name="' + k + '"][value="' + v + '"]');
+            if (el) el.checked = true;
+          });
+        }
+      });
+    } catch (e) { /* idem */ }
+  }
+  relire();
+  conditions();
+
+  var OBLIGATOIRE = {
+    1: [['delaidevis', 'Dites-moi en combien de temps répond un devis demandé.'],
+        ['typedevis', 'Il manque la façon dont un devis est établi.'],
+        ['tauxinscription', 'Il manque la part de devis qui se transforment en inscription.']],
+    2: [['planning', 'Il manque comment le planning des sessions est construit.'],
+        ['visibilite', 'Dites-moi comment une entreprise trouve une date de session aujourd’hui.']],
+    3: [['circuitfinancement', 'Il manque comment se passe le circuit de financement.']],
+    4: [['attestation', 'Dites-moi comment l’attestation est délivrée.'],
+        ['tracecentrale', 'Il manque si vous gardez une trace centralisée des formés.'],
+        ['relance', 'Il manque si vous relancez à l’échéance de renouvellement.']],
+    5: [['heures', 'Il manque le nombre d’heures par semaine.']],
+    6: []
+  };
+
+  function rate(msg, id) {
+    err.textContent = msg;
+    err.hidden = false;
+    var cible = id ? document.getElementById(id) : err;
+    if (cible) {
+      if (cible.focus) { try { cible.focus({ preventScroll: true }); } catch (e) { cible.focus(); } }
+      cible.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    }
+    return false;
+  }
+
+  function valide(n) {
+    err.hidden = true;
+    var regles = OBLIGATOIRE[n] || [];
+    for (var k = 0; k < regles.length; k++) {
+      var champ = regles[k][0];
+      var groupe = form.querySelector('[name="' + champ + '"]');
+      var visible = groupe && groupe.closest('fieldset') && !groupe.closest('fieldset').hidden;
+      if (visible && !choisi(champ)) {
+        var fs = groupe.closest('fieldset');
+        err.textContent = regles[k][1];
+        err.hidden = false;
+        fs.appendChild(err);
+        fs.scrollIntoView({ block: 'center', behavior: 'smooth' });
+        return false;
+      }
+    }
+    if (n === 5 && !val('secteur')) return rate('Dites-moi d’abord dans quoi vous travaillez.', 'secteur');
+    if (n === 6) {
+      document.getElementById('e6').appendChild(err);
+      if (val('nom').length < 2) return rate('Il me faut votre prénom pour vous répondre.', 'nom');
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val('email')))
+        return rate('Cette adresse e-mail ne semble pas valide.', 'email');
+    }
+    return true;
+  }
+
+  function afficher(n) {
+    ecrans.forEach(function (s, k) { s.classList.toggle('active', k === n); });
+    pos = n;
+    progres.hidden = (n === 0);
+    btnRetour.hidden = (n === 0);
+    if (n > 0) {
+      jauge.style.width = Math.round((n / TOTAL) * 100) + '%';
+      etiquette.textContent = 'Étape ' + n + ' sur ' + TOTAL;
+      reste.textContent = n === TOTAL ? 'dernier écran' : (TOTAL - n) + ' écran' + (TOTAL - n > 1 ? 's' : '') + ' après';
+    }
+    btn.textContent = n === 0 ? 'Commencer'
+      : n === TOTAL ? 'Valider et envoyer mon audit'
+      : 'Continuer';
+    promesse.textContent = n === TOTAL
+      ? 'En validant, vos réponses sont enregistrées et je reçois le dossier.'
+      : 'Gratuit, sans engagement. Vos réponses ne servent qu’à l’audit — aucune revente, aucune liste de diffusion.';
+    err.hidden = true;
+    if (typeof mesurerPied === 'function') mesurerPied();
+    window.scrollTo({ top: 0, behavior: n === 0 ? 'auto' : 'smooth' });
+  }
+
+  btnRetour.addEventListener('click', function () { if (pos > 0) afficher(pos - 1); });
+
+  btn.addEventListener('click', function () {
+    if (pos === 0) { afficher(1); return; }
+    if (!valide(pos)) return;
+    if (pos < TOTAL) { afficher(pos + 1); return; }
+    envoyer();
+  });
+
+  var refDossier = null;
+  function reference() {
+    if (refDossier) return refDossier;
+    var d = new Date();
+    var deuxChiffres = function (x) { return (x < 10 ? '0' : '') + x; };
+    refDossier = 'AB-' + String(d.getFullYear()).slice(2) + deuxChiffres(d.getMonth() + 1)
+      + deuxChiffres(d.getDate()) + '-' + Math.random().toString(36).slice(2, 6).toUpperCase();
+    return refDossier;
+  }
+
+  function corps() {
+    return {
+      ref: reference(),
+      nom: val('nom'),
+      entreprise: val('entreprise'),
+      email: val('email').toLowerCase(),
+      telephone: val('telephone'),
+      commune: val('commune'),
+      secteur: val('secteur'),
+      /* écran 1 — demandes de devis */
+      delaidevis: choisi('delaidevis'),
+      typedevis: choisi('typedevis'),
+      tauxinscription: choisi('tauxinscription'),
+      /* écran 2 — sessions et planning */
+      planning: choisi('planning'),
+      visibilite: choisi('visibilite'),
+      format: coches('format'),
+      /* écran 3 — financement */
+      financement: coches('financement'),
+      circuitfinancement: choisi('circuitfinancement'),
+      /* écran 4 — attestations */
+      attestation: choisi('attestation'),
+      tracecentrale: choisi('tracecentrale'),
+      relance: choisi('relance'),
+      /* écran 5 — le temps */
+      taches: coches('taches'),
+      heures: choisi('heures'),
+      /* écran 6 */
+      objectif: choisi('objectif'),
+      message: val('message'),
+      /* traçabilité */
+      prospect: cle || '',
+      site: P ? P.site : '',
+      source: 'audit-b2b-formation-v1',
+      page: window.location.pathname + window.location.search,
+      date: new Date().toISOString()
+    };
+  }
+
+  function poster() {
+    return fetch(WEBHOOK, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(corps())
+    }).then(function (r) {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.text();
+    });
+  }
+
+  function envoyer() {
+    btn.disabled = true;
+    btnRetour.disabled = true;
+    btn.textContent = 'Envoi…';
+    err.hidden = true;
+
+    poster()
+      .catch(function () { return poster(); })
+      .then(function () {
+        try { localStorage.removeItem(CLE); } catch (e) {}
+        form.hidden = true;
+        ecrans[0].hidden = true;
+        progres.hidden = true;
+        pied.hidden = true;
+        dernierBilan = afficherBilan();
+        document.getElementById('refAffiche').textContent = reference();
+        merci.hidden = false;
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      })
+      .catch(function () {
+        btn.disabled = false;
+        btnRetour.disabled = false;
+        btn.textContent = 'Réessayer l’envoi';
+        err.innerHTML = 'L’envoi n’est pas passé — vos réponses sont toujours là, ' +
+          'rien n’est perdu. Touchez « Réessayer l’envoi ». Si ça bloque encore, ' +
+          'appelez-moi au <a href="tel:+262692417749" style="color:#f2606f;font-weight:700">06 92 41 77 49</a>.';
+        err.hidden = false;
+        err.scrollIntoView({ block: 'center', behavior: 'smooth' });
+      });
+  }
+
+  function mesurerPied() {
+    var h = pied.hidden ? 0 : pied.getBoundingClientRect().height;
+    document.documentElement.style.setProperty('--pied', Math.round(h) + 'px');
+  }
+  window.addEventListener('resize', mesurerPied);
+  if (window.ResizeObserver) new ResizeObserver(mesurerPied).observe(pied);
+
+  afficher(0);
+  mesurerPied();
+})();
+</script>
+</body>
+</html>
