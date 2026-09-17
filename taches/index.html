@@ -94,6 +94,7 @@ ul{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; ga
 .pastille{width:8px; height:8px; border-radius:50%; margin-top:8px; flex:0 0 8px}
 .pastille.livre{background:var(--vert)} .pastille.bloque{background:var(--rouge)}
 .pastille.attente{background:var(--ambre)} .pastille.toi{background:var(--bleu)}
+.pastille.propose, .pastille.a-retravailler{background:#3dc4c2}
 .corps{flex:1; min-width:0}
 .titre{margin:0; font-size:15px; line-height:1.4}
 .note{margin:4px 0 0; font-size:13px; color:var(--gris); line-height:1.45}
@@ -104,6 +105,41 @@ ul{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; ga
 .voir:hover{background:#182338}
 .voir.vide{border:0; padding:0; width:0}
 .toi .titre{font-weight:500}
+
+/* ── Cartes proposées par l'agent hebdomadaire ─────────────────────────── */
+.badge-propose{
+  display:inline-block; font-size:11px; font-weight:700; letter-spacing:.02em;
+  color:#0c0d18; background:#3dc4c2; border-radius:99px; padding:2px 9px;
+  margin:0 8px 4px 0; vertical-align:2px; white-space:nowrap;
+}
+.note.justification{color:#c9e9e8}
+.note.justification .impact{
+  display:inline-block; font-size:11px; color:var(--gris); border:1px solid var(--bord);
+  border-radius:99px; padding:1px 8px; margin-left:4px; vertical-align:1px;
+}
+.propose-actions{margin-top:10px}
+.propose-boutons{display:flex; flex-wrap:wrap; gap:8px}
+.btn-propose{
+  font:inherit; font-size:13px; font-weight:600; border-radius:8px; padding:6px 13px;
+  cursor:pointer; transition:opacity .15s, background .15s;
+}
+.btn-propose:disabled{opacity:.55; cursor:default}
+.btn-ok{background:#3dc4c2; color:#06201f; border:1px solid #3dc4c2}
+.btn-ok:hover:not(:disabled){background:#4dd4d2}
+.btn-modifier{background:transparent; color:#eab308; border:1px solid #6b5a1a}
+.btn-modifier:hover:not(:disabled){background:rgba(234,179,8,.12)}
+.btn-envoyer-modif{background:#eab308; color:#1a1200; border:1px solid #eab308; margin-top:8px}
+.btn-envoyer-modif:hover:not(:disabled){background:#f2c332}
+.propose-modif{margin-top:9px; display:flex; flex-direction:column; align-items:flex-start; gap:0}
+.propose-modif textarea{
+  width:100%; max-width:420px; resize:vertical; font:inherit; font-size:13.5px;
+  background:#0e1013; color:var(--texte); border:1px solid var(--bord); border-radius:8px;
+  padding:8px 10px; box-sizing:border-box;
+}
+.propose-statut{font-size:13px; margin:9px 0 0}
+.propose-statut.envoi{color:var(--gris)}
+.propose-statut.ok{color:#3dc4c2; font-weight:600}
+.propose-statut.erreur{color:var(--rouge)}
 .rappel{
   border:1px solid #2a3446; background:#141a24; border-radius:11px;
   padding:13px 14px; margin:10px 0 0; font-size:13.5px; color:#b8c4d4; line-height:1.5;
@@ -149,7 +185,7 @@ footer{margin-top:34px; font-size:12px; color:var(--gris2); line-height:1.6}
 
 <h2>Proximité du cash</h2>
 <div class="cash-f">
-  <button class="cf direct" data-c="direct" aria-pressed="false"><b>21</b><span>€€€ Cash direct</span></button>
+  <button class="cf direct" data-c="direct" aria-pressed="false"><b>22</b><span>€€€ Cash direct</span></button>
   <button class="cf proche" data-c="proche" aria-pressed="false"><b>20</b><span>€€ Amène du cash</span></button>
   <button class="cf loin"   data-c="loin"   aria-pressed="false"><b>21</b><span>€ Convertible</span></button>
 </div>
@@ -185,6 +221,8 @@ footer{margin-top:34px; font-size:12px; color:var(--gris2); line-height:1.6}
   <div class="corps">
     <p class="titre"><span class="eur direct" title="Cash direct — Prospect immobilier nommé. C’est la v4 qui s’envoie — la v2 avait été refusée, ne jamais repointer dessus.">€€€</span>Koytcha — module de recherche refait et fonctionnel (le bundle du plugin ne demandait que window.wp.element)</p>
     <p class="note">Le module s'hydrate hors WordPress, tire les vrais resultats. Habille a la charte.</p>
+    
+    
   </div>
   <a class="voir" href="/koytcha-refonte-v5/">Voir</a>
 </li>
@@ -193,6 +231,8 @@ footer{margin-top:34px; font-size:12px; color:var(--gris2); line-height:1.6}
   <div class="corps">
     <p class="titre"><span class="eur direct" title="Cash direct — Prospect immobilier nommé. C’est la v4 qui s’envoie — la v2 avait été refusée, ne jamais repointer dessus.">€€€</span>Koytcha — menu mobile reparé : le bouton burger n'avait aucun gestionnaire, le menu etait inaccessible sur telephone</p>
     <p class="note">Panneau plein ecran + accordeons + sous-menus repris de leur site.</p>
+    
+    
   </div>
   <a class="voir" href="/koytcha-refonte-v5/">Voir</a>
 </li>
@@ -201,6 +241,8 @@ footer{margin-top:34px; font-size:12px; color:var(--gris2); line-height:1.6}
   <div class="corps">
     <p class="titre"><span class="eur direct" title="Cash direct — Prospect immobilier nommé. C’est la v4 qui s’envoie — la v2 avait été refusée, ne jamais repointer dessus.">€€€</span>Koytcha — effets : Ken Burns amplifie, miroir reconstruit, aneau neon rose au survol, sons au clic, fonds en pleine definition</p>
     <p class="note">Fonds passes de 1024 a 1600 px (maximum de leur mediatheque, pas de 4K disponible).</p>
+    
+    
   </div>
   <a class="voir" href="/koytcha-refonte-v5/">Voir</a>
 </li>
@@ -209,6 +251,8 @@ footer{margin-top:34px; font-size:12px; color:var(--gris2); line-height:1.6}
   <div class="corps">
     <p class="titre"><span class="eur direct" title="Cash direct — Prospect immobilier nommé. C’est la v4 qui s’envoie — la v2 avait été refusée, ne jamais repointer dessus.">€€€</span>Koytcha — export HTML autonome + tutoriel d'integration WordPress</p>
     <p class="note">Fichier a chemins absolus + marche a suivre (modele de page, rapatriement des images, quoi retirer pour le widget Elementor).</p>
+    
+    
   </div>
   <a class="voir" href="/koytcha-refonte-v5/integration/">Voir</a>
 </li>
@@ -217,6 +261,8 @@ footer{margin-top:34px; font-size:12px; color:var(--gris2); line-height:1.6}
   <div class="corps">
     <p class="titre"><span class="eur direct" title="Cash direct — Prospect immobilier nommé. C’est la v4 qui s’envoie — la v2 avait été refusée, ne jamais repointer dessus.">€€€</span>Koytcha — email envoye a Florent : modifications, configuration du formulaire, point securite</p>
     <p class="note">Envoye le 08/09 dans le fil « Preversion de la refonte ». Attend ses reponses sur les 3 destinataires du formulaire.</p>
+    
+    
   </div>
   <span class="voir vide" aria-hidden="true"></span>
 </li>
@@ -225,6 +271,8 @@ footer{margin-top:34px; font-size:12px; color:var(--gris2); line-height:1.6}
   <div class="corps">
     <p class="titre"><span class="eur direct" title="Cash direct — Prospect immobilier nommé. C’est la v4 qui s’envoie — la v2 avait été refusée, ne jamais repointer dessus.">€€€</span>Koytcha — formulaire de contact : 2 destinataires sur 3 pointent vers example.com, les messages sont perdus</p>
     <p class="note">Le 3e destinataire est le Gmail perso de Tony (reste de test, en production). Destinataire a fixer cote serveur dans Contact Form 7 : aujourd'hui il est dans un champ cache modifiable par le visiteur. Attend la reponse de Florent sur qui recoit quoi.</p>
+    
+    
   </div>
   <a class="voir" href="https://koytchaimmo.re/contact/">Voir</a>
 </li>
@@ -233,6 +281,8 @@ footer{margin-top:34px; font-size:12px; color:var(--gris2); line-height:1.6}
   <div class="corps">
     <p class="titre"><span class="eur direct" title="Cash direct — Prospect immobilier nommé. C’est la v4 qui s’envoie — la v2 avait été refusée, ne jamais repointer dessus.">€€€</span>Koytcha — comptes Administrateur suspects sur leur WordPress + jeton admin public valable jusqu'en 2027</p>
     <p class="note">damian-hoerr23 / deja_schlemmer / dorine_wittig, noms generes. Jeton JWT sub=1 en clair dans le source de leur page d'accueil. Proposition envoyee : audit+nettoyage 390 EUR puis maintenance 89 EUR/mois. Intervention impossible sans acces admin.</p>
+    
+    
   </div>
   <span class="voir vide" aria-hidden="true"></span>
 </li>
@@ -241,6 +291,8 @@ footer{margin-top:34px; font-size:12px; color:var(--gris2); line-height:1.6}
   <div class="corps">
     <p class="titre"><span class="eur direct" title="Cash direct — Prospect immobilier nommé. C’est la v4 qui s’envoie — la v2 avait été refusée, ne jamais repointer dessus.">€€€</span>Koytcha — integrer les 3 photos que Florent a jointes (Cambaie Park, Ze Bure@u 2, Ze Lokal)</p>
     <p class="note">Remplacees en attendant par les photos de leurs propres fiches de biens. Les pieces jointes de son mail ne sont pas telechargeables depuis l'environnement de travail : il faut les deposer en fichiers.</p>
+    
+    
   </div>
   <a class="voir" href="/koytcha-refonte-v5/">Voir</a>
 </li>
@@ -249,6 +301,8 @@ footer{margin-top:34px; font-size:12px; color:var(--gris2); line-height:1.6}
   <div class="corps">
     <p class="titre"><span class="eur loin" title="Convertible — Non rattaché à un prospect ni à un canal d’acquisition.">€</span>Script d'appel adapté à chaque lead sur la feuille d'appel</p>
     <p class="note">Livré et vérifié : script replié sous chaque lead, adapté à son type, sa cuisine et l état réel de sa vitrine. Plus les vignettes des 12 sites (11 capturés) et le suivi d appel (appelé / pas de réponse / à rappeler + commentaire), testé avec rechargement.</p>
+    
+    
   </div>
   <a class="voir" href="/appels/">Voir</a>
 </li>
@@ -256,6 +310,8 @@ footer{margin-top:34px; font-size:12px; color:var(--gris2); line-height:1.6}
   <span class="pastille attente" aria-hidden="true"></span>
   <div class="corps">
     <p class="titre"><span class="eur direct" title="Cash direct — Prospect immobilier nommé. C’est la v4 qui s’envoie — la v2 avait été refusée, ne jamais repointer dessus.">€€€</span>Vidéo Koytcha v2 : sous-titres, textes animés HyperFrames (30 ans d'expérience + stats), un bien et un programme vers la fin, plus un b-roll de 3-4 s</p>
+    
+    
     
   </div>
   <a class="voir" href="/koytcha-video/">Voir</a>
@@ -265,6 +321,8 @@ footer{margin-top:34px; font-size:12px; color:var(--gris2); line-height:1.6}
   <div class="corps">
     <p class="titre"><span class="eur loin" title="Convertible — Non rattaché à un prospect ni à un canal d’acquisition.">€</span>Landing matrix : recaler la boule d'énergie sur la main et le doigt, adapter au mobile, puis vidéo + planification</p>
     <p class="note">Demande Tony 25/08 : la boule doit être décalée sur certains plans, grossir vers le doigt et vers le haut de la main. Puis réadapter le format mobile, produire une vidéo et la planifier.</p>
+    
+    
   </div>
   <a class="voir" href="/automatisationboost-matrix/">Voir</a>
 </li>
@@ -273,6 +331,8 @@ footer{margin-top:34px; font-size:12px; color:var(--gris2); line-height:1.6}
   <div class="corps">
     <p class="titre"><span class="eur loin" title="Convertible — Non rattaché à un prospect ni à un canal d’acquisition.">€</span>Comptes IA à zéro — 3 workflows sur 4 repartent en rechargeant OpenAI, le 4e non</p>
     <p class="note">Vérifié le 26/08, erreur réelle de la dernière exécution de chacun. OpenAI à zéro (3) : « Automatisé la création de sites web avec claude code restaurant » (jRl7GsvAVkB2xEk6), « Agent ia retourne solution » (iyuosFSnXzZhdIKB), « restaurant v5 demo + essai » (iIv2o7ADJl6wVKYT). Le libellé n8n dit « Rate limit reached », mais ces workflows ne tournent que 1 à 4 fois par JOUR : à cette fréquence un rate limit de débit ne peut pas se déclencher — c'est le 429 d'un solde épuisé. Le 4e, « kilo code restaurant » (nOmnxsyQUp1HtuYq), a DEUX pannes distinctes et aucune n'est OpenAI : le nœud Anthropic demande le modèle claude-opus-4-5-20251101 et reçoit « Bad request - please check your parameters », et « Scrape with Puppeteer2 » pointe sur http://164.68.127.62:80 qui ne répond plus (timeout à 20 s, testé). Recharger OpenAI ne le réparera pas. | MAJ 26/08 : les deux corrections du 4e workflow (nOmnxsyQUp1HtuYq) sont TROUVÉES et prouvées, mais NON APPLIQUÉES — volontairement. (1) Modèle : claude-opus-4-5-20251101 est refusé ; claude-haiku-4-5-20251001 est le seul identifiant Anthropic du parc avec un succès récent (« Blotato — Réponse auto commentaires Instagram », 26/08). (2) Puppeteer : l'endpoint browserless sur 164.68.127.62 est MORT (HTTP 000, timeout 20 s) ; celui sur 158.220.127.234 répond en 0,03 s et sert déjà 104 workflows. POURQUOI JE N'AI RIEN TOUCHÉ : en aval du scraper il y a « Mail Validation », « Send a transactional email1 » et « Envoie message whatsapp » (Evolution API). Réparer = rallumer des emails et des WhatsApp automatiques vers de vrais restaurateurs. Un mot de Tony et j'applique les deux en cinq minutes.</p>
+    
+    
   </div>
   <span class="voir vide" aria-hidden="true"></span>
 </li>
@@ -281,6 +341,8 @@ footer{margin-top:34px; font-size:12px; color:var(--gris2); line-height:1.6}
   <div class="corps">
     <p class="titre"><span class="eur loin" title="Convertible — Non rattaché à un prospect ni à un canal d’acquisition.">€</span>Prospection restaurants réparée — ce n’était pas le quota, mais une credential morte</p>
     <p class="note">Vérifié le 26/08 : le message réel n'était pas « quota épuisé » mais « Forbidden - perhaps check your credentials ». Apify fonctionne — trois workflows ont réussi le 26/08 avec « Apify account 2 » (dont « Récuperation lead Resto 12h » à 10h00). Dans C31 (4FXdW8gWi7iew8WB), deux planificateurs tournent chaque soir à 22h : la branche « Schedule Trigger » passait, celle de « Schedule Trigger1 » échouait sur le nœud « Recherche Google Maps », seul à utiliser « Apify account 3 tony dsi gmail » — compte mort. Repointé sur « Apify account 2 », publié (versionId = activeVersionId). Sauvegardes avant/après dans prospection-formation/sauvegardes-n8n/.</p>
+    
+    
   </div>
   <span class="voir vide" aria-hidden="true"></span>
 </li>
@@ -289,6 +351,8 @@ footer{margin-top:34px; font-size:12px; color:var(--gris2); line-height:1.6}
   <div class="corps">
     <p class="titre"><span class="eur direct" title="Cash direct — Prospect resto. La vidéo est prête, la relance n’est jamais partie.">€€€</span>Vidéo The Grill — burgers, tacos, wraps, assiettes</p>
     <p class="note">11,2 s, 9:16. Six de leurs vraies photos (site thegrill.re + fiche Google), filés latéraux façon Crousty, bande son de la référence sans la voix. Aucun prix ni horaire inventé.</p>
+    
+    
   </div>
   <a class="voir" href="https://previsualisation.automatisationboost.com/the-grill-burgers/">Voir</a>
 </li>
@@ -297,6 +361,8 @@ footer{margin-top:34px; font-size:12px; color:var(--gris2); line-height:1.6}
   <div class="corps">
     <p class="titre"><span class="eur loin" title="Convertible — Prérequis technique. Ça débloque de la production, pas une vente.">€</span>Un échantillon vocal propre — 30 à 45 s, au calme, sans musique</p>
     <p class="note">Le clone parlé grésille. Son échantillon source n'a jamais été contrôlé : un échantillon bruité donne un clone bruité.</p>
+    
+    
   </div>
   <span class="voir vide" aria-hidden="true"></span>
 </li>
@@ -305,6 +371,8 @@ footer{margin-top:34px; font-size:12px; color:var(--gris2); line-height:1.6}
   <div class="corps">
     <p class="titre"><span class="eur loin" title="Convertible — Prérequis technique. Ça débloque de la production, pas une vente.">€</span>Recharger WaveSpeed</p>
     <p class="note">Rechargé — vérifié le 08/09 : le webhook tts-gen renvoie un vrai MP3 (22 Ko sur un test). La voix clonée refonctionne.</p>
+    
+    
   </div>
   <span class="voir vide" aria-hidden="true"></span>
 </li>
@@ -313,6 +381,8 @@ footer{margin-top:34px; font-size:12px; color:var(--gris2); line-height:1.6}
   <div class="corps">
     <p class="titre"><span class="eur proche" title="Amene du cash — Canal d’acquisition. LinkedIn est le seul des cinq où rien ne part.">€€</span>Reconnecter LinkedIn dans Blotato</p>
     <p class="note">Token expiré. LinkedIn est le seul des 5 réseaux qui ne reçoit rien.</p>
+    
+    
   </div>
   <span class="voir vide" aria-hidden="true"></span>
 </li>
@@ -321,6 +391,8 @@ footer{margin-top:34px; font-size:12px; color:var(--gris2); line-height:1.6}
   <div class="corps">
     <p class="titre"><span class="eur proche" title="Amene du cash — Contenu social : ça construit l’audience qui fournit les prospects.">€€</span>5 vidéos prompt-reveal jamais programmées</p>
     <p class="note">Prêtes depuis le 17/08, absentes des 34 posts en file. Un mot de toi et je les planifie.</p>
+    
+    
   </div>
   <span class="voir vide" aria-hidden="true"></span>
 </li>
@@ -329,6 +401,8 @@ footer{margin-top:34px; font-size:12px; color:var(--gris2); line-height:1.6}
   <div class="corps">
     <p class="titre"><span class="eur proche" title="Amene du cash — Client test — c’est ta vitrine pour vendre aux autres restaurants.">€€</span>Vidéo BeFresh façon Crousty</p>
     <p class="note">Référence analysée (12,4 s, transitions en filé, intérieur néon). Manque les assets BeFresh : logo vectoriel et photos du mois.</p>
+    
+    
   </div>
   <span class="voir vide" aria-hidden="true"></span>
 </li>
@@ -337,6 +411,8 @@ footer{margin-top:34px; font-size:12px; color:var(--gris2); line-height:1.6}
   <div class="corps">
     <p class="titre"><span class="eur loin" title="Convertible — Prérequis technique. Ça débloque de la production, pas une vente.">€</span>Lip-sync du clip — 18 extraits chantés, 41,4 s</p>
     <p class="note">2,07 $ avec sync/lipsync-2. Solde WaveSpeed : 1,54 $. Un essai sur un extrait coûte 0,25 $. · Mis à plus tard le 08/09 : aucun prospect ni client au bout, et rien ne dépend de lui.</p>
+    
+    
   </div>
   <span class="voir vide" aria-hidden="true"></span>
 </li>
@@ -345,6 +421,8 @@ footer{margin-top:34px; font-size:12px; color:var(--gris2); line-height:1.6}
   <div class="corps">
     <p class="titre"><span class="eur proche" title="Amene du cash — Canal d’acquisition. LinkedIn est le seul des cinq où rien ne part.">€€</span>Carrousel LinkedIn 6 cartes — récap de la semaine</p>
     <p class="note">Images prêtes en 1200×1500. LinkedIn ne peut pas recevoir : le token Blotato est expiré.</p>
+    
+    
   </div>
   <span class="voir vide" aria-hidden="true"></span>
 </li>
@@ -353,6 +431,8 @@ footer{margin-top:34px; font-size:12px; color:var(--gris2); line-height:1.6}
   <div class="corps">
     <p class="titre"><span class="eur direct" title="Cash direct — Prospect immobilier nommé. C’est la v4 qui s’envoie — la v2 avait été refusée, ne jamais repointer dessus.">€€€</span>Koytcha — image révélée à travers le logo, bords de pinceau</p>
     <p class="note">Section « Nos biens » ramenée de 1 158 à 980 px.</p>
+    
+    
   </div>
   <a class="voir" href="/koytcha-refonte-v4/">Voir</a>
 </li>
@@ -361,6 +441,8 @@ footer{margin-top:34px; font-size:12px; color:var(--gris2); line-height:1.6}
   <div class="corps">
     <p class="titre"><span class="eur proche" title="Amene du cash — Contenu social : ça construit l’audience qui fournit les prospects.">€€</span>Chanson « lé chaud » chantée par ta voix clonée</p>
     <p class="note">voiceId 8b46633ba738f0ad1535c3c4c70d5491, obtenu au 5e essai. Les 4 échecs venaient d'un grep qui tuait le script.</p>
+    
+    
   </div>
   <a class="voir" href="/chanson-le-chaud/">Voir</a>
 </li>
@@ -369,6 +451,8 @@ footer{margin-top:34px; font-size:12px; color:var(--gris2); line-height:1.6}
   <div class="corps">
     <p class="titre"><span class="eur loin" title="Convertible — Non rattaché à un prospect ni à un canal d’acquisition.">€</span>Site La Réunion cinématique — le volcan intégré, boucle fermée</p>
     <p class="note">224 images. Le clip « retour » est en extension backward : il monte au lieu de descendre, donc inutilisable comme retour.</p>
+    
+    
   </div>
   <a class="voir" href="/reunion-vol/">Voir</a>
 </li>
@@ -377,6 +461,8 @@ footer{margin-top:34px; font-size:12px; color:var(--gris2); line-height:1.6}
   <div class="corps">
     <p class="titre"><span class="eur proche" title="Amene du cash — Contenu social : ça construit l’audience qui fournit les prospects.">€€</span>Split-screen « 30 000 prompts » avec ta voix clonée</p>
     <p class="note">Cadence relevée à l'image (18 changements sur 27,1 s). Le grésillement venait de la pente spectrale du TTS, pas du mixage.</p>
+    
+    
   </div>
   <a class="voir" href="/split-prompts/">Voir</a>
 </li>
@@ -385,6 +471,8 @@ footer{margin-top:34px; font-size:12px; color:var(--gris2); line-height:1.6}
   <div class="corps">
     <p class="titre"><span class="eur proche" title="Amene du cash — Contenu social : ça construit l’audience qui fournit les prospects.">€€</span>Clip roule kiki v3 — 16 clips, fin qui ne coupe plus à sec</p>
     <p class="note">Carton « à bientôt » en fondu, musique en descente sur 4,3 s. Le premier rendu avait recyclé les segments de la v2 : 3 s au lieu de 236.</p>
+    
+    
   </div>
   <a class="voir" href="/clip-roule-kiki-v2/">Voir</a>
 </li>
@@ -393,6 +481,8 @@ footer{margin-top:34px; font-size:12px; color:var(--gris2); line-height:1.6}
   <div class="corps">
     <p class="titre"><span class="eur direct" title="Cash direct — Huit commerces déjà destinataires d’un site. Chacun a maintenant une raison concrète d’être rappelé.">€€€</span>Boutons remis à la charte : Giulietta en vert, Coulommiers sur son accent, Mam'Zelle sur le brun de son logo</p>
     <p class="note">Giulietta n'avait aucun vert dans sa charte. Le brun de Mam'Zelle (#584242) est échantillonné sur logo-brun.png, pas inventé.</p>
+    
+    
   </div>
   <a class="voir" href="/client-giulietta-pizzeria-saint-pierre/">Voir</a>
 </li>
@@ -401,6 +491,8 @@ footer{margin-top:34px; font-size:12px; color:var(--gris2); line-height:1.6}
   <div class="corps">
     <p class="titre"><span class="eur direct" title="Cash direct — Huit commerces déjà destinataires d’un site. Chacun a maintenant une raison concrète d’être rappelé.">€€€</span>Traitement d'image aligné sur Villa Fleurie sur les 8 sites</p>
     <p class="note">Coins droits, ombre 0 8px 40px à 12 %, object-fit cover. Relevé sur le site de référence, pas supposé. Aucun des 8 ne l'avait.</p>
+    
+    
   </div>
   <a class="voir" href="/client-mamzelle-pizza-ile-reunion/">Voir</a>
 </li>
@@ -409,6 +501,8 @@ footer{margin-top:34px; font-size:12px; color:var(--gris2); line-height:1.6}
   <div class="corps">
     <p class="titre"><span class="eur direct" title="Cash direct — Huit commerces déjà destinataires d’un site. Chacun a maintenant une raison concrète d’être rappelé.">€€€</span>Les 8 sites clients corrigés — zéro débordement, zéro erreur, zéro image manquante</p>
     <p class="note">Le brief donnait des chemins périmés : les dossiers ont un préfixe `client-`, sans quoi les 8 renvoyaient 404.</p>
+    
+    
   </div>
   <a class="voir" href="/client-kmila-pizza-reunion/">Voir</a>
 </li>
@@ -417,6 +511,8 @@ footer{margin-top:34px; font-size:12px; color:var(--gris2); line-height:1.6}
   <div class="corps">
     <p class="titre"><span class="eur proche" title="Amene du cash — Contenu social : ça construit l’audience qui fournit les prospects.">€€</span>Top 3 en écran scindé, avatar qui pointe vers les logos</p>
     <p class="note">Le geste ne durait que 3 s dans le clip source : portion isolée et bouclée.</p>
+    
+    
   </div>
   <a class="voir" href="/autoboost-top3-split/">Voir</a>
 </li>
@@ -424,6 +520,8 @@ footer{margin-top:34px; font-size:12px; color:var(--gris2); line-height:1.6}
   <span class="pastille livre" aria-hidden="true"></span>
   <div class="corps">
     <p class="titre"><span class="eur direct" title="Cash direct — Ta vitrine de vente. C’est la page où atterrissent les prospects.">€€€</span>Landing AutomatisationBoost cinématique (salle de contrôle)</p>
+    
+    
     
   </div>
   <a class="voir" href="/automatisationboost-cinematique/">Voir</a>
@@ -433,6 +531,8 @@ footer{margin-top:34px; font-size:12px; color:var(--gris2); line-height:1.6}
   <div class="corps">
     <p class="titre"><span class="eur direct" title="Cash direct — Ta vitrine de vente. C’est la page où atterrissent les prospects.">€€€</span>Landing avec ton visage, boule d'énergie, casque VR, matrice</p>
     <p class="note">Boule dessinée en canvas : incrustée dans la photo, elle n'aurait pas pu grossir.</p>
+    
+    
   </div>
   <a class="voir" href="/automatisationboost-matrix/">Voir</a>
 </li>
@@ -441,6 +541,8 @@ footer{margin-top:34px; font-size:12px; color:var(--gris2); line-height:1.6}
   <div class="corps">
     <p class="titre"><span class="eur proche" title="Amene du cash — Client test — c’est ta vitrine pour vendre aux autres restaurants.">€€</span>3 vidéos BeFresh — accès événementiel, 2 montages + beat-sync</p>
     <p class="note">BPM mesuré à 130,00 — le manifeste annonçait 128.</p>
+    
+    
   </div>
   <a class="voir" href="/befresh-evenementiel/">Voir</a>
 </li>
@@ -449,6 +551,8 @@ footer{margin-top:34px; font-size:12px; color:var(--gris2); line-height:1.6}
   <div class="corps">
     <p class="titre"><span class="eur direct" title="Cash direct — Dossier complet, concurrents VR fermés. Site + vidéo prêts à montrer.">€€€</span>Site Family Arena, style cinématique au scroll</p>
     <p class="note">Portail qui s'ouvre depuis la tête de la joueuse.</p>
+    
+    
   </div>
   <a class="voir" href="/family-arena-portail/">Voir</a>
 </li>
@@ -457,6 +561,8 @@ footer{margin-top:34px; font-size:12px; color:var(--gris2); line-height:1.6}
   <div class="corps">
     <p class="titre"><span class="eur proche" title="Amene du cash — Contenu social : ça construit l’audience qui fournit les prospects.">€€</span>Essai ego refait sans or ni néon</p>
     <p class="note">0 pixel doré mesuré sur toute la durée. Musique « Au bord des étoiles ».</p>
+    
+    
   </div>
   <a class="voir" href="/essai-ego-tom-odell-v2/">Voir</a>
 </li>
@@ -465,6 +571,8 @@ footer{margin-top:34px; font-size:12px; color:var(--gris2); line-height:1.6}
   <div class="corps">
     <p class="titre"><span class="eur proche" title="Amene du cash — Produit à vendre. Il lui manque encore son chemin d’achat.">€€</span>Vidéo du contenu de la formation</p>
     <p class="note">Les 6 titres de modules sont les vrais, lus dans le cours.</p>
+    
+    
   </div>
   <a class="voir" href="/autoboost-formation-contenu/">Voir</a>
 </li>
@@ -473,6 +581,8 @@ footer{margin-top:34px; font-size:12px; color:var(--gris2); line-height:1.6}
   <div class="corps">
     <p class="titre"><span class="eur proche" title="Amene du cash — Contenu social : ça construit l’audience qui fournit les prospects.">€€</span>Journal IA du 21/08 réparé (il était vide)</p>
     <p class="note">64,3 s au lieu de 18,9. Garde-fou posé : sous 3 brèves, le rendu refuse.</p>
+    
+    
   </div>
   <a class="voir" href="/journal-ia-2026-08-21/">Voir</a>
 </li>
@@ -481,6 +591,8 @@ footer{margin-top:34px; font-size:12px; color:var(--gris2); line-height:1.6}
   <div class="corps">
     <p class="titre"><span class="eur loin" title="Convertible — Non rattaché à un prospect ni à un canal d’acquisition.">€</span>Carte des projets — bulles, objectifs, pourquoi</p>
     <p class="note">Avec pomodoro et accès Notion.</p>
+    
+    
   </div>
   <a class="voir" href="/carte/">Voir</a>
 </li>
@@ -489,6 +601,8 @@ footer{margin-top:34px; font-size:12px; color:var(--gris2); line-height:1.6}
   <div class="corps">
     <p class="titre"><span class="eur direct" title="Cash direct — C’est l’outil de relance lui-même : qui a été appelé, qui ne l’a pas été.">€€€</span>Sites clients — galerie, avant/après, suivi d'appels</p>
     <p class="note">66 captures du vrai site actuel. 5 domaines ne résolvent plus.</p>
+    
+    
   </div>
   <a class="voir" href="/sites-clients/vue.html">Voir</a>
 </li>
@@ -497,6 +611,8 @@ footer{margin-top:34px; font-size:12px; color:var(--gris2); line-height:1.6}
   <div class="corps">
     <p class="titre"><span class="eur proche" title="Amene du cash — Capture de leads. Ça alimente la liste, ça ne facture pas.">€€</span>Ressource sur le volume en acquisition + calculateur</p>
     <p class="note">MOFU. Écrite sur tes chiffres : 15 posts sur 16 sans commentaire.</p>
+    
+    
   </div>
   <a class="voir" href="/ressource-volume-acquisition/">Voir</a>
 </li>
@@ -505,6 +621,8 @@ footer{margin-top:34px; font-size:12px; color:var(--gris2); line-height:1.6}
   <div class="corps">
     <p class="titre"><span class="eur loin" title="Convertible — Non rattaché à un prospect ni à un canal d’acquisition.">€</span>Index de prévisualisation filtrable, titres raccourcis</p>
     <p class="note">560 caractères max → 79. 297 routes listées au lieu de 150.</p>
+    
+    
   </div>
   <a class="voir" href="/">Voir</a>
 </li>
@@ -513,6 +631,8 @@ footer{margin-top:34px; font-size:12px; color:var(--gris2); line-height:1.6}
   <div class="corps">
     <p class="titre"><span class="eur loin" title="Convertible — Non rattaché à un prospect ni à un canal d’acquisition.">€</span>Loupe « chercher sur Google » sur les fiches sans site</p>
     <p class="note">51 fiches. « Aucun site » est une conclusion de machine — la loupe te rend la vérification.</p>
+    
+    
   </div>
   <a class="voir" href="/sites-clients/vue.html">Voir</a>
 </li>
@@ -521,6 +641,8 @@ footer{margin-top:34px; font-size:12px; color:var(--gris2); line-height:1.6}
   <div class="corps">
     <p class="titre"><span class="eur direct" title="Cash direct — Dossier complet, concurrents VR fermés. Site + vidéo prêts à montrer.">€€€</span>Souvenir HADO pour Family Arena</p>
     <p class="note">Clip de 5 s généré par Seedance, 0,90 $. Envoyé en fichier.</p>
+    
+    
   </div>
   <span class="voir vide" aria-hidden="true"></span>
 </li>
@@ -529,6 +651,8 @@ footer{margin-top:34px; font-size:12px; color:var(--gris2); line-height:1.6}
   <div class="corps">
     <p class="titre"><span class="eur proche" title="Amene du cash — Contenu social : ça construit l’audience qui fournit les prospects.">€€</span>Time-lapse « je suis réel » à partir de tes 3 vidéos</p>
     <p class="note">18,9 s → 4,4 s, en 9:16 et 16:9, sans musique pour s'insérer partout.</p>
+    
+    
   </div>
   <span class="voir vide" aria-hidden="true"></span>
 </li>
@@ -537,6 +661,8 @@ footer{margin-top:34px; font-size:12px; color:var(--gris2); line-height:1.6}
   <div class="corps">
     <p class="titre"><span class="eur loin" title="Convertible — Non rattaché à un prospect ni à un canal d’acquisition.">€</span>Production vidéo basculée sur v3, fond vert en pause</p>
     <p class="note">Skills + 2 agents + 1 routine cloud. Le cercle néon jaune est conservé.</p>
+    
+    
   </div>
   <span class="voir vide" aria-hidden="true"></span>
 </li>
@@ -545,6 +671,8 @@ footer{margin-top:34px; font-size:12px; color:var(--gris2); line-height:1.6}
   <div class="corps">
     <p class="titre"><span class="eur proche" title="Amene du cash — Contenu social : ça construit l’audience qui fournit les prospects.">€€</span>Journal IA élargi — GitHub, clivant, coup à jouer</p>
     <p class="note">Effectif à la prochaine édition, 00h05 UTC.</p>
+    
+    
   </div>
   <span class="voir vide" aria-hidden="true"></span>
 </li>
@@ -553,6 +681,8 @@ footer{margin-top:34px; font-size:12px; color:var(--gris2); line-height:1.6}
   <div class="corps">
     <p class="titre"><span class="eur proche" title="Amene du cash — Contenu social : ça construit l’audience qui fournit les prospects.">€€</span>Publier le Journal IA corrigé sur les 5 réseaux</p>
     <p class="note">Publié le 06/09 : upload binaire Blotato puis 5 posts programmés (TikTok, YouTube, Facebook, Instagram, LinkedIn). Le refus de permission venait de l'URL Cloudflare, pas des droits.</p>
+    
+    
   </div>
   <span class="voir vide" aria-hidden="true"></span>
 </li>
@@ -561,6 +691,8 @@ footer{margin-top:34px; font-size:12px; color:var(--gris2); line-height:1.6}
   <div class="corps">
     <p class="titre"><span class="eur proche" title="Amene du cash — Contenu social : ça construit l’audience qui fournit les prospects.">€€</span>Programmer les 4 prompt-reveal (sauf REGARD)</p>
     <p class="note">Même blocage de permission — et BURGER, SHONEN, NEON, COMBAT n'ont aucune porte.</p>
+    
+    
   </div>
   <span class="voir vide" aria-hidden="true"></span>
 </li>
@@ -569,6 +701,8 @@ footer{margin-top:34px; font-size:12px; color:var(--gris2); line-height:1.6}
   <div class="corps">
     <p class="titre"><span class="eur proche" title="Amene du cash — Client test — c’est ta vitrine pour vendre aux autres restaurants.">€€</span>Choisir la voix BeFresh</p>
     <p class="note">9 voix ElevenLabs envoyées. Dès que tu choisis, je refais les 3 montages pour 12 centimes.</p>
+    
+    
   </div>
   <span class="voir vide" aria-hidden="true"></span>
 </li>
@@ -577,6 +711,8 @@ footer{margin-top:34px; font-size:12px; color:var(--gris2); line-height:1.6}
   <div class="corps">
     <p class="titre"><span class="eur direct" title="Cash direct — Dossier complet, concurrents VR fermés. Site + vidéo prêts à montrer.">€€€</span>Family Arena — vraie séquence HADO filmée</p>
     <p class="note">Le clip actuel part d'une image générée. Avec 10-20 s filmées chez eux, le rendez-vous se conclut seul.</p>
+    
+    
   </div>
   <span class="voir vide" aria-hidden="true"></span>
 </li>
@@ -585,6 +721,8 @@ footer{margin-top:34px; font-size:12px; color:var(--gris2); line-height:1.6}
   <div class="corps">
     <p class="titre"><span class="eur direct" title="Cash direct — Tu as écrit toi-même « vendre le clip ou la méthode ». C’est une offre, pas un rendu.">€€€</span>Projet Kripia — orthographe, style, et vendre le clip ou la méthode</p>
     <p class="note">La fourche décide de tout : prestation ou produit.</p>
+    
+    
   </div>
   <span class="voir vide" aria-hidden="true"></span>
 </li>
@@ -593,6 +731,8 @@ footer{margin-top:34px; font-size:12px; color:var(--gris2); line-height:1.6}
   <div class="corps">
     <p class="titre"><span class="eur loin" title="Convertible — Non rattaché à un prospect ni à un canal d’acquisition.">€</span>Clip de 3 minutes beat-sync</p>
     <p class="note">Ta banque avatar n'a que 38,8 s exploitables. Il faut tourner davantage, ou inverser le rapport image/avatar. · Mis à plus tard le 08/09 : aucun prospect ni client au bout, et rien ne dépend de lui.</p>
+    
+    
   </div>
   <span class="voir vide" aria-hidden="true"></span>
 </li>
@@ -601,6 +741,8 @@ footer{margin-top:34px; font-size:12px; color:var(--gris2); line-height:1.6}
   <div class="corps">
     <p class="titre"><span class="eur proche" title="Amene du cash — Capture de leads. Ça alimente la liste, ça ne facture pas.">€€</span>Mot-clé et porte pour les 2 ressources écrites aujourd'hui</p>
     <p class="note">Tu as déjà 15 mots annoncés sans porte. Je n'en ajoute pas un 16e sans ton accord.</p>
+    
+    
   </div>
   <span class="voir vide" aria-hidden="true"></span>
 </li>
@@ -609,6 +751,8 @@ footer{margin-top:34px; font-size:12px; color:var(--gris2); line-height:1.6}
   <div class="corps">
     <p class="titre"><span class="eur loin" title="Convertible — Outillage interne. Convertible en offre, mais rien à facturer en l’état.">€</span>Planifier cron-watchdog en routine quotidienne</p>
     <p class="note">Il n'a jamais tourné : rien ne l'invoque. C'est lui qui aurait vu le journal vide.</p>
+    
+    
   </div>
   <span class="voir vide" aria-hidden="true"></span>
 </li>
@@ -617,6 +761,8 @@ footer{margin-top:34px; font-size:12px; color:var(--gris2); line-height:1.6}
   <div class="corps">
     <p class="titre"><span class="eur loin" title="Convertible — Non rattaché à un prospect ni à un canal d’acquisition.">€</span>Gîte Matilona remis en ligne</p>
     <p class="note">Était exited:unhealthy côté Coolify depuis au moins le 24/08. Redéployé le 25/08, vérifié en HTTP 200 avec la vraie page (27,8 ko, titre correct). la-kaz-de-ben et ticoeur-store-v2 étaient dans le même cas, remis en ligne aussi.</p>
+    
+    
   </div>
   <a class="voir" href="https://gite-matilona-sainte-rose.automatisationboost.com">Voir</a>
 </li>
@@ -625,6 +771,8 @@ footer{margin-top:34px; font-size:12px; color:var(--gris2); line-height:1.6}
   <div class="corps">
     <p class="titre"><span class="eur loin" title="Convertible — Outillage interne. Convertible en offre, mais rien à facturer en l’état.">€</span>Repointer les 2 autres routines cloud en v3</p>
     <p class="note">Dont le doublon quotidien de 22h, qui produit une 2e vidéo depuis la même file.</p>
+    
+    
   </div>
   <span class="voir vide" aria-hidden="true"></span>
 </li>
@@ -633,6 +781,8 @@ footer{margin-top:34px; font-size:12px; color:var(--gris2); line-height:1.6}
   <div class="corps">
     <p class="titre"><span class="eur proche" title="Amene du cash — Client test — c’est ta vitrine pour vendre aux autres restaurants.">€€</span>Feed Instagram BeFresh</p>
     <p class="note">Mentionné en passant, jamais traité. Dis-moi si c'est toujours d'actualité.</p>
+    
+    
   </div>
   <span class="voir vide" aria-hidden="true"></span>
 </li>
@@ -641,6 +791,8 @@ footer{margin-top:34px; font-size:12px; color:var(--gris2); line-height:1.6}
   <div class="corps">
     <p class="titre"><span class="eur loin" title="Convertible — Outillage interne. Convertible en offre, mais rien à facturer en l’état.">€</span>Skill reel-tempo-match (mesurer le BPM d'un Reel de référence)</p>
     <p class="note">Proposé, pas construit. Il me faut un Reel de calibrage. · Mis à plus tard le 08/09 : aucun prospect ni client au bout, et rien ne dépend de lui.</p>
+    
+    
   </div>
   <span class="voir vide" aria-hidden="true"></span>
 </li>
@@ -649,6 +801,8 @@ footer{margin-top:34px; font-size:12px; color:var(--gris2); line-height:1.6}
   <div class="corps">
     <p class="titre"><span class="eur loin" title="Convertible — Non rattaché à un prospect ni à un canal d’acquisition.">€</span>3 autres clips Higgsfield + musique tendance</p>
     <p class="note">Le blocage vidéo est levé — Seedance marche via WaveSpeed. Il me manque le choix des clips. · Mis à plus tard le 08/09 : aucun prospect ni client au bout, et rien ne dépend de lui.</p>
+    
+    
   </div>
   <span class="voir vide" aria-hidden="true"></span>
 </li>
@@ -657,6 +811,8 @@ footer{margin-top:34px; font-size:12px; color:var(--gris2); line-height:1.6}
   <div class="corps">
     <p class="titre"><span class="eur loin" title="Convertible — Outillage interne. Convertible en offre, mais rien à facturer en l’état.">€</span>VideoBoost 100 % hors ligne</p>
     <p class="note">Faisable : il ne reste que TTS et Whisper à remplacer en local. Dis-moi ta machine. · Mis à plus tard le 08/09 : aucun prospect ni client au bout, et rien ne dépend de lui.</p>
+    
+    
   </div>
   <span class="voir vide" aria-hidden="true"></span>
 </li>
@@ -665,6 +821,8 @@ footer{margin-top:34px; font-size:12px; color:var(--gris2); line-height:1.6}
   <div class="corps">
     <p class="titre"><span class="eur loin" title="Convertible — Non rattaché à un prospect ni à un canal d’acquisition.">€</span>Dépôt previsualisation public — 799 numéros et 254 emails de tiers lisibles sur GitHub</p>
     <p class="note">Mesuré le 08/09 : 799 numéros uniques et 254 emails répartis dans 141 fichiers versionnés (appels/resultats.json, appels/mode/leads.json, a-envoyer/…). Le dépôt tonyPayetDev/previsualisation est public. Les URL renvoient bien 401, mais GitHub sert les fichiers en clair. Deux issues : passer le dépôt en privé (une case dans les réglages GitHub, Coolify continue de déployer avec ton jeton), ou sortir les données du dépôt et les servir depuis R2 derrière le mot de passe. La première est immédiate.</p>
+    
+    
   </div>
   <span class="voir vide" aria-hidden="true"></span>
 </li>
@@ -673,6 +831,28 @@ footer{margin-top:34px; font-size:12px; color:var(--gris2); line-height:1.6}
   <div class="corps">
     <p class="titre"><span class="eur loin" title="Convertible — Outillage interne. Convertible en offre, mais rien à facturer en l’état.">€</span>Agent YouTube auto-hébergé (AgentTube) — décider quoi en faire</p>
     <p class="note">Installé et vérifié ici : 495 paquets, 45 tests sur 45, tableau de bord opérationnel sur le port 3456. Il tourne en mode setup — il ne génère ni ne publie rien tant que le walkthrough n’est pas passé. Trois décisions t’appartiennent : quelle chaîne YouTube il alimente, quel fournisseur vidéo (il sait parler à Seedance via Replicate), et où il tourne en permanence — ici il s’éteint avec la session. · Mis à plus tard le 08/09 : aucun prospect ni client au bout, et rien ne dépend de lui.</p>
+    
+    
+  </div>
+  <span class="voir vide" aria-hidden="true"></span>
+</li>
+<li class="t" data-etat="propose" data-cash="direct">
+  <span class="pastille propose" aria-hidden="true"></span>
+  <div class="corps">
+    <p class="titre"><span class="badge-propose">💡 proposé cette semaine</span><span class="eur direct" title="Cash direct — 35 prospects nommés avec contact direct. Relancer peut produire un RDV audit cette semaine.">€€€</span>Relancer les 35 prospects de PROSPECTS-AUDIT-IA.md avec l'offre audit IA</p>
+    <p class="note">Carte proposée automatiquement cette semaine — à valider ou à renvoyer en modification. Rien ne part avant ton clic.</p>
+    <p class="note justification">💬 35 structures réunionnaises qualifiées avec un contact direct utilisable sont recensées depuis le 09/09 (secteurs conseil, immobilier, BTP, tourisme, services) et aucune n'a encore été contactée — c'est un stock de prospects prêt à l'emploi qui dort. <span class="impact">🤝 clients</span></p>
+    <div class="propose-actions" data-carte="relance-prospects-audit-ia">
+      <div class="propose-boutons">
+        <button type="button" class="btn-propose btn-ok">✅ OK, envoie</button>
+        <button type="button" class="btn-propose btn-modifier">✏️ Modifier</button>
+      </div>
+      <div class="propose-modif" hidden>
+        <textarea rows="2" placeholder="Ce qui doit changer…"></textarea>
+        <button type="button" class="btn-propose btn-envoyer-modif">Envoyer le retour</button>
+      </div>
+      <p class="propose-statut" hidden></p>
+    </div>
   </div>
   <span class="voir vide" aria-hidden="true"></span>
 </li>
@@ -784,6 +964,64 @@ bCash.forEach(function(b){
   });
 });
 appliquer();
+
+/* ── Boutons des cartes proposées ────────────────────────────────────────
+   Même principe que previsualisation/audit/index.html : on n'affiche une
+   confirmation qu'après une vraie réponse HTTP 200 du webhook, une seule
+   reprise en cas d'échec réseau, sinon un message d'erreur clair. */
+var WEBHOOK_CARTE = 'https://n7n.automatisationboost.com/webhook/carte-action';
+
+function posterCarte(corps) {
+  return fetch(WEBHOOK_CARTE, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(corps)
+  }).then(function (r) {
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    return r.text();
+  });
+}
+
+function envoyerCarte(carteId, action, retour, boutons, statutEl) {
+  boutons.forEach(function (b) { b.disabled = true; });
+  statutEl.hidden = false;
+  statutEl.className = 'propose-statut envoi';
+  statutEl.textContent = 'Envoi…';
+  posterCarte({ carte_id: carteId, action: action, retour: retour || '' })
+    .catch(function () { return posterCarte({ carte_id: carteId, action: action, retour: retour || '' }); })
+    .then(function () {
+      statutEl.className = 'propose-statut ok';
+      statutEl.textContent = '✓ Envoyé — repris dans la journée';
+    })
+    .catch(function () {
+      boutons.forEach(function (b) { b.disabled = false; });
+      statutEl.className = 'propose-statut erreur';
+      statutEl.textContent = 'L’envoi n’est pas passé — réessaie, ou dis-le-moi directement.';
+    });
+}
+
+[].slice.call(document.querySelectorAll('.propose-actions')).forEach(function (bloc) {
+  var carteId = bloc.dataset.carte;
+  var btnOk = bloc.querySelector('.btn-ok');
+  var btnModifier = bloc.querySelector('.btn-modifier');
+  var zoneModif = bloc.querySelector('.propose-modif');
+  var textarea = zoneModif.querySelector('textarea');
+  var btnEnvoyerModif = zoneModif.querySelector('.btn-envoyer-modif');
+  var statutEl = bloc.querySelector('.propose-statut');
+
+  btnOk.addEventListener('click', function () {
+    envoyerCarte(carteId, 'approuve', '', [btnOk, btnModifier], statutEl);
+  });
+  btnModifier.addEventListener('click', function () {
+    zoneModif.hidden = !zoneModif.hidden;
+    if (!zoneModif.hidden) textarea.focus();
+  });
+  btnEnvoyerModif.addEventListener('click', function () {
+    var retour = textarea.value.trim();
+    if (!retour) { textarea.focus(); return; }
+    envoyerCarte(carteId, 'modifier', retour, [btnOk, btnModifier, btnEnvoyerModif], statutEl);
+  });
+});
 </script>
 </body>
 </html>

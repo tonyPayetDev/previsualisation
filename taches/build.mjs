@@ -13,6 +13,15 @@ const data = JSON.parse(fs.readFileSync(path.join(D, 'taches.json'), 'utf8'));
 
 const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
+/* Identifiant stable d'une carte, pour le webhook /webhook/carte-action.
+   On préfère un champ "id" explicite (ajouté par l'agent qui propose la
+   carte) ; à défaut on dérive un slug du titre — jamais le titre brut,
+   qui change de formulation d'une proposition à l'autre. */
+const slug = s => String(s).toLowerCase()
+  .normalize('NFD').replace(/[̀-ͯ]/g, '')
+  .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 60);
+const carteId = t => t.id || slug(t.t);
+
 /* ── Les outils, déclarés ici et VÉRIFIÉS avant d'être affichés ───────────
  *
  * Cette page est le point d'entrée : c'est elle que Tony ouvre. Or plusieurs
@@ -66,6 +75,15 @@ const ETATS = {
   'plus-tard': { nom: 'Plus tard', aide: 'gardé, mais rien ni personne n\'attend dessus' },
 };
 
+/* ── Cartes proposées par l'agent hebdomadaire ────────────────────────────
+ * "propose" = brouillon frais, jamais encore montré. "a-retravailler" =
+ * renvoyé en modification, un nouveau brouillon est attendu du veilleur
+ * quotidien. Les deux affichent le badge et les deux boutons : rien ne
+ * part en public sans un clic "OK, envoie" explicite (voir PROPOSITIONS.md).
+ */
+const PROPOSE_ETATS = new Set(['propose', 'a-retravailler']);
+const IMPACT = { volume: '📈 volume', clients: '🤝 clients', strategie: '🧭 stratégie' };
+
 const n = e => data.taches.filter(t => t.etat === e).length;
 
 // L axe « proximite du cash », demande par Tony. Il est ORTHOGONAL a l etat :
@@ -82,14 +100,30 @@ const c = k => data.taches.filter(t => t.cash === k).length;
 // courte et la plus rentable de la page.
 const aEnvoyer = data.taches.filter(t => t.cash === "direct" && t.etat === "livre");
 
-const ligne = t => `<li class="t" data-etat="${t.etat}" data-cash="${t.cash}">
+const ligne = t => {
+  const proposee = PROPOSE_ETATS.has(t.etat);
+  const id = carteId(t);
+  return `<li class="t" data-etat="${t.etat}" data-cash="${t.cash}">
   <span class="pastille ${t.etat}" aria-hidden="true"></span>
   <div class="corps">
-    <p class="titre"><span class="eur ${t.cash}" title="${esc(CASH[t.cash].nom)} — ${esc(t.cashNote || '')}">${CASH[t.cash].pic}</span>${esc(t.t)}</p>
+    <p class="titre">${proposee ? '<span class="badge-propose">💡 proposé cette semaine</span>' : ''}<span class="eur ${t.cash}" title="${esc(CASH[t.cash].nom)} — ${esc(t.cashNote || '')}">${CASH[t.cash].pic}</span>${esc(t.t)}</p>
     ${t.note ? `<p class="note">${esc(t.note)}</p>` : ''}
+    ${proposee && t.justification ? `<p class="note justification">💬 ${esc(t.justification)}${t.impact && IMPACT[t.impact] ? ` <span class="impact">${IMPACT[t.impact]}</span>` : ''}</p>` : ''}
+    ${proposee ? `<div class="propose-actions" data-carte="${esc(id)}">
+      <div class="propose-boutons">
+        <button type="button" class="btn-propose btn-ok">✅ OK, envoie</button>
+        <button type="button" class="btn-propose btn-modifier">✏️ Modifier</button>
+      </div>
+      <div class="propose-modif" hidden>
+        <textarea rows="2" placeholder="Ce qui doit changer…"></textarea>
+        <button type="button" class="btn-propose btn-envoyer-modif">Envoyer le retour</button>
+      </div>
+      <p class="propose-statut" hidden></p>
+    </div>` : ''}
   </div>
   ${t.lien ? `<a class="voir" href="${esc(t.lien)}">Voir</a>` : '<span class="voir vide" aria-hidden="true"></span>'}
 </li>`;
+};
 
 const ligneToi = (x) => {
   const t = (typeof x === 'string') ? { t: x } : (x || {});
@@ -199,6 +233,7 @@ ul{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; ga
 .pastille{width:8px; height:8px; border-radius:50%; margin-top:8px; flex:0 0 8px}
 .pastille.livre{background:var(--vert)} .pastille.bloque{background:var(--rouge)}
 .pastille.attente{background:var(--ambre)} .pastille.toi{background:var(--bleu)}
+.pastille.propose, .pastille.a-retravailler{background:#3dc4c2}
 .corps{flex:1; min-width:0}
 .titre{margin:0; font-size:15px; line-height:1.4}
 .note{margin:4px 0 0; font-size:13px; color:var(--gris); line-height:1.45}
@@ -209,6 +244,41 @@ ul{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; ga
 .voir:hover{background:#182338}
 .voir.vide{border:0; padding:0; width:0}
 .toi .titre{font-weight:500}
+
+/* ── Cartes proposées par l'agent hebdomadaire ─────────────────────────── */
+.badge-propose{
+  display:inline-block; font-size:11px; font-weight:700; letter-spacing:.02em;
+  color:#0c0d18; background:#3dc4c2; border-radius:99px; padding:2px 9px;
+  margin:0 8px 4px 0; vertical-align:2px; white-space:nowrap;
+}
+.note.justification{color:#c9e9e8}
+.note.justification .impact{
+  display:inline-block; font-size:11px; color:var(--gris); border:1px solid var(--bord);
+  border-radius:99px; padding:1px 8px; margin-left:4px; vertical-align:1px;
+}
+.propose-actions{margin-top:10px}
+.propose-boutons{display:flex; flex-wrap:wrap; gap:8px}
+.btn-propose{
+  font:inherit; font-size:13px; font-weight:600; border-radius:8px; padding:6px 13px;
+  cursor:pointer; transition:opacity .15s, background .15s;
+}
+.btn-propose:disabled{opacity:.55; cursor:default}
+.btn-ok{background:#3dc4c2; color:#06201f; border:1px solid #3dc4c2}
+.btn-ok:hover:not(:disabled){background:#4dd4d2}
+.btn-modifier{background:transparent; color:#eab308; border:1px solid #6b5a1a}
+.btn-modifier:hover:not(:disabled){background:rgba(234,179,8,.12)}
+.btn-envoyer-modif{background:#eab308; color:#1a1200; border:1px solid #eab308; margin-top:8px}
+.btn-envoyer-modif:hover:not(:disabled){background:#f2c332}
+.propose-modif{margin-top:9px; display:flex; flex-direction:column; align-items:flex-start; gap:0}
+.propose-modif textarea{
+  width:100%; max-width:420px; resize:vertical; font:inherit; font-size:13.5px;
+  background:#0e1013; color:var(--texte); border:1px solid var(--bord); border-radius:8px;
+  padding:8px 10px; box-sizing:border-box;
+}
+.propose-statut{font-size:13px; margin:9px 0 0}
+.propose-statut.envoi{color:var(--gris)}
+.propose-statut.ok{color:#3dc4c2; font-weight:600}
+.propose-statut.erreur{color:var(--rouge)}
 .rappel{
   border:1px solid #2a3446; background:#141a24; border-radius:11px;
   padding:13px 14px; margin:10px 0 0; font-size:13.5px; color:#b8c4d4; line-height:1.5;
@@ -321,6 +391,64 @@ bCash.forEach(function(b){
   });
 });
 appliquer();
+
+/* ── Boutons des cartes proposées ────────────────────────────────────────
+   Même principe que previsualisation/audit/index.html : on n'affiche une
+   confirmation qu'après une vraie réponse HTTP 200 du webhook, une seule
+   reprise en cas d'échec réseau, sinon un message d'erreur clair. */
+var WEBHOOK_CARTE = 'https://n7n.automatisationboost.com/webhook/carte-action';
+
+function posterCarte(corps) {
+  return fetch(WEBHOOK_CARTE, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(corps)
+  }).then(function (r) {
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    return r.text();
+  });
+}
+
+function envoyerCarte(carteId, action, retour, boutons, statutEl) {
+  boutons.forEach(function (b) { b.disabled = true; });
+  statutEl.hidden = false;
+  statutEl.className = 'propose-statut envoi';
+  statutEl.textContent = 'Envoi…';
+  posterCarte({ carte_id: carteId, action: action, retour: retour || '' })
+    .catch(function () { return posterCarte({ carte_id: carteId, action: action, retour: retour || '' }); })
+    .then(function () {
+      statutEl.className = 'propose-statut ok';
+      statutEl.textContent = '✓ Envoyé — repris dans la journée';
+    })
+    .catch(function () {
+      boutons.forEach(function (b) { b.disabled = false; });
+      statutEl.className = 'propose-statut erreur';
+      statutEl.textContent = 'L’envoi n’est pas passé — réessaie, ou dis-le-moi directement.';
+    });
+}
+
+[].slice.call(document.querySelectorAll('.propose-actions')).forEach(function (bloc) {
+  var carteId = bloc.dataset.carte;
+  var btnOk = bloc.querySelector('.btn-ok');
+  var btnModifier = bloc.querySelector('.btn-modifier');
+  var zoneModif = bloc.querySelector('.propose-modif');
+  var textarea = zoneModif.querySelector('textarea');
+  var btnEnvoyerModif = zoneModif.querySelector('.btn-envoyer-modif');
+  var statutEl = bloc.querySelector('.propose-statut');
+
+  btnOk.addEventListener('click', function () {
+    envoyerCarte(carteId, 'approuve', '', [btnOk, btnModifier], statutEl);
+  });
+  btnModifier.addEventListener('click', function () {
+    zoneModif.hidden = !zoneModif.hidden;
+    if (!zoneModif.hidden) textarea.focus();
+  });
+  btnEnvoyerModif.addEventListener('click', function () {
+    var retour = textarea.value.trim();
+    if (!retour) { textarea.focus(); return; }
+    envoyerCarte(carteId, 'modifier', retour, [btnOk, btnModifier, btnEnvoyerModif], statutEl);
+  });
+});
 </script>
 </body>
 </html>

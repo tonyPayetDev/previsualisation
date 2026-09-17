@@ -30,6 +30,7 @@ const REGLES = [
   [/kripia/i,                     'direct', 'Tu as écrit toi-même « vendre le clip ou la méthode ». C’est une offre, pas un rendu.'],
   [/gite-matilona/i,              'direct', 'Site remis en ligne le 25/08. Le rappeler maintenant a une raison concrète.'],
   [/landing automatisationboost|landing avec ton visage/i, 'direct', 'Ta vitrine de vente. C’est la page où atterrissent les prospects.'],
+  [/35 prospects|prospects-audit-ia|audit-ia\.md/i, 'direct', '35 prospects nommés avec contact direct. Relancer peut produire un RDV audit cette semaine.'],
 
   // ── PROCHE : ça sert la vente, sans facture au bout ───────────────────────
   [/befresh/i,                    'proche', 'Client test — c’est ta vitrine pour vendre aux autres restaurants.'],
