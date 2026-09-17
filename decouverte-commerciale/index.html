@@ -1,0 +1,628 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Découverte commerciale — AutomatisationBoost</title>
+<meta name="description" content="Support d'appel pour un entretien de découverte de 25-30 min : notes en direct, synthèse et reformulation générées automatiquement.">
+<meta name="robots" content="noindex,nofollow">
+<style>
+/* Outil INTERNE (Tony, pendant l'appel) — pas un formulaire public.
+   Charte tony.automatisationboost.com : nuit #0c0d18, turquoise #3dc4c2,
+   bleu #26729f, jaune #eab308, lavande #d1c5e0.
+   Différence avec /audit/ et /audit-formation/ : rien n'est jamais bloquant
+   ici — pas de validation obligatoire, on doit pouvoir naviguer librement
+   pendant que le prospect parle, sans qu'un champ vide bloque le passage
+   à la question suivante. */
+:root{
+  --nuit:#0c0d18; --carte:#141626; --carte2:#1a1d30; --trait:#252943;
+  --encre:#eef0f7; --doux:#9298b3; --faible:#6b7191;
+  --turq:#3dc4c2; --bleu:#26729f; --jaune:#eab308; --lavande:#d1c5e0;
+  --rouge:#f2606f;
+  --barre: 56px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;background:var(--nuit)}
+body{
+  background:var(--nuit); color:var(--encre);
+  font:400 16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  padding:0 17px calc(var(--pied,132px) + 26px + env(safe-area-inset-bottom));
+  overflow-wrap:break-word;
+}
+.wrap{max-width:640px;margin-inline:auto}
+::selection{background:var(--turq);color:#06201f}
+
+/* ── Barre haute : toujours visible, le bouton Enregistrer y vit en
+      permanence — pas seulement à la fin. ─────────────────────────────── */
+.haut{
+  position:sticky;top:0;z-index:25;background:var(--nuit);
+  padding:12px 0 10px;margin-bottom:4px;display:flex;flex-direction:column;gap:8px;
+}
+.haut .ligne1{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.marque{font-size:15px;font-weight:800;letter-spacing:-.01em;white-space:nowrap}
+.marque span{color:var(--jaune)}
+.btnSave{
+  background:var(--carte2);color:var(--encre);border:1px solid var(--trait);
+  border-radius:10px;padding:9px 13px;font:inherit;font-size:13.5px;font-weight:700;
+  cursor:pointer;display:flex;align-items:center;gap:7px;white-space:nowrap;
+  transition:border-color .16s,background .16s,color .16s;
+}
+.btnSave:hover{border-color:var(--turq)}
+.btnSave.fait{background:#101d24;border-color:var(--turq);color:var(--turq)}
+.statutSave{font-size:11.5px;color:var(--faible)}
+.rail{height:4px;background:var(--trait);border-radius:99px;overflow:hidden}
+.jauge{height:100%;width:0;background:var(--turq);border-radius:99px;
+  transition:width .32s cubic-bezier(.2,.8,.3,1)}
+.etiquetteEtape{font-size:12.5px;color:var(--faible)}
+.etiquetteEtape b{color:var(--doux);font-weight:600}
+
+header{display:flex;flex-direction:column;gap:10px;padding:18px 0 20px}
+h1{font-size:clamp(24px,6.5vw,32px);line-height:1.1;font-weight:800;letter-spacing:-.03em;
+  text-wrap:balance}
+.intro{color:var(--doux);font-size:15.5px;line-height:1.6}
+.intro b{color:var(--encre);font-weight:600}
+
+.champOrg{display:flex;flex-direction:column;gap:6px;margin:16px 0 4px}
+.champOrg label{font-size:12.5px;color:var(--doux);font-weight:600;letter-spacing:.01em}
+.champOrg input{
+  font:inherit;font-size:16px;color:var(--encre);background:var(--carte);
+  border:1px solid var(--trait);border-radius:10px;padding:12px 14px;min-height:48px;
+}
+.champOrg input:focus{outline:0;border-color:var(--turq)}
+
+/* ── Le texte à lire tel quel pendant l'appel ────────────────────────── */
+.lire{background:#0f1d1d;border:1px solid #1f4a49;border-left:3px solid var(--turq);
+  border-radius:12px;padding:18px 19px;margin:14px 0;font-size:15.3px;line-height:1.62;
+  color:var(--encre)}
+.lire .tag{font-size:10.5px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;
+  color:var(--turq);display:block;margin-bottom:8px}
+
+.etape{display:none}
+.etape.active{display:block;animation:entre .26s ease}
+@keyframes entre{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}
+.chapitre{padding:6px 0 2px}
+.chapitre .num{font-size:11.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--turq)}
+.chapitre h2{font-size:clamp(20px,5.2vw,25px);font-weight:800;letter-spacing:-.02em;
+  line-height:1.18;margin:8px 0 6px;text-wrap:balance}
+.chapitre p{color:var(--doux);font-size:14.5px;line-height:1.55}
+
+.question{background:var(--carte);border:1px solid var(--trait);border-radius:13px;
+  padding:17px 17px 15px;margin-top:14px;display:flex;flex-direction:column;gap:10px}
+.question .q{font-size:15.8px;font-weight:650;line-height:1.4;letter-spacing:-.008em}
+.question textarea{
+  width:100%;font:inherit;font-size:15.5px;color:var(--encre);background:var(--carte2);
+  border:1px solid var(--trait);border-radius:10px;padding:12px 13px;min-height:78px;
+  resize:vertical;line-height:1.55;
+}
+.question textarea:focus{outline:0;border-color:var(--turq)}
+.question textarea::placeholder{color:#5a6084}
+
+/* ── Pastilles rapides par question : marquer sans avoir à écrire ────── */
+.tags{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.tag-btn{
+  background:var(--carte2);color:var(--doux);border:1px solid var(--trait);
+  border-radius:99px;padding:7px 13px;font:inherit;font-size:12.8px;font-weight:600;
+  cursor:pointer;transition:border-color .16s,background .16s,color .16s;
+  -webkit-tap-highlight-color:transparent;
+}
+.tag-btn:hover{border-color:#39406b}
+.tag-btn.on{border-color:var(--jaune);background:#241f10;color:var(--jaune)}
+.tag-btn.on.na{border-color:var(--faible);background:#1a1d30;color:var(--faible)}
+.tag-autre{
+  flex:1 1 140px;min-width:120px;font:inherit;font-size:13px;color:var(--encre);
+  background:var(--carte2);border:1px solid var(--trait);border-radius:99px;
+  padding:7px 13px;display:none;
+}
+.tag-autre.visible{display:block}
+.tag-autre:focus{outline:0;border-color:var(--jaune)}
+
+/* ── Sous-questions repliées : n'apparaissent que si utiles ──────────── */
+.sousq{border-top:1px dashed var(--trait);margin-top:14px;padding-top:14px}
+.sousq-liste{display:flex;flex-direction:column;gap:10px}
+.reveler{
+  background:transparent;border:1px dashed var(--trait);color:var(--doux);
+  border-radius:10px;padding:11px 14px;font:inherit;font-size:14px;font-weight:600;
+  cursor:pointer;text-align:left;width:100%;transition:border-color .16s,color .16s;
+}
+.reveler:hover{border-color:var(--turq);color:var(--turq)}
+.reveler[hidden]{display:none}
+
+.pastille{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;
+  background:var(--bleu);color:#fff;font-size:11.5px;font-weight:700;margin-right:8px;
+  vertical-align:-1px}
+
+/* ── Choix rapide (résultat attendu) ─────────────────────────────────── */
+.choixrapide{display:flex;flex-wrap:wrap;gap:9px}
+.choixrapide button{
+  background:var(--carte2);color:var(--encre);border:1px solid var(--trait);
+  border-radius:11px;padding:11px 15px;font:inherit;font-size:14.3px;font-weight:600;
+  cursor:pointer;transition:border-color .16s,background .16s;
+}
+.choixrapide button.on{border-color:var(--turq);background:#101d24;color:var(--turq)}
+
+/* ── Synthèse ─────────────────────────────────────────────────────────── */
+.synthese{background:var(--carte);border:1px solid var(--trait);border-radius:16px;
+  padding:22px 20px;margin-top:16px;display:flex;flex-direction:column;gap:14px}
+.synthese dl{display:grid;grid-template-columns:auto 1fr;gap:9px 14px;font-size:14px}
+.synthese dt{color:var(--faible);font-weight:600;white-space:nowrap}
+.synthese dd{color:var(--encre);line-height:1.5}
+.synthese dd.vide{color:var(--rouge);font-style:italic}
+.manquant{background:#241318;border:1px solid #4a222b;border-radius:10px;padding:13px 15px;
+  font-size:13.5px;color:var(--rouge);line-height:1.55}
+.manquant[hidden]{display:none}
+.reformulation{background:#101d24;border:1px solid #1d3a44;border-radius:12px;
+  padding:16px 17px;font-size:14.8px;line-height:1.65;color:var(--encre)}
+.reformulation b{color:var(--jaune)}
+.copier{
+  background:var(--carte2);color:var(--encre);border:1px solid var(--trait);
+  border-radius:11px;padding:15px;font:inherit;font-size:15px;font-weight:600;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:9px;width:100%;
+  transition:border-color .16s,background .16s,color .16s;
+}
+.copier:hover{border-color:var(--turq)}
+.copier.fait{background:#101d24;border-color:var(--turq);color:var(--turq)}
+
+/* ── Barre d'action ───────────────────────────────────────────────────── */
+.pied{
+  position:fixed;left:0;right:0;bottom:0;z-index:30;
+  background:linear-gradient(to top,var(--nuit) 68%,rgba(12,13,24,0));
+  padding:18px 17px calc(16px + env(safe-area-inset-bottom));
+  pointer-events:none;
+}
+.pied .dedans{max-width:640px;margin-inline:auto;display:flex;gap:10px;align-items:stretch;
+  pointer-events:auto}
+button.nav{
+  font:inherit;font-size:16.5px;font-weight:700;letter-spacing:-.01em;
+  background:var(--turq);color:#06201f;border:0;border-radius:12px;
+  padding:16px;min-height:56px;cursor:pointer;flex:1;
+  transition:transform .15s cubic-bezier(.2,.8,.3,1);
+}
+button.nav:active{transform:translateY(1px)}
+button.retour{
+  flex:0 0 auto;width:56px;background:var(--carte);color:var(--doux);
+  border:1px solid var(--trait);font-size:20px;font-weight:400;padding:0;
+}
+button.retour[hidden]{display:none}
+
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="haut">
+  <div class="ligne1">
+    <div class="marque">Automation<span>Boost</span> · découverte</div>
+    <button type="button" class="btnSave" id="btnSave">💾 Enregistrer</button>
+  </div>
+  <div class="rail"><div class="jauge" id="jauge"></div></div>
+  <div class="etiquetteEtape"><b id="etiquette">Étape 1 sur 6</b> · <span id="statutSave" class="statutSave">rien d'enregistré pour l'instant</span></div>
+</div>
+
+<header>
+  <h1>Support d'appel — découverte commerciale</h1>
+  <p class="intro">Entretien de <b>25 à 30 minutes</b>. Ça ne bloque jamais : avancez à votre
+  rythme pendant que le prospect parle, revenez en arrière si besoin. Rien n'est obligatoire.</p>
+  <div class="champOrg">
+    <label for="org">Organisme / prospect</label>
+    <input type="text" id="org" placeholder="ex. Focalys">
+  </div>
+</header>
+
+<!-- ══ Étape 1 — Ouverture ══════════════════════════════════════════════ -->
+<section class="etape active" id="e1">
+  <div class="chapitre">
+    <div class="num">Étape 1 · Ouverture</div>
+    <h2><span class="pastille">1</span>Faire parler le prospect</h2>
+  </div>
+
+  <div class="lire">
+    <span class="tag">à lire</span>
+    Merci pour votre temps. Dans votre mail, vous m'avez indiqué vouloir automatiser
+    certaines parties de votre entreprise. Avant de vous proposer une solution,
+    j'aimerais comprendre votre fonctionnement actuel et identifier avec vous la priorité.
+  </div>
+
+  <div class="question">
+    <div class="q">Dans votre mail, vous m'avez indiqué vouloir automatiser certaines
+      parties de votre entreprise. Quelles sont aujourd'hui les tâches ou les étapes
+      qui vous prennent le plus de temps, se répètent souvent ou créent le plus de
+      difficultés pour votre équipe&nbsp;?</div>
+    <textarea id="q_probleme" placeholder="Notez ce qu'il/elle dit, avec ses mots…"></textarea>
+  </div>
+</section>
+
+<!-- ══ Étape 2 — Approfondissement ══════════════════════════════════════ -->
+<section class="etape" id="e2">
+  <div class="chapitre">
+    <div class="num">Étape 2 · Approfondissement</div>
+    <h2><span class="pastille">2</span>Comprendre le fonctionnement actuel</h2>
+    <p>Ne dévoilez une question que si elle est utile à ce que le prospect vient de dire.</p>
+  </div>
+  <div class="sousq-liste" id="sousqListe"></div>
+</section>
+
+<!-- ══ Étape 3 — Qualification de la priorité ═══════════════════════════ -->
+<section class="etape" id="e3">
+  <div class="chapitre">
+    <div class="num">Étape 3 · Qualification de la priorité</div>
+    <h2><span class="pastille">3</span>Cerner ce qui compte vraiment</h2>
+  </div>
+
+  <div class="question">
+    <div class="q">Si nous pouvions améliorer une seule chose en priorité, laquelle choisiriez-vous&nbsp;?</div>
+    <textarea id="q_priorite" placeholder="Notez sa réponse…"></textarea>
+  </div>
+
+  <div class="question">
+    <div class="q">Le résultat recherché serait-il surtout de…&nbsp;?</div>
+    <div class="choixrapide" id="choixResultat">
+      <button type="button" data-val="temps">Gagner du temps</button>
+      <button type="button" data-val="rapidite">Répondre plus rapidement</button>
+      <button type="button" data-val="erreurs">Réduire les erreurs</button>
+      <button type="button" data-val="inscriptions">Augmenter le nombre d'inscriptions</button>
+    </div>
+    <input type="text" id="q_resultat_autre" class="tag-autre" placeholder="autre chose (précisez)…">
+  </div>
+
+  <div class="question">
+    <div class="q">Comment sauriez-vous, après 30 jours, que la solution apporte réellement de la valeur&nbsp;?</div>
+    <textarea id="q_indicateur" placeholder="Notez son indicateur de réussite…"></textarea>
+  </div>
+</section>
+
+<!-- ══ Étape 4 — Décision, calendrier, budget ═══════════════════════════ -->
+<section class="etape" id="e4">
+  <div class="chapitre">
+    <div class="num">Étape 4 · Décision, calendrier et budget</div>
+    <h2><span class="pastille">4</span>Qui décide, et avec quels moyens</h2>
+  </div>
+
+  <div class="question">
+    <div class="q">Qui utilisera cette solution au quotidien&nbsp;?</div>
+    <textarea id="q_utilisateurs" placeholder="Notez…"></textarea>
+  </div>
+  <div class="question">
+    <div class="q">Qui participera à la décision finale&nbsp;?</div>
+    <textarea id="q_decisionnaire" placeholder="Notez…"></textarea>
+  </div>
+  <div class="question">
+    <div class="q">Sous quel délai souhaiteriez-vous la mettre en place&nbsp;?</div>
+    <textarea id="q_delai" placeholder="Notez…"></textarea>
+  </div>
+  <div class="question">
+    <div class="q">Si le gain est démontré, avez-vous déjà prévu un budget, ou souhaitez-vous d'abord recevoir une proposition chiffrée&nbsp;?</div>
+    <textarea id="q_budget" placeholder="Notez…"></textarea>
+  </div>
+</section>
+
+<!-- ══ Étape 5 — Synthèse ════════════════════════════════════════════════ -->
+<section class="etape" id="e5">
+  <div class="chapitre">
+    <div class="num">Étape 5 · Synthèse</div>
+    <h2><span class="pastille">5</span>Ce qu'on retient, prêt pour la proposition</h2>
+  </div>
+
+  <div class="question">
+    <div class="q">Solution potentielle envisagée (votre note, pas une question au prospect)</div>
+    <textarea id="q_solution" placeholder="Ce que vous pensez proposer à ce stade…"></textarea>
+  </div>
+
+  <div class="synthese">
+    <dl id="syntheseDl"></dl>
+    <div class="manquant" id="manquantBox" hidden>
+      <strong>Informations encore manquantes&nbsp;:</strong> <span id="manquantListe"></span>
+    </div>
+  </div>
+</section>
+
+<!-- ══ Étape 6 — Reformulation et clôture ════════════════════════════════ -->
+<section class="etape" id="e6">
+  <div class="chapitre">
+    <div class="num">Étape 6 · Reformulation et clôture</div>
+    <h2><span class="pastille">6</span>Confirmer et conclure</h2>
+  </div>
+
+  <div class="reformulation" id="reformulation"></div>
+
+  <div class="lire">
+    <span class="tag">à lire, pour clore</span>
+    À partir de ces informations, je vais définir une première solution simple, son
+    périmètre, son prix forfaitaire et les indicateurs à suivre. Quelle serait la
+    meilleure prochaine étape pour vous présenter cette proposition&nbsp;?
+  </div>
+
+  <button type="button" class="copier" id="btnCopier">📋 Copier la synthèse complète</button>
+</section>
+
+<div class="pied">
+  <div class="dedans">
+    <button type="button" class="nav retour" id="btnRetour" hidden aria-label="Étape précédente">←</button>
+    <button type="button" class="nav" id="btnSuivant">Continuer</button>
+  </div>
+</div>
+
+</div>
+
+<script>
+(function () {
+  'use strict';
+  var CLE = 'decouverte-commerciale-v1';
+
+  var ecrans = [];
+  for (var i = 1; i <= 6; i++) ecrans.push(document.getElementById('e' + i));
+  var TOTAL = 6;
+  var pos = 0;
+
+  var jauge = document.getElementById('jauge');
+  var etiquette = document.getElementById('etiquette');
+  var btnRetour = document.getElementById('btnRetour');
+  var btnSuivant = document.getElementById('btnSuivant');
+
+  /* ── Les 8 questions d'approfondissement — révélées une par une, pas
+        toutes d'un coup : c'est ce qui les rend "seulement quand utiles". ── */
+  var SOUSQ = [
+    { id: 'sq1', q: 'Pouvez-vous me décrire concrètement comment cette tâche est réalisée aujourd’hui ?' },
+    { id: 'sq2', q: 'Et concrètement, qu’est-ce qui se passe ensuite ?' },
+    { id: 'sq3', q: 'Cette situation se produit environ combien de fois par semaine ou par mois ?' },
+    { id: 'sq4', q: 'Combien de personnes interviennent dans ce processus ?' },
+    { id: 'sq5', q: 'Combien de temps cela prend-il à chaque fois ?' },
+    { id: 'sq6', q: 'Quelles sont les conséquences lorsqu’il y a un retard, un oubli ou une erreur ?' },
+    { id: 'sq7', q: 'Quels outils utilisez-vous actuellement pour gérer cette tâche ?' },
+    { id: 'sq8', q: 'Avez-vous déjà essayé de l’améliorer ou de l’automatiser ? Si oui, qu’est-ce qui a bloqué ?' }
+  ];
+
+  var sousqListe = document.getElementById('sousqListe');
+  SOUSQ.forEach(function (item, idx) {
+    var bloc = document.createElement('div');
+    bloc.className = 'question';
+    bloc.id = 'bloc-' + item.id;
+    bloc.hidden = true;
+    bloc.innerHTML =
+      '<div class="q">' + item.q + '</div>' +
+      '<textarea id="' + item.id + '" placeholder="Notez…"></textarea>' +
+      '<div class="tags">' +
+        '<button type="button" class="tag-btn" data-tag="approfondir">À approfondir</button>' +
+        '<button type="button" class="tag-btn na" data-tag="na">Non applicable</button>' +
+        '<button type="button" class="tag-btn" data-tag="autre">Autre</button>' +
+        '<input type="text" class="tag-autre" id="' + item.id + '_autre" placeholder="précisez…">' +
+      '</div>';
+    sousqListe.appendChild(bloc);
+
+    var reveler = document.createElement('button');
+    reveler.type = 'button';
+    reveler.className = 'reveler';
+    reveler.id = 'rev-' + item.id;
+    reveler.textContent = '+ Question suivante : « ' + item.q + ' »';
+    sousqListe.appendChild(reveler);
+
+    reveler.addEventListener('click', function () {
+      bloc.hidden = false;
+      reveler.hidden = true;
+      var ta = document.getElementById(item.id);
+      if (ta) { ta.focus(); }
+      sauver();
+    });
+
+    bloc.querySelectorAll('.tag-btn').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var deja = btn.classList.contains('on');
+        bloc.querySelectorAll('.tag-btn').forEach(function (b) { b.classList.remove('on'); });
+        var autreInput = document.getElementById(item.id + '_autre');
+        autreInput.classList.remove('visible');
+        if (!deja) {
+          btn.classList.add('on');
+          if (btn.dataset.tag === 'autre') {
+            autreInput.classList.add('visible');
+            autreInput.focus();
+          }
+        }
+        sauver();
+      });
+    });
+  });
+  // Première sous-question déjà visible pour ne pas partir d'un écran vide.
+  document.getElementById('rev-sq1').click();
+
+  /* ── Choix rapide "résultat attendu" ──────────────────────────────────── */
+  var choixResultat = document.getElementById('choixResultat');
+  choixResultat.querySelectorAll('button').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var deja = btn.classList.contains('on');
+      choixResultat.querySelectorAll('button').forEach(function (b) { b.classList.remove('on'); });
+      if (!deja) btn.classList.add('on');
+      sauver();
+      majSynthese();
+    });
+  });
+
+  /* ── Sauvegarde : automatique à chaque frappe + bouton manuel visible
+        en permanence, comme demandé — la frappe seule ne suffit pas comme
+        garantie ressentie pendant un appel en direct. ─────────────────── */
+  var CHAMPS_TEXTE = ['org', 'q_probleme', 'q_priorite', 'q_resultat_autre', 'q_indicateur',
+    'q_utilisateurs', 'q_decisionnaire', 'q_delai', 'q_budget', 'q_solution'];
+  SOUSQ.forEach(function (i) { CHAMPS_TEXTE.push(i.id); CHAMPS_TEXTE.push(i.id + '_autre'); });
+
+  function etatComplet() {
+    var d = { _resultat: choixResultat.querySelector('button.on') ? choixResultat.querySelector('button.on').dataset.val : '' };
+    CHAMPS_TEXTE.forEach(function (id) {
+      var el = document.getElementById(id);
+      if (el) d[id] = el.value;
+    });
+    SOUSQ.forEach(function (i) {
+      var tagOn = document.querySelector('#bloc-' + i.id + ' .tag-btn.on');
+      d['_tag_' + i.id] = tagOn ? tagOn.dataset.tag : '';
+      var bloc = document.getElementById('bloc-' + i.id);
+      d['_visible_' + i.id] = bloc && !bloc.hidden;
+    });
+    return d;
+  }
+
+  var statutSave = document.getElementById('statutSave');
+  function sauver(silencieux) {
+    try {
+      localStorage.setItem(CLE, JSON.stringify(etatComplet()));
+      var h = new Date();
+      var deuxChiffres = function (x) { return (x < 10 ? '0' : '') + x; };
+      statutSave.textContent = 'enregistré à ' + deuxChiffres(h.getHours()) + ':' + deuxChiffres(h.getMinutes());
+    } catch (e) { if (!silencieux) statutSave.textContent = 'échec d’enregistrement (stockage local indisponible)'; }
+  }
+  function relire() {
+    try {
+      var d = JSON.parse(localStorage.getItem(CLE) || '{}');
+      CHAMPS_TEXTE.forEach(function (id) {
+        var el = document.getElementById(id);
+        if (el && d[id]) el.value = d[id];
+      });
+      if (d._resultat) {
+        var b = choixResultat.querySelector('button[data-val="' + d._resultat + '"]');
+        if (b) b.classList.add('on');
+      }
+      SOUSQ.forEach(function (i) {
+        if (d['_visible_' + i.id]) document.getElementById('rev-' + i.id).click();
+        if (d['_tag_' + i.id]) {
+          var btn = document.querySelector('#bloc-' + i.id + ' .tag-btn[data-tag="' + d['_tag_' + i.id] + '"]');
+          if (btn) btn.click();
+        }
+      });
+      if (d.q_probleme || d.org) statutSave.textContent = 'notes précédentes rechargées';
+    } catch (e) { /* navigation privée : tant pis */ }
+  }
+  relire();
+
+  document.body.addEventListener('input', function () { sauver(true); });
+
+  var btnSave = document.getElementById('btnSave');
+  btnSave.addEventListener('click', function () {
+    sauver();
+    btnSave.textContent = '✓ Enregistré';
+    btnSave.classList.add('fait');
+    setTimeout(function () {
+      btnSave.textContent = '💾 Enregistrer';
+      btnSave.classList.remove('fait');
+    }, 1800);
+  });
+
+  /* ── Navigation : jamais bloquante, on peut toujours avancer/reculer ──── */
+  function afficher(n) {
+    ecrans.forEach(function (s, k) { s.classList.toggle('active', k === n - 1); });
+    pos = n;
+    jauge.style.width = Math.round((n / TOTAL) * 100) + '%';
+    etiquette.textContent = 'Étape ' + n + ' sur ' + TOTAL;
+    btnRetour.hidden = (n === 1);
+    btnSuivant.textContent = n === TOTAL ? 'Terminer' : 'Continuer';
+    if (n === 5) majSynthese();
+    if (n === 6) majReformulation();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+  btnRetour.addEventListener('click', function () { if (pos > 1) afficher(pos - 1); });
+  btnSuivant.addEventListener('click', function () {
+    if (pos < TOTAL) { afficher(pos + 1); } else { afficher(1); }
+  });
+
+  /* ── Synthèse : compile tout, marque ce qui manque. ───────────────────── */
+  var LIGNES_SYNTHESE = [
+    ['Problème prioritaire', function () { return v('q_probleme'); }],
+    ['Fonctionnement actuel', function () { return joindre(['sq1', 'sq2']); }],
+    ['Fréquence', function () { return v('sq3'); }],
+    ['Personnes concernées', function () { return v('sq4'); }],
+    ['Temps consacré', function () { return v('sq5'); }],
+    ['Conséquences', function () { return v('sq6'); }],
+    ['Outils actuels', function () { return v('sq7'); }],
+    ['Tentatives passées', function () { return v('sq8'); }],
+    ['Résultat attendu', function () { return resultatTexte(); }],
+    ['Indicateur de réussite (30j)', function () { return v('q_indicateur'); }],
+    ['Utilisateurs au quotidien', function () { return v('q_utilisateurs'); }],
+    ['Décisionnaire', function () { return v('q_decisionnaire'); }],
+    ['Délai souhaité', function () { return v('q_delai'); }],
+    ['Budget évoqué', function () { return v('q_budget'); }],
+    ['Solution potentielle', function () { return v('q_solution'); }]
+  ];
+
+  function v(id) { var el = document.getElementById(id); return el ? el.value.trim() : ''; }
+  function joindre(ids) {
+    return ids.map(v).filter(Boolean).join(' — ');
+  }
+  function resultatTexte() {
+    var b = choixResultat.querySelector('button.on');
+    var base = b ? b.textContent : '';
+    var autre = v('q_resultat_autre');
+    return [base, autre].filter(Boolean).join(' — ');
+  }
+
+  function majSynthese() {
+    var dl = document.getElementById('syntheseDl');
+    dl.innerHTML = '';
+    var manquants = [];
+    LIGNES_SYNTHESE.forEach(function (l) {
+      var val = l[1]();
+      var dt = document.createElement('dt'); dt.textContent = l[0];
+      var dd = document.createElement('dd');
+      if (val) { dd.textContent = val; } else { dd.textContent = '—'; dd.className = 'vide'; manquants.push(l[0]); }
+      dl.appendChild(dt); dl.appendChild(dd);
+    });
+    var box = document.getElementById('manquantBox');
+    if (manquants.length) {
+      box.hidden = false;
+      document.getElementById('manquantListe').textContent = manquants.join(', ');
+    } else {
+      box.hidden = true;
+    }
+  }
+
+  /* ── Reformulation : se met à jour en direct pendant que vous tapez. ──── */
+  function trou(texte) { return texte ? texte : '[à compléter]'; }
+  function majReformulation() {
+    var el = document.getElementById('reformulation');
+    el.innerHTML =
+      'Si je résume, votre principale difficulté est <b>' + trou(v('q_probleme')) + '</b>. ' +
+      'Elle se produit environ <b>' + trou(v('sq3')) + '</b> et entraîne <b>' + trou(v('sq6')) + '</b>. ' +
+      'Votre priorité est d’obtenir <b>' + trou(resultatTexte()) + '</b>. C’est bien cela&nbsp;?';
+  }
+  document.body.addEventListener('input', function () {
+    if (pos === 5) majSynthese();
+    if (pos === 6) majReformulation();
+  });
+
+  /* ── Copier la synthèse complète ───────────────────────────────────────── */
+  function texteSynthese() {
+    var lignes = [];
+    lignes.push('SYNTHÈSE DÉCOUVERTE — ' + (v('org') || 'prospect') + ' — ' + new Date().toLocaleDateString('fr-FR'));
+    lignes.push('');
+    LIGNES_SYNTHESE.forEach(function (l) {
+      lignes.push(l[0] + ' : ' + (l[1]() || '[manquant]'));
+    });
+    lignes.push('');
+    lignes.push('Reformulation : Si je résume, votre principale difficulté est ' + trou(v('q_probleme')).replace(/<\/?b>/g, '') +
+      '. Elle se produit environ ' + trou(v('sq3')) + ' et entraîne ' + trou(v('sq6')) +
+      '. Votre priorité est d’obtenir ' + trou(resultatTexte()) + '.');
+    return lignes.join('\n');
+  }
+  function copierSecours(texte, callback) {
+    var z = document.createElement('textarea');
+    z.value = texte; z.style.position = 'fixed'; z.style.opacity = '0';
+    document.body.appendChild(z); z.focus(); z.select();
+    try { document.execCommand('copy'); callback(); } catch (e) {}
+    document.body.removeChild(z);
+  }
+  document.getElementById('btnCopier').addEventListener('click', function () {
+    var btn = this;
+    var texte = texteSynthese();
+    var confirme = function () {
+      btn.textContent = '✓ Copié';
+      btn.classList.add('fait');
+      setTimeout(function () { btn.textContent = '📋 Copier la synthèse complète'; btn.classList.remove('fait'); }, 2200);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(texte).then(confirme).catch(function () { copierSecours(texte, confirme); });
+    } else {
+      copierSecours(texte, confirme);
+    }
+  });
+
+  afficher(1);
+})();
+</script>
+</body>
+</html>
