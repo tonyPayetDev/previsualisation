@@ -161,32 +161,21 @@ footer{margin-top:34px; font-size:12px; color:var(--gris2); line-height:1.6}
   <p style="background:#15130c;border:1px solid #3a3115;border-left:3px solid #eab308;border-radius:10px;padding:14px 16px;margin:16px 0;line-height:1.6;color:#e6d29a">
     Cette page est le TABLEAU DE BORD (où en est chaque chantier). Le tableau où tu valides, où tu vois ce qui me bloque et où tu déposes une idée est ailleurs : /taches/valider/. Les 89 tâches ouvertes y sont, celles d'ici n'y sont pas — les deux listes ne sont pas encore fusionnées. <a href="/taches/valider/" style="color:#eab308">Ouvrir le tableau de validation →</a></p>
   <nav class="nav">
-    <a href="/taches/" class="ici" title="où en est chaque chose">Mes demandes</a>
-    <a href="/a-envoyer/" title="fini, jamais parti">À envoyer</a>
-    <a href="/leads-qualifies/" title="qui appeler, et pourquoi">Leads qualifiés</a>
-    <a href="/leads-restaurants/" title="la liste complète">Tous les leads</a>
-    <a href="/appels/" title="ce qui a été dit">Appels</a>
-    <a href="/etude-concurrents/" title="qui vend quoi, à quel prix">Étude concurrents</a>
-    <a href="/cta/" title="les mots-clés sans porte">Promesses vidéo</a>
-    <a href="/carte/" title="vue d'ensemble">La carte</a>
-    <a href="/sites-clients/vue.html" title="galerie et avant/après">Sites clients</a>
-    <a href="/partage/" title="prêt à montrer">À partager</a>
-    <a href="/feed-html-vs-ia/" title="HTML contre générateur">Maquette feed</a>
-    <a href="/" title="tous les rendus">Prévisualisation</a>
+
   </nav>
 </header>
 
 <div class="compteurs">
   <button class="c livre"   data-f="livre"   aria-pressed="false"><b>36</b><span>Livré</span></button>
-  <button class="c bloque"  data-f="bloque"  aria-pressed="false"><b>4</b><span>Bloqué</span></button>
+  <button class="c bloque"  data-f="bloque"  aria-pressed="false"><b>5</b><span>Bloqué</span></button>
   <button class="c attente" data-f="attente" aria-pressed="false"><b>16</b><span>Attend toi</span></button>
 </div>
 <p class="aide" id="aide">Touche un chiffre pour ne voir que celles-là.</p>
 
 <h2>Proximité du cash</h2>
 <div class="cash-f">
-  <button class="cf direct" data-c="direct" aria-pressed="false"><b>22</b><span>€€€ Cash direct</span></button>
-  <button class="cf proche" data-c="proche" aria-pressed="false"><b>20</b><span>€€ Amène du cash</span></button>
+  <button class="cf direct" data-c="direct" aria-pressed="false"><b>23</b><span>€€€ Cash direct</span></button>
+  <button class="cf proche" data-c="proche" aria-pressed="false"><b>21</b><span>€€ Amène du cash</span></button>
   <button class="cf loin"   data-c="loin"   aria-pressed="false"><b>21</b><span>€ Convertible</span></button>
 </div>
 <p class="aide" id="aideCash">Rouge : un prospect nommé est au bout. Vert : utile, mais personne ne paie pour ça aujourd'hui.</p>
@@ -836,13 +825,23 @@ footer{margin-top:34px; font-size:12px; color:var(--gris2); line-height:1.6}
   </div>
   <span class="voir vide" aria-hidden="true"></span>
 </li>
+<li class="t" data-etat="bloque" data-cash="direct">
+  <span class="pastille bloque" aria-hidden="true"></span>
+  <div class="corps">
+    <p class="titre"><span class="eur direct" title="Cash direct — 35 prospects nommés avec contact direct. Relancer peut produire un RDV audit cette semaine — mais seulement quand la liste existera vraiment.">€€€</span>Relancer les 35 prospects de PROSPECTS-AUDIT-IA.md avec l'offre audit IA</p>
+    <p class="note">Tu as cliqué ✅ OK, envoie (18/09, deux fois — la même carte). Vérifié le 21/09 avant tout envoi : PROSPECTS-AUDIT-IA.md n'existe nulle part — ni dans le dépôt (arborescence actuelle, ni dans tout l'historique git), ni sur le disque de cette session. Le commit qui a créé cette carte (9d9abeb, 17/09) la décrit lui-même comme une « carte d'exemple réaliste » pour tester le webhook de bout en bout — le fichier des 35 prospects n'a jamais été produit. Résultat : aucun nom, aucun contact, aucun ton de référence à suivre. Je n'ai fabriqué ni prospects ni emails — aucun envoi n'est parti. À reprendre depuis une session qui a (ou qui produit) le vrai PROSPECTS-AUDIT-IA.md ; à ce moment-là je relance vraiment, un email personnalisé par destinataire.</p>
+    
+    
+  </div>
+  <span class="voir vide" aria-hidden="true"></span>
+</li>
 <li class="t" data-etat="propose" data-cash="direct">
   <span class="pastille propose" aria-hidden="true"></span>
   <div class="corps">
-    <p class="titre"><span class="badge-propose">💡 proposé cette semaine</span><span class="eur direct" title="Cash direct — 35 prospects nommés avec contact direct. Relancer peut produire un RDV audit cette semaine.">€€€</span>Relancer les 35 prospects de PROSPECTS-AUDIT-IA.md avec l'offre audit IA</p>
+    <p class="titre"><span class="badge-propose">💡 proposé cette semaine</span><span class="eur direct" title="Cash direct — Prospect nommé : organisme de formation Qualiopi, audit complet et page de devis déjà prêts, aucun contact pris à ce jour.">€€€</span>Relancer Focalys avec l'audit complet et la page de devis déjà prêts</p>
     <p class="note">Carte proposée automatiquement cette semaine — à valider ou à renvoyer en modification. Rien ne part avant ton clic.</p>
-    <p class="note justification">💬 35 structures réunionnaises qualifiées avec un contact direct utilisable sont recensées depuis le 09/09 (secteurs conseil, immobilier, BTP, tourisme, services) et aucune n'a encore été contactée — c'est un stock de prospects prêt à l'emploi qui dort. <span class="impact">🤝 clients</span></p>
-    <div class="propose-actions" data-carte="relance-prospects-audit-ia">
+    <p class="note justification">💬 ANALYSE-FOCALYS.md (16/09) : Focalys, organisme de formation Qualiopi à La Réunion/Mayotte, vend sa formation hygiène alimentaire — une obligation légale, donc le produit le plus facile du catalogue — sans prix, ni durée, ni date en HTML : juste un PDF de 16,3 Mo et un formulaire générique. La page de devis de remplacement est déjà construite et en ligne (previsualisation.automatisationboost.com/focalys-audit), avec un script de closing complet prêt. Le fichier le dit noir sur blanc : « Aucun contact n'a été pris avec Focalys ». <span class="impact">🤝 clients</span></p>
+    <div class="propose-actions" data-carte="relance-focalys-audit">
       <div class="propose-boutons">
         <button type="button" class="btn-propose btn-ok">✅ OK, envoie</button>
         <button type="button" class="btn-propose btn-modifier">✏️ Modifier</button>
@@ -854,7 +853,27 @@ footer{margin-top:34px; font-size:12px; color:var(--gris2); line-height:1.6}
       <p class="propose-statut" hidden></p>
     </div>
   </div>
-  <span class="voir vide" aria-hidden="true"></span>
+  <a class="voir" href="/focalys-audit/">Voir</a>
+</li>
+<li class="t" data-etat="propose" data-cash="proche">
+  <span class="pastille propose" aria-hidden="true"></span>
+  <div class="corps">
+    <p class="titre"><span class="badge-propose">💡 proposé cette semaine</span><span class="eur proche" title="Amene du cash — Contenu social prêt à diffuser : ça construit l’audience qui fournit les prospects.">€€</span>Publier ou planifier le reel « Arrête de vendre tout de suite » (script de Tony, déjà rendu)</p>
+    <p class="note">Carte proposée automatiquement cette semaine — à valider ou à renvoyer en modification. Rien ne part avant ton clic.</p>
+    <p class="note justification">💬 reel-audit-3-questions/index.html : reel de 25,5 s rendu le 17/09, écrit par Tony lui-même (3 questions avant de vendre, hook + silence volontaire + carton final problème/impact/preuve/prochaine étape). La page le dit explicitement : « Rien n'est publié ni programmé : à valider avant diffusion » — c'est un contenu fini qui dort depuis 4 jours faute d'un clic. <span class="impact">📈 volume</span></p>
+    <div class="propose-actions" data-carte="publier-reel-arrete-de-vendre">
+      <div class="propose-boutons">
+        <button type="button" class="btn-propose btn-ok">✅ OK, envoie</button>
+        <button type="button" class="btn-propose btn-modifier">✏️ Modifier</button>
+      </div>
+      <div class="propose-modif" hidden>
+        <textarea rows="2" placeholder="Ce qui doit changer…"></textarea>
+        <button type="button" class="btn-propose btn-envoyer-modif">Envoyer le retour</button>
+      </div>
+      <p class="propose-statut" hidden></p>
+    </div>
+  </div>
+  <a class="voir" href="/reel-audit-3-questions/">Voir</a>
 </li>
 </ul>
 <p class="rappel" id="rien" hidden>Rien dans cette catégorie.</p>

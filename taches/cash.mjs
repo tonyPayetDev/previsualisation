@@ -31,6 +31,7 @@ const REGLES = [
   [/gite-matilona/i,              'direct', 'Site remis en ligne le 25/08. Le rappeler maintenant a une raison concrète.'],
   [/landing automatisationboost|landing avec ton visage/i, 'direct', 'Ta vitrine de vente. C’est la page où atterrissent les prospects.'],
   [/35 prospects|prospects-audit-ia|audit-ia\.md/i, 'direct', '35 prospects nommés avec contact direct. Relancer peut produire un RDV audit cette semaine.'],
+  [/focalys/i,                    'direct', 'Prospect nommé : organisme de formation Qualiopi, audit complet et page de devis déjà prêts, aucun contact pris à ce jour.'],
 
   // ── PROCHE : ça sert la vente, sans facture au bout ───────────────────────
   [/befresh/i,                    'proche', 'Client test — c’est ta vitrine pour vendre aux autres restaurants.'],
@@ -39,6 +40,8 @@ const REGLES = [
   [/linkedin/i,                   'proche', 'Canal d’acquisition. LinkedIn est le seul des cinq où rien ne part.'],
   [/prompt-reveal|journal ia|carrousel|split-screen|top 3|clip roule kiki|chanson|essai ego|time-lapse|hado/i,
                                   'proche', 'Contenu social : ça construit l’audience qui fournit les prospects.'],
+  [/arrête de vendre tout de suite|reel-audit-3-questions|reel-nexeus/i,
+                                  'proche', 'Contenu social prêt à diffuser : ça construit l’audience qui fournit les prospects.'],
   [/voix befresh|feed instagram/i,'proche', 'Client test, même logique que le reste de BeFresh.'],
 
   // ── LOIN : outillage. Convertible, mais personne ne paie pour ça aujourd’hui.
