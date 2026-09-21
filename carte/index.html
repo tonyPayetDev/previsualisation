@@ -1379,6 +1379,14 @@ function Micro(orbe){
    ───────────────────────────────────────────────────────────────────────── */
 var TTS_GEN  = 'https://n7n.automatisationboost.com/webhook/tts-gen';
 var VOIX_URL = 'https://assets.automatisationboost.com/voix/archiviste_ZIl7EoOf.mp3';
+/* Question ouverte non reconnue par les sujets fixes de cerveau.json : dernier
+   recours avant "je n'ai pas compris", un vrai LLM (Claude via SSH, zéro cout
+   d'API - cf. prospection-formation/REMPLACER-OPENAI-PAR-CLAUDE-CODE.md) qui
+   lit cerveau.json lui-meme et repond en 2-4 phrases orales. Cle partagee
+   verifiee par le webhook (onlyRunIf) : ce n'est pas un secret utilisateur,
+   juste un filtre anti-scan pour un webhook public par defaut. */
+var CARTE_ASK    = 'https://n7n.automatisationboost.com/webhook/carte-ask';
+var CARTE_ASK_CLE = 'dNvs2dJ1pUlTKflBbtUZAZQZx9Qo2ZB';
 
 function Bouche(orbe){
   var api = { clone:false, parle:false };
@@ -1817,16 +1825,32 @@ function repondre(phrase){
   var sujet = trouverSujet(phrase);
   var s = sujet && cerveau.sujets[sujet];
   if (!s){
-    // Jamais d'échec muet : on dit ce qu'on sait faire, mot pour mot.
-    var r = ['Je n\'ai pas compris.',
-             'Pour savoir : demande-moi les relances, ce qui s\'est mal passé, tes décisions, ' +
-             'tes prospects, tes chantiers ou tes automatisations.',
-             'Pour agir : dis « crée une tâche » suivi de ce que tu veux noter, ou « fais-en une tâche » ' +
-             'juste après une réponse. Dis « mets à jour » pour recalculer. Dis « prépare un mail à » ' +
-             'suivi du nom de quelqu\'un de tes données.'];
-    afficher('Je n\'ai pas compris', r, []);
-    ouvrirAide(true);
-    return bouche.dire(r).then(reprendre);
+    // Dernier recours avant "je n'ai pas compris" : une vraie question ouverte
+    // part vers le LLM (voir CARTE_ASK plus haut), qui lit cerveau.json lui-même.
+    etat('Je réfléchis', 0);
+    afficher('Je réfléchis…', ['Question posée au cerveau : « ' + phrase + ' »'], []);
+    return fetch(CARTE_ASK, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-carte-key': CARTE_ASK_CLE },
+      body: JSON.stringify({ question: phrase })
+    }).then(function(resp){ return resp.json(); }).then(function(data){
+      var texte = (data && data.reponse) ? data.reponse : null;
+      if (!texte){ throw new Error('reponse vide'); }
+      var r = [texte];
+      afficher('Réponse du cerveau', r, []);
+      return bouche.dire(r, surEtatVoix).then(reprendre);
+    }).catch(function(){
+      // Jamais d'échec muet : on dit ce qu'on sait faire, mot pour mot.
+      var r = ['Je n\'ai pas compris, et mon cerveau LLM ne répond pas non plus là.',
+               'Pour savoir : demande-moi les relances, ce qui s\'est mal passé, tes décisions, ' +
+               'tes prospects, tes chantiers ou tes automatisations.',
+               'Pour agir : dis « crée une tâche » suivi de ce que tu veux noter, ou « fais-en une tâche » ' +
+               'juste après une réponse. Dis « mets à jour » pour recalculer. Dis « prépare un mail à » ' +
+               'suivi du nom de quelqu\'un de tes données.'];
+      afficher('Je n\'ai pas compris', r, []);
+      ouvrirAide(true);
+      return bouche.dire(r).then(reprendre);
+    });
   }
   etat('Je réponds', 0);
   sujetCourant = sujet;
