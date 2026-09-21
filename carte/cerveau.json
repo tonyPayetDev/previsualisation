@@ -1,5 +1,5 @@
 {
- "genere_le": "2026-09-10T15:33:04.422Z",
+ "genere_le": "2026-09-21T14:42:23.411Z",
  "sources": [
   "taches/taches.json",
   "TASKLOG.md",
@@ -13,10 +13,11 @@
   "relances": {
    "titre": "Les relances à faire",
    "phrases": [
-    "6 chantiers ont un client ou un prospect nommé au bout, et ne sont pas finis. Ce sont ceux qui peuvent produire une facture cette semaine. Ils se ramènent à 3 dossiers.",
+    "7 chantiers ont un client ou un prospect nommé au bout, et ne sont pas finis. Ce sont ceux qui peuvent produire une facture cette semaine. Ils se ramènent à 4 dossiers.",
     "Koytcha, 4 lignes du tableau : Prospect immobilier nommé. C’est la v4 qui s’envoie — la v2 avait été refusée, ne jamais repointer dessus.",
     "Family Arena : Dossier complet, concurrents VR fermés. Site + vidéo prêts à montrer.",
-    "Projet Kripia : Tu as écrit toi-même « vendre le clip ou la méthode ». C’est une offre, pas un rendu."
+    "Projet Kripia : Tu as écrit toi-même « vendre le clip ou la méthode ». C’est une offre, pas un rendu.",
+    "Relancer les 35 prospects de PROSPECTS-AUDIT-IA.md avec l'offre audit IA : 35 prospects nommés avec contact direct. Relancer peut produire un RDV audit cette semaine."
    ],
    "details": [
     {
@@ -54,19 +55,31 @@
      "etat": "attente",
      "pourquoi": "Tu as écrit toi-même « vendre le clip ou la méthode ». C’est une offre, pas un rendu.",
      "lien": null
+    },
+    {
+     "texte": "Relancer les 35 prospects de PROSPECTS-AUDIT-IA.md avec l'offre audit IA",
+     "etat": "propose",
+     "pourquoi": "35 prospects nommés avec contact direct. Relancer peut produire un RDV audit cette semaine.",
+     "lien": null
     }
    ]
   },
   "rates": {
    "titre": "Ce qui s'est mal passé",
    "phrases": [
-    "Le journal de bord porte 3 alertes et 4 points restés ouverts.",
+    "Le journal de bord porte 4 alertes et 6 points restés ouverts.",
+    "Le 10 septembre : CORS n'est PAS une protection ici, et je l'ai constate en direct.",
     "Le 10 septembre : À REGARDER : le remote git de resto-automatisationboost contient le PAT GitHub en clair dans l'URL (visible dès un git remote -v).",
     "Le 10 septembre : L'attribution outil ↔ verdict est un choix éditorial de ma part, pas une mesure — Tony ne nomme aucun outil dans son rush.",
     "Le 10 septembre : URL inventée, rattrapée avant publication.",
-    "Et ce sont ces points qui restent ouverts : EN COURS — analyse sécurité koytchaimmo.re. ; EN COURS — mail n8n à corriger. ; A DECIDER : ajouter le bloc « parle-moi de ton projet » (3 questions + email) au bas des 253 ressources qui n'en ont pas."
+    "Et ce sont ces points qui restent ouverts : A TRANCHER PAR TONY (actions vocales) : (1) un modele EST disponible — OpenRouter (vufAPCfchjp0ffHx) a des executions re ; A TRANCHER PAR TONY sur l'assistant vocal : (1) la fraicheur — cerveau.json est un instantane commite, le rafraichir dem ; EN COURS — analyse sécurité koytchaimmo.re.."
    ],
    "details": [
+    {
+     "genre": "alerte",
+     "date": "10/09",
+     "texte": "CORS n'est PAS une protection ici, et je l'ai constate en direct. La page poste en Content-Type: text/plain pour eviter le preflight — mais du coup la requete est « simple », donc le navigateur l'envoie et le workflow S'EXECUTE, meme depuis une origine interdite ; seul l'acces a la REPONSE est bloque. Constate en testant depuis 127.0.0.1 : les appels affichaient « Failed to fetch » a l'ecran et une ligne avait bien ete ecrite dans la table (supprimee depuis). Consequence a assumer : allowedOrigins ne protege rien sur ces POST. Ces webhooks sont ouverts comme les 74 autres webhooks actifs de l'instance (releve : aucun n'a d'authentification)."
+    },
     {
      "genre": "alerte",
      "date": "10/09",
@@ -81,6 +94,16 @@
      "genre": "alerte",
      "date": "10/09",
      "texte": "URL inventée, rattrapée avant publication. J'avais écrit human-atlas.vercel.app dans la page ressource sans l'avoir vérifiée : c'est un site totalement différent (une carte des émotions). La vraie est human-atlas-seven.vercel.app, retrouvée dans le transcript de la session où la capture a été faite, et confirmée par fetch. Leçon : ne jamais écrire une URL qu'on n'a pas ouverte."
+    },
+    {
+     "genre": "ouvert",
+     "date": "10/09",
+     "texte": "A TRANCHER PAR TONY (actions vocales) : (1) un modele EST disponible — OpenRouter (vufAPCfchjp0ffHx) a des executions reussies ce matin meme, alors qu'OpenAI et Anthropic sont a sec (preuves dans les logs). J'ai volontairement garde la grammaire fermee : ouvrir le langage libre sur des commandes qui AGISSENT, c'est accepter qu'une phrase mal entendue declenche quelque chose. A lui de dire s'il veut que j'ouvre. (2) Faut-il authentifier ces webhooks ? Aujourd'hui non, comme les 74 autres — mais ceux-la ecrivent et touchent Gmail. (3) La tache creee part sans confirmation (elle est reversible, bouton Annuler) alors que le brouillon en exige une : dire si ce dosage lui va."
+    },
+    {
+     "genre": "ouvert",
+     "date": "10/09",
+     "texte": "A TRANCHER PAR TONY sur l'assistant vocal : (1) la fraicheur — cerveau.json est un instantane commite, le rafraichir demande de relancer cerveau.mjs ici puis de redeployer ; s'il veut du temps reel il faut un webhook n8n authentifie, a construire ; (2) la voix clonee reste desactivee par defaut (lenteur), a lui de dire s'il la veut d'office ; (3) l'assistant ne repond que sur 7 sujets par mots-cles — dire lesquels ajouter."
     },
     {
      "genre": "ouvert",
@@ -150,7 +173,7 @@
   "taches": {
    "titre": "Les chantiers",
    "phrases": [
-    "Ton tableau compte 62 chantiers, relevés le 8 septembre.",
+    "Ton tableau compte 63 chantiers, relevés le 14 septembre.",
     "36 sont livrés et vérifiés en ligne, 16 attendent ton retour, et 4 sont bloqués.",
     "Ce qui est bloqué : Comptes IA à zéro ; Un échantillon vocal propre ; Reconnecter LinkedIn dans Blotato ; Programmer les 4 prompt-reveal."
    ],
@@ -277,10 +300,11 @@
     }
    ],
    "enCours": [
+    "Le 10 septembre : A TRANCHER PAR TONY (actions vocales) : (1) un modele EST disponible — OpenRouter (vufAPCfchjp0ffHx) a des executions reussies ce matin meme, alors qu'OpenAI et Anthropic sont a sec (preuves dans les logs).",
+    "Le 10 septembre : A TRANCHER PAR TONY sur l'assistant vocal : (1) la fraicheur — cerveau.json est un instantane commite, le rafraichir demande de relancer cerveau.mjs ici puis de redeployer ; s'il veut du temps reel il faut un webhook n8n authentifie, a cons…",
     "Le 10 septembre : EN COURS — analyse sécurité koytchaimmo.re.",
     "Le 10 septembre : EN COURS — mail n8n à corriger.",
-    "Le 8 septembre : A DECIDER : ajouter le bloc « parle-moi de ton projet » (3 questions + email) au bas des 253 ressources qui n'en ont pas.",
-    "Le 8 septembre : BLOQUE cote Apify : le workflow PtT2qJqDXKpN2lPu appelle maintenant l'acteur apify/web-scraper (appel REST, meme montage que le workflow social qui tourne)."
+    "Le 8 septembre : A DECIDER : ajouter le bloc « parle-moi de ton projet » (3 questions + email) au bas des 253 ressources qui n'en ont pas."
    ]
   },
   "prospects": {
@@ -575,53 +599,37 @@
   "workflows": {
    "titre": "Les automatisations",
    "phrases": [
-    "141 workflows sont actifs sur ton instance n8n, sur 595 au total.",
-    "221 exécutions ont échoué sur les quatorze derniers jours, réparties sur 30 workflows.",
-    "Validation Sheet - programme TikTok + Instagram a échoué 60 fois, la dernière le 10 septembre, sur le nœud Lire onglet 30 Videos : Service unavailable.",
-    "Récuperer lead chaud a échoué 46 fois, la dernière le 10 septembre, sur le nœud Lire Google Sheet2 : The service is receiving too many requests from you.",
-    "TTS Generator - Voice Clone + OpenAI Fallback a échoué 20 fois, la dernière le 6 septembre, sur le nœud Submit Voice Clone : Bad request.",
-    "FoodBoost — Démo : tuile, aperçu ou post a échoué 18 fois, la dernière le 31 août, sur le nœud Kie Record Info : The connection timed out, consider setting the 'Retry on Fail' option in the node settings.",
-    "Scraper Leads HoReCa Quotidien - Humian a échoué 10 fois, la dernière le 10 septembre, sur le nœud Sortie : The service is receiving too many requests from you."
+    "144 workflows sont actifs sur ton instance n8n, sur 615 au total.",
+    "201 exécutions ont échoué sur les quatorze derniers jours, réparties sur 24 workflows.",
+    "Validation Sheet - programme TikTok + Instagram a échoué 62 fois, la dernière le 19 septembre.",
+    "Récuperer lead chaud a échoué 49 fois, la dernière le 21 septembre, sur le nœud Joindre lead + tracking : Task execution aborted because runner became unresponsive.",
+    "TTS Generator - Voice Clone + OpenAI Fallback a échoué 33 fois, la dernière le 18 septembre, sur le nœud OpenAI TTS : The service is receiving too many requests from you.",
+    "🍽️ Demo de feed resto — a partir de LEURS photos a échoué 8 fois, la dernière le 8 septembre, sur le nœud Rendre la page (Apify) : Forbidden - perhaps check your credentials?.",
+    "Auto-DM commentaires Instagram → lien ressource a échoué 7 fois, la dernière le 21 septembre, sur le nœud Filtrer mot-cle + message : Task request timed out after 60 seconds."
    ],
    "details": [
     {
      "nom": "Validation Sheet - programme TikTok + Instagram",
      "id": "soNcMKsz1ce7yDhA",
-     "echecs": 60,
-     "dernier": "2026-09-10",
-     "noeud": "Lire onglet 30 Videos",
-     "erreur": "Service unavailable - try again later or consider setting this node to retry automatically (in the node settings)"
+     "echecs": 62,
+     "dernier": "2026-09-19",
+     "noeud": null,
+     "erreur": null
     },
     {
      "nom": "Récuperer lead chaud",
      "id": "fHFZvB7XsTJJuXMa",
-     "echecs": 46,
-     "dernier": "2026-09-10",
-     "noeud": "Lire Google Sheet2",
-     "erreur": "The service is receiving too many requests from you"
+     "echecs": 49,
+     "dernier": "2026-09-21",
+     "noeud": "Joindre lead + tracking",
+     "erreur": "Task execution aborted because runner became unresponsive"
     },
     {
      "nom": "TTS Generator - Voice Clone + OpenAI Fallback",
      "id": "6InNNRjMJxiteEkV",
-     "echecs": 20,
-     "dernier": "2026-09-06",
-     "noeud": "Submit Voice Clone",
-     "erreur": "Bad request - please check your parameters"
-    },
-    {
-     "nom": "FoodBoost — Démo : tuile, aperçu ou post",
-     "id": "Z10DjZWv7skokVrd",
-     "echecs": 18,
-     "dernier": "2026-08-31",
-     "noeud": "Kie Record Info",
-     "erreur": "The connection timed out, consider setting the 'Retry on Fail' option in the node settings"
-    },
-    {
-     "nom": "Scraper Leads HoReCa Quotidien - Humian",
-     "id": "t448DfTS6icIRTzy",
-     "echecs": 10,
-     "dernier": "2026-09-10",
-     "noeud": "Sortie",
+     "echecs": 33,
+     "dernier": "2026-09-18",
+     "noeud": "OpenAI TTS",
      "erreur": "The service is receiving too many requests from you"
     },
     {
@@ -631,22 +639,38 @@
      "dernier": "2026-09-08",
      "noeud": "Rendre la page (Apify)",
      "erreur": "Forbidden - perhaps check your credentials?"
+    },
+    {
+     "nom": "Auto-DM commentaires Instagram → lien ressource",
+     "id": "U0U6yjMp88h9cH2A",
+     "echecs": 7,
+     "dernier": "2026-09-21",
+     "noeud": "Filtrer mot-cle + message",
+     "erreur": "Task request timed out after 60 seconds"
+    },
+    {
+     "nom": "Automatisé la création de sites web avec claude code restaurant",
+     "id": "jRl7GsvAVkB2xEk6",
+     "echecs": 7,
+     "dernier": "2026-09-20",
+     "noeud": "Agent SEO1",
+     "erreur": "OpenAI: Rate limit reached"
     }
    ],
    "chiffres": {
-    "actifs": 141,
-    "echecs14j": 221,
-    "workflowsEnEchec": 30
+    "actifs": 144,
+    "echecs14j": 201,
+    "workflowsEnEchec": 24
    }
   },
   "resume": {
    "titre": "Le point complet",
    "phrases": [
-    "6 chantiers ont un client ou un prospect nommé au bout, et ne sont pas finis. Ce sont ceux qui peuvent produire une facture cette semaine. Ils se ramènent à 3 dossiers.",
+    "7 chantiers ont un client ou un prospect nommé au bout, et ne sont pas finis. Ce sont ceux qui peuvent produire une facture cette semaine. Ils se ramènent à 4 dossiers.",
     "7 décisions attendent que tu tranches. Personne ne peut les prendre à ta place.",
-    "Le journal de bord porte 3 alertes et 4 points restés ouverts.",
+    "Le journal de bord porte 4 alertes et 6 points restés ouverts.",
     "43 prospects qualifiés n'ont jamais été contactés, ni par téléphone, ni par email. 43 ont un numéro, 42 n'ont aucune adresse.",
-    "221 exécutions ont échoué sur les quatorze derniers jours, réparties sur 30 workflows.",
+    "201 exécutions ont échoué sur les quatorze derniers jours, réparties sur 24 workflows.",
     "Demande-moi les relances, ce qui a mal tourné, tes décisions, tes prospects ou tes automatisations."
    ],
    "details": []
