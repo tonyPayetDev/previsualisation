@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#0a0a0f">
+<title>À valider — swipe</title>
+<style>
+:root{--bg:#0a0a0f;--carte:#15151d;--carte2:#1b1b26;--bord:#2a2a38;--txt:#ededed;--mut:#9a9aa8;
+  --ok:#3ED37B;--rouge:#ef4444;--amber:#f5b338;--violet:#a855f7;--bleu:#5b9dff}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{color-scheme:dark}
+body{background:var(--bg);color:var(--txt);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  min-height:100vh;overflow:hidden;display:flex;flex-direction:column;
+  padding:max(12px,env(safe-area-inset-top)) 14px max(14px,env(safe-area-inset-bottom))}
+.wrap{max-width:520px;margin:0 auto;width:100%;display:flex;flex-direction:column;flex:1;min-height:0}
+header h1{font-size:22px;font-weight:800;letter-spacing:-.02em;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+/* compteurs = filtres */
+.compteurs{display:flex;gap:8px;margin-bottom:12px}
+.cpt{flex:1;background:var(--carte);border:1px solid var(--bord);border-radius:13px;padding:9px 6px;text-align:center;cursor:pointer;transition:.12s}
+.cpt .n{font-size:26px;font-weight:800;line-height:1;font-variant-numeric:tabular-nums}
+.cpt .l{font-size:11px;color:var(--mut);margin-top:3px;text-transform:uppercase;letter-spacing:.06em}
+.cpt[data-f="standby"] .n{color:var(--amber)} .cpt[data-f="ok"] .n{color:var(--ok)} .cpt[data-f="annuler"] .n{color:var(--rouge)}
+.cpt.on{border-color:currentColor}
+.cpt[data-f="standby"].on{border-color:var(--amber);background:#1e190f}
+.cpt[data-f="ok"].on{border-color:var(--ok);background:#0f1e15}
+.cpt[data-f="annuler"].on{border-color:var(--rouge);background:#1e1010}
+.progress{font-size:12px;color:var(--mut);text-align:center;margin-bottom:8px;min-height:1.2em}
+/* deck */
+.deck{position:relative;flex:1;min-height:0}
+.card{position:absolute;inset:0;background:linear-gradient(160deg,var(--carte2),var(--carte));border:1px solid var(--bord);
+  border-radius:20px;padding:20px 18px;display:flex;flex-direction:column;overflow:hidden;
+  box-shadow:0 18px 50px rgba(0,0,0,.5);will-change:transform;touch-action:pan-y}
+.card.behind{transform:scale(.94) translateY(14px);filter:brightness(.7)}
+.card .qui{align-self:flex-start;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;
+  padding:4px 10px;border-radius:99px;border:1px solid var(--bord);color:var(--mut);margin-bottom:12px}
+.card .qui.claude{color:#cbb8ff;border-color:#3a2f55} .card .qui.toi{color:#ffd98a;border-color:#4a3d1a}
+.card h2{font-size:23px;font-weight:800;line-height:1.18;letter-spacing:-.01em;margin-bottom:12px}
+.card .pq{font-size:15px;color:var(--mut);line-height:1.5;overflow:auto;flex:1;margin-bottom:12px}
+.card .fi{font-size:13px;color:var(--txt);background:#0e0e15;border:1px solid var(--bord);border-radius:10px;padding:9px 11px;margin-bottom:12px}
+.card .fi b{color:var(--ok)}
+.card .meta{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px}
+.card .tag{font-size:12px;color:var(--mut);background:#0e0e15;border:1px solid var(--bord);border-radius:8px;padding:4px 9px}
+.card a.lien{font-size:13px;color:var(--bleu);text-decoration:none;font-weight:600;margin-top:4px}
+/* estampilles swipe */
+.stamp{position:absolute;top:22px;font-size:30px;font-weight:900;letter-spacing:.06em;padding:6px 14px;border:4px solid;border-radius:12px;
+  text-transform:uppercase;opacity:0;pointer-events:none;transition:opacity .05s}
+.stamp.ok{right:20px;color:var(--ok);border-color:var(--ok);transform:rotate(12deg)}
+.stamp.no{left:20px;color:var(--rouge);border-color:var(--rouge);transform:rotate(-12deg)}
+.stamp.sb{left:50%;bottom:20px;top:auto;transform:translateX(-50%);color:var(--amber);border-color:var(--amber)}
+/* boutons */
+.actions{display:flex;justify-content:center;align-items:center;gap:18px;margin-top:14px}
+.rond{width:60px;height:60px;border-radius:50%;border:2px solid var(--bord);background:var(--carte);color:var(--txt);
+  font-size:26px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.12s}
+.rond:active{transform:scale(.9)}
+.rond.no{border-color:var(--rouge);color:var(--rouge)} .rond.ok{border-color:var(--ok);color:var(--ok)}
+.rond.sb{border-color:var(--amber);color:var(--amber);width:52px;height:52px;font-size:20px}
+.rond.big{width:66px;height:66px;font-size:30px}
+.vide{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;text-align:center;color:var(--mut);padding:20px}
+.vide .em{font-size:44px}
+.hint{font-size:11px;color:var(--mut);text-align:center;margin-top:8px;min-height:1.2em}
+.sync{position:fixed;top:8px;right:10px;font-size:11px;color:var(--mut)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>À valider <span style="font-size:13px;font-weight:500;color:var(--mut)">— swipe</span></h1>
+    <div class="compteurs">
+      <div class="cpt on" data-f="standby"><div class="n" id="n-standby">0</div><div class="l">Stand-by</div></div>
+      <div class="cpt" data-f="ok"><div class="n" id="n-ok">0</div><div class="l">OK</div></div>
+      <div class="cpt" data-f="annuler"><div class="n" id="n-annuler">0</div><div class="l">Annuler</div></div>
+    </div>
+    <div class="progress" id="progress"></div>
+  </header>
+  <div class="deck" id="deck"></div>
+  <div class="actions">
+    <button class="rond no big" id="b-no" title="Annuler (swipe ←)">✕</button>
+    <button class="rond sb" id="b-sb" title="Stand-by (swipe ↓)">⏭</button>
+    <button class="rond ok big" id="b-ok" title="OK (swipe →)">✓</button>
+  </div>
+  <div class="hint">← Annuler · ↓ Stand-by · OK → &nbsp;•&nbsp; touche les compteurs pour filtrer</div>
+</div>
+<div class="sync" id="sync"></div>
+
+<script>
+(function(){
+'use strict';
+var TACHES = __TACHES_JSON__;
+var URL_ETAT = 'https://n7n.automatisationboost.com/webhook/taches-validation';
+var LS = 'taches-etat-cache';
+var $=function(s){return document.querySelector(s)};
+var etat = {};            // { id: { etat, maj } } — même contrat que l'ancienne page
+var filtre = 'standby';
+var pile = [];            // ids filtrés à traiter
+var idx = 0;
+
+/* --- classification en 3 seaux --- */
+function seau(id){
+  var e = (etat[id] && etat[id].etat) || (TACHES.find(function(t){return t.id===id})||{}).etat || 'propose';
+  if (e==='valide'||e==='ok') return 'ok';
+  if (e==='refuse'||e==='revoir') return 'annuler';
+  return 'standby';        // propose, attente-toi, fait, autres
+}
+function compter(){
+  var c={standby:0,ok:0,annuler:0};
+  TACHES.forEach(function(t){ c[seau(t.id)]++; });
+  $('#n-standby').textContent=c.standby; $('#n-ok').textContent=c.ok; $('#n-annuler').textContent=c.annuler;
+  return c;
+}
+
+/* --- persistance : POST du map complet (comme l'ancienne page) --- */
+var envoiEnCours=false, redemander=false;
+function cache(){ try{ localStorage.setItem(LS, JSON.stringify(etat)); }catch(_){} }
+function sauver(){
+  cache();
+  if (envoiEnCours){ redemander=true; return; }
+  envoiEnCours=true; $('#sync').textContent='synchro…';
+  fetch(URL_ETAT,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify(etat)})
+    .then(function(){ $('#sync').textContent='✓ enregistré'; setTimeout(function(){$('#sync').textContent=''},1200); })
+    .catch(function(){ $('#sync').textContent='hors-ligne (gardé)'; })
+    .finally(function(){ envoiEnCours=false; if(redemander){redemander=false; sauver();} });
+}
+
+/* --- décision --- */
+function decider(id, vers){        // vers: 'valide' | 'refuse' | null(=stand-by/passer)
+  if (vers){
+    etat[id] = { etat: vers, maj: new Date().toISOString() };
+    sauver();
+  }
+  compter();
+  idx++;
+  rendre();
+}
+
+/* --- construction d'une carte --- */
+function carteHTML(t){
+  var meta=[];
+  if(t.temps) meta.push('<span class="tag">⏱ '+esc(t.temps)+'</span>');
+  if(t.energie) meta.push('<span class="tag">🔋 '+esc(t.energie)+'</span>');
+  if(t.cout) meta.push('<span class="tag">💶 '+esc(t.cout)+'</span>');
+  return '<span class="qui '+(t.qui==='claude'?'claude':'toi')+'">'+(t.qui==='claude'?'proposé par Claude':'sur toi')+'</span>'
+    +'<h2>'+esc(t.titre)+'</h2>'
+    +(t.pourquoi?'<div class="pq">'+esc(t.pourquoi)+'</div>':'<div class="pq"></div>')
+    +(t.fini?'<div class="fi"><b>Fini quand :</b> '+esc(t.fini)+'</div>':'')
+    +'<div class="meta">'+meta.join('')+'</div>'
+    +(t.lien?'<a class="lien" href="'+esc(t.lien)+'" target="_blank" rel="noopener">Ouvrir le lien ↗</a>':'')
+    +'<div class="stamp ok">OK</div><div class="stamp no">Annulé</div><div class="stamp sb">Stand-by</div>';
+}
+function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+
+/* --- rendu du deck --- */
+function rendre(){
+  var deck=$('#deck'); deck.innerHTML='';
+  pile = TACHES.filter(function(t){return seau(t.id)===filtre}).map(function(t){return t.id});
+  if (idx>=pile.length){
+    var msg = filtre==='standby' ? ['🎉','Rien en stand-by. Tout est décidé !'] :
+              filtre==='ok' ? ['✅','Les tâches validées apparaissent ici.'] :
+              ['🗂','Les tâches annulées apparaissent ici.'];
+    deck.innerHTML='<div class="vide"><div class="em">'+msg[0]+'</div><div>'+msg[1]+'</div></div>';
+    $('#progress').textContent = pile.length ? (pile.length+' au total') : '';
+    setBoutons(false); return;
+  }
+  setBoutons(filtre==='standby');
+  $('#progress').textContent = (idx+1)+' / '+pile.length+(filtre==='standby'?' à décider':'');
+  // carte suivante (dessous) puis courante (dessus)
+  if (pile[idx+1]){ var b=document.createElement('div'); b.className='card behind'; b.innerHTML=carteHTML(byId(pile[idx+1])); deck.appendChild(b); }
+  var c=document.createElement('div'); c.className='card'; c.dataset.id=pile[idx]; c.innerHTML=carteHTML(byId(pile[idx]));
+  deck.appendChild(c);
+  swipe(c);
+}
+function byId(id){return TACHES.find(function(t){return t.id===id})}
+function setBoutons(on){ ['#b-no','#b-sb','#b-ok'].forEach(function(s){$(s).style.visibility=on?'visible':'hidden'}); }
+
+/* --- swipe (pointer events, tactile + souris) --- */
+function swipe(card){
+  var x0=0,y0=0,dx=0,dy=0,drag=false;
+  var sOk=card.querySelector('.stamp.ok'), sNo=card.querySelector('.stamp.no'), sSb=card.querySelector('.stamp.sb');
+  function down(e){ drag=true; x0=e.clientX; y0=e.clientY; card.style.transition='none'; card.setPointerCapture&&card.setPointerCapture(e.pointerId); }
+  function move(e){ if(!drag)return; dx=e.clientX-x0; dy=e.clientY-y0;
+    card.style.transform='translate('+dx+'px,'+dy+'px) rotate('+(dx*0.05)+'deg)';
+    sOk.style.opacity = dx>30 ? Math.min(1,dx/120):0;
+    sNo.style.opacity = dx<-30 ? Math.min(1,-dx/120):0;
+    sSb.style.opacity = (dy>40 && Math.abs(dx)<60) ? Math.min(1,dy/120):0;
+  }
+  function up(){ if(!drag)return; drag=false; card.style.transition='transform .28s ease';
+    var id=card.dataset.id;
+    if (dx>110){ fly(card, 700, dy); decider(id,'valide'); return; }
+    if (dx<-110){ fly(card, -700, dy); decider(id,'refuse'); return; }
+    if (dy>110 && Math.abs(dx)<80){ fly(card, dx, 800); decider(id,null); return; }
+    card.style.transform=''; sOk.style.opacity=sNo.style.opacity=sSb.style.opacity=0;
+  }
+  card.addEventListener('pointerdown',down);
+  card.addEventListener('pointermove',move);
+  card.addEventListener('pointerup',up);
+  card.addEventListener('pointercancel',up);
+}
+function fly(card,tx,ty){ card.style.transform='translate('+tx+'px,'+ty+'px) rotate('+(tx*0.04)+'deg)'; card.style.opacity='0'; }
+
+/* boutons = mêmes décisions, avec anim */
+function boutonDecide(vers, dir){
+  if (idx>=pile.length) return;
+  var card=$('.deck .card:last-child'); if(!card) return;
+  card.style.transition='transform .28s ease'; card.style.opacity='0';
+  if(dir==='ok') fly(card,700,0); else if(dir==='no') fly(card,-700,0); else fly(card,0,800);
+  decider(card.dataset.id, vers);
+}
+$('#b-ok').onclick=function(){boutonDecide('valide','ok')};
+$('#b-no').onclick=function(){boutonDecide('refuse','no')};
+$('#b-sb').onclick=function(){boutonDecide(null,'sb')};
+
+/* filtres via compteurs */
+document.querySelectorAll('.cpt').forEach(function(el){
+  el.onclick=function(){ filtre=el.dataset.f; idx=0;
+    document.querySelectorAll('.cpt').forEach(function(x){x.classList.toggle('on',x===el)});
+    rendre();
+  };
+});
+
+/* --- démarrage : cache local puis état serveur --- */
+try{ etat = JSON.parse(localStorage.getItem(LS)||'{}')||{}; }catch(_){ etat={}; }
+compter(); rendre();
+fetch(URL_ETAT+'?t='+Date.now()).then(function(r){return r.json()}).then(function(d){
+  if(d && typeof d==='object'){ etat=d; cache(); compter(); idx=0; rendre(); }
+}).catch(function(){});
+})();
+</script>
+</body>
+</html>
