@@ -1,0 +1,431 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Monteur — caméra filtrée + choix du template</title>
+<meta name="robots" content="noindex,nofollow">
+<style>
+/* Charte tony.automatisationboost.com : nuit #0c0d18, turquoise #3dc4c2,
+   bleu #26729f, jaune #eab308, lavande #d1c5e0.
+   Trois écrans : caméra (filtre visage en direct sur canvas) → relecture +
+   choix du template → envoi vers R2 (même mécanique que /tournage/, réutilisée
+   telle quelle : webhook upload-r2-asset, dossier monteur/<session>/). */
+:root{
+  --nuit:#0c0d18; --carte:#141626; --carte2:#1a1d30; --trait:#252943;
+  --encre:#eef0f7; --doux:#9298b3; --faible:#6b7191;
+  --turq:#3dc4c2; --bleu:#26729f; --jaune:#eab308; --lavande:#d1c5e0;
+  --rouge:#f2606f;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;background:var(--nuit)}
+body{
+  background:var(--nuit); color:var(--encre);
+  font:400 16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  padding:20px 17px calc(120px + env(safe-area-inset-bottom));
+}
+.wrap{max-width:600px;margin-inline:auto}
+h1{font-size:clamp(22px,6vw,28px);font-weight:800;letter-spacing:-.03em;margin-bottom:6px}
+.marque{font-size:14px;font-weight:800;color:var(--faible);margin-bottom:14px}
+.marque span{color:var(--jaune)}
+.intro{color:var(--doux);font-size:14.5px;line-height:1.6;margin-bottom:18px}
+
+.etape{display:none}
+.etape.active{display:block;animation:entre .26s ease}
+@keyframes entre{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}
+
+.scene{position:relative;width:100%;aspect-ratio:9/16;background:#000;border-radius:16px;
+  overflow:hidden;border:1px solid var(--trait)}
+.scene video, .scene canvas{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.scene video{visibility:hidden}
+.scene .badge{position:absolute;top:12px;left:12px;background:rgba(12,13,24,.72);
+  border:1px solid var(--trait);border-radius:99px;padding:6px 12px;font-size:12px;
+  font-weight:700;color:var(--doux);display:flex;align-items:center;gap:7px;z-index:5}
+.scene .badge .pt{width:8px;height:8px;border-radius:50%;background:var(--turq)}
+.scene .badge.rec .pt{background:var(--rouge);animation:clignote 1.1s ease-in-out infinite}
+@keyframes clignote{0%,100%{opacity:1}50%{opacity:.25}}
+.scene .chrono{position:absolute;top:12px;right:12px;background:rgba(12,13,24,.72);
+  border:1px solid var(--trait);border-radius:99px;padding:6px 12px;font-size:12.5px;
+  font-weight:700;color:var(--encre);font-variant-numeric:tabular-nums;z-index:5}
+.scene .erreur{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  padding:24px;text-align:center;color:var(--rouge);font-size:14px;background:#150a0c;z-index:6}
+.scene .erreur[hidden]{display:none}
+
+.controles{display:flex;gap:10px;margin-top:16px}
+button.principal{
+  flex:1;font:inherit;font-size:16px;font-weight:700;letter-spacing:-.01em;
+  background:var(--turq);color:#06201f;border:0;border-radius:12px;padding:16px;
+  cursor:pointer;min-height:56px;transition:transform .15s,opacity .16s;
+}
+button.principal:active{transform:translateY(1px)}
+button.principal:disabled{opacity:.5;cursor:default}
+button.principal.rec{background:var(--rouge);color:#2a0509}
+button.secondaire{
+  flex:0 0 auto;font:inherit;font-size:15px;font-weight:600;background:var(--carte);
+  color:var(--doux);border:1px solid var(--trait);border-radius:12px;padding:16px 18px;
+  cursor:pointer;min-height:56px;
+}
+
+.filtreToggle{display:flex;align-items:center;justify-content:space-between;gap:10px;
+  background:var(--carte);border:1px solid var(--trait);border-radius:12px;padding:13px 15px;
+  margin-top:12px;font-size:13.5px;color:var(--doux)}
+.filtreToggle label{display:flex;align-items:center;gap:9px;cursor:pointer}
+.filtreToggle input{width:18px;height:18px;accent-color:var(--turq)}
+
+.templates{display:flex;flex-direction:column;gap:10px;margin-top:16px}
+label.tpl{
+  display:flex;align-items:center;gap:13px;cursor:pointer;background:var(--carte);
+  border:1px solid var(--trait);border-radius:13px;padding:15px 16px;
+  transition:border-color .16s,background .16s;
+}
+label.tpl:has(input:checked){border-color:var(--turq);background:#101d24}
+label.tpl input{width:20px;height:20px;accent-color:var(--turq);flex:0 0 auto}
+label.tpl .nom{font-weight:700;font-size:15.5px}
+label.tpl .desc{font-size:13px;color:var(--doux);margin-top:2px;line-height:1.45}
+
+.statut{margin-top:16px;display:flex;flex-direction:column;gap:10px}
+.ligneEnvoi{display:flex;align-items:center;gap:11px;font-size:13.5px;color:var(--doux)}
+.ligneEnvoi .pt{width:9px;height:9px;border-radius:50%;background:var(--trait);flex:0 0 auto}
+.ligneEnvoi.ok .pt{background:var(--turq)}
+.ligneEnvoi.ko .pt{background:var(--rouge)}
+.barre{flex:1;height:5px;background:var(--trait);border-radius:99px;overflow:hidden}
+.barre i{display:block;height:100%;width:0;background:var(--turq);border-radius:99px;transition:width .2s}
+
+.resultat{background:#0f1d1d;border:1px solid #1f4a49;border-radius:14px;padding:20px;margin-top:18px}
+.resultat h2{font-size:17px;font-weight:800;margin-bottom:8px}
+.resultat p{color:var(--doux);font-size:13.8px;line-height:1.6;margin-bottom:10px}
+.resultat code{display:block;background:#0b1616;border:1px dashed #2a5c5b;border-radius:8px;
+  padding:10px 12px;font-size:12.5px;color:var(--turq);word-break:break-all;margin-bottom:10px}
+.resultat .dire{background:var(--carte2);border:1px solid var(--trait);border-radius:10px;
+  padding:13px 14px;font-size:13.5px;color:var(--encre)}
+
+.erreurEnvoi{background:#241318;border:1px solid #4a222b;color:var(--rouge);border-radius:10px;
+  padding:13px 15px;font-size:13.5px;margin-top:14px}
+.erreurEnvoi[hidden]{display:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="marque">Automation<span>Boost</span> · monteur</div>
+  <h1>Filme-toi, choisis un template</h1>
+  <p class="intro">Filtre visage en direct pendant la prise. La vidéo part ensuite vers un
+    template — je m'occupe du montage final quand tu me dis « monte la session ».</p>
+
+  <!-- ═══ Étape 1 — Caméra ═══════════════════════════════════════════ -->
+  <section class="etape active" id="e-camera">
+    <div class="scene">
+      <div class="badge" id="badgeEtat"><span class="pt"></span><span>Caméra éteinte</span></div>
+      <div class="chrono" id="chrono" hidden>00:00</div>
+      <video id="video" playsinline muted></video>
+      <canvas id="canvas"></canvas>
+      <div class="erreur" id="erreurCam" hidden></div>
+    </div>
+
+    <div class="filtreToggle">
+      <label><input type="checkbox" id="toggleFiltre" checked> Filtre visage (lissage + teinte chaude, suivi par points du visage)</label>
+    </div>
+
+    <div class="controles">
+      <button type="button" class="principal" id="btnCamera">🎥 Démarrer la caméra</button>
+      <button type="button" class="principal rec" id="btnRec" disabled hidden>🔴 Enregistrer</button>
+    </div>
+  </section>
+
+  <!-- ═══ Étape 2 — Relecture + template ═════════════════════════════ -->
+  <section class="etape" id="e-relecture">
+    <div class="scene">
+      <video id="relecture" playsinline controls style="visibility:visible"></video>
+    </div>
+
+    <div class="templates" id="templates">
+      <label class="tpl">
+        <input type="radio" name="tpl" value="reel-nexeus" checked>
+        <div><div class="nom">reel-nexeus</div><div class="desc">Avatar plein écran / split / cercle, panneaux de verre dépoli, l'anneau qui tourne.</div></div>
+      </label>
+      <label class="tpl">
+        <input type="radio" name="tpl" value="preuve-bulles-branded">
+        <div><div class="nom">preuve-bulles-branded</div><div class="desc">Mockups d'écran + bulles de tchat nommées + cartes de texte wobble, fond dégradé de marque.</div></div>
+      </label>
+      <label class="tpl">
+        <input type="radio" name="tpl" value="journal">
+        <div><div class="nom">journal (veille-journal-ia)</div><div class="desc">Le format du Journal IA quotidien — charte néon, running gags, CTA VEILLE.</div></div>
+      </label>
+    </div>
+
+    <div class="controles">
+      <button type="button" class="secondaire" id="btnRefaire">🔁 Refaire</button>
+      <button type="button" class="principal" id="btnEnvoyer">📤 Envoyer vers ce template</button>
+    </div>
+
+    <div class="statut" id="statut" hidden></div>
+    <div class="erreurEnvoi" id="erreurEnvoi" hidden></div>
+  </section>
+
+  <!-- ═══ Étape 3 — Résultat ══════════════════════════════════════════ -->
+  <section class="etape" id="e-resultat">
+    <div class="resultat">
+      <h2>✓ Envoyé</h2>
+      <p>La prise est sur le serveur, avec le template choisi. Rien n'est monté automatiquement —
+        dis-le-moi et je lance le montage.</p>
+      <code id="lienResultat"></code>
+      <div class="dire">Dans le chat : « monte la session <b id="sessionResultat"></b> avec le template <b id="tplResultat"></b> »</div>
+    </div>
+    <div class="controles" style="margin-top:16px">
+      <button type="button" class="principal" id="btnNouvelle">🎥 Nouvelle prise</button>
+    </div>
+  </section>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  const $ = (s) => document.querySelector(s);
+  const etapes = { camera: $('#e-camera'), relecture: $('#e-relecture'), resultat: $('#e-resultat') };
+  function montrer(nom) { Object.entries(etapes).forEach(([k, el]) => el.classList.toggle('active', k === nom)); }
+
+  const video = $('#video');
+  const canvas = $('#canvas');
+  const ctx = canvas.getContext('2d');
+  const badgeEtat = $('#badgeEtat');
+  const chrono = $('#chrono');
+  const erreurCam = $('#erreurCam');
+  const btnCamera = $('#btnCamera');
+  const btnRec = $('#btnRec');
+
+  let flux = null;          // MediaStream caméra brute (vidéo + micro)
+  let faceMesh = null;
+  let dernierResultat = null;
+  let animId = null;
+  let recorder = null, chunks = [], chronoId = null, chronoDebut = 0;
+  let blobFinal = null, typeFinal = '';
+
+  /* ── Filtre visage : lissage de peau dans l'ovale du visage + teinte
+        chaude + léger vignettage. Le canvas EST la source d'enregistrement
+        (captureStream), donc le filtre est vraiment gravé dans la vidéo,
+        pas juste un aperçu cosmétique. ─────────────────────────────────── */
+  const OVALE = [10,338,297,332,284,251,389,356,454,323,361,288,397,365,379,378,400,377,
+    152,148,176,149,150,136,172,58,132,93,234,127,162,21,54,103,67,109];
+
+  function dessinerVisageLisse(landmarks, w, h) {
+    ctx.save();
+    ctx.beginPath();
+    OVALE.forEach((i, k) => {
+      const p = landmarks[i];
+      const x = p.x * w, y = p.y * h;
+      k === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+    });
+    ctx.closePath();
+    ctx.clip();
+    ctx.filter = 'blur(5px) saturate(1.08) brightness(1.04)';
+    ctx.drawImage(video, 0, 0, w, h);
+    ctx.filter = 'none';
+    ctx.restore();
+  }
+
+  function dessinerTeinteEtVignette(w, h) {
+    const grad = ctx.createLinearGradient(0, 0, 0, h);
+    grad.addColorStop(0, 'rgba(255,190,120,0.05)');
+    grad.addColorStop(1, 'rgba(255,140,80,0.09)');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, w, h);
+    const vg = ctx.createRadialGradient(w/2, h/2, h*0.35, w/2, h/2, h*0.72);
+    vg.addColorStop(0, 'rgba(0,0,0,0)');
+    vg.addColorStop(1, 'rgba(0,0,0,0.32)');
+    ctx.fillStyle = vg;
+    ctx.fillRect(0, 0, w, h);
+  }
+
+  function boucle() {
+    const w = canvas.width, h = canvas.height;
+    ctx.drawImage(video, 0, 0, w, h);
+    const filtreActif = $('#toggleFiltre').checked;
+    if (filtreActif && dernierResultat && dernierResultat.multiFaceLandmarks && dernierResultat.multiFaceLandmarks[0]) {
+      dessinerVisageLisse(dernierResultat.multiFaceLandmarks[0], w, h);
+      dessinerTeinteEtVignette(w, h);
+    }
+    animId = requestAnimationFrame(boucle);
+  }
+
+  async function demarrerCamera() {
+    erreurCam.hidden = true;
+    btnCamera.disabled = true;
+    btnCamera.textContent = 'Ouverture…';
+    try {
+      flux = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: 'user', width: { ideal: 720 }, height: { ideal: 1280 } },
+        audio: true
+      });
+      video.srcObject = flux;
+      await video.play();
+      canvas.width = video.videoWidth || 720;
+      canvas.height = video.videoHeight || 1280;
+
+      if (window.FaceMesh && window.Camera) {
+        faceMesh = new FaceMesh({ locateFile: (f) => `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${f}` });
+        faceMesh.setOptions({ maxNumFaces: 1, refineLandmarks: true, minDetectionConfidence: 0.6, minTrackingConfidence: 0.6 });
+        faceMesh.onResults((r) => { dernierResultat = r; });
+        const camUtils = new Camera(video, {
+          onFrame: async () => { await faceMesh.send({ image: video }); },
+          width: canvas.width, height: canvas.height
+        });
+        camUtils.start();
+      } else {
+        $('#toggleFiltre').checked = false;
+        $('#toggleFiltre').disabled = true;
+        erreurCam.hidden = false;
+        erreurCam.textContent = "Le suivi du visage n'a pas pu se charger (réseau) — la caméra tourne sans filtre.";
+        setTimeout(() => { erreurCam.hidden = true; }, 4000);
+      }
+
+      boucle();
+      badgeEtat.innerHTML = '<span class="pt"></span><span>Caméra active</span>';
+      btnCamera.hidden = true;
+      btnRec.hidden = false;
+      btnRec.disabled = false;
+    } catch (e) {
+      erreurCam.hidden = false;
+      erreurCam.textContent = 'Caméra refusée ou indisponible (' + (e.name || e.message) + ') — autorise l’accès caméra + micro pour ce site.';
+      btnCamera.disabled = false;
+      btnCamera.textContent = '🎥 Démarrer la caméra';
+    }
+  }
+  btnCamera.addEventListener('click', demarrerCamera);
+
+  function formatChrono(s) {
+    const m = Math.floor(s / 60), r = s % 60;
+    return (m < 10 ? '0' : '') + m + ':' + (r < 10 ? '0' : '') + r;
+  }
+
+  function demarrerEnregistrement() {
+    const pisteVideo = canvas.captureStream(30).getVideoTracks()[0];
+    const pisteAudio = flux.getAudioTracks()[0];
+    const streamFinal = new MediaStream(pisteAudio ? [pisteVideo, pisteAudio] : [pisteVideo]);
+    const choixType = ['video/webm;codecs=vp9,opus', 'video/webm;codecs=vp8,opus', 'video/webm', 'video/mp4']
+      .find((t) => window.MediaRecorder && MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported(t)) || '';
+    chunks = [];
+    recorder = choixType ? new MediaRecorder(streamFinal, { mimeType: choixType }) : new MediaRecorder(streamFinal);
+    recorder.addEventListener('dataavailable', (e) => { if (e.data && e.data.size > 0) chunks.push(e.data); });
+    recorder.addEventListener('stop', () => {
+      blobFinal = new Blob(chunks, { type: recorder.mimeType || 'video/webm' });
+      typeFinal = recorder.mimeType || 'video/webm';
+      const rel = $('#relecture');
+      rel.src = URL.createObjectURL(blobFinal);
+      montrer('relecture');
+    });
+    recorder.start();
+    chronoDebut = Date.now();
+    chrono.hidden = false;
+    chronoId = setInterval(() => { chrono.textContent = formatChrono(Math.floor((Date.now() - chronoDebut) / 1000)); }, 1000);
+    badgeEtat.className = 'badge rec';
+    badgeEtat.innerHTML = '<span class="pt"></span><span>Enregistrement</span>';
+    btnRec.textContent = '⏹ Arrêter';
+    btnRec.classList.add('rec');
+  }
+  function arreterEnregistrement() {
+    if (recorder && recorder.state === 'recording') recorder.stop();
+    clearInterval(chronoId);
+    chrono.hidden = true;
+    badgeEtat.className = 'badge';
+    badgeEtat.innerHTML = '<span class="pt"></span><span>Caméra active</span>';
+    btnRec.textContent = '🔴 Enregistrer';
+    btnRec.classList.remove('rec');
+  }
+  btnRec.addEventListener('click', () => {
+    if (recorder && recorder.state === 'recording') arreterEnregistrement();
+    else demarrerEnregistrement();
+  });
+
+  $('#btnRefaire').addEventListener('click', () => { montrer('camera'); });
+
+  /* ── Envoi vers R2 : même mécanique que /tournage/ (webhook upload-r2-asset,
+        dossier monteur/<session>/), réutilisée telle quelle. ─────────────── */
+  const WEBHOOK = 'https://n7n.automatisationboost.com/webhook/upload-r2-asset';
+  function envoyer(blob, cle, nom, onProgres) {
+    return new Promise((res, rej) => {
+      const fd = new FormData();
+      fd.append('data', blob, nom);
+      const x = new XMLHttpRequest();
+      x.open('POST', WEBHOOK + '?cle=' + encodeURIComponent(cle));
+      x.timeout = 300000;
+      x.upload.onprogress = (e) => { if (e.lengthComputable && onProgres) onProgres(e.loaded / e.total); };
+      x.onload = () => {
+        if (x.status >= 200 && x.status < 300) {
+          try { res(JSON.parse(x.responseText)); } catch (e) { res({ status: 'ok', brut: x.responseText }); }
+        } else rej(new Error('HTTP ' + x.status + ' — ' + x.responseText.slice(0, 220)));
+      };
+      x.onerror = () => rej(new Error('réseau bloqué (CORS ou coupure)'));
+      x.ontimeout = () => rej(new Error('délai dépassé (5 min)'));
+      x.send(fd);
+    });
+  }
+
+  function ligneStatut(id, texte) {
+    const el = document.createElement('div');
+    el.className = 'ligneEnvoi';
+    el.id = id;
+    el.innerHTML = '<span class="pt"></span><span class="txt">' + texte + '</span><div class="barre"><i></i></div>';
+    $('#statut').appendChild(el);
+    return el;
+  }
+
+  $('#btnEnvoyer').addEventListener('click', async () => {
+    if (!blobFinal) return;
+    const btn = $('#btnEnvoyer');
+    btn.disabled = true;
+    $('#erreurEnvoi').hidden = true;
+    $('#statut').innerHTML = '';
+    $('#statut').hidden = false;
+
+    const d = new Date();
+    const p = (n) => String(n).padStart(2, '0');
+    const session = `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}-${p(d.getHours())}${p(d.getMinutes())}${p(d.getSeconds())}`;
+    const dossier = 'monteur/' + session;
+    const template = document.querySelector('input[name="tpl"]:checked').value;
+    const ext = typeFinal.indexOf('mp4') >= 0 ? 'mp4' : 'webm';
+    const nomVideo = 'video.' + ext;
+
+    const ligneVideo = ligneStatut('lv', 'Vidéo filtrée — 0 %');
+    try {
+      const r = await envoyer(blobFinal, dossier + '/' + nomVideo, nomVideo, (pr) => {
+        ligneVideo.querySelector('.txt').textContent = 'Vidéo filtrée — ' + Math.round(pr * 100) + ' %';
+        ligneVideo.querySelector('.barre i').style.width = Math.round(pr * 100) + '%';
+      });
+      ligneVideo.classList.add('ok');
+      ligneVideo.querySelector('.txt').textContent = 'Vidéo filtrée envoyée';
+      ligneVideo.querySelector('.barre i').style.width = '100%';
+
+      const meta = {
+        outil: 'previsualisation/monteur', version: 1, session, cree: d.toISOString(),
+        template, filtreVisage: $('#toggleFiltre').checked,
+        video: { fichier: nomVideo, type: typeFinal, octets: blobFinal.size,
+          url: r.url || ('https://assets.automatisationboost.com/' + dossier + '/' + nomVideo) }
+      };
+      const ligneMeta = ligneStatut('lm', 'Fiche de session — envoi…');
+      await envoyer(new Blob([JSON.stringify(meta, null, 2)], { type: 'application/json' }), dossier + '/meta.json', 'meta.json');
+      ligneMeta.classList.add('ok');
+      ligneMeta.querySelector('.txt').textContent = 'Fiche de session envoyée';
+      ligneMeta.querySelector('.barre i').style.width = '100%';
+
+      $('#lienResultat').textContent = meta.video.url;
+      $('#sessionResultat').textContent = session;
+      $('#tplResultat').textContent = template;
+      montrer('resultat');
+    } catch (e) {
+      $('#erreurEnvoi').hidden = false;
+      $('#erreurEnvoi').textContent = "L'envoi n'a pas abouti — " + e.message + '. Rien n’est perdu, réessaie.';
+      btn.disabled = false;
+    }
+  });
+
+  $('#btnNouvelle').addEventListener('click', () => {
+    blobFinal = null;
+    $('#statut').hidden = true;
+    montrer('camera');
+  });
+})();
+</script>
+</body>
+</html>
