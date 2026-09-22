@@ -205,16 +205,28 @@ et il convertit déjà</textarea>
       var j = await r.json();
       var url = j.videoUrl || j.url || j.video;
       if(!url) throw new Error(j.message || 'Réponse sans vidéo.');
-      // On attend que la vidéo apparaisse sur R2 (poll HEAD, anti-cache).
-      etat.textContent='Fabrication en cours… la vidéo apparaît dès qu\'elle est prête.';
-      var ready=false, tries=0;
-      while(!ready && tries<100){ // ~8 min max
-        await new Promise(function(res){setTimeout(res,5000);});
-        tries++;
-        try{ var h = await fetch(url+'?t='+Date.now(), {method:'HEAD',cache:'no-store'}); if(h.ok){ ready=true; } }catch(e){}
-      }
+      // On attend que la vidéo existe sur R2. Le domaine R2 n'a pas de CORS,
+      // donc on NE sonde PAS avec fetch (bloqué) : on charge directement la
+      // balise <video> (le chargement média n'est pas soumis au CORS).
+      etat.textContent='Fabrication en cours… la vidéo apparaît dès qu\'elle est prête (~15-40s).';
+      var vid = $('video');
+      var ready = await new Promise(function(resolve){
+        var tries=0, done=false;
+        function done_ok(){ if(done) return; done=true; vid.onloadeddata=null; vid.onerror=null; resolve(true); }
+        function attempt(){
+          if(done) return;
+          tries++;
+          if(tries>120){ resolve(false); return; } // ~10 min max
+          vid.onloadeddata = done_ok;
+          vid.oncanplay = done_ok;
+          vid.onerror = function(){ if(!done) setTimeout(attempt, 5000); };
+          vid.src = url + '?t=' + Date.now(); // anti-cache 404 Cloudflare
+          vid.load();
+        }
+        attempt();
+      });
       if(!ready) throw new Error('La vidéo met trop de temps — réessaie dans un instant.');
-      $('video').src = url; $('dl').href = url;
+      $('dl').href = url;
       $('resultat').classList.add('on');
       etat.className='etat ok'; etat.textContent='✓ Vidéo prête.';
     }catch(e){
