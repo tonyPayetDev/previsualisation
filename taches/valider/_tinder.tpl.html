@@ -27,11 +27,22 @@ header h1{font-size:22px;font-weight:800;letter-spacing:-.02em;margin-bottom:10p
 .cpt[data-f="ok"].on{border-color:var(--ok);background:#0f1e15}
 .cpt[data-f="annuler"].on{border-color:var(--rouge);background:#1e1010}
 .progress{font-size:12px;color:var(--mut);text-align:center;margin-bottom:8px;min-height:1.2em}
+/* ajouter une tâche */
+.ajout{margin-bottom:12px}
+.ajout-toggle{width:100%;min-height:44px;border-radius:12px;border:1px dashed var(--bord);background:transparent;color:var(--mut);font:inherit;font-weight:700;font-size:14px;cursor:pointer}
+.ajout-toggle:active{transform:scale(.99)}
+.ajout-box{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+.ajout-box.masque{display:none}
+.ajout-box textarea{width:100%;min-height:70px;padding:11px 13px;border-radius:11px;border:1px solid var(--bord);background:#0e0b14;color:var(--txt);font:inherit;font-size:16px;resize:vertical}
+.ajout-box textarea:focus{outline:2px solid var(--violet);border-color:var(--violet)}
+.btn-envoi{min-height:46px;border-radius:11px;border:none;background:var(--violet);color:#fff;font:inherit;font-weight:800;font-size:16px;cursor:pointer}
+.btn-envoi:active{transform:scale(.99)}
+.ajout-etat{font-size:12px;color:var(--ok);text-align:center;min-height:1.1em}
 /* deck */
 .deck{position:relative;flex:1;min-height:0}
 .card{position:absolute;inset:0;background:linear-gradient(160deg,var(--carte2),var(--carte));border:1px solid var(--bord);
   border-radius:20px;padding:20px 18px;display:flex;flex-direction:column;overflow:hidden;
-  box-shadow:0 18px 50px rgba(0,0,0,.5);will-change:transform;touch-action:pan-y}
+  box-shadow:0 18px 50px rgba(0,0,0,.5);will-change:transform;touch-action:none;user-select:none;-webkit-user-select:none}
 .card.behind{transform:scale(.94) translateY(14px);filter:brightness(.7)}
 .card .qui{align-self:flex-start;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;
   padding:4px 10px;border-radius:99px;border:1px solid var(--bord);color:var(--mut);margin-bottom:12px}
@@ -73,11 +84,19 @@ header h1{font-size:22px;font-weight:800;letter-spacing:-.02em;margin-bottom:10p
       <div class="cpt" data-f="annuler"><div class="n" id="n-annuler">0</div><div class="l">Annuler</div></div>
     </div>
     <div class="progress" id="progress"></div>
+    <div class="ajout">
+      <button class="ajout-toggle" id="ajout-toggle">+ Dire ce qu'il faut faire</button>
+      <div class="ajout-box masque" id="ajout-box">
+        <textarea id="ajout-txt" placeholder="Écris ce qu'il faut faire, même mal formulé. Ça part dans ton backlog."></textarea>
+        <button class="btn-envoi" id="ajout-envoi">Envoyer dans le backlog</button>
+        <span class="ajout-etat" id="ajout-etat"></span>
+      </div>
+    </div>
   </header>
   <div class="deck" id="deck"></div>
   <div class="actions">
     <button class="rond no big" id="b-no" title="Annuler (swipe ←)">✕</button>
-    <button class="rond sb" id="b-sb" title="Stand-by (swipe ↓)">⏭</button>
+    <button class="rond sb" id="b-sb" title="Stand-by (swipe ↓)">↓</button>
     <button class="rond ok big" id="b-ok" title="OK (swipe →)">✓</button>
   </div>
   <div class="hint">← Annuler · ↓ Stand-by · OK → &nbsp;•&nbsp; touche les compteurs pour filtrer</div>
@@ -146,7 +165,7 @@ function carteHTML(t){
     +(t.fini?'<div class="fi"><b>Fini quand :</b> '+esc(t.fini)+'</div>':'')
     +'<div class="meta">'+meta.join('')+'</div>'
     +(t.lien?'<a class="lien" href="'+esc(t.lien)+'" target="_blank" rel="noopener">Ouvrir le lien ↗</a>':'')
-    +'<div class="stamp ok">OK</div><div class="stamp no">Annulé</div><div class="stamp sb">Stand-by</div>';
+    +'<div class="stamp ok">'+esc(libSwipe(t).ok)+'</div><div class="stamp no">'+esc(libSwipe(t).no)+'</div><div class="stamp sb">'+esc(libSwipe(t).sb)+'</div>';
 }
 function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
 
@@ -164,6 +183,8 @@ function rendre(){
   }
   setBoutons(filtre==='standby');
   $('#progress').textContent = (idx+1)+' / '+pile.length+(filtre==='standby'?' à décider':'');
+  var cur=byId(pile[idx]); var hEl=document.querySelector('.hint');
+  if(cur && hEl) hEl.textContent = libSwipe(cur).hint + ' · touche les compteurs pour filtrer';
   // carte suivante (dessous) puis courante (dessus)
   if (pile[idx+1]){ var b=document.createElement('div'); b.className='card behind'; b.innerHTML=carteHTML(byId(pile[idx+1])); deck.appendChild(b); }
   var c=document.createElement('div'); c.className='card'; c.dataset.id=pile[idx]; c.innerHTML=carteHTML(byId(pile[idx]));
@@ -171,6 +192,11 @@ function rendre(){
   swipe(c);
 }
 function byId(id){return TACHES.find(function(t){return t.id===id})}
+/* libellés selon le type : tâche À FAIRE par Tony vs proposée par Claude */
+function libSwipe(t){
+  if(t && (t.qui==='toi')) return {ok:'FAIT', no:'LAISSE TOMBER', sb:'PLUS TARD', hint:'✕ Laisse tomber · ↓ Plus tard · ✓ Je l\'ai fait'};
+  return {ok:'OK / GO', no:'ANNULÉ', sb:'STAND-BY', hint:'✕ Annuler · ↓ Stand-by · ✓ OK / Go'};
+}
 function setBoutons(on){ ['#b-no','#b-sb','#b-ok'].forEach(function(s){$(s).style.visibility=on?'visible':'hidden'}); }
 
 /* --- swipe (pointer events, tactile + souris) --- */
@@ -217,6 +243,17 @@ document.querySelectorAll('.cpt').forEach(function(el){
     rendre();
   };
 });
+
+/* --- ajouter une tâche / dire ce qu'il faut faire (→ backlog, comme l'ancienne page) --- */
+$('#ajout-toggle').onclick=function(){ $('#ajout-box').classList.toggle('masque'); if(!$('#ajout-box').classList.contains('masque')) $('#ajout-txt').focus(); };
+$('#ajout-envoi').onclick=function(){
+  var t=$('#ajout-txt').value.trim();
+  if(!t){ $('#ajout-etat').textContent=''; $('#ajout-txt').focus(); return; }
+  etat['idee:'+Date.now()]={ etat:'idee', texte:t, maj:new Date().toISOString() };
+  sauver();
+  $('#ajout-txt').value=''; $('#ajout-etat').textContent='✓ Ajouté à ton backlog';
+  setTimeout(function(){ $('#ajout-etat').textContent=''; $('#ajout-box').classList.add('masque'); },1600);
+};
 
 /* --- démarrage : cache local puis état serveur --- */
 try{ etat = JSON.parse(localStorage.getItem(LS)||'{}')||{}; }catch(_){ etat={}; }
