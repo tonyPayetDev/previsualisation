@@ -165,7 +165,7 @@ function carteHTML(t){
     +(t.fini?'<div class="fi"><b>Fini quand :</b> '+esc(t.fini)+'</div>':'')
     +'<div class="meta">'+meta.join('')+'</div>'
     +(t.lien?'<a class="lien" href="'+esc(t.lien)+'" target="_blank" rel="noopener">Ouvrir le lien ↗</a>':'')
-    +'<div class="stamp ok">OK</div><div class="stamp no">Annulé</div><div class="stamp sb">Stand-by</div>';
+    +'<div class="stamp ok">'+esc(libSwipe(t).ok)+'</div><div class="stamp no">'+esc(libSwipe(t).no)+'</div><div class="stamp sb">'+esc(libSwipe(t).sb)+'</div>';
 }
 function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
 
@@ -183,6 +183,8 @@ function rendre(){
   }
   setBoutons(filtre==='standby');
   $('#progress').textContent = (idx+1)+' / '+pile.length+(filtre==='standby'?' à décider':'');
+  var cur=byId(pile[idx]); var hEl=document.querySelector('.hint');
+  if(cur && hEl) hEl.textContent = libSwipe(cur).hint + ' · touche les compteurs pour filtrer';
   // carte suivante (dessous) puis courante (dessus)
   if (pile[idx+1]){ var b=document.createElement('div'); b.className='card behind'; b.innerHTML=carteHTML(byId(pile[idx+1])); deck.appendChild(b); }
   var c=document.createElement('div'); c.className='card'; c.dataset.id=pile[idx]; c.innerHTML=carteHTML(byId(pile[idx]));
@@ -190,6 +192,11 @@ function rendre(){
   swipe(c);
 }
 function byId(id){return TACHES.find(function(t){return t.id===id})}
+/* libellés selon le type : tâche À FAIRE par Tony vs proposée par Claude */
+function libSwipe(t){
+  if(t && (t.qui==='toi')) return {ok:'FAIT', no:'LAISSE TOMBER', sb:'PLUS TARD', hint:'✕ Laisse tomber · ↓ Plus tard · ✓ Je l\'ai fait'};
+  return {ok:'OK / GO', no:'ANNULÉ', sb:'STAND-BY', hint:'✕ Annuler · ↓ Stand-by · ✓ OK / Go'};
+}
 function setBoutons(on){ ['#b-no','#b-sb','#b-ok'].forEach(function(s){$(s).style.visibility=on?'visible':'hidden'}); }
 
 /* --- swipe (pointer events, tactile + souris) --- */
