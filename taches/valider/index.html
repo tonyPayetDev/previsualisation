@@ -27,6 +27,17 @@ header h1{font-size:22px;font-weight:800;letter-spacing:-.02em;margin-bottom:10p
 .cpt[data-f="ok"].on{border-color:var(--ok);background:#0f1e15}
 .cpt[data-f="annuler"].on{border-color:var(--rouge);background:#1e1010}
 .progress{font-size:12px;color:var(--mut);text-align:center;margin-bottom:8px;min-height:1.2em}
+/* ajouter une tâche */
+.ajout{margin-bottom:12px}
+.ajout-toggle{width:100%;min-height:44px;border-radius:12px;border:1px dashed var(--bord);background:transparent;color:var(--mut);font:inherit;font-weight:700;font-size:14px;cursor:pointer}
+.ajout-toggle:active{transform:scale(.99)}
+.ajout-box{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+.ajout-box.masque{display:none}
+.ajout-box textarea{width:100%;min-height:70px;padding:11px 13px;border-radius:11px;border:1px solid var(--bord);background:#0e0b14;color:var(--txt);font:inherit;font-size:16px;resize:vertical}
+.ajout-box textarea:focus{outline:2px solid var(--violet);border-color:var(--violet)}
+.btn-envoi{min-height:46px;border-radius:11px;border:none;background:var(--violet);color:#fff;font:inherit;font-weight:800;font-size:16px;cursor:pointer}
+.btn-envoi:active{transform:scale(.99)}
+.ajout-etat{font-size:12px;color:var(--ok);text-align:center;min-height:1.1em}
 /* deck */
 .deck{position:relative;flex:1;min-height:0}
 .card{position:absolute;inset:0;background:linear-gradient(160deg,var(--carte2),var(--carte));border:1px solid var(--bord);
@@ -73,11 +84,19 @@ header h1{font-size:22px;font-weight:800;letter-spacing:-.02em;margin-bottom:10p
       <div class="cpt" data-f="annuler"><div class="n" id="n-annuler">0</div><div class="l">Annuler</div></div>
     </div>
     <div class="progress" id="progress"></div>
+    <div class="ajout">
+      <button class="ajout-toggle" id="ajout-toggle">+ Dire ce qu'il faut faire</button>
+      <div class="ajout-box masque" id="ajout-box">
+        <textarea id="ajout-txt" placeholder="Écris ce qu'il faut faire, même mal formulé. Ça part dans ton backlog."></textarea>
+        <button class="btn-envoi" id="ajout-envoi">Envoyer dans le backlog</button>
+        <span class="ajout-etat" id="ajout-etat"></span>
+      </div>
+    </div>
   </header>
   <div class="deck" id="deck"></div>
   <div class="actions">
     <button class="rond no big" id="b-no" title="Annuler (swipe ←)">✕</button>
-    <button class="rond sb" id="b-sb" title="Stand-by (swipe ↓)">⏭</button>
+    <button class="rond sb" id="b-sb" title="Stand-by (swipe ↓)">↓</button>
     <button class="rond ok big" id="b-ok" title="OK (swipe →)">✓</button>
   </div>
   <div class="hint">← Annuler · ↓ Stand-by · OK → &nbsp;•&nbsp; touche les compteurs pour filtrer</div>
@@ -217,6 +236,17 @@ document.querySelectorAll('.cpt').forEach(function(el){
     rendre();
   };
 });
+
+/* --- ajouter une tâche / dire ce qu'il faut faire (→ backlog, comme l'ancienne page) --- */
+$('#ajout-toggle').onclick=function(){ $('#ajout-box').classList.toggle('masque'); if(!$('#ajout-box').classList.contains('masque')) $('#ajout-txt').focus(); };
+$('#ajout-envoi').onclick=function(){
+  var t=$('#ajout-txt').value.trim();
+  if(!t){ $('#ajout-etat').textContent=''; $('#ajout-txt').focus(); return; }
+  etat['idee:'+Date.now()]={ etat:'idee', texte:t, maj:new Date().toISOString() };
+  sauver();
+  $('#ajout-txt').value=''; $('#ajout-etat').textContent='✓ Ajouté à ton backlog';
+  setTimeout(function(){ $('#ajout-etat').textContent=''; $('#ajout-box').classList.add('masque'); },1600);
+};
 
 /* --- démarrage : cache local puis état serveur --- */
 try{ etat = JSON.parse(localStorage.getItem(LS)||'{}')||{}; }catch(_){ etat={}; }
