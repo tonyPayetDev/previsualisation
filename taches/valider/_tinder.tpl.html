@@ -6,21 +6,25 @@
 <meta name="robots" content="noindex, nofollow">
 <meta name="theme-color" content="#0a0a0f">
 <title>À valider — swipe</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#0a0a0f;--carte:#15151d;--carte2:#1b1b26;--bord:#2a2a38;--txt:#ededed;--mut:#9a9aa8;
-  --ok:#3ED37B;--rouge:#ef4444;--amber:#f5b338;--violet:#a855f7;--bleu:#5b9dff}
+  --ok:#3ED37B;--rouge:#ef4444;--amber:#f5b338;--violet:#a855f7;--violet2:#7828be;--bleu:#5b9dff;
+  --disp:"Bricolage Grotesque",system-ui,-apple-system,"Segoe UI",sans-serif}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html{color-scheme:dark}
 body{background:var(--bg);color:var(--txt);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
   min-height:100vh;overflow:hidden;display:flex;flex-direction:column;
   padding:max(12px,env(safe-area-inset-top)) 14px max(14px,env(safe-area-inset-bottom))}
 .wrap{max-width:520px;margin:0 auto;width:100%;display:flex;flex-direction:column;flex:1;min-height:0}
-header h1{font-size:22px;font-weight:800;letter-spacing:-.02em;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+header h1{font-family:var(--disp);font-size:24px;font-weight:800;letter-spacing:-.02em;margin-bottom:10px;display:flex;align-items:center;gap:8px}
 /* compteurs = filtres */
 .compteurs{display:flex;gap:8px;margin-bottom:12px}
 .cpt{flex:1;background:var(--carte);border:1px solid var(--bord);border-radius:13px;padding:9px 6px;text-align:center;cursor:pointer;transition:.12s}
-.cpt .n{font-size:26px;font-weight:800;line-height:1;font-variant-numeric:tabular-nums}
-.cpt .l{font-size:11px;color:var(--mut);margin-top:3px;text-transform:uppercase;letter-spacing:.06em}
+.cpt .n{font-family:var(--disp);font-size:30px;font-weight:800;line-height:1;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.cpt .l{font-size:12px;color:var(--mut);margin-top:3px;text-transform:uppercase;letter-spacing:.06em}
 .cpt[data-f="standby"] .n{color:var(--amber)} .cpt[data-f="ok"] .n{color:var(--ok)} .cpt[data-f="annuler"] .n{color:var(--rouge)}
 .cpt.on{border-color:currentColor}
 .cpt[data-f="standby"].on{border-color:var(--amber);background:#1e190f}
@@ -35,7 +39,7 @@ header h1{font-size:22px;font-weight:800;letter-spacing:-.02em;margin-bottom:10p
 .ajout-box.masque{display:none}
 .ajout-box textarea{width:100%;min-height:70px;padding:11px 13px;border-radius:11px;border:1px solid var(--bord);background:#0e0b14;color:var(--txt);font:inherit;font-size:16px;resize:vertical}
 .ajout-box textarea:focus{outline:2px solid var(--violet);border-color:var(--violet)}
-.btn-envoi{min-height:46px;border-radius:11px;border:none;background:var(--violet);color:#fff;font:inherit;font-weight:800;font-size:16px;cursor:pointer}
+.btn-envoi{min-height:46px;border-radius:11px;border:none;background:var(--violet2);color:#fff;font:inherit;font-weight:800;font-size:16px;cursor:pointer}
 .btn-envoi:active{transform:scale(.99)}
 .ajout-etat{font-size:12px;color:var(--ok);text-align:center;min-height:1.1em}
 /* deck */
@@ -47,8 +51,9 @@ header h1{font-size:22px;font-weight:800;letter-spacing:-.02em;margin-bottom:10p
 .card .qui{align-self:flex-start;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;
   padding:4px 10px;border-radius:99px;border:1px solid var(--bord);color:var(--mut);margin-bottom:12px}
 .card .qui.claude{color:#cbb8ff;border-color:#3a2f55} .card .qui.toi{color:#ffd98a;border-color:#4a3d1a}
-.card h2{font-size:23px;font-weight:800;line-height:1.18;letter-spacing:-.01em;margin-bottom:12px}
-.card .pq{font-size:15px;color:var(--mut);line-height:1.5;overflow:auto;flex:1;margin-bottom:12px}
+.card h2{font-family:var(--disp);font-size:23px;font-weight:700;line-height:1.15;letter-spacing:-.01em;margin-bottom:12px}
+.card .pq{font-size:15px;color:var(--mut);line-height:1.55;overflow:auto;max-height:42vh;margin-bottom:16px}
+.card .spacer{flex:1;min-height:12px}
 .card .fi{font-size:13px;color:var(--txt);background:#0e0e15;border:1px solid var(--bord);border-radius:10px;padding:9px 11px;margin-bottom:12px}
 .card .fi b{color:var(--ok)}
 .card .meta{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px}
@@ -70,8 +75,21 @@ header h1{font-size:22px;font-weight:800;letter-spacing:-.02em;margin-bottom:10p
 .rond.big{width:66px;height:66px;font-size:30px}
 .vide{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;text-align:center;color:var(--mut);padding:20px}
 .vide .em{font-size:44px}
-.hint{font-size:11px;color:var(--mut);text-align:center;margin-top:8px;min-height:1.2em}
-.sync{position:fixed;top:8px;right:10px;font-size:11px;color:var(--mut)}
+.hint{font-size:12px;color:var(--mut);text-align:center;margin-top:8px;min-height:1.2em}
+.sync{position:fixed;top:8px;right:10px;font-size:12px;color:var(--mut)}
+/* icônes dessinées (SVG), cohérentes — pas d'emoji */
+.rond svg{width:26px;height:26px;display:block}
+.rond.sb svg{width:22px;height:22px}
+.tag svg{width:13px;height:13px;margin-right:6px;vertical-align:-2px;opacity:.75;flex:none}
+.tag{display:inline-flex;align-items:center}
+.ajout-toggle svg,.stamp{pointer-events:none}
+/* surfaces navigateur thématisées */
+::selection{background:rgba(168,85,247,.32);color:#fff}
+:focus-visible{outline:2px solid var(--violet);outline-offset:2px;border-radius:10px}
+textarea{caret-color:var(--violet)}
+.pq::-webkit-scrollbar{width:6px}
+.pq::-webkit-scrollbar-thumb{background:var(--bord);border-radius:3px}
+.pq::-webkit-scrollbar-track{background:transparent}
 </style>
 </head>
 <body>
@@ -95,9 +113,9 @@ header h1{font-size:22px;font-weight:800;letter-spacing:-.02em;margin-bottom:10p
   </header>
   <div class="deck" id="deck"></div>
   <div class="actions">
-    <button class="rond no big" id="b-no" title="Annuler (swipe ←)">✕</button>
-    <button class="rond sb" id="b-sb" title="Stand-by (swipe ↓)">↓</button>
-    <button class="rond ok big" id="b-ok" title="OK (swipe →)">✓</button>
+    <button class="rond no big" id="b-no" aria-label="Annuler / laisse tomber"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    <button class="rond sb" id="b-sb" aria-label="Stand-by / plus tard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v13M6 12l6 6 6-6"/></svg></button>
+    <button class="rond ok big" id="b-ok" aria-label="OK / je l'ai fait"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7"/></svg></button>
   </div>
   <div class="hint">← Annuler · ↓ Stand-by · OK → &nbsp;•&nbsp; touche les compteurs pour filtrer</div>
 </div>
@@ -155,13 +173,17 @@ function decider(id, vers){        // vers: 'valide' | 'refuse' | null(=stand-by
 
 /* --- construction d'une carte --- */
 function carteHTML(t){
+  var IC_T='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2M9 2h6"/></svg>';
+  var IC_E='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></svg>';
+  var IC_C='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M17 8a5 5 0 100 8M5 10h7M5 14h7"/></svg>';
   var meta=[];
-  if(t.temps) meta.push('<span class="tag">⏱ '+esc(t.temps)+'</span>');
-  if(t.energie) meta.push('<span class="tag">🔋 '+esc(t.energie)+'</span>');
-  if(t.cout) meta.push('<span class="tag">💶 '+esc(t.cout)+'</span>');
+  if(t.temps) meta.push('<span class="tag">'+IC_T+esc(t.temps)+'</span>');
+  if(t.energie) meta.push('<span class="tag">'+IC_E+esc(t.energie)+'</span>');
+  if(t.cout) meta.push('<span class="tag">'+IC_C+esc(t.cout)+'</span>');
   return '<span class="qui '+(t.qui==='claude'?'claude':'toi')+'">'+(t.qui==='claude'?'proposé par Claude':'sur toi')+'</span>'
     +'<h2>'+esc(t.titre)+'</h2>'
     +(t.pourquoi?'<div class="pq">'+esc(t.pourquoi)+'</div>':'<div class="pq"></div>')
+    +'<div class="spacer"></div>'
     +(t.fini?'<div class="fi"><b>Fini quand :</b> '+esc(t.fini)+'</div>':'')
     +'<div class="meta">'+meta.join('')+'</div>'
     +(t.lien?'<a class="lien" href="'+esc(t.lien)+'" target="_blank" rel="noopener">Ouvrir le lien ↗</a>':'')
