@@ -202,49 +202,100 @@ label.tpl .desc{font-size:13px;color:var(--doux);margin-top:2px;line-height:1.45
   let recorder = null, chunks = [], chronoId = null, chronoDebut = 0;
   let blobFinal = null, typeFinal = '';
 
-  /* ── Filtre visage : lissage de peau dans l'ovale du visage + teinte
-        chaude + léger vignettage. Le canvas EST la source d'enregistrement
-        (captureStream), donc le filtre est vraiment gravé dans la vidéo,
-        pas juste un aperçu cosmétique. ─────────────────────────────────── */
+  /* ── Format 9:16 forcé. object-fit:cover en CSS ne change QUE l'aperçu à
+        l'écran — le canvas enregistré, lui, gardait la résolution brute de
+        la caméra (souvent proche du carré ou du 3:4 selon le téléphone),
+        d'où la vidéo pas au format une fois téléchargée. On fixe le canvas
+        à 720×1280 et on recadre nous-mêmes le flux caméra dedans, comme le
+        ferait CSS mais sur les vrais pixels enregistrés. ─────────────────── */
+  const CANVAS_W = 720, CANVAS_H = 1280;
+  let recadre = { sx: 0, sy: 0, sw: CANVAS_W, sh: CANVAS_H };
+
+  function majRecadre() {
+    const vw = video.videoWidth || CANVAS_W, vh = video.videoHeight || CANVAS_H;
+    const ratioVideo = vw / vh, ratioCible = CANVAS_W / CANVAS_H;
+    if (ratioVideo > ratioCible) { const sh = vh, sw = vh * ratioCible; recadre = { sx: (vw - sw) / 2, sy: 0, sw, sh }; }
+    else { const sw = vw, sh = vw / ratioCible; recadre = { sx: 0, sy: (vh - sh) / 2, sw, sh }; }
+  }
+  function dessinerCadre() {
+    ctx.drawImage(video, recadre.sx, recadre.sy, recadre.sw, recadre.sh, 0, 0, CANVAS_W, CANVAS_H);
+  }
+  // Un point de repère MediaPipe est normalisé (0..1) sur l'IMAGE BRUTE
+  // envoyée à FaceMesh, pas sur le canvas recadré — il faut le faire passer
+  // par le même recadrage, sinon le masque dérive par rapport au visage dès
+  // que le ratio caméra n'est pas déjà du 9:16.
+  function pointVersCanvas(p) {
+    const vw = video.videoWidth || CANVAS_W, vh = video.videoHeight || CANVAS_H;
+    return {
+      x: (p.x * vw - recadre.sx) / recadre.sw * CANVAS_W,
+      y: (p.y * vh - recadre.sy) / recadre.sh * CANVAS_H,
+    };
+  }
+
+  /* ── Filtre visage : lissage LÉGER, à bord fondu (pas de découpe nette),
+        mélangé à faible opacité avec l'image d'origine — un filtre trop
+        fort ou au bord visible a l'air d'un autocollant, pas d'une peau. ── */
   const OVALE = [10,338,297,332,284,251,389,356,454,323,361,288,397,365,379,378,400,377,
     152,148,176,149,150,136,172,58,132,93,234,127,162,21,54,103,67,109];
 
-  function dessinerVisageLisse(landmarks, w, h) {
-    ctx.save();
-    ctx.beginPath();
+  const masque = document.createElement('canvas');
+  masque.width = CANVAS_W; masque.height = CANVAS_H;
+  const mctx = masque.getContext('2d');
+  const peau = document.createElement('canvas');
+  peau.width = CANVAS_W; peau.height = CANVAS_H;
+  const pctx = peau.getContext('2d');
+
+  function dessinerVisageLisse(landmarks) {
+    // 1) masque blanc flouté = bord fondu au lieu d'une découpe nette
+    mctx.clearRect(0, 0, CANVAS_W, CANVAS_H);
+    mctx.filter = 'blur(14px)';
+    mctx.fillStyle = '#fff';
+    mctx.beginPath();
     OVALE.forEach((i, k) => {
-      const p = landmarks[i];
-      const x = p.x * w, y = p.y * h;
-      k === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+      const q = pointVersCanvas(landmarks[i]);
+      k === 0 ? mctx.moveTo(q.x, q.y) : mctx.lineTo(q.x, q.y);
     });
-    ctx.closePath();
-    ctx.clip();
-    ctx.filter = 'blur(5px) saturate(1.08) brightness(1.04)';
-    ctx.drawImage(video, 0, 0, w, h);
-    ctx.filter = 'none';
-    ctx.restore();
+    mctx.closePath();
+    mctx.fill();
+    mctx.filter = 'none';
+
+    // 2) couche peau lissée (flou léger), puis masquée par le flou ci-dessus
+    pctx.clearRect(0, 0, CANVAS_W, CANVAS_H);
+    pctx.filter = 'blur(2.5px) saturate(1.04) brightness(1.02)';
+    pctx.drawImage(canvas, 0, 0);
+    pctx.filter = 'none';
+    pctx.globalCompositeOperation = 'destination-in';
+    pctx.drawImage(masque, 0, 0);
+    pctx.globalCompositeOperation = 'source-over';
+
+    // 3) mélange à faible opacité sur le canvas principal — jamais un
+    //    remplacement total, sinon la peau a l'air plastifiée.
+    ctx.globalAlpha = 0.4;
+    ctx.drawImage(peau, 0, 0);
+    ctx.globalAlpha = 1;
   }
 
-  function dessinerTeinteEtVignette(w, h) {
+  function dessinerTeinteEtVignette() {
+    const w = CANVAS_W, h = CANVAS_H;
     const grad = ctx.createLinearGradient(0, 0, 0, h);
-    grad.addColorStop(0, 'rgba(255,190,120,0.05)');
-    grad.addColorStop(1, 'rgba(255,140,80,0.09)');
+    grad.addColorStop(0, 'rgba(255,190,120,0.025)');
+    grad.addColorStop(1, 'rgba(255,140,80,0.045)');
     ctx.fillStyle = grad;
     ctx.fillRect(0, 0, w, h);
-    const vg = ctx.createRadialGradient(w/2, h/2, h*0.35, w/2, h/2, h*0.72);
+    const vg = ctx.createRadialGradient(w/2, h/2, h*0.42, w/2, h/2, h*0.78);
     vg.addColorStop(0, 'rgba(0,0,0,0)');
-    vg.addColorStop(1, 'rgba(0,0,0,0.32)');
+    vg.addColorStop(1, 'rgba(0,0,0,0.16)');
     ctx.fillStyle = vg;
     ctx.fillRect(0, 0, w, h);
   }
 
   function boucle() {
-    const w = canvas.width, h = canvas.height;
-    ctx.drawImage(video, 0, 0, w, h);
+    majRecadre();
+    dessinerCadre();
     const filtreActif = $('#toggleFiltre').checked;
     if (filtreActif && dernierResultat && dernierResultat.multiFaceLandmarks && dernierResultat.multiFaceLandmarks[0]) {
-      dessinerVisageLisse(dernierResultat.multiFaceLandmarks[0], w, h);
-      dessinerTeinteEtVignette(w, h);
+      dessinerVisageLisse(dernierResultat.multiFaceLandmarks[0]);
+      dessinerTeinteEtVignette();
     }
     animId = requestAnimationFrame(boucle);
   }
@@ -255,13 +306,14 @@ label.tpl .desc{font-size:13px;color:var(--doux);margin-top:2px;line-height:1.45
     btnCamera.textContent = 'Ouverture…';
     try {
       flux = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: 'user', width: { ideal: 720 }, height: { ideal: 1280 } },
+        video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 1280 }, aspectRatio: { ideal: 9/16 } },
         audio: true
       });
       video.srcObject = flux;
       await video.play();
-      canvas.width = video.videoWidth || 720;
-      canvas.height = video.videoHeight || 1280;
+      canvas.width = CANVAS_W;
+      canvas.height = CANVAS_H;
+      majRecadre();
 
       if (window.FaceMesh && window.Camera) {
         faceMesh = new FaceMesh({ locateFile: (f) => `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${f}` });
