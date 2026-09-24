@@ -63,23 +63,33 @@ h2 a:hover{color:var(--jaune)}
    radial-gradient(1100px 200px at 88% -30%,rgba(124,92,255,.22),transparent 60%),
    linear-gradient(135deg,#1b1524,#121220);
   border:1px solid #33294d;border-radius:17px;padding:22px 22px 19px;position:relative;overflow:hidden}
+.goulot > :not(.volcan){position:relative;z-index:1}
+.volcan{position:absolute;right:0;top:0;bottom:0;width:52%;pointer-events:none;z-index:0;
+  -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 36%);mask-image:linear-gradient(90deg,transparent 0,#000 36%)}
+.volcan canvas{width:100%;height:100%;display:block}
 .goulot .eti{font-size:.67rem;letter-spacing:.13em;text-transform:uppercase;color:var(--jaune);
   display:flex;align-items:center;gap:7px;margin-bottom:11px;font-weight:600}
 .goulot h3{margin:0 0 5px;font-size:1.72rem;line-height:1.1;letter-spacing:-.02em}
 .goulot h3 em{font-style:normal;color:var(--jaune);display:block}
-.goulot p{margin:0 0 15px;color:#b9b9cc;font-size:.92rem;max-width:520px}
+.goulot p{margin:0 0 15px;color:#c3c3d4;font-size:.92rem;max-width:min(520px,56%)}
+.goulot .chiffre,.goulot .jauge,.goulot .jauge-leg{max-width:min(430px,56%)}
 .goulot .chiffre{display:flex;align-items:baseline;gap:9px;margin-bottom:13px;flex-wrap:wrap}
 .goulot .chiffre b{font-size:1.5rem;font-variant-numeric:tabular-nums}
 .goulot .chiffre span{color:var(--gris);font-size:.84rem}
-.jauge{height:7px;border-radius:99px;background:#26263a;overflow:hidden;max-width:430px}
-.jauge i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--jaune),var(--orange))}
+.jauge{height:8px;border-radius:99px;overflow:hidden;max-width:430px;
+  background:repeating-linear-gradient(-45deg,rgba(224,86,74,.55) 0 5px,rgba(224,86,74,.2) 5px 10px)}
+.jauge i{display:block;height:100%;border-radius:99px 0 0 99px;background:var(--jaune);box-shadow:2px 0 0 #121220}
+.jauge-leg{display:flex;justify-content:space-between;gap:10px;max-width:430px;margin-top:6px;font-size:.72rem;color:var(--gris);font-variant-numeric:tabular-nums}
+.jauge-leg .perdu{color:#f08a80}
 .bouton{display:inline-flex;align-items:center;gap:8px;margin-top:15px;background:var(--jaune);color:#15150d;
   font-weight:700;font-size:.87rem;padding:11px 17px;border-radius:11px;text-decoration:none;border:0;cursor:pointer}
 .bouton:hover{filter:brightness(1.08)}
 
 /* ── Le tunnel ── */
-.tunnel{display:flex;gap:7px;overflow-x:auto;padding-bottom:3px}
-.et{flex:1 1 0;min-width:112px;background:var(--carte2);border:1px solid var(--bord);
+.tunnel{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(98px,1fr);gap:7px;
+  overflow-x:auto;padding:11px 2px 4px;margin-top:-4px;scroll-snap-type:x proximity;
+  scrollbar-width:thin;scrollbar-color:#2e2e44 transparent}
+.et{min-width:0;scroll-snap-align:start;background:var(--carte2);border:1px solid var(--bord);
   border-radius:12px;padding:12px 11px;position:relative}
 .et b{display:block;font-size:1.45rem;line-height:1.1;font-variant-numeric:tabular-nums}
 .et .nom{font-size:.76rem;color:var(--texte);margin-top:3px;font-weight:600}
@@ -90,8 +100,9 @@ h2 a:hover{color:var(--jaune)}
   border-radius:7px;padding:5px 6px;font:inherit;font-size:1.1rem;font-weight:700;
   text-align:left;font-variant-numeric:tabular-nums}
 .et input:focus{outline:none;border-color:var(--jaune)}
-.chute{position:absolute;top:-8px;right:9px;font-size:.62rem;background:var(--rouge);color:#fff;
-  padding:1px 6px;border-radius:99px;font-weight:700}
+.chute{position:absolute;top:-9px;right:8px;font-size:.64rem;line-height:1.5;background:var(--rouge);color:#fff;
+  padding:1px 7px;border-radius:99px;font-weight:700;white-space:nowrap;font-variant-numeric:tabular-nums;
+  box-shadow:0 2px 6px rgba(0,0,0,.45)}
 
 /* ── Listes ── */
 .ligne{display:flex;gap:11px;align-items:flex-start;padding:10px 0;border-top:1px solid var(--bord)}
@@ -157,7 +168,13 @@ h2 a:hover{color:var(--jaune)}
   .rail a{white-space:nowrap;padding:8px 12px}
   main{padding:16px 13px 60px}
   .goulot h3{font-size:1.4rem}
+  .goulot{padding-bottom:168px}
+  .goulot p,.goulot .chiffre,.goulot .jauge,.goulot .jauge-leg{max-width:none}
+  .volcan{top:auto;height:200px;width:100%;
+    -webkit-mask-image:linear-gradient(180deg,transparent 0,#000 38%);mask-image:linear-gradient(180deg,transparent 0,#000 38%)}
 }
+::selection{background:rgba(245,197,24,.3);color:#fff}
+@media (prefers-reduced-motion:reduce){ .bouton{transition:none} }
 </style>
 </head>
 <body>
@@ -185,13 +202,14 @@ h2 a:hover{color:var(--jaune)}
   </div>
 
   <section class="goulot">
-    <div class="eti">⚠ Ton goulot actuel</div>
+    <div class="volcan" aria-hidden="true"><canvas id="volcan"></canvas></div>
     <h3 id="g-titre">…</h3>
     <p id="g-sous"></p>
     <div class="chiffre">
       <b id="g-chiffre">—</b><span id="g-detail"></span>
     </div>
-    <div class="jauge"><i id="g-jauge" style="width:0"></i></div>
+    <div class="jauge" role="img" id="g-jauge-lbl"><i id="g-jauge" style="width:0"></i></div>
+    <div class="jauge-leg"><span id="g-passe"></span><span class="perdu" id="g-perdu"></span></div>
     <a class="bouton" id="g-action" href="/taches/tests-foodboost/">Ouvrir le registre des démarches →</a>
   </section>
 
@@ -250,6 +268,135 @@ h2 a:hover{color:var(--jaune)}
 
 <div class="etat" id="etat">chargement…</div>
 
+<script>
+/* Le Piton de la Fournaise : sa pression = la perte mesurée au goulot.
+   Plus le tunnel bloque, plus la fontaine monte et plus les coulées débordent. */
+(function(){
+"use strict";
+var cv=document.getElementById('volcan'); if(!cv||!cv.getContext) return;
+var g=cv.getContext('2d'), W=0, H=0, dpr=1, P=0.6, cible=0.6;
+var calme=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+var seed=11; function rnd(){ seed=(seed*16807)%2147483647; return seed/2147483647; }
+var parts=[], fumee=[], braises=[], t0=performance.now(), visible=true, raf=0;
+
+function taille(){
+  var r=cv.getBoundingClientRect(); dpr=Math.min(2,window.devicePixelRatio||1);
+  W=Math.max(1,r.width); H=Math.max(1,r.height);
+  cv.width=Math.round(W*dpr); cv.height=Math.round(H*dpr); g.setTransform(dpr,0,0,dpr,0,0);
+}
+/* Profil de volcan bouclier : pentes douces, sommet large, cratère Dolomieu. */
+function geo(){
+  var base=H*1.02, som=H*0.5, cx=W*0.62, lg=Math.min(W*1.25,H*3.2);
+  return {base:base,som:som,cx:cx,l:cx-lg/2,r:cx+lg/2,cw:lg*0.085};
+}
+function flanc(G){
+  g.beginPath(); g.moveTo(G.l-20,G.base+10);
+  g.bezierCurveTo(G.l+(G.cx-G.l)*0.55,G.base-6,G.cx-G.cw*3.2,G.som+10,G.cx-G.cw,G.som);
+  g.lineTo(G.cx-G.cw*0.62,G.som+8); g.quadraticCurveTo(G.cx,G.som+17,G.cx+G.cw*0.62,G.som+8);
+  g.lineTo(G.cx+G.cw,G.som+1);
+  g.bezierCurveTo(G.cx+G.cw*3.2,G.som+12,G.cx+(G.r-G.cx)*0.45,G.base-6,G.r+20,G.base+10);
+  g.closePath();
+}
+function chemin(G,k,avance){
+  var sx=G.cx+(k?G.cw*0.4:-G.cw*0.15), sy=G.som+9;
+  var ex=G.cx+(k?(G.r-G.cx)*0.62:(G.r-G.cx)*0.30), ey=G.base-8;
+  var pts=[], n=40, m=Math.max(2,Math.round(n*avance));
+  for(var i=0;i<=m;i++){ var u=i/n, y=sy+(ey-sy)*u;
+    var x=sx+(ex-sx)*Math.pow(u,0.8)+Math.sin(u*(k?9:7)+k*2)*6*u+Math.sin(u*23+k)*1.6;
+    pts.push([x,y]); }
+  return pts;
+}
+function trace(pts){ g.beginPath(); g.moveTo(pts[0][0],pts[0][1]); for(var i=1;i<pts.length;i++) g.lineTo(pts[i][0],pts[i][1]); }
+function coulee(G,k,t,p){
+  var avance=Math.min(1,0.4+p*0.7), pts=chemin(G,k,avance), w=(k?2.6:2)+p*1.8;
+  g.save(); g.lineCap='round'; g.lineJoin='round'; g.globalCompositeOperation='lighter';
+  trace(pts); g.strokeStyle='rgba(255,90,30,.28)'; g.lineWidth=w*4; g.stroke();
+  trace(pts); g.strokeStyle='rgba(255,130,40,.75)'; g.lineWidth=w*1.6; g.stroke();
+  trace(pts); g.strokeStyle='rgba(255,225,140,.85)'; g.lineWidth=w*0.6; g.stroke();
+  trace(pts); g.setLineDash([6,30]); g.lineDashOffset=-t*42*(0.6+p); g.strokeStyle='rgba(255,250,210,.95)'; g.lineWidth=w; g.stroke();
+  g.restore();
+}
+function emettre(G,p,dt){
+  var n=Math.round((40+p*190)*dt);
+  for(var i=0;i<n;i++){
+    var a=-Math.PI/2+(rnd()-.5)*(0.5+p*0.5), v=(H*0.45+rnd()*H*0.55)*(0.55+p*0.75);
+    parts.push({x:G.cx+(rnd()-.5)*G.cw*0.8,y:G.som+9,vx:Math.cos(a)*v*0.55,vy:Math.sin(a)*v,v:0,max:0.9+rnd()*0.8,r:0.8+rnd()*1.9});
+  }
+  if(rnd()<dt*(4+p*5)) fumee.push({x:G.cx+(rnd()-.5)*G.cw,y:G.som-4,r:6+rnd()*8,v:0,max:6+rnd()*3});
+  if(rnd()<dt*(6+p*10)) braises.push({x:G.cx+(rnd()-.5)*G.cw,y:G.som,vx:(rnd()-.3)*20,vy:-20-rnd()*40,v:0,max:2.5+rnd()*2});
+}
+function dessiner(t,dt){
+  g.clearRect(0,0,W,H);
+  P+=(cible-P)*Math.min(1,dt*1.5);
+  var G=geo(), p=P, puls=0.75+0.25*Math.sin(t*2.1)+0.1*Math.sin(t*5.3);
+
+  /* lueur du ciel au-dessus du cratère */
+  var halo=g.createRadialGradient(G.cx,G.som,4,G.cx,G.som,H*(0.55+p*0.25));
+  halo.addColorStop(0,'rgba(255,150,50,'+(0.34*puls*(0.5+p))+')');
+  halo.addColorStop(.4,'rgba(200,70,60,'+(0.14*(0.5+p))+')');
+  halo.addColorStop(1,'rgba(124,92,255,0)');
+  g.fillStyle=halo; g.fillRect(0,0,W,H);
+
+  /* rempart de l'Enclos, en arrière-plan */
+  g.fillStyle='#161225'; g.beginPath(); g.moveTo(0,H*0.8);
+  g.bezierCurveTo(W*0.25,H*0.66,W*0.5,H*0.74,W,H*0.62); g.lineTo(W,H); g.lineTo(0,H); g.fill();
+
+  /* fumée poussée par les alizés vers l'ouest */
+  g.save(); g.globalCompositeOperation='source-over';
+  for(var i=fumee.length-1;i>=0;i--){ var f=fumee[i]; f.v+=dt; if(f.v>f.max){fumee.splice(i,1);continue;}
+    var k=f.v/f.max; f.x-=dt*(8+k*26); f.y-=dt*(20-k*12); f.r+=dt*11;
+    g.fillStyle='rgba(110,98,135,'+(0.075*(1-k)*Math.min(1,f.v*1.5))+')';
+    g.beginPath(); g.arc(f.x,f.y,f.r,0,Math.PI*2); g.fill(); }
+  g.restore();
+
+  /* le volcan */
+  flanc(G);
+  var fl=g.createLinearGradient(0,G.som,0,G.base);
+  fl.addColorStop(0,'#2a1d2e'); fl.addColorStop(.5,'#1a1424'); fl.addColorStop(1,'#0e0b16');
+  g.fillStyle=fl; g.fill();
+  g.save(); g.strokeStyle='rgba(160,130,255,.28)'; g.lineWidth=1.2; g.stroke(); g.restore();
+  g.save(); g.clip();
+  var rim=g.createRadialGradient(G.cx,G.som,G.cw,G.cx,G.som,(G.r-G.l)*0.45);
+  rim.addColorStop(0,'rgba(255,110,40,'+(0.22*(0.5+p))+')'); rim.addColorStop(1,'rgba(255,110,40,0)');
+  g.fillStyle=rim; g.fillRect(0,0,W,H);
+  coulee(G,1,t,p); coulee(G,0,t,p);
+  var cr=g.createRadialGradient(G.cx,G.som+10,1,G.cx,G.som+10,G.cw*1.4);
+  cr.addColorStop(0,'rgba(255,240,170,'+(0.95*puls)+')'); cr.addColorStop(.35,'rgba(255,120,30,.7)'); cr.addColorStop(1,'rgba(255,80,20,0)');
+  g.fillStyle=cr; g.fillRect(0,0,W,H);
+  g.restore();
+
+  /* fontaine de lave */
+  emettre(G,p,dt);
+  g.save(); g.globalCompositeOperation='lighter';
+  var grav=H*1.25;
+  for(var j=parts.length-1;j>=0;j--){ var q=parts[j]; q.v+=dt; q.vy+=grav*dt; q.x+=q.vx*dt; q.y+=q.vy*dt;
+    if(q.v>q.max||q.y>G.som+30){parts.splice(j,1);continue;}
+    var e=q.v/q.max, c=e<.3?'255,240,170':e<.65?'255,150,50':'210,60,30';
+    g.strokeStyle='rgba('+c+','+(0.9*(1-e))+')'; g.lineWidth=q.r;
+    g.beginPath(); g.moveTo(q.x,q.y); g.lineTo(q.x-q.vx*0.018,q.y-q.vy*0.018); g.stroke(); }
+  for(var b=braises.length-1;b>=0;b--){ var s2=braises[b]; s2.v+=dt; if(s2.v>s2.max){braises.splice(b,1);continue;}
+    s2.x+=s2.vx*dt-dt*8; s2.y+=s2.vy*dt; s2.vy+=4*dt;
+    g.fillStyle='rgba(255,190,90,'+(0.8*(1-s2.v/s2.max))+')'; g.fillRect(s2.x,s2.y,1.6,1.6); }
+  g.restore();
+  if(parts.length>900) parts.splice(0,parts.length-900);
+}
+var last=performance.now();
+function boucle(now){
+  var dt=Math.min(0.05,(now-last)/1000); last=now;
+  dessiner((now-t0)/1000,dt);
+  raf=(visible&&!document.hidden&&!calme)?requestAnimationFrame(boucle):0;
+}
+function relancer(){ if(!raf&&visible&&!document.hidden&&!calme){ last=performance.now(); raf=requestAnimationFrame(boucle); } }
+function figer(){ /* image fixe : on simule 2,5 s d'éruption puis on dessine une fois */
+  for(var i=0;i<75;i++) dessiner(i/30,1/30); }
+taille();
+if(calme) figer(); else relancer();
+window.addEventListener('resize',function(){ taille(); if(calme) figer(); });
+document.addEventListener('visibilitychange',relancer);
+if('IntersectionObserver' in window) new IntersectionObserver(function(es){ visible=es[0].isIntersecting; relancer(); }).observe(cv);
+window.volcan={ pression:function(x){ cible=Math.max(0.15,Math.min(1,+x||0)); if(calme) figer(); } };
+})();
+</script>
 <script>
 (function(){
 "use strict";
@@ -313,6 +460,11 @@ function peindre(d){
     document.getElementById('g-detail').textContent=
       d.goulot.pourcent+' % se perdent ici — '+d.goulot.quoi;
     document.getElementById('g-jauge').style.width=(100-d.goulot.pourcent)+'%';
+    document.getElementById('g-passe').textContent=d.goulot.apres+' passent';
+    document.getElementById('g-perdu').textContent=(d.goulot.avant-d.goulot.apres)+' restent bloqués';
+    document.getElementById('g-jauge-lbl').setAttribute('aria-label',
+      d.goulot.apres+' sur '+d.goulot.avant+' passent, '+d.goulot.pourcent+' % se perdent');
+    if(window.volcan) window.volcan.pression(typeof d.goulot.perte==='number'?d.goulot.perte:d.goulot.pourcent/100);
   }
 
   /* ── Le tunnel ── */
