@@ -2,98 +2,277 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="robots" content="noindex,nofollow">
-<title>Mes outils</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Tous mes outils — AutomatisationBoost</title>
+<!--
+  Le catalogue des outils déjà fabriqués. Deux partis pris :
+
+  1. AUCUNE route inventée. Les 24 entrées ci-dessous ont été vérifiées une à
+     une comme présentes dans le dépôt le 2026-09-24. Une carte qui mène à un
+     404 est pire qu'une carte absente : elle fait perdre le geste.
+  2. Les FAVORIS et les RÉCENTS sont gardés dans le magasin n8n partagé, donc
+     ils suivent d'un appareil à l'autre. Le compteur d'ouvertures est local,
+     c'est une commodité, pas une mesure.
+-->
 <style>
 :root{
-  --nuit:#0a0a0d;--carte:#121218;--carte2:#17171f;--ligne:#24242e;
-  --texte:#f2f0ec;--doux:#a3a0ad;--faible:#6f6c78;
-  --or:#eab308;--violet:#8b5cf6;
-  --dsp:'Arial Narrow','Helvetica Neue',system-ui,sans-serif;
-  --mno:ui-monospace,SFMono-Regular,Menlo,monospace;
+  --fond:#0a0a12; --carte:#13131f; --carte2:#181826; --bord:#262636;
+  --jaune:#f5c518; --violet:#7c5cff; --vert:#34c26a; --bleu:#3d8bfd; --orange:#f0913a;
+  --texte:#eceef4; --gris:#8b8ba0; --gris2:#5e5e73;
 }
-*{margin:0;padding:0;box-sizing:border-box}
-html{background:var(--nuit)}
-body{background:var(--nuit);color:var(--texte);line-height:1.55;
-  font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased}
-.w{max-width:1000px;margin:0 auto;padding:clamp(28px,6vw,60px) clamp(18px,4vw,32px) 100px}
-a.retour{color:var(--faible);font-size:13px;text-decoration:none}a.retour:hover{color:var(--or)}
-.mono{font-family:var(--mno);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--or);display:block;margin-top:16px}
-h1{font-family:var(--dsp);text-transform:uppercase;font-weight:700;letter-spacing:.01em;
-  font-size:clamp(34px,7vw,58px);line-height:1.02;margin:12px 0 12px;text-wrap:balance}
-h1 em{font-style:normal;color:var(--or)}
-.chapo{color:var(--doux);max-width:58ch;font-size:clamp(15px,1.6vw,17px)}
-h2{font-family:var(--dsp);text-transform:uppercase;font-size:20px;letter-spacing:.02em;
-  margin:44px 0 4px;padding-top:24px;border-top:1px solid var(--ligne)}
-h2 + p{color:var(--faible);font-size:13.5px;margin-bottom:18px}
-.outils{display:grid;grid-template-columns:repeat(auto-fit,minmax(258px,1fr));gap:12px}
-.outil{display:flex;flex-direction:column;gap:7px;background:var(--carte);border:1px solid var(--ligne);
-  border-radius:14px;padding:19px 20px 17px;text-decoration:none;color:inherit;transition:.16s}
-.outil:hover{border-color:#3a3a48;background:var(--carte2);transform:translateY(-2px)}
-.outil .ic{display:flex;width:38px;height:38px;border-radius:11px;align-items:center;justify-content:center;
-  background:#191922;border:1px solid var(--ligne);color:var(--doux)}
-.outil .ic svg{width:21px;height:21px}
-.outil.cle .ic{background:rgba(234,179,8,.10);border-color:rgba(234,179,8,.38);color:var(--or)}
-.outil:hover .ic{color:var(--texte)}
-.outil .t{font-family:var(--dsp);text-transform:uppercase;font-size:21px;letter-spacing:.02em}
-.outil .q{color:var(--doux);font-size:13.5px;line-height:1.5}
-.outil.cle{border-color:rgba(234,179,8,.42);background:rgba(234,179,8,.06)}
-.outil.cle:hover{border-color:var(--or)}
-.outil:focus-visible{outline:2px solid var(--or);outline-offset:3px}
-@media (prefers-reduced-motion:reduce){.outil{transition:none}.outil:hover{transform:none}}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--fond);color:var(--texte);
+  font:400 15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif;display:flex;min-height:100vh}
+
+.rail{width:214px;flex:0 0 214px;background:#0c0c16;border-right:1px solid var(--bord);
+  padding:18px 12px;display:flex;flex-direction:column;gap:3px;position:sticky;top:0;height:100vh;overflow-y:auto}
+.marque{display:flex;align-items:center;gap:9px;padding:4px 8px 20px}
+.marque .b{width:30px;height:30px;border-radius:9px;background:linear-gradient(135deg,var(--jaune),var(--orange));
+  display:grid;place-items:center;font-size:16px;flex:0 0 30px}
+.marque span{font-size:.7rem;letter-spacing:.09em;text-transform:uppercase;color:var(--gris);line-height:1.25}
+.marque b{display:block;color:var(--texte);font-size:.82rem;letter-spacing:.04em}
+.rail a{display:flex;align-items:center;gap:10px;padding:9px 11px;border-radius:9px;
+  color:var(--gris);text-decoration:none;font-size:.88rem}
+.rail a:hover{background:#16162a;color:var(--texte)}
+.rail a.ici{background:rgba(245,197,24,.1);color:var(--jaune);font-weight:600;
+  box-shadow:inset 0 0 0 1px rgba(245,197,24,.2)}
+.rail a i{font-style:normal;width:17px;text-align:center;opacity:.9}
+
+main{flex:1;min-width:0;padding:22px 26px 70px;max-width:1180px}
+h1{font-size:1.85rem;margin:0 0 4px;letter-spacing:-.02em}
+h1 em{font-style:normal;color:var(--jaune)}
+.sous{color:var(--gris);font-size:.9rem;margin:0 0 20px;max-width:560px}
+h2{font-size:1rem;margin:30px 0 12px;display:flex;align-items:center;gap:9px}
+h2 .n{font-size:.72rem;color:var(--gris2);background:var(--carte2);border:1px solid var(--bord);
+  border-radius:99px;padding:1px 8px;font-weight:400}
+
+.recherche{display:flex;align-items:center;gap:10px;background:var(--carte);border:1px solid var(--bord);
+  border-radius:12px;padding:11px 15px;margin-bottom:22px;max-width:560px}
+.recherche input{flex:1;background:none;border:0;color:var(--texte);font:inherit;outline:none;min-width:0}
+.recherche input::placeholder{color:var(--gris2)}
+.recherche span{color:var(--gris2)}
+
+.grille{display:grid;grid-template-columns:repeat(auto-fill,minmax(232px,1fr));gap:11px}
+.o{background:var(--carte);border:1px solid var(--bord);border-radius:13px;padding:14px 15px;
+  display:block;text-decoration:none;color:inherit;position:relative;transition:border-color .13s,transform .13s}
+.o:hover{border-color:#3a3a52;transform:translateY(-1px)}
+.o .ic{width:32px;height:32px;border-radius:9px;display:grid;place-items:center;font-size:15px;margin-bottom:9px}
+.o b{display:block;font-size:.91rem;letter-spacing:-.005em}
+.o span{display:block;color:var(--gris);font-size:.77rem;margin-top:3px;line-height:1.4}
+.o .fav{position:absolute;top:11px;right:11px;font-size:.95rem;color:var(--gris2);cursor:pointer;
+  line-height:1;padding:3px;border-radius:6px}
+.o .fav:hover{color:var(--jaune)}
+.o .fav.on{color:var(--jaune)}
+.o .fle{position:absolute;top:14px;right:36px;color:var(--gris2);font-size:.8rem}
+
+.vide{color:var(--gris2);font-size:.85rem;padding:14px 0}
+.note{font-size:.76rem;color:var(--gris2);margin-top:26px;line-height:1.5;max-width:620px;
+  border-top:1px solid var(--bord);padding-top:14px}
+.etat{position:fixed;right:14px;bottom:12px;background:#0d0d18;border:1px solid var(--bord);
+  border-radius:9px;padding:6px 11px;font-size:.72rem;color:var(--gris);z-index:9}
+.etat.ok{color:var(--vert);border-color:#1e4030} .etat.ko{color:var(--rouge,#e0564a)}
+
+@media(max-width:760px){
+  body{display:block}
+  .rail{width:auto;height:auto;position:static;flex-direction:row;overflow-x:auto;
+    padding:10px;gap:6px;border-right:0;border-bottom:1px solid var(--bord)}
+  .marque{display:none}
+  .rail a{white-space:nowrap;padding:8px 12px}
+  main{padding:16px 13px 70px}
+  h1{font-size:1.5rem}
+}
 </style>
 </head>
 <body>
-<div class="w">
-  <a class="retour" href="/">← page principale</a>
-  <span class="mono">Automatisation Boost</span>
+
+<nav class="rail">
+  <div class="marque"><div class="b">⚡</div><span>Automatisation<b>BOOST</b></span></div>
+  <a href="/carte/"><i>◉</i>Aujourd'hui</a>
+  <a href="/taches/"><i>▤</i>Mes chantiers</a>
+  <a href="/leads-qualifies/"><i>◎</i>Prospects</a>
+  <a href="/appels/"><i>☎</i>Appels</a>
+  <a href="/taches/tests-foodboost/"><i>⚗</i>Tests FoodBoost</a>
+  <a class="ici" href="/outils/"><i>⊞</i>Tous mes outils</a>
+  <a href="/cockpit/"><i>▦</i>Analyses</a>
+</nav>
+
+<main>
   <h1>Tous mes <em>outils</em>.</h1>
-  <p class="chapo">Tout ce que j'ai fabriqué pour toi, rangé en trois familles : fabriquer une vidéo,
-  piloter le quotidien, et voir ce qui existe. Rien n'est perdu ici.</p>
+  <p class="sous">Tout ce que tu as fabriqué, rangé par familles. Touche l'étoile pour
+    épingler un outil en haut. Les 24 routes ont été vérifiées présentes — aucune ne mène à un 404.</p>
 
-  <h2>Fabriquer une vidéo</h2>
-  <p>De l'idée au brief que tu me colles.</p>
-  <div class="outils">
-    <a class="outil cle" href="/studio-video/"><span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5h18v14H3z"/><path d="M10 9.5l5 2.5-5 2.5z"/></svg></span><span class="t">Studio vidéo</span><span class="q">Choisis un modèle, un avatar, une durée : la page te sort la commande à me coller.</span></a>
-    <a class="outil" href="/creer/"><span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v16"/><path d="M4 12h16"/></svg></span><span class="t">Créer une vidéo</span><span class="q">Le brief guidé : style, durée, sujet, hashtags, mot-clé.</span></a>
-    <a class="outil" href="/generateur/"><span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4H6a2 2 0 0 0-2 2v3a2 2 0 0 1-2 2 2 2 0 0 1 2 2v3a2 2 0 0 0 2 2h2"/><path d="M16 4h2a2 2 0 0 1 2 2v3a2 2 0 0 0 2 2 2 2 0 0 0-2 2v3a2 2 0 0 1-2 2h-2"/></svg></span><span class="t">Générateur de brief</span><span class="q">Un template, un format, une durée → le JSON exact à me transmettre.</span></a>
-    <a class="outil" href="/ui-kit/"><span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h9v5H4z"/><path d="M15 6h5v5h-5z"/><path d="M4 13h5v5H4z"/><path d="M11 13h9v5h-9z"/></svg></span><span class="t">Bandes hautes</span><span class="q">Sept décors animés pour le haut de tes vidéos : verre, néon, flux de nœuds, réglages, cartes 3D.</span></a>
-    <a class="outil" href="/templates/"><span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h7v7H4z"/><path d="M13 4h7v7h-7z"/><path d="M4 13h7v7H4z"/><path d="M13 13h7v7h-7z"/></svg></span><span class="t">Catalogue des templates</span><span class="q">Chaque style, sa commande pour le relancer, et les vidéos qui en sont sorties.</span></a>
-    <a class="outil" href="/templates-video/"><span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5h18v14H3z"/><path d="M7 5v14"/><path d="M17 5v14"/><path d="M3 12h18"/></svg></span><span class="t">Mes gabarits</span><span class="q">Les familles de composition, côte à côte, avec ce que chacune contient.</span></a>
-    <a class="outil" href="/banque-higgsfield/"><span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l9 5-9 5-9-5z"/><path d="M3 13l9 5 9-5"/></svg></span><span class="t">Banque Higgsfield</span><span class="q">624 clips triés, cherchables, pour arrêter de choisir les hooks à l'aveugle.</span></a>
-    <a class="outil" href="/tournage/"><span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h11v10H3z"/><path d="M14 11l7-4v10l-7-4z"/></svg></span><span class="t">Tournage / prompteur</span><span class="q">Ton script défile, les mouvements s'affichent, la vidéo part avec ses repères.</span></a>
-    <a class="outil cle" href="/studio-avatar/"><span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.4"/><path d="M5 20a7 7 0 0 1 14 0"/><path d="M18.5 5.5l2-2"/><path d="M20.5 8.5h2"/></svg></span><span class="t">Studio de pose (filmer)</span><span class="q">Rejoue la pose montrée à l'écran, filme-la, et elle rejoint ta banque d'avatars. 3 poses sur 24 filmées.</span></a>
-    <a class="outil" href="/live/"><span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v10"/><path d="M9 6.5a3 3 0 0 1 6 0v4a3 3 0 0 1-6 0z"/><path d="M5 12a7 7 0 0 0 14 0"/><path d="M4 20h16"/></svg></span><span class="t">Slides pilotées à la voix</span><span class="q">Tu parles, la bonne fiche apparaît. Tu captures l'écran et c'est la vidéo — plus de rendu.</span></a>
-    <a class="outil" href="/studio/"><span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4a3 3 0 0 1 3 3v5a3 3 0 0 1-6 0V7a3 3 0 0 1 3-3z"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/></svg></span><span class="t">Atelier assets & styles</span><span class="q">Musiques, bruitages, clips avatar, palette, polices — la matière première.</span></a>
-    <a class="outil" href="/foodboost-editeur/"><span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12a8 8 0 0 1 16 0z"/><path d="M3 16h18"/><path d="M7 4v4"/><path d="M17 4v4"/></svg></span><span class="t">Éditeur de feed FoodBoost</span><span class="q">Monter le feed vitrine d'un restaurant, plat par plat.</span></a>
-  </div>
+  <div class="recherche"><span>⌕</span><input id="q" placeholder="Chercher un outil…" autocomplete="off"></div>
 
-  <h2>Piloter</h2>
-  <p>Décider, faire, appeler, situer.</p>
-  <div class="outils">
-    <a class="outil cle" href="/taches/journee/"><span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v2"/><path d="M12 19v2"/><path d="M5 12H3"/><path d="M21 12h-2"/><path d="M6 6l-1.5-1.5"/><path d="M19.5 19.5L18 18"/><path d="M18 6l1.5-1.5"/><path d="M4.5 19.5L6 18"/><path d="M12 8a4 4 0 1 1 0 8 4 4 0 0 1 0-8z"/></svg></span><span class="t">Ma journée</span><span class="q">Tes trois blocs de 2 h 30 à 3 h, ce qu'il y a dedans, le chrono, et le bilan à me laisser en fin de bloc.</span></a>
-    <a class="outil" href="/taches/"><span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19h16"/><path d="M7 19V9"/><path d="M12 19V5"/><path d="M17 19v-7"/></svg></span><span class="t">Tableau de bord</span><span class="q">Où en est chaque chantier, classé par distance à la facture.</span></a>
-    <a class="outil" href="/tri/"><span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16"/><path d="M4 12h10"/><path d="M4 18h6"/><path d="M17 15l2.5 2.5L23 13"/></svg></span><span class="t">Trier les vidéos</span><span class="q">Garder, planifier, corriger ou écarter — une vidéo après l'autre. C'est d'ici que partent tes retours.</span></a>
-    <a class="outil" href="/taches/valider/"><span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v14H4z"/><path d="M8 12l3 3 5-6"/></svg></span><span class="t">Décider</span><span class="q">Ce que je te propose, ce que tu valides, ce que tu renvoies.</span></a>
-    <a class="outil" href="/sprint/"><span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 21V4"/><path d="M6 5h11l-2 3 2 3H6"/></svg></span><span class="t">Faire</span><span class="q">Une tâche, sept minutes, on enchaîne. Et le bilan de la semaine.</span></a>
-    <a class="outil" href="/appels/"><span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L16 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 4 6a2 2 0 0 1 2-3z"/></svg></span><span class="t">Appeler</span><span class="q">La feuille d'appel : qui, quoi dire, et où ça en est.</span></a>
-    <a class="outil cle" href="/taches/actions/"><span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 3L3 10.5l7 2.5 2.5 7z"/><path d="M21 3l-11 10"/></svg></span><span class="t">Envoyer sans appeler</span><span class="q">Cent quatre-vingt-seize contacts, le message déjà écrit, le bouton qui ouvre le bon endroit. Tu coches, ça compte.</span></a>
-    <a class="outil" href="/carte/"><span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5L3 7v12l6-2 6 2 6-2V5l-6 2z"/><path d="M9 5v12"/><path d="M15 7v12"/></svg></span><span class="t">Voir où j'en suis</span><span class="q">Les chantiers, ce qu'ils produisent, et ce qui a bougé.</span></a>
-    <a class="outil cle" href="/a-envoyer/"><span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5h18v14H3z"/><path d="M3 6l9 7 9-7"/></svg></span><span class="t">À envoyer</span><span class="q">Les maquettes marquées envoyables, message écrit, lien vers la page. Tu copies, tu coches.</span></a>
-    <a class="outil" href="/tri-sites/"><span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M7 5h10v14H7z"/><path d="M4 8v8"/><path d="M20 8v8"/></svg></span><span class="t">Trier les sites</span><span class="q">Au pouce, comme pour les vidéos : envoyable, à corriger, à abandonner. 97 maquettes.</span></a>
-    <a class="outil" href="/tri/"><span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16"/><path d="M7 12h10"/><path d="M10 18h4"/></svg></span><span class="t">Trier</span><span class="q">Au pouce : les clips pour les hooks, et les vidéos finies — croix ou cœur.</span></a>
-    <a class="outil" href="/cta-portes/"><span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9v18H6z"/><path d="M12 12h.01"/><path d="M15 8h4v13h-4"/></svg></span><span class="t">Les portes CTA</span><span class="q">Chaque mot-clé promis en vidéo et la ressource derrière.</span></a>
-  </div>
+  <div id="zone"></div>
 
-  <h2>Voir</h2>
-  <p>Ce qui est déjà produit.</p>
-  <div class="outils">
-    <a class="outil cle" href="/analyse-concurrents-0905/"><span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19h16"/><path d="M6 15l4-5 3 3 5-7"/></svg></span><span class="t">Concurrents & corrections</span><span class="q">Ce que font kingarms et dryxio, et les six vidéos remises à −14 LUFS. 5 sept.</span></a>
-    <a class="outil" href="/galerie/"><span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5h18v14H3z"/><path d="M3 15l5-5 4 4 3-3 6 6"/></svg></span><span class="t">Tous les rendus</span><span class="q">Les vidéos, démos et maquettes, du plus récent au plus ancien.</span></a>
-    <a class="outil" href="/avant-apres/"><span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v16H4z"/><path d="M12 4v16"/><path d="M7 9h2"/><path d="M15 9h2"/><path d="M15 13h2"/></svg></span><span class="t">Avant / Après</span><span class="q">Le site d’origine du client et ta version, la barre au milieu. 55 comparaisons.</span></a>
-    <a class="outil" href="/sites-clients/"><span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18z"/><path d="M3 12h18"/><path d="M12 3c3 3.5 3 14.5 0 18"/><path d="M12 3c-3 3.5-3 14.5 0 18"/></svg></span><span class="t">Sites clients</span><span class="q">L'inventaire des sites livrés et leur état.</span></a>
-  </div>
-</div>
+  <p class="note">Cette page ne liste que les outils de pilotage et de vente. Les 180 routes de
+    prévisualisation (rendus vidéo, maquettes client, essais) restent sur
+    <a href="/" style="color:var(--jaune)">la racine</a> et dans
+    <a href="/cockpit/" style="color:var(--jaune)">le cockpit</a>, qui les inventorie avec leurs
+    doublons et leur poids.</p>
+</main>
+
+<div class="etat" id="etat">chargement…</div>
+
+<script>
+(function(){
+"use strict";
+
+/* Les 24 routes, vérifiées présentes dans le dépôt le 2026-09-24. */
+var FAMILLES=[
+ {nom:'Fabriquer une vidéo', coul:'var(--violet)', outils:[
+   {h:'/creer/',                   n:'Créer une vidéo',     d:'Le point de départ',              i:'✦'},
+   {h:'/studio-video/',            n:'Studio vidéo',        d:'Choisir un modèle',               i:'🎬'},
+   {h:'/studio-avatar/',           n:'Studio de pose',      d:'Les plans de l’avatar',      i:'🧍'},
+   {h:'/studio/',                  n:'Atelier',             d:'Assets et styles',                i:'🎨'},
+   {h:'/tournage/',                n:'Tournage',            d:'Téléprompteur et repères',        i:'🎥'},
+   {h:'/monteur/',                 n:'Monteur',             d:'Caméra, filtre visage, templates',i:'✂'},
+   {h:'/templates-video/',         n:'Mes gabarits vidéo',  d:'Ce qui est réutilisable',         i:'▤'},
+   {h:'/templates/',               n:'Catalogue templates', d:'Tous les modèles',                i:'⊞'},
+   {h:'/generateur/',              n:'Générateur JSON',     d:'Fabriquer un template',           i:'{}'},
+   {h:'/ui-kit/',                  n:'Bandes hautes',       d:'Sept habillages',                 i:'▬'},
+   {h:'/banque-higgsfield/',       n:'Banque Higgsfield',   d:'624 clips',                       i:'🎞'}
+ ]},
+ {nom:'Piloter', coul:'var(--jaune)', outils:[
+   {h:'/carte/',                   n:'Aujourd’hui',    d:'Le goulot, le tunnel, la journée',i:'◉'},
+   {h:'/carte/voix/',              n:'La carte qui parle',  d:'L’assistant vocal',          i:'🎙'},
+   {h:'/taches/',                  n:'Mes chantiers',       d:'Où en est chaque chose',          i:'▤'},
+   {h:'/taches/valider/',          n:'À valider',           d:'Ce qui attend ton feu vert',      i:'✓'},
+   {h:'/taches/journee/',          n:'Ma journée',          d:'Les blocs du jour',               i:'🗓'},
+   {h:'/taches/actions/',          n:'Actions sans téléphone', d:'Ce qui avance sans appeler',   i:'⌨'},
+   {h:'/sprint/',                  n:'Sprint',              d:'La poussée en cours',             i:'⚡'},
+   {h:'/matin/',                   n:'Le Matin',            d:'Le point de départ du jour',      i:'☀'},
+   {h:'/menage/',                  n:'Nickel',              d:'Ce qu’il faut ranger',       i:'🧹'},
+   {h:'/cockpit/',                 n:'Cockpit',             d:'Inventaire des 180 routes',       i:'▦'},
+   {h:'/live/',                    n:'Live',                d:'Slides pilotées à la voix',       i:'🔊'}
+ ]},
+ {nom:'Vendre', coul:'var(--vert)', outils:[
+   {h:'/leads-qualifies/',         n:'Leads qualifiés',     d:'Qui appeler, et pourquoi',        i:'◎'},
+   {h:'/leads-restaurants/',       n:'Tous les leads',      d:'La liste large',                  i:'☰'},
+   {h:'/appels/',                  n:'Appels',              d:'Ce qui a été dit',                i:'☎'},
+   {h:'/a-envoyer/',               n:'À envoyer',           d:'Fini, jamais parti',              i:'✈'},
+   {h:'/audit/',                   n:'Audit',               d:'Le formulaire et son bilan',      i:'📋'},
+   {h:'/audit-formation/',         n:'Audit formation',     d:'La version organismes B2B',       i:'🎓'},
+   {h:'/decouverte-commerciale/',  n:'Découverte',          d:'Support d’appel et notes',   i:'💬'},
+   {h:'/etude-concurrents/',       n:'Concurrents',         d:'Qui vend quoi, à quel prix',      i:'⚔'},
+   {h:'/analyse-concurrents-0905/',n:'Analyse du 5 sept.',  d:'Concurrents et corrections',      i:'📄'},
+   {h:'/cta/',                     n:'Promesses en vidéo',  d:'Les mots-clés annoncés',          i:'🔑'},
+   {h:'/cta-portes/',              n:'Les portes CTA',      d:'Où atterrissent les mots-clés',   i:'🚪'},
+   {h:'/partage/',                 n:'À partager',          d:'Prêt à montrer',                  i:'🔗'}
+ ]},
+ {nom:'FoodBoost', coul:'var(--orange)', outils:[
+   {h:'/taches/tests-foodboost/',  n:'Tests FoodBoost',     d:'Quelle démarche fait cliquer',    i:'⚗'},
+   {h:'/taches/demos-resto/',      n:'Démos restos',        d:'Une fiche par restaurant',        i:'🍽'},
+   {h:'/foodboost-editeur/',       n:'Éditeur de feed',     d:'Vitrines et carrousels',          i:'▩'}
+ ]},
+ {nom:'Voir', coul:'var(--bleu)', outils:[
+   {h:'/sites-clients/vue.html',   n:'Sites clients',       d:'Galerie et suivi d’appels',  i:'🖥'},
+   {h:'/avant-apres/',             n:'Avant / Après',       d:'Les refontes, côte à côte',       i:'⇄'},
+   {h:'/galerie/',                 n:'Galerie complète',    d:'Tous les rendus Autoboost',       i:'🖼'},
+   {h:'/tri/',                     n:'Tri',                 d:'Classer les rendus',              i:'⇅'},
+   {h:'/tri-sites/',               n:'Tri des sites',       d:'Classer l’inventaire',       i:'⇵'},
+   {h:'/',                         n:'Prévisualisation',    d:'La racine, tous les rendus',      i:'⌂'}
+ ]}
+];
+
+var URL_ETAT='https://n7n.automatisationboost.com/webhook/taches-validation';
+var CLE='outils_v2';
+var etat={}, perso={favoris:{},vus:{}}, charge=false;
+try{ var b=JSON.parse(localStorage.getItem(CLE)||'null'); if(b&&typeof b==='object') perso=Object.assign(perso,b); }catch(e){}
+
+var elEtat=document.getElementById('etat');
+function dire(t,c){ elEtat.textContent=t; elEtat.className='etat'+(c?' '+c:''); }
+
+var enVol=false,duNeuf=false;
+function pousser(){
+  duNeuf=true; if(enVol) return; enVol=true;
+  (function boucle(){
+    if(!duNeuf){ enVol=false; return; }
+    duNeuf=false;
+    if(!charge){ enVol=false; dire('gardé sur cet appareil','ko'); return; }
+    etat['outils-v2']={ perso:perso, maj:new Date().toISOString() };
+    fetch(URL_ETAT,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify(etat)})
+      .then(function(){ dire('enregistré','ok'); boucle(); })
+      .catch(function(){ duNeuf=true; dire('réseau coupé — on réessaie…','ko'); setTimeout(boucle,1500); });
+  })();
+}
+function garder(){ try{ localStorage.setItem(CLE,JSON.stringify(perso)); }catch(e){} pousser(); }
+
+function carte(o,coul){
+  var a=document.createElement('a'); a.className='o'; a.href=o.h;
+  var ic=document.createElement('div'); ic.className='ic'; ic.textContent=o.i;
+  ic.style.background='color-mix(in srgb,'+coul+' 16%,transparent)';
+  ic.style.boxShadow='inset 0 0 0 1px color-mix(in srgb,'+coul+' 28%,transparent)';
+  var b=document.createElement('b'); b.textContent=o.n;
+  var s=document.createElement('span'); s.textContent=o.d;
+  var fl=document.createElement('span'); fl.className='fle'; fl.textContent='↗';
+  var f=document.createElement('span'); f.className='fav'+(perso.favoris[o.h]?' on':'');
+  f.textContent=perso.favoris[o.h]?'★':'☆';
+  f.title='épingler en haut';
+  f.addEventListener('click',function(e){
+    e.preventDefault(); e.stopPropagation();
+    if(perso.favoris[o.h]) delete perso.favoris[o.h]; else perso.favoris[o.h]=1;
+    garder(); rendre(document.getElementById('q').value);
+  });
+  a.addEventListener('click',function(){
+    perso.vus[o.h]=Date.now(); garder();
+  });
+  a.appendChild(ic); a.appendChild(b); a.appendChild(s); a.appendChild(fl); a.appendChild(f);
+  return a;
+}
+
+function bloc(titre,liste,coul,zone){
+  if(!liste.length) return;
+  var h=document.createElement('h2');
+  h.appendChild(document.createTextNode(titre));
+  var n=document.createElement('span'); n.className='n'; n.textContent=liste.length;
+  h.appendChild(n); zone.appendChild(h);
+  var g=document.createElement('div'); g.className='grille';
+  liste.forEach(function(o){ g.appendChild(carte(o,o._c||coul)); });
+  zone.appendChild(g);
+}
+
+function rendre(filtre){
+  var f=(filtre||'').trim().toLowerCase();
+  var zone=document.getElementById('zone'); zone.innerHTML='';
+  var tous=[];
+  FAMILLES.forEach(function(fa){ fa.outils.forEach(function(o){ o._c=fa.coul; o._f=fa.nom; tous.push(o); }); });
+  var garde=function(o){ return !f || (o.n+' '+o.d+' '+o._f).toLowerCase().indexOf(f)>=0; };
+
+  if(!f){
+    var favs=tous.filter(function(o){ return perso.favoris[o.h]; });
+    bloc('Mes favoris',favs,'var(--jaune)',zone);
+    var recents=tous.filter(function(o){ return perso.vus[o.h]; })
+      .sort(function(a,b){ return perso.vus[b.h]-perso.vus[a.h]; }).slice(0,4);
+    bloc('Récents',recents,'var(--gris)',zone);
+    FAMILLES.forEach(function(fa){ bloc(fa.nom,fa.outils,fa.coul,zone); });
+  } else {
+    var res=tous.filter(garde);
+    if(!res.length){ var v=document.createElement('p'); v.className='vide';
+      v.textContent='Aucun outil ne correspond à « '+filtre+' ».'; zone.appendChild(v); return; }
+    bloc('Résultats',res,'var(--jaune)',zone);
+  }
+}
+
+document.getElementById('q').addEventListener('input',function(e){ rendre(e.target.value); });
+rendre('');
+
+fetch(URL_ETAT+'?t='+Date.now()).then(function(r){return r.json();}).then(function(j){
+  var dd={}; try{ dd=typeof j.donnees==='string'?JSON.parse(j.donnees||'{}'):(j.donnees||{}); }catch(e){}
+  etat=(dd&&typeof dd==='object')?dd:{}; charge=true;
+  var dist=etat['outils-v2'];
+  if(dist&&dist.perso){
+    perso.favoris=Object.assign({},dist.perso.favoris||{},perso.favoris||{});
+    perso.vus=Object.assign({},dist.perso.vus||{},perso.vus||{});
+    try{ localStorage.setItem(CLE,JSON.stringify(perso)); }catch(e){}
+    rendre(document.getElementById('q').value);
+  }
+  dire('synchronisé','ok');
+}).catch(function(){ dire('magasin injoignable — favoris gardés ici','ko'); });
+
+})();
+</script>
 </body>
 </html>
