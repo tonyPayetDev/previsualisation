@@ -33,5 +33,14 @@ RUN if apk add --no-cache nodejs >/dev/null 2>&1; then \
 COPY docker-entrypoint.d/40-htpasswd.sh /docker-entrypoint.d/40-htpasswd.sh
 RUN chmod +x /docker-entrypoint.d/40-htpasswd.sh
 
+# Banque de layouts : le secret du webhook n8n est injecté au démarrage (41-…),
+# jamais écrit dans le dépôt. Fichier vide par défaut => /layouts/api répond 503.
+# `nginx -t` ici : une conf invalide fait échouer la construction, et Coolify
+# garde l'ancien conteneur en ligne au lieu de servir un site mort.
+COPY docker-entrypoint.d/41-banque-layouts.sh /docker-entrypoint.d/41-banque-layouts.sh
+RUN chmod +x /docker-entrypoint.d/41-banque-layouts.sh \
+ && echo 'set $banque_secret "";' > /etc/nginx/banque-layouts-secret.conf \
+ && nginx -t
+
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
