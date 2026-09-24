@@ -1,46 +1,35 @@
-<!doctype html>
-<html lang="fr">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Prévisualisation — essai-chaos-reussite</title>
-<style>
-  :root{ --bg:#0a0a0f; --panel:#111117; --border:#242430; --neon-yellow:#f5d90a; --neon-purple:#a855f7; --neon-orange:#ff7a1a; --text:#f2f2f5; --muted:#9a9aa8; }
-  *{box-sizing:border-box}
-  body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;padding:2rem 1rem 4rem}
-  .wrap{max-width:480px;margin:0 auto}
-  a.back{color:var(--muted);font-size:.8rem;text-decoration:none;display:inline-block;margin-bottom:1rem}
-  header{text-align:center;margin-bottom:2rem}
-  header h1{font-size:1.4rem;margin:0 0 .3rem;background:linear-gradient(90deg,var(--neon-yellow),var(--neon-orange));-webkit-background-clip:text;background-clip:text;color:transparent}
-  header p{color:var(--muted);font-size:.85rem;margin:0}
-  .card{background:var(--panel);border:1px solid var(--border);border-radius:16px;overflow:hidden;box-shadow:0 0 0 1px rgba(245,217,10,.06),0 20px 60px -20px rgba(168,85,247,.35);margin-bottom:1.5rem}
-  .card-head{padding:1rem 1.2rem .8rem;display:flex;justify-content:space-between;align-items:center;gap:.5rem}
-  .badge{font-size:.7rem;font-weight:600;padding:.25rem .6rem;border-radius:999px;background:rgba(245,217,10,.12);color:var(--neon-yellow);border:1px solid rgba(245,217,10,.3);white-space:nowrap}
-  .card-head h2{font-size:1rem;margin:0;font-weight:600}
-  video{display:block;width:100%;aspect-ratio:9/16;background:#000}
-  .meta{padding:1rem 1.2rem 1.3rem;border-top:1px solid var(--border);font-size:.8rem;color:#c9c9d4;line-height:1.7}
-  .meta b{color:var(--neon-yellow)}
-  footer{text-align:center;margin-top:2rem;font-size:.75rem;color:var(--muted)}
-</style>
-</head>
-<body>
-<div class="wrap">
-  <a class="back" href="/">← Toutes les vidéos</a>
-  <header>
-    <h1>essai-chaos-reussite</h1>
-    <p>Publié automatiquement à la fin du rendu</p>
-  </header>
-  <div class="card">
-    <div class="card-head">
-      <h2>Rendu final</h2>
-      <span class="badge">⏳ À valider</span>
-    </div>
-    <video src="video.mp4" poster="cover.jpg" controls playsinline loop></video>
-    <div class="meta">
-      Durée <b>462s</b> · Poids <b>90 Mo</b> · Rendu le <b>24/09/2026</b>
-    </div>
-  </div>
-  <footer>previsualisation.automatisationboost.com</footer>
-</div>
-</body>
-</html>
+<!doctype html><html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow">
+<title>Essai long — chaos &amp; probabilité de réussite</title>
+<style>body{margin:0;background:#0a0a0f;color:#e9e9f2;font:400 15px/1.6 system-ui,sans-serif;
+display:grid;place-items:center;min-height:100vh;padding:26px}.b{width:min(940px,94vw)}
+video{width:100%;border-radius:12px;display:block;background:#000}h1{font-size:21px;margin:0 0 4px}
+p{color:#8b8b99;font-size:13.5px;margin:6px 0 18px}ul{color:#8b8b99;font-size:13px;padding-left:18px}
+li{margin-bottom:5px}b{color:#eab308}h2{font-size:12px;letter-spacing:.08em;text-transform:uppercase;
+color:#8b5cf6;margin:22px 0 6px}code{color:#c9c9d4;background:#15151d;padding:1px 5px;border-radius:4px}
+</style></head><body><div class="b">
+<h1>Essai long — chaos, filtre et probabilité de réussite</h1>
+<p>7 min 42 · 1920×1080 · 30 i/s · 21 blocs de voix · style contemplatif (sphère + schémas + b-roll) · 95,3 Mo</p>
+<video src="https://assets.automatisationboost.com/previsualisation/essai-chaos-reussite/video.mp4" poster="cover.jpg" controls playsinline></video>
+
+<h2>Ce que raconte le texte</h2>
+<ul>
+<li>Le chaos ordinaire d'une journée de travail (onglets, tâches, messages) → pourquoi ce n'est pas une erreur mais l'état par défaut d'un système sans énergie pour le contrer → le filtre plutôt que la meilleure idée comme vrai facteur de réussite.</li>
+<li>La métaphore centrale : une sphère qui tourne dans le noir, une lumière qui ne fait pas disparaître le nuage de points mais en révèle un volume qu'on peut suivre. Puis la bibliothèque de Babel de Borges, pour dire que le sens existe déjà quelque part — ce qui manque, c'est une lumière pour le trouver.</li>
+<li>Bascule finale : le texte explique comment cette vidéo précise a été produite (idée → texte → voix → image, en une journée) et révèle que c'est VideoBoost qui l'a faite. Se termine sur une question ouverte, pas un appel à l'action classique.</li>
+</ul>
+
+<h2>Fabrication</h2>
+<ul>
+<li>Voix clonée (WaveSpeed <code>qwen3-tts/voice-clone</code>) sur 21 blocs, TTS régénéré à deux reprises pendant l'écriture pour ajuster la durée sans jamais rouvrir de nouveau bloc.</li>
+<li>Visuels 100% procéduraux : une sphère (canvas/Playwright), cinq schémas écrits pour ce texte précis (nuage de points, entonnoir-filtre, balance, bibliothèque, chaîne idée→texte→voix→image→film), et du b-roll en bichromie jaune avec dérive de cadre. Aucun stock vidéo.</li>
+<li>Douze cartons-mots posés uniquement sur les phrases qui portent le texte (jamais de sous-titrage continu), plus le martèlement « Pourquoi. » ×3 en empilement vertical.</li>
+<li>Sound design très bas (0,05–0,09 de volume) : quatre clics à l'entrée des formes pures, trois clics sur le martèlement, deux carillons sur les phrases de bascule.</li>
+</ul>
+
+<h2>Point d'attention</h2>
+<ul>
+<li><b>Durée : 7 min 42</b>, un peu sous la fourchette 8-12 min visée pour ce format. Le script a déjà été étoffé deux fois en cours de route (712 → 1556 mots) sans changer l'arc narratif ; l'étoffer encore aurait voulu forcer du remplissage. À toi de dire si ça reste en l'état ou si on rouvre 2-3 blocs.</li>
+<li>Format 16:9, à ne jamais poster tel quel sur les réseaux courts — pensé pour YouTube / page de vente, pas pour Reels/TikTok.</li>
+</ul>
+</div></body></html>
