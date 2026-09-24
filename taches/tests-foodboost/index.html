@@ -1,0 +1,428 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>FoodBoost — le registre des démarches</title>
+<!--
+  Une ligne par DÉMARCHE testée, pas une ligne par prospect (ça, c'est
+  /taches/demos-resto/). Ici on répond à une seule question : quelle manière
+  d'aborder un restaurateur fait cliquer ?
+
+  Les chiffres se saisissent à la main et sont gardés dans le magasin n8n
+  partagé — le même que le tableau de validation. On RELIT avant d'écrire :
+  le magasin porte aussi les décisions de Tony, un POST prématuré les
+  remplacerait par cet objet-ci.
+
+  Le taux affiché est TOUJOURS calculé, jamais saisi : un tableau de bord faux
+  est pire que pas de tableau de bord.
+-->
+<style>
+:root{
+  --fond:#0b0b0d; --carte:#141417; --bord:#26262b; --ambre:#f0a500;
+  --texte:#edeff1; --gris:#9a9aa4; --vert:#34c26a; --rouge:#e0564a;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--fond);color:var(--texte);
+  font:400 16px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif;
+  padding:24px 16px 80px}
+.wrap{max-width:1180px;margin:0 auto}
+h1{font-size:1.5rem;margin:0 0 4px;letter-spacing:-.01em}
+h2{font-size:1.05rem;margin:38px 0 12px;letter-spacing:-.01em}
+.sous{color:var(--gris);font-size:.92rem;margin:0 0 22px}
+.sous b{color:var(--texte)}
+
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:26px}
+.kpi{background:var(--carte);border:1px solid var(--bord);border-radius:12px;padding:13px 14px}
+.kpi b{display:block;font-size:1.7rem;line-height:1.1;color:var(--ambre);font-variant-numeric:tabular-nums}
+.kpi span{display:block;color:var(--gris);font-size:.74rem;text-transform:uppercase;letter-spacing:.06em;margin-top:3px}
+
+.tbl{width:100%;border-collapse:collapse;font-size:.88rem}
+.tbl th{text-align:left;color:var(--gris);font-size:.68rem;text-transform:uppercase;
+  letter-spacing:.07em;font-weight:600;padding:0 8px 8px;white-space:nowrap}
+.tbl td{background:var(--carte);border-top:1px solid var(--bord);border-bottom:1px solid var(--bord);
+  padding:11px 8px;vertical-align:top}
+.tbl tr td:first-child{border-left:1px solid var(--bord);border-radius:10px 0 0 10px}
+.tbl tr td:last-child{border-right:1px solid var(--bord);border-radius:0 10px 10px 0}
+.tbl tr{transition:opacity .15s}
+.espaceur td{background:none;border:none;padding:3px 0;height:3px}
+.nom{font-weight:600;line-height:1.3}
+.det{color:var(--gris);font-size:.79rem;margin-top:3px;max-width:330px}
+.eti{display:inline-block;font-size:.68rem;padding:2px 7px;border-radius:999px;
+  border:1px solid var(--bord);color:var(--gris);white-space:nowrap;margin-top:5px}
+.eti.av1{border-color:#3a6ea5;color:#8ab6e8}
+.eti.av2{border-color:#a5723a;color:#e8b98a}
+.eti.av3{border-color:#6a3aa5;color:#b98ae8}
+.eti.av4{border-color:#3aa57e;color:#8ae8c4}
+input.n{width:62px;background:#0e0e11;border:1px solid var(--bord);color:var(--texte);
+  border-radius:7px;padding:7px 6px;font:inherit;font-size:.86rem;text-align:center;
+  font-variant-numeric:tabular-nums}
+input.n:focus{outline:none;border-color:var(--ambre)}
+input.v{width:100%;min-width:150px;background:#0e0e11;border:1px solid var(--bord);
+  color:var(--texte);border-radius:7px;padding:7px 8px;font:inherit;font-size:.82rem}
+input.v:focus{outline:none;border-color:var(--ambre)}
+select.st{background:#0e0e11;border:1px solid var(--bord);color:var(--texte);
+  border-radius:7px;padding:6px 7px;font:inherit;font-size:.78rem}
+.taux{font-weight:700;font-variant-numeric:tabular-nums;font-size:1rem}
+.taux.bon{color:var(--vert)} .taux.nul{color:var(--rouge)} .taux.vide{color:var(--gris);font-weight:400}
+.inc{color:var(--gris);font-size:.78rem;text-align:center;display:block;padding-top:8px}
+
+.note{background:#111114;border:1px solid var(--bord);border-left:3px solid var(--ambre);
+  border-radius:0 10px 10px 0;padding:13px 15px;color:var(--gris);font-size:.86rem;margin:16px 0}
+.note b{color:var(--texte)}
+
+.av{background:var(--carte);border:1px solid var(--bord);border-radius:14px;padding:17px 18px;margin-bottom:12px}
+.av h3{margin:0 0 3px;font-size:1.02rem}
+.av .qui{color:var(--gris);font-size:.86rem;margin:0 0 12px}
+.av dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:5px 12px;font-size:.86rem}
+.av dt{color:var(--ambre);font-size:.7rem;text-transform:uppercase;letter-spacing:.06em;padding-top:3px;white-space:nowrap}
+.av dd{margin:0}
+.av ul{margin:12px 0 0;padding-left:19px;font-size:.87rem}
+.av li{margin-bottom:5px}
+.av li b{color:var(--ambre);font-weight:600}
+
+.etat{position:fixed;left:0;right:0;bottom:0;background:#0e0e11;border-top:1px solid var(--bord);
+  padding:9px 16px;font-size:.78rem;color:var(--gris);text-align:center}
+.etat.ok{color:var(--vert)} .etat.ko{color:var(--rouge)}
+@media(max-width:820px){
+  body{padding:18px 11px 72px}
+  .enveloppe{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:0 -11px;padding:0 11px}
+  .tbl{min-width:900px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>FoodBoost — le registre des démarches</h1>
+<p class="sous">Une ligne par <b>manière d'aborder</b> un restaurateur. La colonne qui décide de
+tout est <b>Clics</b> : c'est le seul moment où quelqu'un a fait un geste. Les chiffres se
+saisissent à la main et se gardent tout seuls.</p>
+
+<div class="kpis">
+  <div class="kpi"><b id="k-lance">0</b><span>démarches lancées</span></div>
+  <div class="kpi"><b id="k-env">0</b><span>contacts touchés</span></div>
+  <div class="kpi"><b id="k-clic">0</b><span>clics obtenus</span></div>
+  <div class="kpi"><b id="k-rep">0</b><span>réponses</span></div>
+  <div class="kpi"><b id="k-rdv">0</b><span>rendez-vous</span></div>
+</div>
+
+<div class="note">
+  <b>Ce qui est déjà mesuré, au 24/09.</b> Les 10 vidéos envoyées le 10/09 ont produit
+  <b>1 ouverture de page</b> (Relais de l'Hermitage, 14h22), <b>0 lecture de vidéo</b>,
+  <b>0 clic</b> et <b>1 réponse</b> (Le Nautile, accusé de réception). Source : table n8n
+  <code>SuiviDemoResto</code>, pas une estimation. Les ouvertures d'<em>email</em> sont
+  marquées « ? » : Gmail n'a pas de pixel, on ne les a jamais mesurées — c'est Brevo qui
+  les donnera.
+</div>
+
+<h2>Les démarches</h2>
+<div class="enveloppe">
+<table class="tbl">
+<thead><tr>
+  <th style="width:32%">Démarche</th><th>Canal</th><th>Coût</th>
+  <th>Touchés</th><th>Ouverts</th><th>Clics</th><th>Rép.</th><th>RDV</th>
+  <th>Taux clic</th><th>Statut</th><th>Ce que j'en retiens</th>
+</tr></thead>
+<tbody id="corps"></tbody>
+</table>
+</div>
+
+<h2>Les quatre avatars, et quoi tester sur chacun</h2>
+<p class="sous">Le même message pour tout le monde, c'est ce qui a été fait le 10/09.
+Un snack de Saint-André et un hôtel-restaurant de Saint-Gilles n'ont ni le même problème,
+ni le même budget, ni la même boîte mail.</p>
+<div id="avatars"></div>
+
+</div>
+<div class="etat" id="etat">chargement…</div>
+
+<script>
+(function(){
+"use strict";
+
+/* ── Les avatars ─────────────────────────────────────────────────────────
+   Construits sur ce qu'on a vraiment dans la base : 1 519 restaurants OSM
+   de La Réunion, dont 155 ont un site et 44 une adresse email. La rareté
+   des emails n'est pas un défaut de recherche — c'est le portrait du
+   secteur, et c'est ce qui dicte le canal de chaque avatar. */
+var AVATARS = [
+  { id:'av1', cls:'av1', nom:'Le snack / camion créole',
+    qui:'Saint-André, Saint-Benoît, Le Port. Pas de site, une page Facebook, un numéro de portable.',
+    volume:'Le gros du gisement — la majorité des 1 519 fiches OSM',
+    bloque:"Il n'ouvre pas ses mails. Il photographie ses plats au téléphone, entre deux services, et poste quand il y pense.",
+    declenche:'Voir SES plats à lui devenir une vidéo propre, en 15 secondes, sans rien installer.',
+    budget:'50 à 120 € / mois — au-delà il compare au prix d\'un employé',
+    idees:[
+      "<b>WhatsApp plutôt qu'email</b> : c'est là qu'il est. La vidéo se regarde dans la conversation, pas derrière un lien.",
+      "<b>DM Instagram</b> avec la vidéo en pièce jointe directe — zéro clic demandé.",
+      "<b>Avant / après de SA page</b> : capture de son feed actuel à gauche, le feed refait à droite.",
+      "<b>Passage physique avec QR code</b> sur un flyer. Long, mais c'est le seul avatar où ça se justifie."
+    ]},
+  { id:'av2', cls:'av2', nom:'La pizzeria / burger qui poste déjà',
+    qui:'Sainte-Marie, Saint-Pierre, Le Tampon. Un site simple, Instagram actif, concurrence forte sur la livraison.',
+    volume:'~155 fiches avec site web',
+    bloque:"Il poste déjà, mais ses visuels sont amateurs et il le sait. Il ne cherche pas quelqu'un qui poste à sa place, il cherche que ça ait l'air pro.",
+    declenche:'La comparaison directe avec son propre feed. Pas une promesse : une preuve visuelle.',
+    budget:'150 à 300 € / mois',
+    idees:[
+      "<b>Carrousel avant / après</b> de ses 9 dernières publications refaites à la charte.",
+      "<b>Ses photos retouchées</b> : mêmes plats, exposition et couleurs corrigées. Le contraste est immédiat.",
+      "<b>Facebook Ads ciblée</b> restaurateurs 974 — le seul avatar assez nombreux pour qu'une pub soit rentable.",
+      "<b>Relance à J+4</b> avec un seul plat, celui qui rend le mieux : « regardez juste celle-là »."
+    ]},
+  { id:'av3', cls:'av3', nom:"L'hôtel-restaurant / table de destination",
+    qui:'Saint-Gilles, Saint-Leu, Salazie. Site soigné, photos déjà professionnelles, parfois quelqu\'un à la com.',
+    volume:'Les 50 hôtels déjà qualifiés, emails écrits, jamais envoyés',
+    bloque:"Il n'a pas de problème de qualité, il a un problème de RÉGULARITÉ. Et le mail tombe sur une réception qui fait suivre — ou pas. C'est exactement ce qui s'est passé au Nautile.",
+    declenche:'Un mois entier de publications déjà prêtes, pas trois posts. Et parler à la bonne personne.',
+    budget:'300 à 800 € / mois — le seul avatar avec une vraie ligne budgétaire',
+    idees:[
+      "<b>Demander le bon interlocuteur</b> avant de vendre quoi que ce soit. La réception ne peut pas dire oui, elle peut donner un nom.",
+      "<b>Démo d'un MOIS de feed</b> (30 cases), pas de 3 posts : leur problème est le volume.",
+      "<b>LinkedIn</b> vers le directeur ou le responsable com — ils y sont, contrairement aux trois autres avatars.",
+      "<b>Saisonnalité</b> : accrocher la démo à leur prochaine période creuse."
+    ]},
+  { id:'av4', cls:'av4', nom:'Le traiteur / food truck événementiel',
+    qui:'La Possession, Saint-Paul. Vit de commandes et de contrats, pas du passage.',
+    volume:'6 traiteurs identifiés avec email dans le Sheet n8n',
+    bloque:"Instagram lui sert de catalogue, pas de vitrine. Il n'a pas besoin de « faire joli », il a besoin qu'on le contacte.",
+    declenche:'Des visuels qui montrent un buffet entier et une manière évidente de demander un devis.',
+    budget:'100 à 250 € / mois, mais décide vite',
+    idees:[
+      "<b>Démo orientée devis</b> : la dernière carte n'est pas « on publie », c'est « demandez votre devis ».",
+      "<b>Visuel buffet</b> plutôt qu'assiette : c'est ce qu'il vend.",
+      "<b>WhatsApp Business</b> — son canal de commande, donc celui où il répond.",
+      "<b>Accroche saisonnière</b> : fêtes de fin d'année, mariages, séminaires."
+    ]}
+];
+
+/* ── Les démarches ───────────────────────────────────────────────────────
+   `reel:true` = déjà lancée, les chiffres viennent d'une mesure.
+   `ouvertsInconnus:true` = on ne SAIT pas, et on l'écrit « ? » au lieu de
+   mettre 0 — un zéro non mesuré est un mensonge qui se transmet. */
+var DEMARCHES = [
+  { id:'d01', nom:'Vidéo démo faite avec leurs photos', reel:true,
+    det:'10 restaurants, une page personnalisée chacun, lien par email Gmail. Envoyé le 10/09.',
+    avatar:'av2', canal:'Email', cout:'0 €',
+    envoyes:10, ouverts:null, ouvertsInconnus:true, clics:0, reponses:1, rdv:0,
+    statut:'termine', verdict:'1 seule page ouverte sur 10. Lien enveloppé par Gmail.' },
+
+  { id:'d02', nom:'Relance des 9 restés muets',
+    det:'Même liste, 14 jours après, un seul plat mis en avant. Message court, aucune relance envoyée à ce jour.',
+    avatar:'av2', canal:'Email', cout:'0 €', statut:'a-lancer' },
+
+  { id:'d03', nom:'Leurs photos retouchées, avant / après',
+    det:'On ne montre pas une vidéo : on montre LEURS 3 photos, exposition et couleurs corrigées, côte à côte avec l\'original.',
+    avatar:'av2', canal:'Email', cout:'0 €', statut:'a-lancer' },
+
+  { id:'d04', nom:'Démo « un mois de feed » pour les hôtels',
+    det:'30 cases au lieu de 3 posts, sur les 50 hôtels déjà qualifiés dont les emails sont écrits et jamais partis.',
+    avatar:'av3', canal:'Email', cout:'0 €', statut:'a-lancer' },
+
+  { id:'d05', nom:'Demander le bon interlocuteur',
+    det:'Ne rien vendre : demander le prénom de la personne qui s\'occupe de la com. Test en cours sur Le Nautile.',
+    avatar:'av3', canal:'Email', cout:'0 €', statut:'en-cours' },
+
+  { id:'d06', nom:'Vidéo envoyée en DM Instagram',
+    det:'Le fichier directement dans la conversation, aucun lien à cliquer. Vise ceux qui n\'ont pas d\'email — l\'écrasante majorité.',
+    avatar:'av1', canal:'DM Instagram', cout:'0 €', statut:'a-lancer' },
+
+  { id:'d07', nom:'Vidéo envoyée en WhatsApp',
+    det:'Le numéro est public sur presque toutes les fiches OSM, contrairement à l\'email.',
+    avatar:'av1', canal:'WhatsApp', cout:'0 €', statut:'a-lancer' },
+
+  { id:'d08', nom:'Publicité Facebook ciblée restaurateurs 974',
+    det:'Audience : gérants de restaurant à La Réunion. Créa = la vidéo avant/après. Renvoie vers l\'éditeur.',
+    avatar:'av2', canal:'Facebook Ads', cout:'à définir', statut:'a-lancer' },
+
+  { id:'d09', nom:'Démo orientée devis pour traiteurs',
+    det:'Visuels de buffet, dernière carte « demandez votre devis » au lieu de « on publie ».',
+    avatar:'av4', canal:'Email', cout:'0 €', statut:'a-lancer' },
+
+  { id:'d10', nom:'Approche LinkedIn des directeurs d\'hôtel',
+    det:'Le seul avatar présent sur LinkedIn. Message court + lien vers la démo de leur établissement.',
+    avatar:'av3', canal:'LinkedIn', cout:'0 €', statut:'a-lancer' },
+
+  { id:'d11', nom:'Campagne Brevo par vagues',
+    det:'150+ contacts, vagues de 30 à 50 par jour, deux objets en A/B, désinscription en clair.',
+    avatar:'av2', canal:'Brevo', cout:'0 €', statut:'a-lancer' }
+];
+
+var STATUTS = { 'a-lancer':'À lancer', 'en-cours':'En cours', 'termine':'Terminé', 'abandon':'Abandonné' };
+var NOM_AV = {}; AVATARS.forEach(function(a){ NOM_AV[a.id]=a; });
+
+/* ── Le magasin partagé ─────────────────────────────────────────────────── */
+var URL_ETAT='https://n7n.automatisationboost.com/webhook/taches-validation';
+var CLE='tests_foodboost';
+var etat={}, saisies={}, charge=false;
+try { saisies=JSON.parse(localStorage.getItem(CLE)||'{}'); } catch(e){}
+
+var elEtat=document.getElementById('etat');
+function dire(txt,cls){ elEtat.textContent=txt; elEtat.className='etat'+(cls?' '+cls:''); }
+
+var enVol=false, duNeuf=false;
+function pousser(){
+  duNeuf=true; if(enVol) return; enVol=true;
+  (function boucle(){
+    if(!duNeuf){ enVol=false; return; }
+    duNeuf=false;
+    /* Tant que le magasin n'est pas relu, on n'écrit RIEN : écraser les
+       décisions de Tony pour sauver un compteur serait un mauvais échange. */
+    if(!charge){ enVol=false; dire('pas encore synchronisé — gardé sur cet appareil','ko'); return; }
+    etat['tests-foodboost']={ saisies:saisies, maj:new Date().toISOString() };
+    fetch(URL_ETAT,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify(etat)})
+      .then(function(){ dire('enregistré · '+new Date().toLocaleTimeString('fr-FR'),'ok'); boucle(); })
+      .catch(function(){ duNeuf=true; dire('réseau coupé — nouvelle tentative…','ko'); setTimeout(boucle,1500); });
+  })();
+}
+
+function val(d,champ){
+  var s=saisies[d.id]||{};
+  if(s[champ]!==undefined && s[champ]!==null && s[champ]!=='') return s[champ];
+  return (d[champ]!==undefined && d[champ]!==null) ? d[champ] : '';
+}
+function nb(d,champ){ var v=val(d,champ); v=parseInt(v,10); return isNaN(v)?0:v; }
+
+function majTaux(d,tr){
+  var e=nb(d,'envoyes'), c=nb(d,'clics');
+  var el=tr.querySelector('.taux');
+  if(!e){ el.textContent='—'; el.className='taux vide'; return; }
+  var t=c/e*100;
+  el.textContent=(t<10?t.toFixed(1):Math.round(t))+' %';
+  el.className='taux '+(c>0?'bon':'nul');
+}
+
+function majKpis(){
+  var lance=0,env=0,cl=0,rep=0,rdv=0;
+  DEMARCHES.forEach(function(d){
+    var st=val(d,'statut');
+    if(st==='en-cours'||st==='termine') lance++;
+    env+=nb(d,'envoyes'); cl+=nb(d,'clics'); rep+=nb(d,'reponses'); rdv+=nb(d,'rdv');
+  });
+  document.getElementById('k-lance').textContent=lance;
+  document.getElementById('k-env').textContent=env;
+  document.getElementById('k-clic').textContent=cl;
+  document.getElementById('k-rep').textContent=rep;
+  document.getElementById('k-rdv').textContent=rdv;
+}
+
+function noter(d,champ,valeur){
+  saisies[d.id]=saisies[d.id]||{};
+  saisies[d.id][champ]=valeur;
+  try{ localStorage.setItem(CLE,JSON.stringify(saisies)); }catch(e){}
+  majKpis(); pousser();
+}
+
+var corps=document.getElementById('corps');
+DEMARCHES.forEach(function(d,i){
+  if(i){ var sp=document.createElement('tr'); sp.className='espaceur';
+         sp.innerHTML='<td colspan="11"></td>'; corps.appendChild(sp); }
+  var av=NOM_AV[d.avatar]||{nom:'—',cls:''};
+  var tr=document.createElement('tr');
+  tr.innerHTML=
+    '<td><div class="nom"></div><div class="det"></div>'+
+      '<span class="eti '+av.cls+'"></span></td>'+
+    '<td></td><td></td>'+
+    '<td><input class="n" type="number" min="0" inputmode="numeric" data-c="envoyes"></td>'+
+    '<td class="cell-ouv"></td>'+
+    '<td><input class="n" type="number" min="0" inputmode="numeric" data-c="clics"></td>'+
+    '<td><input class="n" type="number" min="0" inputmode="numeric" data-c="reponses"></td>'+
+    '<td><input class="n" type="number" min="0" inputmode="numeric" data-c="rdv"></td>'+
+    '<td><span class="taux"></span></td>'+
+    '<td><select class="st"></select></td>'+
+    '<td><input class="v" type="text" data-c="verdict" placeholder="ce que ça a appris…"></td>';
+
+  /* textContent et pas innerHTML : les libellés portent des apostrophes et du
+     texte libre, et un jour l'un d'eux viendra d'une saisie. */
+  tr.querySelector('.nom').textContent=d.nom;
+  tr.querySelector('.det').textContent=d.det;
+  tr.querySelector('.eti').textContent=av.nom;
+  tr.children[1].textContent=d.canal;
+  tr.children[2].textContent=d.cout;
+
+  var cellOuv=tr.querySelector('.cell-ouv');
+  if(d.ouvertsInconnus){
+    var s=document.createElement('span'); s.className='inc'; s.textContent='?';
+    s.title="Jamais mesuré : Gmail n'a pas de pixel d'ouverture. Brevo le donnera.";
+    cellOuv.appendChild(s);
+  } else {
+    var io=document.createElement('input');
+    io.className='n'; io.type='number'; io.min='0'; io.inputMode='numeric';
+    io.dataset.c='ouverts'; cellOuv.appendChild(io);
+  }
+
+  var sel=tr.querySelector('.st');
+  Object.keys(STATUTS).forEach(function(k){
+    var o=document.createElement('option'); o.value=k; o.textContent=STATUTS[k]; sel.appendChild(o);
+  });
+
+  function peindre(){
+    tr.querySelectorAll('input[data-c]').forEach(function(inp){
+      inp.value=val(d,inp.dataset.c);
+    });
+    sel.value=val(d,'statut')||'a-lancer';
+    tr.style.opacity=(sel.value==='a-lancer'||sel.value==='abandon')?'.62':'1';
+    majTaux(d,tr);
+  }
+  tr.querySelectorAll('input[data-c]').forEach(function(inp){
+    inp.addEventListener('input',function(){
+      noter(d,inp.dataset.c,inp.value); majTaux(d,tr);
+    });
+  });
+  sel.addEventListener('change',function(){
+    noter(d,'statut',sel.value);
+    tr.style.opacity=(sel.value==='a-lancer'||sel.value==='abandon')?'.62':'1';
+  });
+  tr._peindre=peindre;
+  peindre();
+  corps.appendChild(tr);
+});
+
+/* ── Les fiches avatar ──────────────────────────────────────────────────── */
+var zone=document.getElementById('avatars');
+AVATARS.forEach(function(a){
+  var d=document.createElement('div'); d.className='av';
+  var h=document.createElement('h3'); h.textContent=a.nom;
+  var q=document.createElement('p'); q.className='qui'; q.textContent=a.qui;
+  var dl=document.createElement('dl');
+  [['Gisement',a.volume],['Ce qui le bloque',a.bloque],['Ce qui le déclenche',a.declenche],['Budget plausible',a.budget]]
+    .forEach(function(p){
+      var dt=document.createElement('dt'); dt.textContent=p[0];
+      var dd=document.createElement('dd'); dd.textContent=p[1];
+      dl.appendChild(dt); dl.appendChild(dd);
+    });
+  var ul=document.createElement('ul');
+  a.idees.forEach(function(t){ var li=document.createElement('li'); li.innerHTML=t; ul.appendChild(li); });
+  d.appendChild(h); d.appendChild(q); d.appendChild(dl); d.appendChild(ul);
+  zone.appendChild(d);
+});
+
+majKpis();
+
+fetch(URL_ETAT+'?t='+Date.now()).then(function(r){return r.json();}).then(function(j){
+  var dd={}; try{ dd=typeof j.donnees==='string'?JSON.parse(j.donnees||'{}'):(j.donnees||{}); }catch(e){}
+  etat=(dd&&typeof dd==='object')?dd:{};
+  charge=true;
+  var dist=etat['tests-foodboost'];
+  /* Le serveur fait foi au chargement : c'est lui qui a vu les autres
+     appareils. Ce qui a été saisi hors ligne ici est ensuite repoussé. */
+  if(dist&&dist.saisies&&typeof dist.saisies==='object'){
+    Object.keys(dist.saisies).forEach(function(k){
+      saisies[k]=Object.assign({}, dist.saisies[k], saisies[k]||{});
+    });
+    try{ localStorage.setItem(CLE,JSON.stringify(saisies)); }catch(e){}
+    [].slice.call(corps.querySelectorAll('tr')).forEach(function(tr){ if(tr._peindre) tr._peindre(); });
+    majKpis();
+  }
+  dire('synchronisé'+(dist&&dist.maj?' · dernière écriture '+new Date(dist.maj).toLocaleString('fr-FR'):''),'ok');
+  if(Object.keys(saisies).length) pousser();
+}).catch(function(){
+  dire('magasin injoignable — les saisies restent sur cet appareil','ko');
+});
+
+})();
+</script>
+</body>
+</html>

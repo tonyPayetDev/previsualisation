@@ -44,6 +44,7 @@ const OUTILS = [
   { h: '/appels/',                 n: 'Appels',            q: 'ce qui a été dit' },
   { h: '/etude-concurrents/',      n: 'Étude concurrents', q: 'qui vend quoi, à quel prix' },
   { h: '/cta/',                    n: 'Promesses vidéo',   q: 'les mots-clés sans porte' },
+  { h: '/taches/tests-foodboost/', n: 'Tests FoodBoost',   q: 'quelle démarche fait cliquer' },
   { h: '/carte/',                  n: 'La carte',          q: 'vue d\'ensemble' },
   { h: '/sites-clients/vue.html',  n: 'Sites clients',     q: 'galerie et avant/après' },
   { h: '/partage/',                n: 'À partager',        q: 'prêt à montrer' },
