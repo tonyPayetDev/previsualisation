@@ -39,7 +39,12 @@ RUN chmod +x /docker-entrypoint.d/40-htpasswd.sh
 # garde l'ancien conteneur en ligne au lieu de servir un site mort.
 COPY docker-entrypoint.d/41-banque-layouts.sh /docker-entrypoint.d/41-banque-layouts.sh
 RUN chmod +x /docker-entrypoint.d/41-banque-layouts.sh \
- && echo 'set $banque_secret "";' > /etc/nginx/banque-layouts-secret.conf \
+ && echo 'set $banque_secret "";' > /etc/nginx/banque-layouts-secret.conf
+
+# /a-publier/ : même principe, secret A_PUBLIER_SECRET injecté au démarrage (42-…).
+COPY docker-entrypoint.d/42-a-publier.sh /docker-entrypoint.d/42-a-publier.sh
+RUN chmod +x /docker-entrypoint.d/42-a-publier.sh \
+ && echo 'set $apublier_secret "";' > /etc/nginx/a-publier-secret.conf \
  && nginx -t
 
 EXPOSE 80
