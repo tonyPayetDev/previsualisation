@@ -9,7 +9,7 @@
         --vert:#34d399;--jaune:#FFE600;--rouge:#fb7185;--bleu:#60a5fa}
   *{margin:0;padding:0;box-sizing:border-box}
   html{height:100%;background:var(--fond)}
-  body{height:100%;max-width:560px;margin:0 auto;width:100%}
+  body{min-height:100%;max-width:560px;margin:0 auto;width:100%}
   body{background:var(--fond);color:var(--blanc);
     font:16px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif;
     display:flex;flex-direction:column;padding:14px 16px calc(14px + env(safe-area-inset-bottom))}
@@ -18,7 +18,7 @@
   .prog i{display:block;height:100%;background:linear-gradient(90deg,var(--jaune),#A855F7);width:0;transition:width .35s}
   .cpt{font-size:12.5px;color:var(--gris);white-space:nowrap;font-variant-numeric:tabular-nums}
   a.retour{color:var(--gris);text-decoration:none;font-size:12.5px}
-  main{flex:1;display:flex;flex-direction:column;justify-content:center;gap:14px;min-height:0;overflow-y:auto}
+  main{flex:1 0 auto;display:flex;flex-direction:column;justify-content:center;gap:14px}
   .badge{display:inline-block;font-size:11px;letter-spacing:.2em;text-transform:uppercase;
     border:1px solid var(--ligne);border-radius:999px;padding:4px 11px;color:var(--gris);align-self:flex-start}
   .badge.echauffement{color:var(--bleu);border-color:#26405f}
@@ -102,6 +102,10 @@
 .lance p{color:var(--gris);font-size:15px;max-width:34ch}
 .lance .gros{font-size:44px;font-weight:700;color:var(--jaune);font-variant-numeric:tabular-nums;letter-spacing:-.02em}
 button.go{background:#eab308;border-color:#eab308;color:#1a1200;font-size:17px;font-weight:700}
+.infos{display:flex;gap:8px;flex-wrap:wrap}
+.infos a{flex:1 1 40%;display:flex;align-items:center;justify-content:center;min-height:44px;padding:0 10px;
+  background:#141a26;border:1px solid var(--ligne);border-radius:10px;color:#c2cbd9;font-size:13.5px;font-weight:600;text-decoration:none;white-space:nowrap}
+.infos a:active{transform:translateY(1px)}
 .rang.sortie button{width:100%;border-color:#3a2430;background:#1b1218;color:#d59aae;font-size:14px}
 </style></head>
 <body>
@@ -421,6 +425,12 @@ button.go{background:#eab308;border-color:#eab308;color:#1a1200;font-size:17px;f
       '<span class="badge '+r.cat+'">'+LIB[r.cat]+'</span>'
       +'<h1>'+r.nom+'</h1>'
       +'<div class="meta">'+[r.commune,r.note?r.note+'★':null].filter(Boolean).join(' · ')+'</div>'
+      +'<div class="infos">'
+        +(r.site?'<a href="'+r.site+'" target="_blank" rel="noopener">Leur site</a>':'')
+        +'<a href="https://www.google.com/search?q='+encodeURIComponent(r.nom+' '+(r.commune||'')+' La Réunion')+'" target="_blank" rel="noopener">Google</a>'
+        +'<a href="https://www.google.com/maps/search/'+encodeURIComponent(r.nom+' '+(r.commune||''))+'" target="_blank" rel="noopener">Avis Maps</a>'
+        +'<a href="https://www.facebook.com/search/top?q='+encodeURIComponent(r.nom+' '+(r.commune||''))+'" target="_blank" rel="noopener">Facebook</a>'
+      +'</div>'
       +'<div class="vu">Ce que tu as vu chez eux : <b>'+r.vitrine+'</b></div>'
       +(r.suite?'<div class="vu" style="border-left-color:#FFE600">La dernière fois : '+r.suite+'</div>':'')
       +(r.cat==='echauffement'?'':'<div class="cap"><b>Tu ne vends pas.</b> Tu cherches à comprendre son besoin : pose une question, puis écoute.</div>')
