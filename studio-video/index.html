@@ -182,6 +182,14 @@ Deux looks ne sont tolérés que si le second est <b>uniquement</b> à l'ouvertu
   <label class="champ"><span>Projet <i>(slug pour boost-niveau/split-preuve, AAAA-MM-JJ pour le Journal)</i></span>
     <input type="text" id="lprojet" placeholder="ex. 22-mon-sujet ou 2026-09-29"></label>
 </div>
+<label class="champ"><span>Modèle qui écrit le script <i>(prix environ, pour un script)</i></span>
+  <select id="lmodele">
+    <option value="deepseek/deepseek-v4-flash" selected>DeepSeek V4 Flash — ~0,003 $ (par défaut)</option>
+    <option value="qwen/qwen3.8-27b:free">Qwen 3.8 — gratuit (parfois lent)</option>
+    <option value="google/gemini-3.8-flash">Gemini 3.8 Flash — quelques centimes au plus</option>
+    <option value="~anthropic/claude-haiku-latest">Claude Haiku — ~0,03 $</option>
+    <option value="anthropic/claude-sonnet-5.5">Claude Sonnet 5.5 — ~0,07 $</option>
+  </select></label>
 <label class="champ"><span>Sujet</span>
   <textarea id="lsujet" placeholder="repris du sujet ci-dessus si rempli"></textarea></label>
 <label class="champ"><span>Consignes <i>(facultatif)</i></span>
@@ -189,6 +197,7 @@ Deux looks ne sont tolérés que si le second est <b>uniquement</b> à l'ouvertu
 
 <div class="actions">
   <button class="bt pri" id="l-ecrire" type="button">1 · Écrire</button>
+  <button class="bt pri" id="l-tout" type="button" title="Écrit, vérifie puis fabrique la vidéo. Ne publie rien.">⚡ Écrire + rendre</button>
   <button class="bt" id="l-valider" type="button" disabled>2 · Valider</button>
   <button class="bt" id="l-apercu" type="button" disabled>3 · Aperçu</button>
   <button class="bt" id="l-rendre" type="button" disabled>4 · Rendre</button>
@@ -495,7 +504,7 @@ ecrire();
   var elStatut = document.getElementById('lstatut');
   var elLiens = document.getElementById('lliens');
   var btns = {};
-  ['ecrire','valider','apercu','rendre','publier','programmer'].forEach(function(a){ btns[a]=document.getElementById('l-'+a); });
+  ['ecrire','tout','valider','apercu','rendre','publier','programmer'].forEach(function(a){ btns[a]=document.getElementById('l-'+a); });
 
   function setStatut(t){ elStatut.textContent = t; }
   function setLiens(html){ elLiens.innerHTML = html; }
@@ -516,30 +525,98 @@ ecrire();
   prefill();
   document.getElementById('sujet').addEventListener('input', prefill);
 
-  async function appel(action, extra){
+  async function appel(action, extra, silencieux){
     extra = extra || {};
     var skill = document.getElementById('lskill').value;
     var projet = document.getElementById('lprojet').value.trim();
     if (!projet) { setStatut('Renseigne un « Projet » (slug ou date) avant de lancer « '+action+' ».'); throw new Error('projet manquant'); }
     var body = Object.assign({ action:action, skill:skill, projet:projet }, extra);
-    setStatut((elStatut.textContent||'') + '\n→ ' + action + '…');
+    if (!silencieux) setStatut((elStatut.textContent||'') + '\n→ ' + action + '…');
     var r = await fetch('/studio-video/api', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) });
     var j = null; try { j = await r.json(); } catch(e) { j = { ok:false, erreur:'reponse illisible ('+r.status+')' }; }
     return j;
   }
 
-  btns.ecrire.addEventListener('click', async function(){
-    lock('ecrire', false); setStatut('Écriture en cours (OpenCode)… peut prendre 1 à 3 min.');
-    try {
-      var j = await appel('ecrire', { sujet: sujetEl.value, consignes: consEl.value });
-      if (j.ok && j.result && j.result.ok){
-        document.getElementById('ljson').value = j.result.contenu || '';
-        setStatut('✓ video.json écrit.\n' + (j.raw_tail||''));
-        lock('valider', true);
-      } else {
-        setStatut('✗ échec écriture.\n' + JSON.stringify(j, null, 2));
+  var sleep = function(ms){ return new Promise(function(r){ setTimeout(r, ms); }); };
+  var jsonEl = document.getElementById('ljson');
+  var modeleEl = document.getElementById('lmodele');
+  var ETAPES = { en_cours:'en cours', ok:'terminé', echec:'échec', absent:'rien de lancé' };
+
+  // Starts the (async) writing on the server, then asks every 5 s where it is (10 min max).
+  // Resolves { ok:true, avertissements } or { ok:false, message }.
+  async function ecrireEtAttendre(){
+    var skill = document.getElementById('lskill').value;
+    if (skill === 'veille-journal-ia') return { ok:false, message:'Le Journal IA s\'écrit tout seul chaque matin : rien à écrire ici.' };
+    var modele = modeleEl.value;
+    var nomModele = modeleEl.options[modeleEl.selectedIndex].text.split(' — ')[0];
+    setStatut('Écriture lancée avec ' + nomModele + '… (souvent 1 à 4 min)');
+    var j = await appel('ecrire', { sujet: sujetEl.value, consignes: consEl.value, modele: modele }, true);
+    var res = (j && j.result) || j || {};
+    if (res.statut === 'deja_en_cours') setStatut('Une écriture tourne déjà pour ce projet — je suis celle-là.');
+    else if (!(res.ok && res.statut === 'lance')) return { ok:false, message:'L\'écriture n\'a pas démarré.\n' + JSON.stringify(j, null, 2) };
+    var debut = Date.now();
+    while (Date.now() - debut < 10*60*1000){
+      await sleep(5000);
+      var e;
+      try { var r = await appel('etat-ecrire', {}, true); e = (r && r.result) || r || {}; }
+      catch(err){ continue; }
+      var sec = Math.round((Date.now() - debut)/1000);
+      var val = e.validation || {};
+      if (e.etat === 'ok'){
+        if (e.contenu) jsonEl.value = e.contenu;
+        var av = val.avertissements || [];
+        setStatut('✓ Script écrit et vérifié' + (e.duree_s ? ' en ' + e.duree_s + ' s' : '') + (e.essais ? ' (' + e.essais + ' essai' + (e.essais>1?'s':'') + ')' : '') + (e.modele ? ' — ' + e.modele : '') + '.' +
+          (av.length ? '\nÀ regarder :\n• ' + av.join('\n• ') : ''));
+        return { ok:true, avertissements: av };
       }
-    } catch(e){} finally { lock('ecrire', true); }
+      if (e.etat === 'echec'){
+        if (e.contenu) jsonEl.value = e.contenu;
+        var er = val.erreurs || [];
+        return { ok:false, message:'✗ L\'écriture a échoué' + (e.erreur ? ' : ' + e.erreur : '.') +
+          (er.length ? '\nProblèmes trouvés :\n• ' + er.join('\n• ') : '') +
+          (e.contenu ? '\nLe dernier essai est dans la case video.json : tu peux le corriger à la main puis cliquer « Valider ».' : '') };
+      }
+      setStatut('Écriture… ' + sec + ' s\nÉtape : ' + (e.etape || ETAPES[e.etat] || e.etat || '…'));
+    }
+    return { ok:false, message:'✗ Toujours pas fini après 10 min. Clique « Écrire » plus tard pour reprendre le suivi.' };
+  }
+
+  btns.ecrire.addEventListener('click', async function(){
+    lock('ecrire', false); lock('tout', false);
+    try {
+      var r = await ecrireEtAttendre();
+      if (r.ok) lock('valider', true);
+      else { setStatut(r.message); if (jsonEl.value) lock('valider', true); }
+    } catch(e){} finally { lock('ecrire', true); lock('tout', true); }
+  });
+
+  // One click: write → wait → check → render. Never publishes or schedules anything.
+  btns.tout.addEventListener('click', async function(){
+    lock('ecrire', false); lock('tout', false);
+    try {
+      var r = await ecrireEtAttendre();
+      if (!r.ok){ setStatut(r.message + '\n\nArrêté à l\'étape 1 (écrire).'); if (jsonEl.value) lock('valider', true); return; }
+      var avant = elStatut.textContent;
+      setStatut(avant + '\n\nVérification du script…');
+      lock('valider', true);
+      var j = await appel('valider', {}, true);
+      var v = (j && j.result) || j || {};
+      if (!v.ok){ setStatut(avant + '\n\n✗ Script refusé à la vérification :\n• ' + (v.erreurs||[JSON.stringify(j)]).join('\n• ') + '\n\nArrêté à l\'étape 2 (valider).'); return; }
+      setStatut(avant + '\n\n✓ Script valide.\nLancement du rendu…');
+      lock('apercu', true);
+      var k = await appel('rendre', {}, true);
+      var rr = (k && k.result) || k || {};
+      if (rr.ok && rr.statut === 'lance'){
+        setStatut('✓ Script écrit, vérifié, rendu lancé (job ' + rr.job + '). Suivi automatique…');
+        lock('rendre', true);
+        pollEtat();
+      } else if (rr.statut === 'deja_en_cours'){
+        setStatut('⏳ Script prêt, mais un autre rendu tourne déjà. Clique « 4 · Rendre » plus tard.'); lock('rendre', true);
+      } else {
+        setStatut('✗ Le rendu n\'a pas démarré.\n' + JSON.stringify(rr) + '\n\nArrêté à l\'étape 4 (rendre).'); lock('rendre', true);
+      }
+    } catch(e){ setStatut((elStatut.textContent||'') + '\n✗ ' + e.message); }
+    finally { lock('ecrire', true); lock('tout', true); }
   });
 
   btns.valider.addEventListener('click', async function(){
