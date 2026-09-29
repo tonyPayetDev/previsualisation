@@ -276,34 +276,50 @@ button.go{background:#eab308;border-color:#eab308;color:#1a1200;font-size:17px;f
     const b = racine.querySelector('#micro');
     const t = racine.querySelector('#noteTxt');
     if (!b || !t) return;
-    b.onclick = () => {
-      if (reco) { reco.stop(); return; }
+    /* Chrome sur telephone coupe la reconnaissance apres un court silence,
+       meme en « continuous ». On relance donc tant que Tony n'a pas appuye
+       pour arreter : seul son appui (ou un micro refuse) met fin a la dictee.
+       Le texte est reconstruit a partir de TOUS les resultats de la session,
+       ce qui evite les mots en double d'Android. */
+    let veut = false, base = '', debut = 0;
+    const MAX_MS = 5 * 60 * 1000;
+    const etatBouton = (actif) => {
+      b.classList.toggle('actif', actif);
+      b.innerHTML = '<span class="pastille"></span>' + (actif ? 'J’écoute — appuie pour arrêter' : (t.value ? 'Reprendre la dictée' : 'Dicter la note'));
+    };
+    const lancer = () => {
       reco = new Reco();
       reco.lang = 'fr-FR';
       reco.continuous = true;
       reco.interimResults = true;
-      let acquis = t.value ? t.value + ' ' : '';
+      base = t.value ? t.value.replace(/\s+$/, '') + ' ' : '';
       reco.onresult = (e) => {
-        let vol = '';
-        for (let i = e.resultIndex; i < e.results.length; i++) {
+        let fini = '', vol = '';
+        for (let i = 0; i < e.results.length; i++) {
           const m = e.results[i][0].transcript;
-          if (e.results[i].isFinal) acquis += m + ' '; else vol += m;
+          if (e.results[i].isFinal) fini += m + ' '; else vol += m;
         }
-        t.value = (acquis + vol).replace(/\s+/g, ' ').trim();
+        t.value = (base + fini + vol).replace(/\s+/g, ' ').trim();
       };
-      /* Un refus de micro doit se voir : sinon on croit que ça enregistre. */
       reco.onerror = (e) => {
-        b.textContent = e.error === 'not-allowed'
-          ? 'Micro refusé — tape la note'
-          : 'La dictée a coupé — reprends';
-        reco = null;
-        b.classList.remove('actif');
+        if (e.error === 'not-allowed' || e.error === 'service-not-allowed' || e.error === 'audio-capture') {
+          veut = false;
+          b.textContent = e.error === 'audio-capture' ? 'Pas de micro — tape la note' : 'Micro refusé — tape la note';
+          b.classList.remove('actif');
+        }
+        // no-speech, network, aborted : onend suit et relance
       };
-      reco.onend = () => { reco = null; b.classList.remove('actif');
-        b.innerHTML = '<span class="pastille"></span>Reprendre la dictée'; };
+      reco.onend = () => {
+        reco = null;
+        if (veut && Date.now() - debut < MAX_MS && document.body.contains(b)) { try { lancer(); return; } catch (x) {} }
+        veut = false; etatBouton(false);
+      };
       reco.start();
-      b.classList.add('actif');
-      b.innerHTML = '<span class="pastille"></span>J’écoute — appuie pour arrêter';
+    };
+    b.onclick = () => {
+      if (veut) { veut = false; if (reco) reco.stop(); etatBouton(false); return; }
+      veut = true; debut = Date.now();
+      try { lancer(); etatBouton(true); } catch (x) { veut = false; etatBouton(false); }
     };
   };
 
