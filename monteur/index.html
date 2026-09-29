@@ -384,7 +384,10 @@ label.tpl .desc{font-size:13px;color:var(--doux);margin-top:2px;line-height:1.45
     if (!vw || !vh) return;
     if (vw > vh) {
       const r = vw / vh, nom = Math.abs(r - 4/3) < 0.05 ? '4:3' : Math.abs(r - 16/9) < 0.05 ? '16:9' : r.toFixed(2) + ':1';
-      el.innerHTML = 'Ta caméra filme à l’horizontale : <b>' + vw + '×' + vh + ' (' + nom + ')</b>. Je recadre en 9:16, donc tu perds les côtés : <b>recule de 20 à 30 cm</b>, ou filme avec le téléphone debout.';
+      const telephoneDebout = window.innerHeight > window.innerWidth && matchMedia('(pointer:coarse)').matches;
+      el.innerHTML = telephoneDebout
+        ? 'Ton téléphone est debout, mais le navigateur ne donne qu’une image en paysage (<b>' + vw + '×' + vh + '</b>). Je la recadre en 9:16 : <b>recule le téléphone de 20 à 30 cm</b> pour garder tes épaules et tes gestes.'
+        : 'Ta caméra filme à l’horizontale : <b>' + vw + '×' + vh + ' (' + nom + ')</b>. Je recadre en 9:16, donc tu perds les côtés : <b>recule de 20 à 30 cm</b>.';
       el.hidden = false;
     } else el.hidden = true;
   }
@@ -407,12 +410,23 @@ label.tpl .desc{font-size:13px;color:var(--doux);margin-top:2px;line-height:1.45
     btnCamera.disabled = true;
     btnCamera.textContent = 'Ouverture…';
     try {
-      flux = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 1280 }, aspectRatio: { ideal: 9/16 } },
-        audio: true
-      });
-      video.srcObject = flux;
-      await video.play();
+      /* Demander du vertical quand l'écran est vertical. Avec 1280×1280 « idéal »,
+         beaucoup de téléphones répondaient au format capteur (paysage, ex.
+         1440×1080) alors qu'on les tient debout : le recadrage 9:16 serrait
+         alors le visage. Si le paysage revient quand même, on réessaie une fois
+         avec les dimensions inversées (certains navigateurs les lisent ainsi). */
+      const portraitEcran = window.innerHeight > window.innerWidth;
+      const contraintes = (w, h) => ({ video: { facingMode: 'user', width: { ideal: w }, height: { ideal: h } }, audio: true });
+      const ouvrir = async (c) => { const f = await navigator.mediaDevices.getUserMedia(c); video.srcObject = f; await video.play(); return f; };
+      flux = await ouvrir(portraitEcran ? contraintes(1080, 1920) : contraintes(1920, 1080));
+      if (portraitEcran && video.videoWidth > video.videoHeight) {
+        flux.getTracks().forEach((t) => t.stop());
+        flux = await ouvrir(contraintes(1920, 1080));
+        if (video.videoWidth > video.videoHeight) {
+          flux.getTracks().forEach((t) => t.stop());
+          flux = await ouvrir(contraintes(1080, 1920));
+        }
+      }
       canvas.width = CANVAS_W;
       canvas.height = CANVAS_H;
       majRecadre();
