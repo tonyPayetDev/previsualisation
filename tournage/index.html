@@ -478,6 +478,37 @@ pre.json{margin-top:10px;background:#101016;border:1px solid var(--trait);border
 
 <script>
 "use strict";
+/* Version de la page, écrite dans chaque reperes.json. La prise du
+   2026-09-29-214209 est sortie en 1440x1080 alors que le canvas 3:4/9:16 était
+   en ligne depuis six heures : l'onglet de Tony tournait encore sur une page
+   chargée avant le correctif, et rien dans le fichier ne permettait de le voir.
+   À changer à chaque modification de la page. */
+const PAGE_VERSION = '2026-09-29.3-tags-tolerants';
+/* Onglet resté ouvert : au retour sur la page, on compare avec la version
+   servie ; si elle a changé, on recharge (le script est sauvé en brouillon). */
+async function versionServie(){
+  try {
+    const r = await fetch(location.pathname + '?v=' + Date.now(), { cache:'no-store', credentials:'same-origin' });
+    const m = (await r.text()).match(/const PAGE_VERSION = '([^']+)'/);
+    return m ? m[1] : null;
+  } catch(e){ return null; }
+}
+async function verifierVersion(){
+  if (typeof enCours !== 'undefined' && enCours) return;
+  const v = await versionServie();
+  if (v && v !== PAGE_VERSION){
+    const e = document.getElementById('e1');
+    if (e && e.classList.contains('on')) location.reload();
+    else {
+      const b = document.createElement('div');
+      b.style.cssText = 'position:fixed;left:12px;right:12px;top:12px;z-index:99;background:#facc15;color:#000;padding:10px 14px;border-radius:10px;font:600 14px Inter,sans-serif';
+      b.textContent = 'Nouvelle version de la page disponible — recharge avant la prochaine prise.';
+      document.body.appendChild(b);
+    }
+  }
+}
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') verifierVersion(); });
+window.addEventListener('pageshow', (e) => { if (e.persisted) verifierVersion(); });
 /* ═══════════════════════════════════════════════════════════════════════
    Le vocabulaire des mouvements.
 
@@ -805,20 +836,81 @@ $('#pal').addEventListener('click', (ev) => {
 
 /* Analyse du script. Un marqueur = `[tag]` ou `[tag|précision]`, n'importe où.
    Le texte qui suit un marqueur, jusqu'au marqueur suivant, lui est attaché :
-   c'est ce texte que le moteur affichera sur la carte. */
+   c'est ce texte que le moteur affichera sur la carte.
+
+   Tolérant depuis le 2026-09-29 : Tony a tourné avec des marqueurs libres
+   (`[FACE CAM — centre]`, `[IA]`, `[MOTION DESIGN …]`) que l'ancien
+   analyseur ne connaissait pas — il les a laissés en texte, la prise est
+   partie avec ZÉRO repère et le montage s'est arrêté. Désormais :
+   - les variantes françaises/anglaises courantes et le format 25×3H
+     (`[centre]`, `[zoom|mot]`, `[rupture|…]`, `[avatar IA]`,
+     `[retour centre]`, `[CTA]`) retombent sur un tag connu ;
+   - un marqueur inconnu devient un repère « libre » qui porte son texte en
+     précision — jamais perdu ;
+   - une indication entre parenthèses `(Motion design : …)` n'est pas lue au
+     prompteur : elle complète la précision du repère qui la précède. */
+function sansAccent(x){ return String(x).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase(); }
+const ALIAS_MUETS = /^(face ?cam(era)?|facecam|camera|cam|centre|center|retour( au)? centre|plan face|face)$/;
+function resoudreTag(interieur){
+  let tete = interieur, precision = '';
+  const barre = interieur.indexOf('|');
+  if (barre >= 0){ tete = interieur.slice(0, barre); precision = interieur.slice(barre + 1).trim(); }
+  tete = tete.trim();
+  const n = sansAccent(tete).replace(/[_]+/g, ' ').replace(/\s+/g, ' ').trim();
+  if (TAGS[n]) return { tag:n, precision };
+  /* « FACE CAM — pointe commentaires » : ce qui suit le tiret précise. */
+  const coupe = tete.split(/\s+[—–-]\s+|\s*[:,]\s+/);
+  const base = sansAccent(coupe[0]).trim();
+  const suite = coupe.slice(1).join(' — ').trim();
+  const mots = ' ' + n.replace(/[^a-z0-9%]+/g, ' ') + ' ';
+  const a = (re) => re.test(mots);
+  let tag = null;
+  if (a(/ (zoom|zoome|zoomer|rapproche\w*|rapprochement|avance|gros plan|punch ?in) /)) tag = 'avance';
+  else if (a(/ (recule\w*|recul|dezoom\w*|plan large|zoom out) /)) tag = 'recule';
+  else if (a(/ (gauche|left) /)) tag = 'gauche';
+  else if (a(/ (droite|right) /)) tag = 'droite';
+  else if (a(/ (rupture|pause|silence|temps|respiration|beat|break) /)) tag = 'pause';
+  else if (a(/ (compte|doigts|count|liste) /)) tag = 'compte';
+  else if (a(/ (main|leve la main|hand) /)) tag = 'main';
+  else if (a(/ (motion|design|animation|anime|b ?roll|broll|ecran|screen|capture|screencast|insert|visuel|image|demo|montre|show|schema|graphique|ia|ai|avatar|overlay|texte a l ecran) /)) tag = 'montre';
+  else if (a(/ (face|facecam|cam|camera|centre|center|cta|appel a l action|call to action|outro|intro|hook) /)) tag = 'centre';
+  if (!tag) return { tag:'libre', precision: precision || tete };
+  const muet = (x) => ALIAS_MUETS.test(x) || !!TAGS[x];
+  if (!precision){
+    /* [FACE CAM — centre] : rien à dire ; [FACE CAM — pointe commentaires] :
+       la suite ; [CAPTURE ÉCRAN — CLAUDE.md], [IA], [CTA] : tout le marqueur. */
+    if (!muet(base)) precision = tete;
+    else if (suite && !muet(sansAccent(suite))) precision = suite;
+  }   // [zoom|mot] : la précision est le mot ; le marqueur d'origine reste dans `brut`
+  return { tag, precision };
+}
 function analyser(src){
   const blocs = [];
-  const re = /\[([a-zA-Zéèêàç]+)(?:\s*\|\s*([^\]\n]*))?\]/g;
-  const lignes = src.split('\n');
-  for (const ligne of lignes){
+  /* Un marqueur, ou une indication de mise en scène entre parenthèses. */
+  const re = /\[([^\]\n]{1,120})\]|\(([^()\n]{1,300})\)/g;
+  const direction = (t) => {
+    for (let i = blocs.length - 1; i >= 0; i--){
+      if (blocs[i].k === 'repere'){
+        const r = blocs[i];
+        r.precision = r.precision ? r.precision + ' — ' + t : t;
+        return;
+      }
+      if (blocs[i].k === 'texte') break;   // déjà du texte parlé depuis : l'indication vaut pour la suite
+    }
+    blocs.push({ k:'repere', tag:'libre', precision:t });
+  };
+  for (const ligne of String(src).split('\n')){
     let pos = 0, m;
     re.lastIndex = 0;
     while ((m = re.exec(ligne)) !== null){
       const avant = ligne.slice(pos, m.index).trim();
       if (avant) blocs.push({ k:'texte', texte:avant });
-      const tag = m[1].toLowerCase();
-      if (TAGS[tag]) blocs.push({ k:'repere', tag, precision:(m[2]||'').trim() });
-      else blocs.push({ k:'texte', texte:m[0] });   // marqueur inconnu : on le laisse lisible
+      if (m[1] !== undefined){
+        const r = resoudreTag(m[1]);
+        blocs.push({ k:'repere', tag:r.tag, precision:r.precision, brut:m[1].trim() });
+      } else {
+        direction(m[2].trim());
+      }
       pos = m.index + m[0].length;
     }
     const reste = ligne.slice(pos).trim();
@@ -1208,6 +1300,7 @@ function nouveauRepere(b, i, t){
     tag: b.tag,
     libelle: T.nom,
     precision: b.precision || '',
+    brut: b.brut || null,
     t: t, tFin: null, tPrevu: null,
     source: 'prompteur',
     positionCadre: T.cadre,
@@ -1501,7 +1594,8 @@ function finTournage(){
   etat.video  = new Blob(morceaux, { type });
   etat.source = 'camera';
   etat.meta   = { nom: 'video.' + (type.indexOf('mp4') >= 0 ? 'mp4' : 'webm'),
-                  type, octets: etat.video.size };
+                  type, octets: etat.video.size,
+                  canvas: { largeur: grade.width, hauteur: grade.height } };
   if (stream) stream.getTracks().forEach(t => t.stop());
   if (verrou) { try { verrou.release(); } catch(e){} verrou = null; }
   ouvrirRelecture();
@@ -1620,6 +1714,10 @@ function fabriquerJson(){
   const o = {
     outil: 'previsualisation/tournage',
     version: 1,
+    pageVersion: PAGE_VERSION,
+    format: etat.source === 'camera' ? format : 'fichier',
+    canvas: etat.meta.canvas || null,
+    navigateur: navigator.userAgent,
     session: sessionId,
     cree: d.toISOString(),
     source: etat.source,
@@ -1648,7 +1746,7 @@ function fabriquerJson(){
       tFin: r.tFin === null ? null : +r.tFin.toFixed(3),
       tPrevu: r.tPrevu === null ? null : +r.tPrevu.toFixed(3),
       source: r.source, positionCadre: r.positionCadre, coteAnimation: r.coteAnimation,
-      effet: r.effet, texte: r.texte,
+      effet: r.effet, texte: r.texte, brut: r.brut || null,
     })),
   };
   jsonTexte = JSON.stringify(o, null, 2);
