@@ -282,12 +282,14 @@ img{max-width:100%;display:block}
 .hero h1{font-family:var(--serif);font-weight:300;color:#fff;margin:0;
   font-size:clamp(40px,6.6vw,86px);line-height:1.02;letter-spacing:-.02em;max-width:15ch}
 .hero h1 i{font-style:italic;display:block}
-.hero h1 .pt{color:var(--magenta);font-style:normal}
+.hero h1 .pt{color:var(--magenta);font-style:normal;margin-left:.05em}
 /* Mot qui défile. La hauteur est verrouillée sur une ligne et le débordement
    masqué : sans ça, le remplacement d'un mot long par un court fait sauter
    toute la ligne à chaque rotation. */
 .roule{display:inline-block;overflow:hidden;vertical-align:bottom;
-  height:1.05em;position:relative;color:var(--magenta)}
+  height:1.05em;position:relative;color:var(--magenta);
+  /* l'italique deborde a droite et le g descend : on elargit la zone visible sans deplacer le texte */
+  padding:0 .16em .14em 0;margin:0 -.16em -.14em 0}
 .roule span{display:block;transition:transform .55s var(--ease),opacity .55s var(--ease)}
 .roule.part span{transform:translateY(-105%);opacity:0}
 .roule.entre span{transform:translateY(105%);opacity:0;transition:none}
