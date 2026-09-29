@@ -1127,8 +1127,11 @@ function demarrerVu(fluxMicro){
     }, 100);
   } catch(e){}
 }
-/* On lit ce que la camera DONNE, pas ce qu'on lui a demande : `getSettings()`
-   renvoie les dimensions reelles de la piste. Plus large que haut = paysage. */
+/* On juge l'orientation sur l'image AFFICHEE (videoWidth/videoHeight de la
+   balise video, rotation appliquee), pas sur getSettings() : beaucoup de
+   telephones (iPhone surtout) y declarent le format du capteur, en paysage,
+   alors que l'image est bien verticale — la page criait « paysage » a tort
+   (retour de Tony le 2026-09-29, telephone tenu debout). */
 let cadrageVu = false;
 function verifierCadrage(fluxCam){
   const b = $('#paysage'); if (!b) return;
@@ -1136,8 +1139,8 @@ function verifierCadrage(fluxCam){
     const t = fluxCam.getVideoTracks()[0]; if (!t) return;
     const appliquer = () => {
       const st = t.getSettings() || {};
-      const l = st.width || 0, h = st.height || 0, ips = Math.round(st.frameRate || 0);
-      if (!l || !h) return;
+      const l = flux.videoWidth || 0, h = flux.videoHeight || 0, ips = Math.round(st.frameRate || 0);
+      if (!l || !h) return;   // pas encore d'image decodee : on repasse sur loadedmetadata / resize
       const paysage = l > h;
       /* La cadence compte autant que le cadrage. La contrainte dure de 24 i/s a
          ete retiree le 2026-09-10 pour que la camera s'ouvre en faible lumiere —
@@ -1158,6 +1161,7 @@ function verifierCadrage(fluxCam){
     /* Certains telephones ne renseignent les dimensions qu'une fois la premiere
        image decodee : on repasse quand la video connait sa taille. */
     flux.addEventListener('loadedmetadata', appliquer, { once: true });
+    flux.onresize = appliquer;   // une seule fois, meme si la camera est rouverte
   } catch(e){}
 }
 
