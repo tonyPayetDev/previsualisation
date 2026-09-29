@@ -106,6 +106,10 @@ button.go{background:#eab308;border-color:#eab308;color:#1a1200;font-size:17px;f
 .infos a{flex:1 1 40%;display:flex;align-items:center;justify-content:center;min-height:44px;padding:0 10px;
   background:#141a26;border:1px solid var(--ligne);border-radius:10px;color:#c2cbd9;font-size:13.5px;font-weight:600;text-decoration:none;white-space:nowrap}
 .infos a:active{transform:translateY(1px)}
+.choix-interet{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.choix-interet button{min-height:48px;font-size:14.5px;border-color:var(--ligne);background:#141a26;color:var(--gris)}
+.choix-interet button[aria-pressed="true"]{border-color:#1f6f52;background:#12271e;color:#8ff0c4}
+.choix-interet button.non[aria-pressed="true"]{border-color:#4a3d10;background:#1d1706;color:#e8c98a}
 .rang.sortie button{width:100%;border-color:#3a2430;background:#1b1218;color:#d59aae;font-size:14px}
 </style></head>
 <body>
@@ -180,6 +184,23 @@ button.go{background:#eab308;border-color:#eab308;color:#1a1200;font-size:17px;f
       + 'https://videoboost.automatisationboost.com\n'
       + 'https://www.instagram.com/foodboost/\n\n'
       + 'Votre avis, même critique, m’aide beaucoup. Bonne journée à vous !';
+  };
+
+  /* Pas interesse : on ne relance pas, on laisse une trace utile. Merci, ce que
+     Tony fait, et une demande de faire suivre — c'est de la visibilite, pas une
+     relance deguisee. */
+  const messageRefus = (l) => {
+    const resto = RESTO.test(l.type || '');
+    const exemple = resto
+      ? 'https://previsualisation.automatisationboost.com/foodboost-11-grillades/'
+      : 'https://koytcha.automatisationboost.com';
+    return 'Bonjour, c’est Tony, on vient de se parler au téléphone. Merci pour votre franchise, aucun souci !\n\n'
+      + 'Je vous laisse quand même ce que je fais, au cas où — des vidéos courtes et des sites pour les commerces d’ici :\n'
+      + exemple + '\n'
+      + 'https://tony.automatisationboost.com\n\n'
+      + 'Si vous connaissez quelqu’un à qui ça pourrait servir (un commerçant, un ami qui lance son activité…), '
+      + 'n’hésitez pas à lui transférer ce message ou à me mettre en relation.\n\n'
+      + 'Bonne journée à vous !';
   };
 
   const blocWa = (l, gros, msgForce) => {
@@ -354,9 +375,13 @@ button.go{background:#eab308;border-color:#eab308;color:#1a1200;font-size:17px;f
   const apresAppel=(r)=>{
     const note=lireNote();
     const pi=document.getElementById('pied');
+    let interet='oui';
     const msg=messageSuivi(r);
-    pi.innerHTML='<div class="suivi"><span class="t">Envoie-lui le message de suivi.</span>'
-      +'<span class="d">Relis-le, change ce qui ne colle pas à ce qu’il t’a dit, puis envoie.</span>'
+    pi.innerHTML='<div class="choix-interet" role="group" aria-label="Il est intéressé ?">'
+      +'<button type="button" data-i="oui" aria-pressed="true">Intéressé</button>'
+      +'<button type="button" class="non" data-i="non" aria-pressed="false">Pas intéressé</button></div>'
+      +'<div class="suivi"><span class="t" id="suivi-titre">Envoie-lui le message de suivi.</span>'
+      +'<span class="d" id="suivi-aide">Relis-le, change ce qui ne colle pas à ce qu’il t’a dit, puis envoie.</span>'
       +'<textarea class="suivi-txt" id="suivi-txt" aria-label="Message de suivi">'+msg.replace(/</g,'&lt;')+'</textarea></div>'
       +(premierMobile(r)?blocWa(r,true,msg)
         :'<div class="wa"><button type="button" class="wa-copie" style="flex:1" data-msg="">Copier le message</button></div>')
@@ -367,8 +392,19 @@ button.go{background:#eab308;border-color:#eab308;color:#1a1200;font-size:17px;f
       pi.querySelectorAll('[data-msg]').forEach(x=>x.dataset.msg=t);
       const a=pi.querySelector('.wa-envoi'); if(a) a.href=a.href.split('?')[0]+'?text='+encodeURIComponent(t); };
     ta.addEventListener('input',maj); maj();
+    pi.querySelectorAll('.choix-interet button').forEach(bt=>bt.onclick=()=>{
+      interet=bt.dataset.i;
+      pi.querySelectorAll('.choix-interet button').forEach(x=>x.setAttribute('aria-pressed',String(x===bt)));
+      ta.value = interet==='non' ? messageRefus(r) : messageSuivi(r);
+      document.getElementById('suivi-titre').textContent = interet==='non'
+        ? 'Pas intéressé : laisse-lui une trace.' : 'Envoie-lui le message de suivi.';
+      document.getElementById('suivi-aide').textContent = interet==='non'
+        ? 'Pas de relance : un merci, ce que tu fais, et la demande de faire suivre à quelqu’un.'
+        : 'Relis-le, change ce qui ne colle pas à ce qu’il t’a dit, puis envoie.';
+      maj();
+    });
     brancherCopie(pi);
-    const fin=()=>{ etat[r.id]={etat:'appele',date:aujourdhui(),h:new Date().toISOString()};
+    const fin=()=>{ etat[r.id]={etat:'appele',interet,date:aujourdhui(),h:new Date().toISOString()};
       if(note) etat[r.id].note=note; duNeuf=true; envoyer(); i++; suivant(); };
     document.getElementById('suite-ok').onclick=fin;
     document.getElementById('suite-non').onclick=fin;
