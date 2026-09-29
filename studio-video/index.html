@@ -540,6 +540,20 @@ ecrire();
   var sleep = function(ms){ return new Promise(function(r){ setTimeout(r, ms); }); };
   var jsonEl = document.getElementById('ljson');
   var modeleEl = document.getElementById('lmodele');
+  var dernierContenu = null; // text last returned by etat-ecrire (to detect a manual edit)
+
+  // Returns {} (nothing to send), { contenu } or { erreur } for the video.json textarea.
+  function contenuAEnvoyer(seulementSiModifie){
+    if (document.getElementById('lskill').value === 'veille-journal-ia') return {};
+    var t = jsonEl.value;
+    if (!t.trim()) return {};
+    if (seulementSiModifie && t === dernierContenu) return {};
+    try { var v = JSON.parse(t); if (!v || typeof v !== 'object' || Array.isArray(v)) throw new Error('il faut un objet { … }'); }
+    catch(e){ return { erreur: 'La case video.json n\'est pas un JSON correct : ' + e.message + '\nCorrige-la (virgule, guillemet, accolade…) puis reclique.' }; }
+    if (t.length > 60000) return { erreur: 'La case video.json est trop longue (plus de 60 000 caractères).' };
+    return { contenu: t };
+  }
+
   var ETAPES = { en_cours:'en cours', ok:'terminé', echec:'échec', absent:'rien de lancé' };
 
   // Starts the (async) writing on the server, then asks every 5 s where it is (10 min max).
@@ -563,14 +577,14 @@ ecrire();
       var sec = Math.round((Date.now() - debut)/1000);
       var val = e.validation || {};
       if (e.etat === 'ok'){
-        if (e.contenu) jsonEl.value = e.contenu;
+        if (e.contenu){ jsonEl.value = e.contenu; dernierContenu = e.contenu; }
         var av = val.avertissements || [];
         setStatut('✓ Script écrit et vérifié' + (e.duree_s ? ' en ' + e.duree_s + ' s' : '') + (e.essais ? ' (' + e.essais + ' essai' + (e.essais>1?'s':'') + ')' : '') + (e.modele ? ' — ' + e.modele : '') + '.' +
           (av.length ? '\nÀ regarder :\n• ' + av.join('\n• ') : ''));
         return { ok:true, avertissements: av };
       }
       if (e.etat === 'echec'){
-        if (e.contenu) jsonEl.value = e.contenu;
+        if (e.contenu){ jsonEl.value = e.contenu; dernierContenu = e.contenu; }
         var er = val.erreurs || [];
         return { ok:false, message:'✗ L\'écriture a échoué' + (e.erreur ? ' : ' + e.erreur : '.') +
           (er.length ? '\nProblèmes trouvés :\n• ' + er.join('\n• ') : '') +
@@ -599,7 +613,9 @@ ecrire();
       var avant = elStatut.textContent;
       setStatut(avant + '\n\nVérification du script…');
       lock('valider', true);
-      var j = await appel('valider', {}, true);
+      var ce = contenuAEnvoyer(true);
+      if (ce.erreur){ setStatut(avant + '\n\n✗ ' + ce.erreur + '\n\nArrêté à l\'étape 2 (valider).'); return; }
+      var j = await appel('valider', ce.contenu ? { contenu: ce.contenu } : {}, true);
       var v = (j && j.result) || j || {};
       if (!v.ok){ setStatut(avant + '\n\n✗ Script refusé à la vérification :\n• ' + (v.erreurs||[JSON.stringify(j)]).join('\n• ') + '\n\nArrêté à l\'étape 2 (valider).'); return; }
       setStatut(avant + '\n\n✓ Script valide.\nLancement du rendu…');
@@ -620,9 +636,12 @@ ecrire();
   });
 
   btns.valider.addEventListener('click', async function(){
-    lock('valider', false); setStatut('Validation…');
+    var ce = contenuAEnvoyer(false);
+    if (ce.erreur){ setStatut('✗ ' + ce.erreur); return; }
+    lock('valider', false); setStatut(ce.contenu ? 'Enregistrement de ta version du video.json puis vérification…' : 'Validation…');
     try {
-      var j = await appel('valider', {});
+      var j = await appel('valider', ce.contenu ? { contenu: ce.contenu } : {});
+      if (ce.contenu && j && j.result) dernierContenu = ce.contenu;
       var res = (j.result) || j;
       if (res.ok){ setStatut('✓ video.json valide.\n' + JSON.stringify(res.avertissements||[], null, 2)); lock('apercu', true); }
       else { setStatut('✗ refusé :\n' + (res.erreurs||[]).join('\n')); }
