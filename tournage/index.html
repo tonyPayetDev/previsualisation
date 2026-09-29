@@ -993,8 +993,16 @@ let gctx = null, tampon = null, fluxCanvas = null, rafGrade = null;
 function dessinerRendu(){
   rafGrade = requestAnimationFrame(dessinerRendu);
   const L = RENDUS[rendu];
-  if (!L || !L.css || !flux.videoWidth) return;
-  const w = flux.videoWidth, h = flux.videoHeight;
+  if (!L || !flux.videoWidth) return;
+  /* Toujours 9:16. Avant, la prise gardait le format que la camera donnait
+     (1440x1080, 3:4...) : « apres tournage c'est toujours pas en 9:16 »
+     (Tony, 2026-09-29). On recadre au centre le plus grand 9:16 de l'image et
+     on le pose sur un canvas fixe 1080x1920 — ce que l'on voit est ce qui est
+     enregistre, filtre ou pas. */
+  const w = 1080, h = 1920;
+  const vw = flux.videoWidth, vh = flux.videoHeight;
+  const cw = Math.min(vw, vh * 9 / 16), ch = cw * 16 / 9;
+  const sx = (vw - cw) / 2, sy = (vh - ch) / 2;
   if (grade.width !== w || grade.height !== h){
     grade.width = w; grade.height = h;
     gctx = grade.getContext('2d', { alpha:false });
@@ -1008,7 +1016,7 @@ function dessinerRendu(){
   const ctx = gctx; if (!ctx) return;
   ctx.setTransform(1,0,0,1,0,0);
   ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1;
-  ctx.filter = L.css; ctx.drawImage(flux, 0, 0, w, h); ctx.filter = 'none';
+  ctx.filter = L.css || 'none'; ctx.drawImage(flux, sx, sy, cw, ch, 0, 0, w, h); ctx.filter = 'none';
 
   /* Adoucissement : une copie floue reposee en OPACITE SIMPLE, pas en
      « soft-light ». Mesure du 2026-09-09 : en soft-light la copie floue
@@ -1040,7 +1048,7 @@ function dessinerRendu(){
 }
 
 function appliquerRendu(){
-  const actif = rendu !== 'aucun';
+  const actif = true;   // le canvas 9:16 sert toujours d'apercu et de source, meme sans filtre
   grade.classList.toggle('on', actif);
   flux.classList.toggle('cache', actif);
   grade.classList.toggle('miroir', cam === 'user');
@@ -1069,7 +1077,6 @@ function appliquerRendu(){
    relecture. On garde le meme objet d'un enregistrement a l'autre : rappeler
    `captureStream` cree un second flux et le premier continue de tourner. */
 function fluxAEnregistrer(){
-  if (rendu === 'aucun') return stream;
   /* Le flux de canvas etait garde d'une prise a l'autre. Or la fin d'une prise
      coupe TOUTES les pistes du flux camera — y compris la piste audio qui avait
      ete greffee ici. A la prise suivante, le micro est un nouvel objet, mais ce
