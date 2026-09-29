@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="fr"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>Conso Claude</title>
+<style>
+:root{--fond:#07080c;--carte:#101420;--ligne:#1e2637;--blanc:#f0f3f8;--gris:#8590a3;--vert:#34d399;--jaune:#FFE600;--rouge:#fb7185;--bleu:#60a5fa;--violet:#a855f7}
+*{margin:0;padding:0;box-sizing:border-box}
+html{background:var(--fond)}
+body{background:var(--fond);color:var(--blanc);font:16px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif;max-width:760px;margin:0 auto;padding:16px 16px 48px;overflow-x:hidden}
+h1{font-size:26px;line-height:1.2;margin:8px 0 4px}
+h2{font-size:19px;margin:36px 0 12px;color:var(--jaune)}
+.sub{color:var(--gris);font-size:14px}
+.card{background:var(--carte);border:1px solid var(--ligne);border-radius:14px;padding:14px;margin-bottom:10px}
+.grid3{display:grid;grid-template-columns:1fr;gap:10px}
+@media(min-width:640px){.grid3{grid-template-columns:repeat(3,1fr)}}
+.big{font-size:34px;font-weight:700;line-height:1.1;font-variant-numeric:tabular-nums}
+.lab{color:var(--gris);font-size:13.5px;margin-top:4px}
+.warn{color:var(--rouge)}.ok{color:var(--vert)}
+.row{display:flex;flex-direction:column;gap:6px;margin-bottom:12px}
+.rt{display:flex;justify-content:space-between;gap:10px;align-items:baseline}
+.rt b{font-weight:600}.rt span{color:var(--gris);font-size:13px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.bar{height:10px;background:#161d2b;border-radius:999px;overflow:hidden;display:flex}
+.bar i{display:block;height:100%}
+.bar .a{background:linear-gradient(90deg,var(--jaune),#f5b700)}
+.bar .b{background:var(--violet)}
+.bar .c{background:var(--bleu)}
+.note{color:var(--gris);font-size:13.5px}
+.leg{display:flex;gap:14px;flex-wrap:wrap;font-size:13px;color:var(--gris);margin-bottom:10px}
+.leg u{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px;text-decoration:none}
+.dayrow{display:grid;grid-template-columns:44px 1fr 46px;gap:8px;align-items:center;font-size:13px;margin-bottom:7px;font-variant-numeric:tabular-nums}
+.dayrow .bar{height:14px;position:relative}
+.dayrow .n{text-align:right;color:var(--gris)}
+.cap{position:absolute;top:-3px;bottom:-3px;width:2px;background:var(--vert)}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.tag{font-size:12px;border:1px solid var(--ligne);border-radius:999px;padding:2px 9px;color:var(--gris)}
+ol.rec{list-style:none;counter-reset:r}
+ol.rec li{counter-increment:r;position:relative;padding-left:44px}
+ol.rec li:before{content:counter(r);position:absolute;left:12px;top:12px;width:24px;height:24px;border-radius:50%;background:var(--jaune);color:#111;font-weight:700;display:flex;align-items:center;justify-content:center;font-size:13px}
+ol.rec b{display:block;margin-bottom:2px}
+ol.rec .g{color:var(--vert);font-size:13.5px;margin-top:4px}
+.meth li{margin:0 0 8px 18px;font-size:14px;color:#c7cfdd}
+code{background:#161d2b;padding:1px 5px;border-radius:5px;font-size:13px}
+</style></head><body>
+<h1>Où passent mes jetons Claude ?</h1>
+<p class="sub" id="maj"></p>
+
+<h2>En bref</h2>
+<div class="grid3" id="bref"></div>
+<div class="card" id="budget"></div>
+
+<h2>Ce qui consomme</h2>
+<p class="note" style="margin-bottom:10px">Part du coût estimé total. Les lignes se recoupent : ce sont des angles différents sur les mêmes dépenses, pas une somme.</p>
+<div id="causes"></div>
+
+<h2>Par jour</h2>
+<div class="leg"><span><u style="background:#FFE600"></u>session principale</span><span><u style="background:#a855f7"></u>sous-agents</span><span><u style="background:#34d399"></u>budget du jour conseillé</span></div>
+<div id="jours"></div>
+
+<h2>Les plus grosses sessions</h2>
+<div id="sessions"></div>
+
+<h2>Que faire jusqu'à lundi</h2>
+<ol class="rec" id="recs"></ol>
+
+<h2>Comment c'est mesuré</h2>
+<ul class="meth" id="meth"></ul>
+
+<script>
+const D={"generated":"2026-09-29 20:51","today":"2026-09-29","deadline":"2026-10-05","daysLeft":6,"files":60,"sessionsN":6,"range":["2026-09-16","2026-09-29"],"totals":{"in":10275,"cw":45974104,"cr":1362612944,"out":4225654,"turns":4493,"w":206.44,"mainW":132.74,"subW":73.7,"mainTurns":2392,"subTurns":2101,"subFiles":47},"parts":{"cr":112.81,"cw":76.13,"out":17.49,"in":0.01},"models":{"sonnet":58.31,"opus":147.12,"haiku":1.01},"days":[{"d":"2026-09-16","w":6.81,"main":3.68,"sub":3.13,"cr":68781755,"cw":1353481,"inp":797,"out":351335,"turns":399,"sessions":2,"models":{"sonnet":6.81}},{"d":"2026-09-17","w":17.03,"main":9.47,"sub":7.55,"cr":133074159,"cw":6453770,"inp":930,"out":431941,"turns":465,"sessions":3,"models":{"sonnet":17.03}},{"d":"2026-09-18","w":0,"main":0,"sub":0,"cr":0,"cw":0,"inp":0,"out":0,"turns":0,"sessions":0,"models":{}},{"d":"2026-09-19","w":0,"main":0,"sub":0,"cr":0,"cw":0,"inp":0,"out":0,"turns":0,"sessions":0,"models":{}},{"d":"2026-09-20","w":0,"main":0,"sub":0,"cr":0,"cw":0,"inp":0,"out":0,"turns":0,"sessions":0,"models":{}},{"d":"2026-09-21","w":9.79,"main":9.79,"sub":0,"cr":102092889,"cw":2753765,"inp":392,"out":119005,"turns":196,"sessions":3,"models":{"sonnet":9.79}},{"d":"2026-09-22","w":30.61,"main":20.1,"sub":10.51,"cr":181938903,"cw":6416143,"inp":1266,"out":775988,"turns":633,"sessions":2,"models":{"sonnet":6.45,"opus":24.16}},{"d":"2026-09-23","w":14.68,"main":11.59,"sub":3.1,"cr":131173581,"cw":2873555,"inp":1492,"out":265510,"turns":338,"sessions":2,"models":{"sonnet":4.76,"opus":9.34,"haiku":0.58}},{"d":"2026-09-24","w":45.23,"main":28.36,"sub":16.87,"cr":319694948,"cw":8075082,"inp":2212,"out":1007119,"turns":1062,"sessions":2,"models":{"sonnet":10.98,"opus":34.09,"haiku":0.15}},{"d":"2026-09-25","w":27.11,"main":14.54,"sub":12.56,"cr":144486541,"cw":5171445,"inp":994,"out":463133,"turns":489,"sessions":1,"models":{"opus":27.11}},{"d":"2026-09-26","w":1.76,"main":1.29,"sub":0.47,"cr":908608,"cw":821407,"inp":14,"out":5694,"turns":7,"sessions":1,"models":{"opus":1.76}},{"d":"2026-09-27","w":0,"main":0,"sub":0,"cr":0,"cw":0,"inp":0,"out":0,"turns":0,"sessions":0,"models":{}},{"d":"2026-09-28","w":22.26,"main":6.72,"sub":15.54,"cr":69578462,"cw":6932655,"inp":534,"out":312671,"turns":261,"sessions":1,"models":{"opus":22.22,"haiku":0.03}},{"d":"2026-09-29","w":31.18,"main":27.2,"sub":3.98,"cr":210883098,"cw":5122801,"inp":1644,"out":493258,"turns":643,"sessions":3,"models":{"opus":28.44,"sonnet":2.5,"haiku":0.24}}],"sessions":[{"id":"6db9a376","w":147.11,"main":90.38,"sub":56.73,"turns":1619,"subTurns":1498,"subFiles":34,"compactions":13,"imgs":290,"cr":863438559,"cw":31536698,"inp":7524,"out":3008752,"peakCtx":848132,"first":"2026-09-17","last":"2026-09-29","models":{"sonnet":19.99,"opus":126.11,"haiku":1.01},"avgCtx":405757},{"id":"3fdea324","w":58.48,"main":41.91,"sub":16.57,"turns":750,"subTurns":571,"subFiles":12,"compactions":2,"imgs":61,"cr":494736791,"cw":14092817,"inp":2641,"out":1179750,"peakCtx":958338,"first":"2026-09-16","last":"2026-09-29","models":{"sonnet":37.62,"opus":20.85},"avgCtx":476433},{"id":"f1ce490d","w":0.59,"main":0.18,"sub":0.41,"turns":16,"subTurns":32,"subFiles":1,"compactions":0,"imgs":0,"cr":4192017,"cw":190371,"inp":96,"out":35014,"peakCtx":92050,"first":"2026-09-16","last":"2026-09-16","models":{"sonnet":0.59},"avgCtx":79846},{"id":"f593deea","w":0.15,"main":0.15,"sub":0,"turns":4,"subTurns":0,"subFiles":0,"compactions":0,"imgs":0,"cr":156758,"cw":63768,"inp":8,"out":1532,"peakCtx":71911,"first":"2026-09-28","last":"2026-09-28","models":{"opus":0.15},"avgCtx":55134},{"id":"e0ac4d43","w":0.08,"main":0.08,"sub":0,"turns":2,"subTurns":0,"subFiles":0,"compactions":0,"imgs":0,"cr":72139,"cw":58895,"inp":4,"out":543,"peakCtx":75685,"first":"2026-09-21","last":"2026-09-21","models":{"sonnet":0.08},"avgCtx":65519},{"id":"6d47b768","w":0.04,"main":0.04,"sub":0,"turns":1,"subTurns":0,"subFiles":0,"compactions":0,"imgs":0,"cr":16680,"cw":31555,"inp":2,"out":63,"peakCtx":48237,"first":"2026-09-16","last":"2026-09-16","models":{"sonnet":0.04},"avgCtx":48237}],"tools":[{"name":"Bash","calls":3003,"resTok":1238645,"carry":11.75,"imgs":0,"turnW":134.43},{"name":"Read","calls":562,"resTok":1017832,"carry":9.88,"imgs":336,"turnW":16.21},{"name":"mcp__claude_ai_Gmail__search_threads","calls":17,"resTok":25083,"carry":0.62,"imgs":0,"turnW":0.27},{"name":"image collée","calls":15,"resTok":24000,"carry":0.53,"imgs":15,"turnW":0},{"name":"mcp__claude_ai_n8n__get_workflow_details","calls":11,"resTok":32609,"carry":0.46,"imgs":0,"turnW":0.26},{"name":"mcp__claude_ai_n8n__get_sdk_reference","calls":4,"resTok":41899,"carry":0.4,"imgs":0,"turnW":0},{"name":"WebFetch","calls":50,"resTok":16481,"carry":0.29,"imgs":0,"turnW":2.9},{"name":"mcp__claude_ai_n8n__list_credentials","calls":7,"resTok":26347,"carry":0.28,"imgs":0,"turnW":0.22},{"name":"Agent","calls":51,"resTok":13889,"carry":0.26,"imgs":0,"turnW":2.66},{"name":"mcp__claude_ai_n8n__get_node_types","calls":11,"resTok":19175,"carry":0.19,"imgs":0,"turnW":0.72},{"name":"mcp__claude_ai_n8n__search_nodes","calls":6,"resTok":14851,"carry":0.18,"imgs":0,"turnW":0.14},{"name":"RemoteTrigger","calls":2,"resTok":7434,"carry":0.18,"imgs":0,"turnW":0.09}],"ctx":[{"k":"<50k","w":0,"turns":2},{"k":"50-100k","w":0.44,"turns":116},{"k":"100-200k","w":3,"turns":368},{"k":"200-400k","w":16.41,"turns":632},{"k":">400k","w":60.25,"turns":1274}],"subModels":{"sonnet":19.07,"opus":54.56,"haiku":0.07},"cold":{"cwShare":0.475,"turns":56},"waits":{"calls":308,"w":12.83},"images":{"n":351,"carry":5.68},"compactions":15,"weeks":{"2026-09-14":23.84,"2026-09-21":129.18,"2026-09-28":53.44},"openrouter":{"total":26.4,"used":21.73},"opencode":{"runs":92,"ok":24,"fail":1,"days":48}};
+const $=id=>document.getElementById(id);
+const fmt=n=>Math.round(n).toLocaleString('fr-FR');
+const M=n=>(n/1e6).toLocaleString('fr-FR',{maximumFractionDigits:1})+' M';
+const G=n=>(n/1e9).toLocaleString('fr-FR',{maximumFractionDigits:2})+' Md';
+const pc=(a,b)=>b?Math.round(100*a/b):0;
+const T=D.totals,W=T.w;
+const mn=n=>String(n).replace('.',',');
+const sh=D.days.slice(-14).map(d=>d.d);
+const wk=D.weeks,keys=Object.keys(wk).sort();
+const cur=wk[keys[keys.length-1]],prev=keys.slice(0,-1).map(k=>wk[k]);
+const ceil=Math.max(...prev);
+const left=Math.max(ceil-cur,0),dl=D.daysLeft,perDay=left/dl;
+const activeDays=D.days.filter(d=>d.w>1);
+const avgDay=activeDays.reduce((a,d)=>a+d.w,0)/activeDays.length;
+const last2=D.days.slice(-2).reduce((a,d)=>a+d.w,0)/2;
+$('maj').textContent='Mis à jour le '+D.generated+' (heure de La Réunion) · '+D.sessionsN+' sessions, '+D.files+' fichiers, du '+D.range[0]+' au '+D.range[1];
+
+// en bref
+const opusShare=pc((D.models.opus||0)+(D.models.fable||0),W);
+$('bref').innerHTML=[
+ [G(T.cr),'jetons « relus » depuis le cache : '+pc(T.cr,T.in+T.cw+T.cr+T.out)+' % du volume, mais chaque relecture coûte peu. C\'est le contexte géant renvoyé à chaque tour.','warn'],
+ [pc(D.sessions[0].w,W)+' %','du coût vient d\'UNE seule session ('+D.sessions[0].id+') : '+D.sessions[0].compactions+' compactions, contexte moyen '+fmt(D.sessions[0].avgCtx/1000)+' k, sur '+((Date.parse(D.sessions[0].last)-Date.parse(D.sessions[0].first))/864e5+1)+' jours.','warn'],
+ [opusShare+' %','du coût est sur Opus (le plus cher). Sous-agents : '+pc(T.subW,W)+' % du coût.','']
+].map(x=>'<div class="card"><div class="big '+x[2]+'">'+x[0]+'</div><div class="lab">'+x[1]+'</div></div>').join('');
+
+// budget
+const pct=Math.round(100*cur/ceil);
+$('budget').innerHTML='<div class="rt"><b>Semaine en cours (estimation)</b><span>'+pct+' % du plafond supposé</span></div>'+
+ '<div class="bar" style="margin:8px 0"><i class="a" style="width:'+Math.min(pct,100)+'%"></i></div>'+
+ '<p class="note">Estimation, pas une mesure : la semaine du '+keys[keys.length-2]+' a atteint '+mn(ceil.toFixed(0))+' unités avant le blocage (26 au 28/09), donc je prends ça comme plafond. Cette semaine : '+mn(cur.toFixed(0))+' unités en '+D.days.filter(d=>d.d>=keys[keys.length-1]&&d.w>0).length+' jours. Il reste environ <b>'+mn(left.toFixed(0))+'</b> unités pour '+dl+' jours jusqu\'à lundi '+D.deadline+', soit <b class="ok">'+mn(perDay.toFixed(0))+' par jour</b>. Rythme récent : '+mn(last2.toFixed(0))+' par jour (moyenne des jours actifs : '+mn(avgDay.toFixed(0))+'). '+(last2>perDay?'<b class="warn">À ce rythme le plafond tombe environ dans '+mn((left/last2).toFixed(1))+' jours, avant lundi.</b>':'<b class="ok">Le rythme actuel tient.</b>')+'</p>'+
+ '<p class="note" style="margin-top:6px">Une « unité » = 1 million de jetons d\'entrée Opus au tarif normal (voir la mesure). Le routine cloud du Journal IA n\'est pas dans ces fichiers mais compte aussi sur le même plafond.</p>';
+
+// causes
+const P=D.parts,ctx=Object.fromEntries(D.ctx.map(c=>[c.k,c]));
+const big=ctx['>400k'],mid=ctx['200-400k'];
+const coldW=D.cold.cwShare*P.cw;
+const tl=Object.fromEntries(D.tools.map(t=>[t.name,t]));
+const causes=[
+ ['Relire un très long contexte à chaque tour', big.w+mid.w, big.turns+' tours au-dessus de 400 k et '+mid.turns+' entre 200 et 400 k de contexte (session principale).'],
+ ['Réécrire le cache (contexte reconstruit)', P.cw, fmt(T.cw/1e6)+' M de jetons écrits. '+pc(D.cold.cwShare*100,100)+' % de ces écritures viennent de '+D.cold.turns+' reprises après plus d\'une heure d\'inactivité, plus '+D.compactions+' compactions.'],
+ ['Tout ce qui tourne sur Opus', (D.models.opus||0)+(D.models.fable||0), 'Sonnet '+pc(D.models.sonnet||0,W)+' %, Haiku '+pc(D.models.haiku||0,W)+' %.'],
+ ['Sous-agents', T.subW, T.subFiles+' sous-agents, '+fmt(T.subTurns)+' tours ; dont '+pc(D.subModels.opus||0,T.subW)+' % sur Opus.'],
+ ['Attentes et sondages (sleep, until, arrière-plan, Monitor)', D.waits.w, D.waits.calls+' appels : chaque tour de sondage relit tout le contexte.'],
+ ['Texte produit par le modèle (sortie)', P.out, M(T.out)+' de jetons de sortie, facturés 5 fois plus cher que l\'entrée.'],
+ ['Résultats d\'outils qui restent dans le contexte (Bash + Read)', ((tl.Bash||{}).carry||0)+((tl.Read||{}).carry||0), 'Bash : '+fmt((tl.Bash||{}).calls)+' appels, ~'+M((tl.Bash||{}).resTok)+' jetons rendus. Read : '+fmt((tl.Read||{}).calls)+' appels.'],
+ ['Images lues', D.images.carry, D.images.n+' images (surtout captures et planches).']
+].sort((a,b)=>b[1]-a[1]);
+$('causes').innerHTML=causes.map(c=>{const p=pc(c[1],W);return '<div class="row"><div class="rt"><b>'+c[0]+'</b><span>'+p+' %</span></div><div class="bar"><i class="a" style="width:'+Math.min(p,100)+'%"></i></div><div class="note">'+c[2]+'</div></div>'}).join('');
+
+// jours
+const mx=Math.max(...D.days.map(d=>d.w),perDay*1.2);
+$('jours').innerHTML=D.days.map(d=>{const m=d.main/mx*100,s=d.sub/mx*100,cp=perDay/mx*100;
+ return '<div class="dayrow"><span>'+d.d.slice(5).replace('-','/')+'</span><div class="bar"><i class="a" style="width:'+m+'%"></i><i class="b" style="width:'+s+'%"></i><span class="cap" style="left:'+cp+'%"></span></div><span class="n">'+mn(d.w.toFixed(0))+'</span></div>'}).join('')+
+ '<p class="note">Unités estimées par jour. '+D.days.filter(d=>d.w===0).length+' jours sans trace (week-end ou blocage).</p>';
+
+// sessions
+$('sessions').innerHTML=D.sessions.map((s,i)=>{const mods=Object.entries(s.models).sort((a,b)=>b[1]-a[1]).map(([k,v])=>'<span class="tag">'+k+' '+pc(v,s.w)+' %</span>').join('');
+ return '<div class="card"><div class="rt"><b>#'+(i+1)+' · '+s.id+'</b><span>'+mn(s.w.toFixed(1))+' unités · '+pc(s.w,W)+' %</span></div><div class="bar" style="margin:8px 0"><i class="a" style="width:'+pc(s.main,s.w)+'%"></i><i class="b" style="width:'+pc(s.sub,s.w)+'%"></i></div><div class="note">'+s.first+' → '+s.last+' · '+fmt(s.turns)+' tours principaux, '+s.subFiles+' sous-agents ('+fmt(s.subTurns)+' tours) · '+s.compactions+' compactions · '+s.imgs+' images · contexte moyen '+fmt(s.avgCtx/1000)+' k, pic '+fmt(s.peakCtx/1000)+' k</div><div class="tags">'+mods+'</div></div>'}).join('');
+
+// recos
+const s1=D.sessions[0];
+const saveCtx=0.5*(big.w+mid.w);
+const saveCold=coldW;
+const saveOpus=0.4*0.5*((D.models.opus||0));
+const recs=[
+ ['Une session neuve par sujet, et /clear ou /compact dès 150 k de contexte','La session '+s1.id+' a duré des jours avec un contexte moyen de '+fmt(s1.avgCtx/1000)+' k. Au-dessus de 200 k, chaque tour coûte plus de 2 fois plus qu\'à 100 k.','Gain estimé : environ '+fmt(saveCtx)+' unités ('+pc(saveCtx,W)+' % du total) si on divise par deux ces relectures.'],
+ ['Ne pas laisser une grosse session dormir plus d\'une heure','Le cache expire après 1 h : la reprise réécrit tout le contexte. '+D.cold.turns+' reprises de ce type = '+pc(coldW,W)+' % du coût.','Avant une pause : /compact ou note de reprise courte, puis nouvelle session au retour. Gain estimé : jusqu\'à '+fmt(saveCold)+' unités.'],
+ ['Sonnet par défaut, Opus seulement pour concevoir ou déboguer','Opus = '+opusShare+' % du coût. Sonnet coûte environ 0,6 fois Opus, Haiku environ 0,2 fois (tarifs supposés).','Si la moitié de l\'Opus passe sur Sonnet : environ '+fmt(saveOpus)+' unités gagnées.'],
+ ['Envoyer le routinier à OpenCode / OpenRouter','Scripts déterministes pour les vidéos, seul le JSON demande un modèle. OpenRouter : '+(D.openrouter?D.openrouter.used+' $ dépensés sur '+D.openrouter.total+' $ (reste '+(D.openrouter.total-D.openrouter.used).toFixed(2).replace('.',',')+' $)':'solde non lu')+'. OpenCode : '+D.opencode.runs+' lancements dans les journaux, '+D.opencode.ok+' réussites notées, '+D.opencode.fail+' échec (délai dépassé).','Chaque tâche sortie de Claude = 0 unité sur le plafond. Les modèles gratuits peuvent expirer : garder une reprise Sonnet.'],
+ ['Sous-agents : petits, sur Sonnet ou Haiku, briefés une seule fois','Sous-agents = '+pc(T.subW,W)+' % du coût, '+pc(D.subModels.opus||0,T.subW)+' % d\'entre eux sur Opus. Chacun réécrit son propre contexte au départ.','Un sous-agent par tâche bornée, modèle imposé, rapport court. Ne pas relancer en boucle après une limite atteinte.'],
+ ['Remplacer les sondages par une seule commande d\'arrière-plan avec notification',''+D.waits.calls+' appels d\'attente ou de sondage ont coûté '+pc(D.waits.w,W)+' % : un tour complet relu à chaque vérification.','Un seul appel « lance et préviens-moi » ; jamais de sleep en boucle dans une longue session.'],
+ ['Limiter la sortie des outils et mesurer avant de regarder','Bash a rendu ~'+M((tl.Bash||{}).resTok)+' jetons en '+fmt((tl.Bash||{}).calls)+' appels ; Read a chargé '+fmt((tl.Read||{}).imgs)+' images sur '+D.images.n+'.','Toujours <code>| head -40</code> ou <code>| tail</code> ; lire les mesures (json, logs) avant toute image ; une planche contact au lieu de dix captures.'],
+ ['Fixer un budget par jour et le suivre','Il reste environ '+mn(left.toFixed(0))+' unités pour '+dl+' jours : '+mn(perDay.toFixed(0))+' par jour, contre '+mn(last2.toFixed(0))+' ces deux derniers jours.','Relancer <code>node /work/scripts/conso-claude.mjs</code> chaque matin (sans Claude) pour voir où on en est.']
+];
+$('recs').innerHTML=recs.map(r=>'<li class="card"><b>'+r[0]+'</b><span class="note">'+r[1]+'</span><div class="g">'+r[2]+'</div></li>').join('');
+
+// méthode
+$('meth').innerHTML=[
+ 'Source : les transcripts locaux de Claude Code ('+D.files+' fichiers dont '+T.subFiles+' de sous-agents), du '+D.range[0]+' au '+D.range[1]+'. Les mois précédents ne sont plus disponibles ici.',
+ 'Chaque réponse est comptée une seule fois : entrée neuve, cache écrit, cache relu, sortie. Les jours sont en heure de La Réunion (UTC+4).',
+ 'Coût estimé en « unités » : entrée 1, cache écrit 2 (durée 1 h), cache relu 0,1, sortie 5 ; puis multiplié par un facteur modèle (Opus 1, Sonnet 0,6, Haiku 0,2). Ce sont des hypothèses de tarif, pas la facture. Les parts (%) sont plus fiables que les valeurs absolues.',
+ 'Le plafond hebdomadaire n\'est pas lisible dans les fichiers. Je suppose qu\'il correspond à la semaine la plus chargée observée (blocage du 26 au 28/09) et qu\'il repart le lundi. C\'est une estimation.',
+ 'Résultats d\'outils : longueur en caractères divisée par 3,5 ; image = 1 600 jetons (estimation). « Reste en contexte » = taille × nombre de tours avant la prochaine compaction × 0,1.',
+ 'Ne sont pas comptés : le routine cloud du Journal IA, les usages hors de ce dossier, les autres appareils.',
+ 'Aucun texte de conversation n\'est publié : seulement des totaux, des dates, des identifiants de 8 caractères, des noms d\'outils et de modèles. Régénération : <code>node /work/scripts/conso-claude.mjs</code>.'
+].map(x=>'<li>'+x+'</li>').join('');
+</script>
+</body></html>
