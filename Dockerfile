@@ -44,7 +44,13 @@ RUN chmod +x /docker-entrypoint.d/41-banque-layouts.sh \
 # /a-publier/ : même principe, secret A_PUBLIER_SECRET injecté au démarrage (42-…).
 COPY docker-entrypoint.d/42-a-publier.sh /docker-entrypoint.d/42-a-publier.sh
 RUN chmod +x /docker-entrypoint.d/42-a-publier.sh \
- && echo 'set $apublier_secret "";' > /etc/nginx/a-publier-secret.conf \
+ && echo 'set $apublier_secret "";' > /etc/nginx/a-publier-secret.conf
+
+# /studio-video/ : routeur vidéo (écrire/valider/aperçu/rendre/publier/programmer), même
+# principe, secret STUDIO_VIDEO_SECRET injecté au démarrage (43-…).
+COPY docker-entrypoint.d/43-studio-video.sh /docker-entrypoint.d/43-studio-video.sh
+RUN chmod +x /docker-entrypoint.d/43-studio-video.sh \
+ && echo 'set $studiovideo_secret "";' > /etc/nginx/studio-video-secret.conf \
  && nginx -t
 
 EXPOSE 80

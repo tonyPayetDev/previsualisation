@@ -171,6 +171,39 @@ Deux looks ne sont tolérés que si le second est <b>uniquement</b> à l'ouvertu
   <button class="bt" id="raz" type="button">Tout remettre à zéro</button>
 </div>
 
+<h2>11 · Lancer <i>appelle le routeur n8n « Studio vidéo » — écrit, valide, aperçu, rend, publie, programme</i></h2>
+<div class="deux">
+  <label class="champ"><span>Skill vidéo (déterministe, un video.json → un mp4)</span>
+    <select id="lskill">
+      <option value="boost-niveau">boost-niveau</option>
+      <option value="split-preuve">split-preuve</option>
+      <option value="veille-journal-ia">Journal IA</option>
+    </select></label>
+  <label class="champ"><span>Projet <i>(slug pour boost-niveau/split-preuve, AAAA-MM-JJ pour le Journal)</i></span>
+    <input type="text" id="lprojet" placeholder="ex. 22-mon-sujet ou 2026-09-29"></label>
+</div>
+<label class="champ"><span>Sujet</span>
+  <textarea id="lsujet" placeholder="repris du sujet ci-dessus si rempli"></textarea></label>
+<label class="champ"><span>Consignes <i>(facultatif)</i></span>
+  <textarea id="lconsignes" placeholder="repris du hook / CTA / notes ci-dessus si remplis"></textarea></label>
+
+<div class="actions">
+  <button class="bt pri" id="l-ecrire" type="button">1 · Écrire</button>
+  <button class="bt" id="l-valider" type="button" disabled>2 · Valider</button>
+  <button class="bt" id="l-apercu" type="button" disabled>3 · Aperçu</button>
+  <button class="bt" id="l-rendre" type="button" disabled>4 · Rendre</button>
+  <button class="bt" id="l-publier" type="button" disabled>5 · Publier</button>
+  <button class="bt" id="l-programmer" type="button" disabled>6 · Programmer (test à sec)</button>
+</div>
+
+<label class="champ"><span>video.json <i>(modifiable avant « Valider »)</i></span>
+  <textarea id="ljson" style="min-height:220px;font:12.5px/1.5 ui-monospace,Menlo,monospace" placeholder="apparaît après « Écrire »"></textarea></label>
+
+<div class="sortie">
+  <pre id="lstatut">En attente.</pre>
+  <div id="lliens" style="margin-top:8px"></div>
+</div>
+
 <footer>
   Les plans avatar, les hooks et le b-roll listés existent réellement (banque triée au pouce dans <a href="/tri/" style="color:var(--gris)">Trier</a>,
   durées avatar mesurées à l'ffprobe). Les blocs motion sont les briques HyperFrames réutilisables (hook, problème, solution, preuve, CTA, b-roll).
@@ -455,6 +488,141 @@ peindreChips(HFIN,'#hfin',etat.hf,null,{v:''});
 peindreChips(BROLL,'#broll',etat.broll,'#fbroll',fBro);
 peindreHookScripts();
 ecrire();
+
+/* ---------- 11 · Lancer — appelle le routeur n8n via /studio-video/api ---------- */
+(function(){
+  var etatL = { projet:null, video:null, route:null, pollTimer:null };
+  var elStatut = document.getElementById('lstatut');
+  var elLiens = document.getElementById('lliens');
+  var btns = {};
+  ['ecrire','valider','apercu','rendre','publier','programmer'].forEach(function(a){ btns[a]=document.getElementById('l-'+a); });
+
+  function setStatut(t){ elStatut.textContent = t; }
+  function setLiens(html){ elLiens.innerHTML = html; }
+  function lock(a,on){ btns[a].disabled = !on; }
+
+  // prefill sujet/consignes from the configurator above, once, without overwriting a manual edit
+  var sujetEl = document.getElementById('lsujet'), consEl = document.getElementById('lconsignes');
+  function prefill(){
+    if (!sujetEl.value) { var s=(document.getElementById('sujet')||{}).value; if (s) sujetEl.value = s; }
+    if (!consEl.value) {
+      var parts=[];
+      var h=(document.getElementById('hook')||{}).value; if (h) parts.push('Hook : '+h);
+      var c=(document.getElementById('cta')||{}).value; if (c) parts.push('CTA : '+c);
+      var n=(document.getElementById('notes')||{}).value; if (n) parts.push(n);
+      if (parts.length) consEl.value = parts.join('\n');
+    }
+  }
+  prefill();
+  document.getElementById('sujet').addEventListener('input', prefill);
+
+  async function appel(action, extra){
+    extra = extra || {};
+    var skill = document.getElementById('lskill').value;
+    var projet = document.getElementById('lprojet').value.trim();
+    if (!projet) { setStatut('Renseigne un « Projet » (slug ou date) avant de lancer « '+action+' ».'); throw new Error('projet manquant'); }
+    var body = Object.assign({ action:action, skill:skill, projet:projet }, extra);
+    setStatut((elStatut.textContent||'') + '\n→ ' + action + '…');
+    var r = await fetch('/studio-video/api', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) });
+    var j = null; try { j = await r.json(); } catch(e) { j = { ok:false, erreur:'reponse illisible ('+r.status+')' }; }
+    return j;
+  }
+
+  btns.ecrire.addEventListener('click', async function(){
+    lock('ecrire', false); setStatut('Écriture en cours (OpenCode)… peut prendre 1 à 3 min.');
+    try {
+      var j = await appel('ecrire', { sujet: sujetEl.value, consignes: consEl.value });
+      if (j.ok && j.result && j.result.ok){
+        document.getElementById('ljson').value = j.result.contenu || '';
+        setStatut('✓ video.json écrit.\n' + (j.raw_tail||''));
+        lock('valider', true);
+      } else {
+        setStatut('✗ échec écriture.\n' + JSON.stringify(j, null, 2));
+      }
+    } catch(e){} finally { lock('ecrire', true); }
+  });
+
+  btns.valider.addEventListener('click', async function(){
+    lock('valider', false); setStatut('Validation…');
+    try {
+      var j = await appel('valider', {});
+      var res = (j.result) || j;
+      if (res.ok){ setStatut('✓ video.json valide.\n' + JSON.stringify(res.avertissements||[], null, 2)); lock('apercu', true); }
+      else { setStatut('✗ refusé :\n' + (res.erreurs||[]).join('\n')); }
+    } catch(e){} finally { lock('valider', true); }
+  });
+
+  btns.apercu.addEventListener('click', async function(){
+    lock('apercu', false); setStatut('Aperçu (images fixes)… ~1 min.');
+    try {
+      var j = await appel('apercu', {});
+      var res = j.result || j;
+      if (res.ok){
+        setStatut('✓ aperçu généré.');
+        lock('rendre', true);
+        var html = (res.stills||[]).map(function(u){ return '<a href="'+u+'" target="_blank" style="color:var(--bleu);margin-right:10px">'+u.split('/').pop()+'</a>'; }).join('');
+        setLiens(html);
+      } else { setStatut('✗ échec aperçu.\n' + (res.log_tail||'')); }
+    } catch(e){} finally { lock('apercu', true); }
+  });
+
+  btns.rendre.addEventListener('click', async function(){
+    lock('rendre', false); setStatut('Lancement du rendu complet…');
+    try {
+      var j = await appel('rendre', {});
+      var res = j.result || j;
+      if (res.ok && res.statut==='lance'){
+        setStatut('✓ rendu lancé (job '+res.job+'). Suivi automatique…');
+        pollEtat();
+      } else if (res.statut==='deja_en_cours'){
+        setStatut('⏳ un autre rendu tourne déjà — réessaie plus tard.');
+      } else { setStatut('✗ échec lancement rendu.\n' + JSON.stringify(res)); }
+    } catch(e){} finally { lock('rendre', true); }
+  });
+
+  function pollEtat(){
+    if (etatL.pollTimer) clearInterval(etatL.pollTimer);
+    etatL.pollTimer = setInterval(async function(){
+      try {
+        var j = await appel('etat', {});
+        var res = j.result || j;
+        setStatut('Rendu en cours…\n' + (res.tail||''));
+        if (res.termine){
+          clearInterval(etatL.pollTimer);
+          if (String(res.code) === '0'){ setStatut('✓ rendu terminé.\n'+(res.tail||'')); lock('publier', true); }
+          else { setStatut('✗ rendu terminé en échec (code '+res.code+').\n'+(res.tail||'')); }
+        }
+      } catch(e){}
+    }, 15000);
+  }
+
+  btns.publier.addEventListener('click', async function(){
+    lock('publier', false); setStatut('Publication (R2 + previsualisation + Coolify)…');
+    try {
+      var projet = document.getElementById('lprojet').value.trim();
+      var route = projet;
+      var j = await appel('publier', { route: route });
+      var res = j.result || j;
+      if (res.ok){
+        etatL.route = route;
+        setStatut('✓ publié.');
+        setLiens('<a href="'+res.url+'" target="_blank" style="color:var(--bleu)">'+res.url+'</a>');
+        lock('programmer', true);
+      } else { setStatut('✗ échec publication.\n' + JSON.stringify(res)); }
+    } catch(e){} finally { lock('publier', true); }
+  });
+
+  btns.programmer.addEventListener('click', async function(){
+    lock('programmer', false); setStatut('Programmation — TEST À SEC uniquement (aucun réseau n\'est touché ici).');
+    try {
+      var route = etatL.route || document.getElementById('lprojet').value.trim();
+      var when = new Date(Date.now()+3600000).toISOString();
+      var j = await appel('programmer', { route: route, date: when, reseaux: 'tiktok,facebook,youtube,linkedin' });
+      var res = j.result || j;
+      setStatut('Plan Blotato (dry-run — rien n\'est programmé) :\n' + JSON.stringify(res.plan||res, null, 2));
+    } catch(e){} finally { lock('programmer', true); }
+  });
+})();
 </script>
 </body>
 </html>
