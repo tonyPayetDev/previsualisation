@@ -177,6 +177,8 @@ textarea{width:100%;min-height:190px;background:var(--carte);color:var(--texte);
 .rendus button{flex:0 0 auto;padding:7px 13px;border-radius:999px;border:1px solid rgba(255,255,255,.24);
   background:rgba(19,19,24,.76);color:#dcdce4;font:inherit;font-size:12px;letter-spacing:.02em;
   -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);cursor:pointer;white-space:nowrap}
+.rendus button.fmt{border-style:dashed}
+.rendus .sep{flex:0 0 1px;align-self:stretch;background:rgba(255,255,255,.22);margin:4px 2px}
 .rendus button[aria-pressed="true"]{background:#fff;border-color:#fff;color:#111;font-weight:600}
 .voile{position:absolute;inset:0;background:
   linear-gradient(180deg,rgba(10,10,10,.86) 0%,rgba(10,10,10,.42) 26%,
@@ -986,6 +988,9 @@ const RENDUS = {
             teinte: { c: '120,170,205', a: 0.10, mode: 'soft-light' },
             vignette: 0.18 },
 };
+const FORMATS = { '3:4': { h: 1440, d: 'plus large — gestes et épaules gardés' }, '9:16': { h: 1920, d: 'format reel direct — plus serré' } };
+let format = '3:4';
+try { const f = localStorage.getItem('tournage-format'); if (FORMATS[f]) format = f; } catch(e){}
 let rendu = localStorage.getItem('tournage-rendu') || 'aucun';
 if (!RENDUS[rendu]) rendu = 'aucun';
 let gctx = null, tampon = null, fluxCanvas = null, rafGrade = null;
@@ -999,9 +1004,12 @@ function dessinerRendu(){
      (Tony, 2026-09-29). On recadre au centre le plus grand 9:16 de l'image et
      on le pose sur un canvas fixe 1080x1920 — ce que l'on voit est ce qui est
      enregistre, filtre ou pas. */
-  const w = 1080, h = 1920;
+  /* 3:4 par defaut (retour de Tony le 2026-09-29 : le 9:16 recadre dans une
+     camera paysage « zoome trop »). Le 3:4 garde epaules et gestes ; le
+     montage recadre ensuite en 9:16 avec de la marge. */
+  const w = 1080, h = FORMATS[format].h;
   const vw = flux.videoWidth, vh = flux.videoHeight;
-  const cw = Math.min(vw, vh * 9 / 16), ch = cw * 16 / 9;
+  const cw = Math.min(vw, vh * w / h), ch = cw * h / w;
   const sx = (vw - cw) / 2, sy = (vh - ch) / 2;
   if (grade.width !== w || grade.height !== h){
     grade.width = w; grade.height = h;
@@ -1052,7 +1060,7 @@ function appliquerRendu(){
   grade.classList.toggle('on', actif);
   flux.classList.toggle('cache', actif);
   grade.classList.toggle('miroir', cam === 'user');
-  [].forEach.call($('#rendus').children, (b) => {
+  [].forEach.call($('#rendus').querySelectorAll('button[data-k]'), (b) => {
     b.setAttribute('aria-pressed', String(b.dataset.k === rendu));
   });
   localStorage.setItem('tournage-rendu', rendu);
@@ -1062,6 +1070,19 @@ function appliquerRendu(){
 
 (function construireRendus(){
   const bo = $('#rendus');
+  const majFormats = () => [].forEach.call(bo.querySelectorAll('.fmt'), (x) => x.setAttribute('aria-pressed', String(x.dataset.f === format)));
+  Object.keys(FORMATS).forEach((f) => {
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'fmt'; b.dataset.f = f; b.textContent = f; b.title = FORMATS[f].d;
+    b.addEventListener('click', () => {
+      if (typeof enCours !== 'undefined' && enCours) return;   // pas de changement de format pendant une prise
+      format = f; try { localStorage.setItem('tournage-format', f); } catch(e){}
+      majFormats();
+    });
+    bo.appendChild(b);
+  });
+  const sep = document.createElement('span'); sep.className = 'sep'; bo.appendChild(sep);
+  majFormats();
   Object.keys(RENDUS).forEach((k) => {
     const b = document.createElement('button');
     b.type = 'button'; b.dataset.k = k; b.textContent = RENDUS[k].nom;
