@@ -96,12 +96,19 @@
 .suivi-txt{width:100%;min-height:230px;font:inherit;font-size:14px;line-height:1.55;color:var(--blanc);
   background:#0b0f16;border:1px solid var(--ligne);border-radius:10px;padding:11px 12px;resize:vertical}
 .suivi-txt:focus{outline:0;border-color:var(--jaune)}
+.pomo{font-size:12.5px;font-variant-numeric:tabular-nums;color:var(--jaune);white-space:nowrap}
+.lance{text-align:center;display:flex;flex-direction:column;gap:14px;align-items:center;padding:20px 6px}
+.lance h2{font-size:clamp(26px,7vw,34px);line-height:1.1;letter-spacing:-.02em}
+.lance p{color:var(--gris);font-size:15px;max-width:34ch}
+.lance .gros{font-size:44px;font-weight:700;color:var(--jaune);font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+button.go{background:#eab308;border-color:#eab308;color:#1a1200;font-size:17px;font-weight:700}
 .rang.sortie button{width:100%;border-color:#3a2430;background:#1b1218;color:#d59aae;font-size:14px}
 </style></head>
 <body>
 <header>
   <a class="retour" href="../">‹ feuille</a>
   <div class="prog"><i id="barre"></i></div>
+  <div class="pomo" id="pomo"></div>
   <div class="cpt" id="cpt"></div>
 </header>
 <main id="ecran"></main>
@@ -152,7 +159,7 @@
 
   /* Message après un vrai échange. Les liens ne sont que des pages vérifiées
      en ligne (29/09) ; l'exemple suit le métier du prospect. */
-  const RESTO = /restau|fast|pizz|boulang|traiteur|caf|th[ée]|snack|h[ôo]tel/i;
+  const RESTO = /restau|fast|pizz|boulang|traiteur|caf|salon de th|snack/i;
   const messageSuivi = (l) => {
     const resto = RESTO.test(l.type || '');
     const exemple = resto
@@ -359,6 +366,36 @@
     pi.querySelector('.wa-envoi').addEventListener('click',()=>setTimeout(()=>marquer(r,'repondu'),400));
   };
 
+  /* Session pomodoro : 25 min, 7 à 10 appels, puis 5 min de pause.
+     Gardée dans le navigateur (par appareil) : c'est un chrono, pas une donnée. */
+  const DUREE=25*60000, MAXI=10, MINI=7, CLE='appels-session';
+  let session=null, tic=null;
+  try{ session=JSON.parse(localStorage.getItem(CLE)||'null'); }catch(e){}
+  const garder=()=>{ try{ session?localStorage.setItem(CLE,JSON.stringify(session)):localStorage.removeItem(CLE); }catch(e){} };
+  const faitsSession=()=>session?Object.values(etat).filter(x=>x&&x.h&&new Date(x.h).getTime()>=session.debut).length:0;
+  const reste=()=>session?Math.max(0,session.debut+DUREE-Date.now()):0;
+  const mmss=(ms)=>{const t=Math.ceil(ms/1000);return String(Math.floor(t/60)).padStart(2,'0')+':'+String(t%60).padStart(2,'0');};
+  const sessionFinie=()=>session&&(reste()===0||faitsSession()>=MAXI);
+  const majPomo=()=>{ const el=document.getElementById('pomo');
+    if(!session){ el.textContent=''; return; }
+    el.textContent='⏱ '+mmss(reste())+' · '+faitsSession()+'/'+MAXI;
+    if(sessionFinie()&&tic){ clearInterval(tic); tic=null; peindre(); } };
+  const lancer=()=>{ session={debut:Date.now()}; garder(); clearInterval(tic); tic=setInterval(majPomo,1000); majPomo(); peindre(); };
+  if(session&&!sessionFinie()) tic=setInterval(majPomo,1000);
+
+  const ecranLance=(ec,pi)=>{
+    const f=faitsSession(), fini=!!session;
+    ec.innerHTML='<div class="lance">'
+      +(fini
+        ?'<h2>Session terminée.</h2><div class="gros">'+f+' appel'+(f>1?'s':'')+'</div>'
+          +'<p>'+(f>=MINI?'Objectif tenu. ':'Objectif : '+MINI+' à '+MAXI+'. ')+'Lève-toi, bois de l’eau : 5 minutes de pause, puis relance.</p>'
+        :'<h2>Session d’appels</h2><div class="gros">25:00</div>'
+          +'<p>Objectif : '+MINI+' à '+MAXI+' appels. Tu ne vends pas : tu cherches à comprendre leur besoin.</p>')
+      +'</div>';
+    pi.innerHTML='<button type="button" class="go" id="go">'+(fini?'Relancer une session de 25 min':'Lancer la session — 25 min')+'</button>';
+    document.getElementById('go').onclick=lancer;
+  };
+
   const peindre=()=>{
     const ec=document.getElementById('ecran'), pi=document.getElementById('pied');
     const fait=faitsAujourdhui();
@@ -367,6 +404,8 @@
     document.getElementById('cpt').textContent=
       fait+' / '+(LEADS.length-hors)+(hors?' \u00b7 '+hors+' \u00e9cart\u00e9s':'');
 
+    majPomo();
+    if(!session||sessionFinie()){ ecranLance(document.getElementById('ecran'),document.getElementById('pied')); return; }
     if(i>=LEADS.length){
       ec.innerHTML='<div class="fini"><h2>C’est fini pour aujourd’hui.</h2>'
         +'<p>'+fait+' appel'+(fait>1?'s':'')+' passé'+(fait>1?'s':'')+'. Note ce qui s’est dit sur la feuille pendant que c’est frais.</p></div>';
