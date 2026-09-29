@@ -1,0 +1,336 @@
+<!doctype html>
+<html lang="fr"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>Mémoire ChatGPT</title>
+<!-- Cette page ne contient AUCUNE donnée : tout arrive par /memoire/api (authentifié). -->
+<style>
+  :root{--fond:#07080c;--carte:#101420;--carte2:#0d1626;--ligne:#1e2637;--blanc:#f0f3f8;--gris:#8590a3;--gris2:#c2cbd9;
+        --vert:#34d399;--jaune:#FFE600;--rouge:#fb7185;--bleu:#60a5fa;--violet:#A855F7;--orange:#fb923c}
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{background:var(--fond)}
+  body{background:var(--fond);color:var(--blanc);font:16px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif;
+    max-width:760px;margin:0 auto;padding:14px 16px calc(40px + env(safe-area-inset-bottom));overflow-x:hidden}
+  a{color:var(--jaune)}
+  header{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:6px}
+  a.retour{color:var(--gris);text-decoration:none;font-size:13px}
+  h1{font-size:clamp(27px,7vw,38px);line-height:1.08;letter-spacing:-.025em;margin:6px 0 4px}
+  h1 em{font-style:normal;color:var(--jaune)}
+  .sous{color:var(--gris);font-size:14px;margin-bottom:12px;min-height:21px}
+  nav.onglets{position:sticky;top:0;z-index:5;background:var(--fond);display:flex;gap:6px;overflow-x:auto;
+    padding:8px 0 10px;scrollbar-width:none;margin:0 -16px;padding-left:16px;padding-right:16px}
+  nav.onglets::-webkit-scrollbar{display:none}
+  nav.onglets button{flex:0 0 auto;font:600 14px/1 inherit;color:var(--gris2);background:#141a26;border:1px solid var(--ligne);
+    border-radius:999px;padding:11px 15px;cursor:pointer;min-height:42px;white-space:nowrap}
+  nav.onglets button[aria-selected=true]{background:var(--jaune);color:#111;border-color:var(--jaune)}
+  section{display:none}
+  section.actif{display:block}
+  .champ{display:flex;gap:8px;align-items:stretch;margin:6px 0 12px}
+  .champ input,.champ textarea{flex:1;min-width:0;font:inherit;font-size:16px;color:var(--blanc);background:#0b0f16;
+    border:1px solid var(--ligne);border-radius:12px;padding:13px 14px;outline:none}
+  .champ input:focus,.champ textarea:focus{border-color:#4a4310}
+  .champ textarea{min-height:88px;resize:vertical}
+  .col{flex-direction:column}
+  .btn{font:600 15px/1 inherit;border:1px solid var(--ligne);background:#141a26;color:var(--blanc);border-radius:11px;
+    padding:14px 16px;cursor:pointer;min-height:48px}
+  .btn.jaune{background:var(--jaune);color:#111;border-color:var(--jaune)}
+  .btn.petit{min-height:36px;padding:8px 12px;font-size:13px}
+  .btn:disabled{opacity:.5;cursor:default}
+  .carte{background:var(--carte);border:1px solid var(--ligne);border-radius:12px;padding:13px 14px;margin-bottom:10px}
+  .carte h3{font-size:16.5px;line-height:1.3;margin-bottom:3px;overflow-wrap:anywhere}
+  .meta{color:var(--gris);font-size:12.5px;display:flex;flex-wrap:wrap;gap:4px 10px;align-items:center}
+  .passage{border-left:2px solid var(--ligne);padding:4px 0 4px 10px;margin-top:9px;font-size:14.5px;color:var(--gris2);
+    overflow-wrap:anywhere;white-space:pre-wrap}
+  .passage b.qui{display:block;font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--gris);font-weight:600}
+  .passage.toi{border-left-color:#26405f}
+  mark{background:#4a4310;color:#fff3a0;border-radius:3px;padding:0 2px}
+  .pastille{display:inline-block;font-size:11px;letter-spacing:.08em;text-transform:uppercase;border:1px solid var(--ligne);
+    border-radius:999px;padding:3px 9px;color:var(--gris2);white-space:nowrap}
+  .p-vert{color:var(--vert);border-color:#1f6f52}.p-rouge{color:var(--rouge);border-color:#6b2436}
+  .p-orange{color:var(--orange);border-color:#6b3d14}.p-bleu{color:var(--bleu);border-color:#26405f}
+  .p-jaune{color:var(--jaune);border-color:#4a4310}.p-violet{color:#c9b6ff;border-color:#4b3a7a}
+  .actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+  .lien{background:none;border:0;color:var(--jaune);font:inherit;font-size:14px;cursor:pointer;padding:6px 0;text-decoration:underline;text-underline-offset:3px}
+  .etat{color:var(--gris);font-size:14px;padding:16px 4px;text-align:center}
+  .reponse{background:var(--carte2);border:1px solid #22354f;border-radius:12px;padding:15px 16px;margin-bottom:10px}
+  .reponse p{font-size:16px;line-height:1.55;white-space:pre-wrap;overflow-wrap:anywhere}
+  .alerte{border-radius:10px;padding:10px 12px;font-size:14px;margin:10px 0 0}
+  .alerte.absente{background:#2a1117;border:1px solid #6b2436;color:#ffc2cd}
+  .alerte.vieille{background:#2a1d0b;border:1px solid #6b3d14;color:#ffd7a8}
+  .hook{background:#1b1430;border:1px solid #4b3a7a;color:#e2d6ff;border-radius:10px;padding:10px 12px;margin-top:9px;font-size:15px}
+  .hook small{display:block;font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:#9d8bd0}
+  .jauge{height:6px;background:#161d2b;border-radius:999px;overflow:hidden;margin-top:8px}
+  .jauge i{display:block;height:100%;background:linear-gradient(90deg,var(--jaune),var(--violet))}
+  ul.etapes{list-style:none;margin-top:9px;display:flex;flex-direction:column;gap:6px}
+  ul.etapes li{font-size:14.5px;color:var(--gris2);padding-left:22px;position:relative}
+  ul.etapes li::before{content:"→";position:absolute;left:2px;color:var(--vert)}
+  h2{font-size:19px;margin:18px 0 4px;letter-spacing:-.01em}
+  .aide{color:var(--gris);font-size:13.5px;margin-bottom:10px}
+  .puces{display:flex;flex-wrap:wrap;gap:7px;margin:6px 0 14px}
+  .puces button{font:500 13.5px/1 inherit;background:#141a26;border:1px solid var(--ligne);color:var(--gris2);border-radius:999px;
+    padding:9px 12px;cursor:pointer;min-height:38px}
+  .puces button b{color:var(--jaune);margin-left:4px}
+  .puces button.on{border-color:var(--jaune);color:var(--blanc)}
+  .vide{background:var(--carte);border:1px solid var(--ligne);border-radius:14px;padding:18px 16px;margin-top:8px}
+  .vide h2{margin-top:0}
+  .vide ol{margin:10px 0 0 20px;display:flex;flex-direction:column;gap:8px;color:var(--gris2)}
+  .vide code{background:#0b0f16;border:1px solid var(--ligne);border-radius:6px;padding:1px 6px;font-size:13.5px;overflow-wrap:anywhere}
+  /* lecteur de conversation */
+  #lecteur{position:fixed;inset:0;background:rgba(3,4,8,.86);z-index:20;display:none;overflow-y:auto;-webkit-overflow-scrolling:touch}
+  #lecteur.ouvert{display:block}
+  #lecteur .boite{max-width:760px;margin:0 auto;padding:14px 16px 40px;background:var(--fond);min-height:100%}
+  #lecteur .haut{position:sticky;top:0;background:var(--fond);padding:6px 0 10px;display:flex;gap:10px;align-items:center;justify-content:space-between;border-bottom:1px solid var(--ligne);margin-bottom:10px}
+  #lecteur .haut h3{font-size:16px;line-height:1.3;overflow-wrap:anywhere}
+  .msg{border-radius:12px;padding:11px 13px;margin-bottom:9px;font-size:15px;white-space:pre-wrap;overflow-wrap:anywhere}
+  .msg.toi{background:#0d1626;border:1px solid #22354f;margin-left:12%}
+  .msg.chatgpt{background:var(--carte);border:1px solid var(--ligne);margin-right:4%}
+  .msg small{display:block;font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--gris);margin-bottom:3px}
+  .note{color:var(--gris);font-size:12.5px;text-align:center;margin-top:18px}
+</style>
+</head>
+<body>
+<header><a class="retour" href="/outils/">← Mes outils</a><span class="pastille p-violet">privé</span></header>
+<h1>Ma <em>mémoire</em> ChatGPT</h1>
+<p class="sous" id="sous">chargement…</p>
+
+<div id="vide" hidden></div>
+
+<div id="app" hidden>
+  <nav class="onglets" role="tablist">
+    <button role="tab" data-o="chercher" aria-selected="true">Chercher</button>
+    <button role="tab" data-o="demander" aria-selected="false">Demander</button>
+    <button role="tab" data-o="viral" aria-selected="false">Viral</button>
+    <button role="tab" data-o="objectif" aria-selected="false">Objectif 10 k€</button>
+    <button role="tab" data-o="themes" aria-selected="false">Thèmes</button>
+  </nav>
+
+  <section id="o-chercher" class="actif">
+    <div class="champ"><input id="q" type="search" placeholder="Un mot, un client, un sujet…" autocomplete="off" enterkeyhint="search"></div>
+    <div id="r-chercher"><p class="etat">Tape un mot : tu retrouves ce que ChatGPT t’a déjà répondu.</p></div>
+  </section>
+
+  <section id="o-demander">
+    <div class="champ col">
+      <textarea id="question" placeholder="Pose ta question. Ex : quel prix j’avais prévu pour un site vitrine ?"></textarea>
+      <button class="btn jaune" id="go-demander">Chercher la réponse dans mes conversations</button>
+    </div>
+    <p class="aide">La réponse vient seulement de tes anciennes conversations, avec les références. Si l’info n’y est pas ou date un peu, c’est écrit.</p>
+    <div id="r-demander"></div>
+  </section>
+
+  <section id="o-viral">
+    <p class="aide">Les conversations qui feraient les meilleures vidéos ou posts, avec la plateforme et une phrase d’accroche.</p>
+    <div id="r-viral"><p class="etat">chargement…</p></div>
+  </section>
+
+  <section id="o-objectif">
+    <p class="aide">Ce qui t’aide le plus à atteindre 10 000 € par mois stables. D’abord le réaliste, ensuite les paris.</p>
+    <div id="r-objectif"><p class="etat">chargement…</p></div>
+  </section>
+
+  <section id="o-themes">
+    <div class="puces" id="puces"></div>
+    <div id="r-themes"><p class="etat">chargement…</p></div>
+  </section>
+  <p class="note">Tes conversations restent sur ton serveur. Rien n’est publié.</p>
+</div>
+
+<div id="lecteur" role="dialog" aria-modal="true"><div class="boite">
+  <div class="haut"><h3 id="l-titre">…</h3><button class="btn petit" id="l-fermer">Fermer</button></div>
+  <div id="l-corps"></div>
+</div></div>
+
+<script>
+(function(){
+"use strict";
+var API='/memoire/api';
+var $=function(id){return document.getElementById(id)};
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+function api(body){
+  return fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body),credentials:'same-origin'})
+    .then(function(r){
+      if(r.status===503) throw new Error('Le service n’est pas encore branché (secret absent côté serveur).');
+      if(!r.ok) return r.json().catch(function(){return {}}).then(function(j){throw new Error(j.erreur||('Erreur '+r.status))});
+      return r.json();
+    }).then(function(j){ if(j&&j.ok===false) throw new Error(j.erreur||'Erreur'); return j; });
+}
+function erreur(el,e){el.innerHTML='<p class="etat">'+esc(e.message||e)+'</p>'}
+function surligne(txt,ranges){
+  if(!ranges||!ranges.length) return esc(txt);
+  var out='',pos=0;
+  ranges.slice().sort(function(a,b){return a[0]-b[0]}).forEach(function(r){
+    if(r[0]<pos) return;
+    out+=esc(txt.slice(pos,r[0]))+'<mark>'+esc(txt.slice(r[0],r[1]))+'</mark>'; pos=r[1];
+  });
+  return out+esc(txt.slice(pos));
+}
+function pct(x){return x==null?'—':Math.round(x*100)+' %'}
+function mois(d){if(!d) return '';var m=['janv.','févr.','mars','avr.','mai','juin','juil.','août','sept.','oct.','nov.','déc.'];var p=d.split('-');return (+p[2])+' '+m[+p[1]-1]+' '+p[0]}
+function btnLire(id){return '<button class="lien" data-lire="'+esc(id)+'">Lire la conversation</button>'}
+
+/* ── onglets ─────────────────────────────────────────── */
+var charge={};
+document.querySelectorAll('nav.onglets button').forEach(function(b){
+  b.addEventListener('click',function(){ouvrir(b.dataset.o)});
+});
+function ouvrir(o){
+  document.querySelectorAll('nav.onglets button').forEach(function(b){b.setAttribute('aria-selected',b.dataset.o===o?'true':'false')});
+  document.querySelectorAll('section').forEach(function(s){s.classList.toggle('actif',s.id==='o-'+o)});
+  try{localStorage.setItem('memoire-onglet',o)}catch(e){}
+  if(o==='viral'||o==='objectif'||o==='themes') chargerAnalyse();
+  if(o==='chercher') $('q').focus({preventScroll:true});
+}
+
+/* ── départ ──────────────────────────────────────────── */
+api({action:'stats'}).then(function(s){
+  if(!s.importe){ vide(); return; }
+  $('sous').textContent=s.conversations+' conversations · de '+mois(s.periode&&s.periode.debut)+' à '+mois(s.periode&&s.periode.fin)
+    +(s.analysees<s.conversations?' · '+s.analysees+' analysées':'');
+  $('app').hidden=false;
+  var o='chercher'; try{o=localStorage.getItem('memoire-onglet')||o}catch(e){}
+  ouvrir(['chercher','demander','viral','objectif','themes'].indexOf(o)>=0?o:'chercher');
+}).catch(function(e){ $('sous').textContent=e.message; });
+
+function vide(){
+  $('sous').textContent='Pas encore de conversations importées.';
+  var v=$('vide'); v.hidden=false;
+  v.innerHTML='<div class="vide"><h2>Récupère tes conversations ChatGPT</h2>'
+   +'<p class="aide">Une seule fois. Ensuite tu cherches dans tout ce que ChatGPT t’a déjà répondu.</p><ol>'
+   +'<li>Ouvre ChatGPT sur ordinateur, clique sur ta photo puis <b>Paramètres</b>.</li>'
+   +'<li>Va dans <b>Contrôles des données</b> puis <b>Exporter les données</b>, et confirme.</li>'
+   +'<li>Tu reçois un e-mail d’OpenAI (quelques minutes à quelques heures). Télécharge le fichier <b>.zip</b>.</li>'
+   +'<li>Donne ce fichier à Claude en disant « importe ma mémoire ChatGPT ». Il lance <code>node importer.mjs export.zip</code> puis l’analyse.</li>'
+   +'</ol><p class="aide" style="margin-top:12px">Le fichier reste sur ton serveur : il n’est jamais mis sur GitHub ni publié.</p></div>';
+}
+
+/* ── Chercher ────────────────────────────────────────── */
+var tq=null,dernier='';
+$('q').addEventListener('input',function(){
+  clearTimeout(tq);
+  var q=this.value.trim();
+  tq=setTimeout(function(){chercher(q)},380);
+});
+function chercher(q){
+  var el=$('r-chercher');
+  if(q.length<2){el.innerHTML='<p class="etat">Tape au moins 2 lettres.</p>';return}
+  dernier=q; el.innerHTML='<p class="etat">Je cherche…</p>';
+  api({action:'chercher',q:q}).then(function(r){
+    if(r.q!==dernier) return;
+    if(!r.resultats||!r.resultats.length){el.innerHTML='<p class="etat">Rien trouvé pour « '+esc(q)+' ». Essaie un autre mot, ou l’onglet Demander.</p>';return}
+    el.innerHTML='<p class="aide">'+r.total+' conversation'+(r.total>1?'s':'')+'</p>'+r.resultats.map(function(c){
+      return '<div class="carte"><h3>'+esc(c.titre)+'</h3><div class="meta"><span>'+esc(mois(c.date))+'</span></div>'
+       +c.passages.map(function(p){return '<div class="passage '+(p.role==='toi'?'toi':'')+'"><b class="qui">'+(p.role==='toi'?'Toi':'ChatGPT')+'</b>'+surligne(p.extrait,p.surligne)+'</div>'}).join('')
+       +'<div class="actions">'+btnLire(c.id)+'</div></div>';
+    }).join('');
+  }).catch(function(e){erreur(el,e)});
+}
+
+/* ── Demander ────────────────────────────────────────── */
+$('go-demander').addEventListener('click',demander);
+$('question').addEventListener('keydown',function(e){if(e.key==='Enter'&&(e.metaKey||e.ctrlKey))demander()});
+function lienWeb(q){return 'https://www.google.com/search?q='+encodeURIComponent(q)}
+function demander(){
+  var q=$('question').value.trim(), el=$('r-demander'), b=$('go-demander');
+  if(q.length<4){el.innerHTML='<p class="etat">Écris ta question.</p>';return}
+  b.disabled=true; el.innerHTML='<p class="etat">Je relis tes conversations… (10 à 20 secondes)</p>';
+  api({action:'demander',question:q}).then(function(r){
+    var h='<div class="reponse"><div class="meta" style="margin-bottom:8px">'
+      +(r.statut==='complete'?'<span class="pastille p-vert">trouvé</span>':r.statut==='partielle'?'<span class="pastille p-orange">en partie</span>':'<span class="pastille p-rouge">info absente</span>')
+      +'</div><p>'+esc(r.reponse).replace(/\[(\d+)\]/g,'<b style="color:var(--jaune)">[$1]</b>')+'</p>';
+    if(r.statut==='absente') h+='<div class="alerte absente">Cette info n’est pas dans tes conversations. '
+      +(r.recherche_suggeree?'<a href="'+esc(lienWeb(r.recherche_suggeree))+'" target="_blank" rel="noopener">Chercher sur le web : « '+esc(r.recherche_suggeree)+' »</a>':'')+'</div>';
+    else if(r.peut_etre_depassee) h+='<div class="alerte vieille">Peut être dépassée'+(r.date_info?' (info du '+esc(mois(r.date_info))+')':'')+'. Vérifie avant de t’en servir. '
+      +(r.recherche_suggeree?'<a href="'+esc(lienWeb(r.recherche_suggeree))+'" target="_blank" rel="noopener">Vérifier sur le web : « '+esc(r.recherche_suggeree)+' »</a>':'')+'</div>';
+    else if(r.statut==='partielle'&&r.recherche_suggeree) h+='<div class="alerte vieille">Réponse incomplète. <a href="'+esc(lienWeb(r.recherche_suggeree))+'" target="_blank" rel="noopener">Compléter sur le web</a></div>';
+    h+='</div>';
+    if(r.sources&&r.sources.length){
+      h+='<h2>Conversations utilisées</h2>'+r.sources.map(function(s){
+        return '<div class="carte"><h3><span style="color:var(--jaune)">['+esc(s.n)+']</span> '+esc(s.titre)+'</h3><div class="meta"><span>'+esc(mois(s.date))+'</span></div><div class="actions">'+btnLire(s.id)+'</div></div>';
+      }).join('');
+    }
+    el.innerHTML=h;
+  }).catch(function(e){erreur(el,e)}).then(function(){b.disabled=false});
+}
+
+/* ── Analyse (Viral / Objectif / Thèmes) ─────────────── */
+var analyse=null,filtre=null;
+function chargerAnalyse(){
+  if(charge.analyse) return; charge.analyse=true;
+  api({action:'analyse'}).then(function(a){analyse=a;viral();objectif();themes()})
+   .catch(function(e){charge.analyse=false;['r-viral','r-objectif','r-themes'].forEach(function(id){erreur($(id),e)})});
+}
+function manque(){
+  var n=analyse.total-analyse.analysees;
+  return n>0?'<p class="aide">'+n+' conversation'+(n>1?'s':'')+' pas encore analysée'+(n>1?'s':'')+' (elles sont déjà cherchables).</p>':'';
+}
+function viral(){
+  var el=$('r-viral');
+  if(!analyse.viral.length){el.innerHTML=manque()+'<p class="etat">Rien d’analysé pour l’instant.</p>';return}
+  el.innerHTML=manque()+analyse.viral.map(function(x,i){
+    return '<div class="carte"><h3>'+(i+1)+'. '+esc(x.titre)+'</h3><div class="meta"><span class="pastille p-violet">'+esc(x.plateforme)+'</span><span>potentiel '+pct(x.viral)+'</span><span>'+esc(mois(x.date))+'</span></div>'
+     +'<div class="jauge"><i style="width:'+Math.round((x.viral||0)*100)+'%"></i></div>'
+     +(x.pourquoi_viral?'<div class="passage"><b class="qui">Pourquoi</b>'+esc(x.pourquoi_viral)+'</div>':'')
+     +(x.hook?'<div class="hook"><small>Accroche proposée</small>« '+esc(x.hook)+' »</div>':'')
+     +'<div class="actions">'+btnLire(x.id)+(x.hook?'<button class="btn petit" data-copie="'+esc(x.hook)+'">Copier l’accroche</button>':'')+'</div></div>';
+  }).join('');
+}
+function carteObjectif(x){
+  return '<div class="carte"><h3>'+esc(x.titre)+'</h3><div class="meta">'
+   +(x.realisme==='realiste'?'<span class="pastille p-vert">réaliste</span>':'<span class="pastille p-orange">spéculatif</span>')
+   +'<span>utilité 10 k€ : '+pct(x.objectif_10k)+'</span>'+(x.projet?'<span>'+esc(x.projet)+'</span>':'')+'<span>'+esc(mois(x.date))+'</span></div>'
+   +(x.resume?'<div class="passage">'+esc(x.resume)+'</div>':'')
+   +(x.prochaines_etapes&&x.prochaines_etapes.length?'<ul class="etapes">'+x.prochaines_etapes.map(function(e){return '<li>'+esc(e)+'</li>'}).join('')+'</ul>':'')
+   +(x.date_sensible?'<div class="alerte vieille">Contient des prix ou des règles qui ont pu changer depuis le '+esc(mois(x.date))+'.</div>':'')
+   +'<div class="actions">'+btnLire(x.id)+'</div></div>';
+}
+function objectif(){
+  var el=$('r-objectif'),o=analyse.objectif;
+  el.innerHTML=manque()
+   +'<h2>Réaliste, à faire en premier <span class="pastille p-vert">'+o.realiste.length+'</span></h2>'
+   +(o.realiste.length?o.realiste.map(carteObjectif).join(''):'<p class="etat">Aucune piste réaliste repérée.</p>')
+   +'<h2>Spéculatif, à tester petit <span class="pastille p-orange">'+o.speculatif.length+'</span></h2>'
+   +(o.speculatif.length?o.speculatif.map(carteObjectif).join(''):'<p class="etat">Aucun pari repéré.</p>');
+}
+function themes(){
+  var p=$('puces');
+  p.innerHTML='<button data-theme="" class="'+(filtre?'':'on')+'">Tous<b>'+analyse.analysees+'</b></button>'
+   +analyse.themes.map(function(t){return '<button data-theme="'+esc(t.nom)+'" class="'+(filtre===t.nom?'on':'')+'">'+esc(t.nom)+'<b>'+t.n+'</b></button>'}).join('');
+  var liste=analyse.themes.filter(function(t){return !filtre||t.nom===filtre});
+  $('r-themes').innerHTML=manque()+liste.map(function(t){
+    return '<h2>'+esc(t.nom)+' <span class="pastille">'+t.n+'</span></h2>'+t.conversations.map(function(c){
+      return '<div class="carte"><h3>'+esc(c.titre)+'</h3><div class="meta">'+(c.type?'<span class="pastille p-bleu">'+esc(c.type)+'</span>':'')
+       +(c.projet?'<span class="pastille p-jaune">'+esc(c.projet)+'</span>':'')+'<span>'+esc(mois(c.date))+'</span></div>'
+       +(c.resume?'<div class="passage">'+esc(c.resume)+'</div>':'')+'<div class="actions">'+btnLire(c.id)+'</div></div>';
+    }).join('');
+  }).join('')
+  +(analyse.projets&&analyse.projets.length&&!filtre?'<h2>Projets</h2><div class="puces">'+analyse.projets.map(function(x){return '<span class="pastille">'+esc(x.nom)+' · '+x.n+'</span>'}).join('')+'</div>':'');
+}
+$('puces').addEventListener('click',function(e){
+  var b=e.target.closest('button[data-theme]'); if(!b) return;
+  filtre=b.dataset.theme||null; themes();
+});
+
+/* ── Lecteur + copie ─────────────────────────────────── */
+document.addEventListener('click',function(e){
+  var l=e.target.closest('[data-lire]'); if(l){lire(l.dataset.lire);return}
+  var c=e.target.closest('[data-copie]');
+  if(c){ try{navigator.clipboard.writeText(c.dataset.copie);c.textContent='Copié ✓'}catch(err){} }
+});
+function lire(id){
+  var L=$('lecteur'); L.classList.add('ouvert'); document.body.style.overflow='hidden';
+  $('l-titre').textContent='…'; $('l-corps').innerHTML='<p class="etat">chargement…</p>'; L.scrollTop=0;
+  api({action:'conversation',id:id}).then(function(c){
+    $('l-titre').textContent=c.titre+' — '+mois(c.date);
+    $('l-corps').innerHTML=c.messages.map(function(m){
+      return '<div class="msg '+(m.role==='toi'?'toi':'chatgpt')+'"><small>'+(m.role==='toi'?'Toi':'ChatGPT')+'</small>'+esc(m.texte)+'</div>';
+    }).join('');
+  }).catch(function(e){erreur($('l-corps'),e)});
+}
+function fermer(){$('lecteur').classList.remove('ouvert');document.body.style.overflow=''}
+$('l-fermer').addEventListener('click',fermer);
+$('lecteur').addEventListener('click',function(e){if(e.target.id==='lecteur')fermer()});
+document.addEventListener('keydown',function(e){if(e.key==='Escape')fermer()});
+})();
+</script>
+</body></html>

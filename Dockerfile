@@ -50,7 +50,13 @@ RUN chmod +x /docker-entrypoint.d/42-a-publier.sh \
 # principe, secret STUDIO_VIDEO_SECRET injecté au démarrage (43-…).
 COPY docker-entrypoint.d/43-studio-video.sh /docker-entrypoint.d/43-studio-video.sh
 RUN chmod +x /docker-entrypoint.d/43-studio-video.sh \
- && echo 'set $studiovideo_secret "";' > /etc/nginx/studio-video-secret.conf \
+ && echo 'set $studiovideo_secret "";' > /etc/nginx/studio-video-secret.conf
+
+# /memoire/ : mémoire ChatGPT privée (chercher/demander dans les anciennes conversations).
+# Même principe, secret MEMOIRE_SECRET injecté au démarrage (44-…). Aucune donnée dans l'image.
+COPY docker-entrypoint.d/44-memoire.sh /docker-entrypoint.d/44-memoire.sh
+RUN chmod +x /docker-entrypoint.d/44-memoire.sh \
+ && echo 'set $memoire_secret "";' > /etc/nginx/memoire-secret.conf \
  && nginx -t
 
 EXPOSE 80
