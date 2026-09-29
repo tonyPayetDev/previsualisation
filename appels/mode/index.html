@@ -88,6 +88,14 @@
 .rang.trois{display:grid;grid-template-columns:1fr 1fr;gap:9px}
 .rang.trois .surplace{grid-column:1/-1;border-color:#4a3d10;background:#1d1706;color:#e8c98a}
 .rang.sortie{margin-top:9px}
+.cap{font-size:13px;color:#e8c98a;background:#1d1706;border:1px solid #4a3d10;border-radius:9px;padding:9px 12px;line-height:1.45}
+.cap b{color:var(--jaune);font-weight:600}
+.suivi{background:#101a14;border:1px solid #1f6f52;border-radius:12px;padding:15px;display:flex;flex-direction:column;gap:6px}
+.suivi .t{font-size:15.5px;font-weight:600;color:#8ff0c4}
+.suivi .d{font-size:13.3px;color:var(--gris);line-height:1.5}
+.suivi-txt{width:100%;min-height:230px;font:inherit;font-size:14px;line-height:1.55;color:var(--blanc);
+  background:#0b0f16;border:1px solid var(--ligne);border-radius:10px;padding:11px 12px;resize:vertical}
+.suivi-txt:focus{outline:0;border-color:var(--jaune)}
 .rang.sortie button{width:100%;border-color:#3a2430;background:#1b1218;color:#d59aae;font-size:14px}
 </style></head>
 <body>
@@ -142,12 +150,33 @@
       + 'des établissements, celles qui tournent sur Instagram. Est-ce que je vous montre un exemple ?';
   };
 
-  const blocWa = (l, gros) => {
+  /* Message après un vrai échange. Les liens ne sont que des pages vérifiées
+     en ligne (29/09) ; l'exemple suit le métier du prospect. */
+  const RESTO = /restau|fast|pizz|boulang|traiteur|caf|th[ée]|snack|h[ôo]tel/i;
+  const messageSuivi = (l) => {
+    const resto = RESTO.test(l.type || '');
+    const exemple = resto
+      ? 'Un exemple de vidéo faite pour un restaurant :\nhttps://previsualisation.automatisationboost.com/foodboost-11-grillades/'
+      : 'Un exemple de site premium que j’ai refait :\nhttps://koytcha.automatisationboost.com';
+    return 'Bonjour, c’est Tony, on vient de se parler au téléphone au sujet de ' + l.nom + '.\n\n'
+      + 'Je fais des vidéos courtes et des sites premium pour aider les établissements de La Réunion à être plus visibles.\n\n'
+      + 'Avant de vous proposer quoi que ce soit, j’aimerais surtout comprendre ce dont vous avez besoin.\n\n'
+      + exemple + '\n\n'
+      + 'Je vous offre une première vidéo gratuite, et un petit audit de votre visibilité si vous le souhaitez :\n'
+      + 'https://previsualisation.automatisationboost.com/audit/\n\n'
+      + 'Mon travail :\n'
+      + 'https://tony.automatisationboost.com\n'
+      + 'https://videoboost.automatisationboost.com\n'
+      + 'https://www.instagram.com/foodboost/\n\n'
+      + 'Votre avis, même critique, m’aide beaucoup. Bonne journée à vous !';
+  };
+
+  const blocWa = (l, gros, msgForce) => {
     const num = premierMobile(l);
     /* Pas de WhatsApp sur un echauffement : la page dit elle-meme que le but
        y est d entendre sa voix, pas de vendre. */
     if (!num || l.cat === 'echauffement') return '';
-    const msg = messageWa(l);
+    const msg = msgForce || messageWa(l);
     const lien = 'https://wa.me/' + num + '?text=' + encodeURIComponent(msg);
     return '<div class="wa' + (gros ? ' gros' : '') + '">'
       + '<a class="wa-envoi" data-msg="' + msg.replace(/"/g, '&quot;') + '"'
@@ -294,6 +323,30 @@
     if(n) etat[r.id].note=n;
     duNeuf=true; envoyer(); i++; suivant(); };
 
+  /* Après « J'ai parlé » : le message de suivi est prêt, modifiable, puis on passe. */
+  const apresAppel=(r)=>{
+    const note=lireNote();
+    const pi=document.getElementById('pied');
+    const msg=messageSuivi(r);
+    pi.innerHTML='<div class="suivi"><span class="t">Envoie-lui le message de suivi.</span>'
+      +'<span class="d">Relis-le, change ce qui ne colle pas à ce qu’il t’a dit, puis envoie.</span>'
+      +'<textarea class="suivi-txt" id="suivi-txt" aria-label="Message de suivi">'+msg.replace(/</g,'&lt;')+'</textarea></div>'
+      +(premierMobile(r)?blocWa(r,true,msg)
+        :'<div class="wa"><button type="button" class="wa-copie" style="flex:1" data-msg="">Copier le message</button></div>')
+      +'<button type="button" class="parle" id="suite-ok">C’est envoyé — prospect suivant</button>'
+      +'<button type="button" class="passer" id="suite-non">Passer sans message</button>';
+    const ta=document.getElementById('suivi-txt');
+    const maj=()=>{ const t=ta.value;
+      pi.querySelectorAll('[data-msg]').forEach(x=>x.dataset.msg=t);
+      const a=pi.querySelector('.wa-envoi'); if(a) a.href=a.href.split('?')[0]+'?text='+encodeURIComponent(t); };
+    ta.addEventListener('input',maj); maj();
+    brancherCopie(pi);
+    const fin=()=>{ etat[r.id]={etat:'appele',date:aujourdhui(),h:new Date().toISOString()};
+      if(note) etat[r.id].note=note; duNeuf=true; envoyer(); i++; suivant(); };
+    document.getElementById('suite-ok').onclick=fin;
+    document.getElementById('suite-non').onclick=fin;
+  };
+
   const rate=(r)=>{
     const pi=document.getElementById('pied');
     pi.innerHTML='<div class="rate"><span class="t">Personne n’a décroché.</span>'
@@ -331,6 +384,7 @@
       +'<div class="meta">'+[r.commune,r.note?r.note+'★':null].filter(Boolean).join(' · ')+'</div>'
       +'<div class="vu">Ce que tu as vu chez eux : <b>'+r.vitrine+'</b></div>'
       +(r.suite?'<div class="vu" style="border-left-color:#FFE600">La dernière fois : '+r.suite+'</div>':'')
+      +(r.cat==='echauffement'?'':'<div class="cap"><b>Tu ne vends pas.</b> Tu cherches à comprendre son besoin : pose une question, puis écoute.</div>')
       +'<div class="dire"><div class="t">À lire, mot pour mot</div><p>'+ouvre[1]+'</p></div>'
       +'<details><summary>La suite, si ça s’ouvre — et les objections</summary>'
       +reste.map(x=>'<p><b>'+x[0]+'</b>'+x[1]+'</p>').join('')+'</details>';
@@ -354,6 +408,7 @@
     brancherNote(pi);
     pi.querySelectorAll('button:not(.micro)').forEach(b=>b.onclick=()=>{
       if(b.dataset.q==='repondu' && premierMobile(r)) return rate(r);
+      if(b.dataset.q==='appele' && r.cat!=='echauffement') return apresAppel(r);
       marquer(r,b.dataset.q);
     });
     brancherCopie(pi);
