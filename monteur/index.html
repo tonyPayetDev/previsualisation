@@ -66,6 +66,41 @@ button.secondaire{
   cursor:pointer;min-height:56px;
 }
 
+/* Repères de cadrage : DOM par-dessus le canvas, jamais dessinés dans la vidéo enregistrée. */
+.reperes{position:absolute;inset:0;pointer-events:none;z-index:4}
+.reperes[hidden]{display:none}
+.reperes .buste{position:absolute;left:14%;right:14%;top:9%;bottom:24%;border:1.5px dashed rgba(61,196,194,.55);border-radius:40% 40% 10px 10px}
+.reperes .yeux{position:absolute;left:8%;right:8%;top:33%;border-top:1px solid rgba(234,179,8,.6)}
+.reperes .yeux span,.reperes .st span{position:absolute;right:0;top:-18px;font-size:10.5px;font-weight:700;color:rgba(234,179,8,.9);letter-spacing:.04em}
+.reperes .st{position:absolute;left:0;right:0;bottom:0;height:20%;background:linear-gradient(to top,rgba(242,96,111,.16),rgba(242,96,111,0));border-top:1px dashed rgba(242,96,111,.45)}
+.reperes .st span{color:rgba(242,150,160,.95);left:10px;right:auto;top:6px}
+.coach{position:absolute;left:50%;bottom:22%;transform:translateX(-50%);z-index:5;white-space:nowrap;
+  background:rgba(12,13,24,.82);border:1px solid var(--trait);border-radius:99px;padding:8px 15px;font-size:13.5px;font-weight:700}
+.coach[hidden]{display:none}
+.coach.ok{color:var(--turq);border-color:#1f4a49}
+.coach.loin{color:var(--jaune);border-color:#4a3d10}
+.coach.pres{color:var(--rouge);border-color:#5a2029}
+.format{margin-top:12px;background:#1d1706;border:1px solid #4a3d10;color:#e8c98a;border-radius:12px;padding:12px 14px;font-size:13.5px;line-height:1.5}
+.format[hidden]{display:none}
+.format b{color:var(--jaune)}
+details.prep{margin-top:12px;background:var(--carte);border:1px solid var(--trait);border-radius:12px;padding:13px 15px}
+details.prep summary{cursor:pointer;font-weight:700;font-size:14.5px;list-style:none}
+details.prep summary::-webkit-details-marker{display:none}
+details.prep summary::after{content:' ▾';color:var(--faible)}
+details.prep[open] summary::after{content:' ▴'}
+details.prep ol{margin:10px 0 2px 18px;display:flex;flex-direction:column;gap:9px;color:var(--doux);font-size:13.8px;line-height:1.55}
+details.prep li b{color:var(--encre)}
+.champs25{display:none;gap:10px;margin-top:4px}
+.templates:has(input[value="25x3h"]:checked) + .champs25{display:flex}
+.champs25 label{flex:1;min-width:0;display:flex;flex-direction:column;gap:5px;font-size:12.5px;color:var(--doux);font-weight:600}
+.champs25 input,.champs25 select{width:100%;min-width:0;font:inherit;font-size:15px;color:var(--encre);background:var(--carte);border:1px solid var(--trait);
+  border-radius:10px;padding:11px 12px;min-height:46px}
+.champs25 input:focus,.champs25 select:focus{outline:0;border-color:var(--turq)}
+.cmd{display:flex;gap:8px;margin-top:10px}
+.cmd code{flex:1;margin:0}
+.cmd button{flex:0 0 auto;font:inherit;font-size:14px;font-weight:700;background:var(--carte);color:var(--encre);
+  border:1px solid var(--trait);border-radius:10px;padding:0 14px;cursor:pointer;min-height:46px}
+.cmd button.ok{border-color:#1f4a49;color:var(--turq)}
 .filtreToggle{display:flex;align-items:center;justify-content:space-between;gap:10px;
   background:var(--carte);border:1px solid var(--trait);border-radius:12px;padding:13px 15px;
   margin-top:12px;font-size:13.5px;color:var(--doux)}
@@ -118,7 +153,29 @@ label.tpl .desc{font-size:13px;color:var(--doux);margin-top:2px;line-height:1.45
       <div class="chrono" id="chrono" hidden>00:00</div>
       <video id="video" playsinline muted></video>
       <canvas id="canvas"></canvas>
+      <div class="reperes" id="reperes" hidden>
+        <div class="buste"></div>
+        <div class="yeux"><span>YEUX</span></div>
+        <div class="st"><span>ZONE SOUS-TITRES</span></div>
+      </div>
+      <div class="coach" id="coach" hidden></div>
       <div class="erreur" id="erreurCam" hidden></div>
+    </div>
+
+    <div class="format" id="alerteFormat" hidden></div>
+
+    <details class="prep" open>
+      <summary>Avant d’enregistrer — 4 réglages</summary>
+      <ol>
+        <li><b>Filme directement en vertical (9:16).</b> Une caméra à l’horizontale (ex. 1440×1080) est recadrée : ton visage devient serré et tes gestes sortent du cadre. Sinon, recule la caméra de 20 à 30 cm.</li>
+        <li><b>Cadre tête + épaules jusqu’au milieu du torse.</b> Tu gardes de la marge pour les gestes et les sous-titres ; les zooms (110, 120, 130 %) se font au montage.</li>
+        <li><b>Lumière plus haute et à 30–45° sur le côté</b>, pas face à toi : c’est ce qui enlève le reflet dans les lunettes. Regard dans l’objectif.</li>
+        <li><b>Éloigne-toi du mur de 50 cm à 1 m.</b> Garde le fond noir et le tee-shirt noir ; la plante et l’horloge restent en petit élément secondaire.</li>
+      </ol>
+    </details>
+
+    <div class="filtreToggle">
+      <label><input type="checkbox" id="toggleReperes" checked> Repères de cadrage (non enregistrés)</label>
     </div>
 
     <div class="filtreToggle">
@@ -139,6 +196,10 @@ label.tpl .desc{font-size:13px;color:var(--doux);margin-top:2px;line-height:1.45
 
     <div class="templates" id="templates">
       <label class="tpl">
+        <input type="radio" name="tpl" value="25x3h">
+        <div><div class="nom">25×3H — rush monté + sous-titres</div><div class="desc">Un script du batch 25×3H : dérush des pickups, sous-titres selon le moteur (PUNCH / INSIGHT / DEMO), zooms 110–130 %.</div></div>
+      </label>
+      <label class="tpl">
         <input type="radio" name="tpl" value="reel-nexeus" checked>
         <div><div class="nom">reel-nexeus</div><div class="desc">Avatar plein écran / split / cercle, panneaux de verre dépoli, l'anneau qui tourne.</div></div>
       </label>
@@ -150,6 +211,11 @@ label.tpl .desc{font-size:13px;color:var(--doux);margin-top:2px;line-height:1.45
         <input type="radio" name="tpl" value="journal">
         <div><div class="nom">journal (veille-journal-ia)</div><div class="desc">Le format du Journal IA quotidien — charte néon, running gags, CTA VEILLE.</div></div>
       </label>
+    </div>
+
+    <div class="champs25">
+      <label>ID du script<input id="scriptId" placeholder="ex. A3" maxlength="4" autocapitalize="characters"></label>
+      <label>Moteur<select id="moteur"><option>PUNCH</option><option>INSIGHT</option><option>DEMO</option><option>HYBRIDE</option></select></label>
     </div>
 
     <div class="controles">
@@ -168,7 +234,9 @@ label.tpl .desc{font-size:13px;color:var(--doux);margin-top:2px;line-height:1.45
       <p>La prise est sur le serveur, avec le template choisi. Rien n'est monté automatiquement —
         dis-le-moi et je lance le montage.</p>
       <code id="lienResultat"></code>
-      <div class="dire">Dans le chat : « monte la session <b id="sessionResultat"></b> avec le template <b id="tplResultat"></b> »</div>
+      <p>Colle cette commande dans Claude Code :</p>
+      <div class="cmd"><code id="cmdClaude"></code><button type="button" id="btnCmd">Copier</button></div>
+      <span id="sessionResultat" hidden></span><span id="tplResultat" hidden></span>
     </div>
     <div class="controles" style="margin-top:16px">
       <button type="button" class="principal" id="btnNouvelle">🎥 Nouvelle prise</button>
@@ -289,7 +357,41 @@ label.tpl .desc{font-size:13px;color:var(--doux);margin-top:2px;line-height:1.45
     ctx.fillRect(0, 0, w, h);
   }
 
+  /* ── Coach de cadrage. Cible : tête + épaules jusqu'au mi-torse en 9:16,
+        soit un visage (front→menton) d'environ 17 à 25 % de la hauteur.
+        Mesuré sur le canvas recadré, lissé pour ne pas clignoter. ────────── */
+  const coach = $('#coach'), reperes = $('#reperes');
+  let hauteurLisse = null, dernierCoach = 0;
+  function majCoach() {
+    const lm = dernierResultat && dernierResultat.multiFaceLandmarks && dernierResultat.multiFaceLandmarks[0];
+    if (!lm) { coach.hidden = true; return; }
+    const haut = pointVersCanvas(lm[10]), bas = pointVersCanvas(lm[152]), yeux = pointVersCanvas(lm[168]);
+    const h = (bas.y - haut.y) / CANVAS_H;
+    hauteurLisse = hauteurLisse == null ? h : hauteurLisse * 0.85 + h * 0.15;
+    if (Date.now() - dernierCoach < 400) return;
+    dernierCoach = Date.now();
+    const yY = yeux.y / CANVAS_H, H = hauteurLisse;
+    let t, c;
+    if (H > 0.27) { t = 'Trop près — recule de 20 à 30 cm'; c = 'pres'; }
+    else if (H < 0.14) { t = 'Un peu loin — rapproche-toi'; c = 'loin'; }
+    else if (yY > 0.42) { t = 'Monte la caméra (ou baisse-toi)'; c = 'loin'; }
+    else if (yY < 0.24) { t = 'Baisse la caméra un peu'; c = 'loin'; }
+    else { t = 'Bon cadrage ✓'; c = 'ok'; }
+    coach.textContent = t; coach.className = 'coach ' + c; coach.hidden = false;
+  }
+  function majFormat() {
+    const vw = video.videoWidth, vh = video.videoHeight, el = $('#alerteFormat');
+    if (!vw || !vh) return;
+    if (vw > vh) {
+      const r = vw / vh, nom = Math.abs(r - 4/3) < 0.05 ? '4:3' : Math.abs(r - 16/9) < 0.05 ? '16:9' : r.toFixed(2) + ':1';
+      el.innerHTML = 'Ta caméra filme à l’horizontale : <b>' + vw + '×' + vh + ' (' + nom + ')</b>. Je recadre en 9:16, donc tu perds les côtés : <b>recule de 20 à 30 cm</b>, ou filme avec le téléphone debout.';
+      el.hidden = false;
+    } else el.hidden = true;
+  }
+  $('#toggleReperes').addEventListener('change', (e) => { reperes.hidden = !e.target.checked || !flux; });
+
   function boucle() {
+    majCoach();
     majRecadre();
     dessinerCadre();
     const filtreActif = $('#toggleFiltre').checked;
@@ -332,6 +434,9 @@ label.tpl .desc{font-size:13px;color:var(--doux);margin-top:2px;line-height:1.45
         setTimeout(() => { erreurCam.hidden = true; }, 4000);
       }
 
+      majFormat();
+      video.addEventListener('resize', majFormat);
+      reperes.hidden = !$('#toggleReperes').checked;
       boucle();
       badgeEtat.innerHTML = '<span class="pt"></span><span>Caméra active</span>';
       btnCamera.hidden = true;
@@ -390,6 +495,12 @@ label.tpl .desc{font-size:13px;color:var(--doux);margin-top:2px;line-height:1.45
     else demarrerEnregistrement();
   });
 
+  $('#btnCmd').addEventListener('click', async () => {
+    const b = $('#btnCmd'), t = $('#cmdClaude').textContent;
+    try { await navigator.clipboard.writeText(t); b.textContent = 'Copié'; b.classList.add('ok'); }
+    catch (e) { const r = document.createRange(); r.selectNodeContents($('#cmdClaude')); getSelection().removeAllRanges(); getSelection().addRange(r); b.textContent = 'Sélectionné'; }
+    setTimeout(() => { b.textContent = 'Copier'; b.classList.remove('ok'); }, 2200);
+  });
   $('#btnRefaire').addEventListener('click', () => { montrer('camera'); });
 
   /* ── Envoi vers R2 : même mécanique que /tournage/ (webhook upload-r2-asset,
@@ -452,6 +563,9 @@ label.tpl .desc{font-size:13px;color:var(--doux);margin-top:2px;line-height:1.45
       const meta = {
         outil: 'previsualisation/monteur', version: 1, session, cree: d.toISOString(),
         template, filtreVisage: $('#toggleFiltre').checked,
+        source: { largeur: video.videoWidth, hauteur: video.videoHeight },
+        ...(template === '25x3h' ? { skill: '25x3h-content-engine', script_id: ($('#scriptId').value || '').trim().toUpperCase() || null, moteur: $('#moteur').value } : {}),
+        montage: { punchIns: [1.1, 1.2, 1.3], note: 'Plan large tête + mi-torse : les zooms 110/120/130 % se font au montage.' },
         video: { fichier: nomVideo, type: typeFinal, octets: blobFinal.size,
           url: r.url || ('https://assets.automatisationboost.com/' + dossier + '/' + nomVideo) }
       };
@@ -464,6 +578,10 @@ label.tpl .desc{font-size:13px;color:var(--doux);margin-top:2px;line-height:1.45
       $('#lienResultat').textContent = meta.video.url;
       $('#sessionResultat').textContent = session;
       $('#tplResultat').textContent = template;
+      const sid = ($('#scriptId').value || '').trim().toUpperCase();
+      $('#cmdClaude').textContent = template === '25x3h'
+        ? 'monte la session ' + session + ' (25x3h, script ' + (sid || '?') + ', moteur ' + $('#moteur').value + ')'
+        : 'monte la session ' + session + ' avec le template ' + template;
       montrer('resultat');
     } catch (e) {
       $('#erreurEnvoi').hidden = false;
