@@ -79,6 +79,15 @@ pre{margin:0;white-space:pre-wrap;word-break:break-word;font:13px/1.5 ui-monospa
 .bt:hover{background:#22304a}
 .bt.pri{background:#2a2410;border-color:#5a4a1c;color:var(--or)}
 .bt.pri:hover{background:#392f14}
+/* étape 🎙️ Ma voix — visible seulement sur le serveur local (localhost) */
+#etape-voix .alerte{margin-top:0}
+.prompteur{background:#101419;border:1px solid var(--bord);border-radius:12px;padding:20px 18px;text-align:center;min-height:130px;display:flex;flex-direction:column;justify-content:center;gap:10px}
+#voix-phrase{font-size:clamp(20px,3.6vw,31px);line-height:1.4;font-weight:650;letter-spacing:-.01em;color:var(--texte)}
+#voix-phrase b{color:var(--or)}
+#voix-indice{font-size:12.5px;color:var(--gris2)}
+#voix-nav{display:flex;justify-content:center;gap:8px;align-items:center;flex-wrap:wrap}
+#voix-ecoute{width:100%;margin-top:10px}
+#voix-envoie-statut{margin-top:8px;font-size:13px;color:var(--gris)}
 footer{margin-top:34px;font-size:12px;color:var(--gris2);line-height:1.6}
 @media(max-width:520px){.deux{grid-template-columns:1fr}h1{font-size:21px}}
 </style>
@@ -194,6 +203,33 @@ Deux looks ne sont tolérés que si le second est <b>uniquement</b> à l'ouvertu
   <textarea id="lsujet" placeholder="repris du sujet ci-dessus si rempli"></textarea></label>
 <label class="champ"><span>Consignes <i>(facultatif)</i></span>
   <textarea id="lconsignes" placeholder="repris du hook / CTA / notes ci-dessus si remplis"></textarea></label>
+
+<h2>🎙️ Ma voix <i>prompteur phrase par phrase · ta vraie voix, pas la voix clonée · local seulement</i></h2>
+<div id="etape-voix" style="display:none">
+  <div class="alerte">⏸ Laisse <b>une demi-seconde de pause entre chaque phrase</b> : le découpage se fait sur ces silences.
+    Trop serré, le build refuse (code 6) et te redemanderait de reprendre.</div>
+  <div class="prompteur">
+    <div id="voix-phrase">Le texte des phrases apparaît ici après « Écrire ».</div>
+    <div id="voix-nav">
+      <button class="bt" id="voix-prec" type="button" disabled>◀ Précédente</button>
+      <span id="voix-indice">Phrase 0 / 0</span>
+      <button class="bt" id="voix-suiv" type="button" disabled>Suivante ▶</button>
+    </div>
+    <div id="voix-indice2" style="font-size:12.5px;color:var(--gris2)"></div>
+  </div>
+  <div class="actions">
+    <button class="bt pri" id="voix-record" type="button">🎙️ Enregistrer la prise</button>
+    <button class="bt" id="voix-stop" type="button" disabled>⏹ Stop</button>
+    <button class="bt" id="voix-retry" type="button" disabled>↺ Recommencer</button>
+    <label class="bt" style="display:inline-block" for="voix-file">📂 Importer un fichier audio</label>
+    <input type="file" id="voix-file" accept="audio/*" style="display:none">
+  </div>
+  <audio id="voix-ecoute" controls style="display:none"></audio>
+  <div class="actions">
+    <button class="bt pri" id="voix-envoyer" type="button" disabled>▶ Envoyer la prise (prise.webm)</button>
+  </div>
+  <div id="voix-envoie-statut"></div>
+</div>
 
 <div class="actions">
   <button class="bt pri" id="l-ecrire" type="button">1 · Écrire</button>
@@ -577,14 +613,14 @@ ecrire();
       var sec = Math.round((Date.now() - debut)/1000);
       var val = e.validation || {};
       if (e.etat === 'ok'){
-        if (e.contenu){ jsonEl.value = e.contenu; dernierContenu = e.contenu; }
+        if (e.contenu){ jsonEl.value = e.contenu; dernierContenu = e.contenu; if (typeof majPhrases === 'function') majPhrases(); }
         var av = val.avertissements || [];
         setStatut('✓ Script écrit et vérifié' + (e.duree_s ? ' en ' + e.duree_s + ' s' : '') + (e.essais ? ' (' + e.essais + ' essai' + (e.essais>1?'s':'') + ')' : '') + (e.modele ? ' — ' + e.modele : '') + '.' +
           (av.length ? '\nÀ regarder :\n• ' + av.join('\n• ') : ''));
         return { ok:true, avertissements: av };
       }
       if (e.etat === 'echec'){
-        if (e.contenu){ jsonEl.value = e.contenu; dernierContenu = e.contenu; }
+        if (e.contenu){ jsonEl.value = e.contenu; dernierContenu = e.contenu; if (typeof majPhrases === 'function') majPhrases(); }
         var er = val.erreurs || [];
         return { ok:false, message:'✗ L\'écriture a échoué' + (e.erreur ? ' : ' + e.erreur : '.') +
           (er.length ? '\nProblèmes trouvés :\n• ' + er.join('\n• ') : '') +
@@ -658,7 +694,7 @@ ecrire();
         lock('rendre', true);
         var html = (res.stills||[]).map(function(u){ return '<a href="'+u+'" target="_blank" style="color:var(--bleu);margin-right:10px">'+u.split('/').pop()+'</a>'; }).join('');
         setLiens(html);
-      } else { setStatut('✗ échec aperçu.\n' + (res.log_tail||'')); }
+      } else { setStatut('✗ échec aperçu.\n' + (String(res.code) === '6' ? MSG_PAUSES + '\n' : '') + (res.log_tail || '')); }
     } catch(e){} finally { lock('apercu', true); }
   });
 
@@ -686,7 +722,7 @@ ecrire();
         if (res.termine){
           clearInterval(etatL.pollTimer);
           if (String(res.code) === '0'){ setStatut('✓ rendu terminé.\n'+(res.tail||'')); lock('publier', true); }
-          else { setStatut('✗ rendu terminé en échec (code '+res.code+').\n'+(res.tail||'')); }
+          else { setStatut('✗ rendu terminé en échec (code '+res.code+').\n' + (String(res.code) === '6' ? MSG_PAUSES + '\n' : '') + (res.tail||'')); }
         }
       } catch(e){}
     }, 15000);
@@ -718,6 +754,171 @@ ecrire();
       setStatut('Plan Blotato (dry-run — rien n\'est programmé) :\n' + JSON.stringify(res.plan||res, null, 2));
     } catch(e){} finally { lock('programmer', true); }
   });
+  /* ── 🎙️ Ma voix — local studio only (127.0.0.1) : one take, split later on the silences ── */
+  var MSG_PAUSES = '⏸ Le découpage a échoué : les phrases ne sont pas séparées assez net.\n' +
+    'Laisse une demi-seconde de silence entre chaque phrase, puis renvoie la prise (étape 🎙️ Ma voix).';
+
+  var LOCAL = ['localhost', '127.0.0.1'].indexOf(location.hostname) >= 0;
+  var vEl = {
+    boite: document.getElementById('etape-voix'),
+    phrase: document.getElementById('voix-phrase'),
+    indice: document.getElementById('voix-indice'),
+    aide: document.getElementById('voix-indice2'),
+    prec: document.getElementById('voix-prec'),
+    suiv: document.getElementById('voix-suiv'),
+    record: document.getElementById('voix-record'),
+    stop: document.getElementById('voix-stop'),
+    retry: document.getElementById('voix-retry'),
+    file: document.getElementById('voix-file'),
+    ecoute: document.getElementById('voix-ecoute'),
+    envoyer: document.getElementById('voix-envoyer'),
+    statut: document.getElementById('voix-envoie-statut')
+  };
+  var VOIX = { phrases: [], i: 0, prise: null, stream: null, rec: null, chrono: null, boucleUrl: null };
+
+  /* Same split as split-preuve/lib/valider.mjs decouperPhrases(): on the space after [.!?…]. */
+  function phrasesDuScript(){
+    try {
+      var v = JSON.parse(jsonEl.value), out = [];
+      ((v && v.plans) || []).forEach(function(p){
+        var t = (p && typeof p.texte === 'string') ? p.texte : '';
+        String(t).replace(/\s+/g, ' ').trim().split(/(?<=[.!?…])\s+/).forEach(function(s){
+          s = s.trim(); if (s) out.push(s);
+        });
+      });
+      return out;
+    } catch(e){ return []; }
+  }
+
+  function majVisibiliteVoix(){
+    if (!LOCAL) return;
+    var vu = document.getElementById('lskill').value === 'split-preuve';
+    vEl.boite.style.display = vu ? '' : 'none';
+    if (vu) majPhrases();
+  }
+
+  function majPhrases(){
+    VOIX.phrases = phrasesDuScript();
+    if (VOIX.i >= VOIX.phrases.length) VOIX.i = 0;
+    majPhrase();
+  }
+
+  function majPhrase(){
+    var n = VOIX.phrases.length;
+    if (!n){
+      vEl.phrase.textContent = 'Le texte apparaît ici dès que le script est écrit (« 1 · Écrire »), ou quand tu colles le video.json.';
+      vEl.indice.textContent = 'Phrase 0 / 0';
+      vEl.aide.textContent = '';
+      vEl.prec.disabled = vEl.suiv.disabled = true;
+      return;
+    }
+    var t = VOIX.phrases[VOIX.i];
+    vEl.phrase.textContent = t;
+    vEl.indice.textContent = 'Phrase ' + (VOIX.i + 1) + ' / ' + n;
+    vEl.aide.textContent = 'Lis cette phrase à voix haute, laisse une demi-seconde de silence, puis avance.' +
+      (VOIX.rec ? ' (auto pendant l\'enregistrement — clique « Suivante » si tu es en retard.)' : '');
+    vEl.prec.disabled = VOIX.i === 0;
+    vEl.suiv.disabled = VOIX.i === n - 1;
+    /* take running → advance alone: ~2,6 words/s + 0,7 s of silence */
+    if (VOIX.rec){
+      if (VOIX.chrono) clearTimeout(VOIX.chrono);
+      var mots = t.split(/\s+/).length;
+      VOIX.chrono = setTimeout(function(){
+        if (VOIX.i < VOIX.phrases.length - 1){ VOIX.i++; majPhrase(); }
+      }, Math.max(1600, mots * 380 + 700));
+    }
+  }
+
+  async function demarrerPrise(){
+    if (!navigator.mediaDevices || !window.MediaRecorder){
+      vEl.statut.textContent = '✗ ce navigateur ne sait pas enregistrer — importe un fichier audio à la place.';
+      return;
+    }
+    try { VOIX.stream = await navigator.mediaDevices.getUserMedia({ audio: true }); }
+    catch(e){ vEl.statut.textContent = '✗ microphone refusé ou absent : ' + e.message; return; }
+    var types = ['audio/webm;codecs=opus', 'audio/webm', 'audio/ogg;codecs=opus'], mime = '';
+    for (var k = 0; k < types.length; k++) if (MediaRecorder.isTypeSupported(types[k])) { mime = types[k]; break; }
+    var morceaux = [];
+    VOIX.rec = mime ? new MediaRecorder(VOIX.stream, { mimeType: mime }) : new MediaRecorder(VOIX.stream);
+    VOIX.rec.ondataavailable = function(e){ if (e.data && e.data.size) morceaux.push(e.data); };
+    VOIX.rec.onstop = function(){
+      var blob = new Blob(morceaux, { type: (mime || 'audio/webm').split(';')[0] });
+      poserPrise(blob);
+      if (VOIX.stream){ VOIX.stream.getTracks().forEach(function(t){ t.stop(); }); VOIX.stream = null; }
+      VOIX.rec = null;
+    };
+    VOIX.rec.start();
+    vEl.record.disabled = true; vEl.stop.disabled = false; vEl.retry.disabled = true; vEl.envoyer.disabled = true;
+    vEl.statut.textContent = '🔴 Enregistrement — parle, puis Stop à la fin des phrases.';
+    majPhrase();
+  }
+
+  function poserPrise(blob){
+    if (VOIX.boucleUrl) URL.revokeObjectURL(VOIX.boucleUrl);
+    VOIX.prise = { blob: blob, b64: null, url: URL.createObjectURL(blob) };
+    VOIX.boucleUrl = VOIX.prise.url;
+    vEl.ecoute.src = VOIX.prise.url; vEl.ecoute.style.display = '';
+    if (VOIX.chrono) clearTimeout(VOIX.chrono);
+    vEl.record.disabled = false; vEl.stop.disabled = true; vEl.retry.disabled = false; vEl.envoyer.disabled = false;
+    vEl.statut.textContent = '✓ prise de ' + Math.round(blob.size / 1024) + ' Ko — réécoute, puis « Recommencer » ou « Envoyer ».';
+  }
+
+  function depuisFichier(f){
+    if (!f) return;
+    var lr = new FileReader();
+    lr.onload = function(){
+      var b64 = String(lr.result).split(',')[1] || '';
+      if (VOIX.boucleUrl) URL.revokeObjectURL(VOIX.boucleUrl);
+      VOIX.prise = { blob: f, b64: b64, url: URL.createObjectURL(f) };
+      VOIX.boucleUrl = VOIX.prise.url;
+      vEl.ecoute.src = VOIX.prise.url; vEl.ecoute.style.display = '';
+      vEl.retry.disabled = false; vEl.envoyer.disabled = false;
+      vEl.statut.textContent = '✓ fichier « ' + f.name + ' » (' + Math.round(f.size / 1024) + ' Ko) prêt à envoyer.';
+    };
+    lr.onerror = function(){ vEl.statut.textContent = '✗ fichier illisible : ' + f.name; };
+    lr.readAsDataURL(f);
+  }
+
+  async function envoyerPrise(){
+    if (!VOIX.prise){ vEl.statut.textContent = '✗ aucune prise à envoyer (enregistre ou importe d\'abord).'; return; }
+    var projet = document.getElementById('lprojet').value.trim();
+    if (!projet){ vEl.statut.textContent = '✗ renseigne d\'abord le champ « Projet ». '; return; }
+    vEl.envoyer.disabled = true;
+    vEl.statut.textContent = 'Envoi de la prise…';
+    try {
+      var b64 = VOIX.prise.b64;
+      if (!b64) b64 = await new Promise(function(ok, ko){
+        var fr = new FileReader();
+        fr.onload = function(){ ok(String(fr.result).split(',')[1] || ''); };
+        fr.onerror = function(){ ko(new Error('lecture du micro impossible')); };
+        fr.readAsDataURL(VOIX.prise.blob);
+      });
+      var j = await appel('voix', { audio: b64 });
+      if (j && j.ok){
+        vEl.statut.textContent = '✓ prise enregistrée : ' + j.fichier + ' (' + Math.round(j.taille / 1024) + ' Ko) dans ' + j.dossier +
+          '\nMaintenant « 3 · Aperçu », puis « 4 · Rendre ».';
+      } else { vEl.statut.textContent = '✗ ' + ((j && (j.erreur || (j.result && j.result.erreur))) || 'envoi impossible'); }
+    } catch(e){ vEl.statut.textContent = '✗ ' + e.message; }
+    finally { vEl.envoyer.disabled = false; }
+  }
+
+  if (LOCAL){
+    document.getElementById('lskill').addEventListener('change', majVisibiliteVoix);
+    vEl.prec.addEventListener('click', function(){ if (VOIX.i > 0){ VOIX.i--; majPhrase(); } });
+    vEl.suiv.addEventListener('click', function(){ if (VOIX.i < VOIX.phrases.length - 1){ VOIX.i++; majPhrase(); } });
+    vEl.record.addEventListener('click', demarrerPrise);
+    vEl.stop.addEventListener('click', function(){ if (VOIX.rec && VOIX.rec.state !== 'inactive') VOIX.rec.stop(); });
+    vEl.retry.addEventListener('click', function(){
+      VOIX.prise = null;
+      vEl.ecoute.removeAttribute('src'); vEl.ecoute.style.display = 'none';
+      vEl.retry.disabled = true; vEl.envoyer.disabled = true;
+      vEl.statut.textContent = 'Prise effacée — relance « Enregistrer ».';
+    });
+    vEl.file.addEventListener('change', function(){ depuisFichier(this.files && this.files[0]); this.value = ''; });
+    vEl.envoyer.addEventListener('click', envoyerPrise);
+    jsonEl.addEventListener('input', majPhrases);
+    majVisibiliteVoix();
+  }
 })();
 </script>
 </body>
