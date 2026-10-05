@@ -46,6 +46,9 @@ const appels = (a && a.appels) || {};
 const clesAppels = Object.keys(appels);
 const repondu = clesAppels.filter((k) => appels[k] && appels[k].etat === 'repondu').length;
 const aRappeler = clesAppels.filter((k) => appels[k] && appels[k].etat === 'rappeler').length;
+/* In-person conversations, relances and invoices typed by Tony (appels/resultats.json `_direct`). */
+const direct = (a && Array.isArray(a._direct)) ? a._direct : [];
+const somme = (k) => direct.reduce((t, x) => t + (+x[k] || 0), 0);
 const chauds = clesAppels.filter((k) => appels[k] && appels[k].chaud);
 
 /* ── Les prospects ──────────────────────────────────────────────────────── */
@@ -127,6 +130,8 @@ const sortie = {
       detail: `${qualifies} qualifiés + ${restosAvecMail} restaurants avec email` },
     { nom: 'Appels passés',        n: clesAppels.length, mesure: true,
       detail: `${repondu} ont répondu · ${aRappeler} à rappeler` },
+    { nom: 'Conversations en direct', n: somme('conversations'), mesure: direct.length > 0,
+      detail: `saisies par Tony · ${somme('relances')} relance(s) · ${somme('factures')} facture(s) envoyée(s)` },
     { nom: 'Démos envoyées',       n: demos.envoyees, mesure: true,
       detail: `relevé du ${demos.releve}` },
     { nom: 'Pages ouvertes',       n: demos.ouvertes, mesure: true,
