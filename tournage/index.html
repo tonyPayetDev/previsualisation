@@ -72,6 +72,9 @@ label.lb{display:block;font-size:12px;font-weight:700;letter-spacing:.06em;
 .pont-c{background:#000;border:1px solid var(--trait);border-radius:10px;padding:12px 14px;
   font-family:ui-monospace,Menlo,monospace;font-size:12.5px;line-height:1.5;color:#D6DBD9;
   overflow-x:auto;white-space:pre-wrap;word-break:break-all;margin-bottom:10px}
+.pont-lab{font-size:11.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--doux);margin:14px 0 7px}
+.pont .b{display:block;margin-top:4px}
 textarea{width:100%;min-height:190px;background:var(--carte);color:var(--texte);
   border:1px solid var(--trait);border-radius:12px;padding:13px;font:inherit;
   font-size:15px;line-height:1.6;resize:vertical}
@@ -287,6 +290,35 @@ textarea{width:100%;min-height:190px;background:var(--carte);color:var(--texte);
 pre.json{margin-top:10px;background:#101016;border:1px solid var(--trait);border-radius:11px;
   padding:11px;font-size:11px;line-height:1.5;overflow:auto;max-height:230px;color:#c9c6d4;
   font-family:ui-monospace,SFMono-Regular,Menlo,monospace;white-space:pre}
+
+/* ── Repris de /monteur/ : les 4 conseils de prise, le coach de cadrage,
+   le choix du modele de montage et les 2 commandes copiables. ─────────── */
+details.prep{margin:14px 0 0;background:#101016;border:1px solid var(--trait);border-radius:12px;padding:13px 15px}
+details.prep summary{cursor:pointer;font-weight:700;font-size:14.5px;list-style:none}
+details.prep summary::-webkit-details-marker{display:none}
+details.prep summary::after{content:' ▾';opacity:.6}
+details.prep[open] summary::after{content:' ▴'}
+details.prep ol{margin:10px 0 2px 18px;display:flex;flex-direction:column;gap:9px;color:#b9b6c6;font-size:13.6px;line-height:1.55}
+details.prep li b{color:#f2f2f5}
+#coach{position:absolute;left:50%;bottom:24%;transform:translateX(-50%);z-index:6;white-space:nowrap;
+  background:rgba(12,13,24,.85);border:1px solid var(--trait);border-radius:99px;padding:8px 15px;
+  font-size:13.5px;font-weight:700;color:#dcd9e6}
+#coach[hidden]{display:none}
+#coach.ok{color:#5eead4;border-color:#1f4a49}
+#coach.loin{color:#f5d90a;border-color:#4a3d10}
+#coach.pres{color:#ff8fa3;border-color:#5a2029}
+.mod{display:flex;gap:8px;flex-wrap:wrap}
+.mod .b{flex:1 1 46%}
+.champs25{display:none;gap:10px;margin-top:10px;flex-wrap:wrap}
+.champs25.on{display:flex}
+.champs25 label{flex:1 1 45%;min-width:0;display:flex;flex-direction:column;gap:5px;font-size:12.5px;color:#b9b6c6;font-weight:600}
+.champs25 input,.champs25 select{width:100%;min-width:0;font:inherit;font-size:15px;color:#f2f2f5;background:#0e1013;
+  border:1px solid var(--trait);border-radius:9px;padding:10px 11px}
+#sc25list{width:100%;flex:1 1 100%;font:inherit;font-size:15px;color:#f2f2f5;background:#0e1013;
+  border:1px solid var(--trait);border-radius:9px;padding:10px 11px}
+.pont-c2{margin-top:0;background:#101016;border:1px solid var(--trait);border-radius:11px;padding:11px;
+  font-size:11.5px;line-height:1.6;color:#c9c6d4;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+  white-space:pre-wrap;word-break:break-word;margin-bottom:10px}
 </style>
 
 <!-- ═══════════ 1 · LE SCRIPT ═══════════ -->
@@ -364,6 +396,36 @@ pre.json{margin-top:10px;background:#101016;border:1px solid var(--trait);border
     <button data-dec="0">Aucun</button>
   </div>
 
+  <details class="prep" open>
+    <summary>Avant d'enregistrer — 4 réglages</summary>
+    <ol>
+      <li><b>Filme directement en vertical (9:16).</b> Une caméra à l'horizontale (ex. 1440×1080) est recadrée : ton visage devient serré et tes gestes sortent du cadre. Sinon, recule la caméra de 20 à 30 cm.</li>
+      <li><b>Cadre tête + épaules jusqu'au milieu du torse.</b> Tu gardes de la marge pour les gestes et les sous-titres ; les zooms (110, 120, 130 %) se font au montage.</li>
+      <li><b>Lumière plus haute et à 30–45° sur le côté</b>, pas face à toi : c'est ce qui enlève le reflet dans les lunettes. Regard dans l'objectif.</li>
+      <li><b>Éloigne-toi du mur de 50 cm à 1 m.</b> Garde le fond noir et le tee-shirt noir ; la plante et l'horloge restent en petit élément secondaire.</li>
+    </ol>
+  </details>
+
+  <label class="lb">Modèle de montage <i>ce que je fabrique à partir de ta prise</i></label>
+  <div class="seg mod" id="segmod">
+    <button type="button" data-mod="standard">Standard</button>
+    <button type="button" data-mod="25x3h" class="on">25×3H — script du batch</button>
+  </div>
+  <p class="aide" id="modaide">Montage 25×3H : dérush des pickups, sous-titres selon le moteur (PUNCH / INSIGHT / DEMO), zooms 110–130 %.</p>
+
+  <div class="champs25 on" id="champs25">
+    <select id="sc25list" aria-label="Script 25×3H"></select>
+    <label>ID du script<input id="scriptId" placeholder="ex. A3" maxlength="6" autocapitalize="characters"></label>
+    <label>Moteur<select id="moteur"><option>PUNCH</option><option>INSIGHT</option><option>DEMO</option><option>HYBRIDE</option></select></label>
+    <label style="flex:1 1 100%">Autre lot de scripts (URL)
+      <input id="sc25url" type="url" placeholder="https://…/scripts.json" style="width:100%;min-width:0;font:inherit;font-size:15px;color:#f2f2f5;background:#0e1013;border:1px solid var(--trait);border-radius:9px;padding:10px 11px">
+    </label>
+    <label style="flex:1 1 100%">…ou un fichier du téléphone
+      <input id="sc25file" type="file" accept="application/json,.json" style="color:#f2f2f5;font:inherit">
+    </label>
+  </div>
+  <p class="aide" id="sc25aide" hidden></p>
+
   <div style="margin-top:20px">
     <button class="b plein gros" id="go">Tourner</button>
   </div>
@@ -426,6 +488,10 @@ pre.json{margin-top:10px;background:#101016;border:1px solid var(--trait);border
 
   <div class="rendus" id="rendus" role="group" aria-label="Rendu de l'image"></div>
 
+  <!-- Coach de cadrage (repris de /monteur/) : pastille de texte, jamais
+       dessinee dans la video enregistree. -->
+  <div id="coach" hidden></div>
+
   <div class="bas">
     <button class="declic" id="rec" aria-label="Enregistrer"></button>
     <button class="fait" id="fait" disabled>Mouvement fait<small>pose le repère à cet instant</small></button>
@@ -460,11 +526,27 @@ pre.json{margin-top:10px;background:#101016;border:1px solid var(--trait);border
 
   <div class="pont" id="pont" hidden>
     <div class="pont-t">Faire monter la vidéo</div>
-    <p class="pont-p">Colle cette ligne à Claude Code. Il télécharge la prise et les repères,
+    <p class="pont-p">Colle une des deux commandes. L'agent télécharge la prise et les repères,
     pose les cartes du côté opposé à toi, et incruste les sous-titres à partir de ton script —
     sans transcription.</p>
+
+    <p class="pont-lab">Claude Code</p>
     <pre class="pont-c" id="cmd"></pre>
-    <button class="b" id="copier">Copier la commande</button>
+    <button class="b" id="copier">Copier la commande Claude Code</button>
+
+    <p class="pont-lab">OpenCode — l'agent bon marché</p>
+    <pre class="pont-c2" id="cmd2"></pre>
+    <button class="b" id="copier2">Copier la commande OpenCode</button>
+
+    <!-- Mode local uniquement (hostname localhost / 127.0.0.1, servi par
+         studio-local/serveur.mjs) : tout est déjà sur ce disque, inutile de
+         passer par le stockage en ligne. -->
+    <div id="localbox" hidden>
+      <p class="pont-lab">Sur ce disque — montage direct</p>
+      <button class="b cyan" id="btmonter">Monter maintenant</button>
+      <pre class="pont-c2" id="logmonter" hidden></pre>
+      <a class="lien" id="lienmonter" href="#" target="_blank" rel="noopener" hidden></a>
+    </div>
   </div>
 
   <label class="lb">Le fichier de repères</label>
@@ -476,6 +558,14 @@ pre.json{margin-top:10px;background:#101016;border:1px solid var(--trait);border
   <button class="b fant gros" id="retour" style="margin-top:10px">Nouveau tournage</button>
 </section>
 
+<!-- Coach de cadrage : les MÊMES deux CDN que /monteur/ (FaceMesh + camera_utils).
+     Seul FaceMesh est utilisé ici — on pilote l'envoi d'images avec notre propre
+     boucle, parce que `Camera.start()` de camera_utils rouvre lui-même la caméra
+     (getUserMedia) et volerait le flux qu'on est en train d'enregistrer.
+     Si le réseau manque, les deux scripts ne se chargent pas : la page tourne
+     quand même, sans coach. -->
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
 <script>
 "use strict";
 /* Version de la page, écrite dans chaque reperes.json. La prise du
@@ -483,7 +573,7 @@ pre.json{margin-top:10px;background:#101016;border:1px solid var(--trait);border
    en ligne depuis six heures : l'onglet de Tony tournait encore sur une page
    chargée avant le correctif, et rien dans le fichier ne permettait de le voir.
    À changer à chaque modification de la page. */
-const PAGE_VERSION = '2026-09-29.3-tags-tolerants';
+const PAGE_VERSION = '2026-10-05-dezoom';
 /* Onglet resté ouvert : au retour sur la page, on compare avec la version
    servie ; si elle a changé, on recharge (le script est sauvé en brouillon). */
 async function versionServie(){
@@ -541,7 +631,15 @@ let etat = {
   reperes : [],     // LE livrable
   duree   : 0,
   source  : 'camera',
-  template: 'libre',
+  /* Le lot 25×3H est ce qui se tourne depuis cette page (T-049) : c'est donc
+     le modèle par défaut, pas une option à aller chercher. On repasse en
+     « libre » dès qu'on choisit un autre format visuel dans `#segtpl`. */
+  template: '25x3h',
+  /* 25×3H : le lot de scripts (T-049). `scriptId` et `moteur` partent dans
+     reperes.json — c'est par eux que l'agent retrouve le script exact à
+     monter, le prompteur ne servant qu'au tournage. */
+  scriptId: null,
+  moteur  : null,
   musique : null,
   musVol  : 0.20,   /* lit musical sous la voix, pas bande-son (retour Tony 10/09) */
   video   : null,   // Blob
@@ -556,6 +654,11 @@ const R2 = 'https://assets.automatisationboost.com/previsualisation/';
    Sans ca, « charger un exemple » ne chargeait qu'un texte : on ne voyait jamais
    a quoi le format ressemble une fois monte. */
 const TEMPLATES = [
+  /* Le lot 25×3H (T-049). Ce n'est pas un format visuel comme les autres : c'est
+     le SCRIPT du batch qui change — d'où le bloc « Modèle de montage » plus bas,
+     qui choisit la vidéo, le moteur et l'ID. */
+  { id:'25x3h', nom:'25×3H', route:'', ref:'', mus:'',
+    desc:'Un script du batch 25×3H — dérush des pickups, sous-titres selon le moteur.' },
   { id:'libre', nom:'Aucun / libre', route:'', ref:'', mus:'',
     desc:'Tournage simple, sans format impose.' },
   /* La reference est la version COURANTE du format, celle que sa propre page
@@ -616,10 +719,16 @@ function renderTemplates(){
   var c=$('#segtpl'); if(!c) return; c.innerHTML='';
   TEMPLATES.forEach(function(t){
     var b=document.createElement('button'); b.type='button'; b.textContent=t.nom;
+    b.dataset.tpl=t.id;
     if(etat.template===t.id) b.classList.add('on'); b.title=t.desc;
     b.addEventListener('click',function(){
       etat.template=t.id;
       Array.prototype.forEach.call(c.children,function(x){x.classList.toggle('on',x===b);});
+      /* Un format visuel et le lot 25×3H se contredisent : dès qu'on choisit un
+         format qui n'est PAS 25×3H, le modèle de montage repasse en Standard et
+         le script du batch est retiré (T-049). */
+      selectionnerModele(t.id === '25x3h' ? '25x3h' : 'standard');
+      if (t.id !== '25x3h') viderScript25();
       var v=$('#tplvoir'); if(t.route){ v.href=t.route; v.hidden=false; } else { v.hidden=true; }
       /* La video du format se pose d'elle-meme en reference : c'est la demande
          du 2026-09-10 — voir a quoi ressemble le format pendant qu'on le tourne,
@@ -1253,6 +1362,37 @@ function demarrerVu(fluxMicro){
    alors que l'image est bien verticale — la page criait « paysage » a tort
    (retour de Tony le 2026-09-29, telephone tenu debout). */
 let cadrageVu = false;
+/* Camera la plus large possible, en VERTICAL (Tony, 2026-10-05 : « tournage doit
+   etre plus dezoome », capture a l appui). Sur son Android, demander 1080x1920
+   en 9:16 renvoyait un flux PAYSAGE 1440x1080 ; recadrer un 3:4 vertical dedans
+   ne gardait que 56 % de la largeur, d ou l effet zoome. On essaie plusieurs
+   contraintes et on garde la premiere qui donne une image verticale, puis on
+   pose le zoom au minimum que le telephone accepte (grand-angle s il existe). */
+async function ouvrirCamera(cam, audio){
+  const essais = [
+    { width:{ideal:1440}, height:{ideal:1920}, aspectRatio:{ideal:3/4} },
+    { width:{ideal:1080}, height:{ideal:1440}, aspectRatio:{ideal:3/4} },
+    { aspectRatio:{exact:3/4} },
+    { width:{ideal:1080}, height:{ideal:1920}, aspectRatio:{ideal:9/16} },
+  ];
+  let dernier = null, err = null;
+  for (const v of essais){
+    try {
+      const s = await navigator.mediaDevices.getUserMedia({ video:{ facingMode:cam, frameRate:{ideal:30}, ...v }, audio });
+      const st = s.getVideoTracks()[0].getSettings ? s.getVideoTracks()[0].getSettings() : {};
+      if (!st.width || !st.height || st.height >= st.width){ dernier = s; break; }
+      s.getTracks().forEach(t => t.stop());   /* one camera at a time on phones */
+    } catch(e){ err = e; }
+  }
+  if (!dernier) dernier = await navigator.mediaDevices.getUserMedia({ video:{ facingMode:cam, frameRate:{ideal:30}, ...essais[essais.length-1] }, audio });
+  try {
+    const t = dernier.getVideoTracks()[0];
+    const c = t.getCapabilities ? t.getCapabilities() : {};
+    if (c.zoom && typeof c.zoom.min === "number") await t.applyConstraints({ advanced:[{ zoom: c.zoom.min }] });
+  } catch(e){}
+  return dernier;
+}
+
 function verifierCadrage(fluxCam){
   const b = $('#paysage'); if (!b) return;
   try {
@@ -1315,15 +1455,7 @@ $('#go').addEventListener('click', async () => {
   etat.blocs = analyser(txt.value);
   if (!etat.blocs.length) return erreur1("Le script est vide — colle au moins une ligne.");
   try {
-    stream = await navigator.mediaDevices.getUserMedia({
-      /* `frameRate:{min:24}` etait une contrainte DURE : un telephone qui ne peut
-         pas garantir 24 images/s — typiquement en faible lumiere — se voyait
-         refuser la camera entierement, avec un « OverconstrainedError » que
-         l'ecran traduisait par « Camera indisponible ». On demande, on n'exige
-         pas : mieux vaut filmer a 20 images/s que ne pas filmer. */
-      video: { facingMode: cam, width:{ideal:1080}, height:{ideal:1920}, aspectRatio:{ideal:9/16}, frameRate:{ideal:30} },
-      audio: { echoCancellation:true, noiseSuppression:true }
-    });
+    stream = await ouvrirCamera(cam, { echoCancellation:true, noiseSuppression:true });
     demarrerVu(stream);
     verifierCadrage(stream);
   } catch (err){
@@ -1336,6 +1468,7 @@ $('#go').addEventListener('click', async () => {
   appliquerRendu();
   construirePiste();
   montrer('e2');
+  demarrerCoach();          // le coach de cadrage suit dès que la caméra est ouverte
   startMusique();          // sans effet si elle tourne deja depuis l'ecran 1
   majBoutonMus();
   try { verrou = await navigator.wakeLock.request('screen'); } catch(e){}
@@ -1401,8 +1534,7 @@ $('#bcam').addEventListener('click', async () => {
   cam = (cam === 'user') ? 'environment' : 'user';
   if (stream) stream.getTracks().forEach(t => t.stop());
   try {
-    stream = await navigator.mediaDevices.getUserMedia({
-      video:{ facingMode:cam, width:{ideal:1080}, height:{ideal:1920} }, audio:true });
+    stream = await ouvrirCamera(cam, true);
     demarrerVu(stream);
     verifierCadrage(stream);
     flux.srcObject = stream; flux.classList.toggle('miroir', cam === 'user');
@@ -1411,6 +1543,7 @@ $('#bcam').addEventListener('click', async () => {
        reconstruit sur la nouvelle. */
     fluxCanvas = null;
     appliquerRendu();
+    demarrerCoach();        // no-op si le coach tourne deja
   } catch(e){}
 });
 $('#paysageok').addEventListener('click', () => { cadrageVu = true; $('#paysage').hidden = true; });
@@ -1419,6 +1552,7 @@ $('#quit').addEventListener('click', () => { arreterTout(); montrer('e1'); });
 function arreterTout(){
   enCours = false; cancelAnimationFrame(rafId);
   arreterVu();
+  arreterCoach();
   $('#e2').classList.remove('tourne');
   if (rafGrade){ cancelAnimationFrame(rafGrade); rafGrade = null; }
   if (fluxCanvas){ fluxCanvas.getTracks().forEach((t) => t.stop()); fluxCanvas = null; }
@@ -1584,6 +1718,7 @@ function stopper(){
 function finTournage(){
   stopMusique();
   arreterVu();
+  arreterCoach();
   $('#e2').classList.remove('tourne');
   try { ref.muted = false; } catch(e){}
   /* On jette le flux de canvas avec le flux camera : les deux partagent la
@@ -1694,7 +1829,7 @@ relec.addEventListener('timeupdate', () => {
   });
 });
 
-$('#refaire').addEventListener('click', () => { montrer('e1'); });
+$('#refaire').addEventListener('click', () => { arreterCoach(); montrer('e1'); });
 
 /* ═══ 4 · Envoi ════════════════════════════════════════════════════════ */
 const WEBHOOK = 'https://n7n.automatisationboost.com/webhook/upload-r2-asset';
@@ -1722,6 +1857,12 @@ function fabriquerJson(){
     cree: d.toISOString(),
     source: etat.source,
     template: etat.template || 'libre',
+    /* 25×3H (T-049) : ces deux champs disent à l'agent quel script il doit
+       retrouver dans le lot pour monter la prise. Ils ne partent que si un
+       script est réellement choisi — sinon l'agent irait le chercher dans le
+       vide. Null partout ailleurs. */
+    script_id: (etat.template === '25x3h' && etat.scriptId) ? etat.scriptId : null,
+    moteur:    (etat.template === '25x3h' && etat.scriptId) ? (etat.moteur || null) : null,
     musiqueLecture: etat.musique || null,
     vitesseMpm: mpm,
     video: {
@@ -1789,9 +1930,12 @@ $('#valider').addEventListener('click', async () => {
   et(0, 'ok', etat.reperes.length + ' repères');
 
   const base = 'https://assets.automatisationboost.com/';
+  /* En local (studio-local/serveur.mjs) la prise part sur le disque, jamais sur
+     le stockage en ligne : même appel, même progression, autre destination. */
+  const poster = LOCAL ? envoyerLocal : envoyer;
   et(1, 'cours', '0 %');
   try {
-    const r1 = await envoyer(etat.video, dossier + '/' + nomVideo, nomVideo,
+    const r1 = await poster(etat.video, dossier + '/' + nomVideo, nomVideo,
       etat.meta.type, p => et(1, 'cours', Math.round(p*100) + ' %'));
     et(1, 'ok', Math.round((etat.meta.octets||0)/1024) + ' Ko');
     $('#liens').innerHTML += `<a class="lien" href="${r1.url || (base+dossier+'/'+nomVideo)}" target="_blank" rel="noopener">${r1.url || (base+dossier+'/'+nomVideo)}</a>`;
@@ -1803,36 +1947,36 @@ $('#valider').addEventListener('click', async () => {
   et(2, 'cours', '');
   try {
     const bj = new Blob([jsonTexte], { type:'application/json' });
-    const r2 = await envoyer(bj, dossier + '/reperes.json', 'reperes.json', 'application/json');
+    const r2 = await poster(bj, dossier + '/reperes.json', 'reperes.json', 'application/json');
     et(2, 'ok', Math.round(jsonTexte.length/1024*10)/10 + ' Ko');
     $('#liens').innerHTML += `<a class="lien" href="${r2.url || (base+dossier+'/reperes.json')}" target="_blank" rel="noopener">${r2.url || (base+dossier+'/reperes.json')}</a>`;
     $('#e4cha').textContent = 'Envoyé. La prise et les repères sont en ligne.';
-    /* Le pont vers le montage : une ligne à coller, rien à retenir. */
-    $('#cmd').textContent =
-      'Monte la session ' + sessionId + ' de /tournage/'
-      + (etat.template && etat.template !== 'libre' ? ' au template ' + etat.template : '')
-      + ' : node /work/autoboost-neon-videos/_moteur/monter-tournage.mjs ' + sessionId
-      + (etat.template && etat.template !== 'libre' ? ' --template ' + etat.template : '');
+    /* Le pont vers le montage : DEUX lignes à coller, rien à retenir. */
+    construireCommandes();
     $('#pont').hidden = false;
+    if (LOCAL) $('#localbox').hidden = false;
   } catch(e){
     et(2, 'ko', 'échec');
     $('#liens').innerHTML += `<div class="lien" style="color:#ffb4ac">Repères non envoyés — ${esc(e.message)}<br>Appuie sur « Garder le JSON » : c'est le fichier qui compte.</div>`;
   }
 });
 
-$('#copier').addEventListener('click', async () => {
-  const b = $('#copier');
-  try {
-    await navigator.clipboard.writeText($('#cmd').textContent);
-    b.textContent = 'Copié'; setTimeout(() => b.textContent = 'Copier la commande', 1800);
-  } catch(e){
-    /* Le presse-papier est refusé hors HTTPS ou sans geste : on sélectionne
-       le texte pour qu'il reste copiable à la main. */
-    const r = document.createRange(); r.selectNodeContents($('#cmd'));
-    const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r);
-    b.textContent = 'Sélectionné — copie à la main';
-  }
-});
+function rendreCopiable(btn, cible, libelle){
+  btn.addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(cible.textContent);
+      btn.textContent = 'Copié'; setTimeout(() => btn.textContent = libelle, 1800);
+    } catch(e){
+      /* Le presse-papier est refusé hors HTTPS ou sans geste : on sélectionne
+         le texte pour qu'il reste copiable à la main. */
+      const r = document.createRange(); r.selectNodeContents(cible);
+      const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r);
+      btn.textContent = 'Sélectionné — copie à la main';
+    }
+  });
+}
+rendreCopiable($('#copier'),  $('#cmd'),  'Copier la commande Claude Code');
+rendreCopiable($('#copier2'), $('#cmd2'), 'Copier la commande OpenCode');
 
 function telecharger(blob, nom){
   const u = URL.createObjectURL(blob);
@@ -1852,6 +1996,351 @@ $('#retour').addEventListener('click', () => { montrer('e1'); });
 /* Petit garde-fou : si la page se ferme pendant un tournage, on relâche
    la caméra proprement plutôt que de laisser la LED allumée. */
 window.addEventListener('pagehide', arreterTout);
+
+/* ═══════════════════════════════════════════════════════════════════════
+   T-049 — la fusion de /monteur/ dans /tournage/.
+
+   Trois morceaux repris de /monteur/ :
+     1. le lot de scripts 25×3H — modèle de montage, script, moteur ;
+     2. le coach de cadrage — FaceMesh, une pastille de texte POSÉE SUR l'image,
+        jamais dessinée dans la vidéo enregistrée ;
+     3. le mode local — la prise part sur le disque et se monte sur place.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+const LOCAL = /^(localhost|127\.0\.0\.1|::1)$/.test(location.hostname);
+
+/* ── 1 · Le lot de scripts 25×3H ────────────────────────────────────────
+   Le fichier est /tournage/scripts-25x3h.json : un objet par vidéo, avec
+   `lignes` [{tag, arg, texte}]. Une ligne = un repère au prompteur. */
+let SC25 = [], SC25ID = null;
+
+function normaliserLot(j){
+  if (Array.isArray(j)) return j;
+  if (j && Array.isArray(j.scripts)) return j.scripts;
+  if (j && Array.isArray(j.videos)) return j.videos;
+  if (j && typeof j === 'object'){
+    const v = Object.values(j).filter(x => x && typeof x === 'object' && Array.isArray(x.lignes));
+    if (v.length) return v;
+  }
+  return [];
+}
+/* L'ordre de tournage, pas l'ordre des idées : bloc d'abord, puis `ordre`
+   (étape 6 du skill 25×3H — même cadrage, même micro pendant tout un bloc). */
+function trier25(a, b){
+  return ((a.bloc_tournage || 0) - (b.bloc_tournage || 0))
+      || ((a.ordre || 0) - (b.ordre || 0))
+      || String(a.id || '').localeCompare(String(b.id || ''));
+}
+function peuplerScripts25(j){
+  SC25 = normaliserLot(j).slice().sort(trier25);
+  const sel = $('#sc25list'); if (!sel) return;
+  sel.innerHTML = '';
+  const vide = document.createElement('option');
+  vide.value = '';
+  vide.textContent = SC25.length
+    ? '— choisis une vidéo (' + SC25.length + ') —'
+    : 'aucun script chargé';
+  sel.appendChild(vide);
+  SC25.forEach(s => {
+    const o = document.createElement('option');
+    o.value = String(s.id);
+    o.textContent = 'Bloc ' + (s.bloc_tournage != null ? s.bloc_tournage : '?')
+      + ' · ' + s.id + ' — ' + (s.titre || s.hook || 'sans titre');
+    sel.appendChild(o);
+  });
+}
+function lignesVersPrompteur(s){
+  return (s.lignes || []).map(l => {
+    const tag = String(l.tag || 'centre').trim();
+    const balise = l.arg ? '[' + tag + '|' + l.arg + ']' : '[' + tag + ']';
+    return (balise + ' ' + (l.texte || '')).trim();
+  }).join('\n');
+}
+function dire25(t, err){
+  const a = $('#sc25aide'); if (!a) return;
+  a.hidden = false;
+  a.style.color = err ? '#ffb4ac' : '';
+  a.textContent = t;
+}
+function selectionnerModele(m){
+  $$('#segmod button').forEach(b => b.classList.toggle('on', b.dataset.mod === m));
+  const c = $('#champs25'); if (c) c.classList.toggle('on', m === '25x3h');
+  const a = $('#modaide');
+  if (a) a.textContent = (m === '25x3h')
+    ? 'Montage 25×3H : dérush des pickups, sous-titres selon le moteur (PUNCH / INSIGHT / DEMO), zooms 110–130 %.'
+    : 'Le montage classique : cartes + sous-titres, aucun script imposé.';
+}
+function majSegmentTpl(id){
+  const c = $('#segtpl'); if (!c) return;
+  Array.prototype.forEach.call(c.children, b => b.classList.toggle('on', b.dataset.tpl === id));
+}
+function viderScript25(){
+  const s = $('#sc25list'); if (s) s.value = '';
+  const i = $('#scriptId'); if (i) i.value = '';
+  const m = $('#moteur'); if (m) m.selectedIndex = 0;
+  SC25ID = null; etat.scriptId = null; etat.moteur = null;
+}
+function choisirScript25(id){
+  const s = SC25.find(x => String(x.id) === String(id));
+  if (!s){ SC25ID = null; return; }
+  const t = lignesVersPrompteur(s);
+  if (txt.value.trim() && txt.value.trim() !== t
+      && !confirm('Remplacer le script du prompteur par « ' + s.id + ' — '
+                  + (s.titre || '') + ' » ?')){
+    $('#sc25list').value = SC25ID || '';
+    return;
+  }
+  SC25ID = String(s.id);
+  txt.value = t;
+  etat.template = '25x3h';
+  etat.scriptId = String(s.id);
+  etat.moteur = s.moteur || null;
+  $('#scriptId').value = etat.scriptId;
+  if (s.moteur){
+    const sel = $('#moteur');
+    if (sel && !Array.prototype.some.call(sel.options, o => o.value === s.moteur)){
+      const o = document.createElement('option'); o.value = s.moteur; o.textContent = s.moteur;
+      sel.appendChild(o);
+    }
+    if (sel) sel.value = s.moteur;
+  }
+  selectionnerModele('25x3h');
+  majSegmentTpl('25x3h');
+  const a = $('#tplaide');
+  if (a) a.firstChild.nodeValue = 'Script ' + s.id + ' — ' + (s.titre || s.hook || '') + ' ';
+  dire25('Bloc ' + (s.bloc_tournage != null ? s.bloc_tournage : '?') + ' · vidéo ' + s.id
+    + (s.duree_cible ? ' · ' + s.duree_cible + ' s' : '')
+    + ' · moteur ' + (s.moteur || '?')
+    + (s.cta && s.cta.mot ? ' · CTA « ' + s.cta.mot + ' »' : '')
+    + ' — ses lignes sont dans le prompteur, balises conservées.', false);
+  startMusique();
+  majApercu();
+  txt.focus();
+  txt.setSelectionRange(0, 0);
+  txt.scrollTop = 0;
+}
+
+$('#segmod').addEventListener('click', (e) => {
+  const b = e.target.closest('button'); if (!b) return;
+  const m = b.dataset.mod;
+  selectionnerModele(m);
+  if (m === '25x3h'){
+    etat.template = '25x3h'; majSegmentTpl('25x3h');
+  } else if (etat.template === '25x3h'){
+    etat.template = 'libre'; viderScript25(); majSegmentTpl('libre');
+  }
+});
+$('#sc25list').addEventListener('change', (e) => choisirScript25(e.target.value));
+$('#scriptId').addEventListener('input', (e) => {
+  e.target.value = e.target.value.toUpperCase();
+  etat.scriptId = e.target.value.trim() || null;
+});
+$('#moteur').addEventListener('change', (e) => { etat.moteur = e.target.value; });
+
+/* Un autre lot : une adresse, ou un fichier posé sur le téléphone. Même format
+   que scripts-25x3h.json (décrit dans le skill 25x3h-content-engine). */
+$('#sc25url').addEventListener('change', async (e) => {
+  const u = e.target.value.trim(); if (!u) return;
+  try {
+    const r = await fetch(u, { cache: 'no-store' });
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    peuplerScripts25(await r.json());
+    dire25(SC25.length + ' scripts chargés depuis l\'adresse.', false);
+  } catch(err){ dire25('Impossible de lire cette adresse (' + err.message + ').', true); }
+});
+$('#sc25file').addEventListener('change', (e) => {
+  const f = e.target.files && e.target.files[0]; if (!f) return;
+  const fr = new FileReader();
+  fr.onload = () => {
+    try {
+      peuplerScripts25(JSON.parse(fr.result));
+      dire25(SC25.length + ' scripts chargés depuis « ' + f.name + ' ».', false);
+    } catch(err){ dire25('Ce fichier n\'est pas un scripts.json lisible (' + err.message + ').', true); }
+  };
+  fr.readAsText(f);
+});
+
+/* Le lot est chargé par défaut : c'est lui qu'on tourne, pas une page blanche. */
+(async function chargerScripts25(){
+  try {
+    const r = await fetch('scripts-25x3h.json', { cache: 'no-store' });
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    peuplerScripts25(await r.json());
+    if (!SC25.length) throw new Error('fichier vide');
+  } catch(err){
+    peuplerScripts25([]);
+    dire25('Le lot 25×3H n\'a pas pu être chargé (' + err.message
+      + ') — choisis un fichier scripts.json plus bas, ou colle ton script à la main.', true);
+  }
+})();
+
+/* ── 2 · Le coach de cadrage ─────────────────────────────────────────────
+   Repris de /monteur/ : cible tête + épaules jusqu'au mi-torse, visage entre
+   14 % et 27 % de la hauteur (× 0,75 en 3:4, où le cadre est plus court).
+   La pastille est du DOM posé SUR l'image : le canvas enregistré ne la voit
+   jamais. L'envoi d'images est throttlé à 4 images/s — au-delà, MediaPipe
+   concurrence le rendu d'image pendant la prise pour une pastille qui ne
+   change que toutes les 400 ms. */
+let faceMesh = null, coachOn = false, idCoach = 0, dernierEnvoi = 0, hLisse = null, dernierCoach = 0;
+
+function pointCoach(p){
+  const vw = flux.videoWidth || 0, vh = flux.videoHeight || 0;
+  const w = grade.width || 1080, h = grade.height || 1440;
+  if (!vw || !vh || !w || !h) return { x: 0, y: 0 };
+  const cw = Math.min(vw, vh * w / h), ch = cw * h / w;
+  return { x: (p.x * vw - (vw - cw) / 2) / cw * w,
+           y: (p.y * vh - (vh - ch) / 2) / ch * h };
+}
+function majCoach(r){
+  const el = $('#coach'); if (!el) return;
+  const lm = r && r.multiFaceLandmarks && r.multiFaceLandmarks[0];
+  if (!lm){ el.hidden = true; return; }
+  const H = grade.height || 1440;
+  const haut = pointCoach(lm[10]), bas = pointCoach(lm[152]), yeux = pointCoach(lm[168]);
+  const h = (bas.y - haut.y) / H;
+  hLisse = hLisse == null ? h : hLisse * 0.85 + h * 0.15;
+  const maintenant = Date.now();
+  if (maintenant - dernierCoach < 400) return;
+  dernierCoach = maintenant;
+  const yY = yeux.y / H, hF = hLisse;
+  const k = (format === '3:4') ? 0.75 : 1;
+  let t, c;
+  if (hF * k > 0.27){ t = 'Trop près — recule de 20 à 30 cm'; c = 'pres'; }
+  else if (hF * k < 0.14){ t = 'Un peu loin — rapproche-toi'; c = 'loin'; }
+  else if (yY > 0.42){ t = 'Monte la caméra (ou baisse-toi)'; c = 'loin'; }
+  else if (yY < 0.24){ t = 'Baisse la caméra un peu'; c = 'loin'; }
+  else { t = 'Bon cadrage ✓'; c = 'ok'; }
+  el.textContent = t; el.className = c; el.hidden = false;
+}
+function boucleCoach(){
+  if (!coachOn) return;
+  const n = Date.now();
+  if (faceMesh && flux.videoWidth && n - dernierEnvoi >= 250){
+    dernierEnvoi = n;
+    faceMesh.send({ image: flux }).then(majCoach).catch(() => {});
+  }
+  idCoach = requestAnimationFrame(boucleCoach);
+}
+function demarrerCoach(){
+  if (coachOn) return;
+  const el = $('#coach');
+  if (!window.FaceMesh){ if (el) el.hidden = true; return; }
+  try {
+    if (!faceMesh){
+      faceMesh = new FaceMesh({ locateFile: (f) => 'https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/' + f });
+      faceMesh.setOptions({ maxNumFaces: 1, refineLandmarks: true,
+                            minDetectionConfidence: 0.6, minTrackingConfidence: 0.6 });
+      faceMesh.onResults(() => {});
+    }
+    coachOn = true; hLisse = null; dernierEnvoi = 0;
+    idCoach = requestAnimationFrame(boucleCoach);
+  } catch(e){
+    coachOn = false; faceMesh = null;
+    if (el) el.hidden = true;
+  }
+}
+function arreterCoach(){
+  coachOn = false;
+  if (idCoach){ cancelAnimationFrame(idCoach); idCoach = 0; }
+  hLisse = null;
+  const el = $('#coach'); if (el){ el.hidden = true; el.textContent = ''; el.className = ''; }
+}
+
+/* ── 3 · Mode local ─────────────────────────────────────────────────────
+   Quand la page est servie par studio-local/serveur.mjs (localhost), la prise
+   n'a aucune raison de faire le tour du réseau : elle va sur le disque, et le
+   montage se lance depuis la même page. */
+function envoyerLocal(blob, cle, nom, type, onProgres){
+  return new Promise((res, rej) => {
+    const x = new XMLHttpRequest();
+    x.open('POST', '/tournage/api?cle=' + encodeURIComponent(cle));
+    x.timeout = 600000;
+    x.upload.onprogress = (e) => { if (e.lengthComputable && onProgres) onProgres(e.loaded / e.total); };
+    x.onload = () => {
+      if (x.status >= 200 && x.status < 300){
+        try { res(JSON.parse(x.responseText)); } catch(e){ res({ status: 'ok' }); }
+      } else rej(new Error('HTTP ' + x.status + ' — ' + x.responseText.slice(0, 220)));
+    };
+    x.onerror   = () => rej(new Error('serveur local injoignable — relance `node studio-local/serveur.mjs`'));
+    x.ontimeout = () => rej(new Error('délai dépassé'));
+    x.send(blob);
+  });
+}
+
+function construireCommandes(){
+  const sid = (etat.scriptId || '').trim().toUpperCase();
+  const est25 = etat.template === '25x3h' && sid;
+  /* `--template` sert aux formats visuels de montage : 25×3H n'en est pas un,
+     c'est un script — d'où le mot-clé en tête de commande à la place. */
+  const tpl = (!est25 && etat.template && etat.template !== 'libre'
+               && etat.template !== '25x3h') ? etat.template : null;
+  const moteurTxt = (est25 && etat.moteur) ? ', moteur ' + etat.moteur : '';
+  const moteurCli = (est25 && etat.moteur) ? ' (moteur ' + etat.moteur + ')' : '';
+  if (est25){
+    $('#cmd').textContent = 'monte la session ' + sessionId
+      + ' (25x3h, script ' + sid + moteurTxt + ')';
+    $('#cmd2').textContent = 'opencode run "Monte la session ' + sessionId
+      + ' de /tournage/ : node /work/autoboost-neon-videos/_moteur/monter-tournage.mjs '
+      + sessionId + ' — script 25x3h ' + sid + moteurCli + '"';
+    return;
+  }
+  $('#cmd').textContent = 'Monte la session ' + sessionId + ' de /tournage/'
+    + (tpl ? ' au template ' + tpl : '')
+    + ' : node /work/autoboost-neon-videos/_moteur/monter-tournage.mjs ' + sessionId
+    + (tpl ? ' --template ' + tpl : '');
+  $('#cmd2').textContent = 'opencode run "Monte la session ' + sessionId + ' de /tournage/'
+    + (tpl ? ' au template ' + tpl : '')
+    + ' : node /work/autoboost-neon-videos/_moteur/monter-tournage.mjs ' + sessionId
+    + (tpl ? ' --template ' + tpl : '') + '"';
+}
+
+/* Monter sur place : le serveur local lance le moteur, on suit son log. */
+let jobMontage = null, pollMontage = null;
+function suivreMontage(){
+  if (pollMontage) clearInterval(pollMontage);
+  const l = $('#logmonter');
+  l.hidden = false; l.textContent = 'montage en cours…';
+  $('#lienmonter').hidden = true;
+  $('#btmonter').disabled = true;
+  pollMontage = setInterval(async () => {
+    try {
+      const r = await fetch('/tournage/api?job=' + encodeURIComponent(jobMontage), { cache: 'no-store' });
+      const j = await r.json();
+      l.textContent = j.log || (j.etat === 'encours' ? 'montage en cours…' : '');
+      l.scrollTop = l.scrollHeight;
+      if (j.etat === 'ok' || j.etat === 'erreur'){
+        clearInterval(pollMontage); pollMontage = null;
+        $('#btmonter').disabled = false;
+        if (j.etat === 'ok' && j.lien){
+          const a = $('#lienmonter');
+          a.href = j.lien; a.textContent = j.lien; a.hidden = false;
+          $('#btmonter').textContent = 'Monter à nouveau';
+        } else {
+          l.textContent = (j.log || '') + (j.erreur ? '\n' + j.erreur : '');
+        }
+      }
+    } catch(e){
+      clearInterval(pollMontage); pollMontage = null;
+      $('#btmonter').disabled = false;
+      l.textContent = 'serveur local injoignable (' + e.message + ')';
+    }
+  }, 1500);
+}
+$('#btmonter').addEventListener('click', () => {
+  if (!sessionId) return;
+  const x = new XMLHttpRequest();
+  x.open('POST', '/tournage/api');
+  x.setRequestHeader('Content-Type', 'application/json');
+  x.timeout = 30000;
+  x.onload = () => {
+    let j = {};
+    try { j = JSON.parse(x.responseText); } catch(e){}
+    if (j.ok && j.job){ jobMontage = j.job; suivreMontage(); }
+    else { const l = $('#logmonter'); l.hidden = false; l.textContent = j.erreur || x.responseText; }
+  };
+  x.onerror = () => { const l = $('#logmonter'); l.hidden = false; l.textContent = 'serveur local injoignable'; };
+  x.send(JSON.stringify({ action: 'monter', session: sessionId }));
+});
 
 /* Studio tournage : template + musique */
 renderTemplates(); renderMusiques(); renderOrigines();
