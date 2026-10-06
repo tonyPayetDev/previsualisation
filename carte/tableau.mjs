@@ -107,6 +107,59 @@ const PHRASES = {
   rdv:    { titre: 'Décrocher un rendez-vous', sous: 'Ils cliquent, ça ne va pas jusqu\'à la conversation.' },
 };
 
+/* ── Clics des emails « dirigeants » ───────────────────────────────────────
+   Lu en direct dans le Google Sheet du workflow n8n « Email tracking
+   dirigeants » (webhook track-dirigeants). Only AGGREGATED counts leave this
+   script: no email, no name, no lead id is written to tableau.json (public).
+   Rows are kept only when `secteur` starts with a known trade + « | », which
+   drops the restaurant rows and the test rows. A click whose user-agent looks
+   like a link scanner (Microsoft Safe Links, Google, bots) is counted apart. */
+const METIERS = ['immo', 'hotel', 'voyage', 'compta', 'avocat', 'assurance', 'labo', 'dentaire', 'auto', 'formation', 'portage', 'renovation'];
+const SHEET_CSV = 'https://docs.google.com/spreadsheets/d/1p5ECaubqGIBZv-bCu3MJRkJMNkdKA_y4iAaNjggPoIY/export?format=csv&gid=0';
+function csvRows(txt) {
+  const out = []; let row = [], cell = '', q = false;
+  for (let i = 0; i < txt.length; i++) {
+    const ch = txt[i];
+    if (q) { if (ch === '"') { if (txt[i + 1] === '"') { cell += '"'; i++; } else q = false; } else cell += ch; }
+    else if (ch === '"') q = true;
+    else if (ch === ',') { row.push(cell); cell = ''; }
+    else if (ch === '\n') { row.push(cell); out.push(row); row = []; cell = ''; }
+    else if (ch !== '\r') cell += ch;
+  }
+  if (cell || row.length) { row.push(cell); out.push(row); }
+  return out;
+}
+let dirigeants = null;
+try {
+  const r = await fetch(SHEET_CSV, { signal: AbortSignal.timeout(20000) });
+  if (!r.ok) throw new Error('HTTP ' + r.status);
+  const [tete, ...lignes] = csvRows(await r.text());
+  const col = (n) => tete.indexOf(n);
+  const iEv = col('event'), iSec = col('secteur'), iId = col('lead_id'), iUa = col('ua');
+  const SCAN = /safelinks|microsoft|google|bot|crawler|spider|preview|scanner|proofpoint|mimecast|barracuda|curl|python|wget|^$/i;
+  const rows = lignes.filter((l) => METIERS.some((m) => String(l[iSec] || '').startsWith(m + '|')));
+  const clics = rows.filter((l) => l[iEv] === 'click');
+  const humains = clics.filter((l) => iUa < 0 || !SCAN.test(String(l[iUa] || '')));
+  const parLien = {};
+  humains.forEach((l) => { const k = String(l[iSec]).split('|')[2] || '?'; parLien[k] = (parLien[k] || 0) + 1; });
+  const parVersion = {};
+  humains.forEach((l) => { const k = String(l[iSec]).split('|')[1] || '?'; parVersion[k] = (parVersion[k] || 0) + 1; });
+  dirigeants = {
+    emails: 50,
+    lignes: rows.length,
+    ouvertures: rows.filter((l) => l[iEv] === 'open').length,
+    clics: humains.length,
+    clicsScanners: clics.length - humains.length,
+    prospectsCliqueurs: new Set(humains.map((l) => l[iId])).size,
+    clicsRdv: (parLien['rdv-wa'] || 0) + (parLien['rdv-form'] || 0),
+    parLien, parVersion,
+    releve: new Date().toISOString(),
+  };
+  note('Google Sheet « Email tracking »', true, 'les clics des 50 emails dirigeants (comptes agrégés)');
+} catch (e) {
+  note('Google Sheet « Email tracking »', false, 'les clics des 50 emails dirigeants — ' + e.message);
+}
+
 /* ── Les automatisations ────────────────────────────────────────────────── */
 const c = lire('carte/cerveau.json');
 note('carte/cerveau.json', c, 'les automatisations et leur date de relevé');
@@ -138,6 +191,11 @@ const sortie = {
       detail: `sur ${demos.envoyees} envois` },
     { nom: 'Clics',                n: demos.clics, mesure: true,
       detail: 'aucun clic sur « tester »' },
+    { nom: 'Clics emails dirigeants', n: dirigeants ? dirigeants.clics : null, mesure: !!dirigeants,
+      detail: dirigeants && !dirigeants.lignes ? 'aucun signal encore : les 50 emails sont en brouillon, pas envoyés'
+        : dirigeants
+        ? `${dirigeants.prospectsCliqueurs} entreprise(s) sur ${dirigeants.emails} · ${dirigeants.clicsRdv} vers WhatsApp/formulaire · ${dirigeants.clicsScanners} clic(s) de scanner écartés · ouvertures (peu fiables) : ${dirigeants.ouvertures}`
+        : 'Sheet de suivi illisible au moment du relevé' },
     { nom: 'Rendez-vous',          n: null, mesure: false, saisie: 'rdv',
       detail: 'aucune source ne le compte — à saisir' },
     { nom: 'Ventes',               n: null, mesure: false, saisie: 'ventes',
@@ -160,6 +218,8 @@ const sortie = {
   automatisations: wf ? { ...wf, releve: (c && c.genere_le) || null } : null,
 
   demos,
+
+  emailsDirigeants: dirigeants,
 };
 
 const OUT = path.join(ICI, 'tableau.json');
