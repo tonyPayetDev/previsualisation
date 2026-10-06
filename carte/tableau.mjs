@@ -130,6 +130,12 @@ function csvRows(txt) {
   return out;
 }
 let dirigeants = null;
+/* Visits of the interactive CV (tony.automatisationboost.com/?id=<n>&v=<version>)
+   land in the same Sheet as page events. Only distinct-visitor COUNTS leave
+   this script; ids 990-999 are reserved for tests and never counted. */
+const CV_EVENTS = ['page_vue', 'demo_ouverte', 'demo_lue', 'demo_fin', 'scroll_50', 'scroll_90',
+  'temps_30s', 'temps_90s', 'cta_whatsapp', 'cta_audit', 'audit_formulaire_vu'];
+let cv = null;
 try {
   const r = await fetch(SHEET_CSV, { signal: AbortSignal.timeout(20000) });
   if (!r.ok) throw new Error('HTTP ' + r.status);
@@ -153,6 +159,15 @@ try {
     prospectsCliqueurs: new Set(humains.map((l) => l[iId])).size,
     clicsRdv: (parLien['rdv-wa'] || 0) + (parLien['rdv-form'] || 0),
     parLien, parVersion,
+    releve: new Date().toISOString(),
+  };
+  const vues = lignes.filter((l) => CV_EVENTS.includes(l[iEv]) && /^[0-9]{1,3}$/.test(String(l[iId] || ''))
+    && Number(l[iId]) < 990);
+  const qui = (evs) => new Set(vues.filter((l) => evs.includes(l[iEv])).map((l) => l[iId])).size;
+  cv = {
+    visiteurs: new Set(vues.map((l) => l[iId])).size,
+    demoOuverte: qui(['demo_ouverte']),
+    rdv: qui(['cta_whatsapp', 'cta_audit']),
     releve: new Date().toISOString(),
   };
   note('Google Sheet « Email tracking »', true, 'les clics des 50 emails dirigeants (comptes agrégés)');
@@ -196,6 +211,12 @@ const sortie = {
         : dirigeants
         ? `${dirigeants.prospectsCliqueurs} entreprise(s) sur ${dirigeants.emails} · ${dirigeants.clicsRdv} vers WhatsApp/formulaire · ${dirigeants.clicsScanners} clic(s) de scanner écartés · ouvertures (peu fiables) : ${dirigeants.ouvertures}`
         : 'Sheet de suivi illisible au moment du relevé' },
+    { nom: 'Visiteurs du CV (emails)', n: cv ? cv.visiteurs : null, mesure: !!cv,
+      detail: cv ? 'prospects distincts arrivés par le lien de leur email (tests exclus)' : 'Sheet de suivi illisible au moment du relevé' },
+    { nom: 'Ont ouvert une démo',  n: cv ? cv.demoOuverte : null, mesure: !!cv,
+      detail: cv ? `sur ${cv.visiteurs} visiteur(s) du CV` : 'Sheet de suivi illisible au moment du relevé' },
+    { nom: 'Ont demandé un rendez-vous (WhatsApp/audit)', n: cv ? cv.rdv : null, mesure: !!cv,
+      detail: cv ? 'clic sur WhatsApp ou sur l’audit depuis le CV' : 'Sheet de suivi illisible au moment du relevé' },
     { nom: 'Rendez-vous',          n: null, mesure: false, saisie: 'rdv',
       detail: 'aucune source ne le compte — à saisir' },
     { nom: 'Ventes',               n: null, mesure: false, saisie: 'ventes',
@@ -220,6 +241,8 @@ const sortie = {
   demos,
 
   emailsDirigeants: dirigeants,
+
+  cvInteret: cv,
 };
 
 const OUT = path.join(ICI, 'tableau.json');
