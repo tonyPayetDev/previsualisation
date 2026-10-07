@@ -549,6 +549,18 @@ details.prep li b{color:#f2f2f5}
     </div>
   </div>
 
+  <label class="lb">Nettoyage de la voix (DeepFilterNet)</label>
+  <div class="reglage">
+    <input type="checkbox" id="nettoyerVoix" checked>
+    <label for="nettoyerVoix" style="flex:1;font-weight:700">🎧 Nettoyer ma voix (DeepFilterNet)</label>
+  </div>
+  <div class="reglage" id="nettoyageIntensiteBox">
+    <label for="nettoyageIntensite" style="min-width:70px">Intensité</label>
+    <input type="range" id="nettoyageIntensite" min="15" max="100" step="5" value="30">
+    <span class="val" id="nettoyageIntensiteVal">30 dB</span>
+  </div>
+  <p class="aide">Léger 15 dB · Normal 30 dB · Fort 60 dB · Max 100 dB. Le moteur applique ce réglage avant le montage.</p>
+
   <label class="lb">Le fichier de repères</label>
   <pre class="json" id="apjson"></pre>
   <div class="duo" style="margin-top:14px">
@@ -642,6 +654,7 @@ let etat = {
   moteur  : null,
   musique : null,
   musVol  : 0.20,   /* lit musical sous la voix, pas bande-son (retour Tony 10/09) */
+  nettoyage: { actif: true, intensite: 30 }, /* DeepFilterNet (T-050) */
   video   : null,   // Blob
   meta    : {},
 };
@@ -1053,7 +1066,18 @@ $('#segdec').addEventListener('click', e => { const b = e.target.closest('button
   decompte = +b.dataset.dec; $$('#segdec button').forEach(x => x.classList.toggle('on', x === b)); });
 $('#btvid').addEventListener('click', () => { txt.value = ''; majApercu(); });
 
-/* Voie de repli : une vidéo déjà tournée. Il pose les repères en la regardant.
+  /* Nettoyage voix DeepFilterNet (T-050) */
+  $('#nettoyerVoix').addEventListener('change', e => {
+    etat.nettoyage.actif = e.target.checked;
+    $('#nettoyageIntensiteBox').style.opacity = e.target.checked ? '1' : '0.5';
+  });
+  $('#nettoyageIntensite').addEventListener('input', e => {
+    const v = +e.target.value;
+    etat.nettoyage.intensite = v;
+    $('#nettoyageIntensiteVal').textContent = v + ' dB';
+  });
+
+  /* Voie de repli : une vidéo déjà tournée. Il pose les repères en la regardant.
    Sans ça l'outil est mort dès que le navigateur refuse la caméra — et sur
    iPhone, un navigateur intégré (Instagram, Messages) la refuse souvent. */
 $('#btfic').addEventListener('click', () => $('#fic').click());
@@ -1864,6 +1888,7 @@ function fabriquerJson(){
     script_id: (etat.template === '25x3h' && etat.scriptId) ? etat.scriptId : null,
     moteur:    (etat.template === '25x3h' && etat.scriptId) ? (etat.moteur || null) : null,
     musiqueLecture: etat.musique || null,
+    nettoyage: etat.nettoyage || null,
     vitesseMpm: mpm,
     video: {
       fichier: nomVideo,
