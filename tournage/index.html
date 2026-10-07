@@ -573,7 +573,7 @@ details.prep li b{color:#f2f2f5}
    en ligne depuis six heures : l'onglet de Tony tournait encore sur une page
    chargée avant le correctif, et rien dans le fichier ne permettait de le voir.
    À changer à chaque modification de la page. */
-const PAGE_VERSION = '2026-10-05-dezoom';
+const PAGE_VERSION = '2026-10-07-fusion';
 /* Onglet resté ouvert : au retour sur la page, on compare avec la version
    servie ; si elle a changé, on recharge (le script est sauvé en brouillon). */
 async function versionServie(){
@@ -2150,14 +2150,15 @@ $('#sc25url').addEventListener('change', async (e) => {
 });
 $('#sc25file').addEventListener('change', (e) => {
   const f = e.target.files && e.target.files[0]; if (!f) return;
-  const fr = new FileReader();
-  fr.onload = () => {
+  /* `f.text()` lit le fichier en une ligne : pas de FileReader, pas de
+     callback imbriqué — le scripts.json posé sur le téléphone part directement
+     dans le parseur. */
+  f.text().then((t) => {
     try {
-      peuplerScripts25(JSON.parse(fr.result));
+      peuplerScripts25(JSON.parse(t));
       dire25(SC25.length + ' scripts chargés depuis « ' + f.name + ' ».', false);
     } catch(err){ dire25('Ce fichier n\'est pas un scripts.json lisible (' + err.message + ').', true); }
-  };
-  fr.readAsText(f);
+  }).catch(() => dire25('Impossible de lire « ' + f.name + ' ».', true));
 });
 
 /* Le lot est chargé par défaut : c'est lui qu'on tourne, pas une page blanche. */
