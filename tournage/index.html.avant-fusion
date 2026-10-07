@@ -1,0 +1,1864 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#0a0a0a">
+<title>Tournage — téléprompteur & repères</title>
+<link rel="preload" href="Inter-700-latin.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+/* ─────────────────────────────────────────────────────────────────────────
+   L'outil de tournage. Trois choses en même temps, sur un téléphone tenu
+   à bout de bras : le script qui défile, le mouvement à faire, et le temps
+   qui court. Tout le reste sort de l'écran.
+
+   Ce qui a de la valeur ici n'est PAS la vidéo — c'est le fichier de
+   repères. Sans les horodatages, le moteur de montage n'a rien sur quoi
+   caler ses cartes latérales. Le code est donc écrit autour d'une seule
+   règle : ne jamais perdre un instant mesuré.
+
+   Base de temps : `performance.now()` figé au moment où MediaRecorder
+   émet `start`, jamais l'heure de la pression sur le bouton. Entre les
+   deux il se passe 50 à 400 ms selon le téléphone — décalage suffisant
+   pour qu'une carte arrive après le geste.
+   ───────────────────────────────────────────────────────────────────── */
+@font-face{font-family:Inter;src:url(Inter-400-latin.woff2) format('woff2');font-weight:400;font-display:swap}
+@font-face{font-family:Inter;src:url(Inter-700-latin.woff2) format('woff2');font-weight:700;font-display:swap}
+
+:root{
+  --noir:#0a0a0a; --carte:#131318; --trait:#26262f;
+  --or:#FFE600; --cyan:#00D4FF; --violet:#A855F7;
+  --texte:#F3F3F7; --doux:#8f8c9a; --rouge:#e0483b;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden}
+body{background:var(--noir);color:var(--texte);
+  font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;font-size:15px;
+  -webkit-font-smoothing:antialiased;overscroll-behavior:none}
+:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+
+.ecran{position:fixed;inset:0;display:none;flex-direction:column}
+.ecran.on{display:flex}
+
+/* ── Boutons ─────────────────────────────────────────────────────────── */
+button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
+.b{padding:11px 16px;border-radius:11px;border:1px solid var(--trait);
+  background:var(--carte);font-size:14px;font-weight:700}
+.b:disabled{opacity:.38}
+.b.plein{background:var(--or);color:#0a0a0a;border-color:var(--or)}
+.b.cyan{background:var(--cyan);color:#0a0a0a;border-color:var(--cyan)}
+.b.gros{padding:16px;font-size:16px;width:100%}
+.b.fant{background:transparent;color:var(--doux)}
+
+/* ── 1. Script ───────────────────────────────────────────────────────── */
+/* En colonne flex, les blocs du formulaire s'écrasent les uns sur les autres
+   au lieu de faire défiler la page — sur un téléphone les réglages du bas
+   devenaient inatteignables. Ces deux écrans-là sont des documents, pas des
+   mises en page à hauteur fixe : `display:block` et on défile. */
+#e1.on,#e4.on{display:block}
+#e1{overflow-y:auto;padding:18px 16px calc(24px + env(safe-area-inset-bottom))}
+h1{font-size:22px;line-height:1.2;margin-bottom:4px}
+h1 em{font-style:normal;color:var(--or)}
+.chapo{color:var(--doux);font-size:13.5px;line-height:1.5;margin-bottom:18px}
+label.lb{display:block;font-size:12px;font-weight:700;letter-spacing:.06em;
+  text-transform:uppercase;color:var(--doux);margin:18px 0 7px}
+.lien-ex{float:right;font:inherit;font-size:12.5px;font-weight:700;letter-spacing:.02em;
+  background:none;border:0;color:var(--or);cursor:pointer;padding:0;text-decoration:underline;
+  text-underline-offset:3px}
+.lien-ex:active{opacity:.6}
+.pont{margin-top:18px;background:var(--carte);border:1px solid var(--trait);
+  border-left:4px solid var(--or);border-radius:14px;padding:16px 18px}
+.pont-t{font-size:12.5px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--or)}
+.pont-p{font-size:14px;color:var(--doux);margin:8px 0 12px;line-height:1.55}
+.pont-c{background:#000;border:1px solid var(--trait);border-radius:10px;padding:12px 14px;
+  font-family:ui-monospace,Menlo,monospace;font-size:12.5px;line-height:1.5;color:#D6DBD9;
+  overflow-x:auto;white-space:pre-wrap;word-break:break-all;margin-bottom:10px}
+textarea{width:100%;min-height:190px;background:var(--carte);color:var(--texte);
+  border:1px solid var(--trait);border-radius:12px;padding:13px;font:inherit;
+  font-size:15px;line-height:1.6;resize:vertical}
+.palette{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}
+.palette button{padding:7px 11px;border-radius:999px;border:1px solid var(--trait);
+  background:var(--carte);font-size:12.5px;color:var(--texte);display:flex;gap:6px;align-items:center}
+.palette button b{color:var(--violet);font-weight:700}
+.aide{font-size:12.5px;color:var(--doux);line-height:1.55;margin-top:9px}
+.aide code{background:#1b1b22;border-radius:5px;padding:1px 5px;color:var(--violet);font-size:12px}
+.reglage{display:flex;align-items:center;gap:12px;margin-top:6px}
+.reglage input[type=range]{flex:1;accent-color:var(--or)}
+.reglage .val{font-variant-numeric:tabular-nums;font-weight:700;min-width:96px;
+  text-align:right;font-size:13px}
+.duo{display:flex;gap:8px;margin-top:8px}
+.duo button{flex:1}
+/* `overflow:hidden` + `flex:1` coupait le 6e format et rendait le 7e
+   inatteignable sur un telephone etroit (constate le 2026-09-10). On enroule :
+   sept pastilles sur deux ou trois rangees, toutes cliquables. */
+.seg{display:flex;flex-wrap:wrap;gap:1px;border:1px solid var(--trait);border-radius:11px;
+  overflow:hidden;margin-top:6px;background:var(--trait)}
+.seg button{flex:1 1 30%;min-width:104px;padding:11px 8px;font-size:13.5px;font-weight:700;
+  color:var(--doux);background:var(--fond)}
+.seg button.on{background:var(--carte);color:var(--texte);box-shadow:inset 0 -2px 0 var(--or)}
+.apercu{margin-top:10px;border:1px dashed var(--trait);border-radius:11px;padding:11px;
+  font-size:13px;color:var(--doux);line-height:1.6;max-height:150px;overflow:auto}
+.apercu .cu{display:inline-block;background:rgba(168,85,247,.16);color:var(--violet);
+  border-radius:6px;padding:0 6px;font-weight:700;font-size:12px}
+.msg{margin-top:12px;padding:11px 13px;border-radius:11px;font-size:13px;line-height:1.5;
+  background:rgba(224,72,59,.12);border:1px solid rgba(224,72,59,.4);color:#ffb4ac;display:none}
+.msg.on{display:block}
+.pied{margin-top:22px;font-size:11.5px;color:#5c5a66;line-height:1.6}
+
+/* ── 2. Tournage ─────────────────────────────────────────────────────── */
+#e2{background:#000}
+#flux{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#000}
+#flux.miroir{transform:scaleX(-1)}
+/* Le canvas de rendu se superpose EXACTEMENT au flux camera et le remplace des
+   qu'un rendu est choisi. `object-fit:contain` des deux cotes : sans lui, le
+   canvas s'etire et le visage grossit d'un cran au changement de rendu. */
+#grade{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;
+  background:#000;display:none}
+#grade.on{display:block}
+#grade.miroir{transform:scaleX(-1)}
+#flux.cache{visibility:hidden}
+
+/* La video de reference : en haut, petite, au-dessus du texte du prompteur.
+   Placee la et pas au milieu : c'est vers le haut que le regard va quand on
+   lit, donc on la trouve sans quitter la ligne des yeux, et elle ne couvre
+   aucun mot. `pointer-events:none` — on ne veut pas la toucher par erreur en
+   visant un bouton pendant une prise. */
+#ref{position:absolute;top:calc(50px + env(safe-area-inset-top));left:50%;transform:translateX(-50%);
+  width:32%;max-width:190px;border-radius:12px;background:#000;z-index:4;
+  box-shadow:0 10px 34px -12px rgba(0,0,0,.8);border:1px solid rgba(255,255,255,.16);
+  /* Touchable AVANT la prise : c'est comme ca qu'on l'ecoute. Pendant la prise
+     elle redevient intouchable — on ne veut pas la couper d'un doigt egare. */
+  pointer-events:auto;cursor:pointer}
+#e2.tourne #ref{pointer-events:none;cursor:default}
+/* L'indice « appuie pour ecouter », le temps qu'on ait compris une fois. */
+#refaide{position:absolute;top:calc(50px + env(safe-area-inset-top) + var(--hRef,200px) + 4px);
+  left:50%;transform:translateX(-50%);z-index:5;font-size:11px;letter-spacing:.04em;
+  background:rgba(10,10,10,.78);color:#e9e9ef;border-radius:999px;padding:4px 10px;white-space:nowrap;
+  pointer-events:none}
+#refaide[hidden]{display:none}
+#ref[hidden]{display:none}
+/* La reference ne doit RIEN couvrir du texte : le premier essai la posait
+   par-dessus et les deux premieres lignes du prompteur disparaissaient
+   derriere elle. Le deuxieme essai calculait sa hauteur depuis sa largeur
+   (32vw) — faux des que la video n'est pas en 9:16, et faux meme en 9:16
+   puisque la hauteur vaut alors 16/9 fois la largeur. On MESURE donc sa
+   hauteur reelle une fois la video chargee, et la fenetre de lecture demarre
+   sous elle. */
+#e2.avec-ref .fenetre{top:calc(50px + env(safe-area-inset-top) + var(--hRef, 200px) + 14px)}
+
+/* Les rendus, en bas de l'ecran de tournage, au-dessus des commandes. Une
+   rangee qui defile : sur un telephone etroit, cinq pastilles ne tiennent pas
+   sur une ligne, et les empiler mangerait le prompteur. */
+/* Le temoin de niveau : vert quand la voix passe, gris quand rien n'entre.
+   Volontairement petit — il informe, il ne doit pas attirer l'oeil pendant
+   qu'on lit le prompteur. */
+/* Le bandeau de cadrage : au-dessus de tout, impossible a manquer, mais on
+   peut passer outre — c'est un avertissement, pas un verrou. */
+.paysage{position:absolute;left:12px;right:12px;top:calc(58px + env(safe-area-inset-top));
+  z-index:9;background:rgba(120,20,10,.94);border:1px solid #f87171;border-radius:12px;
+  padding:13px 15px;display:flex;flex-direction:column;gap:6px;font-size:14px;color:#ffe4e0;
+  box-shadow:0 14px 40px -14px rgba(0,0,0,.9)}
+.paysage[hidden]{display:none}
+.paysage b{font-size:16px;color:#fff}
+.paysage #paysagedim{font-size:12px;opacity:.75;font-variant-numeric:tabular-nums}
+.paysage button{align-self:flex-start;margin-top:4px;background:rgba(255,255,255,.14);
+  border:1px solid rgba(255,255,255,.3);color:#fff;border-radius:8px;padding:7px 13px;
+  font:inherit;font-weight:700}
+
+.vu{width:52px;height:6px;border-radius:3px;background:rgba(255,255,255,.16);
+  overflow:hidden;margin-left:10px;flex:0 0 auto}
+.vu i{display:block;height:100%;width:0%;border-radius:3px;background:#22c55e;
+  transition:width .08s linear}
+.vu.muet i{background:#ef4444}
+
+.rendus{position:absolute;left:0;right:0;bottom:calc(112px + env(safe-area-inset-bottom));
+  display:flex;gap:8px;padding:0 12px;overflow-x:auto;scrollbar-width:none;
+  -webkit-overflow-scrolling:touch}
+.rendus::-webkit-scrollbar{display:none}
+.rendus button{flex:0 0 auto;padding:7px 13px;border-radius:999px;border:1px solid rgba(255,255,255,.24);
+  background:rgba(19,19,24,.76);color:#dcdce4;font:inherit;font-size:12px;letter-spacing:.02em;
+  -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);cursor:pointer;white-space:nowrap}
+.rendus button.fmt{border-style:dashed}
+.rendus .sep{flex:0 0 1px;align-self:stretch;background:rgba(255,255,255,.22);margin:4px 2px}
+.rendus button[aria-pressed="true"]{background:#fff;border-color:#fff;color:#111;font-weight:600}
+.voile{position:absolute;inset:0;background:
+  linear-gradient(180deg,rgba(10,10,10,.86) 0%,rgba(10,10,10,.42) 26%,
+  rgba(10,10,10,.42) 68%,rgba(10,10,10,.9) 100%)}
+
+.barre{position:absolute;top:0;left:0;right:0;
+  padding:calc(8px + env(safe-area-inset-top)) 12px 8px;
+  display:flex;align-items:center;gap:10px}
+.chrono{font-size:19px;font-weight:700;font-variant-numeric:tabular-nums;
+  display:flex;align-items:center;gap:8px}
+.pastille{width:11px;height:11px;border-radius:50%;background:#4b4b55}
+.pastille.rec{background:var(--rouge);animation:bat 1s steps(1,end) infinite}
+@keyframes bat{50%{opacity:.2}}
+.barre .esp{margin-left:auto;display:flex;gap:7px}
+.barre .esp button{padding:8px 11px;border-radius:9px;background:rgba(19,19,24,.8);
+  border:1px solid var(--trait);font-size:12.5px;font-weight:700}
+
+/* La fenêtre du prompteur. La ligne de lecture est fixe, à 38 % : c'est là
+   que l'œil se pose quand le téléphone est calé au niveau du regard. */
+.fenetre{position:absolute;left:0;right:0;top:64px;bottom:186px;overflow:hidden;
+  mask-image:linear-gradient(180deg,transparent 0,#000 13%,#000 84%,transparent 100%);
+  -webkit-mask-image:linear-gradient(180deg,transparent 0,#000 13%,#000 84%,transparent 100%)}
+.lecture{position:absolute;left:0;right:0;top:38%;height:2px;
+  background:linear-gradient(90deg,transparent,rgba(255,230,0,.55),transparent);z-index:2}
+#piste{position:absolute;left:0;right:0;top:0;padding:0 22px;will-change:transform}
+#piste .bl{font-size:29px;line-height:1.42;font-weight:700;margin:0 0 20px;
+  color:#fff;text-shadow:0 2px 14px rgba(0,0,0,.95)}
+#piste .bl.passe{color:rgba(243,243,247,.34);text-shadow:none}
+#piste .cu{display:flex;align-items:center;gap:11px;margin:0 0 20px;padding:11px 14px;
+  border-radius:13px;border:1px solid rgba(168,85,247,.45);background:rgba(24,12,36,.8);
+  font-size:19px;font-weight:700;color:#e9d5ff}
+#piste .cu .ic{font-size:26px;line-height:1}
+#piste .cu.actif{border-color:var(--or);background:rgba(48,42,0,.85);color:var(--or);
+  box-shadow:0 0 0 2px rgba(255,230,0,.22)}
+#piste .cu.fait{border-color:rgba(0,212,255,.5);background:rgba(0,32,44,.8);color:var(--cyan)}
+#piste .fin{font-size:16px;color:var(--doux);font-weight:400;padding-bottom:60vh}
+
+/* Le mouvement en cours, énorme, indépendant du défilé : c'est ce qu'il
+   regarde en périphérie sans lâcher l'objectif. */
+.mvt{position:absolute;left:12px;right:12px;bottom:172px;padding:12px 15px;border-radius:14px;
+  background:rgba(255,230,0,.94);color:#0a0a0a;display:none;align-items:center;gap:12px;
+  box-shadow:0 8px 30px rgba(0,0,0,.6)}
+.mvt.on{display:flex}
+.mvt .ic{font-size:32px;line-height:1}
+.mvt .tx{font-size:17px;font-weight:700;line-height:1.25}
+.mvt .tx small{display:block;font-size:11.5px;font-weight:400;opacity:.72;margin-top:2px}
+
+.bas{position:absolute;left:0;right:0;bottom:0;
+  padding:12px 12px calc(14px + env(safe-area-inset-bottom));
+  display:flex;align-items:center;gap:10px}
+.declic{width:74px;height:74px;border-radius:50%;flex:0 0 auto;
+  border:4px solid rgba(255,255,255,.9);background:var(--rouge)}
+.declic.stop{background:#fff;border-radius:20px}
+.fait{flex:1;height:74px;border-radius:18px;background:rgba(0,212,255,.16);
+  border:1px solid var(--cyan);color:var(--cyan);font-size:15px;font-weight:700;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}
+.fait:disabled{opacity:.3}
+.fait small{font-size:11px;font-weight:400;opacity:.8}
+.plus{width:56px;height:74px;border-radius:16px;background:rgba(19,19,24,.85);
+  border:1px solid var(--trait);font-size:30px;font-weight:700;line-height:1;flex:0 0 auto}
+
+.compte{position:absolute;inset:0;display:none;align-items:center;justify-content:center;
+  background:rgba(10,10,10,.72);z-index:5;font-size:120px;font-weight:700;color:var(--or);
+  font-variant-numeric:tabular-nums}
+.compte.on{display:flex}
+
+/* ── 3. Relecture ────────────────────────────────────────────────────── */
+#e3{padding:calc(10px + env(safe-area-inset-top)) 0 0}
+.lecteur{flex:0 0 auto;background:#000;position:relative}
+#relec{width:100%;max-height:38vh;display:block;background:#000;object-fit:contain}
+.rlist{flex:1 1 auto;overflow-y:auto;padding:12px 14px calc(96px + env(safe-area-inset-bottom))}
+.rtete{display:flex;align-items:baseline;gap:9px;margin-bottom:9px}
+.rtete h2{font-size:16px}
+.rtete span{font-size:12px;color:var(--doux);margin-left:auto;font-variant-numeric:tabular-nums}
+.rep{border:1px solid var(--trait);border-radius:13px;background:var(--carte);
+  padding:11px 12px;margin-bottom:9px}
+.rep.actif{border-color:var(--or)}
+.rep .h{display:flex;align-items:center;gap:9px}
+.rep .h .ic{font-size:21px}
+.rep .h .nm{font-weight:700;font-size:14px}
+.rep .h .tt{margin-left:auto;font-variant-numeric:tabular-nums;font-weight:700;
+  font-size:14px;color:var(--or)}
+.rep .tx{font-size:12.5px;color:var(--doux);margin-top:5px;line-height:1.45}
+.rep .cote{font-size:11.5px;color:var(--cyan);margin-top:5px}
+.rep .act{display:flex;gap:5px;margin-top:9px;flex-wrap:wrap}
+.rep .act button{padding:7px 10px;border-radius:8px;border:1px solid var(--trait);
+  background:#1b1b22;font-size:12px;font-variant-numeric:tabular-nums}
+.rep .act button.ici{background:rgba(0,212,255,.14);border-color:var(--cyan);color:var(--cyan)}
+.rep .act button.sup{margin-left:auto;color:var(--rouge)}
+.rbas{position:fixed;left:0;right:0;bottom:0;padding:10px 14px calc(12px + env(safe-area-inset-bottom));
+  background:linear-gradient(180deg,transparent,var(--noir) 32%);display:flex;gap:8px}
+
+/* ── 4. Envoi ────────────────────────────────────────────────────────── */
+#e4{overflow-y:auto;padding:calc(20px + env(safe-area-inset-top)) 16px calc(24px + env(safe-area-inset-bottom))}
+.etape{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--trait);
+  font-size:14px}
+.etape .pt{width:22px;height:22px;border-radius:50%;border:2px solid var(--trait);flex:0 0 auto;
+  display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700}
+.etape.cours .pt{border-color:var(--or);color:var(--or)}
+.etape.ok .pt{border-color:var(--cyan);background:var(--cyan);color:#0a0a0a}
+.etape.ko .pt{border-color:var(--rouge);color:var(--rouge)}
+.etape .pc{margin-left:auto;font-variant-numeric:tabular-nums;color:var(--doux);font-size:12.5px}
+.lien{display:block;margin-top:8px;padding:11px 13px;border-radius:11px;background:var(--carte);
+  border:1px solid var(--trait);font-size:12px;color:var(--cyan);word-break:break-all;
+  text-decoration:none;font-variant-numeric:tabular-nums}
+pre.json{margin-top:10px;background:#101016;border:1px solid var(--trait);border-radius:11px;
+  padding:11px;font-size:11px;line-height:1.5;overflow:auto;max-height:230px;color:#c9c6d4;
+  font-family:ui-monospace,SFMono-Regular,Menlo,monospace;white-space:pre}
+</style>
+
+<!-- ═══════════ 1 · LE SCRIPT ═══════════ -->
+<section class="ecran on" id="e1">
+  <h1>Tourner avec un <em>prompteur</em>.</h1>
+  <p class="chapo">Colle ton script, place les mouvements dedans, appuie sur tourner.
+  À la fin tu récupères la vidéo <b>et</b> le fichier des repères — c'est lui qui dit au
+  moteur de montage à quelle seconde faire entrer une carte, et de quel côté.</p>
+
+  <label class="lb">Le template que tu tournes</label>
+  <div class="seg" id="segtpl"></div>
+  <p class="aide" id="tplaide">Choisis le format visé — je monte avec le même quand tu envoies. <a id="tplvoir" class="lien-ex" href="#" target="_blank" rel="noopener" hidden>revoir un exemple ↗</a></p>
+
+  <label class="lb" for="txt">Ton script
+    <button type="button" id="ex" class="lien-ex">charger un exemple</button>
+  </label>
+  <textarea id="txt" placeholder="Colle ton script ici. Une ligne = un bloc qui défile."></textarea>
+
+  <div class="palette" id="pal"></div>
+  <p class="aide">Un mouvement s'écrit entre crochets, sur sa propre ligne ou dans le texte :
+  <code>[droite]</code>. Tu peux préciser : <code>[montre|le tableau des leads]</code>.
+  Appuie sur une pastille pour l'insérer là où est le curseur.</p>
+
+  <label class="lb">Aperçu de ce qui va défiler</label>
+  <div class="apercu" id="apercu"></div>
+
+  <label class="lb" for="vit">Vitesse de défilement</label>
+  <div class="reglage">
+    <input type="range" id="vit" min="70" max="230" step="5" value="130">
+    <span class="val" id="vitval">130 mots/min</span>
+  </div>
+  <p class="aide">Réglable aussi pendant le tournage, sans arrêter l'enregistrement.</p>
+
+  <label class="lb">Musique de lecture <i>pour rester carré</i></label>
+  <div class="reglage">
+    <select id="mus" style="flex:1;background:#0e1013;border:1px solid var(--trait);color:var(--txt,#eee);border-radius:9px;padding:9px 11px;font:inherit"></select>
+    <button type="button" class="b fant" id="musecoute">Écouter</button>
+  </div>
+  <div class="reglage">
+    <input type="range" id="musvol" min="0" max="100" step="5" value="20">
+    <span class="val" id="musvolval">20 %</span>
+  </div>
+  <p class="aide">Elle tourne pendant que tu prépares ta prise et <b>se coupe toute seule dès que tu enregistres</b> — elle ne peut plus passer dans le micro.</p>
+
+  <label class="lb">Vidéo de référence <i>facultatif</i></label>
+  <!-- Les videos d'origine que Tony reproduit. Demande du 2026-09-10 : pouvoir
+       regarder l'originale pendant la prise, pas seulement son propre rendu.
+       Elles vivent dans /tournage/refs/, derriere le mot de passe : ce sont les
+       videos d'autres createurs, elles n'ont rien a faire en acces libre. -->
+  <div class="reglage">
+    <select id="reforig" style="flex:1;background:#0e1013;border:1px solid var(--trait);color:var(--txt,#eee);border-radius:9px;padding:9px 11px;font:inherit"></select>
+  </div>
+  <div class="reglage">
+    <input type="file" id="reffile" accept="video/*" style="flex:1;font:inherit;color:var(--txt,#eee)">
+  </div>
+  <div class="reglage">
+    <input type="url" id="refurl" placeholder="…ou colle une adresse de vidéo (https://…)"
+      style="flex:1;background:#0e1013;border:1px solid var(--trait);color:var(--txt,#eee);border-radius:9px;padding:9px 11px;font:inherit">
+  </div>
+  <p class="aide">Elle s'affiche en petit, en haut de l'écran, et se lance en même temps que ta
+    lecture : tu vois comment l'original enchaîne pendant que tu le refais. Elle est
+    <b>muette</b> — son audio passerait dans ton micro. Le bouton <b>Réf.</b> en haut à droite
+    la cache ou la montre pendant le tournage.</p>
+
+  <label class="lb">Caméra</label>
+  <div class="seg" id="segcam">
+    <button data-cam="user" class="on">Frontale</button>
+    <button data-cam="environment">Arrière</button>
+  </div>
+
+  <label class="lb">Décompte avant enregistrement</label>
+  <div class="seg" id="segdec">
+    <button data-dec="3" class="on">3 s</button>
+    <button data-dec="5">5 s</button>
+    <button data-dec="0">Aucun</button>
+  </div>
+
+  <div style="margin-top:20px">
+    <button class="b plein gros" id="go">Tourner</button>
+  </div>
+  <div class="duo">
+    <button class="b fant" id="btfic">J'ai déjà la vidéo →</button>
+    <button class="b fant" id="btvid">Vider le script</button>
+  </div>
+  <input type="file" id="fic" accept="video/*" hidden>
+
+  <div class="msg" id="msg1"></div>
+
+  <p class="pied">Rien ne part ailleurs que sur ton propre stockage
+  (assets.automatisationboost.com). Aucune publication, aucun réseau social.
+  La caméra exige une connexion sécurisée : cette page est en HTTPS, c'est bon.</p>
+</section>
+
+<!-- ═══════════ 2 · LE TOURNAGE ═══════════ -->
+<section class="ecran" id="e2">
+  <video id="flux" playsinline muted autoplay></video>
+  <canvas id="grade"></canvas>
+  <video id="ref" playsinline loop hidden></video>
+  <div id="refaide" hidden>appuie pour l'écouter</div>
+  <div class="voile"></div>
+
+  <div class="fenetre">
+    <div class="lecture"></div>
+    <div id="piste"></div>
+  </div>
+
+  <div class="barre">
+    <div class="chrono"><span class="pastille" id="past"></span><span id="chr">0:00</span></div>
+    <!-- Temoin de niveau du micro. Il existe pour une raison precise : le
+         2026-09-10, une prise entiere est repartie sans voix et rien a l'ecran
+         ne le disait. Maintenant ca se voit AVANT d'appuyer. -->
+    <div class="vu" id="vu" title="Niveau du micro"><i id="vubar"></i></div>
+    <div class="esp">
+      <button id="mvit">Vitesse −</button>
+      <button id="pvit">+</button>
+      <button id="bmus" title="Couper ou remettre la musique">♪</button>
+      <button id="bref" title="Cacher ou montrer la vidéo de référence" hidden>Réf.</button>
+      <button id="bcam">↺</button>
+      <button id="quit">✕</button>
+    </div>
+  </div>
+
+  <!-- Alerte cadrage. La prise du 2026-09-10 est sortie en 1440x1080 — du
+       paysage — et personne ne l'a su avant le montage, qui a du jeter la
+       moitie du cadre. La page demande du 9:16 en PREFERENCE : beaucoup de
+       telephones rendent le ratio natif du capteur quoi qu'on demande. Donc on
+       regarde ce qui arrive vraiment, et on le dit avant la prise. -->
+  <div class="paysage" id="paysage" hidden>
+    <b id="paysagetitre">Ton téléphone filme en paysage.</b>
+    <span id="paysagedim"></span>
+    <span id="paysageaide">Tourne-le à la verticale — sinon le montage devra jeter la moitié du cadre.</span>
+    <button type="button" id="paysageok">Filmer quand même</button>
+  </div>
+
+  <div class="mvt" id="mvt"><span class="ic" id="mvtic"></span>
+    <span class="tx" id="mvttx"></span></div>
+
+  <div class="rendus" id="rendus" role="group" aria-label="Rendu de l'image"></div>
+
+  <div class="bas">
+    <button class="declic" id="rec" aria-label="Enregistrer"></button>
+    <button class="fait" id="fait" disabled>Mouvement fait<small>pose le repère à cet instant</small></button>
+    <button class="plus" id="libre" aria-label="Repère libre">+</button>
+  </div>
+
+  <div class="compte" id="compte"></div>
+</section>
+
+<!-- ═══════════ 3 · LA RELECTURE ═══════════ -->
+<section class="ecran" id="e3">
+  <div class="lecteur"><video id="relec" playsinline controls></video></div>
+  <div class="rlist">
+    <div class="rtete"><h2>Les repères</h2><span id="rinfo"></span></div>
+    <div id="rlist"></div>
+    <p class="aide" style="margin-top:14px">Lance la vidéo : le repère en cours s'allume.
+    S'il tombe à côté, appuie sur <b>poser ici</b> à l'instant juste — c'est cette valeur
+    qui part dans le fichier, pas celle du prompteur.</p>
+  </div>
+  <div class="rbas">
+    <button class="b" id="refaire" style="flex:0 0 auto">Refaire</button>
+    <button class="b cyan" id="valider" style="flex:1">OK — envoyer</button>
+  </div>
+</section>
+
+<!-- ═══════════ 4 · L'ENVOI ═══════════ -->
+<section class="ecran" id="e4">
+  <h1>Envoi</h1>
+  <p class="chapo" id="e4cha">La vidéo et les repères partent sur ton stockage.</p>
+  <div id="etapes"></div>
+  <div id="liens"></div>
+
+  <div class="pont" id="pont" hidden>
+    <div class="pont-t">Faire monter la vidéo</div>
+    <p class="pont-p">Colle cette ligne à Claude Code. Il télécharge la prise et les repères,
+    pose les cartes du côté opposé à toi, et incruste les sous-titres à partir de ton script —
+    sans transcription.</p>
+    <pre class="pont-c" id="cmd"></pre>
+    <button class="b" id="copier">Copier la commande</button>
+  </div>
+
+  <label class="lb">Le fichier de repères</label>
+  <pre class="json" id="apjson"></pre>
+  <div class="duo" style="margin-top:14px">
+    <button class="b" id="dlv">Garder la vidéo</button>
+    <button class="b" id="dlj">Garder le JSON</button>
+  </div>
+  <button class="b fant gros" id="retour" style="margin-top:10px">Nouveau tournage</button>
+</section>
+
+<script>
+"use strict";
+/* Version de la page, écrite dans chaque reperes.json. La prise du
+   2026-09-29-214209 est sortie en 1440x1080 alors que le canvas 3:4/9:16 était
+   en ligne depuis six heures : l'onglet de Tony tournait encore sur une page
+   chargée avant le correctif, et rien dans le fichier ne permettait de le voir.
+   À changer à chaque modification de la page. */
+const PAGE_VERSION = '2026-09-29.3-tags-tolerants';
+/* Onglet resté ouvert : au retour sur la page, on compare avec la version
+   servie ; si elle a changé, on recharge (le script est sauvé en brouillon). */
+async function versionServie(){
+  try {
+    const r = await fetch(location.pathname + '?v=' + Date.now(), { cache:'no-store', credentials:'same-origin' });
+    const m = (await r.text()).match(/const PAGE_VERSION = '([^']+)'/);
+    return m ? m[1] : null;
+  } catch(e){ return null; }
+}
+async function verifierVersion(){
+  if (typeof enCours !== 'undefined' && enCours) return;
+  const v = await versionServie();
+  if (v && v !== PAGE_VERSION){
+    const e = document.getElementById('e1');
+    if (e && e.classList.contains('on')) location.reload();
+    else {
+      const b = document.createElement('div');
+      b.style.cssText = 'position:fixed;left:12px;right:12px;top:12px;z-index:99;background:#facc15;color:#000;padding:10px 14px;border-radius:10px;font:600 14px Inter,sans-serif';
+      b.textContent = 'Nouvelle version de la page disponible — recharge avant la prochaine prise.';
+      document.body.appendChild(b);
+    }
+  }
+}
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') verifierVersion(); });
+window.addEventListener('pageshow', (e) => { if (e.persisted) verifierVersion(); });
+/* ═══════════════════════════════════════════════════════════════════════
+   Le vocabulaire des mouvements.
+
+   `cadre` est la seule donnée que le moteur de montage exige réellement :
+   c'est le côté du cadre où Tony se trouve. La carte entre TOUJOURS du
+   côté opposé — c'est la règle du montage validé (rush-monte/work/monter.mjs,
+   où les cartes des « Regarde ça » entrent à gauche quand il est à droite).
+   `effet` dit au moteur QUOI poser ; `cadre` dit OÙ.
+   ═══════════════════════════════════════════════════════════════════════ */
+const TAGS = {
+  gauche : { ic:'⬅️', nom:'Place-toi à gauche',      cadre:'g', effet:'carte' },
+  droite : { ic:'➡️', nom:'Place-toi à droite',      cadre:'d', effet:'carte' },
+  centre : { ic:'⏺',  nom:'Reviens au centre',       cadre:'c', effet:'plein' },
+  montre : { ic:'👉', nom:'Montre sur le côté',      cadre:'?', effet:'carte' },
+  avance : { ic:'🔍', nom:'Rapproche-toi',           cadre:'c', effet:'zoom'  },
+  recule : { ic:'↔️', nom:'Recule',                  cadre:'c', effet:'dezoom'},
+  main   : { ic:'✋', nom:'Lève la main',            cadre:'?', effet:'pastille'},
+  compte : { ic:'🔢', nom:'Compte sur tes doigts', cadre:'?', effet:'compteur'},
+  pause  : { ic:'⏸',  nom:'Marque un temps',         cadre:'?', effet:'respiration'},
+  libre  : { ic:'📍', nom:'Repère',                  cadre:'?', effet:'libre' },
+};
+
+const $ = (s) => document.querySelector(s);
+const $$ = (s) => Array.from(document.querySelectorAll(s));
+const CLE_BROUILLON = 'tournage.script.v1';
+
+/* État de la session. Un seul objet — c'est lui qui devient le JSON. */
+let etat = {
+  blocs   : [],     // rendu du prompteur
+  reperes : [],     // LE livrable
+  duree   : 0,
+  source  : 'camera',
+  template: 'libre',
+  musique : null,
+  musVol  : 0.20,   /* lit musical sous la voix, pas bande-son (retour Tony 10/09) */
+  video   : null,   // Blob
+  meta    : {},
+};
+
+/* ── Écrans ──────────────────────────────────────────────────────────── */
+const R2 = 'https://assets.automatisationboost.com/previsualisation/';
+/* Chaque format porte SON exemple reel : la page a revoir, la video qui se pose
+   en reference pendant la prise, et la musique du meme registre. Les six liens
+   ont ete verifies un par un le 2026-09-10 (page en 200, video servie par R2).
+   Sans ca, « charger un exemple » ne chargeait qu'un texte : on ne voyait jamais
+   a quoi le format ressemble une fois monte. */
+const TEMPLATES = [
+  { id:'libre', nom:'Aucun / libre', route:'', ref:'', mus:'',
+    desc:'Tournage simple, sans format impose.' },
+  /* La reference est la version COURANTE du format, celle que sa propre page
+     marque d'une etoile — pas la passe audio corrigee qui vient apres. Demande
+     de Tony le 2026-09-10 : « la vraie video de base si disponible ».
+     La passe corrigee reste consultable sur /split-prompts-corrige/. */
+  { id:'split-prompts', nom:'Split-prompts', route:'/split-prompts/',
+    ref:R2+'split-prompts/waltz-v1.mp4', mus:'journal-digital-clouds-128.mp3',
+    desc:'Ecran scinde : toi + un site/preuve.' },
+  { id:'hook-puissant-branded', nom:'Hook puissant', route:'/hook-puissant/',
+    ref:R2+'hook-puissant/video.mp4', mus:'hook-epical-drums-02-80.mp3',
+    desc:'Chute, pile de hooks, countdown, slam GO.' },
+  { id:'veille-to-video-v3', nom:'VideoBoost v3', route:'/veille-to-avatar-v3/',
+    ref:R2+'veille-to-avatar-v3/video.mp4', mus:'journal-moon-walk-88.mp3',
+    desc:'Talking-head + habillage neon, voix clonee.' },
+  { id:'reel-remix', nom:'Reel Remix', route:'/autoboost-55-twingo-remix-v3/',
+    ref:R2+'autoboost-55-twingo-remix-v3/video.mp4', mus:'food-cat-walk-128.mp3',
+    desc:'Panneau screen-record en haut, toi en bas.' },
+  { id:'yapping-facecam-branded', nom:'Yapping face cam', route:'/yapping-algo/',
+    ref:R2+'yapping-algo/video.mp4', mus:'mindset-epical-drums-03-80.mp3',
+    desc:'Face camera, debit rapide, captions.' },
+  { id:'revelation-ab-branded', nom:'Revelation A/B', route:'/autoboost-matrix-revelation/',
+    ref:R2+'autoboost-matrix-revelation/video.mp4', mus:'mindset-epical-drums-05-75.mp3',
+    desc:'Une astuce vs le detail qui change tout.' }
+];
+/* Les videos d'origine reproduites, ramenees a 480p (5,3 Mo au total) : c'est
+   une reference qu'on regarde du coin de l'oeil sur un telephone, pas un
+   master. Coupees a 60 s — au-dela on ne reproduit plus, on recopie. */
+const ORIGINES = [
+  { f:'effacer-remake.mp4',       nom:"Effacer ses donnees — le reel repris" },
+  { f:'omni-remake.mp4',          nom:"OmniRoute — le reel repris" },
+  { f:'remake-Dc3vTp6sLMv.mp4',   nom:"Tete parlante dryxio.us — le reel repris" },
+  { f:'astra-gpt6.mp4',           nom:"Astra / GPT-6 — le reel repris" },
+  { f:'remake-fb-1HPDA134FX.mp4', nom:"Facebook 1HPDA134FX — le reel repris (60 s)" },
+  { f:'burger-beat.mp4',          nom:"Burger sur le beat — la source" },
+  { f:'glass-15s.mp4',            nom:"Glass 15 s — la source (sans son)" },
+  { f:'befresh-marche-nuit.mp4',  nom:"BeFresh marche de nuit — la source" },
+  /* Les cinq meilleures de jb.roy_ (Instagram, releve du 2026-09-10). Un
+     concurrent direct : meme offre, meme outil, metropole. Ses chiffres sont
+     la vraie lecon — 17 421 abonnes, certifie, et une MEDIANE de 155 vues.
+     Elles sont ici pour etudier sa facon de filmer, jamais pour etre montees
+     dans une video : c'est son tournage. */
+  { f:'jbroy-1.mp4', nom:"jb.roy_ — 4 378 vues, 200 commentaires (38 s)" },
+  { f:'jbroy-2.mp4', nom:"jb.roy_ — 3 116 vues (43 s)" },
+  { f:'jbroy-3.mp4', nom:"jb.roy_ — 2 355 vues, 71 commentaires (51 s)" },
+  { f:'jbroy-4.mp4', nom:"jb.roy_ — 1 925 vues (42 s)" },
+  { f:'jbroy-5.mp4', nom:"jb.roy_ — 1 418 vues, 72 commentaires (35 s)" }
+];
+const MUS_FILES = ['bgm-cyberpunk-city.mp3','flowers_horror.mp3','food-cat-walk-128.mp3','food-deep-urban-122.mp3','food-sunny-groove-120.mp3','hook-epical-drums-02-80.mp3','horror-echoes-ambient.mp3','horror-piano-horror-ambient.mp3','journal-digital-clouds-128.mp3','journal-moon-walk-88.mp3','mindset-epical-drums-03-80.mp3','mindset-epical-drums-05-75.mp3','valse-des-fleurs-integrale-71.mp3','valse-des-fleurs-maison-evidee.mp3','valse-des-fleurs-maison-tutti.mp3','vsl-voxscape-ambient.mp3'];
+const MUSBASE = '/studio/ecoute/';
+function labelMus(f){
+  var b=f.replace('.mp3',''); var m=b.match(/-(\d{2,3})$/); var bpm=m?m[1]:null;
+  if(bpm) b=b.slice(0,-(bpm.length+1));
+  b=b.replace(/[-_]/g,' ').replace(/\b\w/g,function(c){return c.toUpperCase();});
+  return bpm ? b+' \u00b7 '+bpm+' BPM' : b;
+}
+function renderTemplates(){
+  var c=$('#segtpl'); if(!c) return; c.innerHTML='';
+  TEMPLATES.forEach(function(t){
+    var b=document.createElement('button'); b.type='button'; b.textContent=t.nom;
+    if(etat.template===t.id) b.classList.add('on'); b.title=t.desc;
+    b.addEventListener('click',function(){
+      etat.template=t.id;
+      Array.prototype.forEach.call(c.children,function(x){x.classList.toggle('on',x===b);});
+      var v=$('#tplvoir'); if(t.route){ v.href=t.route; v.hidden=false; } else { v.hidden=true; }
+      /* La video du format se pose d'elle-meme en reference : c'est la demande
+         du 2026-09-10 — voir a quoi ressemble le format pendant qu'on le tourne,
+         sans avoir a coller une adresse a la main. */
+      if(t.ref){ var u=$('#refurl'); if(u) u.value=t.ref; poserReference(t.ref,false); }
+      /* Musique du meme registre, posee seulement si Tony n'a rien choisi
+         lui-meme : son choix explicite passe toujours avant le notre. */
+      if(t.mus && !etat.musChoisie){ var sm=$('#mus'); if(sm){ sm.value=t.mus; etat.musique=t.mus; } }
+      var a=$('#tplaide'); a.firstChild.nodeValue=t.desc+' ';
+      var ex=$('#ex'); if(ex) ex.textContent = (t.id!=='libre' && SCRIPTS[t.id]) ? 'charger un exemple '+t.nom : 'charger un exemple';
+    });
+    c.appendChild(b);
+  });
+}
+function renderOrigines(){
+  var sel=$('#reforig'); if(!sel) return;
+  var v=document.createElement('option'); v.value=''; v.textContent='\u2014 aucune video d\u2019origine \u2014'; sel.appendChild(v);
+  ORIGINES.forEach(function(o){ var x=document.createElement('option'); x.value='refs/'+o.f; x.textContent=o.nom; sel.appendChild(x); });
+  sel.addEventListener('change',function(){
+    var u=sel.value;
+    /* Choisir une origine remplace la reference du format : on ne peut en
+       regarder qu'une a la fois, et c'est un choix explicite. */
+    if(u){ var f=$('#refurl'); if(f) f.value=''; var g=$('#reffile'); if(g) g.value=''; poserReference(u,false); }
+  });
+}
+
+function renderMusiques(){
+  var sel=$('#mus'); if(!sel) return;
+  var opt=document.createElement('option'); opt.value=''; opt.textContent='Aucune \u2014 silence'; sel.appendChild(opt);
+  MUS_FILES.forEach(function(f){ var o=document.createElement('option'); o.value=f; o.textContent=labelMus(f); sel.appendChild(o); });
+  sel.addEventListener('change',function(){
+    etat.musChoisie = true;   // choix explicite : aucun format ne l'ecrasera
+    var tournait = !!guide;
+    etat.musique=sel.value||null;
+    stopMusique();
+    if (tournait) startMusique();   // on enchaine sur le nouveau morceau
+  });
+  var vol=$('#musvol'); vol.addEventListener('input',function(){ etat.musVol=vol.value/100; $('#musvolval').textContent=vol.value+' %'; if(guide)guide.volume=etat.musVol; });
+}
+var guide=null;   // la SEULE lecture de musique de la page
+/* Une SEULE lecture, du chargement du script jusqu'a la fin de la prise.
+   Retour Tony le 2026-09-09 : il la veut des qu'il charge son script sur le
+   prompteur, pas a l'ouverture de l'ecran de tournage — donc elle demarre tot
+   et ne doit surtout pas etre relancee en route. Sans ce garde, chaque appel
+   creait un nouvel objet Audio et la meme boucle tournait en double, decalee. */
+function startMusique(){ if(!etat.musique || guide) return;
+  try{ guide=new Audio(MUSBASE+etat.musique); guide.loop=true; guide.volume=etat.musVol;
+    guide.play().catch(function(){}); majBoutonMus(); }catch(e){} }
+function majBoutonMus(){
+  var b=$('#musecoute'); if(b) b.textContent = guide ? 'Stop' : '\u00c9couter';
+  var m=$('#bmus'); if(m) m.textContent = guide ? '\u266a' : '\u266a\u0338';
+}
+function stopMusique(){ if(guide){ try{guide.pause();}catch(e){} guide=null; } majBoutonMus(); }
+
+function montrer(id){ $$('.ecran').forEach(e => e.classList.toggle('on', e.id === id)); }
+function erreur1(t){ const m = $('#msg1'); m.textContent = t; m.classList.add('on'); }
+
+/* ═══ 1 · Script ═══════════════════════════════════════════════════════ */
+const txt = $('#txt');
+/* Un exemple RÉEL : il se tourne tel quel, il utilise huit repères différents,
+   et ses chiffres sont vrais (relevé du dépôt le 03/09). Un exemple inventé
+   apprendrait la syntaxe mais donnerait une vidéo qui ment. */
+const EXEMPLE = [
+  "[centre] Si tu as une entreprise et que tu ne publies rien, tu perds des clients. Chaque jour.",
+  "",
+  "[droite|le téléphone qui sonne] Un appel manqué à midi, c'est une réservation partie chez le voisin.",
+  "",
+  "[montre|les trois outils] Moi, j'ai trois choses qui tournent pendant que je travaille.",
+  "",
+  "[compte|un, deux, trois] Un : les vidéos. Deux : les relances. Trois : les rendez-vous.",
+  "",
+  "[avance] Aucune des trois ne me demande d'ouvrir un logiciel de montage.",
+  "",
+  "[pause] Aucune.",
+  "",
+  "[gauche|le compteur] Cent trois vidéos publiées cette semaine. Je n'en ai monté aucune à la main.",
+  "",
+  "[recule] Et ça, ce n'est pas une promesse. C'est le dépôt qui le dit.",
+  "",
+  "[centre] Commente OUTILS, je te montre comment c'est branché."
+].join("\n");
+
+/* Un exemple de script PAR template — « charger un exemple » charge celui du
+   template selectionne. C'est ce que corrige le retour de Tony : avant, le
+   bouton remettait toujours le meme script quel que soit le template. */
+const SCRIPTS = {
+  /* La presentation de Tony, dictee le 2026-09-10 et mise en repères telle
+     qu'il l'a dite. Deux corrections : « tu commences sous cette vidéo » etait
+     « tu commentes », et il a dit « 10 ans d'experience, depuis 2012 » — les
+     deux ne collent pas, 2012 fait quatorze ans. On garde la date, qui est
+     verifiable, pas le compte approximatif. */
+  'libre': [
+    "[centre] Bonjour, moi c'est Tony PAYET. C'est moi qui fais AutomatisationBoost et VideoBoost.",
+    "",
+    "[gauche|l'écran de code] Je développe depuis 2012. Quatorze ans que j'écris du code.",
+    "",
+    "[montre|la formation] Aujourd'hui, je propose une formation à l'IA. Très simple, et interactive.",
+    "",
+    "[avance] Elle t'apprend à monter des vidéos vite. Exactement celles que tu vois sur ma chaîne.",
+    "",
+    "[pause] Je ne vais pas te mentir.",
+    "",
+    "[droite|ce qui reste à faire] Ce n'est pas nickel à cent pour cent. Comme tout, ça s'améliore.",
+    "",
+    "[compte|quatre-vingt-dix] Mais ça fait quatre-vingt-dix pour cent du travail à ta place.",
+    "",
+    "[centre] Tu veux le système complet et un accompagnement ? Commente FORMATION sous cette vidéo, je t'envoie tout."
+  ].join("\n"),
+
+  'split-prompts': [
+    "[centre] Trente mille prompts video. Et toi, tu fixes encore une page blanche.",
+    "",
+    "[droite|la bibliotheque a l'ecran] Je tape le style que je veux, il sort le prompt exact.",
+    "",
+    "[montre|l'exemple rempli] Je remplace juste mon sujet. Le reste est deja ecrit.",
+    "",
+    "[avance] Tu ne devines plus ce qui marche. Tu choisis.",
+    "",
+    "[centre] Commente PROMPTS, je t'ouvre la bibliotheque."
+  ].join("\n"),
+  'hook-puissant-branded': [
+    "[centre] Arrete de scroller deux secondes, celui-la va te faire gagner de l'argent.",
+    "",
+    "[pause] Vraiment.",
+    "",
+    "[montre|le systeme a l'ecran] Trois automatisations tournent pendant que je dors.",
+    "",
+    "[compte|un, deux, trois] Les videos, les relances, les rendez-vous.",
+    "",
+    "[avance] Zero montage. Zero logiciel ouvert.",
+    "",
+    "[centre] Commente BOOST, je te donne le plan."
+  ].join("\n"),
+  'veille-to-video-v3': [
+    "[centre] Google vient de sortir un nouveau modele video, et personne n'en parle vraiment.",
+    "",
+    "[droite|la demo] En clair : une image, un prompt, et t'as un plan cinema.",
+    "",
+    "[montre|le prix] Douze centimes le plan. Un tournage, c'etait huit cents euros.",
+    "",
+    "[avance] Ce que tu peux vendre avec ca, c'est enorme.",
+    "",
+    "[centre] Commente SEEDANCE, je te montre comment je m'en sers."
+  ].join("\n"),
+  'reel-remix': [
+    "[centre] J'ai vu passer ce reel, il a fait des millions de vues. Voila pourquoi.",
+    "",
+    "[droite|le reel d'origine] Le format est bon. Le fond, lui, ne te sert a rien.",
+    "",
+    "[montre|ma version] Alors je garde le format, et je mets MA valeur dedans.",
+    "",
+    "[avance] Tu ne copies pas. Tu remixes.",
+    "",
+    "[centre] Commente REMIX, je te donne la methode."
+  ].join("\n"),
+  'yapping-facecam-branded': [
+    "[centre] Je vais te dire un truc que personne ne dit sur l'IA et le business.",
+    "",
+    "[avance] Tout le monde veut l'outil. Personne veut le systeme.",
+    "",
+    "[montre|l'ecran] L'outil sans systeme, c'est un jouet. Le systeme, c'est ce qui facture.",
+    "",
+    "[pause] Relis ca.",
+    "",
+    "[centre] Commente SYSTEME, je t'explique la difference."
+  ].join("\n"),
+  'revelation-ab-branded': [
+    "[centre] Tout le monde te dit d'utiliser cette astuce IA. Elle est incomplete.",
+    "",
+    "[droite|la version A] Version A : tu demandes, ca repond. Correct, banal.",
+    "",
+    "[montre|la version B] Version B : tu ajoutes ce detail, et la, ca change tout.",
+    "",
+    "[avance] Le detail, c'est le contexte. C'est lui qui fait la difference.",
+    "",
+    "[centre] Commente DETAIL, je te l'envoie en entier."
+  ].join("\n")
+};
+function exempleCourant(){ return (etat.template && SCRIPTS[etat.template]) ? SCRIPTS[etat.template] : EXEMPLE; }
+
+try { txt.value = localStorage.getItem(CLE_BROUILLON) || ''; } catch(e){}
+
+/* La palette d'insertion. Elle remplace la frappe de crochets au doigt. */
+$('#ex').addEventListener('click', () => {
+  /* Écraser un script en cours sans prévenir serait la pire des surprises. */
+  if (txt.value.trim() && !confirm("Remplacer ton script par l'exemple ?")) return;
+  txt.value = exempleCourant();
+  /* Le moment que Tony a designe : « quand je charge l'exemple ». Le clic est
+     un geste utilisateur, la lecture est donc autorisee par le navigateur —
+     lancer un son sans geste serait bloque en silence. */
+  startMusique();
+  majApercu();
+  txt.focus();
+  txt.setSelectionRange(0, 0);
+  txt.scrollTop = 0;
+});
+
+$('#pal').innerHTML = Object.entries(TAGS)
+  .filter(([k]) => k !== 'libre')
+  .map(([k,v]) => `<button data-t="${k}"><span>${v.ic}</span><b>[${k}]</b></button>`).join('');
+$('#pal').addEventListener('click', (ev) => {
+  const b = ev.target.closest('button'); if (!b) return;
+  const t = `[${b.dataset.t}]`;
+  const d = txt.selectionStart ?? txt.value.length;
+  const f = txt.selectionEnd ?? d;
+  const av = txt.value.slice(0, d), ap = txt.value.slice(f);
+  const sep = (av && !/\n$/.test(av)) ? '\n' : '';
+  txt.value = av + sep + t + '\n' + ap;
+  txt.focus();
+  const p = (av + sep + t + '\n').length;
+  txt.setSelectionRange(p, p);
+  majApercu();
+});
+
+/* Analyse du script. Un marqueur = `[tag]` ou `[tag|précision]`, n'importe où.
+   Le texte qui suit un marqueur, jusqu'au marqueur suivant, lui est attaché :
+   c'est ce texte que le moteur affichera sur la carte.
+
+   Tolérant depuis le 2026-09-29 : Tony a tourné avec des marqueurs libres
+   (`[FACE CAM — centre]`, `[IA]`, `[MOTION DESIGN …]`) que l'ancien
+   analyseur ne connaissait pas — il les a laissés en texte, la prise est
+   partie avec ZÉRO repère et le montage s'est arrêté. Désormais :
+   - les variantes françaises/anglaises courantes et le format 25×3H
+     (`[centre]`, `[zoom|mot]`, `[rupture|…]`, `[avatar IA]`,
+     `[retour centre]`, `[CTA]`) retombent sur un tag connu ;
+   - un marqueur inconnu devient un repère « libre » qui porte son texte en
+     précision — jamais perdu ;
+   - une indication entre parenthèses `(Motion design : …)` n'est pas lue au
+     prompteur : elle complète la précision du repère qui la précède. */
+function sansAccent(x){ return String(x).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase(); }
+const ALIAS_MUETS = /^(face ?cam(era)?|facecam|camera|cam|centre|center|retour( au)? centre|plan face|face)$/;
+function resoudreTag(interieur){
+  let tete = interieur, precision = '';
+  const barre = interieur.indexOf('|');
+  if (barre >= 0){ tete = interieur.slice(0, barre); precision = interieur.slice(barre + 1).trim(); }
+  tete = tete.trim();
+  const n = sansAccent(tete).replace(/[_]+/g, ' ').replace(/\s+/g, ' ').trim();
+  if (TAGS[n]) return { tag:n, precision };
+  /* « FACE CAM — pointe commentaires » : ce qui suit le tiret précise. */
+  const coupe = tete.split(/\s+[—–-]\s+|\s*[:,]\s+/);
+  const base = sansAccent(coupe[0]).trim();
+  const suite = coupe.slice(1).join(' — ').trim();
+  const mots = ' ' + n.replace(/[^a-z0-9%]+/g, ' ') + ' ';
+  const a = (re) => re.test(mots);
+  let tag = null;
+  if (a(/ (zoom|zoome|zoomer|rapproche\w*|rapprochement|avance|gros plan|punch ?in) /)) tag = 'avance';
+  else if (a(/ (recule\w*|recul|dezoom\w*|plan large|zoom out) /)) tag = 'recule';
+  else if (a(/ (gauche|left) /)) tag = 'gauche';
+  else if (a(/ (droite|right) /)) tag = 'droite';
+  else if (a(/ (rupture|pause|silence|temps|respiration|beat|break) /)) tag = 'pause';
+  else if (a(/ (compte|doigts|count|liste) /)) tag = 'compte';
+  else if (a(/ (main|leve la main|hand) /)) tag = 'main';
+  else if (a(/ (motion|design|animation|anime|b ?roll|broll|ecran|screen|capture|screencast|insert|visuel|image|demo|montre|show|schema|graphique|ia|ai|avatar|overlay|texte a l ecran) /)) tag = 'montre';
+  else if (a(/ (face|facecam|cam|camera|centre|center|cta|appel a l action|call to action|outro|intro|hook) /)) tag = 'centre';
+  if (!tag) return { tag:'libre', precision: precision || tete };
+  const muet = (x) => ALIAS_MUETS.test(x) || !!TAGS[x];
+  if (!precision){
+    /* [FACE CAM — centre] : rien à dire ; [FACE CAM — pointe commentaires] :
+       la suite ; [CAPTURE ÉCRAN — CLAUDE.md], [IA], [CTA] : tout le marqueur. */
+    if (!muet(base)) precision = tete;
+    else if (suite && !muet(sansAccent(suite))) precision = suite;
+  }   // [zoom|mot] : la précision est le mot ; le marqueur d'origine reste dans `brut`
+  return { tag, precision };
+}
+function analyser(src){
+  const blocs = [];
+  /* Un marqueur, ou une indication de mise en scène entre parenthèses. */
+  const re = /\[([^\]\n]{1,120})\]|\(([^()\n]{1,300})\)/g;
+  const direction = (t) => {
+    for (let i = blocs.length - 1; i >= 0; i--){
+      if (blocs[i].k === 'repere'){
+        const r = blocs[i];
+        r.precision = r.precision ? r.precision + ' — ' + t : t;
+        return;
+      }
+      if (blocs[i].k === 'texte') break;   // déjà du texte parlé depuis : l'indication vaut pour la suite
+    }
+    blocs.push({ k:'repere', tag:'libre', precision:t });
+  };
+  for (const ligne of String(src).split('\n')){
+    let pos = 0, m;
+    re.lastIndex = 0;
+    while ((m = re.exec(ligne)) !== null){
+      const avant = ligne.slice(pos, m.index).trim();
+      if (avant) blocs.push({ k:'texte', texte:avant });
+      if (m[1] !== undefined){
+        const r = resoudreTag(m[1]);
+        blocs.push({ k:'repere', tag:r.tag, precision:r.precision, brut:m[1].trim() });
+      } else {
+        direction(m[2].trim());
+      }
+      pos = m.index + m[0].length;
+    }
+    const reste = ligne.slice(pos).trim();
+    if (reste) blocs.push({ k:'texte', texte:reste });
+  }
+  return blocs;
+}
+
+function majApercu(){
+  try { localStorage.setItem(CLE_BROUILLON, txt.value); } catch(e){}
+  const b = analyser(txt.value);
+  $('#apercu').innerHTML = b.length
+    ? b.map(x => x.k === 'texte'
+        ? esc(x.texte)
+        : `<span class="cu">${TAGS[x.tag].ic} ${esc(TAGS[x.tag].nom)}${x.precision ? ' — ' + esc(x.precision) : ''}</span>`
+      ).join(' ')
+    : '<i>Rien pour l\'instant.</i>';
+  const n = b.filter(x => x.k === 'repere').length;
+  $('#go').textContent = n ? `Tourner — ${n} mouvement${n > 1 ? 's' : ''}` : 'Tourner';
+}
+function esc(s){ return String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+txt.addEventListener('input', majApercu);
+majApercu();
+
+let mpm = 130, cam = 'user', decompte = 3;
+$('#vit').addEventListener('input', e => { mpm = +e.target.value; majVit(); });
+function majVit(){ $('#vitval').textContent = mpm + ' mots/min'; $('#vit').value = mpm; recalculerVitesse(); }
+$('#segcam').addEventListener('click', e => { const b = e.target.closest('button'); if(!b) return;
+  cam = b.dataset.cam; $$('#segcam button').forEach(x => x.classList.toggle('on', x === b)); });
+$('#segdec').addEventListener('click', e => { const b = e.target.closest('button'); if(!b) return;
+  decompte = +b.dataset.dec; $$('#segdec button').forEach(x => x.classList.toggle('on', x === b)); });
+$('#btvid').addEventListener('click', () => { txt.value = ''; majApercu(); });
+
+/* Voie de repli : une vidéo déjà tournée. Il pose les repères en la regardant.
+   Sans ça l'outil est mort dès que le navigateur refuse la caméra — et sur
+   iPhone, un navigateur intégré (Instagram, Messages) la refuse souvent. */
+$('#btfic').addEventListener('click', () => $('#fic').click());
+$('#fic').addEventListener('change', (e) => {
+  const f = e.target.files && e.target.files[0]; if (!f) return;
+  etat.blocs   = analyser(txt.value);
+  etat.reperes = etat.blocs.filter(b => b.k === 'repere')
+    .map((b,i) => { const r = nouveauRepere(b, i, 0); r.source = 'a-placer'; return r; });
+  etat.source  = 'fichier';
+  etat.video   = f;
+  etat.meta    = { nom:f.name, type:f.type || 'video/mp4', octets:f.size };
+  ouvrirRelecture();
+});
+
+/* ═══ 2 · Tournage ═════════════════════════════════════════════════════ */
+const flux = $('#flux'), piste = $('#piste');
+
+/* ══════════════════════════════════════════════════════════════════════════
+   LES RENDUS D'IMAGE
+   Demande de Tony le 2026-09-09 : pouvoir choisir un rendu au moment de se
+   filmer, pour que la video paraisse de meilleure qualite sans retouche apres.
+
+   Comment : la camera est dessinee dans un canvas, image par image, avec un
+   filtre. C'est CE canvas qui est enregistre — le rendu est donc dans le
+   fichier, pas seulement a l'ecran. Tout tient en canvas 2D : une page qui
+   embarquerait du WebGL pour ca ferait tomber la cadence sur telephone.
+
+   Rendu « Aucun » : on n'allume rien du tout et on enregistre le flux camera
+   d'origine. C'est important — passer par le canvas re-encode chaque image, et
+   il n'y a aucune raison de payer ce prix quand on ne demande aucun effet.
+   ══════════════════════════════════════════════════════════════════════════ */
+const grade = $('#grade');
+
+/* ══════════════════════════════════════════════════════════════════════════
+   LA VIDEO DE REFERENCE
+   Demande de Tony le 2026-09-09 : voir l'original pendant qu'il refait la
+   prise, « pour voir comment il a fait ». Elle se lance en meme temps que la
+   lecture, en haut de l'ecran, MUETTE — son audio partirait droit dans le
+   micro et se retrouverait dans la banque de voix.
+   ══════════════════════════════════════════════════════════════════════════ */
+const ref = $('#ref');
+let refURL = null;                 // l'adresse blob que NOUS possedons, s'il y en a une
+
+/* `poserReference` revoque l'ancienne adresse blob avant d'en poser une
+   nouvelle. Le piege, paye le 2026-09-09 : en revoquant `refURL` juste apres
+   l'avoir cree, on detruit l'adresse qu'on s'appretait a utiliser — la balise
+   se retrouve avec `currentSrc` vide et `readyState` a 0, et `play()` repond
+   « The element has no supported sources ». On revoque donc l'ANCIENNE, jamais
+   celle qu'on vient de recevoir. */
+function poserReference(src, blob){
+  const ancienne = refURL;
+  refURL = blob ? src : null;
+  if (ancienne && ancienne !== src) { try { URL.revokeObjectURL(ancienne); } catch(e){} }
+  if (!src) { ref.removeAttribute('src'); ref.hidden = true; $('#bref').hidden = true;
+    $('#e2').classList.remove('avec-ref'); return; }
+  ref.src = src;
+  ref.load();
+  ref.hidden = false;
+  $('#bref').hidden = false;
+  $('#e2').classList.add('avec-ref');
+  /* On la met en pause sur sa premiere image : elle doit etre visible pour
+     qu'on la cadre du regard, mais ne pas tourner dans le vide avant la prise. */
+  ref.currentTime = 0;
+  ref.pause();
+  /* Le son. L'element portait `muted` en dur : la reference etait donc MUETTE
+     en toutes circonstances, y compris quand on la regarde pour l'etudier —
+     or ce qu'on vient y chercher, c'est autant la voix que l'image. Retour de
+     Tony le 2026-09-10. Desormais : audible tant qu'on prepare, coupee des que
+     l'enregistrement demarre (sinon elle passe dans le micro, exactement comme
+     la musique). */
+  ref.muted = false;
+  ref.volume = 1;
+  const aide = $('#refaide'); if (aide) aide.hidden = false;
+}
+
+/* Un appui sur la reference la lance ou l'arrete, avec le son. Le geste de
+   l'utilisateur est ce qui autorise le navigateur a jouer du son : sans lui,
+   une lecture automatique sortirait muette de toute facon. */
+ref.addEventListener('click', () => {
+  const aide = $('#refaide'); if (aide) aide.hidden = true;
+  if (ref.paused) { ref.muted = false; ref.play().catch(()=>{}); }
+  else { ref.pause(); }
+});
+
+$('#reffile').addEventListener('change', (e) => {
+  const f = e.target.files && e.target.files[0];
+  if (!f) return;
+  $('#refurl').value = '';
+  poserReference(URL.createObjectURL(f), true);
+});
+$('#refurl').addEventListener('change', () => {
+  const u = $('#refurl').value.trim();
+  if (u) { $('#reffile').value = ''; poserReference(u, false); }
+});
+/* La hauteur reelle de la reference, mesuree des que le navigateur connait les
+   dimensions de la video — et re-mesuree si l'ecran tourne. */
+function mesurerReference(){
+  const h = Math.round(ref.getBoundingClientRect().height);
+  if (h > 0) $('#e2').style.setProperty('--hRef', h + 'px');
+}
+ref.addEventListener('loadedmetadata', mesurerReference);
+window.addEventListener('resize', () => { if (!ref.hidden) mesurerReference(); });
+
+$('#bref').addEventListener('click', () => {
+  ref.hidden = !ref.hidden;
+  /* La fenetre de lecture reprend toute la hauteur des qu'on cache la
+     reference : sinon on garde un vide en haut pour rien. */
+  $('#e2').classList.toggle('avec-ref', !ref.hidden);
+  $('#bref').setAttribute('aria-pressed', String(!ref.hidden));
+});
+
+/* La musique se lançait a `rec.onstart`. Elle demarre maintenant DES QUE LE
+   PROMPTEUR S'OUVRE — c'est ce que Tony demande : « pour me mettre un peu dans
+   le move » avant d'appuyer sur rouge, pas une fois la prise partie.
+   Le bouton ♪ la coupe sur place : sans ecouteur elle passe dans le micro, et
+   il faut pouvoir la faire taire sans quitter l'ecran de tournage. */
+$('#bmus').addEventListener('click', () => { if (guide) stopMusique(); else startMusique(); });
+const RENDUS = {
+  aucun:  { nom: 'Aucun',   d: 'la caméra telle quelle' },
+  net:    { nom: 'Net',     d: 'un cran de contraste',
+            css: 'contrast(1.07) saturate(1.08)' },
+  studio: { nom: 'Studio',  d: 'peau adoucie, lumière chaude',
+            css: 'contrast(1.06) saturate(1.06)',
+            doux: 0.22, teinte: { c: '255,178,110', a: 0.06, mode: 'soft-light' },
+            vignette: 0.12 },
+  cinema: { nom: 'Cinéma',  d: 'ombres froides, hautes lumières chaudes',
+            css: 'contrast(1.12) saturate(1.02)', doux: 0.12,
+            ombre:  { c: '30,95,122',  a: 0.13, mode: 'soft-light' },
+            teinte: { c: '255,150,70', a: 0.07, mode: 'soft-light' },
+            vignette: 0.24 },
+  froid:  { nom: 'Froid',   d: 'gris bleuté, sobre',
+            css: 'contrast(1.10) saturate(0.88)',
+            teinte: { c: '120,170,205', a: 0.10, mode: 'soft-light' },
+            vignette: 0.18 },
+};
+const FORMATS = { '3:4': { h: 1440, d: 'plus large — gestes et épaules gardés' }, '9:16': { h: 1920, d: 'format reel direct — plus serré' } };
+let format = '3:4';
+try { const f = localStorage.getItem('tournage-format'); if (FORMATS[f]) format = f; } catch(e){}
+let rendu = localStorage.getItem('tournage-rendu') || 'aucun';
+if (!RENDUS[rendu]) rendu = 'aucun';
+let gctx = null, tampon = null, fluxCanvas = null, rafGrade = null;
+
+function dessinerRendu(){
+  rafGrade = requestAnimationFrame(dessinerRendu);
+  const L = RENDUS[rendu];
+  if (!L || !flux.videoWidth) return;
+  /* Toujours 9:16. Avant, la prise gardait le format que la camera donnait
+     (1440x1080, 3:4...) : « apres tournage c'est toujours pas en 9:16 »
+     (Tony, 2026-09-29). On recadre au centre le plus grand 9:16 de l'image et
+     on le pose sur un canvas fixe 1080x1920 — ce que l'on voit est ce qui est
+     enregistre, filtre ou pas. */
+  /* 3:4 par defaut (retour de Tony le 2026-09-29 : le 9:16 recadre dans une
+     camera paysage « zoome trop »). Le 3:4 garde epaules et gestes ; le
+     montage recadre ensuite en 9:16 avec de la marge. */
+  const w = 1080, h = FORMATS[format].h;
+  const vw = flux.videoWidth, vh = flux.videoHeight;
+  const cw = Math.min(vw, vh * w / h), ch = cw * h / w;
+  const sx = (vw - cw) / 2, sy = (vh - ch) / 2;
+  if (grade.width !== w || grade.height !== h){
+    grade.width = w; grade.height = h;
+    gctx = grade.getContext('2d', { alpha:false });
+    /* Le flou se calcule sur une copie REDUITE au quart : un `blur()` sur
+       1080x1920 a 30 i/s fait chuter la cadence sur telephone, alors que le
+       meme flou, vu a taille reelle, ne se distingue pas de celui calcule en
+       pleine definition. */
+    tampon = document.createElement('canvas');
+    tampon.width = Math.max(1, Math.round(w/4)); tampon.height = Math.max(1, Math.round(h/4));
+  }
+  const ctx = gctx; if (!ctx) return;
+  ctx.setTransform(1,0,0,1,0,0);
+  ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1;
+  ctx.filter = L.css || 'none'; ctx.drawImage(flux, sx, sy, cw, ch, 0, 0, w, h); ctx.filter = 'none';
+
+  /* Adoucissement : une copie floue reposee en OPACITE SIMPLE, pas en
+     « soft-light ». Mesure du 2026-09-09 : en soft-light la copie floue
+     eclaircit tellement que le visage part en blanc — joli sur une vignette,
+     illisible en grand. En source-over a faible opacite on obtient un vrai
+     flou de portrait : le grain de peau s'efface, les yeux et la bouche
+     restent nets parce qu'ils sont plus contrastes que leur voisinage. */
+  if (L.doux && tampon){
+    const t = tampon.getContext('2d');
+    t.setTransform(1,0,0,1,0,0); t.filter = 'none';
+    t.drawImage(grade, 0, 0, tampon.width, tampon.height);
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.globalAlpha = L.doux; ctx.filter = 'blur(3px)';
+    ctx.drawImage(tampon, 0, 0, w, h);
+    ctx.filter = 'none';
+  }
+  const teindre = (t) => { if (!t) return;
+    ctx.globalCompositeOperation = t.mode; ctx.globalAlpha = t.a;
+    ctx.fillStyle = 'rgb(' + t.c + ')'; ctx.fillRect(0,0,w,h); };
+  teindre(L.ombre); teindre(L.teinte);
+  if (L.vignette){
+    const g = ctx.createRadialGradient(w/2, h/2, Math.min(w,h)*0.30, w/2, h/2, Math.max(w,h)*0.72);
+    g.addColorStop(0,'rgba(0,0,0,0)');
+    g.addColorStop(1,'rgba(0,0,0,' + L.vignette + ')');
+    ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1;
+    ctx.fillStyle = g; ctx.fillRect(0,0,w,h);
+  }
+  ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1;
+}
+
+function appliquerRendu(){
+  const actif = true;   // le canvas 9:16 sert toujours d'apercu et de source, meme sans filtre
+  grade.classList.toggle('on', actif);
+  flux.classList.toggle('cache', actif);
+  grade.classList.toggle('miroir', cam === 'user');
+  [].forEach.call($('#rendus').querySelectorAll('button[data-k]'), (b) => {
+    b.setAttribute('aria-pressed', String(b.dataset.k === rendu));
+  });
+  localStorage.setItem('tournage-rendu', rendu);
+  if (actif && !rafGrade) rafGrade = requestAnimationFrame(dessinerRendu);
+  if (!actif && rafGrade){ cancelAnimationFrame(rafGrade); rafGrade = null; }
+}
+
+(function construireRendus(){
+  const bo = $('#rendus');
+  const majFormats = () => [].forEach.call(bo.querySelectorAll('.fmt'), (x) => x.setAttribute('aria-pressed', String(x.dataset.f === format)));
+  Object.keys(FORMATS).forEach((f) => {
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'fmt'; b.dataset.f = f; b.textContent = f; b.title = FORMATS[f].d;
+    b.addEventListener('click', () => {
+      if (typeof enCours !== 'undefined' && enCours) return;   // pas de changement de format pendant une prise
+      format = f; try { localStorage.setItem('tournage-format', f); } catch(e){}
+      majFormats();
+    });
+    bo.appendChild(b);
+  });
+  const sep = document.createElement('span'); sep.className = 'sep'; bo.appendChild(sep);
+  majFormats();
+  Object.keys(RENDUS).forEach((k) => {
+    const b = document.createElement('button');
+    b.type = 'button'; b.dataset.k = k; b.textContent = RENDUS[k].nom;
+    b.title = RENDUS[k].d;
+    b.addEventListener('click', () => { rendu = k; appliquerRendu(); });
+    bo.appendChild(b);
+  });
+})();
+
+/* Le flux reellement enregistre. Avec un rendu, c'est le canvas — plus la
+   piste AUDIO d'origine, que `captureStream` d'un canvas ne fournit evidemment
+   pas : sans cette ligne, la video sort muette, et on ne s'en apercoit qu'a la
+   relecture. On garde le meme objet d'un enregistrement a l'autre : rappeler
+   `captureStream` cree un second flux et le premier continue de tourner. */
+function fluxAEnregistrer(){
+  /* Le flux de canvas etait garde d'une prise a l'autre. Or la fin d'une prise
+     coupe TOUTES les pistes du flux camera — y compris la piste audio qui avait
+     ete greffee ici. A la prise suivante, le micro est un nouvel objet, mais ce
+     flux-la portait encore l'ancienne piste, morte : la video sortait sans voix.
+     C'est le defaut remonte par Tony le 2026-09-10, et il n'apparaissait qu'a
+     partir de la DEUXIEME prise, avec un rendu d'image actif.
+     On verifie donc que la piste audio est bien vivante ; sinon on rebatit. */
+  const vivante = fluxCanvas
+    && fluxCanvas.getAudioTracks().length
+    && fluxCanvas.getAudioTracks()[0].readyState === 'live';
+  if (!vivante){
+    if (fluxCanvas){ try { fluxCanvas.getTracks().forEach((t) => t.stop()); } catch(e){} }
+    fluxCanvas = grade.captureStream(30);
+    stream.getAudioTracks().forEach((t) => fluxCanvas.addTrack(t));
+  }
+  return fluxCanvas;
+}
+let stream = null, rec = null, morceaux = [];
+let t0 = 0, enCours = false, rafId = 0, y = 0, y0 = 0, pxParSec = 0, dernier = 0;
+let cues = [], iActif = -1, verrou = null;
+let blocs = [], hFenetre = 0;   // mesures figees pendant la prise (voir `boucle`)
+
+/* ─── Temoin de niveau du micro ────────────────────────────────────────
+   Mesure a 10 Hz, dans son propre intervalle : la boucle d'image est deja
+   juste sur telephone quand un rendu tourne, on n'y ajoute rien. */
+let actx = null, ana = null, vuTimer = null, vuBuf = null;
+function demarrerVu(fluxMicro){
+  arreterVu();
+  try {
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC || !fluxMicro.getAudioTracks().length) return;
+    actx = new AC();
+    /* Sur iOS et sur Chrome, un AudioContext nait « suspendu » tant qu'un geste
+       de l'utilisateur ne l'a pas reveille. Sans ce resume, le temoin reste a
+       zero et laisse croire que le micro n'entre pas. */
+    if (actx.state === 'suspended') { actx.resume().catch(()=>{}); }
+    ana = actx.createAnalyser(); ana.fftSize = 256;
+    actx.createMediaStreamSource(fluxMicro).connect(ana);
+    vuBuf = new Uint8Array(ana.fftSize);
+    const barre = $('#vubar'), boite = $('#vu');
+    let muets = 0;
+    vuTimer = setInterval(() => {
+      ana.getByteTimeDomainData(vuBuf);
+      let pic = 0;
+      for (let i = 0; i < vuBuf.length; i++){
+        const e = Math.abs(vuBuf[i] - 128); if (e > pic) pic = e;
+      }
+      const pct = Math.min(100, Math.round((pic / 128) * 260));
+      barre.style.width = pct + '%';
+      /* Trois secondes de silence complet : ce n'est plus du silence, c'est un
+         micro qui n'entre pas. On le dit en rouge plutot que de laisser croire
+         que tout va bien. */
+      muets = pic < 2 ? muets + 1 : 0;
+      boite.classList.toggle('muet', muets > 30);
+    }, 100);
+  } catch(e){}
+}
+/* On juge l'orientation sur l'image AFFICHEE (videoWidth/videoHeight de la
+   balise video, rotation appliquee), pas sur getSettings() : beaucoup de
+   telephones (iPhone surtout) y declarent le format du capteur, en paysage,
+   alors que l'image est bien verticale — la page criait « paysage » a tort
+   (retour de Tony le 2026-09-29, telephone tenu debout). */
+let cadrageVu = false;
+function verifierCadrage(fluxCam){
+  const b = $('#paysage'); if (!b) return;
+  try {
+    const t = fluxCam.getVideoTracks()[0]; if (!t) return;
+    const appliquer = () => {
+      const st = t.getSettings() || {};
+      const l = flux.videoWidth || 0, h = flux.videoHeight || 0, ips = Math.round(st.frameRate || 0);
+      if (!l || !h) return;   // pas encore d'image decodee : on repasse sur loadedmetadata / resize
+      const paysage = l > h;
+      /* La cadence compte autant que le cadrage. La contrainte dure de 24 i/s a
+         ete retiree le 2026-09-10 pour que la camera s'ouvre en faible lumiere —
+         mais une prise a 16 i/s saccade et rien ne le rattrape au montage. Alors
+         on ne refuse plus, on previent. */
+      const lent = ips > 0 && ips < 24;
+      if (!paysage && !lent) { b.hidden = true; return; }
+      $('#paysagetitre').textContent = paysage
+        ? 'Ton t\u00e9l\u00e9phone filme en paysage.'
+        : 'Ta cam\u00e9ra tourne au ralenti.';
+      $('#paysagedim').textContent = l + ' x ' + h + (ips ? ' \u00b7 ' + ips + ' i/s' : '');
+      $('#paysageaide').textContent = paysage
+        ? 'Tourne-le \u00e0 la verticale \u2014 sinon le montage devra jeter la moiti\u00e9 du cadre.'
+        : 'Sous 24 images par seconde le mouvement saccade, et \u00e7a ne se rattrape pas au montage. Plus de lumi\u00e8re, ou ferme les autres applications.';
+      b.hidden = cadrageVu;
+    };
+    appliquer();
+    /* Certains telephones ne renseignent les dimensions qu'une fois la premiere
+       image decodee : on repasse quand la video connait sa taille. */
+    flux.addEventListener('loadedmetadata', appliquer, { once: true });
+    flux.onresize = appliquer;   // une seule fois, meme si la camera est rouverte
+  } catch(e){}
+}
+
+function arreterVu(){
+  if (vuTimer){ clearInterval(vuTimer); vuTimer = null; }
+  if (actx){ try { actx.close(); } catch(e){} actx = null; }
+  ana = null; vuBuf = null;
+  const b = $('#vubar'); if (b) b.style.width = '0%';
+  const v = $('#vu'); if (v) v.classList.remove('muet');
+}
+
+function nouveauRepere(b, i, t){
+  const T = TAGS[b.tag];
+  return {
+    id: i + 1,
+    tag: b.tag,
+    libelle: T.nom,
+    precision: b.precision || '',
+    brut: b.brut || null,
+    t: t, tFin: null, tPrevu: null,
+    source: 'prompteur',
+    positionCadre: T.cadre,
+    coteAnimation: T.cadre === 'g' ? 'd' : (T.cadre === 'd' ? 'g' : null),
+    effet: T.effet,
+    texte: '',
+  };
+}
+
+$('#go').addEventListener('click', async () => {
+  $('#msg1').classList.remove('on');
+  etat.blocs = analyser(txt.value);
+  if (!etat.blocs.length) return erreur1("Le script est vide — colle au moins une ligne.");
+  try {
+    stream = await navigator.mediaDevices.getUserMedia({
+      /* `frameRate:{min:24}` etait une contrainte DURE : un telephone qui ne peut
+         pas garantir 24 images/s — typiquement en faible lumiere — se voyait
+         refuser la camera entierement, avec un « OverconstrainedError » que
+         l'ecran traduisait par « Camera indisponible ». On demande, on n'exige
+         pas : mieux vaut filmer a 20 images/s que ne pas filmer. */
+      video: { facingMode: cam, width:{ideal:1080}, height:{ideal:1920}, aspectRatio:{ideal:9/16}, frameRate:{ideal:30} },
+      audio: { echoCancellation:true, noiseSuppression:true }
+    });
+    demarrerVu(stream);
+    verifierCadrage(stream);
+  } catch (err){
+    return erreur1("Caméra indisponible (" + (err && err.name ? err.name : 'inconnu') + ") — "
+      + (err && err.message ? err.message : '') + ". Ouvre la page dans Safari ou Chrome "
+      + "(pas dans le navigateur d'une app), autorise la caméra, ou passe par « J'ai déjà la vidéo ».");
+  }
+  flux.srcObject = stream;
+  flux.classList.toggle('miroir', cam === 'user');
+  appliquerRendu();
+  construirePiste();
+  montrer('e2');
+  startMusique();          // sans effet si elle tourne deja depuis l'ecran 1
+  majBoutonMus();
+  try { verrou = await navigator.wakeLock.request('screen'); } catch(e){}
+});
+
+function construirePiste(){
+  piste.innerHTML = '';
+  cues = [];
+  let iRep = 0;
+  etat.reperes = [];
+  etat.blocs.forEach((b) => {
+    if (b.k === 'texte'){
+      const p = document.createElement('p'); p.className = 'bl'; p.textContent = b.texte;
+      piste.appendChild(p);
+      if (cues.length) { const c = cues[cues.length-1];
+        c.rep.texte = (c.rep.texte ? c.rep.texte + ' ' : '') + b.texte; }
+    } else {
+      const T = TAGS[b.tag];
+      const d = document.createElement('div'); d.className = 'cu';
+      d.innerHTML = `<span class="ic">${T.ic}</span><span>${esc(T.nom)}${
+        b.precision ? ' — ' + esc(b.precision) : ''}</span>`;
+      piste.appendChild(d);
+      const rep = nouveauRepere(b, iRep++, null);
+      etat.reperes.push(rep);
+      cues.push({ el:d, rep, haut:0 });
+    }
+  });
+  const f = document.createElement('p'); f.className = 'fin';
+  f.textContent = '— fin du script —'; piste.appendChild(f);
+  requestAnimationFrame(() => {
+    cues.forEach(c => c.haut = c.el.offsetTop);
+    /* Meme passe de mesure pour les blocs de texte et pour la hauteur de la
+       fenetre : tout ce que `boucle` lit doit etre connu AVANT la prise. */
+    blocs = Array.from(piste.children)
+      .filter(el => el.classList.contains('bl'))
+      .map(el => ({ el, bas: el.offsetTop + el.offsetHeight, passe: false }));
+    hFenetre = $('.fenetre').clientHeight;
+    recalculerVitesse();
+    y0 = -($('.fenetre').clientHeight * 0.38);
+    y = y0;
+    piste.style.transform = 'translateY(' + (-y) + 'px)';
+  });
+  y = 0; iActif = -1; piste.style.transform = 'translateY(0px)';
+  $('#mvt').classList.remove('on');
+  $('#fait').disabled = true;
+}
+
+/* Vitesse : on convertit des mots/minute en pixels/seconde en mesurant la
+   hauteur réelle du texte rendu. Un réglage en px/s ne veut rien dire quand
+   la taille de police change d'un téléphone à l'autre. */
+function recalculerVitesse(){
+  const mots = etat.blocs.filter(b => b.k === 'texte')
+    .reduce((n,b) => n + b.texte.split(/\s+/).filter(Boolean).length, 0);
+  const h = piste.scrollHeight - (window.innerHeight * 0.6);
+  pxParSec = (mots > 0 && h > 0) ? (mpm / 60) * (h / mots) : 40;
+  if (!isFinite(pxParSec) || pxParSec <= 0) pxParSec = 40;
+}
+
+$('#mvit').addEventListener('click', () => { mpm = Math.max(70, mpm - 10); majVit(); });
+$('#pvit').addEventListener('click', () => { mpm = Math.min(230, mpm + 10); majVit(); });
+$('#bcam').addEventListener('click', async () => {
+  if (enCours) return;
+  cam = (cam === 'user') ? 'environment' : 'user';
+  if (stream) stream.getTracks().forEach(t => t.stop());
+  try {
+    stream = await navigator.mediaDevices.getUserMedia({
+      video:{ facingMode:cam, width:{ideal:1080}, height:{ideal:1920} }, audio:true });
+    demarrerVu(stream);
+    verifierCadrage(stream);
+    flux.srcObject = stream; flux.classList.toggle('miroir', cam === 'user');
+    /* La camera a change : l'ancien flux de canvas porte la piste audio du
+       flux precedent, qui vient d'etre coupee. On le jette pour qu'il soit
+       reconstruit sur la nouvelle. */
+    fluxCanvas = null;
+    appliquerRendu();
+  } catch(e){}
+});
+$('#paysageok').addEventListener('click', () => { cadrageVu = true; $('#paysage').hidden = true; });
+$('#quit').addEventListener('click', () => { arreterTout(); montrer('e1'); });
+
+function arreterTout(){
+  enCours = false; cancelAnimationFrame(rafId);
+  arreterVu();
+  $('#e2').classList.remove('tourne');
+  if (rafGrade){ cancelAnimationFrame(rafGrade); rafGrade = null; }
+  if (fluxCanvas){ fluxCanvas.getTracks().forEach((t) => t.stop()); fluxCanvas = null; }
+  try { ref.pause(); } catch(e){}
+  if (rec && rec.state !== 'inactive') { try { rec.stop(); } catch(e){} }
+  if (stream) stream.getTracks().forEach(t => t.stop());
+  if (verrou) { try { verrou.release(); } catch(e){} verrou = null; }
+  $('#past').classList.remove('rec');
+  stopMusique();
+}
+
+const maintenant = () => (performance.now() - t0) / 1000;
+const mmss = (s) => Math.floor(s/60) + ':' + String(Math.floor(s%60)).padStart(2,'0');
+
+/* Le format d'enregistrement. Safari sait faire du mp4, Chrome du webm ;
+   on prend le premier que le navigateur admet vraiment plutôt que de
+   supposer — un mimeType refusé fait échouer `start()` sans rien dire. */
+function choisirFormat(){
+  const cand = ['video/mp4;codecs=avc1.42E01E,mp4a.40.2','video/mp4',
+                'video/webm;codecs=vp9,opus','video/webm;codecs=vp8,opus','video/webm'];
+  for (const c of cand){
+    try { if (window.MediaRecorder && MediaRecorder.isTypeSupported(c)) return c; } catch(e){}
+  }
+  return '';
+}
+
+$('#rec').addEventListener('click', async () => {
+  if (enCours) return stopper();
+  if (decompte > 0) await faireDecompte(decompte);
+  demarrer();
+});
+
+function faireDecompte(n){
+  return new Promise(res => {
+    const el = $('#compte'); el.classList.add('on');
+    let k = n;
+    el.textContent = k;
+    const it = setInterval(() => {
+      k--;
+      if (k <= 0){ clearInterval(it); el.classList.remove('on'); res(); }
+      else el.textContent = k;
+    }, 1000);
+  });
+}
+
+function demarrer(){
+  morceaux = [];
+  const mime = choisirFormat();
+  try {
+    rec = new MediaRecorder(fluxAEnregistrer(), mime ? { mimeType:mime, videoBitsPerSecond: 6000000 } : undefined);
+  } catch(e){
+    return alert("Enregistrement impossible sur ce navigateur : " + e.message
+      + "\nUtilise « J'ai déjà la vidéo » après avoir filmé avec l'app Caméra.");
+  }
+  rec.ondataavailable = (e) => { if (e.data && e.data.size) morceaux.push(e.data); };
+  rec.onstop = finTournage;
+  /* `onstart` — et surtout pas la ligne d'après. C'est le seul instant où
+     l'on sait que la première image est écrite dans le fichier. */
+  rec.onstart = () => {
+    t0 = performance.now();
+    dernier = t0;
+    enCours = true;
+    $('#past').classList.add('rec');
+    $('#rec').classList.add('stop');
+    $('#fait').disabled = false;
+    /* La musique se TAIT pendant la prise. Elle est la pour se mettre dans le
+       rythme au moment ou l'on charge son script — pas pour etre enregistree.
+       Retour de Tony le 2026-09-10 : sa voix avait disparu de l'enregistrement.
+       Le micro tourne avec annulation d'echo et reduction de bruit : une
+       musique continue jouee par le meme telephone est exactement ce que ces
+       deux traitements cherchent a supprimer, et ils emportent la voix avec.
+       On la coupe ici, on la remet des qu'on revient sur l'ecran de reglage. */
+    stopMusique();
+    /* La reference tourne pendant la prise pour se caler dessus, mais MUETTE :
+       le micro est ouvert a 30 cm. */
+    $('#e2').classList.add('tourne');
+    var aideR = $('#refaide'); if (aideR) aideR.hidden = true;
+    if (ref.src) { try { ref.muted = true; ref.currentTime = 0; ref.play().catch(()=>{}); } catch(e){} }
+    rafId = requestAnimationFrame(boucle);
+  };
+  rec.start(1000);
+}
+
+function boucle(now){
+  if (!enCours) return;
+  const dt = (now - dernier) / 1000; dernier = now;
+  y += pxParSec * dt;
+  piste.style.transform = 'translateY(' + (-y) + 'px)';
+  $('#chr').textContent = mmss(maintenant());
+
+  /* Ligne de lecture à 38 % de la fenêtre : un bloc est « atteint » quand
+     son haut la franchit. */
+  const seuil = y + hFenetre * 0.38;
+  /* Avant : `offsetTop`/`offsetHeight` etaient relus sur CHAQUE bloc a CHAQUE
+     image — autant de recalculs de mise en page forces par seconde. Tant que le
+     rendu d'image etait eteint ca passait ; avec le canvas qui dessine en
+     parallele, le budget d'une image explose et le prompteur saccade. C'est le
+     defaut remonte par Tony le 2026-09-10. Les blocs ne bougent pas pendant une
+     prise : on les mesure une fois, au meme endroit que les reperes. */
+  for (let i = 0; i < blocs.length; i++){
+    const b = blocs[i], passe = b.bas < y + 20;
+    if (b.passe !== passe){ b.passe = passe; b.el.classList.toggle('passe', passe); }
+  }
+  for (let i = 0; i < cues.length; i++){
+    if (i > iActif && cues[i].haut <= seuil){ activer(i); }
+  }
+  rafId = requestAnimationFrame(boucle);
+}
+
+function activer(i){
+  const t = maintenant();
+  if (iActif >= 0){
+    const p = cues[iActif].rep;
+    if (p.tFin === null) p.tFin = t;
+    cues[iActif].el.classList.remove('actif');
+  }
+  iActif = i;
+  const c = cues[i];
+  c.rep.tPrevu = t;
+  if (c.rep.t === null) c.rep.t = t;          // le prompteur pose une valeur par défaut
+  c.el.classList.add('actif');
+  const T = TAGS[c.rep.tag];
+  $('#mvtic').textContent = T.ic;
+  $('#mvttx').innerHTML = esc(T.nom) + (c.rep.precision ? ' — ' + esc(c.rep.precision) : '')
+    + '<small>appuie sur « mouvement fait » quand tu l\'exécutes</small>';
+  $('#mvt').classList.add('on');
+  if (navigator.vibrate) { try { navigator.vibrate(45); } catch(e){} }
+}
+
+/* La confirmation. Le prompteur devine, le pouce tranche. */
+$('#fait').addEventListener('click', () => {
+  if (!enCours || iActif < 0) return;
+  const c = cues[iActif];
+  c.rep.t = maintenant();
+  c.rep.source = 'confirme';
+  c.el.classList.remove('actif'); c.el.classList.add('fait');
+  $('#mvt').classList.remove('on');
+  if (navigator.vibrate) { try { navigator.vibrate([25,40,25]); } catch(e){} }
+});
+
+/* Un repère non prévu au script — il s'est passé quelque chose de filmable. */
+$('#libre').addEventListener('click', () => {
+  if (!enCours) return;
+  const t = maintenant();
+  etat.reperes.push({ id: etat.reperes.length + 1, tag:'libre', libelle:TAGS.libre.nom,
+    precision:'', t, tFin:null, tPrevu:null, source:'libre',
+    positionCadre:'?', coteAnimation:null, effet:'libre', texte:'' });
+  if (navigator.vibrate) { try { navigator.vibrate(60); } catch(e){} }
+  $('#libre').style.color = '#00D4FF';
+  setTimeout(() => $('#libre').style.color = '', 250);
+});
+
+function stopper(){
+  etat.duree = maintenant();
+  enCours = false;
+  cancelAnimationFrame(rafId);
+  $('#past').classList.remove('rec');
+  $('#rec').classList.remove('stop');
+  $('#fait').disabled = true;
+  try { rec.stop(); } catch(e){}
+}
+
+function finTournage(){
+  stopMusique();
+  arreterVu();
+  $('#e2').classList.remove('tourne');
+  try { ref.muted = false; } catch(e){}
+  /* On jette le flux de canvas avec le flux camera : les deux partagent la
+     meme piste audio, qui va etre coupee deux lignes plus bas. */
+  if (fluxCanvas){ try { fluxCanvas.getTracks().forEach((t) => t.stop()); } catch(e){} fluxCanvas = null; }
+  if (iActif >= 0 && cues[iActif].rep.tFin === null) cues[iActif].rep.tFin = etat.duree;
+  const type = (rec && rec.mimeType) || 'video/webm';
+  etat.video  = new Blob(morceaux, { type });
+  etat.source = 'camera';
+  etat.meta   = { nom: 'video.' + (type.indexOf('mp4') >= 0 ? 'mp4' : 'webm'),
+                  type, octets: etat.video.size,
+                  canvas: { largeur: grade.width, hauteur: grade.height } };
+  if (stream) stream.getTracks().forEach(t => t.stop());
+  if (verrou) { try { verrou.release(); } catch(e){} verrou = null; }
+  ouvrirRelecture();
+}
+
+/* ═══ 3 · Relecture ════════════════════════════════════════════════════ */
+const relec = $('#relec');
+let urlBlob = null;
+
+function ouvrirRelecture(){
+  if (urlBlob) URL.revokeObjectURL(urlBlob);
+  urlBlob = URL.createObjectURL(etat.video);
+  relec.src = urlBlob;
+  /* Une capture MediaRecorder n'écrit pas la durée dans l'en-tête : le
+     lecteur annonce Infinity. On force la résolution en cherchant très loin. */
+  relec.onloadedmetadata = () => {
+    if (!isFinite(relec.duration)){
+      relec.currentTime = 1e6;
+      relec.ontimeupdate = () => { relec.ontimeupdate = null; relec.currentTime = 0; majInfo(); };
+    } else { if (!etat.duree) etat.duree = relec.duration; majInfo(); }
+  };
+  dessinerReperes();
+  montrer('e3');
+}
+function dureeVideo(){
+  const d = relec.duration;
+  return (isFinite(d) && d > 0) ? d : (etat.duree || 0);
+}
+function majInfo(){
+  $('#rinfo').textContent = dureeVideo().toFixed(2) + ' s · ' + etat.reperes.length + ' repères';
+}
+const t2 = (v) => (v === null || v === undefined) ? '—' : v.toFixed(2) + ' s';
+
+function dessinerReperes(){
+  etat.reperes.sort((a,b) => (a.t ?? 1e9) - (b.t ?? 1e9));
+  etat.reperes.forEach((r,i) => r.id = i + 1);
+  const l = $('#rlist');
+  if (!etat.reperes.length){
+    l.innerHTML = '<p class="aide">Aucun repère. Tu peux quand même envoyer la vidéo, '
+      + 'mais le moteur n\'aura rien pour caler ses animations.</p>';
+  } else {
+    l.innerHTML = etat.reperes.map(r => {
+      const T = TAGS[r.tag] || TAGS.libre;
+      const cote = r.coteAnimation
+        ? `Animation à ${r.coteAnimation === 'g' ? 'gauche' : 'droite'} (il est à ${
+            r.positionCadre === 'g' ? 'gauche' : 'droite'})`
+        : `Côté à décider au montage`;
+      return `<div class="rep" data-id="${r.id}">
+        <div class="h"><span class="ic">${T.ic}</span>
+          <span class="nm">${esc(r.libelle)}${r.precision ? ' — ' + esc(r.precision) : ''}</span>
+          <span class="tt">${t2(r.t)}</span></div>
+        ${r.texte ? `<div class="tx">« ${esc(r.texte.slice(0,110))}${r.texte.length>110?'…':''} »</div>` : ''}
+        <div class="cote">${cote} · ${r.effet} · fin ${t2(r.tFin)} · ${r.source}</div>
+        <div class="act">
+          <button data-a="-0.5">−0,5</button>
+          <button data-a="-0.1">−0,1</button>
+          <button data-a="+0.1">+0,1</button>
+          <button data-a="+0.5">+0,5</button>
+          <button data-a="ici" class="ici">poser ici</button>
+          <button data-a="voir">▶</button>
+          <button data-a="sup" class="sup">✕</button>
+        </div></div>`;
+    }).join('');
+  }
+  majInfo();
+}
+
+$('#rlist').addEventListener('click', (ev) => {
+  const b = ev.target.closest('button'); if (!b) return;
+  const id = +b.closest('.rep').dataset.id;
+  const r = etat.reperes.find(x => x.id === id); if (!r) return;
+  const a = b.dataset.a;
+  if (a === 'sup'){ etat.reperes = etat.reperes.filter(x => x !== r); dessinerReperes(); return; }
+  if (a === 'voir'){ relec.currentTime = Math.max(0, (r.t ?? 0) - 0.4); relec.play().catch(()=>{}); return; }
+  if (a === 'ici'){ r.t = Math.max(0, relec.currentTime); r.source = 'relecture'; }
+  else { r.t = Math.max(0, (r.t ?? 0) + parseFloat(a)); r.source = 'relecture'; }
+  recalculerFins();
+  dessinerReperes();
+});
+
+/* Les fins se déduisent : un repère court jusqu'au suivant, le dernier
+   jusqu'à la fin de la vidéo. Sauf si le tournage en a mesuré une plus courte. */
+function recalculerFins(){
+  const tri = etat.reperes.filter(r => r.t !== null).sort((a,b) => a.t - b.t);
+  tri.forEach((r,i) => {
+    const suivant = tri[i+1] ? tri[i+1].t : dureeVideo();
+    if (r.tFin === null || r.tFin <= r.t || r.tFin > suivant) r.tFin = Math.max(r.t + 0.4, Math.min(suivant, dureeVideo()));
+  });
+}
+
+relec.addEventListener('timeupdate', () => {
+  const t = relec.currentTime;
+  $$('#rlist .rep').forEach(el => {
+    const r = etat.reperes.find(x => x.id === +el.dataset.id);
+    el.classList.toggle('actif', !!r && r.t !== null && t >= r.t && t < (r.tFin ?? 1e9));
+  });
+});
+
+$('#refaire').addEventListener('click', () => { montrer('e1'); });
+
+/* ═══ 4 · Envoi ════════════════════════════════════════════════════════ */
+const WEBHOOK = 'https://n7n.automatisationboost.com/webhook/upload-r2-asset';
+let sessionId = '', dossier = '', jsonTexte = '';
+
+function fabriquerJson(){
+  recalculerFins();
+  etat.reperes.sort((a,b) => (a.t ?? 1e9) - (b.t ?? 1e9));
+  etat.reperes.forEach((r,i) => r.id = i + 1);
+  const d = new Date();
+  const p = (n) => String(n).padStart(2,'0');
+  sessionId = `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}-`
+            + `${p(d.getHours())}${p(d.getMinutes())}${p(d.getSeconds())}`;
+  dossier = 'tournage/' + sessionId;
+  const ext = etat.meta.type && etat.meta.type.indexOf('mp4') >= 0 ? 'mp4' : 'webm';
+  const nomVideo = 'video.' + ext;
+  const o = {
+    outil: 'previsualisation/tournage',
+    version: 1,
+    pageVersion: PAGE_VERSION,
+    format: etat.source === 'camera' ? format : 'fichier',
+    canvas: etat.meta.canvas || null,
+    navigateur: navigator.userAgent,
+    session: sessionId,
+    cree: d.toISOString(),
+    source: etat.source,
+    template: etat.template || 'libre',
+    musiqueLecture: etat.musique || null,
+    vitesseMpm: mpm,
+    video: {
+      fichier: nomVideo,
+      type: etat.meta.type || '',
+      octets: etat.meta.octets || (etat.video ? etat.video.size : 0),
+      duree: +dureeVideo().toFixed(3),
+      largeur: relec.videoWidth || null,
+      hauteur: relec.videoHeight || null,
+      url: 'https://assets.automatisationboost.com/' + dossier + '/' + nomVideo,
+    },
+    script: etat.blocs.filter(b => b.k === 'texte').map(b => b.texte).join('\n'),
+    legende: {
+      positionCadre: "où Tony se trouve dans le cadre : g | d | c | ? (non déterminé)",
+      coteAnimation: "côté d'où l'animation doit entrer — TOUJOURS l'opposé de positionCadre ; null = à décider",
+      source: "prompteur = horodatage du défilé | confirme = appui pouce pendant le tournage | relecture = repositionné après coup | libre = repère hors script",
+      effet: "carte | zoom | dezoom | pastille | compteur | respiration | plein | libre",
+    },
+    reperes: etat.reperes.map(r => ({
+      id: r.id, tag: r.tag, libelle: r.libelle, precision: r.precision,
+      t: r.t === null ? null : +r.t.toFixed(3),
+      tFin: r.tFin === null ? null : +r.tFin.toFixed(3),
+      tPrevu: r.tPrevu === null ? null : +r.tPrevu.toFixed(3),
+      source: r.source, positionCadre: r.positionCadre, coteAnimation: r.coteAnimation,
+      effet: r.effet, texte: r.texte, brut: r.brut || null,
+    })),
+  };
+  jsonTexte = JSON.stringify(o, null, 2);
+  return { o, nomVideo };
+}
+
+function etapeHtml(){
+  $('#etapes').innerHTML = ['Fabriquer le fichier de repères','Envoyer la vidéo','Envoyer les repères']
+    .map((t,i) => `<div class="etape" id="et${i}"><span class="pt">${i+1}</span><span>${t}</span>
+      <span class="pc"></span></div>`).join('');
+}
+function et(i, cls, pc){ const e = $('#et'+i); if(!e) return;
+  e.className = 'etape ' + cls; if (pc !== undefined) e.querySelector('.pc').textContent = pc; }
+
+function envoyer(blob, cle, nom, type, onProgres){
+  return new Promise((res, rej) => {
+    const fd = new FormData();
+    fd.append('data', blob, nom);
+    const x = new XMLHttpRequest();
+    x.open('POST', WEBHOOK + '?cle=' + encodeURIComponent(cle));
+    x.timeout = 300000;
+    x.upload.onprogress = (e) => { if (e.lengthComputable && onProgres) onProgres(e.loaded / e.total); };
+    x.onload = () => {
+      if (x.status >= 200 && x.status < 300){
+        try { res(JSON.parse(x.responseText)); } catch(e){ res({ status:'ok', brut:x.responseText }); }
+      } else rej(new Error('HTTP ' + x.status + ' — ' + x.responseText.slice(0,220)));
+    };
+    x.onerror   = () => rej(new Error('réseau bloqué (CORS ou coupure) — la réponse n\'est pas lisible'));
+    x.ontimeout = () => rej(new Error('délai dépassé (5 min)'));
+    x.send(fd);
+  });
+}
+
+$('#valider').addEventListener('click', async () => {
+  const { nomVideo } = fabriquerJson();
+  $('#apjson').textContent = jsonTexte;
+  $('#liens').innerHTML = '';
+  etapeHtml();
+  montrer('e4');
+  et(0, 'ok', etat.reperes.length + ' repères');
+
+  const base = 'https://assets.automatisationboost.com/';
+  et(1, 'cours', '0 %');
+  try {
+    const r1 = await envoyer(etat.video, dossier + '/' + nomVideo, nomVideo,
+      etat.meta.type, p => et(1, 'cours', Math.round(p*100) + ' %'));
+    et(1, 'ok', Math.round((etat.meta.octets||0)/1024) + ' Ko');
+    $('#liens').innerHTML += `<a class="lien" href="${r1.url || (base+dossier+'/'+nomVideo)}" target="_blank" rel="noopener">${r1.url || (base+dossier+'/'+nomVideo)}</a>`;
+  } catch(e){
+    et(1, 'ko', 'échec');
+    $('#liens').innerHTML += `<div class="lien" style="color:#ffb4ac">Vidéo non envoyée — ${esc(e.message)}<br>Utilise « Garder la vidéo » pour la sauver sur le téléphone.</div>`;
+  }
+
+  et(2, 'cours', '');
+  try {
+    const bj = new Blob([jsonTexte], { type:'application/json' });
+    const r2 = await envoyer(bj, dossier + '/reperes.json', 'reperes.json', 'application/json');
+    et(2, 'ok', Math.round(jsonTexte.length/1024*10)/10 + ' Ko');
+    $('#liens').innerHTML += `<a class="lien" href="${r2.url || (base+dossier+'/reperes.json')}" target="_blank" rel="noopener">${r2.url || (base+dossier+'/reperes.json')}</a>`;
+    $('#e4cha').textContent = 'Envoyé. La prise et les repères sont en ligne.';
+    /* Le pont vers le montage : une ligne à coller, rien à retenir. */
+    $('#cmd').textContent =
+      'Monte la session ' + sessionId + ' de /tournage/'
+      + (etat.template && etat.template !== 'libre' ? ' au template ' + etat.template : '')
+      + ' : node /work/autoboost-neon-videos/_moteur/monter-tournage.mjs ' + sessionId
+      + (etat.template && etat.template !== 'libre' ? ' --template ' + etat.template : '');
+    $('#pont').hidden = false;
+  } catch(e){
+    et(2, 'ko', 'échec');
+    $('#liens').innerHTML += `<div class="lien" style="color:#ffb4ac">Repères non envoyés — ${esc(e.message)}<br>Appuie sur « Garder le JSON » : c'est le fichier qui compte.</div>`;
+  }
+});
+
+$('#copier').addEventListener('click', async () => {
+  const b = $('#copier');
+  try {
+    await navigator.clipboard.writeText($('#cmd').textContent);
+    b.textContent = 'Copié'; setTimeout(() => b.textContent = 'Copier la commande', 1800);
+  } catch(e){
+    /* Le presse-papier est refusé hors HTTPS ou sans geste : on sélectionne
+       le texte pour qu'il reste copiable à la main. */
+    const r = document.createRange(); r.selectNodeContents($('#cmd'));
+    const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r);
+    b.textContent = 'Sélectionné — copie à la main';
+  }
+});
+
+function telecharger(blob, nom){
+  const u = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = u; a.download = nom;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(u), 4000);
+}
+$('#dlj').addEventListener('click', () => {
+  if (!jsonTexte) fabriquerJson();
+  telecharger(new Blob([jsonTexte], { type:'application/json' }), 'reperes-' + sessionId + '.json');
+});
+$('#dlv').addEventListener('click', () => {
+  if (etat.video) telecharger(etat.video, (sessionId || 'tournage') + '-' + (etat.meta.nom || 'video.webm'));
+});
+$('#retour').addEventListener('click', () => { montrer('e1'); });
+
+/* Petit garde-fou : si la page se ferme pendant un tournage, on relâche
+   la caméra proprement plutôt que de laisser la LED allumée. */
+window.addEventListener('pagehide', arreterTout);
+
+/* Studio tournage : template + musique */
+renderTemplates(); renderMusiques(); renderOrigines();
+/* « Ecouter » pilote la MEME lecture que le tournage. Avant, il ouvrait un
+   second objet Audio (`apercuMus`) : on pouvait donc se retrouver avec la
+   preecoute ET la musique de tournage en meme temps, decalees. */
+(function(){ var b=$('#musecoute'); if(!b) return; b.addEventListener('click', function(){
+  if(guide) stopMusique(); else startMusique();
+}); })();
+</script>
