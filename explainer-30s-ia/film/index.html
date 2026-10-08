@@ -57,7 +57,7 @@ html,body{background:#000;overflow:hidden;height:100%}
 .segs i{display:block;width:62px;height:10px;border-radius:5px;background:#26263a}
 /* proof */
 #cnt{position:absolute;left:0;width:1040px;top:330px;text-align:center;font-family:Anton;font-size:440px;line-height:1;color:var(--Y);font-variant-numeric:tabular-nums}
-.cell{position:absolute;width:150px;height:96px;border-radius:16px;border:2px solid var(--line);background:var(--surf);display:flex;align-items:center;justify-content:center;font-family:Mono;font-size:36px}
+.cell{position:absolute;width:128px;height:96px;border-radius:16px;border:2px solid var(--line);background:var(--surf);display:flex;align-items:center;justify-content:center;font-family:Mono;font-size:36px}
 .cell b{position:absolute;right:-10px;top:-12px;width:34px;height:34px;border-radius:50%;background:var(--Y);display:flex;align-items:center;justify-content:center}
 .cap{position:absolute;left:90px;width:860px;text-align:center;white-space:nowrap}
 /* end */
@@ -121,11 +121,11 @@ body.render #ui{display:none}
   <!-- ===== SCENE 4 : proof (20 – 26 s) ===== -->
   <div class="sc" id="s4">
     <div class="abs caps" id="p4lab" style="left:0;width:1040px;text-align:center;top:236px;font-size:40px;color:var(--V)">La preuve</div>
-    <div id="cnt">15</div>
+    <div id="cnt">18</div>
     <div class="cap" id="cap1" style="top:812px;font-size:58px;font-weight:700">éditions de mon <span class="y">Journal IA</span></div>
     <div class="cap" id="cap2" style="top:812px;font-size:52px;font-weight:700">en ligne depuis le 9 septembre</div>
     <div id="cells"></div>
-    <div class="cap" id="src" style="top:1384px;font-size:36px;color:var(--mute)">Source : les 15 pages, vérifiées le 8 octobre</div>
+    <div class="cap" id="src" style="top:1384px;font-size:36px;color:var(--mute)">Source : les 18 pages, vérifiées le 8 octobre</div>
   </div>
 
   <!-- ===== SCENE 5 : end (26 – 30 s) ===== -->
@@ -327,7 +327,7 @@ body.render #ui{display:none}
 "t": 21.2,
 "sfx": "impact",
 "vol": 0.09,
-"what": "counter lands on 15"
+"what": "counter lands on 18"
 },
 {
 "t": 21.45,
@@ -348,10 +348,10 @@ body.render #ui{display:none}
 "what": "source line"
 },
 {
-"t": 25.2,
+"t": 25.32,
 "sfx": "confirm",
 "vol": 0.15,
-"what": "15 cells checked"
+"what": "18 cells checked"
 },
 {
 "t": 26.3,
@@ -445,10 +445,10 @@ for (let k = 0; k < NC; k++) {
   d.style.zIndex = 10 + k; $('#cards').appendChild(d); cards.push(d);
 }
 /* ---------- build: proof cells ---------- */
-const DATES = ['09.09', '10.09', '11.09', '13.09', '14.09', '15.09', '16.09', '17.09', '18.09', '21.09', '22.09', '23.09', '24.09', '25.09', '30.09'];
+const DATES = ['09.09', '10.09', '11.09', '13.09', '14.09', '15.09', '16.09', '17.09', '18.09', '21.09', '22.09', '23.09', '24.09', '25.09', '30.09', '06.10', '07.10', '08.10'];
 const cells = DATES.map((s, k) => {
   const c = document.createElement('div'); c.className = 'cell';
-  c.style.left = (117 + (k % 5) * 164) + 'px'; c.style.top = (950 + Math.floor(k / 5) * 112) + 'px';
+  c.style.left = (106 + (k % 6) * 140) + 'px'; c.style.top = (950 + Math.floor(k / 6) * 112) + 'px';
   c.innerHTML = `<span>${s}</span><b><svg width="20" height="20" viewBox="0 0 20 20"><path d="M5 10.5l3.2 3.2L15 7" stroke="#07070B" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></b>`;
   $('#cells').appendChild(c); return c;
 });
@@ -618,7 +618,7 @@ function seek(t) {
   if (t >= 20 && t < 26.7) {
     txt($('#p4lab'), t, 20.02, 21.3, 30);
     const cnt = $('#cnt'), cp = P(t, 20.4, .8), ck = S(t, 21.2, POP);
-    const val = Math.round(15 * cp);
+    const val = Math.round(18 * cp);
     cnt.textContent = String(val);
     cnt.style.opacity = 1;
     cnt.style.transform = `scale(${t < 21.2 ? 1 : 1 + .06 * Math.sin(Math.PI * clamp((t - 21.2) / .36))})`;
