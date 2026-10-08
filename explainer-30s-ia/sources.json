@@ -1,0 +1,23 @@
+{
+  "preuve_affichee": "15 éditions de mon Journal IA, en ligne depuis le 9 septembre",
+  "chiffre": 15,
+  "mesure_le": "2026-10-08T04:15Z",
+  "methode": [
+    "ls /work/automationboost/ressources/journal-ia-*.html -> 15 fichiers (2026-09-09 .. 2026-09-30)",
+    "curl https://automatisationboost.com/ressources/<fichier> -> HTTP 200 pour les 15",
+    "controle : https://automatisationboost.com/ressources/journal-ia-2099-01-01.html -> HTTP 404 (le 200 n'est pas un fourre-tout)",
+    "git -C /work/automationboost log --diff-filter=A -- 'ressources/journal-ia-*' -> 15 commits d'ajout, du 2026-09-09T05:23Z au 2026-09-30T04:26Z"
+  ],
+  "editions": ["2026-09-09","2026-09-10","2026-09-11","2026-09-13","2026-09-14","2026-09-15","2026-09-16","2026-09-17","2026-09-18","2026-09-21","2026-09-22","2026-09-23","2026-09-24","2026-09-25","2026-09-30"],
+  "non_retenu": {
+    "blotato-ledger.json": "16 dates x 5 reseaux, mais tous les id de post sont null (14 dates marquees 'backfill') : ne prouve pas une publication, donc non affiche.",
+    "'publie automatiquement'": "14 commits sur 15 portent le message du script (render-publish.sh etape 7b), le premier (09-09) non : la video ne dit donc pas 'automatiquement', seulement 'en ligne'."
+  },
+  "aucune_url_affichee": true,
+  "musique": {
+    "fichier": "/work/autoboost-neon-videos/_shared/bgm/journal-digital-clouds-128.mp3",
+    "titre": "Digital Clouds (Mixkit #175)",
+    "licence": "Mixkit Stock Music Free License (bgm-manifest.json)"
+  },
+  "sfx": "/work/autoboost-neon-videos/_shared/sfx-palette/v1/assets (palette v1 figee, validee par Tony le 2026-07-19)"
+}
