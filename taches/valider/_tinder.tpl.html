@@ -278,10 +278,28 @@ $('#ajout-envoi').onclick=function(){
 };
 
 /* --- démarrage : cache local puis état serveur --- */
-try{ etat = JSON.parse(localStorage.getItem(LS)||'{}')||{}; }catch(_){ etat={}; }
+try{ etat = JSON.parse(localStorage.getItem(LS)||'{}')||{}; if('donnees' in etat) etat={}; }catch(_){ etat={}; }
 compter(); rendre();
 fetch(URL_ETAT+'?t='+Date.now()).then(function(r){return r.json()}).then(function(d){
-  if(d && typeof d==='object'){ etat=d; cache(); compter(); idx=0; rendre(); }
+  /* The webhook answers {ok, donnees:"<json>", maj}. Keep only the answers map,
+     otherwise the next save posts the envelope back and it nests forever. */
+  var plat={};
+  (function aplatir(x){
+    while(x && typeof x==='object' && 'donnees' in x){
+      Object.keys(x).forEach(function(k){
+        if(k!=='ok' && k!=='donnees' && k!=='maj' && x[k] && typeof x[k]==='object'){
+          if(!plat[k] || String(x[k].maj||'')>String(plat[k].maj||'')) plat[k]=x[k];
+        }
+      });
+      try{ x = typeof x.donnees==='string' ? JSON.parse(x.donnees) : x.donnees; }catch(_){ x=null; }
+    }
+    if(x && typeof x==='object') Object.keys(x).forEach(function(k){
+      if(k!=='ok' && k!=='maj' && x[k] && typeof x[k]==='object'){
+        if(!plat[k] || String(x[k].maj||'')>String(plat[k].maj||'')) plat[k]=x[k];
+      }
+    });
+  })(d);
+  if(Object.keys(plat).length){ etat=plat; cache(); compter(); idx=0; rendre(); }
 }).catch(function(){});
 })();
 </script>
