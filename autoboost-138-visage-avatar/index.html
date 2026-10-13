@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Autoboost #138 — Visage avatar IA</title>
+<style>
+  :root{--bg:#0a0a0f;--surface:#111117;--border:#232330;--gold:#eab308;--violet:#8b5cf6;--ink:#EDEDED;--muted:#8A8A8A;}
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:Arial,Helvetica,sans-serif;padding:40px 16px 100px;}
+  .wrap{max-width:720px;margin:0 auto;}
+  h1{font-size:26px;margin:0 0 6px;}
+  .meta{color:var(--muted);font-size:15px;margin-bottom:20px;line-height:1.5;}
+  video{width:100%;max-width:380px;display:block;margin:0 auto 32px;border-radius:16px;border:2px solid var(--border);background:#000;}
+  h2{font-size:18px;color:var(--gold);border-bottom:1px solid var(--border);padding-bottom:8px;margin-top:36px;}
+  .tbl{overflow-x:auto;}
+  table{width:100%;border-collapse:collapse;font-size:14px;margin-top:12px;}
+  td,th{border:1px solid var(--border);padding:8px 10px;text-align:left;vertical-align:top;}
+  th{color:var(--muted);font-weight:600;background:var(--surface);}
+  pre{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;white-space:pre-wrap;font-size:14px;line-height:1.5;color:var(--ink);}
+  .pill{display:inline-block;background:rgba(234,179,8,.15);border:1px solid var(--gold);color:var(--gold);border-radius:999px;padding:4px 14px;font-size:13px;font-weight:700;}
+  img.ref{width:100%;max-width:420px;border-radius:12px;border:1px solid var(--border);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Autoboost #138 — Verrouiller le visage d'un avatar IA (Seedance + Claude)</h1>
+  <div class="meta">Pipeline v3 (assemblage banque avatar, décor BUREAU) · CTA <span class="pill">PROMPT</span> · durée 31,6 s</div>
+  <video src="video.mp4" controls playsinline></video>
+
+  <h2>Génération de cette vidéo</h2>
+  <p class="meta">Aucune image ni vidéo générée par IA dans ce montage : ce sont de vraies prises de Tony
+  (banque avatar BUREAU), sans détourage. Aucun marqueur à remplacer par l'avatar : c'est déjà lui.
+  Voix clonée (webhook <code>avatar-webhook-v2</code>, voix « archiviste »), F0 médian mesuré 118,5 Hz.</p>
+
+  <h2>Le prompt montré dans la vidéo (MASTER PROMPT de la banque avatar)</h2>
+  <p class="meta">Les 3 blocs affichés à l'écran (IDENTITY LOCK · VISUAL CONSISTENCY · PERFORMANCE) viennent tels quels de
+  <code>_shared/avatar-bank/seedance-prompts.md</code>. Modèle : Seedance 2.5, 5 s, 9:16, mode <code>omni_reference</code>,
+  audio Seedance remplacé ensuite par la voix clonée.</p>
+  <pre>Use the provided avatar reference as the exact same person.
+Create a realistic vertical 9:16 talking-head video, 5 seconds long.
+
+IDENTITY LOCK:
+- Preserve the exact facial identity, hairstyle, skin tone, facial proportions and overall appearance of the reference avatar.
+- Do not change the person&#x27;s identity. No face morphing, no character redesign.
+
+VISUAL CONSISTENCY:
+- Same outfit, background, lighting, camera position and focal length as the reference.
+- Medium shot, upper body visible. Camera completely static. 9:16 vertical.
+- Natural realistic skin and facial motion. Professional social-media creator style.
+
+PERFORMANCE (base):
+- Start 1 second neutral: mouth closed, hands relaxed, looking directly at camera.
+- Perform the specified gesture naturally while speaking the exact French sentence.
+- Natural French lip movement synchronized with the words. Expressive but realistic.
+- End 1 second neutral. No exaggerated acting, no camera movement, no text/subtitles/logos/UI.
+
+Feel like a real French entrepreneur explaining something directly to the viewer.</pre>
+
+  <h2>Image de référence</h2>
+  <p class="meta"><b>Substitution avatar :</b> « the provided avatar reference » = cette image. La joindre à l'identique à chaque génération ;
+  pour un autre personnage, remplacer uniquement cette image.</p>
+  <img class="ref" src="ref.jpg" alt="Référence avatar hf-avatar-1-desk">
+
+  <h2>Script voix off (texte intégral)</h2>
+  <pre>Ton avatar IA change de visage à chaque plan ? Avec Seedance et Claude, voici la technique en trois éléments pour garder exactement le même visage sur toute une vidéo. La plupart des gens décrivent un visage en une phrase, et laissent le hasard faire le reste. Résultat : un patchwork de visages que personne ne prend au sérieux. La technique tient en trois blocs précis dans le prompt : verrouiller l&#x27;identité, figer le décor et la lumière, cadrer le jeu d&#x27;acteur. Plus une image de référence, réutilisée à l&#x27;identique à chaque génération. Résultat : un vrai personnage, cohérent du début à la fin. C&#x27;est exactement ce que j&#x27;utilise sur toutes mes vidéos IA. Suis-moi et commente le mot PROMPT, je t&#x27;envoie la technique complète gratuitement.</pre>
+  <p class="meta">Timing des captions estimé (pauses mesurées par silencedetect + pondération longueur de mot) :
+  Whisper a renvoyé <code>transcripts: []</code>, comme sur les runs précédents.</p>
+
+  <h2>Texte TikTok + hashtags</h2>
+  <pre>🎭 Ton avatar IA change de visage à chaque plan ? Avec Seedance + Claude, la technique en 3 éléments pour garder EXACTEMENT le même visage du début à la fin. Commente PROMPT pour la technique 👇
+#seedance #iagenerative #videoia #contentcreator #avatarai</pre>
+
+  <h2>Clips avatar utilisés (décor BUREAU)</h2>
+  <div class="tbl"><table>
+    <tr><th>rôle</th><th>clip</th><th>source (s)</th><th>vidéo (s)</th><th>lèvres actives</th></tr>
+    <tr><td>hook (plein cadre)</td><td>A1_hook_frontal.mp4</td><td>0.67 → 3.00</td><td>0.00 → 2.33</td><td>0.67–4.58</td></tr>
+    <tr><td>intro (fenêtre)</td><td>B1_principe.mp4</td><td>0.08 → 2.41</td><td>2.66 → 5.00 (1re image gelée dès 2.32)</td><td>0.08–4.88</td></tr>
+    <tr><td>réalité (fenêtre)</td><td>B1_principe.mp4</td><td>2.18 → 4.85</td><td>11.02 → 13.69</td><td>0.08–4.88</td></tr>
+    <tr><td>punch (fenêtre)</td><td>A1_hook_frontal.mp4</td><td>2.40 → 4.53</td><td>25.76 → 27.89 (gel jusqu'à 28.20)</td><td>0.67–4.58</td></tr>
+    <tr><td>CTA (fenêtre)</td><td>C2_commente_motcle.mp4</td><td>0.08 → 2.88</td><td>28.20 → 31.00 (gel jusqu'à 31.60)</td><td>0.08–4.83</td></tr>
+  </table></div>
+  <p class="meta"><code>check_lips_rule.mjs</code> : PASS, 0 image fautive. Mesure sur le rendu final : aucune série d'images immobiles sous voix active, bouche gelée pendant les silences.</p>
+
+  <h2>Habillage &amp; musique</h2>
+  <p class="meta">Hook plein cadre → fenêtre néon 648×1152 · carton « 3 éléments » · démo « prompt en une phrase → 4 plans = 4 visages » ·
+  prompt en 3 blocs reliés · image de référence réutilisée ×4 · carton « 4 VISAGES DIFFÉRENTS ▼ 1 SEUL PERSONNAGE » · pilule CTA.
+  Musique <code>valse-des-fleurs-maison-evidee.mp3</code> (production maison), duckée en sidechain sous la voix.
+  Recette complète : <code>autoboost-neon-videos/autoboost-138-visage-avatar/PROMPT.md</code>.</p>
+</div>
+</body>
+</html>
