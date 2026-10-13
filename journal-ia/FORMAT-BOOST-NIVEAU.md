@@ -33,7 +33,10 @@
 - **« Montée de niveau » (variante test) :** hook → problème → niveau 1 → 2 → 3 → 4 → niveau max → résultat → CTA.
 
 ## CTA / gate
-- Carton CTA final = **« JOURNAL »** (gabarits bn). *(à confirmer : l'édition markdown écrit encore « Commente VEILLE » ; il faut un seul mot de gate côté Blotato — JOURNAL ou VEILLE.)*
+- Carton CTA final = **« JOURNAL »**. **Confirmé** : les gabarits bn *et* le rendu auto du 13/10
+  (`journal-ia-2026-10-13/index.html`, « CTA JOURNAL ») utilisent JOURNAL.
+- **À corriger dans l'écriture :** les éditions markdown écrivent encore « Commente VEILLE » ;
+  le mot de gate Blotato canonique est **JOURNAL** → écrire désormais « Commente JOURNAL, je t'envoie tout ».
 
 ## QA bloquant avant publication (12 contrôles)
 Durée · format 1080×1920/30 · niveau audio · ouverture audible · phrases dans plages de lèvres ·
