@@ -14,8 +14,10 @@
 
 ## Spécifications techniques (depuis qa.json du test)
 - **Format :** 1080 × 1920, **30 i/s**, 9:16.
-- **Durée :** cible **30–45 s**, jamais sous 30 s pour le format « montée de niveau » ;
-  la version 6-brèves a été acceptée à **~58 s** (10-07). *(à confirmer : le prompt planifié demande 60–115 s — Boost Niveau est plus court.)*
+- **Durée :** format retenu = **journal 6-brèves (version plus longue)**, cible **~55–75 s**
+  (10-07 : ~58 s ; rendu auto 10-13 : 83 s). **Décision Tony (13/10) : on garde la brève plus longue**,
+  pas la montée de niveau courte (30–45 s), qui reste une variante de réserve.
+- **Script :** viser **~300–390 mots dits** (6 brèves + coup à jouer + CTA) à ~3,3 mots/s.
 - **Audio :** niveau moyen ≈ −14,5 dB, crête ≈ −1,5 dB ; ouverture audible dès les 3 premières s ; pas d'image noire (luminance min > 28).
 - **Lip-sync :** chaque phrase calée dans une plage de lèvres actives (min ~4 lèvres actives/phrase).
 
@@ -29,8 +31,8 @@
 - **Preuve à l'écran :** pour chaque brève, le **vrai défilement de la source** (page ouverte sur son titre, sans fenêtre ni pub), avec **le chiffre exact affiché** (ex. 10-07 : text-to-cad, Agent-Reach, Nano Banana 2.1, Gemini 4 Argon, Mistral Large 4, Doe v. GitHub).
 
 ## Structure narrative
-- **Journal 6-brèves (format courant) :** accroche → 6 brèves (chacune avec sa source qui défile + chiffre) → coup à jouer → carton CTA.
-- **« Montée de niveau » (variante test) :** hook → problème → niveau 1 → 2 → 3 → 4 → niveau max → résultat → CTA.
+- **Journal 6-brèves — FORMAT RETENU :** accroche → 6 brèves (chacune avec sa source qui défile + chiffre exact) → coup à jouer → carton CTA « JOURNAL ».
+- **« Montée de niveau » (variante de réserve, non utilisée par défaut) :** hook → problème → niveau 1 → 2 → 3 → 4 → niveau max → résultat → CTA.
 
 ## CTA / gate
 - Carton CTA final = **« JOURNAL »**. **Confirmé** : les gabarits bn *et* le rendu auto du 13/10
