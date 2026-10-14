@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Autoboost #140 — Claude Code vs Cursor</title>
+<style>
+  :root{--bg:#0a0a0f;--surface:#111117;--border:#232330;--gold:#eab308;--violet:#8b5cf6;--ink:#EDEDED;--muted:#8A8A8A;}
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:Arial,Helvetica,sans-serif;padding:40px 16px 100px;}
+  .wrap{max-width:720px;margin:0 auto;}
+  h1{font-size:26px;margin:0 0 6px;}
+  .meta{color:var(--muted);font-size:15px;margin-bottom:20px;line-height:1.5;}
+  video{width:100%;max-width:380px;display:block;margin:0 auto 32px;border-radius:16px;border:2px solid var(--border);background:#000;}
+  h2{font-size:18px;color:var(--gold);border-bottom:1px solid var(--border);padding-bottom:8px;margin-top:36px;}
+  .tbl{overflow-x:auto;}
+  table{width:100%;border-collapse:collapse;font-size:14px;margin-top:12px;}
+  td,th{border:1px solid var(--border);padding:8px 10px;text-align:left;vertical-align:top;}
+  th{color:var(--muted);font-weight:600;background:var(--surface);}
+  pre{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;white-space:pre-wrap;font-size:14px;line-height:1.5;color:var(--ink);}
+  .pill{display:inline-block;background:rgba(234,179,8,.15);border:1px solid var(--gold);color:var(--gold);border-radius:999px;padding:4px 14px;font-size:13px;font-weight:700;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Autoboost #140 — Claude Code vs Cursor</h1>
+  <div class="meta">Pipeline v3 (assemblage banque avatar, décor BUREAU) · CTA <span class="pill">IDE</span> · durée 30,07 s</div>
+  <video src="video.mp4" controls playsinline></video>
+
+  <h2>Génération de cette vidéo</h2>
+  <p class="meta">Aucune image ni vidéo générée par IA dans ce montage : ce sont de vraies prises de Tony
+  (banque avatar BUREAU — clips A1/B1/C2), sans détourage. Aucun marqueur à remplacer par l'avatar : c'est
+  déjà lui. Voix clonée (webhook <code>avatar-webhook-v2</code>, voix « archiviste »).</p>
+
+  <h2>Sujet (Sheet « 30 Vidéos », ligne 142, Statut Tournage ⬜ À faire)</h2>
+  <p class="meta"><b>Workflow :</b> Claude Code vs Cursor — coder gratuitement depuis le terminal.</p>
+
+  <h2>Script voix off (texte intégral envoyé à avatar-webhook-v2)</h2>
+  <p class="meta">Raccourci de 145 à 111 mots depuis le script brut du Sheet pour tenir la cible 30-35s
+  (~3,3 mots/s).</p>
+  <pre>Cursor facture vingt dollars par mois pour coder avec une IA dans ton éditeur. Claude Code fait pareil, depuis ton terminal, sans abonnement obligatoire. Pas d'interface à ouvrir : il lit ton projet entier, écrit le code, lance les tests, corrige les erreurs, et pilote d'autres outils via MCP, ce que Cursor ne fait pas nativement. Je l'utilise sur tous mes projets clients et je n'ai plus ouvert Cursor depuis des semaines. La prise en main est un peu raide au début, ensuite c'est deux fois plus rapide. Si tu payes encore un abonnement éditeur IA sans être sûr d'en avoir besoin, commente le mot IDE, je t'envoie le guide d'installation complet.</pre>
+  <p class="meta">Timing mot-à-mot : <code>transcripts</code> renvoyé vide par le webhook (quota Whisper
+  OpenAI épuisé, piège déjà documenté) — reconstruit par pondération longueur de mot + bonus ponctuation,
+  normalisé sur la durée réelle du MP3.</p>
+
+  <h2>Texte TikTok + hashtags</h2>
+  <pre>💻 Cursor à 20$/mois pour coder avec l'IA ? Claude Code fait pareil depuis ton terminal, sans abonnement obligatoire. Commente IDE pour le guide d'installation 👇
+#claudecode #ia #developpement #coding #freelance</pre>
+
+  <h2>Clips avatar utilisés (décor BUREAU)</h2>
+  <div class="tbl"><table>
+    <tr><th>rôle</th><th>clip</th><th>source (s)</th><th>vidéo (s)</th><th>lèvres actives</th></tr>
+    <tr><td>hook (plein cadre)</td><td>A1_hook_frontal.mp4</td><td>0.67 → 4.27</td><td>0.00 → 3.60</td><td>0.67–4.58</td></tr>
+    <tr><td>explication (fenêtre)</td><td>B1_principe.mp4</td><td>0.08 → 3.71</td><td>3.60 → 7.23</td><td>0.08–4.88</td></tr>
+    <tr><td>CTA (fenêtre)</td><td>C2_commente_motcle.mp4</td><td>0.08 → 4.78</td><td>23.48 → 28.18</td><td>0.08–4.83</td></tr>
+  </table></div>
+  <p class="meta"><code>check_lips.mjs</code> (adapté de <code>check_lips_rule.mjs</code>, piste voix
+  seule) : <b>PASS — 0 plan en violation</b> sur les 3. Budget bureau utilisé ≈ 11,9s sur 13,5s exploitables.</p>
+
+  <h2>Habillage &amp; musique</h2>
+  <p class="meta">Hook plein cadre « CURSOR TE FACTURE 20$/MOIS » → fenêtre néon 648×1152 (bordure pulsante,
+  cercle néon jaune repris de la v2) + démo terminal « claude "corrige mon projet" » avec checklist qui pop
+  en rythme avec la voix (lecture du projet, écrit le code, tests, erreurs, MCP, ✗ Cursor) → carton
+  transformation « CURSOR — 20$/MOIS ▼ TERMINAL, 0€ » → punch « raide au début… 2X PLUS RAPIDE » → pilule CTA
+  jaune « COMMENTE IDE » pulsante. Musique <code>journal-digital-clouds-128.mp3</code>, fade-in 1,2s, volume
+  0.30 ducké en sidechain sous la voix (profil d'énergie vérifié -11,9 à -20,7dB, pas de montée brutale).
+  Recette complète : <code>hero-section/autoboost-neon-videos/autoboost-140-claude-code-vs-cursor/PROMPT.md</code>.</p>
+</div>
+</body>
+</html>
