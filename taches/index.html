@@ -161,25 +161,13 @@ footer{margin-top:34px; font-size:12px; color:var(--gris2); line-height:1.6}
   <p style="background:#15130c;border:1px solid #3a3115;border-left:3px solid #eab308;border-radius:10px;padding:14px 16px;margin:16px 0;line-height:1.6;color:#e6d29a">
     Cette page est le TABLEAU DE BORD (où en est chaque chantier). Le tableau où tu valides, où tu vois ce qui me bloque et où tu déposes une idée est ailleurs : /taches/valider/. Les 89 tâches ouvertes y sont, celles d'ici n'y sont pas — les deux listes ne sont pas encore fusionnées. <a href="/taches/valider/" style="color:#eab308">Ouvrir le tableau de validation →</a></p>
   <nav class="nav">
-    <a href="/taches/" class="ici" title="où en est chaque chose">Mes demandes</a>
-    <a href="/a-envoyer/" title="fini, jamais parti">À envoyer</a>
-    <a href="/leads-qualifies/" title="qui appeler, et pourquoi">Leads qualifiés</a>
-    <a href="/leads-restaurants/" title="la liste complète">Tous les leads</a>
-    <a href="/appels/" title="ce qui a été dit">Appels</a>
-    <a href="/etude-concurrents/" title="qui vend quoi, à quel prix">Étude concurrents</a>
-    <a href="/cta/" title="les mots-clés sans porte">Promesses vidéo</a>
-    <a href="/taches/tests-foodboost/" title="quelle démarche fait cliquer">Tests FoodBoost</a>
-    <a href="/carte/" title="vue d'ensemble">La carte</a>
-    <a href="/sites-clients/vue.html" title="galerie et avant/après">Sites clients</a>
-    <a href="/partage/" title="prêt à montrer">À partager</a>
-    <a href="/feed-html-vs-ia/" title="HTML contre générateur">Maquette feed</a>
-    <a href="/" title="tous les rendus">Prévisualisation</a>
+
   </nav>
 </header>
 
 <div class="compteurs">
   <button class="c livre"   data-f="livre"   aria-pressed="false"><b>42</b><span>Livré</span></button>
-  <button class="c bloque"  data-f="bloque"  aria-pressed="false"><b>6</b><span>Bloqué</span></button>
+  <button class="c bloque"  data-f="bloque"  aria-pressed="false"><b>8</b><span>Bloqué</span></button>
   <button class="c attente" data-f="attente" aria-pressed="false"><b>19</b><span>Attend toi</span></button>
 </div>
 <p class="aide" id="aide">Touche un chiffre pour ne voir que celles-là.</p>
@@ -302,23 +290,13 @@ footer{margin-top:34px; font-size:12px; color:var(--gris2); line-height:1.6}
   </div>
   <span class="voir vide" aria-hidden="true"></span>
 </li>
-<li class="t" data-etat="propose" data-cash="direct">
-  <span class="pastille propose" aria-hidden="true"></span>
+<li class="t" data-etat="bloque" data-cash="direct">
+  <span class="pastille bloque" aria-hidden="true"></span>
   <div class="corps">
-    <p class="titre"><span class="badge-propose">💡 proposé cette semaine</span><span class="eur direct" title="Cash direct — Offre d’entrée gratuite : la première page, puis le site complet.">€€€</span>Sites démo : choisir les 3 ou 4 meilleurs, écrire à tous les prospects dont le site est mauvais, avec un formulaire « je veux ma première page offerte »</p>
-    <p class="note">Demande de Tony le 06/10/2026, à faire dans le mois. Étapes : 1) choisir les 3-4 meilleurs sites démo ; 2) repérer, parmi les prospects avec email, ceux dont le site est mauvais (mesure : mobile, vitesse, https, formulaire) ; 3) email avec les démos et un lien vers un formulaire ; 4) formulaire : « je veux ma première page offerte » ; 5) suivre les clics et les réponses. Rien n’est envoyé sans son accord.</p>
+    <p class="titre"><span class="eur direct" title="Cash direct — Offre d’entrée gratuite : la première page, puis le site complet.">€€€</span>Sites démo : choisir les 3 ou 4 meilleurs, écrire à tous les prospects dont le site est mauvais, avec un formulaire « je veux ma première page offerte »</p>
+    <p class="note">Demande de Tony le 06/10/2026, à faire dans le mois. Tu as cliqué ✅ OK, envoie (13/10). Vérifié le 14/10 avant tout envoi, étape par étape : 1) les 3-4 meilleurs sites démo sont choisissables parmi les 106 refaits dans sites-clients/data/sites.json. 2) bloqué ici : « parmi les prospects avec email » — j'ai vérifié les trois sources de contacts du dépôt (leads-qualifies-sheet.json : 1 email sur 43 leads ; sites-clients/data/sites.json et urls-clients.json : 0 email sur 106, seulement des téléphones) et aucune ne donne de liste de prospects qui ont À LA FOIS un email ET un site mauvais — le canal déjà en place pour ces 106 contacts est le SMS/appel (voir TASKLOG du 08/09), pas l'email, et je n'ai pas de connecteur SMS. 3) et 4) le formulaire « je veux ma première page offerte » n'existe pas encore. Je n'ai fabriqué aucun email, aucune liste, aucun envoi n'est parti. À reprendre avec soit une vraie liste de prospects-avec-email-et-site-mauvais à fournir, soit ton accord pour cibler par SMS/appel à la place (hors de ce que je peux faire depuis ce connecteur).</p>
     
-    <div class="propose-actions" data-carte="sites-demo-choisir-les-3-ou-4-meilleurs-ecrire-a-tous-les-pr">
-      <div class="propose-boutons">
-        <button type="button" class="btn-propose btn-ok">✅ OK, envoie</button>
-        <button type="button" class="btn-propose btn-modifier">✏️ Modifier</button>
-      </div>
-      <div class="propose-modif" hidden>
-        <textarea rows="2" placeholder="Ce qui doit changer…"></textarea>
-        <button type="button" class="btn-propose btn-envoyer-modif">Envoyer le retour</button>
-      </div>
-      <p class="propose-statut" hidden></p>
-    </div>
+    
   </div>
   <span class="voir vide" aria-hidden="true"></span>
 </li>
@@ -962,23 +940,13 @@ footer{margin-top:34px; font-size:12px; color:var(--gris2); line-height:1.6}
   </div>
   <span class="voir vide" aria-hidden="true"></span>
 </li>
-<li class="t" data-etat="propose" data-cash="direct">
-  <span class="pastille propose" aria-hidden="true"></span>
+<li class="t" data-etat="bloque" data-cash="direct">
+  <span class="pastille bloque" aria-hidden="true"></span>
   <div class="corps">
-    <p class="titre"><span class="badge-propose">💡 proposé cette semaine</span><span class="eur direct" title="Cash direct — Prospect nommé : organisme de formation Qualiopi, audit complet et page de devis déjà prêts, aucun contact pris à ce jour.">€€€</span>Relancer Focalys avec l'audit complet et la page de devis déjà prêts</p>
-    <p class="note">Carte proposée automatiquement cette semaine — à valider ou à renvoyer en modification. Rien ne part avant ton clic.</p>
-    <p class="note justification">💬 ANALYSE-FOCALYS.md (16/09) : Focalys, organisme de formation Qualiopi à La Réunion/Mayotte, vend sa formation hygiène alimentaire — une obligation légale, donc le produit le plus facile du catalogue — sans prix, ni durée, ni date en HTML : juste un PDF de 16,3 Mo et un formulaire générique. La page de devis de remplacement est déjà construite et en ligne (previsualisation.automatisationboost.com/focalys-audit), avec un script de closing complet prêt. Le fichier le dit noir sur blanc : « Aucun contact n'a été pris avec Focalys ». <span class="impact">🤝 clients</span></p>
-    <div class="propose-actions" data-carte="relance-focalys-audit">
-      <div class="propose-boutons">
-        <button type="button" class="btn-propose btn-ok">✅ OK, envoie</button>
-        <button type="button" class="btn-propose btn-modifier">✏️ Modifier</button>
-      </div>
-      <div class="propose-modif" hidden>
-        <textarea rows="2" placeholder="Ce qui doit changer…"></textarea>
-        <button type="button" class="btn-propose btn-envoyer-modif">Envoyer le retour</button>
-      </div>
-      <p class="propose-statut" hidden></p>
-    </div>
+    <p class="titre"><span class="eur direct" title="Cash direct — Prospect nommé : organisme de formation Qualiopi, audit complet et page de devis déjà prêts, aucun contact pris à ce jour.">€€€</span>Relancer Focalys avec l'audit complet et la page de devis déjà prêts</p>
+    <p class="note">Tu as cliqué ✅ OK, envoie (13/10). Vérifié le 14/10 avant tout envoi : aucune adresse email de contact pour Focalys n'existe dans ce dépôt ni dans celui de hero-section — ANALYSE-FOCALYS.md le dit lui-même (« Aucun contact n'a été pris avec Focalys »), recherche uniquement. J'ai tenté de récupérer l'email sur focalys.re/nous-contacter/ : accès bloqué par la politique réseau de cette session (DNS refusé). Une recherche web (PagesJaunes) ne donne ni email ni téléphone exploitable. Je n'ai fabriqué aucune adresse — aucun envoi n'est parti. À reprendre avec l'email ou le téléphone exact de Focalys (toi, ou une session avec accès web complet), ou en appelant le numéro affiché sur focalys.re si tu l'as sous la main.</p>
+    
+    
   </div>
   <a class="voir" href="/focalys-audit/">Voir</a>
 </li>
