@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1080, height=1920" />
+<title>Autoboost 142 — Agent de qualification n8n</title>
+<script src="gsap.min.js"></script>
+<style>
+  @font-face {
+    font-family: 'Inter';
+    src: local('Inter');
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #0a0a0f; font-family: 'Inter', 'DejaVu Sans', sans-serif; }
+  #root {
+    position: relative;
+    width: 1080px;
+    height: 1920px;
+    overflow: hidden;
+    background: #0a0a0f;
+    color: #EDEDED;
+  }
+
+  /* ---------- background chrome (static, not a timed clip) ---------- */
+  .bg-base { position:absolute; inset:0; background: radial-gradient(circle at 20% 10%, rgba(139,92,246,0.14), transparent 55%), radial-gradient(circle at 85% 85%, rgba(234,179,8,0.10), transparent 50%), #0a0a0f; }
+  .bg-grid {
+    position:absolute; inset:0;
+    background-image:
+      linear-gradient(rgba(35,35,48,0.55) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(35,35,48,0.55) 1px, transparent 1px);
+    background-size: 54px 54px;
+    opacity: 0.5;
+  }
+  .wordmark { position:absolute; left:48px; bottom:40px; font-size:22px; font-weight:800; letter-spacing:.08em; color:#8A8A8A; z-index:5; }
+  .wordmark b { color:#eab308; }
+
+  /* ---------- header kicker (S2-S5) ---------- */
+  #headerBar { position:absolute; top:70px; left:0; width:1080px; text-align:center; z-index:6; }
+  #headerBar .brand { font-size:30px; font-weight:800; letter-spacing:.12em; color:#EDEDED; }
+  #headerBar .brand b { color:#eab308; }
+  #headerBar .kicker {
+    display:inline-block; margin-top:14px; padding:10px 28px; border-radius:40px;
+    background:#111117; border:1px solid #232330; color:#BEF264;
+    font-size:21px; font-weight:700; letter-spacing:.08em; text-transform:uppercase;
+  }
+
+  /* ---------- CTA top pill (S6) ---------- */
+  #ctaTop { position:absolute; top:66px; left:0; width:1080px; text-align:center; z-index:6; }
+  #ctaTop .pill {
+    display:inline-block; padding:16px 44px; border-radius:50px;
+    background:#eab308; color:#0a0a0f; font-size:34px; font-weight:800; letter-spacing:.04em;
+    box-shadow: 0 0 40px rgba(234,179,8,.55);
+  }
+  #ctaTop .pill b { font-size:40px; }
+
+  /* ---------- avatar windows ---------- */
+  .avatar-win {
+    position:absolute; left:216px; top:150px; width:648px; height:1152px;
+    border-radius:30px; border:3px solid rgba(255,230,0,0.60);
+    background:#050507; overflow:hidden; z-index:4;
+    box-shadow: 0 0 0 rgba(234,179,8,0);
+  }
+  .avatar-win .live {
+    position:absolute; top:22px; left:22px; padding:6px 16px; border-radius:20px;
+    background:#b91c1c; color:#fff; font-size:16px; font-weight:800; letter-spacing:.1em; z-index:5;
+  }
+  .avatar-full { position:absolute; inset:0; background:#050507; z-index:3; }
+
+  /* ---------- hook title ---------- */
+  #hookTitle {
+    position:absolute; left:0; width:1080px; bottom:170px; text-align:center; z-index:7;
+    padding: 0 70px;
+  }
+  #hookTitle .tag { font-size:26px; font-weight:800; letter-spacing:.1em; color:#BEF264; text-transform:uppercase; }
+  #hookTitle .price { font-size:108px; font-weight:800; color:#eab308; line-height:1; margin-top:10px; text-shadow:0 0 50px rgba(234,179,8,.5); }
+  #hookTitle .sub { font-size:30px; font-weight:700; color:#EDEDED; margin-top:10px; }
+
+  /* ---------- S2 strip label (below avatar window, above captions) ---------- */
+  #introLabel { position:absolute; left:0; width:1080px; top:1330px; text-align:center; z-index:6;
+    font-size:28px; font-weight:800; color:#8b5cf6; letter-spacing:.04em; }
+
+  /* ---------- demo canvas n8n (S3) ---------- */
+  .canvasWrap { position:absolute; left:90px; top:560px; width:900px; height:760px;
+    background:#111117; border:1px solid #232330; border-radius:22px; overflow:visible; z-index:6; }
+  .gridbg { position:absolute; inset:0; border-radius:22px; overflow:hidden;
+    background-image:linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px);
+    background-size:40px 40px; }
+  .nsvg { position:absolute; left:0; top:0; width:900px; height:760px; overflow:visible; }
+  .nnode { position:absolute; width:760px; left:70px; background:#181820; border:1px solid #232330; border-radius:20px;
+    padding:22px 26px; display:flex; align-items:center; gap:22px; opacity:0; box-shadow:0 14px 40px rgba(0,0,0,.4); }
+  .nnode .ic { width:66px; height:66px; border-radius:16px; display:flex; align-items:center; justify-content:center;
+    font-size:34px; font-weight:900; flex:0 0 66px; }
+  .nnode.n1 .ic { background:linear-gradient(135deg,#eab308,#a16207); color:#1a1400; }
+  .nnode.n2 .ic { background:linear-gradient(135deg,#8b5cf6,#7c3aed); color:#fff; }
+  .nnode.n3 .ic { background:linear-gradient(135deg,#eab308,#a16207); color:#1a1400; }
+  .nnode.n4 .ic { background:linear-gradient(135deg,#8b5cf6,#7c3aed); color:#fff; }
+  .nnode .tx .nm { font-size:30px; font-weight:800; color:#fff; line-height:1.2; }
+  .nnode .tx .tp { font-size:22px; font-weight:600; color:#8A8A8A; margin-top:4px; }
+  .nnode.n1{ top:20px; }
+  .nnode.n2{ top:200px; }
+  .nnode.n3{ top:380px; }
+  .nnode.n4{ top:560px; }
+
+  /* ---------- S4 statcard AVANT ---------- */
+  .statcard { position:absolute; left:110px; width:860px; top:760px; background:#111117; border-radius:26px;
+    padding:44px 44px; box-shadow:0 24px 70px rgba(0,0,0,.5); opacity:0; z-index:6; }
+  .statcard.ko { border-left:10px solid #ff6b6b; }
+  .statcard .lab { font-size:32px; font-weight:900; letter-spacing:3px; text-transform:uppercase; margin-bottom:22px; color:#ff6b6b; }
+  .statcard .val { font-size:78px; font-weight:900; line-height:1.15; color:#fff; margin-bottom:14px; }
+  .statcard .sub { font-size:30px; font-weight:700; color:#8A8A8A; }
+
+  /* ---------- S5 reality punch ---------- */
+  #punch { position:absolute; left:90px; top:800px; width:900px; z-index:6; text-align:center; opacity:0; }
+  #punch .l1 { font-size:46px; font-weight:800; color:#EDEDED; }
+  #punch .l2 { font-size:92px; font-weight:800; color:#eab308; margin-top:22px; text-shadow:0 0 50px rgba(234,179,8,.5); }
+  #punch .l3 { font-size:32px; font-weight:700; color:#8A8A8A; margin-top:20px; }
+
+  /* ---------- CTA lower note (S6) ---------- */
+  #ctaNote { position:absolute; left:0; width:1080px; top:1330px; text-align:center; z-index:6;
+    font-size:27px; font-weight:700; color:#EDEDED; }
+  #ctaNote b { color:#eab308; }
+
+  /* ---------- captions ---------- */
+  #captionBand { position:absolute; left:60px; width:960px; top:1420px; text-align:center; z-index:8; }
+  .cap-line { position:absolute; left:0; width:960px; text-align:center;
+    font-size:40px; font-weight:800; color:#fff; text-shadow: 0 2px 0 #000, 0 0 10px rgba(0,0,0,.8); opacity:0; }
+  .cap-line .hot { color:#eab308; text-shadow: 0 2px 0 #000, 0 0 20px rgba(234,179,8,.8); }
+</style>
+</head>
+<body>
+<div id="root" data-composition-id="autoboost142" data-width="1080" data-height="1920" data-duration="32.14">
+
+  <div class="bg-base"></div>
+  <div class="bg-grid"></div>
+  <div class="wordmark">AUTO<b>BOOST</b></div>
+
+  <!-- S1 HOOK 0 -> 3.60, avatar plein cadre (A1) -->
+  <div id="avatarFull" class="avatar-full clip" data-start="0" data-duration="3.60" data-track-index="3"></div>
+  <div id="hookTitle" class="clip" data-start="0" data-duration="3.60" data-track-index="7">
+    <div class="tag">N8N m'a rapporté</div>
+    <div class="price">+3<span style="font-size:48px"> clients</span></div>
+    <div class="sub">ce mois-ci, un seul agent IA</div>
+  </div>
+
+  <!-- header kicker, S2 -> S5 (3.60 -> 20.49) -->
+  <div id="headerBar" class="clip" data-start="3.60" data-duration="16.89" data-track-index="2">
+    <div class="brand">AUTO<b>BOOST</b></div>
+    <div class="kicker">Agent de qualification n8n</div>
+  </div>
+
+  <!-- CTA top pill, S6 (24.81 -> 32.14) -->
+  <div id="ctaTop" class="clip" data-start="24.81" data-duration="7.33" data-track-index="2">
+    <div class="pill">COMMENTE <b>CLIENTS</b></div>
+  </div>
+
+  <!-- S2 avatar window (B1) 3.60 -> 7.23 -->
+  <div id="winAvatar1" class="avatar-win clip" data-start="3.60" data-duration="3.63" data-track-index="4">
+    <div class="live">LIVE</div>
+  </div>
+  <div id="introLabel" class="clip" data-start="3.60" data-duration="3.63" data-track-index="6">
+    qualifie chaque demande
+  </div>
+
+  <!-- S3 demo canvas n8n 7.23 -> 15.77 -->
+  <div id="canvasScene" class="clip" data-start="7.23" data-duration="8.54" data-track-index="6">
+    <div class="canvasWrap">
+      <div class="gridbg"></div>
+      <svg class="nsvg" viewBox="0 0 900 760" fill="none">
+        <path data-role="wireA" d="M450 106 L450 200" stroke="#eab308" stroke-width="4" stroke-dasharray="6 10" stroke-linecap="round"/>
+        <path data-role="wireB" d="M450 286 L450 380" stroke="#8b5cf6" stroke-width="4" stroke-dasharray="6 10" stroke-linecap="round"/>
+        <path data-role="wireC" d="M450 466 L450 560" stroke="#eab308" stroke-width="4" stroke-dasharray="6 10" stroke-linecap="round"/>
+      </svg>
+      <div class="nnode n1" data-role="n1"><div class="ic">✉</div><div class="tx"><div class="nm">Formulaire reçu</div><div class="tp">Trigger — site web</div></div></div>
+      <div class="nnode n2" data-role="n2"><div class="ic">✦</div><div class="tx"><div class="nm">Qualifié par Claude</div><div class="tp">en quelques secondes</div></div></div>
+      <div class="nnode n3" data-role="n3"><div class="ic">⚡</div><div class="tx"><div class="nm">Réponse + créneau</div><div class="tp">&lt; 2 minutes</div></div></div>
+      <div class="nnode n4" data-role="n4"><div class="ic">⏰</div><div class="tx"><div class="nm">Relance automatique</div><div class="tp">si silence &gt; 48h</div></div></div>
+    </div>
+  </div>
+
+  <!-- S4 statcard AVANT 15.77 -> 20.49 -->
+  <div id="statScene" class="clip" data-start="15.77" data-duration="4.72" data-track-index="6">
+    <div class="statcard ko" data-role="s4">
+      <div class="lab">Avant</div>
+      <div class="val">12h+<br>de délai</div>
+      <div class="sub">la moitié des prospects partaient ailleurs</div>
+    </div>
+  </div>
+
+  <!-- S5 reality punch — maintenant 20.49 -> 24.81 -->
+  <div id="punch" class="clip" data-start="20.49" data-duration="4.32" data-track-index="6">
+    <div class="l1">Maintenant :</div>
+    <div class="l2">&lt; 2 MIN</div>
+    <div class="l3">jour et nuit, week-end compris</div>
+  </div>
+
+  <!-- S6 avatar window (C2) 24.81 -> 29.56 -->
+  <div id="winAvatar2" class="avatar-win clip" data-start="24.81" data-duration="4.75" data-track-index="4">
+    <div class="live">LIVE</div>
+  </div>
+  <div id="ctaNote" class="clip" data-start="24.81" data-duration="7.33" data-track-index="7">
+    commente le mot <b>CLIENTS</b> — workflow gratuit
+  </div>
+
+  <!-- captions container (individual caption clips injected by script) -->
+  <div id="captionBand"></div>
+
+</div>
+
+<script>
+window.__timelines = window.__timelines || {};
+var tl = gsap.timeline({ paused: true });
+
+// ---------------- data (word-level, offset -0.326s applied for voice post-trim) ----------------
+var CAPTIONS = [{"start":0.114,"end":1.074,"words":["N8N","m'a","rapporté"],"hot":-1},{"start":1.074,"end":1.794,"words":["3","clients","de"],"hot":0},{"start":1.794,"end":2.594,"words":["plus","ce","mois-ci"],"hot":-1},{"start":2.594,"end":3.414,"words":["et","un","seul"],"hot":-1},{"start":3.414,"end":4.554,"words":["agent","d'automatisation","en"],"hot":-1},{"start":4.554,"end":5.974,"words":["est","responsable.","L'agent"],"hot":-1},{"start":5.974,"end":6.814,"words":["surveille","les","formulaires"],"hot":-1},{"start":6.814,"end":7.414,"words":["remplis","sur","mon"],"hot":-1},{"start":7.414,"end":8.594,"words":["site,","qualifie","chaque"],"hot":-1},{"start":8.594,"end":9.394,"words":["demande","avec","Claude"],"hot":2},{"start":9.394,"end":10.274,"words":["en","quelques","secondes"],"hot":-1},{"start":10.274,"end":11.434,"words":["et","répond","immédiatement"],"hot":-1},{"start":11.434,"end":12.054,"words":["avec","un","créneau"],"hot":-1},{"start":12.054,"end":13.294,"words":["d'appel.","Il","relance"],"hot":-1},{"start":13.294,"end":14.254,"words":["automatiquement","si","la"],"hot":0},{"start":14.254,"end":14.854,"words":["personne","ne","répond"],"hot":-1},{"start":14.854,"end":15.534,"words":["pas","sous","48"],"hot":2},{"start":15.534,"end":16.734,"words":["heures.","Avant,","je"],"hot":0},{"start":16.734,"end":17.614,"words":["répondais","parfois","12"],"hot":2},{"start":17.614,"end":18.194,"words":["heures","plus","tard"],"hot":-1},{"start":18.194,"end":19.034,"words":["et","la","moitié"],"hot":-1},{"start":19.034,"end":19.614,"words":["des","prospects","avaient"],"hot":-1},{"start":19.614,"end":20.494,"words":["déjà","trouvé","quelqu'un"],"hot":-1},{"start":20.494,"end":21.494,"words":["d'autre.","Maintenant,","la"],"hot":1},{"start":21.494,"end":22.254,"words":["première","réponse","part"],"hot":-1},{"start":22.254,"end":22.674,"words":["en","moins","de"],"hot":-1},{"start":22.674,"end":23.394,"words":["2","minutes,","jour"],"hot":0},{"start":23.394,"end":24.354,"words":["et","nuit,","week-end"],"hot":-1},{"start":24.354,"end":25.374,"words":["compris.","C'est","un"],"hot":-1},{"start":25.374,"end":26.654,"words":["seul","workflow","N8N,"],"hot":2},{"start":26.674,"end":27.314,"words":["pas","un","logiciel"],"hot":-1},{"start":27.314,"end":27.894,"words":["à","1000€","par"],"hot":1},{"start":27.894,"end":29.074,"words":["mois.","Follow-moi","et"],"hot":-1},{"start":29.074,"end":29.554,"words":["commente","le","mot"],"hot":-1},{"start":29.554,"end":30.454,"words":["«clients","».","Je"],"hot":0},{"start":30.454,"end":31.074,"words":["t'envoie","le","workflow"],"hot":-1},{"start":31.074,"end":32.054,"words":["complet","gratuitement."],"hot":1}];
+
+var NODES = [
+  { role: 'n1', t: 7.53 },
+  { role: 'n2', t: 7.90 },
+  { role: 'n3', t: 10.30 },
+  { role: 'n4', t: 12.70 }
+];
+
+// ---------------- captions: build DOM + timeline synchronously ----------------
+var band = document.getElementById('captionBand');
+CAPTIONS.forEach(function (c, i) {
+  var el = document.createElement('div');
+  el.className = 'cap-line';
+  el.innerHTML = c.words.map(function (w, wi) {
+    return wi === c.hot ? '<span class="hot">' + w + '</span>' : w;
+  }).join(' ');
+  band.appendChild(el);
+  tl.set(el, { opacity: 0, y: 10 }, c.start);
+  tl.to(el, { opacity: 1, y: 0, duration: 0.12, ease: 'power2.out' }, c.start);
+  tl.to(el, { opacity: 0, duration: 0.10, ease: 'power1.in' }, Math.max(c.start + 0.02, c.end - 0.08));
+});
+
+// ---------------- demo canvas nodes: reveal in sync with voice ----------------
+var R = function (r) { return document.querySelector('[data-role="' + r + '"]'); };
+NODES.forEach(function (n) {
+  var el = R(n.role);
+  tl.fromTo(el, { opacity: 0, y: 20, scale: 0.92 }, { opacity: 1, y: 0, scale: 1, duration: 0.4, ease: 'back.out(1.7)' }, n.t);
+});
+function drawWire(role, t) {
+  tl.fromTo(R(role), { attr: { 'stroke-dashoffset': 260 }, opacity: 0.2 }, { attr: { 'stroke-dashoffset': 0 }, opacity: 1, duration: 0.5, ease: 'power2.out' }, t);
+}
+drawWire('wireA', 7.75);
+drawWire('wireB', 10.1);
+drawWire('wireC', 12.5);
+
+// ---------------- scene reveals ----------------
+tl.from('#hookTitle .tag', { opacity: 0, y: 24, duration: 0.4, ease: 'power3.out' }, 0.05);
+tl.from('#hookTitle .price', { opacity: 0, scale: 0.7, duration: 0.5, ease: 'back.out(2.4)' }, 0.18);
+tl.from('#hookTitle .sub', { opacity: 0, y: 16, duration: 0.4, ease: 'power3.out' }, 0.42);
+
+tl.from('#headerBar', { opacity: 0, y: -14, duration: 0.4, ease: 'power3.out' }, 3.60);
+tl.to('#headerBar', { opacity: 0, duration: 0.25, ease: 'power1.in' }, 20.2);
+
+tl.from('#winAvatar1', { opacity: 0, scale: 0.94, duration: 0.35, ease: 'power3.out' }, 3.60);
+tl.to('#winAvatar1', { boxShadow: '0 0 60px rgba(234,179,8,.65)', duration: 0.9, ease: 'sine.inOut', repeat: 3, yoyo: true }, 3.60);
+tl.from('#introLabel', { opacity: 0, y: 12, duration: 0.35, ease: 'power3.out' }, 3.75);
+
+tl.from('.canvasWrap', { opacity: 0, y: 30, scale: 0.97, duration: 0.4, ease: 'power3.out' }, 7.23);
+tl.to('.canvasWrap', { opacity: 0, duration: 0.25, ease: 'power1.in' }, 15.45);
+
+tl.set('#statScene .statcard', { opacity: 1 }, 15.85);
+tl.from('#statScene .lab', { opacity: 0, y: 20, duration: 0.3, ease: 'power3.out' }, 15.95);
+tl.from('#statScene .val', { opacity: 0, scale: 0.8, duration: 0.45, ease: 'back.out(2.2)' }, 16.2);
+tl.from('#statScene .sub', { opacity: 0, duration: 0.3, ease: 'power2.out' }, 16.7);
+tl.to('#statScene .statcard', { opacity: 0, duration: 0.25, ease: 'power1.in' }, 20.17);
+
+tl.set('#punch', { opacity: 1 }, 20.55);
+tl.from('#punch .l1', { opacity: 0, y: 20, duration: 0.35, ease: 'power3.out' }, 20.6);
+tl.from('#punch .l2', { opacity: 0, scale: 0.75, duration: 0.5, ease: 'back.out(2.4)' }, 21.4);
+tl.from('#punch .l3', { opacity: 0, duration: 0.3, ease: 'power2.out' }, 22.1);
+tl.to('#punch', { opacity: 0, duration: 0.25, ease: 'power1.in' }, 24.56);
+
+tl.from('#ctaTop', { opacity: 0, y: -14, duration: 0.4, ease: 'power3.out' }, 24.81);
+tl.to('#ctaTop .pill', { boxShadow: '0 0 70px rgba(234,179,8,.8)', duration: 0.7, ease: 'sine.inOut', repeat: 5, yoyo: true }, 24.95);
+
+tl.from('#winAvatar2', { opacity: 0, scale: 0.94, duration: 0.35, ease: 'power3.out' }, 24.81);
+tl.to('#winAvatar2', { boxShadow: '0 0 60px rgba(234,179,8,.65)', duration: 0.9, ease: 'sine.inOut', repeat: 4, yoyo: true }, 24.81);
+
+tl.from('#ctaNote', { opacity: 0, y: 14, duration: 0.35, ease: 'power3.out' }, 25.0);
+
+window.__timelines['autoboost142'] = tl;
+</script>
+</body>
+</html>
