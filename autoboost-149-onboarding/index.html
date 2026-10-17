@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Autoboost #149 — Onboarding client automatisé</title>
+<style>
+  :root{--bg:#0a0a0f;--surface:#111117;--border:#232330;--gold:#eab308;--violet:#8b5cf6;--ink:#EDEDED;--muted:#8A8A8A;}
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:Arial,Helvetica,sans-serif;padding:40px 16px 100px;}
+  .wrap{max-width:720px;margin:0 auto;}
+  h1{font-size:26px;margin:0 0 6px;}
+  .meta{color:var(--muted);font-size:15px;margin-bottom:20px;line-height:1.5;}
+  video{width:100%;max-width:380px;display:block;margin:0 auto 32px;border-radius:16px;border:2px solid var(--border);background:#000;}
+  h2{font-size:18px;color:var(--gold);border-bottom:1px solid var(--border);padding-bottom:8px;margin-top:36px;}
+  .tbl{overflow-x:auto;}
+  table{width:100%;border-collapse:collapse;font-size:14px;margin-top:12px;}
+  td,th{border:1px solid var(--border);padding:8px 10px;text-align:left;vertical-align:top;}
+  th{color:var(--muted);font-weight:600;background:var(--surface);}
+  pre{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;white-space:pre-wrap;font-size:14px;line-height:1.5;color:var(--ink);}
+  .pill{display:inline-block;background:rgba(234,179,8,.15);border:1px solid var(--gold);color:var(--gold);border-radius:999px;padding:4px 14px;font-size:13px;font-weight:700;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Autoboost #149 — Onboarding client automatisé</h1>
+  <div class="meta">Pipeline v3 (assemblage banque avatar, décor BUREAU) · CTA <span class="pill">ONBOARDING</span> · durée 33,07 s</div>
+  <video src="video.mp4" controls playsinline></video>
+
+  <h2>Génération de cette vidéo</h2>
+  <p class="meta">Aucune image ni vidéo générée par IA dans ce montage : ce sont de vraies prises de Tony
+  (banque avatar BUREAU — clips A1/B1/C2), sans détourage. Aucun marqueur à remplacer par l'avatar : c'est
+  déjà lui. Voix clonée (webhook <code>avatar-webhook-v2</code>, voix « archiviste »).</p>
+
+  <h2>Sujet (Sheet « 30 Videos », ligne 149, Statut Tournage ⬜ À faire)</h2>
+  <p class="meta"><b>Workflow :</b> Onboarding client automatisé (Claude Code + n8n) — 350€/mois
+  économisés sur la coordination freelance.</p>
+
+  <h2>Script voix off (texte intégral envoyé à avatar-webhook-v2)</h2>
+  <p class="meta">Raccourci de 137 à 114 mots depuis le script brut du Sheet pour tenir la cible 30-35s
+  (~3,3 mots/s).</p>
+  <pre>Claude Code m'a fait économiser trois cent cinquante euros par mois sur l'onboarding de mes nouveaux clients. Avant, je perdais une demi-journée à chaque signature : contrat, accès aux outils, mail de bienvenue, premier rendez-vous. Je payais même une coordination freelance pour ne rien oublier. Maintenant, un workflow n8n piloté par Claude Code déclenche tout automatiquement dès que le devis est signé : contrat généré, accès créés, mail personnalisé, rendez-vous calé, en moins de cinq minutes. Zéro oubli, zéro coordination à payer, un client qui démarre avec une impression beaucoup plus professionnelle. Si tu factures encore des clients sans process d'onboarding clair, follow-moi et commente le mot ONBOARDING, je t'envoie le workflow complet gratuitement.</pre>
+  <p class="meta">Timing mot-à-mot : <code>transcripts</code> renvoyé vide par le webhook (quota Whisper
+  OpenAI épuisé, piège déjà documenté) — reconstruit par pondération longueur de mot + bonus ponctuation
+  sur 7 segments délimités par les silences réels de la voix (<code>silencedetect</code> −30dB/0.15s),
+  normalisé sur la durée réelle du MP3.</p>
+
+  <h2>Texte TikTok + hashtags</h2>
+  <pre>💰 350€/mois économisés sur l'onboarding client, un seul workflow n8n + Claude Code. Zéro oubli, zéro coordination à payer. Commente ONBOARDING pour le workflow complet 👇
+#automatisation #n8n #claudecode #freelance #onboarding</pre>
+
+  <h2>Clips avatar utilisés (décor BUREAU)</h2>
+  <div class="tbl"><table>
+    <tr><th>rôle</th><th>clip</th><th>source (s)</th><th>vidéo (s)</th><th>lèvres actives</th></tr>
+    <tr><td>hook (cercle néon)</td><td>A1_hook_frontal.mp4</td><td>0.67 → 4.47</td><td>0.00 → 3.80</td><td>0.67–4.58</td></tr>
+    <tr><td>explication 1</td><td>B1_principe.mp4</td><td>0.08 → 1.68</td><td>16.04 → 17.64</td><td>0.08–4.88</td></tr>
+    <tr><td>explication 2</td><td>B1_principe.mp4</td><td>1.68 → 4.38</td><td>18.20 → 20.90</td><td>0.08–4.88</td></tr>
+    <tr><td>CTA 1</td><td>C2_commente_motcle.mp4</td><td>0.08 → 0.98</td><td>28.30 → 29.20</td><td>0.08–4.83</td></tr>
+    <tr><td>CTA 2</td><td>C2_commente_motcle.mp4</td><td>0.98 → 3.98</td><td>29.75 → 32.75</td><td>0.08–4.83</td></tr>
+  </table></div>
+  <p class="meta">Explication et CTA scindés en deux demi-plans chacun : deux pauses réelles de la voix
+  (17,75→18,13s et 29,35→29,66s) traversaient la fenêtre d'un seul tenant, ce qui aurait reproduit le
+  défaut inverse documenté dans le skill v3 (« la bouche parle pendant le silence »). Chaque demi-plan
+  s'arrête avant la pause réelle et reprend juste après.
+  <code>check_lips.mjs</code> (adapté de <code>check_lips_rule.mjs</code>, piste voix seule) :
+  <b>PASS — 0 plan en violation</b> sur les 5. Budget bureau utilisé = 13,00s sur 13,5s exploitables.</p>
+
+  <h2>Habillage &amp; musique</h2>
+  <p class="meta">7 scènes calées sur les silences réels de la voix : hook « 350€/MOIS ÉCONOMISÉS » →
+  checklist « AVANT » (4 items qui popent sur les pauses d'énumération réelles : contrat, accès outils,
+  mail, RDV) → transition « LA SOLUTION » → flow n8n animé 4 nœuds (contrat généré → accès créés → mail
+  personnalisé → RDV calé) qui popent au rythme de la voix → jauge résultat « −95% temps par client » →
+  pilule CTA jaune « COMMENTE ONBOARDING » pulsante. Musique <code>journal-digital-clouds-128.mp3</code>
+  (même profil d'énergie déjà validé sur le sujet technique #140), volume 0.30 ducké sous la voix.
+  Palette strictement <code>_shared/CHARTE.md</code> (#eab308 / #8b5cf6, fond #0a0a0f) — pas la
+  palette morte #FFE600/#A855F7/#FF8A3D encore utilisée par erreur sur #141.
+  Recette complète : <code>hero-section/autoboost-neon-videos/autoboost-149-onboarding/PROMPT.md</code>.</p>
+</div>
+</body>
+</html>
