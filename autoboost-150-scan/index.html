@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Autoboost #150 — Claude Code scanne un codebase client</title>
+<style>
+  :root{--bg:#0a0a0f;--surface:#111117;--border:#232330;--gold:#eab308;--violet:#8b5cf6;--ink:#EDEDED;--muted:#8A8A8A;}
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:Arial,Helvetica,sans-serif;padding:40px 16px 100px;}
+  .wrap{max-width:720px;margin:0 auto;}
+  h1{font-size:26px;margin:0 0 6px;}
+  .meta{color:var(--muted);font-size:15px;margin-bottom:20px;line-height:1.5;}
+  video{width:100%;max-width:380px;display:block;margin:0 auto 32px;border-radius:16px;border:2px solid var(--border);background:#000;}
+  h2{font-size:18px;color:var(--gold);border-bottom:1px solid var(--border);padding-bottom:8px;margin-top:36px;}
+  .tbl{overflow-x:auto;}
+  table{width:100%;border-collapse:collapse;font-size:14px;margin-top:12px;}
+  td,th{border:1px solid var(--border);padding:8px 10px;text-align:left;vertical-align:top;}
+  th{color:var(--muted);font-weight:600;background:var(--surface);}
+  pre{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;white-space:pre-wrap;font-size:14px;line-height:1.5;color:var(--ink);}
+  .pill{display:inline-block;background:rgba(234,179,8,.15);border:1px solid var(--gold);color:var(--gold);border-radius:999px;padding:4px 14px;font-size:13px;font-weight:700;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Autoboost #150 — Claude Code scanne un codebase client</h1>
+  <div class="meta">Pipeline v3 (assemblage banque avatar, décor BUREAU) · CTA <span class="pill">SCAN</span> · durée 34,2 s</div>
+  <video src="video.mp4" controls playsinline></video>
+
+  <h2>Génération de cette vidéo</h2>
+  <p class="meta">Aucune image ni vidéo générée par IA dans ce montage : ce sont de vraies prises de Tony
+  (banque avatar BUREAU — clips A1/B1/C2), sans détourage. Aucun marqueur à remplacer par l'avatar : c'est
+  déjà lui. Voix clonée (webhook <code>avatar-webhook-v2</code>, voix « archiviste »).</p>
+
+  <h2>Sujet (Sheet « 30 Videos », ligne 153, # 150, Statut Tournage ⬜ À faire)</h2>
+  <p class="meta"><b>Workflow :</b> Claude Code lit un codebase client en quelques secondes — reprise de
+  projet (site ou automatisation existante) sans repartir de zéro.</p>
+
+  <h2>Script voix off (texte intégral envoyé à avatar-webhook-v2)</h2>
+  <p class="meta">Script du Sheet utilisé tel quel — 133 mots, ~34s à l'oral.</p>
+  <pre>Claude Code lit cinquante fichiers de code en trente secondes, là où il me fallait facilement deux heures avant pour comprendre un projet client que je reprenais. Quand un client m'envoie un site ou une automatisation déjà existante à corriger, je ne pars plus de zéro : je lance Claude Code dans le dossier, et en une poignée de secondes, il m'explique l'architecture, repère les fichiers qui comptent vraiment, et me liste les bugs probables avant même que j'aie ouvert un seul fichier moi-même. Ça change complètement le temps que je facture sur une reprise de projet, et surtout, je ne rate plus les détails cachés dans un vieux code mal documenté. Si tu reprends encore des projets client à l'aveugle, follow-moi et commente le mot SCAN, je t'envoie la méthode complète gratuitement.</pre>
+  <p class="meta">Timing mot-à-mot : <code>transcripts</code> renvoyé vide par <code>avatar-webhook-v2</code>
+  (quota Whisper OpenAI épuisé, piège déjà documenté) — obtenu séparément via <b>WaveSpeed
+  openai-whisper</b> (langue fr, durée détectée 34,11s), timestamps mot-à-mot réels exploités pour
+  caler scènes, captions et fenêtres avatar.</p>
+
+  <h2>Texte TikTok + hashtags</h2>
+  <pre>⚡ Claude Code lit 50 fichiers de code en 30 secondes. Ce qui me prenait 2h pour reprendre un projet client se fait maintenant avant d'ouvrir un seul fichier. Commente SCAN pour la méthode 👇
+#claudecode #developpement #freelance #automatisation #codeia</pre>
+
+  <h2>Clips avatar utilisés (décor BUREAU)</h2>
+  <div class="tbl"><table>
+    <tr><th>rôle</th><th>clip</th><th>source (s)</th><th>vidéo (s)</th><th>lèvres actives</th></tr>
+    <tr><td>hook (cercle néon)</td><td>A1_hook_frontal.mp4</td><td>0.67 → 4.47</td><td>0.55 → 4.35</td><td>0.67–4.58</td></tr>
+    <tr><td>architecture</td><td>B1_principe.mp4</td><td>0.10 → 1.70</td><td>14.45 → 16.05</td><td>0.08–4.88</td></tr>
+    <tr><td>bugs probables</td><td>B1_principe.mp4</td><td>1.70 → 4.40</td><td>18.28 → 20.98</td><td>0.08–4.88</td></tr>
+    <tr><td>CTA 1</td><td>C2_commente_motcle.mp4</td><td>0.10 → 1.00</td><td>28.27 → 29.17</td><td>0.08–4.83</td></tr>
+    <tr><td>CTA 2</td><td>C2_commente_motcle.mp4</td><td>1.00 → 4.00</td><td>30.32 → 33.32</td><td>0.08–4.83</td></tr>
+  </table></div>
+  <p class="meta">3 des 5 fenêtres ont été décalées pendant le build pour éviter un silence réel : la
+  fenêtre hook traversait le silence d'amorce du TTS (0,00-0,52s, sinon la bouche bouge avant que la
+  voix démarre), et deux fenêtres chevauchaient une micro-pause respiration de ~0,27s confirmée réelle
+  par <code>volumedetect</code> (pas un faux positif de seuil). <code>check_lips_rule.mjs</code>
+  (recréé localement, piste voix seule, tolérance 0,2s = 6 images/30fps) :
+  <b>PASS — 0 plan en violation</b> sur les 5. Budget bureau utilisé = 12,00s sur 13,5s exploitables.</p>
+
+  <h2>Habillage &amp; musique</h2>
+  <p class="meta">6 scènes calées sur les timestamps Whisper réels : hook « 50 FICHIERS LUS EN 30
+  SECONDES » → déclencheur (carte « client-site-v2/ » avec checklist) → démo terminal
+  (<code>claude-code scan .</code> tapé + cartes « Architecture » / « Bugs probables » qui popent au
+  rythme de la voix, broll grille en surimpression) → transformation (jauge « 2h → 30s ») → pilule CTA
+  jaune « COMMENTE SCAN » pulsante. Musique <code>journal-digital-clouds-128.mp3</code>, volume 0.30
+  sous la voix. Palette strictement <code>_shared/CHARTE.md</code> (#eab308 / #8b5cf6, fond #0a0a0f).
+  Recette complète : <code>hero-section/autoboost-neon-videos/autoboost-150-scan/PROMPT.md</code>.</p>
+</div>
+</body>
+</html>
