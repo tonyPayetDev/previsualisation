@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="fr"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Relances</title>
+<!--
+  /relances/ — qui relancer, dans quel ordre, et quoi dire.
+
+  Demande de Tony (19/10/2026) : « un truc pour les relances : le taux de
+  relance que je dois faire, ce que je dois appeler étape par étape, et le plan
+  de cette semaine ».
+
+  Aucune liste n'est écrite dans cette page. Tout est relu au chargement :
+   · le journal d'appels VIVANT (webhook appels-journal, le même que /appels/mode/) —
+     c'est lui qui sait qui a été appelé, quand, et ce qui s'est dit ;
+   · les fiches (numéro, script) de /appels/mode/, /appels/recrute/ et des secteurs.
+  Marquer un appel ici l'écrit dans ce même journal : /appels/ le voit aussi.
+
+  Règle de relance : un contact ouvert est À RELANCER 3 jours après le dernier
+  échange, ou à la date « rappeler le… » si elle a été notée. « Plus jamais » le
+  sort de la liste pour de bon.
+-->
+<style>
+:root{--fond:#07080c;--carte:#101420;--ligne:#1e2637;--blanc:#f0f3f8;--gris:#8590a3;--jaune:#FFE600;--vert:#34d399;--rouge:#fb7185;--bleu:#60a5fa}
+*{box-sizing:border-box}
+body{margin:0;overflow-wrap:anywhere;background:var(--fond);color:var(--blanc);font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:720px;margin:0 auto;padding:20px 16px 80px}
+a{color:var(--bleu)}
+h1{font-size:26px;margin:0 0 4px}
+h2{font-size:18px;margin:32px 0 10px;color:var(--jaune)}
+.sous{color:var(--gris);margin:0 0 18px;font-size:14px}
+.chiffres{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.chiffre{background:var(--carte);border:1px solid var(--ligne);border-radius:12px;padding:12px}
+.chiffre b{display:block;font-size:28px;line-height:1.1}
+.chiffre span{color:var(--gris);font-size:13px}
+.barre{height:8px;background:var(--ligne);border-radius:4px;margin:12px 0 4px;overflow:hidden}
+.barre i{display:block;height:100%;background:var(--vert);width:0}
+.jours{display:grid;gap:8px}
+.jour{background:var(--carte);border:1px solid var(--ligne);border-radius:12px;padding:10px 12px}
+.jour.auj{border-color:var(--jaune)}
+.jour .t{font-weight:600}
+.jour .l{color:var(--gris);font-size:14px}
+.fiche{background:var(--carte);border:1px solid var(--ligne);border-radius:14px;margin:10px 0;overflow:hidden}
+.fiche>summary{list-style:none;cursor:pointer;padding:12px 14px;display:flex;gap:10px;align-items:center}
+.fiche>summary::-webkit-details-marker{display:none}
+.fiche .nom{font-weight:600;flex:1;min-width:0}
+.fiche .nom small{display:block;font-weight:400;color:var(--gris);font-size:13px}
+.pastille{font-size:12px;padding:2px 8px;border-radius:99px;border:1px solid var(--ligne);color:var(--gris);white-space:nowrap}
+.pastille.chaud{color:var(--jaune);border-color:var(--jaune)}
+.pastille.retard{color:var(--rouge);border-color:var(--rouge)}
+.pastille.fait{color:var(--vert);border-color:var(--vert)}
+.etapes{padding:0 14px 14px;margin:0;counter-reset:e;list-style:none}
+.etapes li{counter-increment:e;position:relative;padding:10px 0 10px 34px;border-top:1px solid var(--ligne)}
+.etapes li::before{content:counter(e);position:absolute;left:0;top:10px;width:24px;height:24px;border-radius:50%;background:var(--ligne);text-align:center;font-size:13px;line-height:24px}
+.etapes .q{color:var(--gris);font-size:13px;display:block}
+.dire{background:#0b0e16;border-left:3px solid var(--jaune);padding:8px 10px;margin-top:4px}
+.tel{display:inline-block;margin-top:6px;padding:10px 16px;border-radius:10px;background:var(--vert);color:#04130c;font-weight:700;text-decoration:none}
+details.plus{margin-top:6px}
+details.plus summary{color:var(--bleu);cursor:pointer;font-size:14px}
+details.plus p{margin:8px 0}
+.boutons{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+button{font:inherit;font-size:14px;padding:8px 12px;border-radius:10px;border:1px solid var(--ligne);background:#141a26;color:var(--blanc);cursor:pointer}
+button.ok{border-color:var(--vert);color:var(--vert)}
+button.non{border-color:var(--rouge);color:var(--rouge)}
+button:disabled{opacity:.5}
+textarea,input[type=date]{font:inherit;font-size:14px;width:100%;margin-top:6px;padding:8px;border-radius:8px;border:1px solid var(--ligne);background:#0b0e16;color:var(--blanc)}
+input[type=date]{width:auto}
+.vide,.erreur{color:var(--gris);padding:12px 0}
+.erreur{color:var(--rouge)}
+.hors{background:var(--carte);border:1px solid var(--ligne);border-radius:12px;padding:10px 12px;margin:8px 0}
+.hors p{margin:4px 0 0;color:var(--gris);font-size:14px}
+</style>
+</head><body><main>
+<h1>Relances</h1>
+<p class="sous" id="sous">Chargement du journal d'appels…</p>
+
+<section class="chiffres">
+  <div class="chiffre"><b id="n-dues">–</b><span>à relancer</span></div>
+  <div class="chiffre"><b id="n-faites">–</b><span>faites cette semaine</span></div>
+  <div class="chiffre"><b id="n-retard">–</b><span>en retard de +2 semaines</span></div>
+</section>
+<div class="barre"><i id="barre"></i></div>
+<p class="sous" id="taux"></p>
+
+<h2>Le plan de la semaine</h2>
+<div class="jours" id="plan"></div>
+
+<h2>Aujourd'hui, dans l'ordre</h2>
+<div id="auj"></div>
+
+<h2>Sur place</h2>
+<p class="sous">Ils t'ont dit de passer. Regroupe-les par commune quand tu es dans le coin.</p>
+<div id="surplace"></div>
+
+<h2>Le reste de la semaine</h2>
+<div id="reste"></div>
+
+<h2>Hors appels</h2>
+<p class="sous">Des relances qui ne se font pas au téléphone, reprises du tableau de bord.</p>
+<div id="hors"></div>
+
+<h2>Faites cette semaine</h2>
+<div id="faites"></div>
+</main>
+<script>
+(() => {
+  const URL_ETAT = 'https://n7n.automatisationboost.com/webhook/appels-journal';
+  const SOURCES = ['../appels/mode/leads.json', '../appels/recrute/leads.json', '../appels/mode/leads-secteurs.json'];
+  const DELAI = 3;       // jours entre deux relances
+  const PAR_JOUR = 6;    // relances téléphone prévues par jour
+
+  const $ = (id) => document.getElementById(id);
+  const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const jour = (d) => d.toISOString().slice(0, 10);
+  const AUJ = jour(new Date());
+  const ajoute = (iso, n) => { const d = new Date(iso + 'T12:00:00Z'); d.setUTCDate(d.getUTCDate() + n); return jour(d); };
+  const ecart = (a, b) => Math.round((new Date(b + 'T12:00:00Z') - new Date(a + 'T12:00:00Z')) / 864e5);
+  const lundi = (() => { const d = new Date(AUJ + 'T12:00:00Z'); d.setUTCDate(d.getUTCDate() - ((d.getUTCDay() + 6) % 7)); return jour(d); })();
+  const JOURS = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi'];
+  const joli = (iso) => new Date(iso + 'T12:00:00Z').toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' });
+
+  let FICHES = {}, journal = {};
+
+  /* Ce que veut dire chaque état du journal, et ce qu'on fait ensuite. */
+  const TYPE = {
+    appele:   { lib: 'Tu lui as parlé',     poids: 3 },
+    repondu:  { lib: 'Pas décroché',        poids: 1 },
+    surplace: { lib: 'À voir sur place',    poids: 1 },
+  };
+
+  const ouverture = (c) => c.etat === 'appele'
+    ? `Bonjour, c'est Tony, d'AutomatisationBoost. On s'est parlé le ${joli(c.date)}. Je vous rappelle comme prévu — vous avez deux minutes ?`
+    : `Bonjour, c'est Tony, d'AutomatisationBoost. J'avais essayé de vous joindre le ${joli(c.date)}. Je fais des vidéos et des sites pour les commerces d'ici — vous avez deux minutes ?`;
+
+  /* Ce qu'il faut envoyer après l'appel : une adresse notée pendant l'appel,
+     ou un lien de démo écrit dans la fiche. Sinon, rien à inventer. */
+  const apres = (c) => {
+    const txt = `${c.note || ''} ${c.f.suite || ''}`;
+    const mail = (txt.match(/[\w.+-]+@[\w-]+\.[\w.]+/) || [])[0];
+    const lien = (txt.match(/(https?:\/\/)?previsualisation\.automatisationboost\.com\/[\w\/-]+/) || [])[0];
+    const out = [];
+    if (mail) out.push(`Envoie ce que tu fais à <a href="mailto:${esc(mail)}">${esc(mail)}</a>.`);
+    if (lien) out.push(`Envoie le lien de sa démo : <a href="${esc(lien.startsWith('http') ? lien : 'https://' + lien)}" target="_blank">${esc(lien.replace(/^https?:\/\//, ''))}</a>`);
+    if (!out.length) out.push('Envoie par SMS un exemple de ce que tu fais, dans l\'heure qui suit, tant qu\'il s\'en souvient.');
+    return out.join('<br>');
+  };
+
+  const contacts = () => Object.entries(journal)
+    .filter(([id, x]) => x && TYPE[x.etat] && FICHES[id])
+    .map(([id, x]) => {
+      const f = FICHES[id];
+      const due = x.rappel || ajoute(x.date, DELAI);
+      const chaud = f.cat === 'rappel' || (x.etat === 'appele' && /envoy|rappel|video|vidéo|maquette|devis/i.test(x.note || ''));
+      return { id, f, ...x, due, chaud, retard: ecart(due, AUJ) };
+    });
+
+  const score = (c) => (c.chaud ? 10 : 0) + TYPE[c.etat].poids + Math.min(c.retard, 60) / 60;
+
+  const fiche = (c, ouvert) => {
+    const f = c.f, tel = f.direct || f.tel || '';
+    const script = Array.isArray(f.script) ? f.script.filter((x) => x[0] !== 'Ouvrir') : [];
+    const pastille = c.faite ? '<span class="pastille fait">fait</span>'
+      : c.chaud ? '<span class="pastille chaud">chaud</span>'
+      : c.retard > 14 ? `<span class="pastille retard">${c.retard} j de retard</span>` : '';
+    const etape1 = c.etat === 'surplace'
+      ? `<li><span class="q">Passe le voir</span>${esc(f.commune || '')}${c.note ? ' — ' + esc(c.note) : ''}</li>`
+      : `<li><span class="q">Appelle</span><a class="tel" href="tel:${esc(tel.replace(/[^+0-9]/g, ''))}">${esc(tel)}</a></li>`;
+    return `<details class="fiche" ${ouvert ? 'open' : ''} data-id="${esc(c.id)}">
+      <summary><span class="nom">${esc(f.nom)}<small>${esc([f.commune, f.type || f.poste || f.secteur].filter(Boolean).join(' · '))} · ${esc(TYPE[c.etat].lib)} le ${joli(c.date)}</small></span>${pastille}</summary>
+      <ol class="etapes">
+        <li><span class="q">Avant : ce qui s'est dit</span>${esc(c.note || f.suite || 'Rien de noté au dernier appel.')}</li>
+        ${etape1}
+        <li><span class="q">Dis, mot pour mot</span><div class="dire">${esc(ouverture(c))}</div>
+          ${script.length ? `<details class="plus"><summary>La suite, si ça s'ouvre — et les objections</summary>${script.map((x) => `<p><b>${esc(x[0])}</b><br>${esc(x[1])}</p>`).join('')}</details>` : ''}</li>
+        <li><span class="q">Juste après</span>${apres(c)}</li>
+        <li><span class="q">Note le résultat</span>
+          <textarea rows="2" placeholder="Ce qu'il a dit (facultatif)"></textarea>
+          <div class="boutons">
+            <button class="ok" data-q="appele">J'ai parlé</button>
+            <button data-q="repondu">Pas décroché</button>
+            <button data-q="surplace">À voir sur place</button>
+            <button class="non" data-q="jamais">Plus jamais</button>
+          </div>
+          <div class="boutons"><input type="date" min="${AUJ}"><button data-q="rappel">Rappeler à cette date</button></div>
+        </li>
+      </ol></details>`;
+  };
+
+  const peindre = () => {
+    const tous = contacts();
+    const faites = Object.entries(journal).filter(([id, x]) => x && x.date >= lundi && x.date <= AUJ && FICHES[id]).length;
+    const dues = tous.filter((c) => c.due <= AUJ && !(c.date >= lundi && c.date === AUJ));
+    const retard = dues.filter((c) => c.retard > 14).length;
+    $('n-dues').textContent = dues.length;
+    $('n-faites').textContent = faites;
+    $('n-retard').textContent = retard;
+    const taux = faites + dues.length ? Math.round(100 * faites / (faites + dues.length)) : 100;
+    $('barre').style.width = taux + '%';
+    $('taux').textContent = `Taux de relance cette semaine : ${taux} % (${faites} faites sur ${faites + dues.length}).`;
+    const dernier = Object.values(journal).map((x) => x && x.date).filter(Boolean).sort().pop();
+    $('sous').textContent = `${tous.length} contacts ouverts · dernier appel noté le ${dernier ? joli(dernier) : '—'} · une relance tous les ${DELAI} jours.`;
+
+    /* Le plan : les relances téléphone dues, les plus chaudes d'abord, réparties
+       à partir d'aujourd'hui, ${PAR_JOUR} par jour. Les jours passés montrent ce
+       qui a été fait. */
+    const tel = dues.filter((c) => c.etat !== 'surplace').sort((a, b) => score(b) - score(a));
+    const auPlan = {}; let k = 0;
+    for (let j = 0; j < 5; j++) {
+      const d = ajoute(lundi, j);
+      if (d < AUJ) continue;
+      auPlan[d] = tel.slice(k, k + PAR_JOUR); k += PAR_JOUR;
+    }
+    $('plan').innerHTML = JOURS.map((n, j) => {
+      const d = ajoute(lundi, j);
+      const fait = Object.entries(journal).filter(([id, x]) => x && x.date === d && FICHES[id]);
+      const prevus = auPlan[d] || [];
+      const liste = d < AUJ
+        ? (fait.length ? fait.map(([id]) => esc(FICHES[id].nom)).join(', ') : 'rien de noté')
+        : (prevus.length ? prevus.map((c) => esc(c.f.nom)).join(', ') : 'rien de dû — avance sur la liste');
+      return `<div class="jour ${d === AUJ ? 'auj' : ''}"><div class="t">${n} ${joli(d)}${d < AUJ ? ` · ${fait.length} fait${fait.length > 1 ? 's' : ''}` : ` · ${prevus.length} prévu${prevus.length > 1 ? 's' : ''}`}</div><div class="l">${liste}</div></div>`;
+    }).join('') + (tel.length > k ? `<p class="sous">Encore ${tel.length - k} relance${tel.length - k > 1 ? 's' : ''} au-delà de vendredi.</p>` : '');
+
+    const aujourdhui = auPlan[AUJ] || [];
+    $('auj').innerHTML = aujourdhui.length ? aujourdhui.map((c, i) => fiche(c, i === 0)).join('') : '<p class="vide">Rien de prévu aujourd\'hui (week-end, ou tout est fait).</p>';
+    const sp = dues.filter((c) => c.etat === 'surplace').sort((a, b) => (a.f.commune || '').localeCompare(b.f.commune || ''));
+    $('surplace').innerHTML = sp.length ? sp.map((c) => fiche(c, false)).join('') : '<p class="vide">Personne.</p>';
+    const reste = tel.filter((c) => !aujourdhui.includes(c));
+    $('reste').innerHTML = reste.length ? reste.map((c) => fiche(c, false)).join('') : '<p class="vide">Rien.</p>';
+    const ok = Object.entries(journal).filter(([id, x]) => x && x.date >= lundi && FICHES[id]).sort((a, b) => (b[1].h || '').localeCompare(a[1].h || ''));
+    $('faites').innerHTML = ok.length ? ok.map(([id, x]) => `<div class="hors"><b>${esc(FICHES[id].nom)}</b> — ${esc(TYPE[x.etat]?.lib || (x.etat === 'jamais' ? 'Plus jamais' : x.etat))} le ${joli(x.date)}${x.rappel ? ` · rappel le ${joli(x.rappel)}` : ''}${x.note ? `<p>${esc(x.note)}</p>` : ''}</div>`).join('') : '<p class="vide">Aucune relance notée depuis lundi.</p>';
+
+    document.querySelectorAll('.fiche button').forEach((b) => b.onclick = () => noter(b));
+  };
+
+  /* On relit le journal juste avant d'écrire, puis on renvoie l'ensemble :
+     /appels/mode/ écrit dans le même journal, et un envoi à partir d'une copie
+     vieille de dix minutes effacerait ses appels. */
+  const noter = async (b) => {
+    const carte = b.closest('.fiche'), id = carte.dataset.id;
+    const note = carte.querySelector('textarea').value.trim();
+    let q = b.dataset.q, rappel;
+    if (q === 'rappel') {
+      rappel = carte.querySelector('input[type=date]').value;
+      if (!rappel) { carte.querySelector('input[type=date]').focus(); return; }
+      q = 'appele';
+    }
+    carte.querySelectorAll('button').forEach((x) => x.disabled = true);
+    try {
+      const frais = await lire();
+      frais[id] = { etat: q, date: AUJ, h: new Date().toISOString(), ...(note ? { note } : {}), ...(rappel ? { rappel } : {}) };
+      const r = await fetch(URL_ETAT, { method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify(frais) });
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      journal = frais; peindre();
+    } catch (e) {
+      carte.querySelectorAll('button').forEach((x) => x.disabled = false);
+      alert('Pas enregistré (' + e.message + '). Vérifie la connexion et réessaie.');
+    }
+  };
+
+  const lire = async () => {
+    const j = await (await fetch(URL_ETAT + '?t=' + Date.now())).json();
+    const d = typeof j.donnees === 'string' ? JSON.parse(j.donnees || '{}') : (j.donnees || {});
+    return d && typeof d === 'object' ? d : {};
+  };
+
+  const horsAppels = async () => {
+    try {
+      const t = (await (await fetch('../taches/taches.json?t=' + Date.now())).json()).taches || [];
+      const r = t.filter((x) => ['attente', 'propose', 'bloque'].includes(x.etat) && /relanc|envoyer le message|écrire à/i.test(x.t));
+      $('hors').innerHTML = r.length ? r.map((x) => `<div class="hors"><b>${esc(x.t)}</b>${x.etat === 'bloque' ? ' <span class="pastille retard">bloqué</span>' : ''}${x.lien ? ` · <a href="..${esc(x.lien)}">ouvrir</a>` : ''}<p>${esc((x.note || '').slice(0, 260))}${(x.note || '').length > 260 ? '…' : ''}</p></div>`).join('') : '<p class="vide">Rien.</p>';
+    } catch (e) { $('hors').innerHTML = '<p class="vide">Tableau de bord illisible.</p>'; }
+  };
+
+  (async () => {
+    try {
+      for (const s of SOURCES) {
+        try {
+          const j = await (await fetch(s + '?t=' + Date.now())).json();
+          for (const f of (j.leads || [])) if (f && f.id && !FICHES[f.id]) FICHES[f.id] = f;
+        } catch (e) { /* une source absente n'empêche pas les autres */ }
+      }
+      journal = await lire();
+      peindre();
+    } catch (e) {
+      $('sous').innerHTML = `<span class="erreur">Journal d'appels injoignable (${esc(e.message)}). Recharge la page.</span>`;
+    }
+    horsAppels();
+  })();
+})();
+</script>
+</body></html>
