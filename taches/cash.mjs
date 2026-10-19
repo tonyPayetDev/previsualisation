@@ -43,6 +43,8 @@ const REGLES = [
   [/arrête de vendre tout de suite|reel-audit-3-questions|reel-nexeus/i,
                                   'proche', 'Contenu social prêt à diffuser : ça construit l’audience qui fournit les prospects.'],
   [/voix befresh|feed instagram/i,'proche', 'Client test, même logique que le reste de BeFresh.'],
+  [/scripts-en-attente|scripts prêts de scripts-en-attente/i, 'proche', "Contenu déjà écrit, prêt à tourner : ça alimente la production et l'audience, mais rien à facturer tel quel."],
+  [/économie chiffrée/i,          'proche', "Contenu social : ça construit l'audience qui fournit les prospects, pas facturable tel quel."],
 
   // ── LOIN : outillage. Convertible, mais personne ne paie pour ça aujourd’hui.
   [/agenttube|videoboost 100|dépôt public|cron-watchdog|routines cloud|reel-tempo-match/i,
