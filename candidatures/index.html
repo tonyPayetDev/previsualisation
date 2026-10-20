@@ -100,6 +100,8 @@ h1{font-size:26px;margin:0 0 4px}
       if (!r.ok) throw new Error('HTTP ' + r.status);
       const j = await r.json();
       (j.candidatures || []).forEach((c) => STATS[c.slug] = c);
+      // Le test envoyé à Tony lui-même (slug test-tony) apparaît en tête, hors des 50.
+      (j.candidatures || []).filter((c) => !LISTE.some((x) => x.slug === c.slug)).forEach((c) => LISTE.unshift({ n: 0, nom: c.slug === 'test-tony' ? 'Email de test (toi)' : c.slug, ville: '', groupe: 'A', email: 'tony.payet.professionnel@gmail.com', slug: c.slug }));
       $('sous').textContent = `${LISTE.length} entreprises · suivi mis à jour à l'ouverture de la page`;
     } catch (e) {
       $('sous').textContent = `${LISTE.length} entreprises`;
