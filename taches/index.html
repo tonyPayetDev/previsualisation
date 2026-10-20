@@ -157,13 +157,14 @@ footer{margin-top:34px; font-size:12px; color:var(--gris2); line-height:1.6}
 
 <header>
   <h1>Où en sont mes demandes</h1>
-  <p>Tout ce que tu m'as demandé, et où ça en est. Mis à jour le 2026-10-19T16:33:23.894Z.</p>
+  <p>Tout ce que tu m'as demandé, et où ça en est. Mis à jour le 2026-10-20T21:22:13.327Z.</p>
   <p style="background:#15130c;border:1px solid #3a3115;border-left:3px solid #eab308;border-radius:10px;padding:14px 16px;margin:16px 0;line-height:1.6;color:#e6d29a">
     Cette page est le TABLEAU DE BORD (où en est chaque chantier). Le tableau où tu valides, où tu vois ce qui me bloque et où tu déposes une idée est ailleurs : /taches/valider/. Les 89 tâches ouvertes y sont, celles d'ici n'y sont pas — les deux listes ne sont pas encore fusionnées. <a href="/taches/valider/" style="color:#eab308">Ouvrir le tableau de validation →</a></p>
   <nav class="nav">
     <a href="/taches/" class="ici" title="où en est chaque chose">Mes demandes</a>
     <a href="/relances/" title="qui rappeler, quoi dire">Relances</a>
     <a href="/candidatures/" title="envoyées, ouvertes, CV cliqué">Candidatures</a>
+    <a href="/commercial/suivi/" title="quel script obtient des RDV">Commercial</a>
     <a href="/a-envoyer/" title="fini, jamais parti">À envoyer</a>
     <a href="/leads-qualifies/" title="qui appeler, et pourquoi">Leads qualifiés</a>
     <a href="/leads-restaurants/" title="la liste complète">Tous les leads</a>
@@ -180,7 +181,7 @@ footer{margin-top:34px; font-size:12px; color:var(--gris2); line-height:1.6}
 </header>
 
 <div class="compteurs">
-  <button class="c livre"   data-f="livre"   aria-pressed="false"><b>46</b><span>Livré</span></button>
+  <button class="c livre"   data-f="livre"   aria-pressed="false"><b>50</b><span>Livré</span></button>
   <button class="c bloque"  data-f="bloque"  aria-pressed="false"><b>8</b><span>Bloqué</span></button>
   <button class="c attente" data-f="attente" aria-pressed="false"><b>19</b><span>Attend toi</span></button>
 </div>
@@ -188,9 +189,9 @@ footer{margin-top:34px; font-size:12px; color:var(--gris2); line-height:1.6}
 
 <h2>Proximité du cash</h2>
 <div class="cash-f">
-  <button class="cf direct" data-c="direct" aria-pressed="false"><b>27</b><span>€€€ Cash direct</span></button>
-  <button class="cf proche" data-c="proche" aria-pressed="false"><b>24</b><span>€€ Amène du cash</span></button>
-  <button class="cf loin"   data-c="loin"   aria-pressed="false"><b>30</b><span>€ Convertible</span></button>
+  <button class="cf direct" data-c="direct" aria-pressed="false"><b>28</b><span>€€€ Cash direct</span></button>
+  <button class="cf proche" data-c="proche" aria-pressed="false"><b>23</b><span>€€ Amène du cash</span></button>
+  <button class="cf loin"   data-c="loin"   aria-pressed="false"><b>34</b><span>€ Convertible</span></button>
 </div>
 <p class="aide" id="aideCash">Rouge : un prospect nommé est au bout. Vert : utile, mais personne ne paie pour ça aujourd'hui.</p>
 
@@ -224,6 +225,16 @@ footer{margin-top:34px; font-size:12px; color:var(--gris2); line-height:1.6}
 
 <h2>De mon côté</h2>
 <ul id="liste">
+<li class="t" data-etat="attente" data-cash="direct">
+  <span class="pastille attente" aria-hidden="true"></span>
+  <div class="corps">
+    <p class="titre"><span class="eur direct" title="Cash direct — ">€€€</span>Koytcha — attendre le retour de Florent</p>
+    <p class="note">Tout le travail Koytcha est livré (refonte, recherche, menu mobile, effets, export WordPress, facture envoyée le 05/10). Il reste sa réponse : les 3 destinataires du formulaire de contact et la proposition sécurité (comptes administrateur suspects). Rien à faire de ton côté tant qu’il n’a pas répondu.</p>
+    
+    
+  </div>
+  <span class="voir vide" aria-hidden="true"></span>
+</li>
 <li class="t" data-etat="attente" data-cash="loin">
   <span class="pastille attente" aria-hidden="true"></span>
   <div class="corps">
@@ -253,6 +264,46 @@ footer{margin-top:34px; font-size:12px; color:var(--gris2); line-height:1.6}
     
   </div>
   <span class="voir vide" aria-hidden="true"></span>
+</li>
+<li class="t" data-etat="livre" data-cash="loin">
+  <span class="pastille livre" aria-hidden="true"></span>
+  <div class="corps">
+    <p class="titre"><span class="eur loin" title="Convertible — ">€</span>Page Relances : qui rappeler, quoi dire, plan de la semaine</p>
+    <p class="note">33 contacts à relancer, fiche étape par étape, boutons qui écrivent dans le même journal que /appels/.</p>
+    
+    
+  </div>
+  <a class="voir" href="/relances/">Voir</a>
+</li>
+<li class="t" data-etat="livre" data-cash="loin">
+  <span class="pastille livre" aria-hidden="true"></span>
+  <div class="corps">
+    <p class="titre"><span class="eur loin" title="Convertible — ">€</span>Tableau des candidatures + 50 entreprises + emails à tes couleurs</p>
+    <p class="note">Envoi par Brevo, suivi des ouvertures et des clics sur le CV. Test A/B programmé mercredi 21/10 à 8 h (n°1-7 version A, 8-14 version B).</p>
+    
+    
+  </div>
+  <a class="voir" href="/candidatures/">Voir</a>
+</li>
+<li class="t" data-etat="livre" data-cash="loin">
+  <span class="pastille livre" aria-hidden="true"></span>
+  <div class="corps">
+    <p class="titre"><span class="eur loin" title="Convertible — ">€</span>Outil du commercial : journée d’appels, script du jour, fiche notée /10</p>
+    <p class="note">/commercial/ pour le commercial (mot de passe à part), /commercial/suivi/ pour toi : quel script et quelle phrase obtiennent des RDV. Email chaque matin à 7 h 30 avec les 50 contacts (envoyé à toi pendant le test).</p>
+    
+    
+  </div>
+  <a class="voir" href="/commercial/suivi/">Voir</a>
+</li>
+<li class="t" data-etat="livre" data-cash="loin">
+  <span class="pastille livre" aria-hidden="true"></span>
+  <div class="corps">
+    <p class="titre"><span class="eur loin" title="Convertible — ">€</span>Journal IA en Boost Niveau</p>
+    <p class="note">Le 20/10 est sorti en Boost Niveau (rendu=boost-niveau dans le log). L’envoi automatique de 4 h est coupé : à rallumer quand tu le décides.</p>
+    
+    
+  </div>
+  <a class="voir" href="/journal-ia-2026-10-20/">Voir</a>
 </li>
 <li class="t" data-etat="livre" data-cash="loin">
   <span class="pastille livre" aria-hidden="true"></span>
@@ -329,16 +380,6 @@ footer{margin-top:34px; font-size:12px; color:var(--gris2); line-height:1.6}
   <div class="corps">
     <p class="titre"><span class="eur direct" title="Cash direct — ">€€€</span>BeFresh — démo vidéo : 4 modèles HyperFrames montés avec leurs vrais rushes + fiche dans l'éditeur FoodBoost</p>
     <p class="note">Pulse (coupes sur le rythme), La carte (Tropical, Green Detox, Red Energy, Mojito fraise), Le bar vient à vous (écran partagé + types d'événements), Sous vos yeux (ouverture en iris). Page : resto.automatisationboost.com/demo/befresh/ — éditeur : /foodboost-editeur/?client=befresh. À valider par Tony, puis envoyer à BeFresh. 15/10 : l’éditeur FoodBoost a maintenant une section « Style vidéo » (4 exemples) et peut reprendre le style d’une vidéo concurrente (fichier ou adresse).</p>
-    
-    
-  </div>
-  <span class="voir vide" aria-hidden="true"></span>
-</li>
-<li class="t" data-etat="attente" data-cash="proche">
-  <span class="pastille attente" aria-hidden="true"></span>
-  <div class="corps">
-    <p class="titre"><span class="eur proche" title="Amene du cash — ">€€</span>Journal IA — passer le journal du matin au design Boost Niveau</p>
-    <p class="note">Routine relancée : 6 éditions sur 7 publiées cette semaine (13→19/10, le 16 manqué : la routine n’a rien écrit). Mais toutes sont encore sorties en néon : le rendu Boost Niveau attendait son propre script jusqu’à la limite de temps. Correctif écrit et kit rescellé le 19/10 ; à confirmer sur le journal du 20/10 (le log doit dire rendu=boost-niveau).</p>
     
     
   </div>
