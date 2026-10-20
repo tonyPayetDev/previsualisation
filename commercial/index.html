@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="fr"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ma journée d'appels</title>
+<!--
+  /commercial/ — la journée d'appels du commercial (accès par son propre mot de passe).
+
+  Demande de Tony (20/10/2026) : déléguer les appels à un commercial, avec une trame à dire,
+  une note à la fin de chaque appel d'après des questions, et savoir quelle phrase a obtenu le RDV.
+  La liste du jour (jour.json) est écrite chaque matin par matin.mjs ; le script du jour vient de
+  scripts.json. Chaque fiche remplie est écrite dans le journal d'appels de Tony (webhook
+  appels-journal), avec par:"commercial" : /appels/, /relances/ et le suivi la voient.
+-->
+<style>
+:root{--fond:#08080a;--carte:#101015;--ligne:#20202a;--blanc:#F4F5F8;--corps:#c9ccd4;--gris:#8d929c;--jaune:#FFE600;--violet:#A855F7;--vert:#34d399;--rouge:#fb7185}
+*{box-sizing:border-box}
+body{margin:0;background:var(--fond);color:var(--corps);font:16px/1.5 Outfit,system-ui,-apple-system,"Segoe UI",sans-serif;overflow-wrap:anywhere}
+main{max-width:680px;margin:0 auto;padding:18px 16px 80px}
+h1{color:var(--blanc);font-size:24px;margin:0}
+.sous{color:var(--gris);font-size:14px;margin:4px 0 14px}
+.chiffres{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:14px}
+.chiffre{background:var(--carte);border:1px solid var(--ligne);border-radius:12px;padding:10px 12px}
+.chiffre b{display:block;color:var(--blanc);font-size:24px;line-height:1.1}
+.chiffre span{color:var(--gris);font-size:12px}
+.script{background:var(--carte);border:1px solid var(--violet);border-radius:14px;padding:12px 14px;margin-bottom:14px}
+.script .t{color:var(--jaune);font-weight:700}
+.script p{margin:6px 0 0;font-size:14px}
+.contact{background:var(--carte);border:1px solid var(--ligne);border-radius:14px;margin:8px 0;overflow:hidden}
+.contact>summary{list-style:none;cursor:pointer;padding:12px 14px;display:flex;gap:10px;align-items:center}
+.contact>summary::-webkit-details-marker{display:none}
+.contact .nom{flex:1;min-width:0;color:var(--blanc);font-weight:600}
+.contact .nom small{display:block;color:var(--gris);font-weight:400;font-size:13px}
+.p{font-size:12px;padding:2px 8px;border-radius:99px;border:1px solid var(--ligne);color:var(--gris);white-space:nowrap}
+.p.rdv{color:var(--jaune);border-color:var(--jaune)}.p.ok{color:var(--vert);border-color:var(--vert)}.p.non{color:var(--rouge);border-color:var(--rouge)}
+.corps{padding:0 14px 14px}
+.etape{border-top:1px solid var(--ligne);padding:10px 0}
+.etape .q{display:block;color:var(--gris);font-size:13px;margin-bottom:4px}
+.dire{background:#000;border-left:3px solid var(--jaune);padding:8px 10px;color:var(--blanc)}
+.tel{display:inline-block;padding:11px 18px;border-radius:10px;background:var(--vert);color:#04130c;font-weight:700;text-decoration:none}
+details.obj summary{color:var(--violet);cursor:pointer;font-size:14px}
+details.obj p{margin:8px 0;font-size:14px}
+.choix{display:flex;flex-wrap:wrap;gap:6px}
+.choix label{border:1px solid var(--ligne);border-radius:10px;padding:7px 11px;font-size:14px;cursor:pointer;background:#0c0c11}
+.choix input{display:none}
+.choix input:checked+span{color:var(--jaune)}
+.choix label:has(input:checked){border-color:var(--jaune)}
+textarea,input[type=text],input[type=date],select{font:inherit;font-size:14px;width:100%;margin-top:4px;padding:8px;border-radius:8px;border:1px solid var(--ligne);background:#0c0c11;color:var(--blanc)}
+.note{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:10px}
+.note b{color:var(--jaune);font-size:22px}
+button.enr{font:inherit;font-weight:700;padding:11px 18px;border-radius:10px;border:0;background:var(--jaune);color:#141400;cursor:pointer}
+button.enr:disabled{opacity:.5}
+.masque{display:none}
+.erreur{color:var(--rouge)}
+</style>
+</head><body><main>
+<h1>Ma journée d'appels</h1>
+<p class="sous" id="sous">Chargement…</p>
+<section class="chiffres">
+  <div class="chiffre"><b id="c-faits">–</b><span>appels faits</span></div>
+  <div class="chiffre"><b id="c-rdv">–</b><span>rendez-vous</span></div>
+  <div class="chiffre"><b id="c-note">–</b><span>note moyenne /10</span></div>
+</section>
+<div class="script" id="script"></div>
+<div id="liste"></div>
+</main>
+<script>
+(() => {
+  const JOURNAL = 'https://n7n.automatisationboost.com/webhook/appels-journal';
+  const $ = (id) => document.getElementById(id);
+  const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const AUJ = new Date(Date.now() + 4 * 3600e3).toISOString().slice(0, 10);
+  let JOUR, SCRIPT, OBJ = [], journal = {};
+
+  const lire = async () => {
+    const j = await (await fetch(JOURNAL + '?t=' + Date.now())).json();
+    const d = typeof j.donnees === 'string' ? JSON.parse(j.donnees || '{}') : (j.donnees || {});
+    return d && typeof d === 'object' ? d : {};
+  };
+
+  /* La note /10 de l'appel : 1 décroché + 2 décideur + 2 question posée + résultat (RDV 5, rappel 3, infos 2, non 0). */
+  const RESULTATS = { rdv: ['Rendez-vous', 5, 'appele'], rappel: ['À rappeler', 3, 'appele'], infos: ['Envoyer des infos', 2, 'appele'], non: ['Pas intéressé', 0, 'jamais'] };
+  const noter = (f) => {
+    if (f.decroche !== 'oui') return 0;
+    return 1 + (f.decideur === 'oui' ? 2 : 0) + (f.question === 'oui' ? 2 : 0) + (RESULTATS[f.resultat]?.[1] || 0);
+  };
+
+  const radio = (nom, opts) => `<div class="choix">${opts.map(([v, l]) => `<label><input type="radio" name="${nom}" value="${v}"><span>${esc(l)}</span></label>`).join('')}</div>`;
+
+  const fiche = (c) => {
+    const ouv = (c.site ? SCRIPT.ouverture.avec_site : SCRIPT.ouverture.sans_site).replace('{nom}', c.nom);
+    const fait = journal[c.id];
+    const etat = fait ? (fait.resultat === 'rdv' ? '<span class="p rdv">RDV</span>' : fait.etat === 'repondu' ? '<span class="p">pas décroché</span>' : fait.etat === 'jamais' ? '<span class="p non">pas intéressé</span>' : `<span class="p ok">fait${fait.score != null ? ' · ' + fait.score + '/10' : ''}</span>`) : '';
+    return `<details class="contact" data-id="${esc(c.id)}">
+      <summary><span class="nom">${c.n}. ${esc(c.nom)}<small>${esc([c.secteur, c.commune, c.site ? 'a un site' : 'pas de site'].filter(Boolean).join(' · '))}</small></span>${etat}</summary>
+      <div class="corps">
+        <div class="etape"><span class="q">1. Appelle</span><a class="tel" href="tel:${esc(c.tel.replace(/[^+0-9]/g, ''))}">${esc(c.tel)}</a>${c.site ? ` <a href="${esc(c.site)}" target="_blank" style="color:var(--violet);font-size:14px;margin-left:8px">voir son site</a>` : ''}</div>
+        <div class="etape"><span class="q">2. Dis, mot pour mot</span><div class="dire">${esc(ouv)}</div></div>
+        <div class="etape"><span class="q">3. Pose la question</span><div class="dire">${esc(SCRIPT.question)}</div></div>
+        <div class="etape"><span class="q">4. Propose</span>${esc(SCRIPT.proposition)}</div>
+        <div class="etape"><span class="q">5. Demande le rendez-vous</span><div class="dire">${esc(SCRIPT.closing)}</div>
+          <details class="obj"><summary>S'il dit non : les réponses aux objections</summary>${OBJ.map(([o, r]) => `<p><b style="color:var(--blanc)">« ${esc(o)} »</b><br>${esc(r)}</p>`).join('')}</details></div>
+        <form class="etape">
+          <span class="q">6. Après l'appel, réponds (30 secondes)</span>
+          <p style="margin:6px 0 4px">Il a décroché ?</p>${radio('decroche', [['oui', 'Oui'], ['non', 'Non']])}
+          <div class="suite masque">
+            <p style="margin:10px 0 4px">Tu as parlé au décideur (patron, gérant) ?</p>${radio('decideur', [['oui', 'Oui'], ['non', 'Non'], ['?', 'Je ne sais pas']])}
+            <p style="margin:10px 0 4px">Tu as dit l'ouverture du jour ?</p>${radio('ouverture', [['script', 'Oui, telle quelle'], ['adaptee', 'Adaptée'], ['autre', 'Autre chose']])}
+            <input type="text" name="ouverture_texte" class="masque" placeholder="Ce que tu as dit à la place">
+            <p style="margin:10px 0 4px">Il a répondu à la question ?</p>${radio('question', [['oui', 'Oui'], ['non', 'Non']])}
+            <p style="margin:10px 0 4px">Ce qu'il a objecté</p>
+            <select name="objection"><option value="">Aucune objection</option>${OBJ.map(([o]) => `<option>${esc(o)}</option>`).join('')}<option value="autre">Autre</option></select>
+            <p style="margin:10px 0 4px">Résultat</p>${radio('resultat', Object.entries(RESULTATS).map(([k, v]) => [k, v[0]]))}
+            <div class="rdv masque">
+              <p style="margin:10px 0 4px;color:var(--jaune)">La phrase qui a déclenché le rendez-vous (obligatoire)</p>
+              <textarea name="phrase_rdv" rows="2" placeholder="Ce que tu as dit juste avant qu'il dise oui"></textarea>
+              <p style="margin:8px 0 4px">Rendez-vous le</p><input type="date" name="rdv_le" min="${AUJ}">
+            </div>
+            <p style="margin:10px 0 4px">Note libre (facultatif)</p><textarea name="texte" rows="2" placeholder="Ce qu'il a dit, à quelle heure rappeler…"></textarea>
+          </div>
+          <div class="note"><span>Note de l'appel : <b class="score">–</b> /10</span><button type="submit" class="enr" disabled>Enregistrer</button></div>
+          <p class="erreur masque"></p>
+        </form>
+      </div></details>`;
+  };
+
+  const lireFiche = (form) => {
+    const d = new FormData(form), f = Object.fromEntries(d.entries());
+    return f;
+  };
+
+  const brancher = (carte) => {
+    const form = carte.querySelector('form'), c = JOUR.contacts.find((x) => x.id === carte.dataset.id);
+    const maj = () => {
+      const f = lireFiche(form);
+      form.querySelector('.suite').classList.toggle('masque', f.decroche !== 'oui');
+      form.querySelector('[name=ouverture_texte]').classList.toggle('masque', f.ouverture !== 'autre' && f.ouverture !== 'adaptee');
+      form.querySelector('.rdv').classList.toggle('masque', f.resultat !== 'rdv');
+      form.querySelector('.score').textContent = f.decroche ? noter(f) : '–';
+      const pret = f.decroche === 'non' || (f.decroche === 'oui' && f.resultat && (f.resultat !== 'rdv' || (f.phrase_rdv || '').trim().length > 4));
+      form.querySelector('.enr').disabled = !pret;
+    };
+    form.addEventListener('input', maj); form.addEventListener('change', maj);
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const f = lireFiche(form), b = form.querySelector('.enr'), err = form.querySelector('.erreur');
+      b.disabled = true; err.classList.add('masque');
+      const etat = f.decroche === 'non' ? 'repondu' : RESULTATS[f.resultat][2];
+      const ligne = { etat, date: AUJ, h: new Date().toISOString(), par: 'commercial', script: SCRIPT.id, site: !!c.site, decroche: f.decroche, score: noter(f) };
+      if (f.decroche === 'oui') Object.assign(ligne, { decideur: f.decideur || '?', ouverture: f.ouverture || '', ouverture_texte: f.ouverture_texte || '', question: f.question || '', objection: f.objection || '', resultat: f.resultat });
+      if (f.resultat === 'rdv') Object.assign(ligne, { phrase_rdv: f.phrase_rdv.trim(), rdv_le: f.rdv_le || '' });
+      if ((f.texte || '').trim()) ligne.note = f.texte.trim();
+      try {
+        // Relire juste avant d'écrire : Tony écrit dans le même journal depuis /appels/ et /relances/.
+        const frais = await lire(); frais[c.id] = ligne;
+        const r = await fetch(JOURNAL, { method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify(frais) });
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        journal = frais; peindre();
+      } catch (x) { b.disabled = false; err.textContent = 'Pas enregistré (' + x.message + '). Vérifie ta connexion et réessaie.'; err.classList.remove('masque'); }
+    });
+  };
+
+  const peindre = () => {
+    const faits = JOUR.contacts.filter((c) => journal[c.id] && journal[c.id].date === AUJ);
+    const notes = faits.map((c) => journal[c.id].score).filter((x) => typeof x === 'number');
+    $('c-faits').textContent = `${faits.length}/${JOUR.contacts.length}`;
+    $('c-rdv').textContent = faits.filter((c) => journal[c.id].resultat === 'rdv').length;
+    $('c-note').textContent = notes.length ? (notes.reduce((a, b) => a + b, 0) / notes.length).toFixed(1) : '–';
+    // Ceux qui restent d'abord, ceux d'aujourd'hui ensuite.
+    const ordre = [...JOUR.contacts].sort((a, b) => (!!journal[a.id] - !!journal[b.id]) || a.n - b.n);
+    $('liste').innerHTML = ordre.map(fiche).join('');
+    $('liste').querySelectorAll('.contact').forEach(brancher);
+  };
+
+  (async () => {
+    try {
+      const [jour, s] = await Promise.all([fetch('jour.json?t=' + Date.now()).then((r) => r.json()), fetch('scripts.json?t=' + Date.now()).then((r) => r.json())]);
+      JOUR = jour; SCRIPT = s.scripts.find((x) => x.id === jour.script) || s.scripts[0]; OBJ = s.objections;
+      journal = await lire();
+      const jolie = new Date(JOUR.date + 'T12:00:00Z').toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
+      $('sous').textContent = `Liste du ${jolie}${JOUR.date !== AUJ ? ' (la liste d\'aujourd\'hui n\'est pas encore prête)' : ''} · ${JOUR.contacts.length} contacts`;
+      $('script').innerHTML = `<div class="t">Script du jour : ${esc(SCRIPT.titre)}</div><p>${esc(SCRIPT.idee)}</p><p style="color:var(--gris)">Ouvre un contact : tout ce qu'il faut dire est dedans, étape par étape. Remplis la fiche à la fin de chaque appel.</p>`;
+      peindre();
+    } catch (e) { $('sous').innerHTML = `<span class="erreur">Impossible de charger la journée (${esc(e.message)}). Recharge la page.</span>`; }
+  })();
+})();
+</script>
+</body></html>

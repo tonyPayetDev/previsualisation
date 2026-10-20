@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="fr"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Suivi commercial</title>
+<!--
+  /commercial/suivi/ — la page de Tony (son mot de passe, pas celui du commercial).
+  Quel script, quelle ouverture, quelle phrase obtiennent des rendez-vous. Lit le journal
+  d'appels (entrées par:"commercial") et scripts.json ; rien n'est stocké ici.
+-->
+<style>
+:root{--fond:#08080a;--carte:#101015;--ligne:#20202a;--blanc:#F4F5F8;--corps:#c9ccd4;--gris:#8d929c;--jaune:#FFE600;--violet:#A855F7;--vert:#34d399}
+*{box-sizing:border-box}
+body{margin:0;background:var(--fond);color:var(--corps);font:15px/1.5 Outfit,system-ui,-apple-system,"Segoe UI",sans-serif;overflow-wrap:anywhere}
+main{max-width:860px;margin:0 auto;padding:18px 16px 60px}
+h1{color:var(--blanc);font-size:24px;margin:0}
+h2{color:var(--jaune);font-size:16px;margin:26px 0 8px}
+.sous{color:var(--gris);font-size:14px;margin:4px 0 14px}
+.chiffres{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+@media (max-width:560px){.chiffres{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.chiffre{background:var(--carte);border:1px solid var(--ligne);border-radius:12px;padding:10px 12px}
+.chiffre b{display:block;color:var(--blanc);font-size:24px;line-height:1.1}
+.chiffre span{color:var(--gris);font-size:12px}
+.ligne{background:var(--carte);border:1px solid var(--ligne);border-radius:12px;padding:10px 12px;margin:6px 0}
+.ligne b{color:var(--blanc)}
+.barre{height:6px;background:var(--ligne);border-radius:3px;margin-top:6px;overflow:hidden}.barre i{display:block;height:100%;background:var(--jaune)}
+.vide{color:var(--gris)}
+.phrase{border-left:3px solid var(--jaune);padding-left:10px;color:var(--blanc)}
+</style>
+</head><body><main>
+<h1>Suivi commercial</h1>
+<p class="sous" id="sous">Chargement…</p>
+<section class="chiffres">
+  <div class="chiffre"><b id="c-appels">–</b><span>appels passés</span></div>
+  <div class="chiffre"><b id="c-decroche">–</b><span>ont décroché</span></div>
+  <div class="chiffre"><b id="c-rdv">–</b><span>rendez-vous</span></div>
+  <div class="chiffre"><b id="c-note">–</b><span>note moyenne /10</span></div>
+</section>
+<h2>Les phrases qui ont obtenu un rendez-vous</h2><div id="phrases"></div>
+<h2>Par script</h2><div id="scripts"></div>
+<h2>L'ouverture : telle quelle, adaptée, ou autre chose</h2><div id="ouv"></div>
+<h2>Les objections entendues</h2><div id="obj"></div>
+<h2>Par jour</h2><div id="jours"></div>
+</main>
+<script>
+(async () => {
+  const $ = (id) => document.getElementById(id);
+  const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const pct = (a, b) => b ? Math.round(100 * a / b) + ' %' : '–';
+  const [j, s] = await Promise.all([
+    fetch('https://n7n.automatisationboost.com/webhook/appels-journal?t=' + Date.now()).then((r) => r.json()),
+    fetch('../scripts.json?t=' + Date.now()).then((r) => r.json()),
+  ]);
+  const d = typeof j.donnees === 'string' ? JSON.parse(j.donnees || '{}') : (j.donnees || {});
+  const A = Object.entries(d).filter(([, x]) => x && x.par === 'commercial').map(([id, x]) => ({ id, ...x }));
+  const titre = (id) => (s.scripts.find((x) => x.id === id) || {}).titre || id;
+  const dec = A.filter((x) => x.decroche === 'oui'), rdv = A.filter((x) => x.resultat === 'rdv');
+  const notes = dec.map((x) => x.score).filter((x) => typeof x === 'number');
+  $('c-appels').textContent = A.length; $('c-decroche').textContent = `${dec.length} (${pct(dec.length, A.length)})`;
+  $('c-rdv').textContent = `${rdv.length} (${pct(rdv.length, dec.length)})`;
+  $('c-note').textContent = notes.length ? (notes.reduce((a, b) => a + b, 0) / notes.length).toFixed(1) : '–';
+  $('sous').textContent = A.length ? `${A.length} appels notés par le commercial · taux de RDV calculé sur ceux qui ont décroché` : 'Aucun appel noté par le commercial pour l\'instant.';
+
+  $('phrases').innerHTML = rdv.length ? rdv.map((x) => `<div class="ligne"><div class="phrase">« ${esc(x.phrase_rdv)} »</div><div class="sous" style="margin:6px 0 0">${esc(x.id)} · script « ${esc(titre(x.script))} » · ${esc(x.date)}${x.rdv_le ? ' · RDV le ' + esc(x.rdv_le) : ''}</div></div>`).join('') : '<p class="vide">Pas encore de rendez-vous.</p>';
+
+  const groupe = (cle) => { const g = {}; for (const x of A) (g[cle(x)] ||= []).push(x); return g; };
+  const bloc = (g, nom) => Object.entries(g).sort((a, b) => b[1].length - a[1].length).map(([k, l]) => {
+    const dd = l.filter((x) => x.decroche === 'oui'), rr = l.filter((x) => x.resultat === 'rdv');
+    return `<div class="ligne"><b>${esc(nom(k))}</b> — ${l.length} appels · ${dd.length} décrochés · <span style="color:var(--jaune)">${rr.length} RDV (${pct(rr.length, dd.length)})</span><div class="barre"><i style="width:${dd.length ? 100 * rr.length / dd.length : 0}%"></i></div></div>`;
+  }).join('') || '<p class="vide">Rien encore.</p>';
+  $('scripts').innerHTML = bloc(groupe((x) => x.script || '?'), titre);
+  const OUV = { script: 'Telle quelle', adaptee: 'Adaptée', autre: 'Autre chose', '': 'Non renseigné' };
+  $('ouv').innerHTML = bloc(groupe((x) => x.decroche === 'oui' ? (x.ouverture || '') : '__'), (k) => k === '__' ? 'Pas décroché' : OUV[k] || k);
+  const ob = {}; dec.forEach((x) => { const k = x.objection || 'Aucune objection'; ob[k] = (ob[k] || 0) + 1; });
+  $('obj').innerHTML = Object.keys(ob).length ? Object.entries(ob).sort((a, b) => b[1] - a[1]).map(([k, n]) => `<div class="ligne"><b>${esc(k)}</b> — ${n}</div>`).join('') : '<p class="vide">Rien encore.</p>';
+  $('jours').innerHTML = bloc(groupe((x) => x.date), (k) => new Date(k + 'T12:00:00Z').toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' }));
+})().catch((e) => { document.getElementById('sous').textContent = 'Erreur de chargement : ' + e.message; });
+</script>
+</body></html>

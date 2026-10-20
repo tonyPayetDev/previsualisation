@@ -59,5 +59,9 @@ RUN chmod +x /docker-entrypoint.d/44-memoire.sh \
  && echo 'set $memoire_secret "";' > /etc/nginx/memoire-secret.conf \
  && nginx -t
 
+# /commercial/ : la journée d appels du commercial, avec son propre mot de passe (45-…).
+COPY docker-entrypoint.d/45-commercial.sh /docker-entrypoint.d/45-commercial.sh
+RUN chmod +x /docker-entrypoint.d/45-commercial.sh
+
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]

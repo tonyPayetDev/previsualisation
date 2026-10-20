@@ -40,6 +40,7 @@ const OUTILS = [
   { h: '/taches/',                 n: 'Mes demandes',      q: 'où en est chaque chose' },
   { h: '/relances/',               n: 'Relances',          q: 'qui rappeler, quoi dire' },
   { h: '/candidatures/',           n: 'Candidatures',      q: 'envoyées, ouvertes, CV cliqué' },
+  { h: '/commercial/suivi/',       n: 'Commercial',        q: 'quel script obtient des RDV' },
   { h: '/a-envoyer/',              n: 'À envoyer',         q: 'fini, jamais parti' },
   { h: '/leads-qualifies/',        n: 'Leads qualifiés',   q: 'qui appeler, et pourquoi' },
   { h: '/leads-restaurants/',      n: 'Tous les leads',    q: 'la liste complète' },
