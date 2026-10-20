@@ -57,6 +57,7 @@ RUN chmod +x /docker-entrypoint.d/43-studio-video.sh \
 COPY docker-entrypoint.d/44-memoire.sh /docker-entrypoint.d/44-memoire.sh
 RUN chmod +x /docker-entrypoint.d/44-memoire.sh \
  && echo 'set $memoire_secret "";' > /etc/nginx/memoire-secret.conf \
+ && echo 'set $pilote_secret "";' > /etc/nginx/pilote-secret.conf \
  && nginx -t
 
 # /commercial/ : la journée d appels du commercial, avec son propre mot de passe (45-…).
