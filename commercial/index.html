@@ -93,7 +93,7 @@ button.enr:disabled{opacity:.5}
     return `<details class="contact" data-id="${esc(c.id)}">
       <summary><span class="nom">${c.n}. ${esc(c.nom)}<small>${esc([c.secteur, c.commune, c.site ? 'a un site' : 'pas de site'].filter(Boolean).join(' · '))}</small></span>${etat}</summary>
       <div class="corps">
-        <div class="etape"><span class="q">1. Appelle</span><a class="tel" href="tel:${esc(c.tel.replace(/[^+0-9]/g, ''))}">${esc(c.tel)}</a>${c.site ? ` <a href="${esc(c.site)}" target="_blank" style="color:var(--violet);font-size:14px;margin-left:8px">voir son site</a>` : ''}</div>
+        <div class="etape"><span class="q">1. Appelle</span><a class="tel" href="tel:${esc(c.tel.replace(/[^+0-9]/g, ''))}">${esc(c.tel)}</a>${c.site ? ` <a href="${esc(c.site)}" target="_blank" style="color:var(--violet);font-size:14px;margin-left:8px">voir son site</a>` : ` <a href="https://www.google.com/search?q=${encodeURIComponent(c.nom + ' ' + (c.commune || 'Réunion'))}" target="_blank" style="color:var(--violet);font-size:14px;margin-left:8px">vérifier sur Google avant</a><div style="color:var(--gris);font-size:13px;margin-top:6px">Notre fichier ne lui connaît pas de site. Vérifie en 10 secondes : s’il en a un, prends l’ouverture « avec site ».</div>`}</div>
         <div class="etape"><span class="q">2. Dis, mot pour mot</span><div class="dire">${esc(ouv)}</div></div>
         <div class="etape"><span class="q">3. Pose la question</span><div class="dire">${esc(SCRIPT.question)}</div></div>
         <div class="etape"><span class="q">4. Propose</span>${esc(SCRIPT.proposition)}</div>
