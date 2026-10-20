@@ -34,6 +34,10 @@ h1{font-size:26px;margin:0 0 4px}
 .p.envoye{color:var(--bleu);border-color:var(--bleu)}
 .p.ouvert{color:var(--vert);border-color:var(--vert)}
 .p.clic{color:var(--jaune);border-color:var(--jaune)}
+.ab{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-bottom:12px}
+.ab .chiffre b{font-size:20px}
+.ab .t{font-size:13px;color:var(--jaune);font-weight:700;margin-bottom:4px}
+.p.vA{color:#c4b5fd;border-color:#7c3aed}.p.vB{color:#fde68a;border-color:#ca8a04}
 .note{color:var(--gris);font-size:13px;margin-top:18px}
 .alerte{background:#1b1406;border:1px solid #5a4510;color:#f4d27a;border-radius:10px;padding:10px 12px;font-size:14px;margin-bottom:12px}
 </style>
@@ -47,6 +51,7 @@ h1{font-size:26px;margin:0 0 4px}
   <div class="chiffre"><b id="c-clics">–</b><span>ont ouvert le CV</span></div>
   <div class="chiffre"><b id="c-taux">–</b><span>taux d'ouverture</span></div>
 </section>
+<div id="ab"></div>
 <div class="filtres" id="filtres"></div>
 <div id="liste"></div>
 <p class="note">« Ouvert » = l'image invisible de l'email a été chargée. C'est un signal, pas une preuve : Apple Mail la charge parfois tout seul, et certaines messageries bloquent les images. Le clic sur le CV est le signal fiable.</p>
@@ -77,6 +82,12 @@ h1{font-size:26px;margin:0 0 4px}
     const cli = LISTE.filter((x) => STATS[x.slug]?.clics > 0).length;
     $('c-envoyes').textContent = env; $('c-ouverts').textContent = ouv; $('c-clics').textContent = cli;
     $('c-taux').textContent = env ? Math.round(100 * ouv / env) + ' %' : '–';
+    const OBJETS = { A: 'Candidature spontanée — développeur automatisation & IA…', B: 'Un renfort n8n + IA pour <entreprise> ?' };
+    const parV = (k) => { const l = LISTE.filter((x) => x.n > 0 && STATS[x.slug]?.variante === k && STATS[x.slug]?.envoye);
+      return { n: l.length, o: l.filter((x) => STATS[x.slug].ouvertures > 0).length, c: l.filter((x) => STATS[x.slug].clics > 0).length }; };
+    const va = parV('A'), vb = parV('B');
+    $('ab').innerHTML = (va.n || vb.n) ? '<div class="ab">' + [['A', va], ['B', vb]].map(([k, v]) =>
+      `<div class="chiffre"><div class="t">Version ${k}</div><b>${v.c} CV ouvert${v.c > 1 ? 's' : ''} · ${v.o} ouvert${v.o > 1 ? 's' : ''}</b><span>sur ${v.n} envoyé${v.n > 1 ? 's' : ''} — « ${esc(OBJETS[k])} »</span></div>`).join('') + '</div>' : '';
     $('filtres').innerHTML = FILTRES.map(([k, l]) => `<button data-f="${k}" class="${k === filtre ? 'on' : ''}">${esc(l)}</button>`).join('');
     $('filtres').querySelectorAll('button').forEach((b) => b.onclick = () => { filtre = b.dataset.f; peindre(); });
     const tri = [...LISTE].sort((a, b) => {
@@ -87,6 +98,7 @@ h1{font-size:26px;margin:0 0 4px}
       const s = STATS[x.slug] || {};
       const pas = [];
       pas.push(s.envoye ? `<span class="p envoye">envoyé ${esc(s.envoye.slice(0, 10))}</span>` : '<span class="p">pas encore envoyé</span>');
+      if (s.variante) pas.push(`<span class="p v${s.variante}">version ${s.variante}</span>`);
       if (s.ouvertures) pas.push(`<span class="p ouvert">ouvert${s.ouvertures > 1 ? ' ×' + s.ouvertures : ''}</span>`);
       if (s.clics) pas.push(`<span class="p clic">CV ouvert${s.clics > 1 ? ' ×' + s.clics : ''}</span>`);
       return `<div class="ligne"><div><div class="nom">${x.n}. ${esc(x.nom)}</div><div class="meta">${esc(GROUPES[x.groupe])}${x.ville ? ' · ' + esc(x.ville) : ''} · <a href="mailto:${esc(x.email)}" style="color:var(--bleu)">${esc(x.email)}</a></div></div><div class="etat">${pas.join('')}</div></div>`;
