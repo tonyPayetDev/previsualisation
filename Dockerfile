@@ -63,5 +63,11 @@ RUN chmod +x /docker-entrypoint.d/44-memoire.sh \
 COPY docker-entrypoint.d/45-commercial.sh /docker-entrypoint.d/45-commercial.sh
 RUN chmod +x /docker-entrypoint.d/45-commercial.sh
 
+# /pilote/ : Task Pilot, clé PILOTE_SECRET injectée au démarrage (46-…).
+COPY docker-entrypoint.d/46-pilote.sh /docker-entrypoint.d/46-pilote.sh
+RUN chmod +x /docker-entrypoint.d/46-pilote.sh \
+ && echo 'set $pilote_secret "";' > /etc/nginx/pilote-secret.conf \
+ && nginx -t
+
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]

@@ -1,0 +1,408 @@
+<!doctype html>
+<html lang="fr"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Pilote</title>
+<!--
+  /pilote/ — AI Task Pilot, phase 1 (cahier des charges de Tony, 21/10/2026).
+  Capture rapide, parking, semaine du lundi au dimanche, glisser-déposer, répartition automatique
+  (moteur.mjs, déterministe, testé par moteur.test.mjs), placements manuels verrouillés, sauvegarde réelle.
+  Stockage : /pilote/api/* → nginx ajoute la clé → n8n « Task Pilot — stockage » → data table PiloteItems.
+  Aucune clé dans cette page. Objectifs et Bilan arrivent en phase 2, l'IA en phase 3.
+-->
+<style>
+:root{--fond:#0a0a0c;--carte:#131318;--carte2:#1a1a21;--ligne:#26262f;--blanc:#F4F5F8;--corps:#c9ccd4;--gris:#8d929c;--jaune:#FFE600;--violet:#A855F7;--vert:#34d399;--rouge:#fb7185;--orange:#fbbf24}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--fond);color:var(--corps);font:15px/1.45 Outfit,system-ui,-apple-system,"Segoe UI",sans-serif;overflow-wrap:anywhere}
+header{position:sticky;top:0;z-index:5;background:rgba(10,10,12,.94);backdrop-filter:blur(8px);border-bottom:1px solid var(--ligne);padding:12px 16px;display:flex;align-items:center;gap:10px}
+header h1{margin:0;font-size:19px;color:var(--blanc);flex:1}
+header h1 small{display:block;font-size:12px;color:var(--gris);font-weight:400}
+#sync{font-size:12px;color:var(--gris)}
+#sync.err{color:var(--rouge)}
+main{max-width:760px;margin:0 auto;padding:14px 16px 140px}
+h2{font-size:14px;letter-spacing:.06em;text-transform:uppercase;color:var(--violet);margin:22px 0 8px}
+.carte{background:var(--carte);border:1px solid var(--ligne);border-radius:14px;padding:12px 14px;margin:8px 0}
+.vide{color:var(--gris);font-size:14px;padding:6px 0}
+.tache{display:flex;align-items:center;gap:10px;background:var(--carte);border:1px solid var(--ligne);border-radius:12px;padding:10px 12px;margin:6px 0;cursor:pointer;user-select:none}
+.tache[draggable=true]{cursor:grab}
+.tache.dragging{opacity:.4}
+.tache .pt{width:9px;height:9px;border-radius:50%;flex:none}
+.pt.p1{background:var(--jaune)}.pt.p2{background:var(--violet)}.pt.p3{background:var(--gris)}
+.tache .ti{flex:1;min-width:0;color:var(--blanc)}
+.tache .ti small{display:block;color:var(--gris);font-size:12px}
+.tache.fini .ti{color:var(--gris);text-decoration:line-through}
+.tache .d{font-size:12px;color:var(--gris);white-space:nowrap}
+.tag{font-size:11px;padding:1px 7px;border-radius:99px;border:1px solid var(--ligne);color:var(--gris);white-space:nowrap}
+.tag.bloq{color:var(--rouge);border-color:var(--rouge)}.tag.cours{color:var(--vert);border-color:var(--vert)}.tag.ret{color:var(--orange);border-color:var(--orange)}
+.top3 .tache{border-color:var(--jaune)}
+.jour{background:var(--carte);border:1px solid var(--ligne);border-radius:14px;padding:10px 12px;margin:8px 0}
+.jour.auj{border-color:var(--violet)}
+.jour.passe{opacity:.6}
+.jour.sur{border-color:var(--rouge)}
+.jour.over{outline:2px dashed var(--jaune);outline-offset:2px}
+.jour .tete{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.jour .tete b{color:var(--blanc)}
+.jour .tete span{font-size:12px;color:var(--gris)}
+.jour.sur .tete span{color:var(--rouge)}
+.barre{height:5px;background:var(--ligne);border-radius:3px;margin:6px 0 4px;overflow:hidden}
+.barre i{display:block;height:100%;background:var(--violet)}
+.jour.sur .barre i{background:var(--rouge)}
+.zone{min-height:8px}
+.nav-sem{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.nav-sem b{flex:1;text-align:center;color:var(--blanc)}
+button{font:inherit;cursor:pointer}
+.btn{border:1px solid var(--ligne);background:var(--carte2);color:var(--blanc);border-radius:10px;padding:8px 12px;font-size:14px}
+.btn.prim{background:var(--jaune);color:#141400;border-color:var(--jaune);font-weight:700}
+.btn.danger{color:var(--rouge);border-color:var(--rouge);background:transparent}
+.btn:disabled{opacity:.45}
+.ligne-btn{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+nav{position:fixed;left:0;right:0;bottom:0;z-index:6;background:rgba(10,10,12,.96);border-top:1px solid var(--ligne);display:grid;grid-template-columns:repeat(5,1fr);padding-bottom:env(safe-area-inset-bottom)}
+nav button{background:none;border:0;color:var(--gris);padding:10px 2px 12px;font-size:12px}
+nav button b{display:block;font-size:18px;line-height:1.1}
+nav button.on{color:var(--jaune)}
+#fab{position:fixed;right:18px;bottom:calc(76px + env(safe-area-inset-bottom));z-index:7;width:56px;height:56px;border-radius:50%;border:0;background:var(--jaune);color:#141400;font-size:30px;font-weight:700;box-shadow:0 8px 24px rgba(0,0,0,.5)}
+.voile{position:fixed;inset:0;z-index:9;background:rgba(0,0,0,.6);display:none;align-items:flex-end;justify-content:center}
+.voile.ouvert{display:flex}
+.feuille{background:var(--carte);border:1px solid var(--ligne);border-radius:18px 18px 0 0;width:100%;max-width:640px;max-height:90vh;overflow:auto;padding:16px 16px calc(18px + env(safe-area-inset-bottom))}
+.feuille h3{margin:0 0 10px;color:var(--blanc);font-size:17px}
+label.l{display:block;font-size:13px;color:var(--gris);margin:10px 0 4px}
+input,textarea,select{font:inherit;font-size:16px;width:100%;padding:9px 10px;border-radius:10px;border:1px solid var(--ligne);background:#0c0c10;color:var(--blanc)}
+textarea{resize:vertical}
+.puces{display:flex;flex-wrap:wrap;gap:6px}
+.puces button{border:1px solid var(--ligne);background:#0c0c10;color:var(--corps);border-radius:99px;padding:6px 12px;font-size:14px}
+.puces button.on{border-color:var(--jaune);color:var(--jaune)}
+.apercu{margin-top:10px;font-size:14px}
+.apercu div{padding:4px 0;border-bottom:1px solid var(--ligne);color:var(--blanc)}
+.raison{font-size:12px;color:var(--orange);margin-top:2px}
+.hist{font-size:12px;color:var(--gris);margin-top:10px;max-height:120px;overflow:auto}
+.grille-cfg{display:grid;grid-template-columns:auto 1fr 90px;gap:6px 10px;align-items:center}
+.resume{font-size:14px}
+.resume b{color:var(--jaune)}
+</style>
+</head><body>
+<header>
+  <h1>Pilote<small id="sous">—</small></h1>
+  <span id="sync">chargement…</span>
+  <button class="btn" id="b-cfg" title="Réglages">⚙</button>
+</header>
+<main id="vue"></main>
+<button id="fab" title="Ajouter">+</button>
+<nav id="nav">
+  <button data-v="auj"><b>◉</b>Aujourd'hui</button>
+  <button data-v="sem"><b>▦</b>Semaine</button>
+  <button data-v="obj"><b>◎</b>Objectifs</button>
+  <button data-v="park"><b>▤</b>Parking</button>
+  <button data-v="bilan"><b>✎</b>Bilan</button>
+</nav>
+<div class="voile" id="voile"><div class="feuille" id="feuille"></div></div>
+
+<script type="module">
+import { planifier, capacite, charge, lundiDe, semaine, ajoute, CONFIG_DEFAUT, STATUTS } from './moteur.mjs';
+
+const API = './api/';
+const $ = (s, r = document) => r.querySelector(s);
+const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const AUJ = () => new Date(Date.now() + 4 * 3600e3).toISOString().slice(0, 10); // journée à La Réunion
+const LIB = { a_faire: 'À faire', en_cours: 'En cours', bloquee: 'Bloquée', terminee: 'Terminée', reportee: 'Reportée', annulee: 'Annulée' };
+const PRIO = { 1: 'Haute', 2: 'Normale', 3: 'Basse' };
+const JN = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
+const fmtD = (iso) => new Date(iso + 'T12:00:00Z').toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short' });
+const hm = (m) => m >= 60 ? `${Math.floor(m / 60)} h${m % 60 ? String(m % 60).padStart(2, '0') : ''}` : `${m} min`;
+const nouvelId = () => 't' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+
+let T = {};            // tid → tâche
+let CFG = { ...CONFIG_DEFAUT };
+let vue = 'auj', lundi = lundiDe(AUJ());
+
+/* ---------- stockage ---------- */
+const etat = (txt, err) => { const s = $('#sync'); s.textContent = txt; s.className = err ? 'err' : ''; };
+async function appel(chemin, corps) {
+  const r = await fetch(API + chemin, corps ? { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(corps) } : { cache: 'no-store' });
+  const t = await r.text();
+  if (!r.ok) throw new Error('HTTP ' + r.status);
+  const j = t ? JSON.parse(t) : {};
+  if (j.ok !== true) throw new Error('réponse invalide');
+  return j;
+}
+let enAttente = new Map(), minuterie = null;
+function sauver(...objs) {
+  for (const o of objs) enAttente.set(o.tid, o);
+  etat('enregistrement…');
+  clearTimeout(minuterie);
+  minuterie = setTimeout(vider, 400);
+}
+async function vider() {
+  const lot = [...enAttente.values()]; enAttente.clear();
+  if (!lot.length) return;
+  try { await appel('enregistrer', { items: lot }); etat('enregistré'); }
+  catch (e) { for (const o of lot) if (!enAttente.has(o.tid)) enAttente.set(o.tid, o); etat('non enregistré — nouvel essai', true); minuterie = setTimeout(vider, 4000); }
+}
+window.addEventListener('beforeunload', (e) => { if (enAttente.size) { e.preventDefault(); e.returnValue = ''; } });
+
+/* ---------- modèle ---------- */
+function historiser(t, quoi) { t.hist = [...(t.hist || []), { t: new Date().toISOString(), quoi }].slice(-30); t.maj = new Date().toISOString(); }
+function modifier(t, champs, quoi) {
+  const avant = { ...t };
+  Object.assign(t, champs);
+  // Un report = une tâche prévue aujourd'hui ou avant, renvoyée plus tard (ou marquée reportée).
+  if ((champs.statut === 'reportee' && avant.statut !== 'reportee') || (avant.jour && avant.jour <= AUJ() && (champs.jour === null || (champs.jour && champs.jour > avant.jour)) && !['terminee', 'annulee'].includes(t.statut))) t.reports = (t.reports || 0) + 1;
+  historiser(t, quoi);
+  sauver(t);
+}
+const taches = () => Object.values(T).filter((t) => t.kind === 'tache');
+const projets = () => [...new Set(taches().map((t) => t.projet).filter(Boolean))].sort();
+const actives = (t) => !['terminee', 'annulee'].includes(t.statut);
+
+/* ---------- rendu des lignes ---------- */
+function ligne(t, { drag = true, raison = true } = {}) {
+  const tags = [];
+  if (t.statut === 'en_cours') tags.push('<span class="tag cours">en cours</span>');
+  if (t.statut === 'bloquee') tags.push('<span class="tag bloq">bloquée</span>');
+  if (t.statut === 'reportee') tags.push('<span class="tag">reportée</span>');
+  if (t.jour && t.jour < AUJ() && actives(t)) tags.push('<span class="tag ret">en retard</span>');
+  if ((t.reports || 0) >= 3) tags.push(`<span class="tag ret">reportée ${t.reports}×</span>`);
+  if (t.verrou && t.jour) tags.push('<span class="tag" title="placée à la main : la réorganisation ne la bouge pas">🔒</span>');
+  const meta = [t.projet, t.echeance ? 'avant le ' + fmtD(t.echeance) : ''].filter(Boolean).join(' · ');
+  return `<div class="tache ${actives(t) ? '' : 'fini'}" data-tid="${t.tid}" ${drag && actives(t) ? 'draggable="true"' : ''}>
+    <span class="pt p${t.priorite || 2}"></span>
+    <span class="ti">${esc(t.titre)}${meta ? `<small>${esc(meta)}</small>` : ''}${raison && !t.jour && t.raison && actives(t) ? `<div class="raison">${esc(t.raison)}</div>` : ''}</span>
+    ${tags.join('')}<span class="d">${hm(t.duree || 30)}</span></div>`;
+}
+
+/* ---------- vues ---------- */
+function vueAujourdhui() {
+  const a = AUJ(), l = taches();
+  const duJour = l.filter((t) => t.jour === a && t.statut !== 'annulee').sort((x, y) => (x.statut === 'terminee') - (y.statut === 'terminee') || (x.priorite || 2) - (y.priorite || 2));
+  const todo = duJour.filter(actives), top = todo.slice(0, 3), reste = duJour.filter((t) => !top.includes(t));
+  const retard = l.filter((t) => t.jour && t.jour < a && actives(t));
+  const bloq = l.filter((t) => t.statut === 'bloquee');
+  const cap = capacite(CFG, a), ch = charge(l, a);
+  // L'action recommandée : simple et sans IA en phase 1 — la règle la plus utile qui s'applique.
+  const conseil = retard.length ? `Tu as ${retard.length} tâche${retard.length > 1 ? 's' : ''} en retard : replace-les avant d'en commencer une nouvelle (Semaine → Réorganiser).`
+    : ch > cap ? `Ta journée dépasse ton temps disponible (${hm(ch)} pour ${hm(cap)}) : renvoie une tâche à plus tard.`
+    : top[0] ? `Commence par « ${top[0].titre} ».`
+    : taches().some((t) => !t.jour && actives(t)) ? 'Rien de prévu aujourd\'hui : va dans Semaine et appuie sur « Réorganiser ma semaine ».' : 'Ajoute ce que tu as en tête avec le bouton +.';
+  return `<p class="vide" style="margin-top:0">${esc(fmtD(a))} · prévu ${hm(ch)} / ${hm(cap)} disponibles</p>
+    <div class="carte resume"><b>À faire maintenant :</b> ${esc(conseil)}</div>
+    <h2>Les 3 priorités</h2><div class="top3">${top.map((t) => ligne(t, { drag: false })).join('') || '<p class="vide">Aucune tâche prévue aujourd\'hui.</p>'}</div>
+    ${reste.length ? `<h2>Le reste de la journée</h2>${reste.map((t) => ligne(t, { drag: false })).join('')}` : ''}
+    ${retard.length ? `<h2>En retard</h2>${retard.map((t) => ligne(t, { drag: false })).join('')}` : ''}
+    ${bloq.length ? `<h2>Bloquées</h2>${bloq.map((t) => ligne(t, { drag: false })).join('')}` : ''}
+    ${importCarte()}`;
+}
+
+function vueSemaine() {
+  const a = AUJ(), dates = semaine(lundi), l = taches();
+  const jours = dates.map((d, i) => {
+    const cap = capacite(CFG, d), ch = charge(l, d);
+    const ts = l.filter((t) => t.jour === d && t.statut !== 'annulee').sort((x, y) => (x.statut === 'terminee') - (y.statut === 'terminee') || (x.priorite || 2) - (y.priorite || 2));
+    const cls = ['jour', d === a ? 'auj' : '', d < a ? 'passe' : '', ch > cap ? 'sur' : ''].join(' ');
+    return `<div class="${cls}" data-jour="${d}"><div class="tete"><b>${JN[i]} ${new Date(d + 'T12:00:00Z').getUTCDate()}</b>
+      <span>${cap ? `${hm(ch)} / ${hm(cap)}${ch > cap ? ' · surchargé' : ''}` : (ch ? hm(ch) + ' · jour non travaillé' : 'non travaillé')}</span></div>
+      ${cap ? `<div class="barre"><i style="width:${Math.min(100, cap ? 100 * ch / cap : 0)}%"></i></div>` : ''}
+      <div class="zone">${ts.map((t) => ligne(t)).join('')}</div></div>`;
+  }).join('');
+  const parking = l.filter((t) => !t.jour && actives(t));
+  return `<div class="nav-sem"><button class="btn" data-sem="-7">‹</button><b>Semaine du ${esc(fmtD(lundi))}</b><button class="btn" data-sem="7">›</button></div>
+    <div class="ligne-btn" style="margin:0 0 6px"><button class="btn prim" id="b-reorg">Réorganiser ma semaine</button>${lundi !== lundiDe(a) ? '<button class="btn" data-sem="0">Cette semaine</button>' : ''}</div>
+    <p class="vide">Glisse une tâche sur un jour (ou touche-la puis choisis le jour) : elle est alors verrouillée 🔒 et la réorganisation ne la bouge plus. Réserve pour les imprévus : ${Math.round((CFG.reserve ?? .25) * 100)} %.</p>
+    ${jours}
+    <div class="jour" data-jour=""><div class="tete"><b>Parking</b><span>${parking.length} tâche${parking.length > 1 ? 's' : ''} sans jour</span></div><div class="zone">${parking.map((t) => ligne(t)).join('') || '<p class="vide">Vide.</p>'}</div></div>`;
+}
+
+function vueParking() {
+  const l = taches().filter((t) => !t.jour && actives(t)).sort((x, y) => (x.priorite || 2) - (y.priorite || 2) || (x.echeance || '9') .localeCompare(y.echeance || '9'));
+  const parProjet = {};
+  for (const t of l) (parProjet[t.projet || 'Sans projet'] ||= []).push(t);
+  return `<p class="vide" style="margin-top:0">Tout ce qui n'a pas encore de jour. « Réorganiser ma semaine » y puise ; ce qui ne rentre pas reste ici avec la raison.</p>
+    ${Object.entries(parProjet).map(([p, ts]) => `<h2>${esc(p)} · ${ts.length}</h2>${ts.map((t) => ligne(t, { drag: false })).join('')}`).join('') || '<p class="vide">Le parking est vide.</p>'}
+    ${importCarte()}`;
+}
+
+const vueBientot = (titre, quoi) => `<div class="carte"><b style="color:var(--blanc)">${titre} — phase 2</b><p class="vide">${quoi}</p></div>`;
+
+function importCarte() {
+  if (taches().some((t) => t.source === 'taches')) return '';
+  return `<div class="carte"><b style="color:var(--blanc)">Reprendre tes tâches de /taches/</b><p class="vide">Les tâches « en attente », « proposées » et « bloquées » du tableau de bord arrivent dans le parking. Rien n'est supprimé là-bas.</p><button class="btn prim" id="b-import">Importer</button></div>`;
+}
+
+function rendre() {
+  document.querySelectorAll('#nav button').forEach((b) => b.classList.toggle('on', b.dataset.v === vue));
+  const nb = taches().filter(actives).length;
+  $('#sous').textContent = `${nb} tâche${nb > 1 ? 's' : ''} active${nb > 1 ? 's' : ''}`;
+  $('#vue').innerHTML = vue === 'auj' ? vueAujourdhui() : vue === 'sem' ? vueSemaine() : vue === 'park' ? vueParking()
+    : vue === 'obj' ? vueBientot('Objectifs', 'Objectif à 90 jours → objectifs du mois → résultats de la semaine, avec tes vrais indicateurs : appels passés, RDV obtenus, candidatures ouvertes, vidéos publiées. Les indicateurs d\'effort et de résultat seront séparés.')
+    : vueBientot('Bilan du vendredi', 'Prévu / fait, temps prévu / temps réel, tâches reportées 3 fois et plus, blocages, et 3 ajustements au maximum pour la semaine suivante — rien appliqué sans ton accord.');
+  brancher();
+}
+
+/* ---------- interactions ---------- */
+function brancher() {
+  document.querySelectorAll('.tache').forEach((el) => {
+    el.onclick = () => editer(T[el.dataset.tid]);
+    el.ondragstart = (e) => { e.dataTransfer.setData('text/plain', el.dataset.tid); el.classList.add('dragging'); };
+    el.ondragend = () => el.classList.remove('dragging');
+  });
+  document.querySelectorAll('[data-jour]').forEach((z) => {
+    z.ondragover = (e) => { e.preventDefault(); z.classList.add('over'); };
+    z.ondragleave = () => z.classList.remove('over');
+    z.ondrop = (e) => { e.preventDefault(); z.classList.remove('over'); const t = T[e.dataTransfer.getData('text/plain')]; if (t) placer(t, z.dataset.jour || null); };
+  });
+  document.querySelectorAll('[data-sem]').forEach((b) => b.onclick = () => { const n = +b.dataset.sem; lundi = n ? ajoute(lundi, n) : lundiDe(AUJ()); rendre(); });
+  const r = $('#b-reorg'); if (r) r.onclick = reorganiser;
+  const im = $('#b-import'); if (im) im.onclick = importer;
+}
+
+function placer(t, jour) {
+  if (t.jour === jour) return;
+  modifier(t, { jour, verrou: !!jour, raison: '' }, jour ? `placée à la main le ${jour}` : 'remise au parking');
+  rendre();
+}
+
+function reorganiser() {
+  const l = taches(), r = planifier(l, CFG, lundi, AUJ());
+  const changes = l.filter((t) => r.placement[t.tid] !== undefined && (r.placement[t.tid] || null) !== (t.jour || null));
+  const places = changes.filter((t) => r.placement[t.tid]).length;
+  const parking = l.filter((t) => actives(t) && r.placement[t.tid] === null).length;
+  const sur = r.jours.filter((j) => j.surcharge).map((j) => fmtD(j.date));
+  ouvrir(`<h3>Réorganiser la semaine du ${esc(fmtD(lundi))}</h3>
+    <div class="resume"><p><b>${places}</b> tâche${places > 1 ? 's' : ''} placée${places > 1 ? 's' : ''} ou déplacée${places > 1 ? 's' : ''} · <b>${parking}</b> reste${parking > 1 ? 'nt' : ''} au parking.</p>
+    <p class="vide">Les tâches verrouillées 🔒, terminées et bloquées ne bougent pas. Réserve de ${Math.round((CFG.reserve ?? .25) * 100)} % gardée chaque jour.</p>
+    ${sur.length ? `<p style="color:var(--rouge)">Jours encore surchargés par des placements manuels : ${esc(sur.join(', '))}.</p>` : ''}
+    ${changes.slice(0, 12).map((t) => `<div style="font-size:13px;padding:3px 0;border-bottom:1px solid var(--ligne)">${esc(t.titre)} → ${r.placement[t.tid] ? esc(fmtD(r.placement[t.tid])) : 'parking'}</div>`).join('')}${changes.length > 12 ? `<p class="vide">… et ${changes.length - 12} autres.</p>` : ''}</div>
+    <div class="ligne-btn"><button class="btn prim" id="ok">Appliquer</button><button class="btn" id="non">Annuler</button></div>`);
+  $('#non').onclick = fermer;
+  $('#ok').onclick = () => {
+    const modifs = [];
+    for (const t of l) {
+      if (r.placement[t.tid] === undefined) continue;
+      const nouveau = r.placement[t.tid] || null, raison = r.raisons[t.tid] || '';
+      if (nouveau !== (t.jour || null) || (t.raison || '') !== raison) {
+        if (nouveau !== (t.jour || null)) historiser(t, nouveau ? `planifiée le ${nouveau} (réorganisation)` : 'renvoyée au parking (réorganisation)');
+        t.jour = nouveau; t.raison = nouveau ? '' : raison; modifs.push(t);
+      }
+    }
+    if (modifs.length) sauver(...modifs);
+    fermer(); rendre();
+  };
+}
+
+/* ---------- feuilles ---------- */
+function ouvrir(html) { $('#feuille').innerHTML = html; $('#voile').classList.add('ouvert'); }
+function fermer() { $('#voile').classList.remove('ouvert'); }
+$('#voile').onclick = (e) => { if (e.target.id === 'voile') fermer(); };
+const puces = (nom, opts, val) => `<div class="puces" data-p="${nom}">${opts.map(([v, l]) => `<button type="button" data-v="${v}" class="${String(v) === String(val) ? 'on' : ''}">${esc(l)}</button>`).join('')}</div>`;
+const lirePuce = (nom) => { const b = document.querySelector(`[data-p="${nom}"] button.on`); return b ? b.dataset.v : null; };
+function puceClic() { document.querySelectorAll('.puces').forEach((p) => p.querySelectorAll('button').forEach((b) => b.onclick = () => { p.querySelectorAll('button').forEach((x) => x.classList.remove('on')); b.classList.add('on'); p.dispatchEvent(new Event('change')); })); }
+const DUREES = [[15, '15 min'], [30, '30 min'], [60, '1 h'], [90, '1 h 30'], [120, '2 h'], [180, '3 h']];
+
+function capturer() {
+  ouvrir(`<h3>Ajouter</h3>
+    <textarea id="c-txt" rows="3" placeholder="Une tâche par ligne. Ex. : Appeler 10 prospects&#10;Finir FoodBoost"></textarea>
+    <label class="l">Durée estimée (pour chaque ligne)</label>${puces('duree', DUREES, 30)}
+    <label class="l">Priorité</label>${puces('prio', [[1, 'Haute'], [2, 'Normale'], [3, 'Basse']], 2)}
+    <label class="l">Projet (facultatif)</label><input id="c-proj" list="l-proj" placeholder="FoodBoost, Prospection…"><datalist id="l-proj">${projets().map((p) => `<option value="${esc(p)}">`).join('')}</datalist>
+    <label class="l">Échéance (seulement si elle existe vraiment)</label><input type="date" id="c-ech">
+    <div class="apercu" id="c-ap"></div>
+    <div class="ligne-btn"><button class="btn prim" id="c-ok" disabled>Ajouter au parking</button><button class="btn" id="c-non">Annuler</button></div>`);
+  puceClic();
+  const txt = $('#c-txt'), ap = $('#c-ap'), ok = $('#c-ok');
+  const lignes = () => txt.value.split('\n').map((s) => s.replace(/^[-*•\d.)\s]+/, '').trim()).filter((s) => s.length > 1);
+  txt.oninput = () => {
+    const l = lignes(), deja = new Set(taches().filter(actives).map((t) => t.titre.toLowerCase()));
+    ap.innerHTML = l.length > 1 || l.some((x) => deja.has(x.toLowerCase())) ? `<p class="vide">${l.length} tâche${l.length > 1 ? 's' : ''} détectée${l.length > 1 ? 's' : ''} :</p>${l.map((x) => `<div>${esc(x)}${deja.has(x.toLowerCase()) ? ' <span class="tag ret">existe déjà</span>' : ''}</div>`).join('')}` : '';
+    const n = l.filter((x) => !deja.has(x.toLowerCase())).length, dbl = l.length - n;
+    ok.disabled = !n; ok.textContent = (n > 1 ? `Ajouter ${n} tâches au parking` : 'Ajouter au parking') + (dbl ? ` (${dbl} doublon${dbl > 1 ? 's' : ''} ignoré${dbl > 1 ? 's' : ''})` : '');
+  };
+  txt.focus();
+  $('#c-non').onclick = fermer;
+  ok.onclick = () => {
+    const deja = new Set(taches().filter(actives).map((t) => t.titre.toLowerCase()));
+    const maintenant = new Date().toISOString(), nouvelles = lignes().filter((titre) => !deja.has(titre.toLowerCase())).map((titre) => {
+      const t = { tid: nouvelId(), kind: 'tache', titre, statut: 'a_faire', duree: +(lirePuce('duree') || 30), priorite: +(lirePuce('prio') || 2), projet: $('#c-proj').value.trim(), echeance: $('#c-ech').value || null, jour: null, verrou: false, cree: maintenant, reports: 0, hist: [] };
+      historiser(t, 'créée'); return t;
+    });
+    for (const t of nouvelles) T[t.tid] = t;
+    sauver(...nouvelles); fermer(); rendre();
+  };
+}
+
+function editer(t) {
+  const dates = semaine(lundiDe(t.jour && t.jour >= lundiDe(AUJ()) ? t.jour : AUJ()));
+  const optsJour = [['', 'Parking (sans jour)'], ...dates.map((d) => [d, fmtD(d)]), ...semaine(ajoute(dates[0], 7)).map((d) => [d, fmtD(d) + ' (sem. prochaine)'])];
+  if (t.jour && !optsJour.some(([v]) => v === t.jour)) optsJour.splice(1, 0, [t.jour, fmtD(t.jour)]);
+  ouvrir(`<h3>${esc(t.titre)}</h3>
+    <label class="l">Titre</label><input id="e-titre" value="${esc(t.titre)}">
+    <label class="l">Statut</label>${puces('statut', STATUTS.map((s) => [s, LIB[s]]), t.statut)}
+    <label class="l">Jour</label><select id="e-jour">${optsJour.map(([v, l]) => `<option value="${v}" ${v === (t.jour || '') ? 'selected' : ''}>${esc(l)}</option>`).join('')}</select>
+    <label class="l">Durée</label>${puces('duree', DUREES, t.duree || 30)}
+    <label class="l">Priorité</label>${puces('prio', [[1, 'Haute'], [2, 'Normale'], [3, 'Basse']], t.priorite || 2)}
+    <label class="l">Projet</label><input id="e-proj" list="l-proj2" value="${esc(t.projet || '')}"><datalist id="l-proj2">${projets().map((p) => `<option value="${esc(p)}">`).join('')}</datalist>
+    <label class="l">Échéance</label><input type="date" id="e-ech" value="${t.echeance || ''}">
+    <label class="l">Note</label><textarea id="e-note" rows="2">${esc(t.note || '')}</textarea>
+    ${t.verrou && t.jour ? '<p class="vide">🔒 Placée à la main : la réorganisation ne la déplace pas. <button class="btn" id="e-deverr" type="button">Déverrouiller</button></p>' : ''}
+    ${t.raison && !t.jour ? `<p class="raison">${esc(t.raison)}</p>` : ''}
+    <div class="ligne-btn"><button class="btn prim" id="e-ok">Enregistrer</button><button class="btn" id="e-non">Fermer</button><button class="btn danger" id="e-sup" style="margin-left:auto">Supprimer</button></div>
+    <div class="hist">${(t.hist || []).slice().reverse().map((h) => `${esc(new Date(h.t).toLocaleString('fr-FR', { dateStyle: 'short', timeStyle: 'short' }))} — ${esc(h.quoi)}`).join('<br>')}</div>`);
+  puceClic();
+  $('#e-non').onclick = fermer;
+  const dv = $('#e-deverr'); if (dv) dv.onclick = () => { modifier(t, { verrou: false }, 'déverrouillée'); fermer(); rendre(); };
+  $('#e-sup').onclick = async () => {
+    if (!confirm(`Supprimer « ${t.titre} » ? (Pour garder une trace, mets plutôt « Annulée ».)`)) return;
+    delete T[t.tid]; enAttente.delete(t.tid); fermer(); rendre();
+    try { await appel('supprimer', { tids: [t.tid] }); etat('supprimé'); } catch (e) { etat('suppression non enregistrée', true); }
+  };
+  $('#e-ok').onclick = () => {
+    const ch = { titre: $('#e-titre').value.trim() || t.titre, statut: lirePuce('statut') || t.statut, duree: +(lirePuce('duree') || t.duree), priorite: +(lirePuce('prio') || t.priorite), projet: $('#e-proj').value.trim(), echeance: $('#e-ech').value || null, note: $('#e-note').value.trim() };
+    const jour = $('#e-jour').value || null;
+    const diff = Object.entries(ch).filter(([k, v]) => (t[k] ?? '') !== (v ?? '')).map(([k, v]) => k === 'statut' ? `statut : ${LIB[v]}` : k === 'titre' ? 'titre modifié' : `${k} modifié`);
+    if (jour !== (t.jour || null)) { ch.jour = jour; ch.verrou = !!jour; ch.raison = ''; diff.push(jour ? `placée à la main le ${jour}` : 'remise au parking'); }
+    if (diff.length) modifier(t, ch, diff.join(', '));
+    fermer(); rendre();
+  };
+}
+
+function reglages() {
+  ouvrir(`<h3>Réglages</h3><p class="vide">Jours travaillés et heures disponibles. La réserve est retirée de chaque jour avant de planifier.</p>
+    <div class="grille-cfg">${JN.map((j, i) => `<input type="checkbox" id="g-j${i}" ${CFG.jours[i] ? 'checked' : ''} style="width:auto"><label for="g-j${i}">${j}</label><input type="number" id="g-h${i}" min="0" max="16" step="0.5" value="${CFG.heures[i]}">`).join('')}</div>
+    <label class="l">Réserve pour les imprévus : <b id="g-rv">${Math.round(CFG.reserve * 100)} %</b></label><input type="range" id="g-r" min="20" max="30" step="5" value="${Math.round(CFG.reserve * 100)}">
+    <div class="ligne-btn"><button class="btn prim" id="g-ok">Enregistrer</button><button class="btn" id="g-non">Fermer</button></div>`);
+  $('#g-r').oninput = (e) => $('#g-rv').textContent = e.target.value + ' %';
+  $('#g-non').onclick = fermer;
+  $('#g-ok').onclick = () => {
+    CFG = { ...CFG, jours: JN.map((_, i) => $('#g-j' + i).checked), heures: JN.map((_, i) => Math.max(0, Math.min(16, +$('#g-h' + i).value || 0))), reserve: +$('#g-r').value / 100 };
+    T.config = CFG; sauver(CFG); fermer(); rendre();
+  };
+}
+
+async function importer() {
+  const b = $('#b-import'); b.disabled = true; b.textContent = 'Import…';
+  try {
+    const d = await (await fetch('../taches/taches.json?t=' + Date.now())).json();
+    const maintenant = new Date().toISOString();
+    const h = (s) => [...s].reduce((a, c) => (a * 31 + c.charCodeAt(0)) >>> 0, 7).toString(36);
+    const nouvelles = (d.taches || []).filter((x) => ['attente', 'propose', 'bloque'].includes(x.etat)).map((x) => {
+      const titre = x.t.replace(/^🔴\s*/, '').trim(), proj = (titre.match(/^([^—–:]{2,40})\s[—–]/) || [])[1];
+      const t = { tid: 'imp' + h(x.id || x.t), kind: 'tache', titre, statut: x.etat === 'bloque' ? 'bloquee' : 'a_faire', duree: 30, priorite: /^🔴/.test(x.t) ? 1 : 2, projet: (proj || '').trim(), echeance: x.echeance || null, jour: null, verrou: false, cree: x.demande_le ? x.demande_le + 'T00:00:00Z' : maintenant, reports: 0, note: x.note || '', source: 'taches', hist: [] };
+      historiser(t, 'importée de /taches/ (' + x.etat + ')'); return t;
+    }).filter((t) => !T[t.tid]);
+    for (const t of nouvelles) T[t.tid] = t;
+    if (nouvelles.length) sauver(...nouvelles);
+    rendre();
+  } catch (e) { b.disabled = false; b.textContent = 'Réessayer'; etat('import impossible : ' + e.message, true); }
+}
+
+$('#fab').onclick = capturer;
+$('#b-cfg').onclick = reglages;
+document.querySelectorAll('#nav button').forEach((b) => b.onclick = () => { vue = b.dataset.v; rendre(); window.scrollTo(0, 0); });
+
+(async () => {
+  try {
+    const { items } = await appel('liste');
+    for (const o of items) if (o && o.tid) T[o.tid] = o;
+    if (T.config) CFG = { ...CONFIG_DEFAUT, ...T.config };
+    etat('à jour');
+  } catch (e) { etat('stockage injoignable — rien ne sera enregistré', true); }
+  rendre();
+})();
+</script>
+</body></html>

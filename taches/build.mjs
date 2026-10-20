@@ -37,6 +37,7 @@ const carteId = t => t.id || slug(t.t);
  *    tableau de bord, parce qu'un lien mort fait douter de toute la page.
  */
 const OUTILS = [
+  { h: '/pilote/',                 n: 'Pilote',            q: 'ma semaine, mes priorités' },
   { h: '/taches/',                 n: 'Mes demandes',      q: 'où en est chaque chose' },
   { h: '/relances/',               n: 'Relances',          q: 'qui rappeler, quoi dire' },
   { h: '/candidatures/',           n: 'Candidatures',      q: 'envoyées, ouvertes, CV cliqué' },
