@@ -64,7 +64,7 @@ h1{font-size:26px;margin:0 0 4px}
   const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   let LISTE = [], STATS = {}, filtre = 'tous';
 
-  const FILTRES = [['tous', 'Toutes'], ['envoye', 'Envoyées'], ['ouvert', 'Ouvertes'], ['clic', 'CV ouvert'], ['attente', 'Pas encore envoyées'], ['A', GROUPES.A], ['B1', GROUPES.B1], ['B2', GROUPES.B2]];
+  const FILTRES = [['tous', 'Toutes'], ['envoye', 'Envoyées'], ['ouvert', 'Ouvertes'], ['clic', 'CV ouvert'], ['prevu', 'Prévues'], ['attente', 'Pas encore envoyées'], ['A', GROUPES.A], ['B1', GROUPES.B1], ['B2', GROUPES.B2]];
 
   const garde = (x) => {
     const s = STATS[x.slug] || {};
@@ -72,6 +72,7 @@ h1{font-size:26px;margin:0 0 4px}
     if (filtre === 'envoye') return !!s.envoye;
     if (filtre === 'ouvert') return s.ouvertures > 0;
     if (filtre === 'clic') return s.clics > 0;
+    if (filtre === 'prevu') return !s.envoye && !!x.prevu;
     if (filtre === 'attente') return !s.envoye;
     return x.groupe === filtre;
   };
@@ -97,7 +98,7 @@ h1{font-size:26px;margin:0 0 4px}
     $('liste').innerHTML = tri.length ? tri.map((x) => {
       const s = STATS[x.slug] || {};
       const pas = [];
-      pas.push(s.envoye ? `<span class="p envoye">envoyé ${esc(s.envoye.slice(0, 10))}</span>` : '<span class="p">pas encore envoyé</span>');
+      pas.push(s.envoye ? `<span class="p envoye">envoyé ${esc(s.envoye.slice(0, 10))}</span>` : x.prevu ? `<span class="p v${x.variante_prevue}">prévu ${esc(x.prevu)} · version ${x.variante_prevue}</span>` : '<span class="p">pas encore envoyé</span>');
       if (s.variante) pas.push(`<span class="p v${s.variante}">version ${s.variante}</span>`);
       if (s.ouvertures) pas.push(`<span class="p ouvert">ouvert${s.ouvertures > 1 ? ' ×' + s.ouvertures : ''}</span>`);
       if (s.clics) pas.push(`<span class="p clic">CV ouvert${s.clics > 1 ? ' ×' + s.clics : ''}</span>`);
