@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="fr"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Candidatures</title>
+<!--
+  /candidatures/ — les 50 candidatures spontanées : envoyées, ouvertes, CV cliqué.
+
+  Demande de Tony (20/10/2026) : « un tableau pour voir les emails envoyés et les gens qui ont ouvert ».
+  La liste des 50 entreprises est dans liste.json (recherche du 20/10, adresses génériques lues sur
+  leur propre site). Les chiffres viennent du webhook n8n candidatures-suivi, qui relit le Sheet
+  du suivi d'emails : une ligne « sent » par envoi, « open » par ouverture (pixel), « click » par
+  clic sur le CV. Rien n'est stocké dans la page.
+-->
+<style>
+:root{--fond:#07080c;--carte:#101420;--ligne:#1e2637;--blanc:#f0f3f8;--gris:#8590a3;--jaune:#FFE600;--vert:#34d399;--bleu:#60a5fa;--violet:#a855f7}
+*{box-sizing:border-box}
+body{margin:0;background:var(--fond);color:var(--blanc);font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif;overflow-wrap:anywhere}
+main{max-width:900px;margin:0 auto;padding:20px 16px 60px}
+h1{font-size:26px;margin:0 0 4px}
+.sous{color:var(--gris);margin:0 0 16px;font-size:14px}
+.chiffres{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-bottom:14px}
+@media (max-width:560px){.chiffres{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.chiffre{background:var(--carte);border:1px solid var(--ligne);border-radius:12px;padding:12px}
+.chiffre b{display:block;font-size:28px;line-height:1.1}
+.chiffre span{color:var(--gris);font-size:13px}
+.filtres{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
+.filtres button{font:inherit;font-size:13px;padding:6px 12px;border-radius:99px;border:1px solid var(--ligne);background:var(--carte);color:var(--blanc);cursor:pointer}
+.filtres button.on{border-color:var(--jaune);color:var(--jaune)}
+.ligne{display:grid;grid-template-columns:1fr auto;gap:4px 12px;background:var(--carte);border:1px solid var(--ligne);border-radius:12px;padding:10px 12px;margin:6px 0}
+.ligne .nom{font-weight:600}
+.ligne .meta{color:var(--gris);font-size:13px}
+.etat{display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+.p{font-size:12px;padding:2px 8px;border-radius:99px;border:1px solid var(--ligne);color:var(--gris);white-space:nowrap}
+.p.envoye{color:var(--bleu);border-color:var(--bleu)}
+.p.ouvert{color:var(--vert);border-color:var(--vert)}
+.p.clic{color:var(--jaune);border-color:var(--jaune)}
+.note{color:var(--gris);font-size:13px;margin-top:18px}
+.alerte{background:#1b1406;border:1px solid #5a4510;color:#f4d27a;border-radius:10px;padding:10px 12px;font-size:14px;margin-bottom:12px}
+</style>
+</head><body><main>
+<h1>Candidatures spontanées</h1>
+<p class="sous" id="sous">Chargement…</p>
+<div id="alerte"></div>
+<section class="chiffres">
+  <div class="chiffre"><b id="c-envoyes">–</b><span>envoyées sur 50</span></div>
+  <div class="chiffre"><b id="c-ouverts">–</b><span>ouvertes</span></div>
+  <div class="chiffre"><b id="c-clics">–</b><span>ont ouvert le CV</span></div>
+  <div class="chiffre"><b id="c-taux">–</b><span>taux d'ouverture</span></div>
+</section>
+<div class="filtres" id="filtres"></div>
+<div id="liste"></div>
+<p class="note">« Ouvert » = l'image invisible de l'email a été chargée. C'est un signal, pas une preuve : Apple Mail la charge parfois tout seul, et certaines messageries bloquent les images. Le clic sur le CV est le signal fiable.</p>
+</main>
+<script>
+(() => {
+  const SUIVI = 'https://n7n.automatisationboost.com/webhook/candidatures-suivi';
+  const GROUPES = { A: 'Automatisation & IA', B1: 'Agences web / ESN', B2: 'La Réunion' };
+  const $ = (id) => document.getElementById(id);
+  const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  let LISTE = [], STATS = {}, filtre = 'tous';
+
+  const FILTRES = [['tous', 'Toutes'], ['envoye', 'Envoyées'], ['ouvert', 'Ouvertes'], ['clic', 'CV ouvert'], ['attente', 'Pas encore envoyées'], ['A', GROUPES.A], ['B1', GROUPES.B1], ['B2', GROUPES.B2]];
+
+  const garde = (x) => {
+    const s = STATS[x.slug] || {};
+    if (filtre === 'tous') return true;
+    if (filtre === 'envoye') return !!s.envoye;
+    if (filtre === 'ouvert') return s.ouvertures > 0;
+    if (filtre === 'clic') return s.clics > 0;
+    if (filtre === 'attente') return !s.envoye;
+    return x.groupe === filtre;
+  };
+
+  const peindre = () => {
+    const env = LISTE.filter((x) => STATS[x.slug]?.envoye).length;
+    const ouv = LISTE.filter((x) => STATS[x.slug]?.ouvertures > 0).length;
+    const cli = LISTE.filter((x) => STATS[x.slug]?.clics > 0).length;
+    $('c-envoyes').textContent = env; $('c-ouverts').textContent = ouv; $('c-clics').textContent = cli;
+    $('c-taux').textContent = env ? Math.round(100 * ouv / env) + ' %' : '–';
+    $('filtres').innerHTML = FILTRES.map(([k, l]) => `<button data-f="${k}" class="${k === filtre ? 'on' : ''}">${esc(l)}</button>`).join('');
+    $('filtres').querySelectorAll('button').forEach((b) => b.onclick = () => { filtre = b.dataset.f; peindre(); });
+    const tri = [...LISTE].sort((a, b) => {
+      const sa = STATS[a.slug] || {}, sb = STATS[b.slug] || {};
+      return (sb.clics || 0) - (sa.clics || 0) || (sb.ouvertures || 0) - (sa.ouvertures || 0) || (!!sb.envoye - !!sa.envoye) || a.n - b.n;
+    }).filter(garde);
+    $('liste').innerHTML = tri.length ? tri.map((x) => {
+      const s = STATS[x.slug] || {};
+      const pas = [];
+      pas.push(s.envoye ? `<span class="p envoye">envoyé ${esc(s.envoye.slice(0, 10))}</span>` : '<span class="p">pas encore envoyé</span>');
+      if (s.ouvertures) pas.push(`<span class="p ouvert">ouvert${s.ouvertures > 1 ? ' ×' + s.ouvertures : ''}</span>`);
+      if (s.clics) pas.push(`<span class="p clic">CV ouvert${s.clics > 1 ? ' ×' + s.clics : ''}</span>`);
+      return `<div class="ligne"><div><div class="nom">${x.n}. ${esc(x.nom)}</div><div class="meta">${esc(GROUPES[x.groupe])}${x.ville ? ' · ' + esc(x.ville) : ''} · <a href="mailto:${esc(x.email)}" style="color:var(--bleu)">${esc(x.email)}</a></div></div><div class="etat">${pas.join('')}</div></div>`;
+    }).join('') : '<p class="sous">Rien dans ce filtre.</p>';
+  };
+
+  (async () => {
+    LISTE = await (await fetch('liste.json?t=' + Date.now())).json();
+    try {
+      const r = await fetch(SUIVI + '?t=' + Date.now());
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      const j = await r.json();
+      (j.candidatures || []).forEach((c) => STATS[c.slug] = c);
+      $('sous').textContent = `${LISTE.length} entreprises · suivi mis à jour à l'ouverture de la page`;
+    } catch (e) {
+      $('sous').textContent = `${LISTE.length} entreprises`;
+      $('alerte').innerHTML = '<div class="alerte">Le suivi n8n ne répond pas encore : aucun email n\'est parti pour l\'instant. La liste ci-dessous est celle qui sera envoyée.</div>';
+    }
+    peindre();
+  })();
+})();
+</script>
+</body></html>
