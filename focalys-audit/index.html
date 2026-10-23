@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Focalys — ce que j'ai regardé avant de vous écrire</title>
+<meta name="description" content="Audit du site focalys.re : ce qui va bien, ce qui coûte des devis, et ce que je propose.">
+<meta name="robots" content="noindex,nofollow">
+<style>
+:root{
+  --nuit:#0c0d18; --carte:#141626; --carte2:#1a1d30; --trait:#252943;
+  --encre:#eef0f7; --doux:#9298b3; --faible:#6b7191;
+  --turq:#3dc4c2; --bleu:#26729f; --jaune:#eab308; --lavande:#d1c5e0;
+  --rouge:#f2606f;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{background:var(--nuit)}
+body{
+  background:var(--nuit); color:var(--encre);
+  font:400 16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  padding:0 17px 60px; overflow-wrap:break-word;
+}
+.wrap{max-width:720px;margin-inline:auto}
+::selection{background:var(--turq);color:#06201f}
+a{color:var(--turq)}
+
+header{padding:34px 0 22px}
+.marque{font-size:14px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--faible)}
+.marque span{color:var(--jaune)}
+h1{font-size:clamp(26px,7vw,36px);line-height:1.12;font-weight:800;letter-spacing:-.03em;
+  text-wrap:balance;margin-top:10px}
+.chapo{color:var(--doux);font-size:16px;line-height:1.62;margin-top:12px}
+.chapo b{color:var(--encre);font-weight:600}
+.meta{margin-top:16px;font-size:13px;color:var(--faible);display:flex;flex-wrap:wrap;gap:8px 16px}
+.meta b{color:var(--doux);font-weight:600}
+
+.qualiopi{display:inline-flex;align-items:center;gap:8px;margin-top:18px;
+  background:var(--carte);border:1px solid var(--trait);border-radius:999px;
+  padding:8px 14px 8px 10px;font-size:13px;color:var(--doux)}
+.qualiopi .dot{width:9px;height:9px;border-radius:50%;background:var(--turq);flex:0 0 auto}
+.qualiopi b{color:var(--encre)}
+
+section{margin-top:34px}
+.section-tag{font-size:11.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--turq)}
+.section-tag.warn{color:var(--rouge)}
+.section-tag.good{color:var(--turq)}
+h2{font-size:clamp(21px,5.6vw,26px);font-weight:800;letter-spacing:-.025em;
+  line-height:1.18;margin:8px 0 16px;text-wrap:balance}
+
+.carte{background:var(--carte);border:1px solid var(--trait);border-radius:15px;
+  padding:19px 18px;margin-bottom:12px}
+.carte h3{font-size:16px;font-weight:700;letter-spacing:-.01em;margin-bottom:8px;line-height:1.35}
+.carte p{color:var(--doux);font-size:14.5px;line-height:1.58}
+.carte p b, .carte p code{color:var(--encre);font-weight:600}
+.carte .num{display:inline-flex;align-items:center;justify-content:center;
+  width:24px;height:24px;border-radius:50%;background:var(--carte2);
+  color:var(--rouge);font-size:12.5px;font-weight:800;margin-right:9px;flex:0 0 auto}
+.titre-ligne{display:flex;align-items:flex-start;gap:2px}
+
+.bien{border-color:#1f4a49;background:#0f1d1d}
+.bien .num{background:#0b1616;color:var(--turq)}
+
+.stats{width:100%;border-collapse:collapse;margin-top:6px;font-size:13.5px}
+.stats th,.stats td{padding:10px 8px;border-bottom:1px solid var(--trait);text-align:left}
+.stats th{color:var(--faible);font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.04em}
+.stats td{color:var(--doux)}
+.stats td.chiffre{color:var(--encre);font-weight:700;font-variant-numeric:tabular-nums}
+.stats-note{color:var(--faible);font-size:12.5px;margin-top:10px;line-height:1.55}
+
+.propose{background:var(--carte2);border:1px solid var(--trait);border-radius:15px;
+  padding:20px 18px;margin-top:6px}
+.propose ol{margin:0;padding-left:20px;color:var(--doux);font-size:14.7px;line-height:1.7}
+.propose ol li{margin-bottom:8px}
+.propose ol li b{color:var(--encre);font-weight:600}
+.propose ol li:last-child{margin-bottom:0}
+
+.cta{margin-top:40px;background:linear-gradient(160deg,#101d3a,#0f1626);
+  border:1px solid var(--trait);border-radius:18px;padding:26px 22px;text-align:center}
+.cta p.lead{color:var(--doux);font-size:14.5px;line-height:1.6;margin-bottom:16px}
+.cta a.bouton{display:inline-block;background:var(--turq);color:#06201f;font-weight:700;
+  font-size:16px;text-decoration:none;padding:15px 26px;border-radius:11px}
+.cta .tel{display:block;margin-top:14px;color:var(--faible);font-size:13.5px}
+.cta .tel a{color:var(--doux);font-weight:600;text-decoration:none}
+
+footer{margin-top:44px;padding-top:16px;border-top:1px solid var(--trait);
+  color:var(--faible);font-size:12.5px;line-height:1.7}
+footer a{color:var(--faible)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="marque">Automation<span>Boost</span> — audit préparé pour Focalys</div>
+  <h1>Ce que j'ai regardé sur focalys.re avant de vous écrire</h1>
+  <p class="chapo">Rien de ce qui suit n'a été deviné. <b>Chaque constat vient d'une page de
+  focalys.re réellement consultée</b>, ou d'une mesure technique réelle sur votre site en
+  production.</p>
+  <div class="meta">
+    <span><b>Relevé</b> 16 septembre 2026</span>
+    <span><b>Pages lues</b> accueil, hygiène alimentaire, catalogue, contact, mentions légales</span>
+  </div>
+  <div class="qualiopi"><span class="dot"></span><span>Certifié <b>Qualiopi</b> — au
+  service des entreprises réunionnaises <b>depuis 2009</b></span></div>
+</header>
+
+<section>
+  <div class="section-tag good">Ce qui va bien</div>
+  <h2>À reconnaître d'abord — et c'est vrai</h2>
+
+  <div class="carte bien">
+    <h3>Un domaine propre, sans fragmentation</h3>
+    <p><code>www.focalys.re</code> et la version <code>http://</code> redirigent
+    proprement en une seule étape vers <code>https://focalys.re</code>. Une seule adresse
+    de référence, pas de version qui traîne.</p>
+  </div>
+  <div class="carte bien">
+    <h3>Un contenu écrit par quelqu'un qui connaît le sujet</h3>
+    <p>La page hygiène alimentaire cite le bon texte européen (<b>règlement CE 852/2004</b>)
+    et le bon article du Code rural. Ce n'est pas une page générique de mots-clés.</p>
+  </div>
+  <div class="carte bien">
+    <h3>De vrais témoignages, avec un nom et une fonction</h3>
+    <p>LNA, l'association Frédéric Levavasseur, la PJJ STEMO — pas de texte de
+    remplissage à la place, contrairement à ce que je trouve sur beaucoup de sites que
+    j'ouvre.</p>
+  </div>
+  <div class="carte bien">
+    <h3>Une donnée structurée FAQ, déjà posée</h3>
+    <p>La page hygiène alimentaire porte un balisage <code>FAQPage</code> — un détail
+    technique que la plupart des sites de ce type n'ont pas.</p>
+  </div>
+</section>
+
+<section>
+  <div class="section-tag warn">Ce qui coûte des devis</div>
+  <h2>Le produit le plus obligatoire de votre catalogue est le moins instrumenté</h2>
+
+  <div class="carte">
+    <div class="titre-ligne"><span class="num">1</span>
+    <h3>Aucun prix, aucune durée, aucune date en ligne</h3></div>
+    <p>Sur la page hygiène alimentaire (ROFHYA, HACCP, HSA, BPH, ISO 22000), le seul
+    bouton d'action est « Je souhaite un devis ». Le seul calendrier existant est un
+    <b>PDF de 16,3 Mo</b> à télécharger. Une entreprise <b>obligée</b> de former son
+    personnel — ce n'est pas un choix, c'est la loi depuis 2004 — ne trouve ni prix, ni
+    date sans attendre un rappel.</p>
+  </div>
+
+  <div class="carte">
+    <div class="titre-ligne"><span class="num">2</span>
+    <h3>Deux chiffres différents pour la même statistique</h3></div>
+    <p>Page d'accueil : <b>« +3 500 participants formés/an »</b>. Page hygiène
+    alimentaire : <b>« Plus de 2 100 participants annuels »</b>. Même écart entre 93 % et
+    92 % de satisfaction. Un prospect qui compare les deux pages tombe dessus.</p>
+  </div>
+
+  <div class="carte">
+    <div class="titre-ligne"><span class="num">3</span>
+    <h3>Une méta-description figée depuis plusieurs années</h3></div>
+    <p>Elle annonce <b>« depuis 10 ans »</b> — le contenu de la page, lui, dit
+    <b>« depuis 2009 »</b>, soit 17 ans. C'est ce texte-là qui s'affiche dans Google et
+    dans un lien partagé, pas celui de la page.</p>
+  </div>
+
+  <div class="carte">
+    <div class="titre-ligne"><span class="num">4</span>
+    <h3>Aucun mode de financement affiché</h3></div>
+    <p>Ni OPCO, ni CPF, ni aucune prise en charge mentionnée sur la page hygiène
+    alimentaire — l'argument qui débloque souvent la décision pour une entreprise doit
+    être demandé par téléphone.</p>
+  </div>
+</section>
+
+<section>
+  <div class="section-tag">Mesuré en réel</div>
+  <h2>Temps de réponse du site</h2>
+  <table class="stats">
+    <thead><tr><th>Page</th><th>1er octet</th><th>Poids HTML</th></tr></thead>
+    <tbody>
+      <tr><td>Accueil</td><td class="chiffre">0,88 s</td><td class="chiffre">184 Ko</td></tr>
+      <tr><td>Hygiène alimentaire</td><td class="chiffre">0,90 s</td><td class="chiffre">148 Ko</td></tr>
+      <tr><td>Contact</td><td class="chiffre">0,95 s</td><td class="chiffre">111 Ko</td></tr>
+    </tbody>
+  </table>
+  <p class="stats-note">Mesure du HTML seul (pas des images ni des scripts). Un temps de
+  réponse constant autour de 0,9 s malgré un plugin de cache déjà installé suggère un
+  hébergement sans CDN devant.</p>
+</section>
+
+<section>
+  <div class="section-tag">Ce que je propose</div>
+  <h2>Dans l'ordre du rendement</h2>
+  <div class="propose">
+    <ol>
+      <li><b>Un devis en ligne pour l'hygiène alimentaire</b>, avec dates lisibles, prix
+      indicatif et financement — remplace le PDF et le formulaire générique.</li>
+      <li><b>La correction des deux incohérences de chiffres</b> et de la
+      méta-description — moins d'une heure de travail.</li>
+      <li><b>Le suivi des échéances de renouvellement</b> par entreprise cliente, pour
+      transformer un revenu qui dépend de la mémoire de quelqu'un en un revenu qui se
+      déclenche tout seul.</li>
+    </ol>
+  </div>
+</section>
+
+<div class="cta">
+  <p class="lead">Trente minutes pour regarder ensemble ce que ça vous coûte en devis
+  qui traînent — et ce que ça changerait de le rendre immédiat.</p>
+  <a class="bouton" href="https://calendly.com/tony-payet-professionnel/nouvelle-reunion" target="_blank" rel="noopener">Prendre trente minutes</a>
+  <span class="tel">Ou directement : <a href="tel:+262692417749">06 92 41 77 49</a></span>
+</div>
+
+<footer>
+  Page privée préparée pour Focalys à partir de focalys.re, relevé le 16 septembre 2026.
+  Pas indexée par les moteurs de recherche.
+</footer>
+
+</div>
+</body>
+</html>

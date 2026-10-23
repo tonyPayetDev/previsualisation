@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- SEO -->
+  <title>Pizza Di Muro : Recettes faciles, astuces cuisine et actualités food au quotidien</title>
+  <meta name="description" content="Découvrez des recettes simples, astuces de chefs, décryptages d'aliments et actualités food pour mieux manger chaque jour.">
+  <meta name="keywords" content="recettes, cuisine, astuces cuisine, actualités food, aliments, recettes faciles, pizza, gastronomie">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://pizza-dimuro.fr/">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Pizza Di Muro">
+  <meta property="og:title" content="Pizza Di Muro : Recettes faciles, astuces cuisine et actualités food au quotidien">
+  <meta property="og:description" content="Découvrez des recettes simples, astuces de chefs, décryptages d'aliments et actualités food pour mieux manger chaque jour.">
+  <meta property="og:image" content="assets/images/hero-fraisiers.jpg">
+  <meta property="og:locale" content="fr_FR">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Pizza Di Muro : Recettes faciles, astuces cuisine et actualités food">
+  <meta name="twitter:description" content="Découvrez des recettes simples, astuces de chefs et actualités food pour mieux manger chaque jour.">
+  <meta name="twitter:image" content="assets/images/hero-fraisiers.jpg">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="assets/images/favicon.png">
+  <link rel="apple-touch-icon" href="assets/images/favicon.png">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+
+  <!-- Icons (Font Awesome CDN) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="assets/css/style.css">
+
+  <!-- Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "Pizza Di Muro",
+    "url": "https://pizza-dimuro.fr",
+    "description": "Recettes faciles, astuces cuisine et actualités food au quotidien",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "https://pizza-dimuro.fr/?s={search_term_string}",
+      "query-input": "required name=search_term_string"
+    }
+  }
+  </script>
+
+  <style>
+    /* Reveal animation */
+    .reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.55s ease, transform 0.55s ease; }
+    .reveal.revealed { opacity: 1; transform: translateY(0); }
+    .site-header.scrolled { box-shadow: 0 2px 30px rgba(0,0,0,0.18); }
+    @keyframes fadeInUp { from { opacity: 0; transform: translate(-50%, 10px); } to { opacity: 1; transform: translate(-50%, 0); } }
+  </style>
+</head>
+
+<body>
+
+  <!-- ======================== TOPBAR ======================== -->
+  <div class="topbar" role="banner">
+    <div class="topbar__inner">
+      <span class="topbar__date">
+        <i class="far fa-calendar-alt" aria-hidden="true"></i>
+        Vendredi 23 mai 2025
+      </span>
+      <nav class="topbar__links" aria-label="Liens secondaires">
+        <a href="#">Nos auteurs</a>
+        <a href="#">Plan du site</a>
+        <a href="#">Contact</a>
+        <a href="#">Mentions légales</a>
+      </nav>
+    </div>
+  </div>
+
+  <!-- ======================== HEADER ======================== -->
+  <header class="site-header" role="banner">
+    <div class="header__inner">
+
+      <!-- Logo -->
+      <a class="site-logo" href="/" aria-label="Pizza Di Muro - Accueil">
+        <img src="assets/images/logo.png" alt="Logo Pizza Di Muro" width="160" height="52">
+      </a>
+
+      <!-- Navigation principale -->
+      <nav class="main-nav" id="main-nav" aria-label="Navigation principale">
+        <a class="main-nav__link active" href="#actualites">Actualités</a>
+        <a class="main-nav__link" href="#recettes">Recettes</a>
+        <a class="main-nav__link" href="#aliments">Aliments</a>
+        <a class="main-nav__link" href="#astuces">Astuces</a>
+        <a class="main-nav__link main-nav__link--cta" href="#newsletter">
+          <i class="far fa-envelope" aria-hidden="true"></i> Newsletter
+        </a>
+      </nav>
+
+      <!-- Recherche -->
+      <div class="header__search" role="search">
+        <label for="search-input" class="sr-only">Rechercher des recettes</label>
+        <input type="text" id="search-input" placeholder="Rechercher…" aria-label="Rechercher">
+        <button type="submit" aria-label="Lancer la recherche">
+          <i class="fas fa-search" aria-hidden="true"></i>
+        </button>
+      </div>
+
+      <!-- Burger menu (mobile) -->
+      <button class="burger" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="main-nav">
+        <span></span><span></span><span></span>
+      </button>
+
+    </div>
+  </header>
+
+  <!-- ======================== BREAKING NEWS ======================== -->
+  <div class="breaking-bar" aria-label="À la une">
+    <div class="breaking-bar__inner container">
+      <span class="breaking-label"><i class="fas fa-bolt" aria-hidden="true"></i> Flash</span>
+      <div class="ticker-wrapper" aria-live="polite">
+        <div class="ticker-track">
+          <span class="ticker-item">Fraisiers : l'ingrédient secret pour des fruits plus gros dès le printemps</span>
+          <span class="ticker-item">Recettes de saison : les meilleures tartes aux fruits de ce mois</span>
+          <span class="ticker-item">Alerte rappel produits : vérifiez vos achats en cuisine</span>
+          <span class="ticker-item">Asperges vertes : pourquoi ce légume est idéal pour la santé selon les diététiciens</span>
+          <span class="ticker-item">Gigot d'agneau aux flageolets : le classique revisité par nos chefs</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================== HERO ======================== -->
+  <section class="hero" aria-labelledby="hero-title">
+    <div class="hero__bg" role="img" aria-label="Infusion de marc de café pour stimuler les fraisiers"></div>
+    <div class="hero__inner">
+      <div class="hero__content">
+        <span class="hero__eyebrow">
+          <i class="fas fa-fire" aria-hidden="true"></i> Tendance du jour
+        </span>
+        <h1 class="hero__title" id="hero-title">
+          Pizza Di Muro : Recettes faciles, astuces cuisine et <span>actualités food</span> au quotidien
+        </h1>
+        <p class="hero__desc">
+          Découvrez des recettes simples, astuces de chefs, décryptages d'aliments et actualités food pour mieux manger chaque jour.
+        </p>
+        <div class="hero__actions">
+          <a href="#recettes" class="btn btn-primary">
+            <i class="fas fa-utensils" aria-hidden="true"></i> Voir les recettes
+          </a>
+          <a href="#actualites" class="btn btn-outline">
+            <i class="far fa-newspaper" aria-hidden="true"></i> Actualités food
+          </a>
+        </div>
+      </div>
+
+      <!-- Article mis en avant -->
+      <aside class="hero__featured" aria-label="Article en vedette">
+        <img
+          class="hero__featured-img"
+          data-src="assets/images/astuce-eponge.jpg"
+          src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 400'%3E%3Crect fill='%23012d38' width='600' height='400'/%3E%3C/svg%3E"
+          alt="Astuce pour désinfecter les éponges sans produits chimiques"
+          width="560" height="220"
+          loading="lazy"
+        >
+        <div class="hero__featured-body">
+          <div class="hero__featured-cat">
+            <i class="fas fa-lightbulb" aria-hidden="true"></i> Astuce du jour
+          </div>
+          <h2 class="hero__featured-title">
+            Une astuce simple pour désinfecter les éponges sans produits chimiques
+          </h2>
+          <div class="hero__featured-meta">
+            <i class="far fa-clock" aria-hidden="true"></i> 5 min de lecture &nbsp;·&nbsp; Par Lina Selvin
+          </div>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ======================== STATS ======================== -->
+  <div class="stats-section" aria-label="Chiffres clés">
+    <div class="container">
+      <div class="stats-grid">
+        <div class="stat-item reveal">
+          <div class="stat-item__num" data-count="1200" data-suffix="+">0</div>
+          <div class="stat-item__label">Recettes publiées</div>
+        </div>
+        <div class="stat-item reveal">
+          <div class="stat-item__num" data-count="350" data-suffix="+">0</div>
+          <div class="stat-item__label">Articles food</div>
+        </div>
+        <div class="stat-item reveal">
+          <div class="stat-item__num" data-count="85000" data-suffix="+">0</div>
+          <div class="stat-item__label">Lecteurs mensuels</div>
+        </div>
+        <div class="stat-item reveal">
+          <div class="stat-item__num" data-count="42" data-suffix="">0</div>
+          <div class="stat-item__label">Chefs contributeurs</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================== CATEGORIES ======================== -->
+  <div class="categories-band" aria-label="Catégories">
+    <div class="container">
+      <ul class="categories-list">
+        <li>
+          <a class="category-pill" href="#actualites">
+            <span class="category-pill__icon" aria-hidden="true">📰</span> Actualités
+          </a>
+        </li>
+        <li>
+          <a class="category-pill" href="#recettes">
+            <span class="category-pill__icon" aria-hidden="true">🍽️</span> Recettes
+          </a>
+        </li>
+        <li>
+          <a class="category-pill" href="#aliments">
+            <span class="category-pill__icon" aria-hidden="true">🥦</span> Aliments
+          </a>
+        </li>
+        <li>
+          <a class="category-pill" href="#astuces">
+            <span class="category-pill__icon" aria-hidden="true">💡</span> Astuces
+          </a>
+        </li>
+        <li>
+          <a class="category-pill" href="#newsletter">
+            <span class="category-pill__icon" aria-hidden="true">📬</span> Newsletter
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ======================== ACTUALITES ======================== -->
+  <section class="section" id="actualites" aria-labelledby="actu-title">
+    <div class="container">
+      <header class="section-header reveal">
+        <div class="section-header__left">
+          <div class="section-label">Actualités culinaires</div>
+          <h2 id="actu-title">Restez informé des dernières tendances food</h2>
+        </div>
+        <a href="#" class="btn btn-secondary">
+          Explorez nos articles d'actualité <i class="fas fa-arrow-right" aria-hidden="true"></i>
+        </a>
+      </header>
+
+      <div class="actu-layout">
+        <!-- Article principal -->
+        <article class="actu-main-card reveal" aria-label="Article principal actualités">
+          <img
+            data-src="assets/images/actu-cancer.jpg"
+            src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 500'%3E%3Crect fill='%23012d38' width='800' height='500'/%3E%3C/svg%3E"
+            alt="Illustration des choix alimentaires associés à une meilleure protection contre le cancer"
+            width="800" height="500"
+            loading="lazy"
+          >
+          <div class="actu-main-card__overlay">
+            <div class="actu-main-card__cat">
+              <i class="fas fa-tag" aria-hidden="true"></i> Santé & Alimentation
+            </div>
+            <h3 class="actu-main-card__title">
+              Ces choix alimentaires qui réduisent significativement les risques de cancer
+            </h3>
+            <p class="actu-main-card__excerpt">
+              Une nouvelle étude met en lumière l'impact direct de notre régime alimentaire sur la prévention du cancer. Découvrez quels aliments privilégier au quotidien.
+            </p>
+            <a href="#" class="btn btn-primary">
+              Lire l'article <i class="fas fa-arrow-right" aria-hidden="true"></i>
+            </a>
+          </div>
+        </article>
+
+        <!-- Sidebar actualités -->
+        <aside class="actu-sidebar" aria-label="Autres actualités">
+          <article class="actu-item reveal">
+            <img
+              class="actu-item__img"
+              data-src="assets/images/actu-logistique.jpg"
+              src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 200'%3E%3Crect fill='%23e0e0e0' width='300' height='200'/%3E%3C/svg%3E"
+              alt="Extension d'un site logistique dédié à l'approvisionnement bio des cantines"
+              width="100" height="76"
+              loading="lazy"
+            >
+            <div class="actu-item__body">
+              <div class="actu-item__cat">Filière Bio</div>
+              <h3 class="actu-item__title">Extension du réseau logistique pour l'approvisionnement bio des cantines scolaires</h3>
+              <div class="actu-item__date"><i class="far fa-calendar" aria-hidden="true"></i> 20 mai 2025</div>
+            </div>
+          </article>
+          <article class="actu-item reveal">
+            <img
+              class="actu-item__img"
+              data-src="assets/images/actu-rappels.jpg"
+              src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 200'%3E%3Crect fill='%23e0e0e0' width='300' height='200'/%3E%3C/svg%3E"
+              alt="Illustration de la vérification de produits rappelés dans une cuisine"
+              width="100" height="76"
+              loading="lazy"
+            >
+            <div class="actu-item__body">
+              <div class="actu-item__cat">Rappels Produits</div>
+              <h3 class="actu-item__title">Alerte : plusieurs produits alimentaires rappelés cette semaine en France</h3>
+              <div class="actu-item__date"><i class="far fa-calendar" aria-hidden="true"></i> 18 mai 2025</div>
+            </div>
+          </article>
+          <article class="actu-item reveal">
+            <img
+              class="actu-item__img"
+              data-src="assets/images/actu-cadmium.jpg"
+              src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 200'%3E%3Crect fill='%23e0e0e0' width='300' height='200'/%3E%3C/svg%3E"
+              alt="Illustration de la contamination alimentaire par le cadmium"
+              width="100" height="76"
+              loading="lazy"
+            >
+            <div class="actu-item__body">
+              <div class="actu-item__cat">Sécurité alimentaire</div>
+              <h3 class="actu-item__title">Contamination au cadmium dans les sols : l'impact sur nos légumes expliqué</h3>
+              <div class="actu-item__date"><i class="far fa-calendar" aria-hidden="true"></i> 15 mai 2025</div>
+            </div>
+          </article>
+          <article class="actu-item reveal">
+            <img
+              class="actu-item__img"
+              data-src="assets/images/hero-fraisiers.jpg"
+              src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 200'%3E%3Crect fill='%23e0e0e0' width='300' height='200'/%3E%3C/svg%3E"
+              alt="Infusion de marc de café pour favoriser la croissance des fraisiers"
+              width="100" height="76"
+              loading="lazy"
+            >
+            <div class="actu-item__body">
+              <div class="actu-item__cat">Jardinage & Cuisine</div>
+              <h3 class="actu-item__title">Fraisiers : cet ingrédient de cuisine courant favorise des fruits plus gros</h3>
+              <div class="actu-item__date"><i class="far fa-calendar" aria-hidden="true"></i> 12 mai 2025</div>
+            </div>
+          </article>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================== RECETTES ======================== -->
+  <section class="section section--gray" id="recettes" aria-labelledby="recettes-title">
+    <div class="container">
+      <header class="section-header reveal">
+        <div class="section-header__left">
+          <div class="section-label">Recettes gourmandes</div>
+          <h2 id="recettes-title">Trouvez votre prochaine recette préférée</h2>
+        </div>
+        <a href="#" class="btn btn-secondary">
+          Découvrez nos recettes <i class="fas fa-arrow-right" aria-hidden="true"></i>
+        </a>
+      </header>
+
+      <!-- Filtres par onglet -->
+      <div class="recettes-tabs" role="tablist" aria-label="Filtres recettes">
+        <button class="tab-btn active" role="tab" aria-selected="true">Toutes</button>
+        <button class="tab-btn" role="tab" aria-selected="false">Entrées</button>
+        <button class="tab-btn" role="tab" aria-selected="false">Plats</button>
+        <button class="tab-btn" role="tab" aria-selected="false">Desserts</button>
+        <button class="tab-btn" role="tab" aria-selected="false">Végétarien</button>
+        <button class="tab-btn" role="tab" aria-selected="false">Rapide (< 30 min)</button>
+      </div>
+
+      <div class="cards-grid cards-grid--3">
+
+        <!-- Recette featured -->
+        <article class="article-card article-card--featured reveal" aria-label="Recette vedette">
+          <div class="article-card__img-wrap">
+            <img
+              class="article-card__img"
+              data-src="assets/images/recette-agneau.jpg"
+              src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 400'%3E%3Crect fill='%23e0e0e0' width='600' height='400'/%3E%3C/svg%3E"
+              alt="Gigot d'agneau aux flageolets - plat pascal traditionnel"
+              width="600" height="400"
+              loading="lazy"
+            >
+          </div>
+          <div class="article-card__body">
+            <div class="article-card__cat">
+              <i class="fas fa-star" aria-hidden="true"></i> Recette vedette · Plat principal
+            </div>
+            <h3 class="article-card__title">
+              Gigot d'agneau aux flageolets : pourquoi ce classique est un accord culinaire parfait
+            </h3>
+            <p class="article-card__excerpt">
+              Ce duo traditionnel marie la tendresse de l'agneau à la douceur des flageolets. Découvrez les secrets d'une cuisson parfaite pour épater vos convives.
+            </p>
+            <div class="article-card__meta">
+              <span class="article-card__meta-author">
+                <img data-src="assets/images/author-lina.jpg"
+                  src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 26 26'%3E%3Crect fill='%23ccc' width='26' height='26'/%3E%3C/svg%3E"
+                  alt="Lina Selvin" width="26" height="26" loading="lazy">
+                Lina Selvin
+              </span>
+              <span class="article-card__meta-dot">·</span>
+              <span><i class="far fa-clock" aria-hidden="true"></i> 1h30</span>
+              <span class="article-card__meta-dot">·</span>
+              <span>Facile</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="article-card reveal" aria-label="Recette gâteau citron-fraise">
+          <div class="article-card__img-wrap">
+            <img
+              class="article-card__img"
+              data-src="assets/images/recette-gateau.jpg"
+              src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 450 300'%3E%3Crect fill='%23e0e0e0' width='450' height='300'/%3E%3C/svg%3E"
+              alt="Gâteau moelleux citron-fraise cuit à la poêle"
+              width="450" height="300"
+              loading="lazy"
+            >
+          </div>
+          <div class="article-card__body">
+            <div class="article-card__cat">Dessert · Sans four</div>
+            <h3 class="article-card__title">Gâteau moelleux citron-fraise cuit à la poêle : la recette express</h3>
+            <p class="article-card__excerpt">Pas besoin de four ! Ce gâteau gourmand se prépare en 20 minutes sur le feu.</p>
+            <div class="article-card__meta">
+              <span class="article-card__meta-author">
+                <img data-src="assets/images/author-lina.jpg"
+                  src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 26 26'%3E%3Crect fill='%23ccc' width='26' height='26'/%3E%3C/svg%3E"
+                  alt="Lina Selvin" width="26" height="26" loading="lazy">
+                Lina Selvin
+              </span>
+              <span class="article-card__meta-dot">·</span>
+              <span><i class="far fa-clock" aria-hidden="true"></i> 25 min</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="article-card reveal" aria-label="Recette recettes du week-end">
+          <div class="article-card__img-wrap">
+            <img
+              class="article-card__img"
+              data-src="assets/images/hero-recettes.jpg"
+              src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 768 512'%3E%3Crect fill='%23e0e0e0' width='768' height='512'/%3E%3C/svg%3E"
+              alt="Un aperçu gourmand des recettes simples à préparer ce week-end"
+              width="768" height="512"
+              loading="lazy"
+            >
+          </div>
+          <div class="article-card__body">
+            <div class="article-card__cat">Sélection · Week-end</div>
+            <h3 class="article-card__title">Nos 5 meilleures recettes simples à préparer ce week-end avec la famille</h3>
+            <p class="article-card__excerpt">Une sélection testée et approuvée : des plats accessibles, savoureux et qui plaisent à tout le monde.</p>
+            <div class="article-card__meta">
+              <span class="article-card__meta-author">
+                <img data-src="assets/images/author-lina.jpg"
+                  src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 26 26'%3E%3Crect fill='%23ccc' width='26' height='26'/%3E%3C/svg%3E"
+                  alt="Lina Selvin" width="26" height="26" loading="lazy">
+                Lina Selvin
+              </span>
+              <span class="article-card__meta-dot">·</span>
+              <span><i class="far fa-clock" aria-hidden="true"></i> 10 min lecture</span>
+            </div>
+          </div>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================== ALIMENTS ======================== -->
+  <section class="section section--dark" id="aliments" aria-labelledby="aliments-title">
+    <div class="container">
+      <header class="section-header reveal">
+        <div class="section-header__left">
+          <div class="section-label">Focus sur les aliments</div>
+          <h2 id="aliments-title">Apprenez à mieux connaître ce que vous mangez</h2>
+        </div>
+        <a href="#" class="btn btn-primary">
+          En savoir plus sur les aliments <i class="fas fa-arrow-right" aria-hidden="true"></i>
+        </a>
+      </header>
+
+      <div class="aliments-grid">
+        <article class="aliment-card reveal" aria-label="Focus fraisiers">
+          <img
+            data-src="assets/images/hero-fraisiers.jpg"
+            src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 500 500'%3E%3Crect fill='%23012d38' width='500' height='500'/%3E%3C/svg%3E"
+            alt="Infusion de marc de café pour la croissance des fraisiers"
+            width="500" height="500"
+            loading="lazy"
+          >
+          <div class="aliment-card__overlay">
+            <div class="aliment-card__tag">🍓 Fruits</div>
+            <h3 class="aliment-card__title">Fraisiers : tout sur cet aliment printanier et ses secrets de culture</h3>
+          </div>
+        </article>
+
+        <article class="aliment-card reveal" aria-label="Focus légumes santé">
+          <img
+            data-src="assets/images/actu-cadmium.jpg"
+            src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 500 500'%3E%3Crect fill='%23012d38' width='500' height='500'/%3E%3C/svg%3E"
+            alt="Illustration de la contamination alimentaire par le cadmium"
+            width="500" height="500"
+            loading="lazy"
+          >
+          <div class="aliment-card__overlay">
+            <div class="aliment-card__tag">🥬 Légumes</div>
+            <h3 class="aliment-card__title">Comment choisir des légumes sains et éviter les contaminants du sol</h3>
+          </div>
+        </article>
+
+        <article class="aliment-card reveal" aria-label="Focus protection anti-cancer">
+          <img
+            data-src="assets/images/actu-cancer.jpg"
+            src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 500 500'%3E%3Crect fill='%23012d38' width='500' height='500'/%3E%3C/svg%3E"
+            alt="Aliments associés à une meilleure protection contre le cancer"
+            width="500" height="500"
+            loading="lazy"
+          >
+          <div class="aliment-card__overlay">
+            <div class="aliment-card__tag">💚 Santé</div>
+            <h3 class="aliment-card__title">Aliments protecteurs : lesquels intégrer chaque jour pour votre santé</h3>
+          </div>
+        </article>
+      </div>
+
+      <!-- Cards supplémentaires aliments -->
+      <div class="cards-grid cards-grid--4" style="margin-top: 24px;">
+        <article class="article-card article-card--dark reveal">
+          <div class="article-card__img-wrap">
+            <img
+              class="article-card__img"
+              data-src="assets/images/astuce-citronnier.jpg"
+              src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 450 300'%3E%3Crect fill='%23012d38' width='450' height='300'/%3E%3C/svg%3E"
+              alt="Astuce naturelle pour stimuler la croissance du citronnier"
+              width="450" height="300"
+              loading="lazy"
+            >
+          </div>
+          <div class="article-card__body">
+            <div class="article-card__cat">🍋 Agrumes</div>
+            <h3 class="article-card__title">Citron : bienfaits, valeurs nutritionnelles et comment l'utiliser au maximum</h3>
+          </div>
+        </article>
+        <article class="article-card article-card--dark reveal">
+          <div class="article-card__img-wrap">
+            <img
+              class="article-card__img"
+              data-src="assets/images/astuce-pates.jpg"
+              src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 450 300'%3E%3Crect fill='%23012d38' width='450' height='300'/%3E%3C/svg%3E"
+              alt="Astuce de chefs pour des pâtes qui ne collent jamais"
+              width="450" height="300"
+              loading="lazy"
+            >
+          </div>
+          <div class="article-card__body">
+            <div class="article-card__cat">🍝 Féculents</div>
+            <h3 class="article-card__title">Pâtes : l'index glycémique et les meilleures variétés pour votre santé</h3>
+          </div>
+        </article>
+        <article class="article-card article-card--dark reveal">
+          <div class="article-card__img-wrap">
+            <img
+              class="article-card__img"
+              data-src="assets/images/recette-gateau.jpg"
+              src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 450 300'%3E%3Crect fill='%23012d38' width='450' height='300'/%3E%3C/svg%3E"
+              alt="Gâteau moelleux citron-fraise"
+              width="450" height="300"
+              loading="lazy"
+            >
+          </div>
+          <div class="article-card__body">
+            <div class="article-card__cat">🫐 Baies</div>
+            <h3 class="article-card__title">Fraises et petits fruits rouges : antioxydants et vertus méconnues</h3>
+          </div>
+        </article>
+        <article class="article-card article-card--dark reveal">
+          <div class="article-card__img-wrap">
+            <img
+              class="article-card__img"
+              data-src="assets/images/recette-agneau.jpg"
+              src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 450 300'%3E%3Crect fill='%23012d38' width='450' height='300'/%3E%3C/svg%3E"
+              alt="Gigot d'agneau - viande"
+              width="450" height="300"
+              loading="lazy"
+            >
+          </div>
+          <div class="article-card__body">
+            <div class="article-card__cat">🥩 Viandes</div>
+            <h3 class="article-card__title">Agneau : richesse en protéines, cuisson idéale et meilleures associations</h3>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================== ASTUCES ======================== -->
+  <section class="section" id="astuces" aria-labelledby="astuces-title">
+    <div class="container">
+      <header class="section-header reveal">
+        <div class="section-header__left">
+          <div class="section-label">Astuces de cuisine</div>
+          <h2 id="astuces-title">Les conseils de nos chefs pour mieux cuisiner</h2>
+        </div>
+        <a href="#" class="btn btn-secondary">
+          Découvrez nos astuces <i class="fas fa-arrow-right" aria-hidden="true"></i>
+        </a>
+      </header>
+
+      <div class="astuces-layout">
+
+        <!-- Astuce en vedette -->
+        <article class="astuce-featured reveal" aria-label="Astuce vedette">
+          <img
+            data-src="assets/images/astuce-pates.jpg"
+            src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 380 240'%3E%3Crect fill='%23012d38' width='380' height='240'/%3E%3C/svg%3E"
+            alt="Astuce de chefs pour des pâtes qui ne collent jamais"
+            width="380" height="240"
+            loading="lazy"
+          >
+          <div class="astuce-featured__body">
+            <div class="article-card__cat" style="color:#e12c2c; margin-bottom: 10px;">
+              <i class="fas fa-star" aria-hidden="true"></i> Astuce vedette
+            </div>
+            <h3 class="astuce-featured__title">L'astuce de chefs pour des pâtes qui ne collent jamais</h3>
+            <p class="astuce-featured__desc">
+              Fini les pâtes collantes ! Ce geste simple que les professionnels utilisent depuis toujours changera à jamais votre façon de cuisiner les pâtes.
+            </p>
+            <a href="#" class="btn btn-primary">
+              Lire l'astuce complète <i class="fas fa-arrow-right" aria-hidden="true"></i>
+            </a>
+          </div>
+        </article>
+
+        <!-- Liste d'astuces -->
+        <div class="astuces-list">
+          <article class="astuce-item reveal" aria-label="Astuce tarte croustillante">
+            <div class="astuce-item__num" aria-hidden="true">01</div>
+            <img
+              class="astuce-item__img"
+              data-src="assets/images/astuce-tarte.jpg"
+              src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 60'%3E%3Crect fill='%23e0e0e0' width='80' height='60'/%3E%3C/svg%3E"
+              alt="L'astuce traditionnelle qui garde la pâte des tartes bien croustillante"
+              width="80" height="60"
+              loading="lazy"
+            >
+            <div>
+              <h3 class="astuce-item__title">L'astuce traditionnelle pour une pâte à tarte toujours croustillante</h3>
+              <div class="astuce-item__meta">Pâtisserie · 3 min de lecture</div>
+            </div>
+          </article>
+
+          <article class="astuce-item reveal" aria-label="Astuce citronnier">
+            <div class="astuce-item__num" aria-hidden="true">02</div>
+            <img
+              class="astuce-item__img"
+              data-src="assets/images/astuce-citronnier.jpg"
+              src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 60'%3E%3Crect fill='%23e0e0e0' width='80' height='60'/%3E%3C/svg%3E"
+              alt="Astuce naturelle qui stimule la croissance du citronnier"
+              width="80" height="60"
+              loading="lazy"
+            >
+            <div>
+              <h3 class="astuce-item__title">L'astuce naturelle qui stimule la croissance du citronnier dès le printemps</h3>
+              <div class="astuce-item__meta">Jardin & Cuisine · 4 min de lecture</div>
+            </div>
+          </article>
+
+          <article class="astuce-item reveal" aria-label="Astuce éponge">
+            <div class="astuce-item__num" aria-hidden="true">03</div>
+            <img
+              class="astuce-item__img"
+              data-src="assets/images/astuce-eponge.jpg"
+              src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 60'%3E%3Crect fill='%23e0e0e0' width='80' height='60'/%3E%3C/svg%3E"
+              alt="Astuce pour désinfecter les éponges sans produits chimiques"
+              width="80" height="60"
+              loading="lazy"
+            >
+            <div>
+              <h3 class="astuce-item__title">Désinfectez vos éponges de cuisine sans aucun produit chimique</h3>
+              <div class="astuce-item__meta">Hygiène cuisine · 2 min de lecture</div>
+            </div>
+          </article>
+
+          <article class="astuce-item reveal" aria-label="Astuce marc de café fraisiers">
+            <div class="astuce-item__num" aria-hidden="true">04</div>
+            <img
+              class="astuce-item__img"
+              data-src="assets/images/hero-fraisiers.jpg"
+              src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 60'%3E%3Crect fill='%23e0e0e0' width='80' height='60'/%3E%3C/svg%3E"
+              alt="Marc de café pour favoriser la croissance des fraisiers"
+              width="80" height="60"
+              loading="lazy"
+            >
+            <div>
+              <h3 class="astuce-item__title">Réutilisez votre marc de café pour fertiliser naturellement vos fraisiers</h3>
+              <div class="astuce-item__meta">Zéro gaspi · 3 min de lecture</div>
+            </div>
+          </article>
+
+          <article class="astuce-item reveal" aria-label="Astuce conservation fruits">
+            <div class="astuce-item__num" aria-hidden="true">05</div>
+            <img
+              class="astuce-item__img"
+              data-src="assets/images/recette-gateau.jpg"
+              src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 60'%3E%3Crect fill='%23e0e0e0' width='80' height='60'/%3E%3C/svg%3E"
+              alt="Conservation des fruits frais"
+              width="80" height="60"
+              loading="lazy"
+            >
+            <div>
+              <h3 class="astuce-item__title">Comment conserver vos fruits frais deux fois plus longtemps au réfrigérateur</h3>
+              <div class="astuce-item__meta">Conservation · 5 min de lecture</div>
+            </div>
+          </article>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================== NEWSLETTER ======================== -->
+  <section class="newsletter-section" id="newsletter" aria-labelledby="newsletter-title">
+    <div class="newsletter-inner">
+      <div class="newsletter-icon" aria-hidden="true">📬</div>
+      <h2 id="newsletter-title">Recevez le meilleur de Pizza Di Muro</h2>
+      <p>
+        Recevez chaque jour notre sélection de recettes, astuces et actualités food directement dans votre boîte mail.
+      </p>
+      <form class="newsletter-form" novalidate aria-label="Formulaire d'inscription à la newsletter">
+        <label for="newsletter-email" class="sr-only">Votre adresse email</label>
+        <input
+          type="email"
+          id="newsletter-email"
+          name="email"
+          placeholder="Votre adresse email..."
+          autocomplete="email"
+          required
+          aria-required="true"
+        >
+        <button type="submit">
+          <i class="fas fa-paper-plane" aria-hidden="true"></i> S'abonner
+        </button>
+      </form>
+      <p class="newsletter-note">
+        <i class="fas fa-lock" aria-hidden="true"></i>
+        Pas de spam. Désinscription en un clic. Conformément au RGPD.
+      </p>
+    </div>
+  </section>
+
+  <!-- ======================== FOOTER ======================== -->
+  <footer class="site-footer" role="contentinfo">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <a href="/" aria-label="Pizza Di Muro - Accueil">
+          <img src="assets/images/logo.png" alt="Logo Pizza Di Muro" width="140" height="45">
+        </a>
+        <p>
+          Pizza Di Muro, votre guide food au quotidien. Recettes faciles, astuces de chefs et actualités culinaires pour mieux manger chaque jour.
+        </p>
+        <nav class="footer-social" aria-label="Réseaux sociaux">
+          <a class="social-btn" href="#" aria-label="Suivez-nous sur Facebook">
+            <i class="fab fa-facebook-f" aria-hidden="true"></i>
+          </a>
+          <a class="social-btn" href="#" aria-label="Suivez-nous sur Instagram">
+            <i class="fab fa-instagram" aria-hidden="true"></i>
+          </a>
+          <a class="social-btn" href="#" aria-label="Suivez-nous sur X (Twitter)">
+            <i class="fab fa-x-twitter" aria-hidden="true"></i>
+          </a>
+          <a class="social-btn" href="#" aria-label="Rejoignez-nous sur Pinterest">
+            <i class="fab fa-pinterest-p" aria-hidden="true"></i>
+          </a>
+        </nav>
+      </div>
+
+      <nav class="footer-col" aria-label="Catégories">
+        <h4>Catégories</h4>
+        <ul>
+          <li><a href="#actualites">Actualités culinaires</a></li>
+          <li><a href="#recettes">Recettes gourmandes</a></li>
+          <li><a href="#aliments">Focus aliments</a></li>
+          <li><a href="#astuces">Astuces cuisine</a></li>
+          <li><a href="#">Les plus commentés</a></li>
+        </ul>
+      </nav>
+
+      <nav class="footer-col" aria-label="Recettes populaires">
+        <h4>Recettes populaires</h4>
+        <ul>
+          <li><a href="#">Recettes de saison</a></li>
+          <li><a href="#">Recettes rapides</a></li>
+          <li><a href="#">Recettes végétariennes</a></li>
+          <li><a href="#">Pâtisseries</a></li>
+          <li><a href="#">Cuisine du monde</a></li>
+        </ul>
+      </nav>
+
+      <nav class="footer-col" aria-label="À propos">
+        <h4>À propos</h4>
+        <ul>
+          <li><a href="#">Nos auteurs</a></li>
+          <li><a href="#">Contact</a></li>
+          <li><a href="#">Plan du site</a></li>
+          <li><a href="#">Mentions légales</a></li>
+          <li><a href="#">Politique de confidentialité</a></li>
+        </ul>
+      </nav>
+    </div>
+
+    <div class="footer-bottom container">
+      <p>© 2025 Pizza Di Muro. Tous droits réservés.</p>
+      <nav class="footer-bottom__links" aria-label="Liens légaux">
+        <a href="#">Mentions légales</a>
+        <a href="#">Confidentialité</a>
+        <a href="#">Cookies</a>
+      </nav>
+    </div>
+  </footer>
+
+  <!-- ======================== SCROLL TO TOP ======================== -->
+  <button class="scroll-top" aria-label="Retour en haut de page">
+    <i class="fas fa-arrow-up" aria-hidden="true"></i>
+  </button>
+
+  <!-- ======================== COOKIE BANNER ======================== -->
+  <div class="cookie-banner" role="dialog" aria-live="polite" aria-label="Consentement aux cookies">
+    <p>
+      Nous utilisons des cookies pour améliorer votre expérience sur Pizza Di Muro.
+      <a href="#">En savoir plus</a> sur notre politique de confidentialité.
+    </p>
+    <div class="cookie-actions">
+      <button class="btn-accept">Accepter</button>
+      <button class="btn-decline">Refuser</button>
+    </div>
+  </div>
+
+  <!-- Accessibility: screen-reader only utility class -->
+  <style>.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }</style>
+
+  <!-- Scripts -->
+  <script src="assets/js/main.js" defer></script>
+
+</body>
+</html>

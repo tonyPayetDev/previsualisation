@@ -1,0 +1,192 @@
+/* Keyframe Animations */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes scaleUp {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes bounce {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+/* Scroll Reveal Classes */
+.reveal {
+    animation: fadeInUp 0.6s ease-out forwards;
+}
+
+[data-reveal] {
+    opacity: 0;
+}
+
+[data-stagger] > * {
+    animation: fadeInUp 0.6s ease-out forwards;
+    animation-delay: var(--stagger-delay, 0ms);
+}
+
+/* Parallax on Scroll */
+.parallax {
+    background-attachment: fixed;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+/* Service Card Animations */
+.service-card {
+    animation: fadeInUp 0.6s ease-out backwards;
+}
+
+.services-grid > :nth-child(1) {
+    animation-delay: 0ms;
+}
+
+.services-grid > :nth-child(2) {
+    animation-delay: 100ms;
+}
+
+.services-grid > :nth-child(3) {
+    animation-delay: 200ms;
+}
+
+.services-grid > :nth-child(4) {
+    animation-delay: 300ms;
+}
+
+/* Testimonial Card Animations */
+.testimonial-card {
+    animation: fadeInUp 0.6s ease-out backwards;
+}
+
+.testimonials-grid > :nth-child(1) {
+    animation-delay: 0ms;
+}
+
+.testimonials-grid > :nth-child(2) {
+    animation-delay: 100ms;
+}
+
+.testimonials-grid > :nth-child(3) {
+    animation-delay: 200ms;
+}
+
+/* Hover Effects */
+.service-card:hover {
+    transform: translateY(-4px);
+}
+
+.service-card:hover h3 {
+    color: var(--color-accent-primary);
+}
+
+.testimonial-card:hover {
+    transform: translateY(-2px);
+}
+
+/* Link Hover Effects */
+a {
+    position: relative;
+}
+
+a.btn-primary::before,
+a.link-secondary::before {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background-color: var(--color-accent-primary);
+    transition: width var(--transition-normal);
+}
+
+a.link-secondary:hover::before {
+    width: 100%;
+}
+
+/* Fade In On Load */
+body {
+    animation: fadeIn 0.5s ease-out;
+}
+
+/* Button Ripple Effect (Optional) */
+.btn-primary {
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-primary::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.5);
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+}
+
+.btn-primary:active::after {
+    animation: ripple 0.6s ease-out;
+}
+
+@keyframes ripple {
+    to {
+        width: 300px;
+        height: 300px;
+        opacity: 0;
+    }
+}

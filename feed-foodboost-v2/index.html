@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>FoodBoost — feed FoodBoost — v2</title><meta name="robots" content="noindex,nofollow">
+<style>
+:root{--nuit:#0b0806;--carte:#161010;--trait:#2b211c;--encre:#F6EDE0;--doux:#9a8f85;--or:#D8A23C;--braise:#E8602A}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--nuit);color:var(--encre);padding:34px 17px 70px;
+ font:400 16px/1.62 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+.w{max-width:940px;margin-inline:auto}
+.eb{font:700 11px/1 ui-monospace,monospace;letter-spacing:.24em;text-transform:uppercase;color:var(--braise)}
+h1{font-size:clamp(27px,6.4vw,40px);line-height:1.05;font-weight:800;letter-spacing:-.03em;margin:10px 0 14px}
+.note{background:var(--carte);border:1px solid var(--trait);border-left:3px solid var(--or);
+ border-radius:12px;padding:17px 20px;margin:20px 0 30px}
+.note h2{font-size:11.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--or);margin-bottom:9px}
+.note p{font-size:16.5px;color:var(--encre);font-style:italic}
+.duo{display:flex;gap:18px;flex-wrap:wrap}
+figure{flex:1 1 280px;min-width:250px}
+video{width:100%;border-radius:14px;border:1px solid var(--trait);background:#000;display:block}
+figcaption{margin-top:10px;font-size:13.5px;color:var(--doux);text-align:center}
+figcaption b{color:var(--encre);display:block;font-size:15px;margin-bottom:2px}
+figcaption.ap b{color:var(--or)}
+.n{background:var(--carte);border:1px solid var(--trait);border-radius:14px;padding:20px 22px;margin-top:28px}
+.n h2{font-size:11.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--or);margin-bottom:13px}
+.n li{margin:11px 0 11px 19px;font-size:15.2px;color:#cdc3b8;line-height:1.6}
+.n li b{color:var(--encre)}
+code{font:500 13.5px ui-monospace,monospace;color:var(--braise);background:#000;padding:1px 6px;border-radius:5px}
+</style></head><body><div class="w">
+<div class="eb">La Réunion · restaurant · maquette de feed</div>
+<h1>FoodBoost — feed FoodBoost</h1>
+<div class="note"><h2>Ce que Tony a écrit dans le tri</h2><p>« Rajoute CTA a la fin du veux ton feed comment feed pour recevoir ton feed optimisé pour ton resto »</p></div>
+<div class="duo">
+ <figure><video controls playsinline preload="metadata"
+   src="https://assets.automatisationboost.com/previsualisation/feed-foodboost/video.mp4"></video>
+  <figcaption><b>Avant</b>9,00 s · sans CTA, fin sur « le goût d'ici »</figcaption></figure>
+ <figure><video controls playsinline preload="metadata" poster="assets/poster.jpg"
+   src="https://assets.automatisationboost.com/previsualisation/feed-foodboost-v2/video.mp4"></video>
+  <figcaption class="ap"><b>Après — v2</b>14,80 s · carton CTA + voix clonée</figcaption></figure>
+</div>
+<div class="n"><h2>Ce qui a changé</h2><ul><li><b>Carton CTA de 5,8 s à la fin</b>, dans la charte FoodBoost (braise, or, flamme, script Caveat) : « Tu veux ton feed ? » puis <b>COMMENTE FEED</b> en pavé or, et « ton feed optimisé pour ton resto, en DM ».</li>
+ <li><b>La voix clonée de Tony dit le CTA</b> — générée par le webhook <code>tts-gen</code> avec <code>voixUrl</code>, 4,68 s, posée pile sur l’apparition des mots. La musique descend de 11 dB pendant la phrase ; la voix ressort 8 à 10 dB au-dessus du lit.</li>
+ <li><b>Bruitages ajoutés</b> (palette v1 gelée, un par événement) : clic d’entrée, cascade de 5 clics doux sur les vignettes qui se posent, whoosh au départ du défilement, chime à l’arrivée, zoom sur la coupe vers le carton, pop + impact sur le mot FEED.</li>
+ <li>La coupe vers le carton (9,00 s) tombe sur un temps fort : grille <b>mesurée</b> sur <code>bgm.mp3</code> — 157,3 BPM, beat 0,3815 s — le décalage de départ a été calculé pour ça.</li>
+ <li>Niveau homogénéisé à <b>-13,9 LUFS</b>, crête -1,5 dBFS. Aucun silence.</li></ul></div>
+</div></body></html>

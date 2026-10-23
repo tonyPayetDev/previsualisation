@@ -1,0 +1,75 @@
+<!-- ═══════════════════════════════════════════════════════════════════════
+     KOYTCHA IMMO — bloc a coller dans un widget HTML Elementor.
+     Genere depuis index.html : ne pas le modifier a la main, relancer
+     integration/faire-bloc-elementor.mjs a la place.
+
+     A LIRE AVANT DE COLLER
+     1. Sur la page : Elementor → roue crantee en bas a gauche → Mise en page
+        → Modele de page → **Elementor Canvas**. Canvas retire l en-tete et le
+        pied du theme : la page a deja sa propre barre de navigation, et deux
+        menus superposes, c est le probleme qu on cherche a eviter.
+        « Elementor Pleine largeur » garde l en-tete du theme : ce n est pas
+        celui-la qu il faut ici.
+     2. La section qui contient ce widget : Mise en page → Largeur du contenu
+        = **Pleine largeur**, et Etirer la section = **Oui**.
+     3. La colonne : Avance → Marge interieure = 0 partout.
+
+     Le bloc <style> ci-dessous est un FILET DE SECURITE : il refait ces trois
+     reglages en CSS, au cas ou le modele Canvas ne serait pas disponible
+     (certains themes filtrent la liste des modeles). Si Canvas est bien
+     applique, il ne sert a rien et ne gene rien.
+     ═══════════════════════════════════════════════════════════════════════ -->
+<style id="koytcha-compat-elementor">
+/* MESURE SUR LA PAGE EN PRODUCTION (koytchaimmo.re/elementor-573736/, 2026-09-09),
+   pas sur une supposition. Ce qui bride la page :
+     div.e-con-full.e-flex .......... gauche 51 px, largeur 1337 sur 1440
+     div.elementor-widget-html ...... gauche 61 px, largeur 1317
+   Elementor 3.16+ n utilise plus .elementor-section / .elementor-column mais des
+   conteneurs flex `.e-con`. Des regles ecrites pour l ancienne structure ne
+   touchent donc RIEN sur ce site. Les deux jeux sont gardes : l ancien pour les
+   pages construites avant, le nouveau pour celles d aujourd hui. */
+
+/* Conteneurs Elementor modernes (.e-con) */
+.elementor-element.e-con, .e-con-full, .e-con-inner, .e-con > .e-con-inner{
+  --container-max-width:100%; --padding-inline-start:0px; --padding-inline-end:0px;
+  --padding-block-start:0px; --padding-block-end:0px;
+  max-width:100%; width:100%; padding:0; margin-inline:0}
+/* Conteneurs Elementor classiques (sections / colonnes) */
+.elementor-section.elementor-section-boxed > .elementor-container{max-width:none}
+.elementor-column-gap-default > .elementor-row > .elementor-column > .elementor-element-populated{padding:0}
+/* Le widget HTML lui-meme */
+.elementor-widget-html > .elementor-widget-container{padding:0;margin:0}
+body.elementor-page{margin:0;padding:0;overflow-x:hidden}
+
+/* Le theme classique (ici Twenty Eleven) enveloppe encore le contenu dans
+   #page / #primary / #content, et reserve une colonne laterale. Sur un modele
+   « Elementor Canvas » rien de tout ca n existe — ces lignes ne servent que
+   tant que la page reste en modele par defaut. */
+#page, #main, #primary, #content, .entry-content, article.page{
+  max-width:none;width:auto;margin:0;padding:0;float:none}
+#secondary, .widget-area{display:none}
+/* Le theme reaffiche aussi, au-dessus du contenu, son lien d evitement et le
+   titre de la page — mesure du 2026-09-09 : « Skip to primary content » sur
+   26 px, puis « Elementor #573736 » sur 48 px, qui repoussaient la page vers le
+   bas et passaient devant la barre de navigation. */
+.skip-link, .assistive-text, #branding, #access,
+article.page > .entry-header, article.page > .entry-header > .entry-title{display:none}
+
+/* En-tete et pied du theme. Mesures du 2026-09-09 : ils viennent du
+   constructeur de theme d Elementor — header.elementor-location-header et
+   footer.elementor-location-footer — et NON des classes classiques
+   .site-header / #masthead. Les deux familles sont visees.
+   FILET DE SECURITE seulement : la vraie solution est le modele « Elementor
+   Canvas », qui ne les charge pas du tout. Masquer un menu n est pas la meme
+   chose que ne pas le servir — il reste dans le HTML, dans le poids de la page
+   et pour les lecteurs d ecran. */
+.elementor-location-header, .elementor-location-footer,
+.site-header, #masthead, header.site-header, .site-footer, #colophon{display:none}
+
+/* Connecte a WordPress, la barre d administration occupe 32 px en haut de
+   l ecran. La navigation de la page est en position fixe : sans ce decalage
+   elle passe dessous, et le logo se retrouve coupe. */
+body.admin-bar .nav{top:32px}
+@media (max-width:782px){ body.admin-bar .nav{top:46px} }
+</style>
+

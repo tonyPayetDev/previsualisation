@@ -1,0 +1,459 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Koytcha Immo — Conseil &amp; expertise en immobilier à La Réunion</title>
+<meta name="description" content="Koytcha Immo accompagne depuis 2004 entreprises, propriétaires et investisseurs à La Réunion : conseil, transaction, promotion immobilière.">
+<style>
+:root{
+  /* palette relevée sur le site actuel */
+  --magenta:#E6007E;
+  --magenta-clair:#FF74B8;
+  --magenta-deep:#B80065;
+  --vert:#61A229;
+  --vert-fond:#437018;
+  --vert-deep:#4E8221;
+  --ink:#32373C;
+  --texte:#333333;
+  --gris:#B2B2B3;
+  --gris-txt:#70747A;
+  --gris-clair:#DEDFE0;
+  --surface:#F5F6F7;
+  --paper:#FFFFFF;
+  --line:#DEDFE0;
+  /* police du site actuel */
+  --font:Helvetica,Arial,"Helvetica Neue",sans-serif;
+  --wrap:1200px;
+  /* Échelle fluide : 20px de corps était lourd sur mobile et forçait des
+     lignes trop courtes. On descend le corps et on garde l'écart de niveaux. */
+  --fs-xs:clamp(11px,.7vw + 9px,12px);
+  --fs-sm:clamp(14px,.5vw + 12px,15.5px);
+  --fs-base:clamp(16.5px,.6vw + 14px,18.5px);
+  --fs-md:clamp(19px,1vw + 16px,24px);
+  --pad-sec:clamp(56px,7vw,92px);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{
+  margin:0;background:var(--paper);color:var(--texte);
+  font-family:var(--font);font-size:var(--fs-base);line-height:1.65;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3{font-family:var(--font);color:var(--ink);margin:0;font-weight:700;text-wrap:balance}
+p{margin:0}
+a{color:inherit}
+img{display:block;max-width:100%}
+.wrap{max-width:var(--wrap);margin:0 auto;padding:0 24px}
+:focus-visible{outline:2px solid var(--magenta);outline-offset:3px;border-radius:2px}
+
+/* Surfaces que le navigateur dessine par défaut et qui n'appartiennent à
+   aucune charte : sélection, caret, barre de défilement, soulignement.
+   Les laisser aux réglages d'usine se voit, même sans savoir pourquoi. */
+::selection{background:var(--magenta);color:#fff}
+::-moz-selection{background:var(--magenta);color:#fff}
+input,select,textarea{caret-color:var(--magenta)}
+html{scrollbar-color:var(--gris) var(--surface);scrollbar-width:thin}
+::-webkit-scrollbar{width:11px;height:11px}
+::-webkit-scrollbar-track{background:var(--surface)}
+::-webkit-scrollbar-thumb{background:var(--gris);border:3px solid var(--surface);border-radius:6px}
+::-webkit-scrollbar-thumb:hover{background:var(--gris-txt)}
+a:not([class]){text-underline-offset:.18em;text-decoration-thickness:1px;
+  text-decoration-color:var(--gris)}
+a:not([class]):hover{text-decoration-color:var(--magenta)}
+/* Un numéro de téléphone et une adresse s'alignent mieux en chiffres tabulaires. */
+.cinfo,.nav .tel,.call-fab{font-variant-numeric:tabular-nums}
+
+/* ---------- header ---------- */
+.hdr{position:sticky;top:0;z-index:60;background:#fff;border-bottom:1px solid var(--line)}
+.hdr-in{display:flex;align-items:center;gap:32px;height:82px}
+.hdr img{height:38px;width:auto}
+.nav{display:flex;gap:28px;margin-left:auto;align-items:center}
+.nav a{font-size:var(--fs-sm);font-weight:700;text-decoration:none;color:var(--ink);
+  letter-spacing:.02em;text-transform:uppercase;position:relative;padding:6px 0}
+.nav a::after{content:"";position:absolute;left:0;right:100%;bottom:0;height:2px;
+  background:var(--magenta);transition:right .3s cubic-bezier(.16,1,.3,1)}
+.nav a:hover::after{right:0}
+.nav .tel{background:var(--magenta);color:#fff;padding:12px 22px;border-radius:3px;
+  text-transform:none;letter-spacing:0}
+.nav .tel::after{display:none}
+.nav .tel:hover{background:var(--magenta-deep)}
+.burger{display:none;margin-left:auto;background:none;border:0;padding:8px;cursor:pointer}
+.burger span{display:block;width:26px;height:2px;background:var(--ink);margin:6px 0}
+.burger span{transition:transform .25s,opacity .2s}
+.hdr.open .burger span:nth-child(1){transform:translateY(8px) rotate(45deg)}
+.hdr.open .burger span:nth-child(2){opacity:0}
+.hdr.open .burger span:nth-child(3){transform:translateY(-8px) rotate(-45deg)}
+@media(max-width:940px){
+  .burger{display:block}
+  /* Le burger n'ouvrait rien : bouton mort sur une page destinée au client. */
+  .nav{position:absolute;left:0;right:0;top:100%;flex-direction:column;align-items:stretch;
+    gap:0;margin:0;background:#fff;border-bottom:1px solid var(--line);
+    box-shadow:0 18px 30px -22px rgba(50,55,60,.5);
+    display:none}
+  .hdr.open .nav{display:flex}
+  .nav a{padding:17px 24px;border-bottom:1px solid var(--line)}
+  .nav a::after{display:none}
+  .nav .tel{margin:16px 24px 22px;text-align:center;border-bottom:0}
+}
+/* Appel toujours accessible sur mobile : le numéro existe déjà, on ne fait que
+   le rendre atteignable sans remonter en haut de page. */
+.call-fab{display:none;position:fixed;right:16px;bottom:16px;z-index:70;
+  background:var(--magenta);color:#fff;text-decoration:none;font-weight:700;
+  font-size:var(--fs-sm);padding:15px 22px;border-radius:40px;
+  box-shadow:0 10px 26px -8px rgba(184,0,101,.6)}
+@media(max-width:940px){.call-fab{display:inline-block}}
+@media print{.call-fab{display:none}}
+
+/* ---------- hero ---------- */
+.hero{padding:0 12px;position:relative;min-height:clamp(460px,66vh,640px);display:flex;align-items:flex-end;overflow:hidden;background:var(--ink)}
+.hero-img{position:absolute;inset:0;background:var(--ink)}
+.hero-img img{width:100%;height:100%;object-fit:cover}
+.hero-img::after{content:"";position:absolute;inset:0;
+  background:linear-gradient(180deg,rgba(50,55,60,.45) 0%,rgba(50,55,60,.15) 40%,rgba(50,55,60,.86) 100%)}
+.hero-in{position:relative;width:100%;padding:24px 0 88px}
+.hero h1{color:#fff;font-size:clamp(1.9rem,4.4vw,3.4rem);line-height:1.1;max-width:18ch;
+  letter-spacing:-.015em}
+.hero h1 em{font-style:normal;color:var(--magenta-clair);display:block}
+.hero-sub{color:rgba(255,255,255,.92);font-size:var(--fs-md);margin-top:16px;max-width:48ch}
+@media(max-width:640px){
+  /* Le titre remplissait presque tout l'écran avant qu'on voie le module de
+     recherche, qui est pourtant l'outil principal de la page. */
+  .hero{min-height:clamp(380px,58vh,520px)}
+  .hero-in{padding:20px 0 64px}
+  .hero-sub{max-width:38ch}
+}
+
+/* ---------- module de recherche — GABARIT FIGÉ, NE PAS MODIFIER ---------- */
+.search-dock{margin-top:-48px;position:relative;z-index:20}
+#ktp-search-root{background:#fff;border-radius:3px;
+  box-shadow:0 12px 34px -14px rgba(50,55,60,.32);padding:24px 26px}
+.search-tabs{display:flex;gap:2px;margin-bottom:18px;border-bottom:1px solid var(--line)}
+.search-tabs button{font-family:var(--font);font-size:var(--fs-sm);font-weight:700;color:var(--gris-txt);
+  background:none;border:0;border-bottom:2px solid transparent;padding:10px 18px;cursor:pointer;
+  text-transform:uppercase;letter-spacing:.02em}
+.search-tabs button[aria-selected="true"]{color:var(--magenta);border-bottom-color:var(--magenta)}
+.search-grid{display:grid;grid-template-columns:1.3fr 1fr 1fr auto;gap:12px;align-items:end}
+.fld label{display:block;font-size:var(--fs-xs);font-weight:700;letter-spacing:.06em;
+  text-transform:uppercase;color:var(--gris-txt);margin-bottom:6px}
+.fld select,.fld input{width:100%;font-family:var(--font);font-size:var(--fs-base);color:var(--ink);
+  padding:12px 14px;border:1px solid var(--line);border-radius:3px;background:#fff;appearance:none}
+.fld select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%23B2B2B3' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 14px center;padding-right:36px}
+.fld select:focus,.fld input:focus{border-color:var(--magenta);outline:none}
+.search-go{background:var(--magenta);color:#fff;border:0;border-radius:3px;font-family:var(--font);
+  font-weight:700;font-size:var(--fs-sm);padding:14px 30px;cursor:pointer;white-space:nowrap;
+  text-transform:uppercase;letter-spacing:.02em}
+.search-go:hover{background:var(--magenta-deep)}
+@media(max-width:880px){
+  .search-dock{margin-top:-24px}
+  #ktp-search-root{padding:18px 16px}
+  .search-grid{grid-template-columns:1fr}
+  .search-go{width:100%;padding:16px 30px}
+  /* Les trois onglets ne tenaient pas en 390px et « Professionnel » sortait
+     tranché — ce qui se lit comme un défaut, pas comme un défilement. En
+     resserrant la chasse et le rembourrage les trois entrent. Le défilement
+     et le fondu à droite restent en filet pour les écrans plus étroits. */
+  .search-tabs{overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;
+    position:relative;
+    -webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 18px),transparent);
+    mask-image:linear-gradient(90deg,#000 calc(100% - 18px),transparent)}
+  .search-tabs::-webkit-scrollbar{display:none}
+  .search-tabs button{padding:10px 9px;white-space:nowrap;flex:0 0 auto;letter-spacing:0}
+  .search-tabs button:first-child{padding-left:0}
+}
+
+/* ---------- sections ---------- */
+section{padding:var(--pad-sec) 0}
+.sec-head{max-width:40ch;margin-bottom:40px}
+.sec-head h2{font-size:clamp(1.7rem,3.2vw,2.5rem);line-height:1.18}
+.sec-head h2::after{content:"";display:block;width:56px;height:3px;background:var(--magenta);margin-top:16px}
+.sec-head p{margin-top:18px;font-size:var(--fs-md);color:var(--texte)}
+
+/* ---------- programmes : défilement horizontal ---------- */
+.prog-scroll{
+  display:flex;gap:22px;overflow-x:auto;scroll-snap-type:x mandatory;
+  padding:4px 24px 22px;margin:0 -24px;
+  scrollbar-width:thin;scrollbar-color:var(--gris) transparent;
+}
+.prog-scroll::-webkit-scrollbar{height:6px}
+.prog-scroll::-webkit-scrollbar-thumb{background:var(--gris);border-radius:3px}
+.prog{
+  position:relative;flex:0 0 min(78vw,460px);scroll-snap-align:start;
+  overflow:hidden;border-radius:3px;isolation:isolate;background:var(--ink);margin:0;
+}
+.prog img{width:100%;aspect-ratio:4/3;object-fit:cover;transition:transform .8s cubic-bezier(.16,1,.3,1)}
+.prog:hover img{transform:scale(1.05)}
+.prog figcaption{position:absolute;inset:auto 0 0 0;padding:24px;color:#fff;
+  background:linear-gradient(180deg,transparent,rgba(50,55,60,.92))}
+.prog h3{color:#fff;font-size:var(--fs-md);margin-bottom:4px}
+.prog span{font-size:var(--fs-sm);color:rgba(255,255,255,.85)}
+.prog .tag{position:absolute;top:16px;left:16px;background:var(--vert-fond);color:#fff;
+  font-size:var(--fs-xs);font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+  padding:6px 12px;border-radius:3px}
+.scroll-hint{display:flex;align-items:center;gap:10px;margin-top:6px;
+  font-size:var(--fs-sm);color:var(--gris-txt)}
+.scroll-hint::before{content:"";width:34px;height:1px;background:var(--gris-txt)}
+
+/* ---------- accompagnement ---------- */
+.accomp{background:var(--surface)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:start}
+.two p+p{margin-top:18px}
+.commit{list-style:none;padding:0;margin:30px 0 0;border-top:1px solid var(--line)}
+.commit li{padding:18px 0 18px 32px;border-bottom:1px solid var(--line);position:relative;
+  font-size:var(--fs-base);color:var(--ink)}
+.commit li::before{content:"";position:absolute;left:0;top:27px;width:14px;height:3px;background:var(--vert)}
+@media(max-width:940px){.two{grid-template-columns:1fr;gap:40px}}
+
+/* ---------- philosophie ---------- */
+.philo blockquote{margin:0;font-weight:700;color:var(--ink);
+  font-size:clamp(1.5rem,2.9vw,2.2rem);line-height:1.32;max-width:24ch}
+.philo blockquote strong{color:var(--magenta-deep);font-weight:700}
+.pillars{display:grid;grid-template-columns:repeat(3,1fr);gap:38px;margin-top:52px;
+  border-top:1px solid var(--line);padding-top:34px}
+.pillars h3{font-size:var(--fs-base);color:var(--magenta-deep);margin-bottom:10px;
+  text-transform:uppercase;letter-spacing:.04em}
+@media(max-width:940px){.pillars{grid-template-columns:1fr;gap:28px}}
+
+/* ---------- contact ---------- */
+.contact{background:var(--ink);color:rgba(255,255,255,.82)}
+.contact h2{color:#fff}
+.contact .sec-head h2::after{background:var(--vert)}
+.contact .two{gap:52px;align-items:center}
+.cinfo{list-style:none;padding:0;margin:0}
+.cinfo li{padding:16px 0;border-bottom:1px solid rgba(255,255,255,.16);display:flex;gap:16px}
+.cinfo b{font-size:var(--fs-xs);letter-spacing:.06em;text-transform:uppercase;
+  color:rgba(255,255,255,.58);min-width:92px;padding-top:4px}
+.cinfo span{color:#fff;font-size:var(--fs-base)}
+.cinfo a{color:#fff;text-decoration:none;border-bottom:1px solid var(--magenta-clair);padding-bottom:1px}
+.cta-btn{display:inline-block;margin-top:26px;background:var(--magenta);color:#fff;font-weight:700;
+  text-decoration:none;padding:15px 32px;border-radius:3px;text-transform:uppercase;
+  font-size:var(--fs-sm);letter-spacing:.02em}
+.cta-btn:hover{background:var(--magenta-deep)}
+
+/* ---------- footer ---------- */
+footer{background:#262A2E;color:rgba(255,255,255,.55);padding:38px 0;font-size:var(--fs-sm)}
+.f-in{display:flex;flex-wrap:wrap;gap:20px;align-items:center;justify-content:space-between}
+footer img{height:32px}
+footer a{color:rgba(255,255,255,.75);text-decoration:none}
+footer a:hover{color:#fff}
+
+/* ---------- les deux métiers ---------- */
+.metiers{background:var(--surface)}
+.metiers-lead{font-size:clamp(1.5rem,3vw,2.4rem);line-height:1.25;font-weight:700;
+  color:var(--ink);max-width:22ch;letter-spacing:-.02em;margin-bottom:clamp(36px,4vw,54px)}
+.metiers-lead em{font-style:normal;color:var(--magenta-deep)}
+.metiers-two{display:grid;grid-template-columns:1fr 1fr;gap:clamp(32px,5vw,72px)}
+.metiers-two>div{border-top:1px solid var(--gris);padding-top:22px}
+.metiers-two h2{font-size:var(--fs-md);margin-bottom:12px}
+.metiers-two p{max-width:44ch;color:var(--texte)}
+@media(max-width:820px){.metiers-two{grid-template-columns:1fr;gap:34px}}
+
+.note{background:#FDF0F7;border-top:1px solid #F3C9E1;padding:26px 0;
+  font-size:var(--fs-sm);color:var(--ink);line-height:1.6}
+.note::before{content:"Note interne — ne fait pas partie de la page livrée";
+  display:block;font-size:var(--fs-xs);font-weight:700;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--magenta-deep);margin-bottom:10px}
+</style>
+</head>
+<body>
+
+<header class="hdr">
+  <div class="wrap hdr-in">
+    <a href="#"><img src="assets/logo-quadri.webp" alt="Koytcha Immo — conseil et expertise en immobilier"></a>
+    <nav class="nav" id="nav">
+      <a href="#opportunites">Opportunités</a>
+      <a href="#accompagnement">Accompagnement</a>
+      <a href="#metiers">Nos métiers</a>
+      <a href="#philosophie">À propos</a>
+      <a href="#contact">Contact</a>
+      <a class="tel" href="tel:+262262979607">0262 97 96 07</a>
+    </nav>
+    <button class="burger" id="burger" aria-label="Ouvrir le menu"
+            aria-expanded="false" aria-controls="nav"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="hero-img"><img src="assets/drone.webp" alt="Ze Bure@u à l'Éperon, programme réalisé par Koytcha Immo"></div>
+  <div class="hero-in wrap">
+    <h1>30 ans d'expertise<em>à La Réunion</em></h1>
+    <p class="hero-sub">Conseil et expertise en immobilier résidentiel et professionnel, aux côtés des entreprises, des propriétaires et des investisseurs depuis 2004.</p>
+  </div>
+</div>
+
+<div class="wrap search-dock">
+  <!-- ═══════════════════════════════════════════════════════════════
+       MODULE DE RECHERCHE — NE PAS MODIFIER
+       Position, dimensions et comportement identiques au site actuel.
+       En production, ce bloc est remplacé par le point de montage du
+       plugin React « elementor-search-react-ktp-v2 », inchangé.
+       Le balisage ci-dessous ne sert qu'à réserver l'emplacement.
+       ═══════════════════════════════════════════════════════════════ -->
+  <div id="ktp-search-root">
+    <div class="search-tabs" role="tablist">
+      <button role="tab" aria-selected="true">Acheter</button>
+      <button role="tab" aria-selected="false">Louer</button>
+      <button role="tab" aria-selected="false">Professionnel</button>
+    </div>
+    <div class="search-grid">
+      <div class="fld">
+        <label for="f-loc">Localisation</label>
+        <input id="f-loc" type="text" placeholder="Saint-Denis, Saint-Paul…">
+      </div>
+      <div class="fld">
+        <label for="f-type">Type de bien</label>
+        <select id="f-type"><option>Tous les biens</option><option>Appartement</option><option>Maison</option><option>Terrain</option><option>Local / bureau</option></select>
+      </div>
+      <div class="fld">
+        <label for="f-bud">Budget maximum</label>
+        <select id="f-bud"><option>Indifférent</option><option>150 000 €</option><option>250 000 €</option><option>400 000 €</option><option>600 000 € et +</option></select>
+      </div>
+      <button class="search-go">Rechercher</button>
+    </div>
+  </div>
+</div>
+
+<section id="opportunites">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>Nos opportunités exclusives</h2>
+      <p>Découvrez sans plus attendre nos opportunités exclusives du moment.</p>
+    </div>
+    <div class="prog-scroll">
+      <figure class="prog">
+        <span class="tag">Programme phare</span>
+        <img src="assets/drone.webp" alt="Ze Bure@u, centre d'affaires à l'Éperon">
+        <figcaption><h3>Ze Bure@u 1 &amp; 2</h3><span>Centre d'affaires — L'Éperon · plus de 3 000 m² chacun</span></figcaption>
+      </figure>
+      <figure class="prog">
+        <span class="tag">Résidentiel</span>
+        <img src="assets/alpha1.webp" alt="Programme résidentiel Koytcha Immo">
+        <figcaption><h3>Immeubles et logements neufs</h3><span>Programmes résidentiels adaptés aux spécificités locales</span></figcaption>
+      </figure>
+      <figure class="prog">
+        <span class="tag">Professionnel</span>
+        <img src="assets/photo1.webp" alt="Locaux d'activités et bureaux">
+        <figcaption><h3>Bureaux et locaux d'activités</h3><span>Des surfaces pensées pour l'activité, les équipes et l'image</span></figcaption>
+      </figure>
+    </div>
+    <p class="scroll-hint">Faites défiler pour découvrir les programmes</p>
+  </div>
+</section>
+
+<section class="metiers" id="metiers">
+  <div class="wrap">
+    <p class="metiers-lead">Koytcha Immo conseille en transaction <em>et</em> construit en promotion.</p>
+    <div class="metiers-two">
+      <div>
+        <h2>Le conseil</h2>
+        <p>Accompagner particuliers, entreprises et investisseurs sur l'ensemble de leurs enjeux immobiliers : valorisation du patrimoine, transaction, recherche de locaux adaptés à l'activité et aux équipes.</p>
+      </div>
+      <div>
+        <h2>La promotion</h2>
+        <p>Concevoir et commercialiser des programmes pensés pour les spécificités locales — immeubles résidentiels, bureaux, locaux d'activités, et des centres d'affaires comme Ze Bure@u 1 et 2 à l'Éperon.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="accomp" id="accompagnement">
+  <div class="wrap two">
+    <div>
+      <div class="sec-head" style="margin-bottom:24px">
+        <h2>Koytcha Immo vous accompagne depuis 2004</h2>
+      </div>
+      <p>Koytcha Immo accompagne depuis 2004 avec le même niveau d'exigence les entreprises, propriétaires et investisseurs sur l'ensemble de leurs enjeux immobiliers.</p>
+      <p>Que vous cherchiez à investir, à vendre, ou que vous soyez tout simplement à la recherche d'un achat ou d'une location, Koytcha Immo vous apporte toute son expertise et son savoir-faire afin de vous faciliter la vie tout en optimisant votre projet.</p>
+      <p>Agissant également en tant que promoteur immobilier, Koytcha Immo commercialise de nombreux projets innovants et adaptés aux spécificités locales, tels que des immeubles résidentiels, des bureaux, des locaux d'activités, ou encore des centres d'affaires comme les projets phares Ze Bure@u 1 et 2 (plus de 3 000 m² chacun) situés à l'Éperon.</p>
+    </div>
+    <div>
+      <p style="color:var(--ink);font-size:var(--fs-md)">Grâce à notre équipe, nous sommes en mesure de répondre à tous vos besoins tant en résidentiel qu'en professionnel :</p>
+      <ul class="commit">
+        <li>Valorisation du patrimoine</li>
+        <li>Transactions dans des délais mesurés et conditions optimales</li>
+        <li>Recherche de locaux adaptés à l'activité, aux employés et à l'image de l'entreprise</li>
+        <li>Accompagnement du client par un conseil global</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="philo" id="philosophie">
+  <div class="wrap">
+    <blockquote>Notre philosophie : une approche globale axée sur <strong>le conseil</strong>.</blockquote>
+    <p style="margin-top:26px;max-width:62ch;font-size:var(--fs-md)">Que vous soyez investisseurs, utilisateurs, particuliers à la recherche d'un bien à acheter ou particuliers investisseurs, vos problématiques sont variées. Nous y apportons des expertises spécifiques. Le client est au cœur de nos engagements.</p>
+    <div class="pillars">
+      <div>
+        <h3>Notre objectif</h3>
+        <p>Créer de la valeur à chaque étape de la vie d'un bien immobilier.</p>
+      </div>
+      <div>
+        <h3>Notre engagement</h3>
+        <p>Accompagner durablement nos clients tout au long du cycle de vie immobilier.</p>
+      </div>
+      <div>
+        <h3>Nos ambitions</h3>
+        <p>Proposer des solutions pertinentes et originales dans une optique de long terme, sur des emplacements de choix.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="contact" id="contact">
+  <div class="wrap two">
+    <div>
+      <div class="sec-head" style="margin-bottom:20px">
+        <h2>Contact</h2>
+        <p style="color:rgba(255,255,255,.75)">Particuliers comme investisseurs, nos équipes sont à vos côtés pour comprendre vos enjeux, vous conseiller et vous aider à concrétiser votre stratégie immobilière.</p>
+      </div>
+      <a class="cta-btn" href="tel:+262262979607">Parler à un conseiller</a>
+    </div>
+    <ul class="cinfo">
+      <li><b>Adresse</b><span>45 rue Alexis de Villeneuve<br>97400 Saint-Denis, La Réunion</span></li>
+      <li><b>Téléphone</b><span><a href="tel:+262262979607">0262 97 96 07</a></span></li>
+      <li><b>Horaires</b><span>Du lundi au vendredi<br>08h – 12h et 14h – 17h</span></li>
+    </ul>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap f-in">
+    <img src="assets/logo-blanc.webp" alt="Koytcha Immo">
+    <div>© 2026 Koytcha. All Rights Reserved. · <a href="#">Mentions Légales</a> · <a href="#">Retrouvez nos annonces sur Adrezio</a></div>
+  </div>
+</footer>
+
+<a class="call-fab" href="tel:+262262979607">Appeler</a>
+
+<script>
+// Menu mobile. Fermeture au clic sur un lien, à l'Échap, et au clic extérieur —
+// sinon le menu reste ouvert derrière la page une fois la section atteinte.
+(function(){
+  var hdr=document.querySelector('.hdr'), b=document.getElementById('burger'),
+      nav=document.getElementById('nav');
+  if(!hdr||!b||!nav) return;
+  function set(open){
+    hdr.classList.toggle('open',open);
+    b.setAttribute('aria-expanded',open?'true':'false');
+    b.setAttribute('aria-label',open?'Fermer le menu':'Ouvrir le menu');
+  }
+  b.addEventListener('click',function(){ set(!hdr.classList.contains('open')); });
+  nav.addEventListener('click',function(e){ if(e.target.tagName==='A') set(false); });
+  document.addEventListener('keydown',function(e){ if(e.key==='Escape') set(false); });
+  document.addEventListener('click',function(e){
+    if(hdr.classList.contains('open') && !hdr.contains(e.target)) set(false);
+  });
+})();
+</script>
+
+<div class="note">
+  <div class="wrap">
+    <strong>Maquette de refonte — page d'accueil koytchaimmo.re.</strong>
+    Palette (magenta #E6007E, vert #61A229, gris) et police Helvetica relevées sur le site actuel. Le bloc de recherche conserve sa position et ses dimensions d'origine : en production il est remplacé par le point de montage du plugin React <strong>elementor-search-react-ktp-v2</strong>, inchangé. Photos et logo issus du site actuel.
+  </div>
+</div>
+
+</body>
+</html>

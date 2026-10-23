@@ -1,0 +1,445 @@
+/* Container */
+.container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 var(--space-lg);
+}
+
+/* Sections */
+section {
+    padding: var(--space-xxl) 0;
+}
+
+section:first-child {
+    padding-top: 0;
+}
+
+/* Navigation */
+.navbar {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background-color: transparent;
+    padding: var(--space-lg) 0;
+    transition: background-color var(--transition-normal);
+}
+
+.navbar.scrolled {
+    background-color: rgba(249, 247, 244, 0.95);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.nav-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 var(--space-lg);
+}
+
+.logo {
+    font-family: var(--font-serif);
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--color-text-primary);
+}
+
+.nav-menu {
+    display: flex;
+    gap: var(--space-xl);
+    list-style: none;
+}
+
+.nav-menu a {
+    font-size: 0.95rem;
+    color: var(--color-text-primary);
+    transition: color var(--transition-normal);
+}
+
+.nav-menu a:hover {
+    color: var(--color-accent-primary);
+}
+
+.cta-link {
+    color: var(--color-accent-primary);
+    font-weight: 600;
+}
+
+/* Hamburger Menu */
+.hamburger {
+    display: none;
+    flex-direction: column;
+    gap: 6px;
+    cursor: pointer;
+}
+
+.hamburger span {
+    width: 24px;
+    height: 2px;
+    background-color: var(--color-text-primary);
+    transition: all var(--transition-normal);
+}
+
+/* Hero Section */
+.hero {
+    position: relative;
+    height: 100vh;
+    min-height: 600px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.hero-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 0;
+}
+
+.hero-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.3);
+    z-index: 1;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    color: white;
+    animation: fadeInUp 0.8s ease-out;
+}
+
+.hero-title {
+    font-size: 4rem;
+    color: white;
+    margin-bottom: var(--space-md);
+    font-weight: 600;
+}
+
+.hero-subtitle {
+    font-size: 1.25rem;
+    color: rgba(255, 255, 255, 0.9);
+    letter-spacing: 0.1em;
+    margin-bottom: var(--space-xxl);
+}
+
+.scroll-indicator {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    color: white;
+    animation: bounce 2s infinite;
+}
+
+/* About Section */
+.about {
+    background-color: var(--color-bg);
+}
+
+.about-content {
+    display: grid;
+    grid-template-columns: 40% 1fr;
+    gap: var(--space-xxl);
+    align-items: center;
+}
+
+.about-image {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.lisa-photo {
+    width: 100%;
+    max-width: 300px;
+    aspect-ratio: 1;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-md);
+    object-fit: cover;
+}
+
+.about-text h2 {
+    color: var(--color-text-primary);
+    margin-bottom: var(--space-lg);
+}
+
+.about-text p {
+    color: var(--color-text-secondary);
+    margin-bottom: var(--space-md);
+    line-height: 1.8;
+}
+
+.experience-badge {
+    display: inline-flex;
+    align-items: baseline;
+    gap: var(--space-sm);
+    margin-top: var(--space-lg);
+    padding: var(--space-md) var(--space-lg);
+    background-color: var(--color-bg-light);
+    border-left: 4px solid var(--color-accent-primary);
+    border-radius: var(--radius-md);
+}
+
+.badge-number {
+    font-family: var(--font-serif);
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--color-accent-primary);
+}
+
+.badge-text {
+    font-size: 0.9rem;
+    color: var(--color-text-secondary);
+}
+
+/* Services Section */
+.services {
+    background-color: var(--color-bg-white);
+}
+
+.section-title {
+    text-align: center;
+    font-size: 2.5rem;
+    margin-bottom: var(--space-xxl);
+    color: var(--color-text-primary);
+}
+
+.services-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-lg);
+}
+
+.services-grid > :nth-child(3) {
+    grid-column: 1;
+}
+
+.services-grid > :nth-child(4) {
+    grid-column: 2;
+    grid-row: 2;
+}
+
+.service-card {
+    padding: var(--space-lg);
+    background-color: var(--color-bg-white);
+    border-left: 4px solid var(--color-accent-primary);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+    transition: all var(--transition-normal);
+}
+
+.service-card:nth-child(2) {
+    border-left-color: var(--color-accent-secondary);
+}
+
+.service-card:nth-child(3) {
+    border-left-color: var(--color-accent-tertiary);
+}
+
+.service-card:nth-child(4) {
+    border-left-color: var(--color-accent-primary);
+}
+
+.service-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-md);
+}
+
+.service-icon {
+    font-size: 2.5rem;
+    margin-bottom: var(--space-md);
+}
+
+.service-card h3 {
+    color: var(--color-text-primary);
+    margin-bottom: var(--space-sm);
+}
+
+.service-card p {
+    font-size: 0.95rem;
+    color: var(--color-text-secondary);
+    line-height: 1.6;
+}
+
+/* Testimonials Section */
+.testimonials {
+    background-color: var(--color-bg);
+}
+
+.testimonials-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-lg);
+}
+
+.testimonial-card {
+    padding: var(--space-lg);
+    background-color: var(--color-bg-light);
+    border-left: 4px solid var(--color-accent-primary);
+    border-radius: var(--radius-md);
+}
+
+.stars {
+    font-size: 1rem;
+    margin-bottom: var(--space-md);
+    letter-spacing: 2px;
+}
+
+.testimonial-quote {
+    margin-bottom: var(--space-md);
+    color: var(--color-text-primary);
+}
+
+.testimonial-author {
+    font-size: 0.9rem;
+    color: var(--color-text-secondary);
+}
+
+.testimonial-author strong {
+    color: var(--color-text-primary);
+}
+
+/* Booking Section */
+.booking {
+    background-color: rgba(143, 163, 154, 0.1);
+    text-align: center;
+    padding: var(--space-xxl) var(--space-lg);
+}
+
+.booking-title {
+    font-size: 2rem;
+    color: var(--color-text-primary);
+    margin-bottom: var(--space-md);
+}
+
+.booking-subtitle {
+    font-size: 1.1rem;
+    color: var(--color-text-secondary);
+    margin-bottom: var(--space-lg);
+}
+
+.booking-alt {
+    margin-top: var(--space-lg);
+    font-size: 0.95rem;
+    color: var(--color-text-secondary);
+}
+
+/* Footer */
+.footer {
+    background-color: var(--color-footer);
+    color: white;
+    padding: var(--space-xxl) 0 var(--space-lg);
+}
+
+.footer-content {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-xl);
+    margin-bottom: var(--space-xl);
+}
+
+.footer-col h3, .footer-col h4 {
+    color: white;
+    margin-bottom: var(--space-md);
+    font-size: 1.1rem;
+}
+
+.footer-logo {
+    font-family: var(--font-serif);
+    font-size: 1.3rem;
+    font-weight: 700;
+}
+
+.footer-tagline {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.7);
+    margin-top: var(--space-sm);
+}
+
+.footer-col p {
+    margin-bottom: var(--space-sm);
+    font-size: 0.95rem;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.footer-col a {
+    color: rgba(255, 255, 255, 0.8);
+    transition: color var(--transition-normal);
+}
+
+.footer-col a:hover {
+    color: var(--color-accent-primary);
+}
+
+.footer-col ul li {
+    margin-bottom: var(--space-sm);
+}
+
+.footer-bottom {
+    text-align: center;
+    padding-top: var(--space-lg);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .nav-menu {
+        gap: var(--space-lg);
+    }
+
+    .hamburger {
+        display: flex;
+    }
+
+    .nav-menu {
+        display: none;
+    }
+
+    .nav-menu.active {
+        display: flex;
+        flex-direction: column;
+        position: absolute;
+        top: 60px;
+        left: 0;
+        right: 0;
+        background-color: var(--color-bg);
+        padding: var(--space-lg);
+        box-shadow: var(--shadow-md);
+    }
+
+    .hero-title {
+        font-size: 2.5rem;
+    }
+
+    .about-content {
+        grid-template-columns: 1fr;
+    }
+
+    .services-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .testimonials-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .footer-content {
+        grid-template-columns: 1fr;
+    }
+}

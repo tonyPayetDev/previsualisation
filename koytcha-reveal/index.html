@@ -1,0 +1,1232 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Résidence Les Manguiers — Koytcha Immo · La Réunion</title>
+<meta name="description" content="Résidence Les Manguiers, La Possession — appartements T3 au T5, 76 à 110 m², varangues et terrasses. Programme Koytcha Immo, 30 ans d'expertise à La Réunion.">
+<meta name="theme-color" content="#07070a">
+<meta property="og:title" content="Résidence Les Manguiers — Koytcha Immo">
+<meta property="og:description" content="La Possession · Appartements T3 au T5, 76 à 110 m², varangues, terrasses, 30 lots. Présentation cinématique.">
+<meta property="og:image" content="assets/web/reveal.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ============ TOKENS — charte KOYTCHA ============ */
+:root{
+  --magenta:#e6007e; --rose:#ff5db1; --rose-dark:#c00068; --orange:#f6a11a;
+  --rose-100:#ffe3f1; --rose-200:#ffd0e8; --rose-300:#ffcfe7;
+  --white:#ffffff; --ecru:#faf7f9; --ink:#141419; --grey:#6b6b76; --line:#ece6ea;
+  --black:#07070a; --black-2:#0d0d12;
+  --sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  --serif:'Fraunces',Georgia,'Times New Roman',serif;
+  --bar:64px;
+  --ease:cubic-bezier(.22,.61,.36,1);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{
+  font-family:var(--sans); color:var(--ink); background:var(--black);
+  -webkit-font-smoothing:antialiased; overflow-x:hidden;
+}
+body.is-loading{overflow:hidden;height:100vh}
+img{max-width:100%;display:block}
+button,input,select{font:inherit;color:inherit}
+a{color:inherit;text-decoration:none}
+::selection{background:var(--magenta);color:#fff}
+:focus-visible{outline:2px solid var(--magenta);outline-offset:3px;border-radius:4px}
+
+/* ============ LOADER ============ */
+#loader{
+  position:fixed;inset:0;z-index:200;background:var(--black);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:26px;
+  transition:opacity .7s var(--ease),visibility .7s;
+}
+#loader.done{opacity:0;visibility:hidden}
+.ld-logo{font-family:var(--serif);font-size:clamp(26px,6vw,40px);color:#fff;letter-spacing:.14em;font-weight:300}
+.ld-logo b{font-weight:600}
+.ld-logo i{color:var(--magenta);font-style:normal}
+.ld-sub{font-size:11px;letter-spacing:.34em;text-transform:uppercase;color:#79798a}
+.ld-track{width:min(260px,60vw);height:2px;background:#20202a;overflow:hidden;border-radius:2px}
+.ld-fill{height:100%;width:0;background:linear-gradient(90deg,var(--magenta),var(--rose),var(--orange));transition:width .25s linear}
+.ld-pct{font-size:12px;letter-spacing:.2em;color:#9a9aa8;font-variant-numeric:tabular-nums}
+
+/* ============ TOPBAR + RECHERCHE ============ */
+.topbar{
+  position:fixed;top:0;left:0;right:0;z-index:90;
+  background:rgba(9,9,13,.62);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  border-bottom:1px solid rgba(255,255,255,.09);
+  transition:background .4s var(--ease),border-color .4s var(--ease),color .4s var(--ease);
+  padding-top:env(safe-area-inset-top);
+}
+.topbar.light{background:rgba(255,255,255,.97);border-bottom-color:var(--line);color:var(--ink)}
+.bar{height:var(--bar);display:flex;align-items:center;gap:14px;padding:0 clamp(14px,3vw,32px);max-width:1500px;margin:0 auto}
+.brand{display:flex;flex-direction:column;line-height:1;color:#fff;transition:color .4s var(--ease);flex:0 0 auto}
+.topbar.light .brand{color:var(--ink)}
+.brand .b1{font-family:var(--serif);font-size:19px;font-weight:600;letter-spacing:.06em}
+.brand .b1 i{color:var(--magenta);font-style:normal}
+.brand .b2{font-size:8.5px;letter-spacing:.32em;text-transform:uppercase;opacity:.62;margin-top:4px}
+.nav{display:none;gap:26px;margin-left:26px;font-size:13px;color:rgba(255,255,255,.72)}
+.topbar.light .nav{color:var(--grey)}
+.nav a{position:relative;padding:4px 0;transition:color .25s}
+.nav a:hover{color:var(--magenta)}
+.spacer{flex:1}
+.btn-search{
+  display:inline-flex;align-items:center;gap:8px;border:0;cursor:pointer;
+  background:var(--magenta);color:#fff;padding:11px 18px;border-radius:999px;
+  font-size:13px;font-weight:600;letter-spacing:.01em;transition:background .25s,transform .2s;
+}
+.btn-search:hover{background:var(--rose-dark)}
+.btn-search:active{transform:scale(.97)}
+.btn-search svg{width:15px;height:15px;flex:0 0 auto}
+.btn-search .lbl-close{display:none}
+.topbar.open .btn-search .lbl-open{display:none}
+.topbar.open .btn-search .lbl-close{display:inline}
+
+.searchwrap{max-height:0;overflow:hidden;transition:max-height .45s var(--ease)}
+.topbar.open .searchwrap{max-height:520px}
+.search{
+  display:grid;gap:10px;padding:4px clamp(14px,3vw,32px) 16px;max-width:1500px;margin:0 auto;
+  grid-template-columns:1fr;
+}
+.field{position:relative}
+.field label{
+  position:absolute;top:9px;left:14px;font-size:9.5px;letter-spacing:.22em;text-transform:uppercase;
+  color:rgba(255,255,255,.5);pointer-events:none;
+}
+.topbar.light .field label{color:var(--grey)}
+.field select{
+  width:100%;appearance:none;background:rgba(255,255,255,.07);color:#fff;
+  border:1px solid rgba(255,255,255,.16);border-radius:12px;
+  padding:26px 38px 11px 14px;font-size:14px;cursor:pointer;transition:border-color .25s,background .25s;
+}
+.topbar.light .field select{background:var(--ecru);color:var(--ink);border-color:var(--line)}
+.field select:hover{border-color:var(--magenta)}
+.field::after{
+  content:"";position:absolute;right:16px;top:calc(50% + 5px);width:8px;height:8px;
+  border-right:1.6px solid var(--magenta);border-bottom:1.6px solid var(--magenta);
+  transform:translateY(-50%) rotate(45deg);pointer-events:none;
+}
+.field option{background:#141419;color:#fff}
+.topbar.light .field option{background:#fff;color:var(--ink)}
+.btn-go{
+  border:0;cursor:pointer;background:var(--magenta);color:#fff;border-radius:12px;
+  padding:16px 20px;font-size:14px;font-weight:600;letter-spacing:.02em;transition:background .25s,transform .2s;
+  display:flex;align-items:center;justify-content:center;gap:9px;
+}
+.btn-go:hover{background:var(--rose-dark)}
+.btn-go:active{transform:scale(.985)}
+.search-note{
+  grid-column:1/-1;font-size:11.5px;color:rgba(255,255,255,.5);line-height:1.5;display:flex;gap:7px;align-items:flex-start;
+}
+.topbar.light .search-note{color:var(--grey)}
+.search-note b{color:var(--rose);font-weight:600}
+.topbar.light .search-note b{color:var(--magenta)}
+@media(min-width:900px){
+  .nav{display:flex}
+  .searchwrap{max-height:none;overflow:visible}
+  .search{grid-template-columns:1.3fr 1fr 1fr auto;align-items:center;padding-bottom:14px}
+  .btn-go{padding:16px 30px}
+}
+
+/* ============ CHAPITRES CINÉMA ============ */
+.film{position:relative;background:var(--black)}
+.chapter{position:relative;height:400svh}
+#ch2{height:620svh}
+#ch3{height:420svh}
+#ch4{height:320svh}
+.stage{
+  position:sticky;top:0;height:100svh;width:100%;overflow:hidden;
+  background:var(--black);display:block;
+}
+.stage canvas,.stage .still{
+  position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;
+}
+.vignette{
+  position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(120% 85% at 50% 42%,transparent 38%,rgba(0,0,0,.55) 100%);
+}
+.scrim{
+  position:absolute;left:0;right:0;bottom:0;height:66%;pointer-events:none;
+  background:linear-gradient(to top,rgba(4,4,7,.96) 0%,rgba(4,4,7,.88) 22%,rgba(4,4,7,.6) 50%,rgba(4,4,7,.22) 76%,transparent 100%);
+  height:74%;
+}
+.caption{
+  position:absolute;left:clamp(18px,5vw,72px);bottom:clamp(46px,8vh,92px);
+  right:clamp(18px,5vw,72px);max-width:640px;color:#fff;z-index:3;
+}
+.eyebrow{
+  display:flex;align-items:center;gap:11px;font-size:10.5px;letter-spacing:.3em;
+  text-transform:uppercase;color:var(--rose);margin-bottom:16px;
+}
+.eyebrow .num{color:rgba(255,255,255,.42);letter-spacing:.16em}
+.eyebrow .dash{width:34px;height:1px;background:var(--magenta);flex:0 0 auto}
+.caption h1,.caption h2{
+  font-family:var(--serif);font-weight:300;line-height:1.03;letter-spacing:-.015em;
+  font-size:clamp(34px,7.4vw,74px);margin-bottom:14px;text-shadow:0 2px 26px rgba(0,0,0,.55);
+}
+.caption h1 em,.caption h2 em{font-style:normal;font-weight:600}
+.caption p{
+  font-size:clamp(13.5px,3.4vw,16.5px);line-height:1.65;color:rgba(255,255,255,.74);
+  max-width:48ch;font-weight:300;text-shadow:0 1px 16px rgba(0,0,0,.5);
+}
+.cap-meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}
+.tag{
+  font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;padding:7px 13px;
+  border:1px solid rgba(255,255,255,.22);border-radius:999px;color:rgba(255,255,255,.8);
+}
+.tag.demo{border-color:var(--magenta);color:#fff;background:rgba(230,0,126,.22)}
+.cue{
+  position:absolute;left:50%;transform:translateX(-50%);bottom:18px;z-index:4;
+  display:flex;flex-direction:column;align-items:center;gap:8px;
+  font-size:9.5px;letter-spacing:.28em;text-transform:uppercase;color:rgba(255,255,255,.45);
+}
+.cue .line{width:1px;height:34px;background:linear-gradient(to bottom,var(--magenta),transparent);animation:cue 2.1s var(--ease) infinite}
+@keyframes cue{0%{transform:scaleY(.2);transform-origin:top;opacity:0}45%{transform:scaleY(1);opacity:1}100%{transform:scaleY(1);transform-origin:bottom;transform:scaleY(0);opacity:0}}
+.progress-rail{
+  position:absolute;right:clamp(12px,2.4vw,26px);top:50%;transform:translateY(-50%);
+  width:2px;height:120px;background:rgba(255,255,255,.14);border-radius:2px;z-index:4;overflow:hidden;
+}
+.progress-rail i{position:absolute;top:0;left:0;width:100%;height:0%;background:linear-gradient(to bottom,var(--magenta),var(--rose));}
+@media(max-width:640px){.progress-rail{display:none}}
+
+/* chapitre 3 — vue éclatée animée */
+.exploded{
+  position:absolute;inset:0;display:flex;align-items:flex-start;justify-content:center;
+  perspective:1400px;padding:96px 0 34svh;
+}
+.exploded-inner{position:relative;width:min(54vw,270px);aspect-ratio:760/1500;will-change:transform}
+.slab{position:absolute;left:0;width:100%;will-change:transform,opacity}
+.slab img{width:100%;height:auto;filter:drop-shadow(0 30px 60px rgba(0,0,0,.8))}
+.slab.s3{top:0}
+.slab.s2{top:33%}
+.slab.s1{top:66%}
+.beam{
+  position:absolute;left:50%;width:1.5px;transform:translateX(-50%);
+  background:linear-gradient(to bottom,transparent,var(--magenta),var(--rose),transparent);
+  opacity:0;filter:blur(.4px);box-shadow:0 0 12px var(--magenta);transform-origin:top center;
+}
+.beam.b1{top:22%;height:13%}
+.beam.b2{top:60%;height:13%}
+.slab.hot img{filter:drop-shadow(0 0 34px rgba(230,0,126,.55)) drop-shadow(0 30px 60px rgba(0,0,0,.8))}
+@media(min-width:900px){
+  .exploded{justify-content:flex-end;padding:150px 9vw 60px 0;align-items:center}
+  .exploded-inner{width:min(27vw,320px)}
+}
+
+/* chapitre 4 */
+.zoomer{position:absolute;inset:0;overflow:hidden}
+.zoomer picture{display:block;width:100%;height:100%}
+.zoomer img{width:100%;height:100%;object-fit:cover;object-position:center 58%;will-change:transform}
+
+/* transition noir -> clair */
+.seam{height:120px;background:linear-gradient(to bottom,var(--black),var(--white));position:relative;z-index:2}
+
+/* ============ SECTIONS CLAIRES ============ */
+.light-zone{background:var(--ecru);color:var(--ink);position:relative;z-index:2}
+.wrap{max-width:1240px;margin:0 auto;padding:0 clamp(18px,5vw,40px)}
+.sec{padding:clamp(56px,9vw,110px) 0}
+.sec-head{margin-bottom:clamp(28px,5vw,52px);max-width:680px}
+.kicker{
+  display:flex;align-items:center;gap:11px;font-size:10.5px;letter-spacing:.3em;
+  text-transform:uppercase;color:var(--magenta);margin-bottom:16px;font-weight:600;
+}
+.kicker .dash{width:30px;height:1px;background:var(--magenta)}
+.sec-head h2{
+  font-family:var(--serif);font-weight:300;font-size:clamp(27px,5vw,46px);
+  line-height:1.1;letter-spacing:-.015em;
+}
+.sec-head h2 em{font-style:normal;font-weight:600;color:var(--magenta)}
+.sec-head p{margin-top:14px;color:var(--grey);font-size:15px;line-height:1.7;font-weight:300}
+
+/* bandeau de faits */
+.facts{background:var(--white);border-bottom:1px solid var(--line)}
+.facts-in{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--line)}
+.fact{background:var(--white);padding:clamp(20px,4vw,34px) clamp(14px,3vw,26px);text-align:center}
+.fact .v{font-family:var(--serif);font-size:clamp(24px,5vw,38px);font-weight:400;line-height:1;color:var(--ink)}
+.fact .v span{font-size:.5em;color:var(--magenta);margin-left:3px}
+.fact .k{font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--grey);margin-top:11px}
+@media(min-width:760px){.facts-in{grid-template-columns:repeat(4,1fr)}}
+.price-row{
+  display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:14px;
+  padding:26px 0 0;
+}
+.price-row .p{font-family:var(--serif);font-size:clamp(28px,5.4vw,44px);font-weight:400}
+.price-row .p small{font-size:.4em;color:var(--grey);font-family:var(--sans);letter-spacing:.04em;margin-left:8px}
+.ref{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--grey)}
+
+/* sélecteur d'étages */
+.levels-grid{display:grid;gap:clamp(22px,4vw,44px);grid-template-columns:1fr}
+@media(min-width:900px){.levels-grid{grid-template-columns:.95fr 1.05fr;align-items:start}}
+.tabs{display:flex;gap:8px;margin-bottom:22px;flex-wrap:wrap}
+.tab{
+  border:1px solid var(--line);background:var(--white);border-radius:999px;padding:11px 17px;
+  font-size:12.5px;font-weight:500;cursor:pointer;transition:all .25s var(--ease);color:var(--grey);
+}
+.tab:hover{border-color:var(--rose-200);color:var(--ink)}
+.tab[aria-selected="true"]{background:var(--magenta);border-color:var(--magenta);color:#fff;box-shadow:0 8px 22px -10px rgba(230,0,126,.75)}
+.panel[hidden]{display:none}
+.panel{animation:fadeup .5s var(--ease)}
+@keyframes fadeup{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.panel h3{font-family:var(--serif);font-size:clamp(21px,3.6vw,30px);font-weight:400;margin-bottom:6px}
+.panel .surface{color:var(--magenta);font-size:13px;font-weight:600;letter-spacing:.04em;margin-bottom:18px}
+.rooms{list-style:none;display:grid;gap:1px;background:var(--line);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.rooms li{
+  background:var(--white);padding:14px 17px;display:flex;justify-content:space-between;
+  align-items:center;gap:14px;font-size:14px;
+}
+.rooms li span{color:var(--grey);font-size:13px;white-space:nowrap}
+.rooms li::before{content:"";position:absolute}
+.lvl-visual{
+  background:var(--black);border-radius:18px;overflow:hidden;position:relative;
+  display:flex;align-items:center;justify-content:center;padding:26px;min-height:280px;
+}
+.lvl-visual img{width:100%;max-width:420px;transition:opacity .5s var(--ease),transform .6s var(--ease)}
+.lvl-visual .cut{position:absolute;opacity:0;transform:scale(.96)}
+.lvl-visual .cut.on{opacity:1;transform:none;position:relative}
+.lvl-visual .glow{
+  position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(60% 45% at 50% 50%,rgba(230,0,126,.22),transparent 70%);
+}
+
+/* galerie */
+.gal{display:grid;gap:12px;grid-template-columns:repeat(2,1fr)}
+.gal figure{position:relative;overflow:hidden;border-radius:14px;background:#111;aspect-ratio:4/3}
+.gal figure:first-child{grid-column:1/-1;aspect-ratio:16/10}
+.gal img{width:100%;height:100%;object-fit:cover;transition:transform .8s var(--ease)}
+.gal figure:hover img{transform:scale(1.05)}
+.gal figcaption{
+  position:absolute;left:0;right:0;bottom:0;padding:26px 16px 14px;color:#fff;font-size:12px;
+  letter-spacing:.14em;text-transform:uppercase;
+  background:linear-gradient(to top,rgba(0,0,0,.8),transparent);
+}
+@media(min-width:760px){
+  .gal{grid-template-columns:repeat(3,1fr);grid-auto-rows:clamp(190px,18vw,250px)}
+  .gal figure{aspect-ratio:auto}
+  .gal figure:first-child{grid-column:1/3;grid-row:span 2;aspect-ratio:auto}
+  .gal figure:nth-child(4){grid-column:span 2}
+}
+
+/* calculateur */
+.calc-grid{display:grid;gap:clamp(20px,4vw,40px);grid-template-columns:1fr}
+@media(min-width:900px){.calc-grid{grid-template-columns:1.1fr .9fr;align-items:start}}
+.card{background:var(--white);border:1px solid var(--line);border-radius:18px;padding:clamp(20px,3.6vw,32px)}
+.ctrl{margin-bottom:26px}
+.ctrl:last-child{margin-bottom:0}
+.ctrl-top{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:12px}
+.ctrl-top label{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--grey);font-weight:500}
+.ctrl-top output{font-family:var(--serif);font-size:19px;font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums}
+input[type=range]{
+  -webkit-appearance:none;appearance:none;width:100%;height:4px;border-radius:4px;
+  background:linear-gradient(to right,var(--magenta) var(--pc,40%),var(--line) var(--pc,40%));
+  cursor:pointer;
+}
+input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:var(--white);
+  border:2px solid var(--magenta);box-shadow:0 3px 12px -2px rgba(230,0,126,.6);cursor:grab;
+}
+input[type=range]::-moz-range-thumb{
+  width:20px;height:20px;border-radius:50%;background:var(--white);
+  border:2px solid var(--magenta);box-shadow:0 3px 12px -2px rgba(230,0,126,.6);cursor:grab;
+}
+.result{
+  background:linear-gradient(155deg,#1a0a14 0%,var(--black-2) 60%);color:#fff;border-radius:18px;
+  padding:clamp(24px,4vw,34px);position:relative;overflow:hidden;
+}
+.result::before{
+  content:"";position:absolute;top:-60px;right:-60px;width:220px;height:220px;border-radius:50%;
+  background:radial-gradient(circle,rgba(230,0,126,.42),transparent 70%);
+}
+.result .lab{font-size:10.5px;letter-spacing:.3em;text-transform:uppercase;color:var(--rose);position:relative}
+.result .big{
+  font-family:var(--serif);font-size:clamp(38px,8vw,58px);font-weight:400;line-height:1;
+  margin:14px 0 4px;font-variant-numeric:tabular-nums;position:relative;
+}
+.result .big small{font-size:.32em;color:rgba(255,255,255,.6);font-family:var(--sans);margin-left:6px}
+.res-rows{margin-top:24px;display:grid;gap:1px;background:rgba(255,255,255,.1);border-radius:12px;overflow:hidden;position:relative}
+.res-rows div{
+  display:flex;justify-content:space-between;gap:12px;padding:13px 16px;font-size:13.5px;
+  background:rgba(255,255,255,.035);
+}
+.res-rows div b{font-weight:600;font-variant-numeric:tabular-nums}
+.res-rows div span{color:rgba(255,255,255,.6)}
+.disclaim{margin-top:16px;font-size:11.5px;color:rgba(255,255,255,.48);line-height:1.6;position:relative}
+
+/* visite */
+.visit-grid{display:grid;gap:clamp(20px,4vw,40px);grid-template-columns:1fr}
+@media(min-width:900px){.visit-grid{grid-template-columns:1fr 1fr}}
+.frow{display:grid;gap:14px;grid-template-columns:1fr}
+@media(min-width:560px){.frow.two{grid-template-columns:1fr 1fr}}
+.inp{position:relative;margin-bottom:14px}
+.inp label{display:block;font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--grey);margin-bottom:8px}
+.inp input{
+  width:100%;padding:14px 15px;border:1px solid var(--line);border-radius:12px;background:var(--ecru);
+  font-size:15px;transition:border-color .25s,background .25s;
+}
+.inp input:focus{border-color:var(--magenta);background:var(--white);outline:none}
+.slots{display:flex;flex-wrap:wrap;gap:9px;margin-top:4px}
+.slot{
+  border:1px solid var(--line);background:var(--white);border-radius:999px;padding:10px 16px;
+  font-size:13.5px;cursor:pointer;transition:all .22s var(--ease);color:var(--ink);font-variant-numeric:tabular-nums;
+}
+.slot:hover{border-color:var(--rose-200)}
+.slot[aria-pressed="true"]{background:var(--magenta);border-color:var(--magenta);color:#fff;box-shadow:0 8px 20px -10px rgba(230,0,126,.8)}
+.hint{font-size:12px;color:var(--grey);margin-top:12px;display:flex;gap:7px;align-items:flex-start}
+.hint.warn{color:var(--rose-dark)}
+.btn-primary{
+  width:100%;border:0;border-radius:12px;padding:17px 22px;background:var(--magenta);color:#fff;
+  font-size:15px;font-weight:600;cursor:pointer;transition:background .25s,transform .2s,opacity .25s;margin-top:18px;
+}
+.btn-primary:hover:not(:disabled){background:var(--rose-dark)}
+.btn-primary:active:not(:disabled){transform:scale(.99)}
+.btn-primary:disabled{background:#d9d2d7;color:#fff;cursor:not-allowed;opacity:.85}
+.ok-msg{
+  margin-top:16px;padding:16px;border-radius:12px;background:var(--rose-100);
+  border:1px solid var(--rose-200);color:var(--rose-dark);font-size:14px;line-height:1.6;
+}
+.aside-card{background:var(--white);border:1px solid var(--line);border-radius:18px;overflow:hidden}
+.aside-card img{width:100%;aspect-ratio:16/10;object-fit:cover}
+.aside-card .in{padding:clamp(20px,3.4vw,28px)}
+.aside-card h3{font-family:var(--serif);font-size:22px;font-weight:400;margin-bottom:10px}
+.aside-card p{color:var(--grey);font-size:14px;line-height:1.7;margin-bottom:18px}
+.contact-line{display:flex;align-items:center;gap:12px;padding:13px 0;border-top:1px solid var(--line);font-size:14px}
+.contact-line b{color:var(--magenta);font-weight:600}
+
+/* footer */
+footer{background:var(--black);color:rgba(255,255,255,.62);padding:clamp(44px,7vw,72px) 0 40px;position:relative;z-index:2}
+.foot-grid{display:grid;gap:30px;grid-template-columns:1fr}
+@media(min-width:760px){.foot-grid{grid-template-columns:1.4fr 1fr 1fr}}
+footer .brand{color:#fff;margin-bottom:14px}
+footer p{font-size:13.5px;line-height:1.75;font-weight:300}
+footer h4{color:#fff;font-size:11px;letter-spacing:.24em;text-transform:uppercase;margin-bottom:16px;font-weight:600}
+footer ul{list-style:none;display:grid;gap:10px;font-size:13.5px}
+footer a:hover{color:var(--rose)}
+.demo-band{
+  margin-top:40px;padding:18px 20px;border:1px solid rgba(230,0,126,.42);border-radius:14px;
+  background:rgba(230,0,126,.09);color:rgba(255,255,255,.86);font-size:13px;line-height:1.7;
+  display:flex;gap:12px;align-items:flex-start;
+}
+.demo-band strong{color:#fff}
+.demo-band .dot{width:8px;height:8px;border-radius:50%;background:var(--magenta);flex:0 0 auto;margin-top:6px;box-shadow:0 0 12px var(--magenta)}
+.legal{margin-top:26px;padding-top:22px;border-top:1px solid rgba(255,255,255,.1);font-size:11.5px;color:rgba(255,255,255,.4);display:flex;flex-wrap:wrap;gap:14px;justify-content:space-between}
+
+/* ---- expertise + programmes réels ---- */
+.pillars{display:grid;grid-template-columns:repeat(auto-fit,minmax(216px,1fr));gap:18px;margin-top:38px}
+.pillar{padding:22px 20px;border:1px solid var(--line);border-radius:16px;background:var(--white)}
+.pillar h4{font-family:var(--serif);font-weight:600;font-size:17px;margin-bottom:8px;color:var(--ink)}
+.pillar p{font-size:13.5px;line-height:1.65;color:var(--grey)}
+.progs{display:grid;grid-template-columns:repeat(auto-fit,minmax(238px,1fr));gap:14px;margin-top:36px}
+.prog{
+  display:flex;flex-direction:column;gap:4px;padding:20px 18px;border:1px solid var(--line);
+  border-radius:16px;background:var(--white);transition:border-color .3s var(--ease),transform .3s var(--ease),box-shadow .3s var(--ease);
+}
+.prog:hover{border-color:var(--magenta);transform:translateY(-3px);box-shadow:0 14px 34px rgba(230,0,126,.13)}
+.prog .pt{align-self:flex-start;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--grey);border:1px solid var(--line);border-radius:99px;padding:3px 10px;margin-bottom:8px}
+.prog .pt.res{color:var(--magenta);border-color:rgba(230,0,126,.4);background:var(--rose-100)}
+.prog b{font-size:14.5px;letter-spacing:.02em;color:var(--ink)}
+.prog .pl{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--magenta)}
+.prog .pm{font-size:12.5px;color:var(--grey)}
+.prog.cur{border-color:var(--magenta);background:linear-gradient(180deg,var(--rose-100),var(--white))}
+
+/* reveals au scroll */
+.rv{opacity:0;transform:translateY(22px);transition:opacity .8s var(--ease),transform .8s var(--ease)}
+.rv.in{opacity:1;transform:none}
+
+/* reduced motion */
+@media(prefers-reduced-motion:reduce){
+  *{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.15s !important}
+  .chapter{height:auto !important}
+  .stage{position:relative;height:88svh}
+  .cue{display:none}
+  .rv{opacity:1;transform:none}
+}
+html.reduced .chapter{height:auto}
+html.reduced .stage{position:relative;height:88svh}
+html.reduced .cue{display:none}
+</style>
+</head>
+<body class="is-loading">
+
+<!-- ===== LOADER ===== -->
+<div id="loader" role="status" aria-live="polite">
+  <div class="ld-logo">K<i>O</i>YTCHA</div>
+  <div class="ld-sub">Immo · La Réunion</div>
+  <div class="ld-track"><div class="ld-fill" id="ldFill"></div></div>
+  <div class="ld-pct"><span id="ldPct">0</span> %</div>
+</div>
+
+<!-- ===== TOPBAR + RECHERCHE ===== -->
+<header class="topbar" id="topbar">
+  <div class="bar">
+    <a class="brand" href="#top" aria-label="Koytcha Immobilier, accueil">
+      <span class="b1">K<i>O</i>YTCHA</span>
+      <span class="b2">Immo</span>
+    </a>
+    <nav class="nav" aria-label="Navigation principale">
+      <a href="#niveaux">Typologies</a>
+      <a href="#galerie">Galerie</a>
+      <a href="#expertise">Programmes</a>
+      <a href="#financement">Financement</a>
+      <a href="#visite">Contacter un pro</a>
+    </nav>
+    <span class="spacer"></span>
+    <button class="btn-search" id="searchToggle" aria-expanded="false" aria-controls="searchPanel">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true">
+        <circle cx="11" cy="11" r="7"/><path d="M20 20l-3.6-3.6"/>
+      </svg>
+      <span class="lbl-open">Rechercher un bien</span>
+      <span class="lbl-close">Fermer</span>
+    </button>
+  </div>
+  <div class="searchwrap" id="searchPanel">
+    <form class="search" id="searchForm">
+      <div class="field">
+        <label for="f-presta">Votre projet</label>
+        <select id="f-presta" name="prestation_type">
+          <option value="vente" selected>Acheter</option>
+          <option value="location">Louer</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="f-secteur">Votre secteur&nbsp;?</label>
+        <select id="f-secteur" name="pro_res">
+          <option value="residentiel" selected>Résidentiel</option>
+          <option value="professionnel">Professionnel</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="f-type">Type de bien&nbsp;?</label>
+        <select id="f-type" name="type">
+          <option selected>Tous les types</option><option>Appartement</option><option>Maison / Villa</option>
+          <option>Terrain</option><option>Local commercial</option><option>Bureaux</option>
+        </select>
+      </div>
+      <button class="btn-go" type="submit">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" width="16" height="16" aria-hidden="true">
+          <circle cx="11" cy="11" r="7"/><path d="M20 20l-3.6-3.6"/>
+        </svg>
+        Voir les annonces
+      </button>
+      <p class="search-note" id="searchNote">
+        Plus de 100 annonces à La Réunion — la recherche ouvre le portail officiel <b>koytchaimmo.re</b>
+      </p>
+    </form>
+  </div>
+</header>
+
+<main id="top">
+<div class="film">
+
+  <!-- ===== 01 · ARRIVAL ===== -->
+  <section class="chapter" id="ch1" data-seq="arrival">
+    <div class="stage">
+      <canvas id="cv-arrival" aria-label="Vue depuis une varangue de la Résidence Les Manguiers sur le jardin et les hauts de La Possession"></canvas>
+      <div class="vignette"></div>
+      <div class="scrim"></div>
+      <div class="progress-rail"><i data-rail></i></div>
+      <div class="caption" data-cap>
+        <div class="eyebrow"><span class="dash"></span><span>Arrivée</span><span class="num">01 / 04</span></div>
+        <h1>Résidence <em>Les Manguiers</em></h1>
+        <p>La Possession, à flanc de hauts. Le jardin s'ouvre sur les remparts, les varangues cadrent la lumière de fin de journée. Trente lots, une résidence à taille humaine.</p>
+        <div class="cap-meta">
+          <span class="tag">La Possession · 97419</span>
+          <span class="tag">Appartements T3 au T5</span>
+          <span class="tag">76 à 110 m²</span>
+        </div>
+      </div>
+      <div class="cue"><span class="line"></span><span>Faites défiler</span></div>
+    </div>
+  </section>
+
+  <!-- ===== 02 · THE REVEAL ===== -->
+  <section class="chapter" id="ch2" data-seq="reveal">
+    <div class="stage">
+      <canvas id="cv-reveal" aria-label="La façade de la Résidence Les Manguiers se révélant depuis un voile de couleur"></canvas>
+      <div class="vignette"></div>
+      <div class="scrim"></div>
+      <div class="progress-rail"><i data-rail></i></div>
+      <div class="caption" data-cap>
+        <div class="eyebrow"><span class="dash"></span><span>La révélation</span><span class="num">02 / 04</span></div>
+        <h2>Elle ne se visite pas.<br><em>Elle se révèle.</em></h2>
+        <p>Bardages bois, coursives ouvertes, jardin planté au pied des bâtiments. Livrée en mai 2020, la résidence porte la signature Koytcha Immo — trente ans d'expertise sur l'île.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 03 · THE LEVELS ===== -->
+  <section class="chapter" id="ch3">
+    <div class="stage">
+      <div class="exploded">
+        <div class="exploded-inner" data-exp>
+          <div class="beam b1" data-beam></div>
+          <div class="beam b2" data-beam></div>
+          <div class="slab s3" data-slab="3"><img src="assets/levels/t5.jpg" alt="T5 — les plus grandes surfaces de la résidence" loading="lazy"></div>
+          <div class="slab s2" data-slab="2"><img src="assets/levels/t4.jpg" alt="T4 — varangue ouverte sur le jardin" loading="lazy"></div>
+          <div class="slab s1" data-slab="1"><img src="assets/levels/t3.jpg" alt="T3 — séjour traversant et baie vitrée" loading="lazy"></div>
+        </div>
+      </div>
+      <div class="scrim"></div>
+      <div class="progress-rail"><i data-rail></i></div>
+      <div class="caption" data-cap>
+        <div class="eyebrow"><span class="dash"></span><span>Les typologies</span><span class="num">03 / 04</span></div>
+        <h2>Du T3 au T5,<br><em>trente lots</em></h2>
+        <p>La résidence se déplie. Séjours traversants, varangues, terrasses, séchoirs et parkings — selon le lot.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 04 · INSIDE ===== -->
+  <section class="chapter" id="ch4">
+    <div class="stage">
+      <div class="zoomer">
+        <picture>
+          <source media="(max-width:760px)" srcset="assets/web/sejour-sm.jpg">
+          <img src="assets/web/sejour.jpg" alt="Séjour d'un appartement des Manguiers, parquet et baie vitrée ouverte sur la varangue" data-zoom>
+        </picture>
+      </div>
+      <div class="vignette"></div>
+      <div class="scrim"></div>
+      <div class="progress-rail"><i data-rail></i></div>
+      <div class="caption" data-cap>
+        <div class="eyebrow"><span class="dash"></span><span>À l'intérieur</span><span class="num">04 / 04</span></div>
+        <h2>La baie s'ouvre.<br><em>La varangue prolonge le séjour.</em></h2>
+        <p>Parquet clair, séjour traversant, grande baie coulissante : dedans et dehors ne font qu'un. C'est l'art de vivre réunionnais, à l'échelle d'un appartement.</p>
+      </div>
+    </div>
+  </section>
+
+</div>
+<div class="seam"></div>
+
+<!-- ===== BANDEAU DE FAITS ===== -->
+<section class="light-zone facts">
+  <div class="facts-in">
+    <div class="fact"><div class="v">30</div><div class="k">Lots</div></div>
+    <div class="fact"><div class="v">T3 <span>→ T5</span></div><div class="k">Typologies</div></div>
+    <div class="fact"><div class="v">76<span>à 110 m²</span></div><div class="k">Surfaces</div></div>
+    <div class="fact"><div class="v">2020</div><div class="k">Livrée en mai</div></div>
+  </div>
+  <div class="wrap">
+    <div class="price-row">
+      <div class="p">Prix <small>· nous consulter</small></div>
+      <div class="ref">La Possession 97419 · Appartement</div>
+    </div>
+    <div class="price-row" style="padding-bottom:26px">
+      <p style="color:var(--grey);font-size:14px;line-height:1.7;max-width:70ch">
+        Varangues · Terrasses · Séchoirs · Parkings — selon le lot. Résidence livrée en mai 2020,
+        composée d'appartements du T3 au T5. Contactez un conseiller Koytcha Immo pour la disponibilité et les prix.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SÉLECTEUR D'ÉTAGES ===== -->
+<section class="light-zone sec" id="niveaux">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <div class="kicker"><span class="dash"></span>Sélecteur de typologies</div>
+      <h2>Explorez la résidence, <em>typologie par typologie</em></h2>
+      <p>Trente lots répartis du T3 au T5, de 76 à 110 m². Choisissez une typologie pour en voir le détail.</p>
+    </div>
+    <div class="levels-grid">
+      <div class="rv">
+        <div class="tabs" role="tablist" aria-label="Typologies de la résidence">
+          <button class="tab" role="tab" id="tab-3" aria-controls="pan-3" aria-selected="true" data-lvl="3">T5 · Les plus grands</button>
+          <button class="tab" role="tab" id="tab-2" aria-controls="pan-2" aria-selected="false" data-lvl="2">T4 · Intermédiaire</button>
+          <button class="tab" role="tab" id="tab-1" aria-controls="pan-1" aria-selected="false" data-lvl="1">T3 · L'entrée de gamme</button>
+        </div>
+
+        <div class="panel" role="tabpanel" id="pan-3" aria-labelledby="tab-3" data-lvl="3">
+          <h3>T5 — les plus grandes surfaces</h3>
+          <div class="surface">jusqu'à 110 m²</div>
+          <ul class="rooms">
+            <li>Séjour traversant <span>selon le lot</span></li>
+            <li>Quatre chambres <span>selon le lot</span></li>
+            <li>Varangue <span>selon le lot</span></li>
+            <li>Terrasse <span>selon le lot</span></li>
+            <li>Séchoir & parking <span>selon le lot</span></li>
+          </ul>
+        </div>
+
+        <div class="panel" role="tabpanel" id="pan-2" aria-labelledby="tab-2" data-lvl="2" hidden>
+          <h3>T4 — l'équilibre familial</h3>
+          <div class="surface">surfaces intermédiaires de la gamme</div>
+          <ul class="rooms">
+            <li>Séjour ouvert sur varangue <span>selon le lot</span></li>
+            <li>Trois chambres <span>selon le lot</span></li>
+            <li>Varangue ou terrasse <span>selon le lot</span></li>
+            <li>Séchoir <span>selon le lot</span></li>
+            <li>Parking <span>selon le lot</span></li>
+          </ul>
+        </div>
+
+        <div class="panel" role="tabpanel" id="pan-1" aria-labelledby="tab-1" data-lvl="1" hidden>
+          <h3>T3 — le premier achat</h3>
+          <div class="surface">à partir de 76 m²</div>
+          <ul class="rooms">
+            <li>Séjour avec baie coulissante <span>selon le lot</span></li>
+            <li>Deux chambres <span>selon le lot</span></li>
+            <li>Varangue <span>selon le lot</span></li>
+            <li>Séchoir <span>selon le lot</span></li>
+            <li>Parking <span>selon le lot</span></li>
+          </ul>
+        </div>
+        <p class="disclaim" style="margin-top:18px">
+          Composition indicative : la résidence réunit des appartements du T3 au T5, dotés selon le lot de varangues,
+          terrasses, séchoirs et parkings. Le détail exact de chaque lot est communiqué par un conseiller Koytcha Immo.
+        </p>
+      </div>
+
+      <div class="lvl-visual rv">
+        <div class="glow"></div>
+        <img class="cut on" data-cut="3" src="assets/levels/t5.jpg" alt="Façade et coursives de la Résidence Les Manguiers">
+        <img class="cut" data-cut="2" src="assets/levels/t4.jpg" alt="Varangue d'un appartement des Manguiers">
+        <img class="cut" data-cut="1" src="assets/levels/t3.jpg" alt="Séjour d'un appartement des Manguiers">
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== GALERIE ===== -->
+<section class="light-zone sec" id="galerie" style="background:var(--white)">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <div class="kicker"><span class="dash"></span>Galerie</div>
+      <h2>Quelques <em>fragments</em> de la résidence</h2>
+      <p>Photographies du programme — © Koytcha Immo.</p>
+    </div>
+    <div class="gal rv">
+      <figure><img src="assets/web/reveal-sm.jpg" alt="Façade et coursives bois de la Résidence Les Manguiers" loading="lazy"><figcaption>La façade</figcaption></figure>
+      <figure><img src="assets/web/varangue-sm.jpg" alt="Varangue avec garde-corps bois ouverte sur le jardin" loading="lazy"><figcaption>La varangue</figcaption></figure>
+      <figure><img src="assets/web/sejour-sm.jpg" alt="Séjour avec parquet clair et grande baie coulissante" loading="lazy"><figcaption>Le séjour</figcaption></figure>
+      <figure><img src="assets/web/arrival-sm.jpg" alt="Vue sur le jardin planté et les hauts de La Possession" loading="lazy"><figcaption>Le jardin, fin de journée</figcaption></figure>
+    </div>
+  </div>
+</section>
+
+<!-- ===== KOYTCHA IMMO — CONTENU DE LA LANDING ===== -->
+<section class="light-zone sec" id="expertise">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <div class="kicker"><span class="dash"></span>Koytcha Immo vous accompagne depuis 2004</div>
+      <h2>30 ans d'expertise <em>à La Réunion</em></h2>
+      <p>Koytcha Immo accompagne depuis 2004 avec le même niveau d'exigence les entreprises, propriétaires et
+      investisseurs sur l'ensemble de leurs enjeux immobiliers. Que vous cherchiez à investir, à vendre, ou que vous
+      soyez tout simplement à la recherche d'un achat ou d'une location, Koytcha Immo vous apporte toute son expertise
+      et son savoir-faire afin de vous faciliter la vie tout en optimisant votre projet.</p>
+    </div>
+    <div class="pillars rv">
+      <div class="pillar"><h4>Valorisation du patrimoine</h4><p>Créer de la valeur à chaque étape de la vie d'un bien immobilier.</p></div>
+      <div class="pillar"><h4>Transactions maîtrisées</h4><p>Des délais mesurés et des conditions optimales.</p></div>
+      <div class="pillar"><h4>Recherche de locaux</h4><p>Adaptés à l'activité, aux employés et à l'image de l'entreprise.</p></div>
+      <div class="pillar"><h4>Conseil global</h4><p>Un accompagnement durable tout au long du cycle de vie immobilier.</p></div>
+    </div>
+    <div class="sec-head rv" style="margin-top:64px">
+      <div class="kicker"><span class="dash"></span>Nos opportunités exclusives</div>
+      <h2>Les autres <em>programmes</em> Koytcha</h2>
+      <p>Retrouvez ici notre sélection de programmes immobiliers neufs à La Réunion. Que vous souhaitiez développer votre
+      activité professionnelle, investir pour défiscaliser, diversifier votre patrimoine ou préparer votre retraite,
+      Koytcha Immo vous délivre toutes les clés pour réussir votre investissement.</p>
+    </div>
+    <div class="progs rv">
+      <a class="prog" href="https://koytchaimmo.re/nos-programmes/quartz" target="_blank" rel="noopener"><span class="pt">Pro</span><b>QUARTZ</b><span class="pl">Le Tampon</span><span class="pm">Commerce · 57 à 135 m²</span></a>
+      <a class="prog" href="https://koytchaimmo.re/nos-programmes/espace-turquoise" target="_blank" rel="noopener"><span class="pt">Pro</span><b>ESPACE TURQUOISE</b><span class="pl">Saint-Pierre</span><span class="pm">Bureaux et commerces · 61 à 537 m²</span></a>
+      <a class="prog" href="https://koytchaimmo.re/nos-programmes/ze-bureau-3" target="_blank" rel="noopener"><span class="pt">Pro</span><b>ZE BURE@U 3</b><span class="pl">La Possession</span><span class="pm">Bureaux · 58 à 279 m²</span></a>
+      <a class="prog" href="https://koytchaimmo.re/nos-programmes/la-kanopee-boutiques" target="_blank" rel="noopener"><span class="pt">Pro</span><b>LA KANOPÉE BOUTIQUES</b><span class="pl">La Possession</span><span class="pm">Commerce · 12 à 152 m²</span></a>
+      <a class="prog" href="https://koytchaimmo.re/nos-programmes/les-ateliers-de-bel-air" target="_blank" rel="noopener"><span class="pt">Pro</span><b>LES ATELIERS DE BEL AIR</b><span class="pl">Saint-Louis</span><span class="pm">Entrepôts et commerces · 426 à 867 m²</span></a>
+      <a class="prog" href="https://koytchaimmo.re/nos-programmes/le-kerval" target="_blank" rel="noopener"><span class="pt">Pro</span><b>LE KERVAL</b><span class="pl">Sainte-Marie</span><span class="pm">Bureaux et commerces · 10 000 m²</span></a>
+      <a class="prog" href="https://koytchaimmo.re/nos-programmes/ze-bureu-2" target="_blank" rel="noopener"><span class="pt">Pro</span><b>ZE BURE@U 2</b><span class="pl">Saint-Gilles les Hauts</span><span class="pm">Bureaux et commerces · 58 à 279 m²</span></a>
+      <a class="prog cur" href="https://koytchaimmo.re/nos-programmes/les-manguiers" target="_blank" rel="noopener"><span class="pt res">Résidentiel</span><b>RÉSIDENCE LES MANGUIERS</b><span class="pl">La Possession</span><span class="pm">Appartement · 76 à 110 m²</span></a>
+    </div>
+    <div class="rv" style="text-align:center;margin-top:34px">
+      <a class="btn-primary" style="display:inline-block;width:auto;padding-left:34px;padding-right:34px" href="https://koytchaimmo.re/nos-programmes/?statut=encours" target="_blank" rel="noopener">Découvrez nos programmes</a>
+    </div>
+  </div>
+</section>
+
+<!-- ===== CALCULATEUR DE PRÊT ===== -->
+<section class="light-zone sec" id="financement">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <div class="kicker"><span class="dash"></span>Financement</div>
+      <h2>Estimez votre <em>mensualité</em></h2>
+      <p>Le prix des lots des Manguiers est communiqué sur demande. Positionnez le curseur sur le montant de votre projet : la mensualité se recalcule instantanément.</p>
+    </div>
+    <div class="calc-grid">
+      <div class="card rv">
+        <div class="ctrl">
+          <div class="ctrl-top"><label for="c-price">Montant du projet</label><output id="o-price">350 000 €</output></div>
+          <input type="range" id="c-price" min="100000" max="1000000" step="5000" value="350000">
+        </div>
+        <div class="ctrl">
+          <div class="ctrl-top"><label for="c-apport">Apport personnel</label><output id="o-apport">50 000 €</output></div>
+          <input type="range" id="c-apport" min="0" max="500000" step="1000" value="50000">
+        </div>
+        <div class="ctrl">
+          <div class="ctrl-top"><label for="c-taux">Taux d'intérêt</label><output id="o-taux">3,45 %</output></div>
+          <input type="range" id="c-taux" min="0" max="7" step="0.05" value="3.45">
+        </div>
+        <div class="ctrl">
+          <div class="ctrl-top"><label for="c-duree">Durée</label><output id="o-duree">20 ans</output></div>
+          <input type="range" id="c-duree" min="5" max="30" step="1" value="20">
+        </div>
+      </div>
+      <div class="result rv">
+        <div class="lab">Mensualité estimée</div>
+        <div class="big" id="r-month">—<small>€ / mois</small></div>
+        <div class="res-rows">
+          <div><span>Capital emprunté</span><b id="r-cap">—</b></div>
+          <div><span>Coût total du crédit</span><b id="r-cost">—</b></div>
+          <div><span>Total remboursé</span><b id="r-total">—</b></div>
+          <div><span>Apport</span><b id="r-apport">—</b></div>
+        </div>
+        <p class="disclaim">Simulation indicative, hors assurance emprunteur et frais de dossier. Elle ne constitue ni une offre de prêt ni un engagement de Koytcha Immo. Le montant saisi est celui de votre projet, pas le prix d'un lot de la résidence.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== DEMANDE DE VISITE ===== -->
+<section class="light-zone sec" id="visite" style="background:var(--white)">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <div class="kicker"><span class="dash"></span>Contacter un pro</div>
+      <h2>Venez la voir <em>à l'heure dorée</em></h2>
+      <p>Un conseiller Koytcha Immo vous ouvre la résidence. Choisissez une date et un créneau — l'agence reçoit du lundi au vendredi, 08 h – 12 h et 14 h – 17 h.</p>
+    </div>
+    <div class="visit-grid">
+      <form class="card rv" id="visitForm" novalidate>
+        <div class="frow two">
+          <div class="inp"><label for="v-nom">Nom & prénom</label><input id="v-nom" name="nom" type="text" autocomplete="name" required placeholder="Marie Hoarau"></div>
+          <div class="inp"><label for="v-tel">Téléphone</label><input id="v-tel" name="tel" type="tel" autocomplete="tel" required placeholder="0692 00 00 00"></div>
+        </div>
+        <div class="inp"><label for="v-mail">E-mail</label><input id="v-mail" name="email" type="email" autocomplete="email" required placeholder="marie@exemple.re"></div>
+        <div class="inp"><label for="v-date">Date souhaitée</label><input id="v-date" name="date" type="date" required></div>
+        <div class="inp">
+          <label id="slotLabel">Créneau horaire</label>
+          <div class="slots" role="group" aria-labelledby="slotLabel">
+            <button type="button" class="slot" aria-pressed="false" data-slot="08:30">08 h 30</button>
+            <button type="button" class="slot" aria-pressed="false" data-slot="10:00">10 h 00</button>
+            <button type="button" class="slot" aria-pressed="false" data-slot="11:00">11 h 00</button>
+            <button type="button" class="slot" aria-pressed="false" data-slot="14:30">14 h 30</button>
+            <button type="button" class="slot" aria-pressed="false" data-slot="16:00">16 h 00 · lumière de fin de journée</button>
+          </div>
+          <p class="hint" id="slotHint">Sélectionnez un créneau pour activer la demande.</p>
+        </div>
+        <button class="btn-primary" id="visitSubmit" type="submit" disabled>Demander la visite</button>
+        <div id="visitOk" hidden></div>
+      </form>
+      <aside class="aside-card rv">
+        <img src="assets/web/varangue-sm.jpg" alt="Varangue de la Résidence Les Manguiers" loading="lazy">
+        <div class="in">
+          <h3>Votre interlocuteur</h3>
+          <p>Un seul conseiller vous suit, de la première visite à la remise des clés. Koytcha Immo accompagne depuis 2004 entreprises, propriétaires et investisseurs sur l'ensemble de leurs enjeux immobiliers à La Réunion.</p>
+          <div class="contact-line"><b>Tél.</b> <a href="tel:+262262979607">0262 97 96 07</a></div>
+          <div class="contact-line"><b>Agence</b> 45 rue Alexis de Villeneuve, 97400 Saint-Denis</div>
+          <div class="contact-line"><b>Horaires</b> Lun. – ven. · 08 h-12 h et 14 h-17 h</div>
+          <div class="contact-line"><b>Site</b> <a href="https://koytchaimmo.re/contact/" rel="noopener" target="_blank">koytchaimmo.re/contact</a></div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+</main>
+
+<!-- ===== FOOTER ===== -->
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <div class="brand"><span class="b1">K<i>O</i>YTCHA</span><span class="b2">Immo</span></div>
+        <p>30 ans d'expertise immobilière à La Réunion. Koytcha Immo accompagne depuis 2004 entreprises, propriétaires et investisseurs : vente, location, gestion, conseil, et promotion de programmes neufs sur l'ensemble de l'île.</p>
+      </div>
+      <div>
+        <h4>Le programme</h4>
+        <ul>
+          <li><a href="#niveaux">Les typologies</a></li>
+          <li><a href="#galerie">Galerie</a></li>
+          <li><a href="#expertise">Nos programmes</a></li>
+          <li><a href="#financement">Simulateur de prêt</a></li>
+          <li><a href="#visite">Contacter un pro</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Contact</h4>
+        <ul>
+          <li><a href="tel:+262262979607">0262 97 96 07</a></li>
+          <li>45 rue Alexis de Villeneuve</li>
+          <li>97400 Saint-Denis, La Réunion</li>
+          <li>Lun. – ven. · 08 h-12 h / 14 h-17 h</li>
+          <li><a href="https://koytchaimmo.re" rel="noopener" target="_blank">koytchaimmo.re</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="demo-band">
+      <span class="dot"></span>
+      <span><strong>Maquette de présentation.</strong> Le programme, les textes, les caractéristiques et les photographies
+      présentés ici proviennent du site officiel <a href="https://koytchaimmo.re/nos-programmes/les-manguiers" rel="noopener" target="_blank">koytchaimmo.re</a>
+      (Résidence Les Manguiers, La Possession) — les photos sont celles de Koytcha Immo, simplement remises à l'échelle pour l'affichage plein écran.
+      Cette page est une démonstration d'expérience de navigation, pas le site officiel : les formulaires n'envoient et n'enregistrent aucune donnée,
+      et la répartition indicative par typologie ne remplace pas le détail des lots. Pour les biens et les prix réellement disponibles, rendez-vous sur koytchaimmo.re.</span>
+    </div>
+    <div class="legal">
+      <span>© 2026 Koytcha Immo — maquette de présentation · photos © Koytcha Immo</span>
+      <span>Conception : Automatisation Boost</span>
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
+<script>
+(function(){
+'use strict';
+var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+if(reduced) document.documentElement.classList.add('reduced');
+var small = window.matchMedia('(max-width: 700px)').matches;
+
+/* ---------- PLANS CINÉMATIQUES (scroll-scrub sur canvas) ----------
+   Une seule photo source en haute définition par chapitre : le mouvement de
+   caméra est un recadrage calculé à chaque image, donc net à toutes les tailles
+   d'écran (plus de séquence de frames pré-découpées et molles).            */
+function Pan(canvas, src, opts){
+  this.cv = canvas; this.ctx = canvas.getContext('2d', {alpha:false});
+  this.img = new Image(); this.src = src; this.o = opts || {};
+  this.loaded = false; this.lastP = 0;
+  this.dpr = Math.min(window.devicePixelRatio || 1, 2);
+}
+Pan.prototype.load = function(onDone){
+  var self = this;
+  this.img.onload = function(){ self.loaded = !!self.img.naturalWidth; self.resize(); if(onDone) onDone(); };
+  this.img.onerror = function(){ self.loaded = false; if(onDone) onDone(); };
+  this.img.src = this.src;
+};
+Pan.prototype.resize = function(){
+  var r = this.cv.getBoundingClientRect();
+  var w = Math.round(r.width * this.dpr), h = Math.round(r.height * this.dpr);
+  if(!w || !h) return;
+  this.cv.width = w; this.cv.height = h;
+  this.render(this.lastP);
+};
+Pan.prototype.render = function(p){
+  this.lastP = p;
+  if(!this.loaded) return;
+  var cw = this.cv.width, ch = this.cv.height;
+  if(!cw || !ch) return;
+  var iw = this.img.naturalWidth, ih = this.img.naturalHeight, ctx = this.ctx, o = this.o;
+  var ca = cw/ch, bw, bh;
+  if(iw/ih > ca){ bh = ih; bw = ih*ca; } else { bw = iw; bh = iw/ca; }
+  var num = function(v, d){ return v == null ? d : v; };
+  var z = num(o.z0,1.10) + (num(o.z1,1.00) - num(o.z0,1.10)) * p;
+  var w = bw/z, h = bh/z;
+  var xc = num(o.x0,.5) + (num(o.x1,.5) - num(o.x0,.5)) * p;
+  var yc = num(o.y0,.5) + (num(o.y1,.5) - num(o.y0,.5)) * p;
+  var sx = (iw-w)*xc, sy = (ih-h)*yc;
+
+  var t = o.reveal ? Math.max(0, Math.min(1, (p-0.02)/0.66)) : 1;
+  var blur = o.reveal ? (1-t)*(1-t)*16*this.dpr : 0;
+  ctx.filter = blur > 0.4 ? 'blur(' + blur.toFixed(1) + 'px)' : 'none';
+  var m = Math.ceil(blur*2.2); // marge : évite les bords transparents du flou
+  ctx.drawImage(this.img, sx, sy, w, h, -m, -m, cw+2*m, ch+2*m);
+  ctx.filter = 'none';
+  if(o.reveal && t < 0.999) this.veil(t, cw, ch);
+};
+/* voile spectre Koytcha qui se dissipe : la résidence se révèle */
+Pan.prototype.veil = function(t, cw, ch){
+  var ctx = this.ctx, a = Math.pow(1-t, 1.4);
+  if(a <= 0.005) return;
+  var g = ctx.createLinearGradient(0, ch, cw, 0);
+  g.addColorStop(0,   'rgba(230,0,126,'  + (a*0.94).toFixed(3) + ')');
+  g.addColorStop(0.40,'rgba(255,93,177,' + (a*0.74).toFixed(3) + ')');
+  g.addColorStop(0.72,'rgba(246,161,26,' + (a*0.52).toFixed(3) + ')');
+  g.addColorStop(1,   'rgba(7,7,10,'     + (a*0.82).toFixed(3) + ')');
+  ctx.save();
+  ctx.fillStyle = g; ctx.fillRect(0,0,cw,ch);
+  var r = Math.max(cw,ch) * (0.14 + t*1.05);
+  var rg = ctx.createRadialGradient(cw*0.5, ch*0.54, r*0.08, cw*0.5, ch*0.54, r);
+  rg.addColorStop(0,   'rgba(255,255,255,' + (a*0.34).toFixed(3) + ')');
+  rg.addColorStop(0.5, 'rgba(255,93,177,'  + (a*0.14).toFixed(3) + ')');
+  rg.addColorStop(1,   'rgba(255,255,255,0)');
+  ctx.globalCompositeOperation = 'lighter';
+  ctx.fillStyle = rg; ctx.fillRect(0,0,cw,ch);
+  ctx.restore();
+};
+
+var SFX = small ? '-sm' : '';
+var SEQ = {
+  arrival: new Pan(document.getElementById('cv-arrival'), 'assets/web/arrival' + SFX + '.jpg',
+                   {z0:1.16, z1:1.00, y0:0.30, y1:0.74, x0:0.50, x1:0.44}),
+  reveal:  new Pan(document.getElementById('cv-reveal'),  'assets/web/reveal'  + SFX + '.jpg',
+                   {z0:1.22, z1:1.02, y0:0.62, y1:0.26, x0:0.54, x1:0.48, reveal:true})
+};
+
+/* ---------- LOADER ---------- */
+var preload = [
+  SEQ.arrival, SEQ.reveal,
+  'assets/web/sejour' + SFX + '.jpg',
+  'assets/levels/t5.jpg', 'assets/levels/t4.jpg', 'assets/levels/t3.jpg'
+];
+var total = preload.length, done = 0, shownT = 0, curPct = 0;
+var fill = document.getElementById('ldFill'), pct = document.getElementById('ldPct');
+/* la barre suit la progression réelle mais glisse : jamais de saut brutal */
+var ramping = true;
+(function ramp(){
+  if(!ramping) return;
+  var target = Math.min(100, Math.round(done/total*100));
+  if(curPct < target) curPct = Math.min(target, curPct + Math.max(0.6, (target-curPct)*0.12));
+  var v = Math.round(curPct);
+  if(v !== shownT){ shownT = v; fill.style.width = v + '%'; pct.textContent = v; }
+  requestAnimationFrame(ramp);
+})();
+function bump(){ if(++done >= total) finish(); }
+var finished = false;
+function finish(){
+  if(finished) return; finished = true;
+  ramping = false;
+  fill.style.width = '100%'; pct.textContent = '100';
+  setTimeout(function(){
+    document.getElementById('loader').classList.add('done');
+    document.body.classList.remove('is-loading');
+    SEQ.arrival.resize(); SEQ.reveal.resize();
+    if(window.ScrollTrigger) ScrollTrigger.refresh();
+  }, 420);
+}
+preload.forEach(function(it){
+  if(typeof it === 'string'){ var im = new Image(); im.onload = im.onerror = bump; im.src = it; }
+  else it.load(bump);
+});
+setTimeout(finish, 12000); // garde-fou : jamais bloqué sur le loader
+
+/* ---------- BARRE DE RECHERCHE ---------- */
+var topbar = document.getElementById('topbar');
+var toggle = document.getElementById('searchToggle');
+function setOpen(v){
+  topbar.classList.toggle('open', v);
+  toggle.setAttribute('aria-expanded', v ? 'true' : 'false');
+}
+if(window.matchMedia('(min-width:900px)').matches) setOpen(true);
+toggle.addEventListener('click', function(){ setOpen(!topbar.classList.contains('open')); });
+document.getElementById('searchForm').addEventListener('submit', function(e){
+  e.preventDefault();
+  var presta  = document.getElementById('f-presta');
+  var secteur = document.getElementById('f-secteur');
+  var type    = document.getElementById('f-type').value;
+  var url = 'https://koytchaimmo.re/index.php/recherche/?prestation_type=' +
+            encodeURIComponent(presta.value) + '&pro_res=' + encodeURIComponent(secteur.value);
+  var note = document.getElementById('searchNote');
+  note.innerHTML = 'Recherche « ' + presta.options[presta.selectedIndex].text.toLowerCase() + ' · ' +
+    secteur.options[secteur.selectedIndex].text.toLowerCase() + ' · ' + type.toLowerCase() +
+    ' » ouverte sur le portail officiel <b>koytchaimmo.re</b> (nouvel onglet).';
+  window.open(url, '_blank', 'noopener');
+});
+
+/* ---------- SÉLECTEUR D'ÉTAGES ---------- */
+var tabs = [].slice.call(document.querySelectorAll('.tab'));
+var panels = [].slice.call(document.querySelectorAll('.panel'));
+var cuts = [].slice.call(document.querySelectorAll('.cut'));
+function selectLevel(lvl){
+  tabs.forEach(function(t){ t.setAttribute('aria-selected', t.dataset.lvl === lvl ? 'true' : 'false'); });
+  panels.forEach(function(p){ p.hidden = (p.dataset.lvl !== lvl); });
+  cuts.forEach(function(c){ c.classList.toggle('on', c.dataset.cut === lvl); });
+}
+tabs.forEach(function(t){
+  t.addEventListener('click', function(){ selectLevel(t.dataset.lvl); });
+  t.addEventListener('keydown', function(e){
+    var idx = tabs.indexOf(t), n = null;
+    if(e.key === 'ArrowRight') n = tabs[(idx+1)%tabs.length];
+    if(e.key === 'ArrowLeft')  n = tabs[(idx-1+tabs.length)%tabs.length];
+    if(n){ e.preventDefault(); n.focus(); selectLevel(n.dataset.lvl); }
+  });
+});
+
+/* ---------- CALCULATEUR DE PRÊT ---------- */
+var nf = new Intl.NumberFormat('fr-FR', {maximumFractionDigits:0});
+var els = {
+  price:document.getElementById('c-price'), apport:document.getElementById('c-apport'),
+  taux:document.getElementById('c-taux'), duree:document.getElementById('c-duree')
+};
+function fillRange(el){
+  var p = (el.value - el.min) / (el.max - el.min) * 100;
+  el.style.setProperty('--pc', p + '%');
+}
+function calc(){
+  var price = +els.price.value, apport = Math.min(+els.apport.value, price);
+  var taux = +els.taux.value, ans = +els.duree.value;
+  var cap = Math.max(0, price - apport), n = ans*12, i = taux/100/12;
+  var m = i > 0 ? cap*i/(1-Math.pow(1+i,-n)) : (n ? cap/n : 0);
+  var totalPaid = m*n, cost = totalPaid - cap;
+  document.getElementById('o-price').textContent = nf.format(price) + ' €';
+  document.getElementById('o-apport').textContent = nf.format(apport) + ' €';
+  document.getElementById('o-taux').textContent = taux.toFixed(2).replace('.', ',') + ' %';
+  document.getElementById('o-duree').textContent = ans + ' ans';
+  document.getElementById('r-month').innerHTML = nf.format(Math.round(m)) + '<small>€ / mois</small>';
+  document.getElementById('r-cap').textContent = nf.format(cap) + ' €';
+  document.getElementById('r-cost').textContent = nf.format(Math.round(cost)) + ' €';
+  document.getElementById('r-total').textContent = nf.format(Math.round(totalPaid)) + ' €';
+  document.getElementById('r-apport').textContent = nf.format(apport) + ' €';
+  Object.keys(els).forEach(function(k){ fillRange(els[k]); });
+}
+Object.keys(els).forEach(function(k){
+  els[k].addEventListener('input', calc);
+});
+calc();
+
+/* ---------- DEMANDE DE VISITE ---------- */
+var chosen = null;
+var slots = [].slice.call(document.querySelectorAll('.slot'));
+var submit = document.getElementById('visitSubmit');
+var hint = document.getElementById('slotHint');
+slots.forEach(function(s){
+  s.addEventListener('click', function(){
+    chosen = s.dataset.slot;
+    slots.forEach(function(o){ o.setAttribute('aria-pressed', o === s ? 'true' : 'false'); });
+    submit.disabled = false;
+    hint.classList.remove('warn');
+    hint.textContent = 'Créneau retenu : ' + s.textContent.replace(' · coucher de soleil','') + '.';
+  });
+});
+var dateEl = document.getElementById('v-date');
+var t = new Date(Date.now() + 2*86400000);
+dateEl.value = t.toISOString().slice(0,10);
+dateEl.min = new Date().toISOString().slice(0,10);
+document.getElementById('visitForm').addEventListener('submit', function(e){
+  e.preventDefault();
+  if(!chosen){
+    hint.classList.add('warn');
+    hint.textContent = 'Merci de choisir un créneau horaire.';
+    return;
+  }
+  var nom = document.getElementById('v-nom').value.trim() || 'Votre demande';
+  var d = dateEl.value ? new Date(dateEl.value).toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'}) : 'la date choisie';
+  var ok = document.getElementById('visitOk');
+  ok.hidden = false;
+  ok.className = 'ok-msg';
+  ok.innerHTML = '<strong>' + nom + ', c\'est noté.</strong><br>Visite de la Résidence Les Manguiers demandée pour le ' + d +
+    ' à ' + chosen.replace(':',' h ') + '. <em>Maquette de démonstration : aucune donnée n\'est envoyée ni enregistrée. ' +
+    'Pour une vraie prise de rendez-vous, appelez le 0262 97 96 07.</em>';
+  submit.disabled = true;
+  submit.textContent = 'Demande enregistrée';
+});
+
+/* ---------- APPARITIONS AU SCROLL ---------- */
+if('IntersectionObserver' in window){
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(en){ if(en.isIntersecting){ en.target.classList.add('in'); io.unobserve(en.target); } });
+  }, {rootMargin:'0px 0px -12% 0px'});
+  [].slice.call(document.querySelectorAll('.rv')).forEach(function(el){ io.observe(el); });
+} else {
+  [].slice.call(document.querySelectorAll('.rv')).forEach(function(el){ el.classList.add('in'); });
+}
+
+/* ---------- CHAPITRES : SCRUB ---------- */
+var chapters = [].slice.call(document.querySelectorAll('.chapter'));
+function chapterProgress(sec){
+  var r = sec.getBoundingClientRect();
+  var vh = window.innerHeight;
+  var travel = r.height - vh;
+  if(travel <= 0) return r.top < vh/2 ? 1 : 0;
+  return Math.max(0, Math.min(1, -r.top / travel));
+}
+function applyCaption(sec, p){
+  var cap = sec.querySelector('[data-cap]');
+  if(!cap) return;
+  var o, y;
+  var first = (sec.id === 'ch1'); // le premier chapitre est visible dès le chargement
+  if(p < 0.12){ o = first ? 1 : p/0.12; y = (1-o)*26; }
+  else if(p > 0.88){ o = (1-p)/0.12; y = -(1-o)*22; }
+  else { o = 1; y = 0; }
+  o = Math.max(0, Math.min(1, o));
+  cap.style.opacity = o;
+  cap.style.transform = 'translate3d(0,' + y.toFixed(1) + 'px,0)';
+}
+function applyChapter(sec, p){
+  var rail = sec.querySelector('[data-rail]');
+  if(rail) rail.style.height = (p*100).toFixed(1) + '%';
+  applyCaption(sec, p);
+  var seq = sec.dataset.seq;
+  if(seq && SEQ[seq]){ SEQ[seq].render(p); return; }
+  if(sec.id === 'ch3'){
+    var inner = sec.querySelector('[data-exp]');
+    var s3 = sec.querySelector('[data-slab="3"]');
+    var s2 = sec.querySelector('[data-slab="2"]');
+    var s1 = sec.querySelector('[data-slab="1"]');
+    var e = p;                                   // 0 -> compact, 1 -> éclaté
+    var spread = 1 - Math.pow(1-e, 2);
+    if(inner) inner.style.transform = 'rotateX(' + (6 - e*10).toFixed(2) + 'deg) rotateZ(' + (-2 + e*4).toFixed(2) + 'deg) scale(' + (0.9 + e*0.13).toFixed(3) + ')';
+    if(s3) s3.style.transform = 'translate3d(0,' + (40 - spread*50).toFixed(1) + '%,0)';
+    if(s2) s2.style.transform = 'translate3d(0,0,0)';
+    if(s1) s1.style.transform = 'translate3d(0,' + (-40 + spread*50).toFixed(1) + '%,0)';
+    [].slice.call(sec.querySelectorAll('[data-beam]')).forEach(function(b){
+      b.style.opacity = Math.max(0, Math.min(1, (e-0.25)/0.35)).toFixed(2);
+      b.style.transform = 'translateX(-50%) scaleY(' + Math.max(0.05, Math.min(1,(e-0.2)/0.4)).toFixed(2) + ')';
+    });
+    var hot = e < 0.36 ? '3' : (e < 0.68 ? '2' : '1');
+    [s3,s2,s1].forEach(function(s){ if(s) s.classList.toggle('hot', s.dataset.slab === hot); });
+    return;
+  }
+  if(sec.id === 'ch4'){
+    var img = sec.querySelector('[data-zoom]');
+    if(img) img.style.transform = 'scale(' + (1.18 - p*0.18).toFixed(3) + ') translate3d(0,' + ((0.5-p)*3).toFixed(2) + '%,0)';
+  }
+}
+
+function initScroll(){
+  if(reduced){
+    chapters.forEach(function(sec){ applyChapter(sec, 0.55); });
+    return;
+  }
+  if(window.gsap && window.ScrollTrigger){
+    gsap.registerPlugin(ScrollTrigger);
+    ScrollTrigger.config({ignoreMobileResize:true});
+    chapters.forEach(function(sec){
+      ScrollTrigger.create({
+        trigger: sec, start: 'top top', end: 'bottom bottom', scrub: true,
+        onUpdate: function(self){ applyChapter(sec, self.progress); },
+        onRefresh: function(self){ applyChapter(sec, self.progress); }
+      });
+    });
+    ScrollTrigger.create({
+      trigger: '.seam', start: 'top 70%',
+      onEnter: function(){ topbar.classList.add('light'); },
+      onLeaveBack: function(){ topbar.classList.remove('light'); }
+    });
+  } else {
+    // repli sans GSAP : rAF sur le scroll natif
+    var ticking = false;
+    function loop(){
+      chapters.forEach(function(sec){
+        var r = sec.getBoundingClientRect();
+        if(r.bottom > -200 && r.top < window.innerHeight + 200) applyChapter(sec, chapterProgress(sec));
+      });
+      var seam = document.querySelector('.seam');
+      if(seam) topbar.classList.toggle('light', seam.getBoundingClientRect().top < window.innerHeight*0.7);
+      ticking = false;
+    }
+    window.addEventListener('scroll', function(){
+      if(!ticking){ ticking = true; requestAnimationFrame(loop); }
+    }, {passive:true});
+    loop();
+  }
+}
+
+/* fermeture du panneau de recherche au scroll (mobile) */
+var lastY = 0;
+window.addEventListener('scroll', function(){
+  var y = window.scrollY;
+  if(!window.matchMedia('(min-width:900px)').matches && y > 120 && y > lastY) setOpen(false);
+  lastY = y;
+}, {passive:true});
+
+window.addEventListener('resize', function(){
+  small = window.matchMedia('(max-width: 700px)').matches;
+  SEQ.arrival.resize(); SEQ.reveal.resize();
+});
+
+if(document.readyState === 'complete') initScroll();
+else window.addEventListener('load', initScroll);
+SEQ.arrival.resize(); SEQ.reveal.resize();
+})();
+</script>
+</body>
+</html>

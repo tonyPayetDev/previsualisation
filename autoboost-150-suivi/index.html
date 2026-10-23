@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Autoboost #150 — Relance automatique de devis</title>
+<style>
+  :root{--bg:#060606;--surface:#0d0d12;--border:#2a2140;--gold:#FFE600;--violet:#A855F7;--orange:#FF8A3D;--ink:#f5f5f7;--muted:#9aa0aa;}
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:Arial,Helvetica,sans-serif;padding:40px 16px 100px;}
+  .wrap{max-width:720px;margin:0 auto;}
+  a.back{color:var(--muted);font-size:13px;text-decoration:none;display:inline-block;margin-bottom:14px;}
+  h1{font-size:26px;margin:0 0 6px;}
+  .meta{color:var(--muted);font-size:15px;margin-bottom:20px;line-height:1.6;}
+  video{width:100%;max-width:380px;display:block;margin:0 auto 32px;border-radius:16px;border:2px solid var(--border);background:#000;}
+  h2{font-size:18px;color:var(--gold);border-bottom:1px solid var(--border);padding-bottom:8px;margin-top:36px;}
+  pre{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;white-space:pre-wrap;font-size:14px;line-height:1.6;color:var(--ink);}
+  code{color:var(--violet);}
+  .pill{display:inline-block;background:rgba(255,230,0,.15);border:1px solid var(--gold);color:var(--gold);border-radius:999px;padding:4px 14px;font-size:13px;font-weight:700;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="/">← Toutes les vidéos</a>
+  <h1>Autoboost #150 — Relance automatique de devis</h1>
+  <div class="meta">Style <b>seedance</b> (gabarit <code>autoboost-40-seedance</code>) · avatar cercle néon persistant + b-roll · CTA <span class="pill">SUIVI</span> · durée 32,4 s · 🟡 En attente validation</div>
+  <video src="https://raw.githubusercontent.com/tonyPayetDev/previsualisation/main/autoboost-150-suivi/video.mp4" controls playsinline></video>
+
+  <h2>Sujet (Sheet « 30 Vidéos », ligne 152, Statut ⬜ À faire)</h2>
+  <p class="meta"><b>Workflow :</b> Relance automatique de devis sans réponse (n8n). 7 devis envoyés sur 10 ne reçoivent aucun suivi — un workflow relance au bon moment, avant que le client ne signe chez un concurrent.</p>
+
+  <h2>Script voix off (texte intégral envoyé à avatar-webhook-v2)</h2>
+  <p class="meta">Condensé de ~190 à 108 mots depuis le script brut du Sheet pour tenir la cible 30-35 s (~3,3 mots/s → 32,4 s mesurés).</p>
+  <pre>Sept devis sur dix ne reçoivent jamais aucun suivi. Tu chiffres le projet, tu envoies le PDF, et ensuite plus rien. Pendant que tu attends, le client reçoit un autre devis d'un concurrent qui, lui, prend des nouvelles, et c'est lui qui signe. Un workflow n8n change tout : trois jours après l'envoi sans réponse, un message personnalisé part tout seul, et rappelle la valeur du projet, sans relancer comme un robot. Résultat, plus de devis signés, sans aucun effort en plus, juste parce que tu as repris contact au bon moment. Si tes devis dorment dans ta boîte mail, follow-moi et commente le mot SUIVI, je t'envoie le workflow gratuitement.</pre>
+  <p class="meta">Timing mot-à-mot : <code>transcripts</code> renvoyé vide par le webhook (quota Whisper OpenAI épuisé, piège documenté) — reconstruit par pondération longueur de mot + bonus ponctuation, normalisé sur la durée réelle du MP3 (<code>ffprobe</code>) et ancré sur les silences réels de la voix (<code>silencedetect −40dB/0.18s</code>).</p>
+
+  <h2>Texte TikTok + hashtags</h2>
+  <pre>📄 7 devis envoyés sur 10 ne reçoivent AUCUN suivi — et le client signe chez un concurrent plus réactif. n8n relance automatiquement au bon moment. Commente SUIVI pour le workflow 👇
+#automatisation #n8n #freelance #devis #prospection</pre>
+
+  <h2>Habillage &amp; son (style seedance, non négociable)</h2>
+  <p class="meta">5 scènes + 1 b-roll de respiration, coupes posées DANS les silences réels de la voix
+  (6,74 / 12,57 / 19,77 / 21,70 / 26,94 s) : hook « 7 SUR 10 SANS RÉPONSE » + carte <code>devis-client.pdf</code>
+  (envoyé ✓ → relance : jamais) → comparaison Toi (ignoré) vs Concurrent (signé) → flow n8n 3 nœuds
+  (devis envoyé → J+3 sans réponse → message personnalisé) → b-roll → jauge résultat « 100% automatique » +
+  verdict → CTA « SUIVI » pulsant.</p>
+  <p class="meta">Avatar : cercle néon jaune persistant (<code>avatar-keyed.mp4</code>), masqué pendant le b-roll,
+  anneau + orbite qui pulsent, orbite violette sur les 4 drops de la musique (2,34 / 10,36 / 18,38 / 26,40 s).
+  Captions mot-à-mot 27px, un seul mot coloré par phrase (jaune/violet/orange).
+  Musique <code>flowers_horror.mp3</code> « YOU CAN ASK THE FLOWERS (HORROR MIX) », −12,4 LUFS → volume 0.05
+  sous la voix à 1.0. SFX palette v1 figée (<code>_shared/sfx-palette/v1</code>), rôles transposés et
+  <code>data-start</code> recalés sur ces coupes. Voix clonée « archiviste » (webhook <code>avatar-webhook-v2</code>).</p>
+  <p class="meta">Recette : <code>hero-section/autoboost-neon-videos/autoboost-150-suivi/public/index.html</code>.</p>
+</div>
+</body>
+</html>

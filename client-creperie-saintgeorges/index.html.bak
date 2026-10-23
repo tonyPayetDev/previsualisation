@@ -1,0 +1,316 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Crêperie Saint Georges — Saint-Denis</title>
+<meta name="description" content="Crêperie Saint Georges, 5 ruelle Edouard à Saint-Denis, face à la cathédrale. Ouvert du mardi au samedi, midi et soir.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ─────────────────────────────────────────────────────────────────────────
+   CRÊPERIE SAINT GEORGES — refonte, style « Villa Fleurie » (style A de
+   previsualisation/styles).
+
+   Jetons repris tels quels de la galerie : or #b3a780, texte #1a1a1a,
+   gris moyen #555550, fond clair #f5f5f3, filets #e8e4dc, blanc.
+   Cormorant Garamond en titres (300/400), Montserrat en courant.
+   Boutons filetés or, majuscules, interlettrage .22em. Galerie en grille
+   3 colonnes, gouttière de 3px.
+
+   Contenu : UNIQUEMENT ce que leur site publie. Leurs photos ne montrent
+   que le lieu — aucune crêpe photographiée — donc aucune crêpe n'est
+   nommée ici, aucun prix, aucun horaire inventé.
+
+   Le mouvement reste discret : ce style se tient par la respiration et
+   l'interlettrage, pas par les effets. Un scroll spectaculaire le casserait.
+   ───────────────────────────────────────────────────────────────────────── */
+
+:root{
+  --or:#b3a780;
+  --noir:#12110f;
+  --txt:#1a1a1a;
+  --mid:#555550;
+  --clair:#f5f5f3;
+  --bord:#e8e4dc;
+  --pad:clamp(22px,6vw,90px);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:#fff;color:var(--txt);
+  font-family:Montserrat,system-ui,sans-serif;font-weight:300;
+  font-size:15.5px;line-height:1.8;-webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+img{display:block;max-width:100%}
+a{color:inherit}
+h1,h2,h3{font-family:'Cormorant Garamond',Georgia,serif;font-weight:300;
+  margin:0;letter-spacing:.005em;text-wrap:balance}
+
+.sur{
+  display:block;font-size:10px;letter-spacing:.34em;text-transform:uppercase;
+  color:var(--or);font-weight:500;font-family:Montserrat,sans-serif;margin-bottom:16px;
+}
+.btn{
+  display:inline-block;border:1px solid var(--or);color:var(--or);text-decoration:none;
+  padding:14px 32px;font-size:11px;letter-spacing:.22em;text-transform:uppercase;
+  font-weight:500;background:transparent;transition:background .45s ease,color .45s ease;
+}
+.btn:hover{background:var(--or);color:#fff}
+.btn.clair{border-color:rgba(255,255,255,.7);color:#fff}
+.btn.clair:hover{background:#fff;color:var(--txt)}
+
+/* ── Barre ─────────────────────────────────────────────────────────────── */
+.nav{
+  position:fixed;top:0;left:0;right:0;z-index:60;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:20px var(--pad);
+  transition:background .5s ease,padding .5s ease,box-shadow .5s ease;
+}
+.nav.pose{background:rgba(255,255,255,.97);padding-top:13px;padding-bottom:13px;
+  box-shadow:0 1px 0 var(--bord)}
+.nav .marque{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:400;
+  color:#fff;text-decoration:none;letter-spacing:.02em;transition:color .5s ease}
+.nav.pose .marque{color:var(--txt)}
+.nav .liens{display:flex;gap:30px;align-items:center}
+.nav .liens a{font-size:11px;letter-spacing:.19em;text-transform:uppercase;
+  text-decoration:none;color:rgba(255,255,255,.88);transition:color .5s ease}
+.nav.pose .liens a{color:var(--mid)}
+.nav .liens a:hover{color:var(--or)}
+@media(max-width:860px){.nav .liens{display:none}}
+.tel-nav{font-size:11px;letter-spacing:.16em;color:#fff;text-decoration:none;
+  border:1px solid rgba(255,255,255,.55);padding:9px 18px;transition:all .5s ease}
+.nav.pose .tel-nav{color:var(--or);border-color:var(--or)}
+.tel-nav:hover{background:var(--or);border-color:var(--or);color:#fff}
+
+/* ── Ouverture ─────────────────────────────────────────────────────────── */
+.hero{position:relative;height:100svh;min-height:560px;overflow:hidden;
+  display:flex;align-items:center;justify-content:center;text-align:center}
+.hero .fond{position:absolute;inset:0;z-index:0}
+.hero .fond img{width:100%;height:100%;object-fit:cover}
+.hero .fond::after{content:"";position:absolute;inset:0;background:rgba(0,0,0,.46)}
+.hero .dedans{position:relative;z-index:2;padding:0 var(--pad);max-width:820px}
+.hero h1{color:#fff;font-size:clamp(40px,7.4vw,84px);line-height:1.08;font-weight:300}
+.hero p{color:rgba(255,255,255,.86);margin:22px auto 30px;max-width:46ch;font-size:15px}
+.hero .fil{width:1px;height:56px;background:rgba(255,255,255,.5);margin:38px auto 0;
+  animation:respire 3.4s ease-in-out infinite;transform-origin:top}
+@keyframes respire{0%,100%{transform:scaleY(.45);opacity:.4}50%{transform:scaleY(1);opacity:1}}
+
+/* ── Sections ──────────────────────────────────────────────────────────── */
+section{padding:clamp(70px,11vh,140px) var(--pad)}
+.centre{max-width:760px;margin:0 auto;text-align:center}
+.centre h2{font-size:clamp(28px,4.2vw,50px);line-height:1.2;margin-bottom:22px}
+.centre p{color:var(--mid);margin:0 auto 20px;max-width:58ch}
+
+.duo{display:grid;grid-template-columns:1fr 1fr;gap:clamp(28px,5vw,80px);align-items:center;
+  max-width:1240px;margin:0 auto}
+@media(max-width:900px){.duo{grid-template-columns:1fr;gap:32px}}
+.duo h2{font-size:clamp(26px,3.6vw,42px);line-height:1.22;margin-bottom:18px}
+.duo p{color:var(--mid);margin:0 0 18px}
+.cadre{overflow:hidden;background:var(--clair);aspect-ratio:4/3}
+.cadre img{width:100%;height:100%;object-fit:cover;display:block;
+  transition:transform 1.6s cubic-bezier(.19,1,.22,1)}
+.cadre:hover img{transform:scale(1.035)}
+
+/* ── Bandeau chiffré ───────────────────────────────────────────────────── */
+.band{background:var(--clair);padding:clamp(40px,6vh,70px) var(--pad);
+  display:grid;grid-template-columns:repeat(3,1fr);gap:26px;text-align:center}
+@media(max-width:760px){.band{grid-template-columns:1fr;gap:26px}}
+.band b{font-family:'Cormorant Garamond',serif;font-weight:400;font-size:clamp(26px,3.2vw,34px);
+  display:block;color:var(--txt);line-height:1.25}
+.band span{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--mid);
+  display:block;margin-top:9px}
+
+/* ── Galerie ───────────────────────────────────────────────────────────── */
+.galerie{display:grid;grid-template-columns:repeat(3,1fr);gap:3px}
+@media(max-width:760px){.galerie{grid-template-columns:repeat(2,1fr)}}
+.galerie a{display:block;overflow:hidden;background:var(--clair);aspect-ratio:1}
+.galerie img{width:100%;height:100%;object-fit:cover;
+  transition:transform 1.5s cubic-bezier(.19,1,.22,1),filter .7s ease;filter:saturate(.94)}
+.galerie a:hover img{transform:scale(1.045);filter:saturate(1)}
+
+/* ── Informations ──────────────────────────────────────────────────────── */
+.infos{border-top:1px solid var(--bord)}
+.grille{display:grid;grid-template-columns:1.05fr 1fr;gap:clamp(30px,5vw,90px);
+  max-width:1140px;margin:0 auto}
+@media(max-width:860px){.grille{grid-template-columns:1fr;gap:34px}}
+.grille h3{font-size:26px;margin-bottom:16px}
+.horaires{width:100%;border-collapse:collapse;font-size:14.5px}
+.horaires td{padding:11px 0;border-bottom:1px solid var(--bord);color:var(--mid);
+  vertical-align:top}
+.horaires td:first-child{width:34%;color:var(--txt);font-weight:400;text-transform:capitalize}
+.horaires tr:last-child td{border-bottom:0}
+.adr{font-size:16px;line-height:2;color:var(--mid)}
+.adr b{color:var(--txt);font-weight:500;display:block;font-size:17px}
+.adr .repere{font-style:italic;color:var(--or)}
+
+/* ── Clôture ───────────────────────────────────────────────────────────── */
+.fin{position:relative;overflow:hidden;text-align:center;padding-block:clamp(90px,14vh,170px)}
+.fin .fond{position:absolute;inset:0;z-index:0}
+.fin .fond img{width:100%;height:100%;object-fit:cover}
+.fin .fond::after{content:"";position:absolute;inset:0;background:rgba(0,0,0,.58)}
+.fin .dedans{position:relative;z-index:2}
+.fin h2{color:#fff;font-size:clamp(30px,5vw,60px);margin-bottom:16px}
+.fin p{color:rgba(255,255,255,.82);margin:0 auto 32px;max-width:44ch}
+
+footer{padding:34px var(--pad);border-top:1px solid var(--bord);
+  display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap;
+  font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#8d8d86}
+
+/* ── Apparitions : lentes, une seule fois, jamais spectaculaires ──────── */
+.rv{opacity:0;transform:translateY(22px);
+  transition:opacity 1.25s cubic-bezier(.19,1,.22,1),transform 1.25s cubic-bezier(.19,1,.22,1)}
+.rv.vu{opacity:1;transform:none}
+.rv[data-d="1"]{transition-delay:.14s}
+.rv[data-d="2"]{transition-delay:.28s}
+.rv[data-d="3"]{transition-delay:.42s}
+@media(prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation-duration:.001ms!important;transition-duration:.001ms!important}
+  .rv{opacity:1;transform:none}
+}
+</style>
+</head>
+<body>
+
+<nav class="nav" id="nav">
+  <a class="marque" href="#haut">Crêperie Saint Georges</a>
+  <div class="liens">
+    <a href="#lieu">Le lieu</a>
+    <a href="#terrasse">La terrasse</a>
+    <a href="#galerie">Galerie</a>
+    <a href="#infos">Nous trouver</a>
+  </div>
+  <a class="tel-nav" href="tel:+262262215909">02 62 21 59 09</a>
+</nav>
+
+<header class="hero" id="haut">
+  <div class="fond"><img src="img/c01.jpg" alt="La salle de la Crêperie Saint Georges à Saint-Denis" fetchpriority="high"></div>
+  <div class="dedans">
+    <span class="sur">Saint-Denis · La Réunion</span>
+    <h1>Face à la cathédrale,<br>une maison à part</h1>
+    <p>5 ruelle Edouard. Du mardi au samedi, midi et soir.</p>
+    <a class="btn clair" href="tel:+262262215909">Réserver une table</a>
+    <div class="fil"></div>
+  </div>
+</header>
+
+<section id="lieu">
+  <div class="duo">
+    <div>
+      <span class="sur rv">Le lieu</span>
+      <h2 class="rv" data-d="1">Une ruelle, une porte,<br>et le bruit de la ville s'arrête</h2>
+      <p class="rv" data-d="2">La Crêperie Saint Georges se tient au 5 ruelle Edouard, face à la
+        cathédrale de Saint-Denis. On y entre par une façade discrète ; la salle, elle, prend
+        son temps — bois sombre, suspensions basses, tables dressées.</p>
+      <p class="rv" data-d="3">Le service se fait midi et soir, du mardi au samedi.</p>
+    </div>
+    <div class="cadre rv" data-d="1"><img src="img/c05.jpg" alt="Intérieur de la Crêperie Saint Georges"></div>
+  </div>
+</section>
+
+<div class="band">
+  <div class="rv"><b>Face à la cathédrale</b><span>Saint-Denis</span></div>
+  <div class="rv" data-d="1"><b>Du mardi au samedi</b><span>Midi et soir</span></div>
+  <div class="rv" data-d="2"><b>Salle &amp; terrasse</b><span>Deux ambiances</span></div>
+</div>
+
+<section id="terrasse">
+  <div class="duo">
+    <div class="cadre rv"><img src="img/c03.jpg" alt="La terrasse de la Crêperie Saint Georges en soirée"></div>
+    <div>
+      <span class="sur rv">La terrasse</span>
+      <h2 class="rv" data-d="1">Le soir venu,<br>on sort les tables</h2>
+      <p class="rv" data-d="2">Sous les parasols, adossée au mur de pierre, la terrasse s'éclaire
+        quand le jour tombe. C'est le même service, la même carte — simplement dehors.</p>
+      <p class="rv" data-d="3">Le vendredi et le samedi, le service du soir se prolonge
+        jusqu'à 22 h 30.</p>
+    </div>
+  </div>
+</section>
+
+<section class="centre" style="padding-bottom:0">
+  <span class="sur rv">Galerie</span>
+  <h2 class="rv" data-d="1">La maison, en images</h2>
+  <p class="rv" data-d="2">Les photographies sont celles de l'établissement.</p>
+</section>
+<section id="galerie" style="padding-top:clamp(34px,5vh,56px)">
+  <div class="galerie rv">
+    <a href="img/c01.jpg" target="_blank" rel="noopener"><img src="img/c01.jpg" alt="Salle de la Crêperie Saint Georges" loading="lazy"></a>
+    <a href="img/c02.jpg" target="_blank" rel="noopener"><img src="img/c02.jpg" alt="Cour intérieure de la Crêperie Saint Georges" loading="lazy"></a>
+    <a href="img/c03.jpg" target="_blank" rel="noopener"><img src="img/c03.jpg" alt="Terrasse en soirée" loading="lazy"></a>
+    <a href="img/c04.jpg" target="_blank" rel="noopener"><img src="img/c04.jpg" alt="Devanture de la Crêperie Saint Georges" loading="lazy"></a>
+    <a href="img/c05.jpg" target="_blank" rel="noopener"><img src="img/c05.jpg" alt="Table dressée" loading="lazy"></a>
+    <a href="img/c02.jpg" target="_blank" rel="noopener"><img src="img/c02.jpg" alt="Cour intérieure" loading="lazy"></a>
+  </div>
+</section>
+
+<section class="infos" id="infos">
+  <div class="grille">
+    <div>
+      <span class="sur rv">Nous trouver</span>
+      <h3 class="rv" data-d="1">5 ruelle Edouard</h3>
+      <p class="adr rv" data-d="2">
+        <b>Crêperie Saint Georges</b>
+        5 ruelle Edouard<br>
+        97400 Saint-Denis<br>
+        <span class="repere">Face à la cathédrale</span>
+      </p>
+      <p class="rv" data-d="3" style="margin-top:22px">
+        <a class="btn" href="tel:+262262215909">02 62 21 59 09</a>
+      </p>
+    </div>
+    <div class="rv" data-d="1">
+      <span class="sur">Horaires</span>
+      <h3 style="margin-bottom:18px">Nous vous accueillons</h3>
+      <table class="horaires">
+        <tr><td>mardi</td><td>11 h 45 – 14 h 00<br>18 h 45 – 22 h 00</td></tr>
+        <tr><td>mercredi</td><td>11 h 45 – 14 h 00<br>18 h 45 – 22 h 00</td></tr>
+        <tr><td>jeudi</td><td>11 h 45 – 14 h 00<br>18 h 45 – 22 h 00</td></tr>
+        <tr><td>vendredi</td><td>11 h 45 – 14 h 00<br>18 h 45 – 22 h 30</td></tr>
+        <tr><td>samedi</td><td>12 h 00 – 14 h 00<br>18 h 45 – 22 h 30</td></tr>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section class="fin">
+  <div class="fond"><img src="img/c02.jpg" alt=""></div>
+  <div class="dedans">
+    <span class="sur">Réservation</span>
+    <h2>Une table vous attend</h2>
+    <p>Un appel suffit. Nous vous accueillons du mardi au samedi, midi et soir.</p>
+    <a class="btn clair" href="tel:+262262215909">02 62 21 59 09</a>
+  </div>
+</section>
+
+<footer>
+  <span>Crêperie Saint Georges — Saint-Denis</span>
+  <span>Maquette de refonte · AutomatisationBoost</span>
+</footer>
+
+<script>
+/* Barre qui se pose sur fond blanc, et apparitions au défilement. Rien
+   d'autre : ce style tient par la respiration, pas par les effets. */
+(function () {
+  var nav = document.getElementById('nav');
+  var poser = function () { nav.classList.toggle('pose', window.scrollY > window.innerHeight * 0.72); };
+  window.addEventListener('scroll', poser, { passive: true });
+  poser();
+
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    document.querySelectorAll('.rv').forEach(function (e) { e.classList.add('vu'); });
+    return;
+  }
+  var io = new IntersectionObserver(function (es) {
+    es.forEach(function (e) {
+      if (e.isIntersecting) { e.target.classList.add('vu'); io.unobserve(e.target); }
+    });
+  }, { threshold: 0.14, rootMargin: '0px 0px -6% 0px' });
+  document.querySelectorAll('.rv').forEach(function (e) { io.observe(e); });
+})();
+</script>
+</body>
+</html>

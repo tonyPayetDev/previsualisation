@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VideoBoost — 1 prompt = 1 vidéo complète</title>
+<style>
+  :root {
+    --bg: #080808;
+    --card: #111111;
+    --card-border: #262626;
+    --gold: #eab308;
+    --gold-light: #fbbf24;
+    --text: #fafafa;
+    --muted: #a3a3a3;
+    --black: #0a0a0a;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  /* ---------- Hero ---------- */
+  .hero {
+    text-align: center;
+    padding: 76px 20px 56px;
+    background:
+      radial-gradient(600px 300px at 50% -80px, rgba(234, 179, 8, 0.14), transparent 70%);
+  }
+
+  .hero .eyebrow {
+    margin: 0 0 14px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.30em;
+    text-transform: uppercase;
+    color: var(--gold);
+  }
+
+  .hero h1 {
+    margin: 0 0 10px;
+    font-size: clamp(44px, 9vw, 84px);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1;
+  }
+
+  .hero h1 span {
+    background: linear-gradient(180deg, #fde68a, var(--gold));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .hero .subtitle {
+    margin: 0 0 16px;
+    font-size: clamp(18px, 3vw, 26px);
+    font-weight: 600;
+    color: var(--gold-light);
+    letter-spacing: 0.01em;
+  }
+
+  .hero .tagline {
+    margin: 0 auto;
+    max-width: 560px;
+    font-size: 15px;
+    color: var(--muted);
+  }
+
+  /* ---------- Grid ---------- */
+  .tpl-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 26px;
+    padding-bottom: 64px;
+  }
+
+  .card {
+    flex: 0 1 300px;
+    max-width: 340px;
+    width: 100%;
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    border-radius: 16px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+  }
+
+  .card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(234, 179, 8, 0.45);
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.55);
+  }
+
+  /* --- aperçu 9:16 --- */
+  .preview {
+    position: relative;
+    aspect-ratio: 9 / 16;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+
+  .preview img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .preview.k-keynote {
+    background: linear-gradient(160deg, #1c1917 0%, #110f0d 55%, #060606 100%);
+  }
+  .preview.k-cybernetique {
+    background: linear-gradient(160deg, #2e1065 0%, #4c1d95 35%, #0e7490 100%);
+  }
+  .preview.k-editorial {
+    background: linear-gradient(160deg, #f5f5f4 0%, #d6d3d1 60%, #a8a29e 100%);
+  }
+  .preview.k-hollywood {
+    background: linear-gradient(175deg, #070707 0%, #1a0b10 55%, #420d22 100%);
+  }
+
+  /* bandeau « avatar en bas » comme sur une vidéo */
+  .banner {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 22px 14px 12px;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0));
+  }
+
+  .avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    background: linear-gradient(135deg, #fde68a, var(--gold) 60%, #a16207);
+    display: grid;
+    place-items: center;
+    font-size: 11px;
+    font-weight: 800;
+    color: #1a1200;
+    letter-spacing: 0.02em;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+  }
+
+  .banner-title {
+    font-size: 12px;
+    font-weight: 700;
+    color: #ffffff;
+    text-shadow: 0 1px 6px rgba(0, 0, 0, 0.8);
+    line-height: 1.3;
+  }
+
+  /* badge « template phare » */
+  .badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    padding: 5px 10px;
+    border-radius: 999px;
+    background: rgba(8, 8, 8, 0.72);
+    border: 1px solid rgba(234, 179, 8, 0.55);
+    color: var(--gold-light);
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.10em;
+    text-transform: uppercase;
+  }
+
+  /* bandeau LED avec le prompt qui défile (template phare) */
+  .led-strip {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    right: 12px;
+    padding: 7px 10px;
+    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.68);
+    border: 1px solid rgba(234, 179, 8, 0.35);
+    overflow: hidden;
+    white-space: nowrap;
+    pointer-events: none;
+  }
+
+  .led-strip span {
+    display: inline-block;
+    padding-left: 100%;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 10px;
+    color: var(--gold-light);
+    animation: marquee 12s linear infinite;
+  }
+
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-100%); }
+  }
+
+  /* --- contenu sous la zone 9:16 --- */
+  .card-body {
+    padding: 18px 18px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex: 1;
+  }
+
+  .card-body h3 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+
+  .card-body p {
+    margin: 0;
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  .btn {
+    margin-top: 6px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    align-self: flex-start;
+    padding: 10px 16px;
+    border-radius: 10px;
+    border: 1px solid var(--gold);
+    color: var(--gold-light);
+    background: rgba(234, 179, 8, 0.06);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 700;
+    transition: background 0.2s ease, color 0.2s ease;
+  }
+
+  .btn:hover {
+    background: var(--gold);
+    color: #161200;
+  }
+
+  /* ---------- Footer ---------- */
+  footer {
+    border-top: 1px solid #1f1f1f;
+    background: #0c0c0c;
+    text-align: center;
+    padding: 44px 20px 52px;
+  }
+
+  footer .cta {
+    margin: 0 auto 10px;
+    max-width: 520px;
+    font-size: clamp(17px, 2.5vw, 22px);
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  footer .cta strong {
+    color: var(--gold-light);
+  }
+
+  .btn-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
+    padding: 12px 26px;
+    border-radius: 12px;
+    background: linear-gradient(180deg, #fde68a, var(--gold));
+    color: #161200;
+    text-decoration: none;
+    font-size: 15px;
+    font-weight: 800;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .btn-cta:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 28px rgba(234, 179, 8, 0.25);
+  }
+
+  footer .fine {
+    margin: 18px 0 0;
+    font-size: 12px;
+    color: #737373;
+  }
+</style>
+</head>
+<body>
+
+  <!-- ============ Hero ============ -->
+  <header class="hero">
+    <p class="eyebrow">Templates vidéo IA · Premium</p>
+    <h1>Video<span>Boost</span></h1>
+    <p class="subtitle">1 prompt = 1 vidéo complète</p>
+    <p class="tagline">Choisissez un template, collez votre prompt, obtenez une vidéo prête à publier — sans monteur, sans galère.</p>
+  </header>
+
+  <!-- ============ Galerie de templates ============ -->
+  <section class="wrap">
+    <div class="tpl-grid">
+
+      <!-- (a) TEMPLATE PHARE -->
+      <article class="card">
+        <div class="preview k-keynote">
+          <img src="assets/previews/keynote-prompt-reveal.jpg" alt="" onerror="this.remove()">
+          <span class="badge">Template phare</span>
+          <div class="led-strip">
+            <span>Crée une keynote premium : présentateur + écran LED, le prompt exact défile à l'écran, révélation VIDEOBOOST en finale.</span>
+          </div>
+          <div class="banner">
+            <span class="avatar">VB</span>
+            <span class="banner-title">Keynote — Prompt qui défile</span>
+          </div>
+        </div>
+        <div class="card-body">
+          <h3>Keynote — Prompt qui défile</h3>
+          <p>Un présentateur face à son écran LED : le prompt exact défile en direct, jusqu'à la révélation VIDEOBOOST. L'effet « waouh » garanti. Notre flagship.</p>
+          <a class="btn" href="https://automatisationboost.com/ressources/videoboost-template-seedance.html">Voir le prompt <span aria-hidden="true">→</span></a>
+        </div>
+      </article>
+
+      <!-- (b) -->
+      <article class="card">
+        <div class="preview k-cybernetique">
+          <img src="assets/previews/cybernetique.jpg" alt="" onerror="this.remove()">
+          <div class="banner">
+            <span class="avatar">VB</span>
+            <span class="banner-title">Cybernétique</span>
+          </div>
+        </div>
+        <div class="card-body">
+          <h3>Cybernétique</h3>
+          <p>Teintes violet-cyan et HUD futuriste : parfait pour lancer une tech, une app ou une IA avec une allure néo-futuriste.</p>
+          <a class="btn" href="https://automatisationboost.com/ressources/videoboost-template-seedance.html">Voir le prompt <span aria-hidden="true">→</span></a>
+        </div>
+      </article>
+
+      <!-- (c) -->
+      <article class="card">
+        <div class="preview k-editorial">
+          <img src="assets/previews/editorial-premium.jpg" alt="" onerror="this.remove()">
+          <div class="banner">
+            <span class="avatar">VB</span>
+            <span class="banner-title">Éditorial premium</span>
+          </div>
+        </div>
+        <div class="card-body">
+          <h3>Éditorial premium</h3>
+          <p>Clair, minimaliste, esprit keynote Apple : une élégance sobre pour les marques et offres haut de gamme.</p>
+          <a class="btn" href="https://automatisationboost.com/ressources/videoboost-template-seedance.html">Voir le prompt <span aria-hidden="true">→</span></a>
+        </div>
+      </article>
+
+      <!-- (d) -->
+      <article class="card">
+        <div class="preview k-hollywood">
+          <img src="assets/previews/hollywood.jpg" alt="" onerror="this.remove()">
+          <div class="banner">
+            <span class="avatar">VB</span>
+            <span class="banner-title">Hollywood</span>
+          </div>
+        </div>
+        <div class="card-body">
+          <h3>Hollywood</h3>
+          <p>Noir profond, néons et gros final : des annonces cinématographiques qui marquent durablement les esprits.</p>
+          <a class="btn" href="https://automatisationboost.com/ressources/videoboost-template-seedance.html">Voir le prompt <span aria-hidden="true">→</span></a>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <!-- ============ Footer ============ -->
+  <footer>
+    <p class="cta">Commente <strong>VIDEOBOOST</strong> sur la publication et reçois le prompt de ta vidéo en DM.</p>
+    <a class="btn-cta" href="https://automatisationboost.com/ressources/videoboost-template-seedance.html">Commente VIDEOBOOST <span aria-hidden="true">→</span></a>
+    <p class="fine">VideoBoost — videoboost.automatisationboost.com</p>
+  </footer>
+
+</body>
+</html>

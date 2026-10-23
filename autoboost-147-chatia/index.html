@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Autoboost #147 — Chat IA capte les visiteurs</title>
+<style>
+  :root{--bg:#0a0a0f;--surface:#111117;--border:#232330;--gold:#eab308;--violet:#8b5cf6;--ink:#EDEDED;--muted:#8A8A8A;}
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:Arial,Helvetica,sans-serif;padding:40px 16px 100px;}
+  .wrap{max-width:720px;margin:0 auto;}
+  h1{font-size:26px;margin:0 0 6px;}
+  .meta{color:var(--muted);font-size:15px;margin-bottom:20px;line-height:1.5;}
+  video{width:100%;max-width:380px;display:block;margin:0 auto 32px;border-radius:16px;border:2px solid var(--border);background:#000;}
+  h2{font-size:18px;color:var(--gold);border-bottom:1px solid var(--border);padding-bottom:8px;margin-top:36px;}
+  pre{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;white-space:pre-wrap;font-size:14px;line-height:1.5;color:var(--ink);}
+  .pill{display:inline-block;background:rgba(234,179,8,.15);border:1px solid var(--gold);color:var(--gold);border-radius:999px;padding:4px 14px;font-size:13px;font-weight:700;}
+  code{background:var(--surface);border:1px solid var(--border);border-radius:5px;padding:1px 6px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Autoboost #147 — Chat IA capte les visiteurs du site</h1>
+  <div class="meta">Style seedance (gabarit autoboost-40) · avatar overlay persistant, captions néon mot-à-mot 27px, musique <code>flowers_horror</code> + SFX palette v1 · CTA <span class="pill">CHATIA</span> · durée 30,1 s</div>
+  <video src="https://raw.githubusercontent.com/tonyPayetDev/previsualisation/main/autoboost-147-chatia/video.mp4" controls playsinline></video>
+
+  <h2>Sujet (Sheet « 30 Vidéos », ligne 150 / #147, Statut Tournage ⬜ À faire)</h2>
+  <p class="meta"><b>Workflow :</b> Chat IA capte un visiteur sur ton site en 3 secondes (n8n + lead gen).
+  Au lieu d'un formulaire de contact que 9 visiteurs sur 10 ne rempliront jamais, un agent IA engage la
+  conversation dès l'arrivée sur une page clé, répond sur les prix/délais, récupère le contact et tourne 24h/24.</p>
+
+  <h2>Script voix off (texte intégral envoyé à avatar-webhook-v2)</h2>
+  <p class="meta">Raccourci à ~103 mots pour tenir la cible 30-35 s (~3,3 mots/s). Voix clonée « archiviste »
+  (webhook <code>avatar-webhook-v2</code>, WaveSpeed Qwen3 voice-clone).</p>
+  <pre>Ton site perd des clients chaque jour, et tu ne le vois même pas. Neuf visiteurs sur dix ne rempliront jamais ton formulaire de contact : ils ferment l'onglet et vont voir un concurrent. Un chat IA branché sur n8n change tout. Dès qu'un visiteur arrive sur une page clé, l'agent engage la conversation, répond sur tes prix et tes délais, et récupère son contact pendant qu'il est encore intéressé. Pas de standard téléphonique, personne qui surveille le chat la nuit : juste une IA qui travaille vingt-quatre heures sur vingt-quatre, même le week-end. Follow-moi et commente le mot CHATIA, je t'envoie le workflow complet gratuitement.</pre>
+  <p class="meta">Timing mot-à-mot : <code>transcripts</code> renvoyé vide par le webhook (quota Whisper OpenAI
+  épuisé, piège déjà documenté) — captions reconstruites à la main sur les segments délimités par les silences
+  réels de la voix (<code>silencedetect</code> −40dB/0.18s : coupes de scène posées DANS les silences à
+  9,09 / 13,74 / 19,35 / 20,10 / 25,41 s).</p>
+
+  <h2>Texte TikTok + hashtags</h2>
+  <pre>🧲 Ton site perd des clients qui ferment l'onglet avant de te contacter ? Un chat IA n8n capte le visiteur en 3 secondes, même la nuit. Commente CHATIA pour le workflow 👇
+#automatisation #n8n #chatbot #leadgeneration #freelance</pre>
+
+  <h2>Habillage &amp; son (style seedance — NON négociable)</h2>
+  <p class="meta">Gabarit <code>autoboost-40-seedance</code> reproduit : 1080×1920, avatar overlay persistant
+  (cercle néon jaune 560×560, anneau pulsant + orbite), b-roll plein écran en respiration (19,35→20,10 s),
+  5 scènes calées sur les silences (hook problème → point 1 « capte en 3 s » → point 2 « répond &amp; récupère »
+  → point 3 « 24h/24 nuit &amp; week-end » → CTA), captions néon mot-à-mot 27px à <code>top:960px</code>, un seul
+  mot coloré par phrase (jaune force / violet IA / orange action). Musique
+  <code>_shared/bgm/flowers_horror.mp3</code> (« YOU CAN ASK THE FLOWERS — HORROR MIX », −12,4 LUFS → volume
+  0.05), SFX <code>_shared/sfx-palette/v1</code> re-timés sur les coupes. Palette du gabarit seedance
+  (#FFE600 / #A855F7 / #FF8A3D). Recette :
+  <code>hero-section/autoboost-neon-videos/autoboost-147-chatia/public/index.html</code>.</p>
+
+  <p class="meta"><b>Statut :</b> 🟡 en attente de validation de Tony. Rien n'a été publié sur TikTok ni Instagram.</p>
+</div>
+</body>
+</html>

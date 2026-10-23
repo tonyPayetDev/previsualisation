@@ -1,0 +1,365 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>THE GRILL — Votre restaurant de grillades à Saint-Denis</title>
+<meta name="description" content="Recettes authentiques, à base de produits frais et fait maison. Burgers, sandwiches, assiettes de grillades et tacos, 48 rue Issop Ravate, Saint-Denis.">
+<style>
+/* ══════════════════════════════════════════════════════════════════
+   THE GRILL — maquette « scroll cinéma ».
+   Palette dérivée de LEUR logo : le rouge a été prélevé sur la photo
+   (#8d2b29 mesuré), puis remonté en luminosité pour rester lisible sur
+   fond sombre. Ce n'est pas un rouge choisi au hasard, c'est le leur.
+   Tout le texte vient de thegrill.re — aucun prix, aucun plat, aucun
+   horaire inventé.
+   ══════════════════════════════════════════════════════════════════ */
+:root{
+  --charbon:#0C0A09;      /* le fond : braise éteinte */
+  --fumee:#16120F;
+  --rouge:#C7332F;        /* leur rouge, remonté pour l'écran */
+  --rouge-fonce:#8D2B29;  /* la valeur mesurée sur le logo */
+  --braise:#E8853A;       /* second accent, la flamme */
+  --creme:#F5EFE7;
+  --sable:#B9AC9C;
+  --trait:#241C17;
+  --max:1220px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--charbon);color:var(--creme);
+  font:400 16px/1.65 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  -webkit-font-smoothing:antialiased;overflow-x:hidden}
+img{max-width:100%;display:block}
+a{color:inherit}
+
+/* ── Barre + jauge de progression ────────────────────────────────── */
+header{position:sticky;top:0;z-index:50;background:rgba(12,10,9,.86);
+  backdrop-filter:blur(10px);border-bottom:1px solid var(--trait)}
+header::after{content:"";position:absolute;left:0;bottom:-1px;height:2px;
+  width:calc(var(--avance,0) * 100%);
+  background:linear-gradient(90deg,var(--rouge),var(--braise))}
+.nav{max-width:var(--max);margin:0 auto;padding:13px 22px;
+  display:flex;align-items:center;gap:16px}
+.marque{font-weight:800;font-size:15px;letter-spacing:.2em;text-decoration:none}
+.marque i{font-style:normal;color:var(--rouge)}
+.liens{display:flex;gap:26px;margin-left:auto}
+.liens a{text-decoration:none;font-size:13px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--sable);padding:4px 0;border-bottom:1px solid transparent;transition:.25s}
+.liens a:hover{color:var(--creme);border-bottom-color:var(--rouge)}
+.appel{margin-left:22px;text-decoration:none;font-size:12.5px;font-weight:700;
+  letter-spacing:.08em;color:var(--charbon);background:var(--rouge);
+  padding:10px 16px;border-radius:6px;white-space:nowrap;transition:.25s}
+.appel:hover{background:var(--braise)}
+
+/* ── HERO : l'image se dézoome pendant qu'on descend ──────────────── */
+.hero{position:relative;height:100svh;min-height:560px;overflow:hidden;
+  display:grid;place-items:center}
+.hero .fond{position:absolute;inset:0}
+.hero .fond img{width:100%;height:100%;object-fit:cover;
+  /* --p va de 0 (en haut) à 1 (hero sorti) : l'image se dézoome et
+     s'assombrit, le texte reste net. C'est le scrub. */
+  transform:scale(calc(1.28 - var(--p,0) * 0.22));
+  filter:brightness(calc(0.52 - var(--p,0) * 0.22));
+  will-change:transform,filter}
+.hero .voile{position:absolute;inset:0;
+  background:linear-gradient(180deg,rgba(12,10,9,.5) 0%,rgba(12,10,9,.15) 38%,var(--charbon) 100%)}
+.hero .dedans{position:relative;text-align:center;padding:0 22px;
+  transform:translateY(calc(var(--p,0) * -70px));opacity:calc(1 - var(--p,0) * 1.25)}
+.sur{font-size:11px;letter-spacing:.36em;text-transform:uppercase;color:var(--braise);
+  font-weight:600;margin:0 0 18px}
+h1{margin:0;font-size:clamp(46px,12vw,132px);line-height:.9;font-weight:900;
+  letter-spacing:-.045em;text-transform:uppercase;text-wrap:balance}
+h1 i{font-style:normal;color:var(--rouge);display:block}
+.base{margin:22px auto 0;max-width:34ch;font-size:clamp(16px,2.2vw,20px);
+  color:var(--sable);font-weight:300}
+.fleche{position:absolute;bottom:26px;left:50%;transform:translateX(-50%);
+  font-size:10.5px;letter-spacing:.3em;text-transform:uppercase;color:var(--sable);
+  opacity:calc(1 - var(--p,0) * 2)}
+
+/* ── Sections ─────────────────────────────────────────────────────── */
+.sect{max-width:var(--max);margin:0 auto;padding:clamp(70px,11vw,140px) 22px}
+h2{font-size:clamp(30px,5.4vw,58px);line-height:1.02;font-weight:900;
+  letter-spacing:-.035em;margin:0 0 20px;text-transform:uppercase;text-wrap:balance}
+h2 i{font-style:normal;color:var(--rouge)}
+.eyebrow{font-size:11px;letter-spacing:.3em;text-transform:uppercase;
+  color:var(--braise);font-weight:600;margin:0 0 14px}
+p{margin:0 0 16px;color:var(--sable);max-width:56ch}
+
+/* ── La carte : photo épinglée, texte qui défile à côté ───────────── */
+.plat{display:grid;grid-template-columns:1fr 1fr;gap:clamp(28px,5vw,72px);
+  align-items:start;margin-bottom:clamp(60px,9vw,120px)}
+.plat:nth-child(even) .visuel{order:2}
+.colle{position:sticky;top:96px}
+.cadre{position:relative;overflow:hidden;border-radius:3px;background:#000;
+  height:min(70vh,560px)}
+.cadre img{width:100%;height:118%;object-fit:cover;
+  /* parallaxe : l'image glisse dans son cadre, le cadre ne bouge pas */
+  transform:translate3d(0,calc(var(--par,0) * -13%),0);will-change:transform}
+.num{position:absolute;top:14px;left:16px;font-size:12px;font-weight:800;
+  letter-spacing:.2em;color:var(--braise);background:rgba(12,10,9,.72);
+  padding:6px 11px;border-radius:4px;backdrop-filter:blur(4px)}
+.plat h3{font-size:clamp(24px,3.6vw,38px);line-height:1.05;margin:0 0 12px;
+  font-weight:800;letter-spacing:-.02em}
+.plat .det{color:var(--sable);font-size:15px}
+
+/* ── Bandeau pleine largeur en parallaxe ─────────────────────────── */
+.bande{position:relative;height:clamp(280px,52vw,600px);overflow:hidden}
+.bande img{width:100%;height:132%;object-fit:cover;
+  transform:translate3d(0,calc(var(--par,0) * -16%),0);
+  filter:brightness(.6);will-change:transform}
+.bande .mot{position:absolute;inset:0;display:grid;place-items:center;
+  text-align:center;padding:0 22px}
+.bande .mot span{font-size:clamp(24px,5.6vw,62px);font-weight:900;
+  letter-spacing:-.03em;text-transform:uppercase;line-height:1.02;text-wrap:balance}
+.bande .mot i{font-style:normal;color:var(--braise)}
+
+/* ── Infos pratiques ─────────────────────────────────────────────── */
+.infos{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
+  gap:1px;background:var(--trait);border:1px solid var(--trait);margin-top:34px}
+.info{background:var(--fumee);padding:26px 22px}
+.info b{display:block;font-size:11px;letter-spacing:.24em;text-transform:uppercase;
+  color:var(--braise);font-weight:700;margin-bottom:12px}
+.info p{margin:0;color:var(--creme);font-size:15px}
+.info .h{display:flex;justify-content:space-between;gap:14px;padding:5px 0;
+  border-bottom:1px solid var(--trait);font-size:14.5px}
+.info .h:last-child{border-bottom:0}
+.info .h span:last-child{color:var(--sable);font-variant-numeric:tabular-nums}
+.gros{display:inline-block;margin-top:6px;font-size:clamp(19px,3vw,26px);
+  font-weight:800;letter-spacing:-.01em;text-decoration:none;
+  border-bottom:2px solid var(--rouge);padding-bottom:4px}
+
+footer{border-top:1px solid var(--trait);margin-top:40px}
+.pied{max-width:var(--max);margin:0 auto;padding:34px 22px 60px;
+  display:flex;flex-wrap:wrap;gap:14px 28px;justify-content:space-between;
+  color:var(--sable);font-size:13px}
+
+/* ── Apparition au défilement ─────────────────────────────────────── */
+.rev{opacity:0;transform:translateY(24px);
+  transition:opacity .85s cubic-bezier(.22,1,.36,1),transform .85s cubic-bezier(.22,1,.36,1)}
+.rev.vu{opacity:1;transform:none}
+
+@media (max-width:900px){
+  .plat{grid-template-columns:1fr;gap:22px}
+  .plat:nth-child(even) .visuel{order:0}
+  .colle{position:static}
+  .cadre{height:auto;aspect-ratio:4/3}
+  .cadre img{height:100%;transform:none}   /* pas de parallaxe sans hauteur fixe */
+  .bande img{height:100%;transform:none}
+  .liens{display:none}
+  .appel{margin-left:auto}
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .rev{opacity:1;transform:none;transition:none}
+  .hero .fond img{transform:none;filter:brightness(.45)}
+  .hero .dedans{transform:none;opacity:1}
+  .cadre img,.bande img{transform:none;height:100%}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <nav class="nav">
+    <a class="marque" href="#haut">THE <i>GRILL</i></a>
+    <div class="liens">
+      <a href="#carte">La carte</a>
+      <a href="#maison">Fait maison</a>
+      <a href="#venir">Nous trouver</a>
+    </div>
+    <a class="appel" href="tel:+262692773480">0692 77 34 80</a>
+  </nav>
+</header>
+
+<main id="haut">
+
+  <!-- ══ HERO — l'image se dézoome au scroll ══ -->
+  <section class="hero" data-hero>
+    <div class="fond"><img src="photos/hero.jpg" alt="Burger, frites et boisson devant l'enseigne The Grill" width="1600" height="1341"></div>
+    <div class="voile"></div>
+    <div class="dedans">
+      <p class="sur">Saint-Denis · La Réunion</p>
+      <h1>The<i>Grill</i></h1>
+      <p class="base">Votre restaurant de grillades à Saint-Denis</p>
+    </div>
+    <div class="fleche">Défiler</div>
+  </section>
+
+  <!-- ══ La carte — photo épinglée, texte qui défile ══ -->
+  <section class="sect" id="carte">
+    <p class="eyebrow rev">La carte</p>
+    <h2 class="rev">Recettes authentiques,<br><i>fait maison</i></h2>
+    <p class="rev">À base de produits frais. Quatre familles, préparées sur place.</p>
+
+    <div style="height:clamp(40px,7vw,90px)"></div>
+
+    <article class="plat">
+      <div class="visuel"><div class="colle"><div class="cadre rev" data-par>
+        <img src="photos/burger.jpg" alt="Burger maison au fromage fondu" loading="lazy">
+        <span class="num">01</span>
+      </div></div></div>
+      <div class="rev">
+        <h3>Burgers gourmets<br>&amp; gourmands</h3>
+        <p class="det">Le cœur de la maison. Pain, viande grillée, garniture montée à la commande.</p>
+      </div>
+    </article>
+
+    <article class="plat">
+      <div class="visuel"><div class="colle"><div class="cadre rev" data-par>
+        <img src="photos/panini.jpg" alt="Sandwich hummer grillé servi avec frites" loading="lazy">
+        <span class="num">02</span>
+      </div></div></div>
+      <div class="rev">
+        <h3>Sandwiches<br>hummers</h3>
+        <p class="det">Pressés et grillés, servis chauds.</p>
+      </div>
+    </article>
+
+    <article class="plat">
+      <div class="visuel"><div class="colle"><div class="cadre rev" data-par>
+        <img src="photos/grillade.jpg" alt="Assiette de grillade avec frites et salade composée" loading="lazy">
+        <span class="num">03</span>
+      </div></div></div>
+      <div class="rev">
+        <h3>Assiettes<br>de grillades</h3>
+        <p class="det">Servies avec frites et salade composée.</p>
+      </div>
+    </article>
+
+    <article class="plat">
+      <div class="visuel"><div class="colle"><div class="cadre rev" data-par>
+        <img src="photos/tacos.jpg" alt="Tacos garni, sauce fromagère" loading="lazy">
+        <span class="num">04</span>
+      </div></div></div>
+      <div class="rev">
+        <h3>Tacos<br>&amp; sauce fromagère</h3>
+        <p class="det">Roulés et pressés, sauce fromagère maison.</p>
+      </div>
+    </article>
+  </section>
+
+  <!-- ══ Bandeau parallaxe ══ -->
+  <div class="bande" data-par>
+    <img src="photos/bande1.jpg" alt="Burger et frites servis sur ardoise devant l'enseigne" loading="lazy">
+    <div class="mot"><span>Produits frais.<br><i>Fait maison.</i></span></div>
+  </div>
+
+  <!-- ══ Fait maison ══ -->
+  <section class="sect" id="maison">
+    <div class="plat">
+      <div class="visuel"><div class="colle"><div class="cadre rev" data-par>
+        <img src="photos/wrap.jpg" alt="Wraps grillés coupés en deux, servis avec sauce" loading="lazy">
+      </div></div></div>
+      <div class="rev">
+        <p class="eyebrow">Fait maison</p>
+        <h2>Préparé <i>sur place</i></h2>
+        <p>Recettes authentiques, à base de produits frais et fait maison.</p>
+        <p>C'est la phrase que le restaurant met en avant sur sa propre vitrine —
+           et c'est celle qui décide, à Saint-Denis, entre un grill et un autre.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ Infos pratiques ══ -->
+  <section class="sect" id="venir">
+    <p class="eyebrow rev">Nous trouver</p>
+    <h2 class="rev">48 rue Issop Ravate,<br><i>Saint-Denis</i></h2>
+
+    <div class="infos rev">
+      <div class="info">
+        <b>Adresse</b>
+        <p>48 rue Issop Ravate<br>97400 Saint-Denis<br>La Réunion</p>
+      </div>
+      <div class="info">
+        <b>Téléphone</b>
+        <p><a class="gros" href="tel:+262692773480">0692 77 34 80</a></p>
+      </div>
+      <div class="info">
+        <b>Horaires</b>
+        <div class="h"><span>Mardi — Jeudi</span><span>11h30–14h · 18h30–21h</span></div>
+        <div class="h"><span>Vendredi</span><span>18h30–22h</span></div>
+        <div class="h"><span>Samedi</span><span>11h30–14h · 18h30–22h</span></div>
+        <div class="h"><span>Dimanche</span><span>18h30–21h</span></div>
+        <div class="h"><span>Lundi</span><span>Fermé</span></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="bande" data-par>
+    <img src="photos/devanture.jpg" alt="Devanture du restaurant The Grill" loading="lazy">
+    <div class="mot"><span>À emporter<br><i>ou sur place</i></span></div>
+  </div>
+
+</main>
+
+<footer>
+  <div class="pied">
+    <span>THE GRILL · Votre restaurant de grillades à Saint-Denis</span>
+    <span>Maquette — contenu repris de thegrill.re</span>
+  </div>
+</footer>
+
+<script>
+/* Défilement : trois effets, tous pilotés par la position réelle.
+   Un seul écouteur, calcul repoussé dans un requestAnimationFrame —
+   `scroll` peut se déclencher plusieurs fois par image, et lire la
+   géométrie à chaque fois forcerait autant de recalculs de mise en page. */
+(function () {
+  var reduit = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var cibles = document.querySelectorAll('.rev');
+
+  if (reduit || !('IntersectionObserver' in window)) {
+    cibles.forEach(function (e) { e.classList.add('vu'); });
+    return;
+  }
+
+  var obs = new IntersectionObserver(function (ent) {
+    ent.forEach(function (e) {
+      if (e.isIntersecting) { e.target.classList.add('vu'); obs.unobserve(e.target); }
+    });
+  }, { rootMargin: '0px 0px -8% 0px', threshold: 0.05 });
+  cibles.forEach(function (e) { obs.observe(e); });
+
+  var hero = document.querySelector('[data-hero]');
+  var paras = [].slice.call(document.querySelectorAll('[data-par]'));
+  var attente = false;
+
+  function placer() {
+    attente = false;
+    var h = window.innerHeight;
+
+    /* Jauge : bornée, sinon une page plus courte que la fenêtre donne
+       un dénominateur nul ou négatif. */
+    var course = document.documentElement.scrollHeight - h;
+    var av = course > 0 ? window.scrollY / course : 0;
+    document.documentElement.style.setProperty('--avance', Math.min(1, Math.max(0, av)).toFixed(4));
+
+    /* Hero : 0 en haut, 1 quand il est entièrement sorti. */
+    if (hero) {
+      var r = hero.getBoundingClientRect();
+      var p = Math.min(1, Math.max(0, -r.top / (r.height || 1)));
+      hero.style.setProperty('--p', p.toFixed(4));
+    }
+
+    /* Parallaxe : −1 quand le cadre entre par le bas, +1 quand il sort
+       par le haut. Le centre de l'écran vaut 0. */
+    paras.forEach(function (c) {
+      var b = c.getBoundingClientRect();
+      if (b.bottom < -100 || b.top > h + 100) return;
+      var centre = b.top + b.height / 2;
+      var v = (centre - h / 2) / (h / 2 + b.height / 2);
+      c.style.setProperty('--par', Math.max(-1, Math.min(1, v)).toFixed(4));
+    });
+  }
+
+  function demander() { if (!attente) { attente = true; requestAnimationFrame(placer); } }
+  addEventListener('scroll', demander, { passive: true });
+  addEventListener('resize', demander);
+  placer();
+})();
+</script>
+
+</body>
+</html>

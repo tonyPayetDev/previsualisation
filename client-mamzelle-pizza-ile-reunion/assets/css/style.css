@@ -1,0 +1,1055 @@
+/* ============================================================
+   Mam'Zelle Pizza — feuille de style
+   Ligne graphique : « villa-fleurie » (élégant sobre)
+   Palette et polices relevées sur /styles/#villa-fleurie :
+     or sourd #b3a780 · encre #1a1a1a · papier #f5f5f3
+     Cormorant Garamond (titres) + Montserrat (texte)
+   Principe du style : la photo porte tout, la mise en page s'efface.
+   Coins droits, beaucoup de blanc, transitions lentes.
+   ============================================================ */
+
+/* ===== JETONS ===== */
+:root {
+  --or:        #b3a780;  /* or sourd — filets, accents sur fond sombre */
+  --or-texte:  #7a6f4a;  /* même teinte assombrie : 5:1 sur blanc, lisible */
+  --or-clair:  #d8cfb4;
+  --encre:     #1a1a1a;
+  --mid:       #555550;
+  --mid-clair: #6f6a5f;  /* texte en retrait — 4,85:1 sur papier, lisible */
+  --papier:    #f5f5f3;
+  --bord:      #e8e4dc;
+  --blanc:     #ffffff;
+  --nuit:      #14120f;  /* noir chaud des sections sombres */
+
+  --serif: 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
+  --sans:  'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+  --lent:  .55s cubic-bezier(.22,.61,.36,1);
+  --tres-lent: .9s cubic-bezier(.22,.61,.36,1);
+
+  --max: 1180px;
+  --gouttiere: 2rem;
+
+  --barre-h: 74px;   /* hauteur de l'étage logo/menu */
+  --rail-h:  46px;   /* hauteur du rail des pizzerias */
+}
+
+/* ===== RESET ===== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: calc(var(--barre-h) + var(--rail-h) + 12px);
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: var(--sans);
+  font-weight: 400;
+  font-size: 15px;
+  line-height: 1.75;
+  color: var(--mid);
+  background: var(--blanc);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+img, svg { display: block; max-width: 100%; }
+/* `height: auto` est indispensable, pas cosmétique : les attributs width et
+   height du HTML (gardés pour réserver la place et éviter les sauts de mise
+   en page) sont traduits par le navigateur en `height: 667px` & co. Tant que
+   cette hauteur est figée, toute règle `aspect-ratio` est ignorée en
+   silence — l'image sort au format du fichier, pas au format demandé. */
+img { border-radius: 0; height: auto; }
+a { color: inherit; text-decoration: none; }
+ul, ol { list-style: none; }
+button { font: inherit; color: inherit; background: none; border: none; cursor: pointer; }
+
+/* ===== SURFACES DU NAVIGATEUR =====
+   Sélection, curseur, focus et ascenseur sortent par défaut d'aucune charte :
+   on les rattache à la palette, sinon la page se trahit dès qu'on la manipule. */
+::selection { background: var(--or); color: var(--nuit); }
+::-moz-selection { background: var(--or); color: var(--nuit); }
+
+:focus-visible {
+  outline: 2px solid var(--or-texte);
+  outline-offset: 3px;
+}
+.hero :focus-visible,
+.champions :focus-visible,
+footer :focus-visible,
+.navbar:not(.scrolled) .navbar-main :focus-visible,
+.navbar:not(.scrolled) .navbar-lieux :focus-visible {
+  outline-color: var(--or-clair);
+}
+
+* { scrollbar-width: thin; scrollbar-color: var(--or) var(--papier); }
+::-webkit-scrollbar { width: 10px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--papier); }
+::-webkit-scrollbar-thumb { background: #cfc7b2; }
+::-webkit-scrollbar-thumb:hover { background: var(--or); }
+
+/* ===== TYPOGRAPHIE ===== */
+h1, h2, h3, h4 {
+  font-family: var(--serif);
+  font-weight: 400;
+  color: var(--encre);
+  line-height: 1.12;
+  letter-spacing: .005em;
+  text-wrap: balance;
+}
+
+h1 { font-size: clamp(2.6rem, 6vw, 4.6rem); font-weight: 300; }
+h2 { font-size: clamp(2rem, 3.6vw, 2.9rem); }
+h3 { font-size: 1.35rem; }
+h4 { font-size: 1.15rem; }
+
+h1 em, h2 em, h3 em { font-style: italic; font-weight: 300; }
+
+p { max-width: 68ch; }
+
+/* Micro-libellé or : la voix du style. Réservé aux informations réelles
+   (lieu, statut, chiffre), jamais posé en simple étiquette au-dessus d'un
+   titre — un titre porte son propre poids. */
+.micro {
+  display: inline-block;
+  font-family: var(--sans);
+  font-size: .69rem;
+  font-weight: 500;
+  letter-spacing: .3em;
+  text-transform: uppercase;
+  color: var(--or-texte);
+}
+
+.filet {
+  width: 46px;
+  height: 1px;
+  background: var(--or);
+  border: 0;
+  margin: 1.6rem 0;
+}
+.filet-centre { margin-left: auto; margin-right: auto; }
+
+/* ===== LAYOUT ===== */
+.container {
+  width: 100%;
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: 0 var(--gouttiere);
+}
+
+section { padding: clamp(5rem, 10vw, 8.5rem) 0; }
+
+.section-header {
+  max-width: 620px;
+  margin: 0 auto clamp(3rem, 6vw, 4.5rem);
+  text-align: center;
+}
+.section-header p { margin: 1.4rem auto 0; }
+
+/* ===== BOUTONS =====
+   Filet or, lettres capitales espacées, aucun arrondi. */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: .7rem;
+  padding: 1rem 2rem;
+  border: 1px solid var(--or-texte);
+  background: transparent;
+  color: var(--or-texte);
+  font-family: var(--sans);
+  font-size: .7rem;
+  font-weight: 500;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background var(--lent), color var(--lent), border-color var(--lent);
+}
+.btn svg { width: 15px; height: 15px; flex-shrink: 0; transition: transform var(--lent); }
+.btn:hover { background: var(--or-texte); color: var(--blanc); }
+.btn:hover svg { transform: translateX(5px); }
+
+/* Sur photo ou fond sombre */
+.btn-clair { border-color: rgba(255,255,255,.55); color: #fff; }
+.btn-clair:hover { background: #fff; color: var(--encre); border-color: #fff; }
+
+.btn-or { border-color: var(--or); color: var(--or); }
+.btn-or:hover { background: var(--or); color: var(--nuit); border-color: var(--or); }
+
+/* ============================================================
+   EN-TÊTE — deux étages
+   Étage 1 : logo + menu.  Étage 2 : le rail des pizzerias.
+   Le rail est la demande de Tony : les points de vente vivaient
+   sous le titre du hero (invisibles dès qu'on scrolle) et dans un
+   sous-menu qui n'existe qu'au survol. Ils sont désormais dans
+   l'en-tête, affichés en permanence, sur mobile comme sur desktop.
+   ============================================================ */
+.navbar {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 1000;
+  transition: background var(--lent), box-shadow var(--lent);
+}
+
+.navbar-main { height: var(--barre-h); display: flex; align-items: center; }
+
+.navbar-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+}
+
+.navbar-logo img {
+  height: 44px;
+  width: auto;
+  object-fit: contain;
+  transition: filter var(--lent);
+}
+/* Le logo est brun : sur la photo du hero il disparaît, on le passe en blanc. */
+.navbar:not(.scrolled) .navbar-logo img { filter: brightness(0) invert(1); }
+
+.nav-links { display: flex; align-items: center; gap: 2.1rem; }
+
+.nav-links a {
+  position: relative;
+  font-size: .7rem;
+  font-weight: 500;
+  letter-spacing: .17em;
+  text-transform: uppercase;
+  color: var(--encre);
+  transition: color var(--lent);
+  padding: .35rem 0;
+}
+.nav-links a::after {
+  content: "";
+  position: absolute;
+  left: 0; bottom: 0;
+  width: 100%; height: 1px;
+  background: var(--or);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--lent);
+}
+.nav-links a:hover::after { transform: scaleX(1); }
+.navbar:not(.scrolled) .nav-links a { color: #fff; }
+
+.nav-cta { padding: .8rem 1.6rem !important; }
+.nav-cta::after { display: none !important; }
+/* Une fois l'en-tête passé sur fond papier, un bouton bordé de blanc n'a
+   plus de bord du tout : il faut le repasser en filet or. */
+.navbar.scrolled .nav-cta {
+  border-color: var(--or-texte);
+  color: var(--or-texte) !important;
+}
+.navbar.scrolled .nav-cta:hover {
+  background: var(--or-texte);
+  color: #fff !important;
+}
+
+/* --- Rail des pizzerias --- */
+.navbar-lieux {
+  height: var(--rail-h);
+  border-top: 1px solid rgba(255,255,255,.16);
+  transition: border-color var(--lent), background var(--lent);
+}
+
+.navbar-lieux-inner {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  gap: 1.4rem;
+}
+
+/* Le libellé « Nos pizzerias » a été retiré du rail : le menu juste au-dessus
+   porte déjà le mot, et l'étiquette prenait 140 px sur une ligne qui doit
+   loger neuf noms. Les noms passent avant l'étiquette. L'intitulé reste
+   porté par l'aria-label de la liste pour les lecteurs d'écran. */
+
+.lieux-list {
+  display: flex;
+  align-items: center;
+  gap: 1.15rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  padding: .72rem 0;
+}
+.lieux-list::-webkit-scrollbar { display: none; }
+
+.lieux-list a {
+  position: relative;
+  white-space: nowrap;
+  font-size: .705rem;
+  font-weight: 500;
+  letter-spacing: .105em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.78);
+  transition: color var(--lent);
+  padding-bottom: 2px;
+  border-bottom: 1px solid transparent;
+}
+.lieux-list a:hover { color: #fff; border-bottom-color: var(--or); }
+
+.lieu-soon { color: rgba(255,255,255,.74) !important; }
+.lieu-soon em {
+  font-style: normal;
+  font-size: .69rem;
+  letter-spacing: .1em;
+  color: var(--or-clair);
+  margin-left: .35rem;
+}
+
+/* --- État « défilé » : l'en-tête devient papier --- */
+.navbar.scrolled {
+  background: rgba(255,255,255,.97);
+  backdrop-filter: saturate(150%) blur(8px);
+  -webkit-backdrop-filter: saturate(150%) blur(8px);
+  box-shadow: 0 1px 0 var(--bord), 0 8px 34px rgba(26,26,26,.06);
+}
+.navbar.scrolled .navbar-lieux { border-top-color: var(--bord); }
+.navbar.scrolled .lieux-list a { color: var(--mid); }
+.navbar.scrolled .lieux-list a:hover { color: var(--encre); border-bottom-color: var(--or-texte); }
+.navbar.scrolled .lieu-soon { color: var(--mid-clair) !important; }
+.navbar.scrolled .lieu-soon em { color: var(--or-texte); }
+
+/* --- Hamburger --- */
+.hamburger {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  padding: 6px;
+  z-index: 1002;
+}
+.hamburger span {
+  display: block;
+  width: 24px; height: 1.5px;
+  background: var(--encre);
+  transition: transform var(--lent), opacity var(--lent), background var(--lent);
+}
+.navbar:not(.scrolled) .hamburger span { background: #fff; }
+.hamburger.open span { background: var(--encre); }
+.hamburger.open span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+.hamburger.open span:nth-child(2) { opacity: 0; }
+.hamburger.open span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+
+/* ============================================================
+   HERO
+   ============================================================ */
+.hero {
+  position: relative;
+  min-height: 100svh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: var(--nuit);
+  padding: calc(var(--barre-h) + var(--rail-h) + 3rem) 0 5rem;
+}
+
+/* La photo est une VRAIE photo de pizza de la maison, affichée en pleine
+   opacité. Elle était posée à 45 % puis 72 % derrière un dégradé triple :
+   à ce régime une bonne photo devient une tache brune. Ici c'est un voile
+   plat et unique qui protège le texte, la photo garde sa matière. */
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  background-image: url('../images/galerie-01.jpeg');
+  background-size: cover;
+  background-position: center 45%;
+  transform: scale(1.08);
+  transition: transform 14s cubic-bezier(.19,1,.22,1);
+}
+.hero.loaded .hero-bg { transform: scale(1); }
+
+/* Deux calques, deux rôles distincts.
+   Le voile radial creuse un puits d'ombre SOUS le bloc de texte : la pizza
+   est claire au centre, et un simple dégradé vertical y laissait le texte
+   illisible. Le dégradé vertical, lui, ne sert qu'à asseoir l'en-tête en
+   haut et le repère de défilement en bas. */
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 78% 62% at 50% 47%, rgba(10,8,6,.80) 0%, rgba(10,8,6,.55) 45%, rgba(10,8,6,.12) 78%, rgba(10,8,6,0) 100%),
+    linear-gradient(180deg, rgba(10,8,6,.60) 0%, rgba(10,8,6,.10) 26%, rgba(10,8,6,.14) 66%, rgba(10,8,6,.66) 100%);
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  max-width: 760px;
+  padding: 0 var(--gouttiere);
+  color: #fff;
+}
+
+/* Blanc, pas or : l'or sourd sur une photo de pizza claire tombe à 2:1, et
+   ce libellé est du petit texte. L'or reste sur la ligne italique du titre,
+   qui est assez grande pour s'en contenter. */
+.hero-badge {
+  font-size: .7rem;
+  font-weight: 500;
+  letter-spacing: .34em;
+  text-transform: uppercase;
+  color: #fff;
+  display: block;
+  margin-bottom: 1.5rem;
+}
+
+.hero h1 { color: #fff; margin-bottom: 1.6rem; }
+.hero h1 em { display: block; color: var(--or-clair); }
+
+.hero-subtitle {
+  max-width: 46ch;
+  margin: 0 auto 2.6rem;
+  color: rgba(255,255,255,.93);
+  font-size: 1rem;
+  font-weight: 300;
+  line-height: 1.8;
+}
+
+.hero-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.hero-scroll {
+  position: absolute;
+  left: 50%;
+  bottom: 2.2rem;
+  transform: translateX(-50%);
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .5rem;
+  font-size: .69rem;
+  letter-spacing: .3em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.62);
+  animation: derive 3s ease-in-out infinite;
+}
+.hero-scroll svg { width: 15px; height: 15px; }
+
+@keyframes derive {
+  0%, 100% { transform: translate(-50%, 0); opacity: .55; }
+  50%      { transform: translate(-50%, 7px); opacity: 1; }
+}
+
+/* ============================================================
+   BIENVENUE
+   ============================================================ */
+.welcome { background: var(--blanc); }
+
+.welcome-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(2.5rem, 6vw, 5.5rem);
+  align-items: center;
+}
+
+.welcome-img-wrap { position: relative; }
+/* Format natif de la photo (3:2), pas de recadrage : c'est la seule image
+   du fonds qui montre une pizza ENTIÈRE dans son assiette. Recadrée en
+   portrait, elle se réduisait à un gros plan de garniture — exactement le
+   défaut qu'on corrige. */
+.welcome-img-wrap img {
+  width: 100%;
+  aspect-ratio: 3 / 2;
+  object-fit: cover;
+  box-shadow: 0 10px 46px rgba(26,26,26,.13);
+}
+
+.welcome-img-badge {
+  position: absolute;
+  right: -1px;
+  bottom: -1px;
+  background: var(--nuit);
+  color: #fff;
+  padding: 1.5rem 2rem;
+  text-align: center;
+}
+.welcome-img-badge .year {
+  display: block;
+  font-family: var(--serif);
+  font-size: 2.1rem;
+  font-weight: 300;
+  line-height: 1;
+  color: var(--or-clair);
+}
+.welcome-img-badge .label {
+  display: block;
+  margin-top: .45rem;
+  font-size: .69rem;
+  letter-spacing: .24em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.72);
+}
+
+.welcome-text h2 { margin-bottom: 1.4rem; }
+.welcome-text p + p { margin-top: 1.1rem; }
+
+.welcome-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  margin: 2.6rem 0;
+  padding: 2rem 0;
+  border-top: 1px solid var(--bord);
+  border-bottom: 1px solid var(--bord);
+  text-align: center;
+}
+.stat-number {
+  display: block;
+  font-family: var(--serif);
+  font-size: 2.2rem;
+  font-weight: 300;
+  line-height: 1;
+  color: var(--encre);
+}
+.stat-label {
+  display: block;
+  margin-top: .55rem;
+  font-size: .69rem;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--or-texte);
+}
+
+/* ============================================================
+   PIZZERIAS
+   ============================================================ */
+.pizzerias { background: var(--papier); }
+
+.pizzerias-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+  gap: 1px;
+  background: var(--bord);
+  border: 1px solid var(--bord);
+}
+
+/* Les fiches ne sont pas des cartes flottantes : elles forment un tableau
+   d'adresses tenu par un filet d'un pixel. Plus proche du bristol que du
+   composant, et c'est ce que demande le style. */
+.pizzeria-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background: var(--blanc);
+  padding: 2.4rem 2rem 2.2rem;
+  transition: background var(--lent);
+}
+.pizzeria-card::after {
+  content: "";
+  position: absolute;
+  left: 2rem; top: 0;
+  width: 42px; height: 2px;
+  background: var(--or);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--tres-lent);
+}
+.pizzeria-card:hover { background: #fdfdfc; }
+.pizzeria-card:hover::after { transform: scaleX(1); }
+
+.pizzeria-card h3 { margin-bottom: 1.2rem; }
+/* garantit l'écart sous la dernière ligne d'adresse, que le badge soit
+   poussé en bas ou non */
+.pizzeria-card .card-detail:last-of-type { margin-bottom: 1.4rem; }
+
+.card-detail {
+  display: flex;
+  align-items: flex-start;
+  gap: .7rem;
+  font-size: .82rem;
+  line-height: 1.6;
+  color: var(--mid);
+  margin-bottom: .55rem;
+}
+.card-detail svg {
+  width: 14px; height: 14px;
+  flex-shrink: 0;
+  margin-top: .32rem;
+  color: var(--or-texte);
+}
+.card-detail a:hover { color: var(--encre); border-bottom: 1px solid var(--or); }
+
+/* `auto` en haut : les libellés s'alignent sur une même ligne de base d'une
+   fiche à l'autre, même quand une adresse passe sur deux lignes. */
+.card-badge {
+  align-self: flex-start;
+  margin-top: auto;
+  padding: .42rem .85rem;
+  border: 1px solid var(--bord);
+  font-size: .69rem;
+  font-weight: 500;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--or-texte);
+}
+.card-badge.soon { border-color: transparent; background: var(--papier); color: var(--mid-clair); }
+
+.card-soon { color: var(--mid-clair); }
+.card-soon svg { color: var(--mid-clair); }
+
+/* ============================================================
+   LA MARQUE / CHAMPIONS
+   ============================================================ */
+.champions {
+  position: relative;
+  background: var(--nuit);
+  overflow: hidden;
+}
+
+.champions-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(2.5rem, 6vw, 5rem);
+  align-items: center;
+}
+
+.champions h2 { color: #fff; margin-bottom: 1.4rem; }
+.champions h2 em { color: var(--or-clair); }
+.champions-text p { color: rgba(255,255,255,.72); }
+.champions-text p + p { margin-top: 1.1rem; }
+
+.awards-list { margin: 2.4rem 0; }
+.awards-list li {
+  display: flex;
+  gap: 1.1rem;
+  padding: 1.25rem 0;
+  border-top: 1px solid rgba(255,255,255,.11);
+  font-size: .85rem;
+  line-height: 1.65;
+  color: rgba(255,255,255,.66);
+}
+.awards-list li:last-child { border-bottom: 1px solid rgba(255,255,255,.11); }
+
+.award-icon {
+  flex-shrink: 0;
+  width: 22px; height: 22px;
+  margin-top: .18rem;
+  color: var(--or);
+}
+.award-icon svg { width: 100%; height: 100%; }
+
+.awards-list strong {
+  display: block;
+  margin-bottom: .25rem;
+  font-family: var(--serif);
+  font-size: 1.08rem;
+  font-weight: 400;
+  letter-spacing: .01em;
+  color: #fff;
+}
+
+/* Composition photo : le geste du pizzaiolo en grand, le guide en médaillon. */
+.champions-img-wrap { position: relative; }
+.champions-img-main {
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+}
+/* Le médaillon reste DANS le cadre de la photo : débordant vers le bas il
+   recouvrait la légende, qui se retrouvait coupée en deux. */
+.champions-img-inset {
+  position: absolute;
+  right: 16px;
+  bottom: 16px;
+  width: 34%;
+  max-width: 172px;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border: 5px solid var(--nuit);
+}
+.champions-img-legende {
+  margin-top: 1.1rem;
+  font-size: .78rem;
+  letter-spacing: .04em;
+  line-height: 1.7;
+  color: rgba(255,255,255,.52);
+}
+
+/* ============================================================
+   FORMATION
+   ============================================================ */
+.formation { background: var(--blanc); }
+
+.formation-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(2.5rem, 6vw, 5.5rem);
+  align-items: center;
+}
+.formation-visual { order: 2; }
+.formation-text   { order: 1; }
+
+.formation-img {
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  box-shadow: 0 10px 46px rgba(26,26,26,.13);
+}
+
+.formation-text h2 { margin-bottom: 1.4rem; }
+
+/* Liste de prestations, pas une grille de cartes identiques. */
+.formation-cards { margin: 2.4rem 0; }
+.feature-card {
+  display: flex;
+  gap: 1.15rem;
+  padding: 1.3rem 0;
+  border-top: 1px solid var(--bord);
+}
+.feature-card:last-child { border-bottom: 1px solid var(--bord); }
+.feature-icon {
+  flex-shrink: 0;
+  width: 22px; height: 22px;
+  margin-top: .2rem;
+  color: var(--or-texte);
+}
+.feature-icon svg { width: 100%; height: 100%; }
+.feature-card h3 {
+  font-size: 1.08rem;
+  margin-bottom: .2rem;
+}
+.feature-card p { font-size: .84rem; line-height: 1.65; }
+
+/* ============================================================
+   GALERIE
+   ============================================================ */
+.galerie { background: var(--papier); }
+
+.galerie-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 3px;
+}
+
+.galerie-item {
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  background: var(--bord);
+  aspect-ratio: 1;
+}
+.galerie-item img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  transition: transform 1.1s cubic-bezier(.22,.61,.36,1), filter var(--tres-lent);
+}
+.galerie-item::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(20,18,15,.16);
+  opacity: 0;
+  transition: opacity var(--tres-lent);
+}
+.galerie-item:hover img { transform: scale(1.07); }
+.galerie-item:hover::after { opacity: 1; }
+
+/* La première photo tient deux colonnes : une grille parfaitement régulière
+   ne hiérarchise rien, et c'est la meilleure pizza du lot. */
+.galerie-item:first-child { grid-column: span 2; grid-row: span 2; }
+
+/* ============================================================
+   CONTACT
+   ============================================================ */
+.contact { background: var(--blanc); }
+
+.contact-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.15fr;
+  gap: clamp(2.5rem, 6vw, 5rem);
+}
+
+.contact-info h2 { margin-bottom: 1.3rem; }
+.contact-info > p { margin-bottom: 2.4rem; }
+
+.contact-details { margin-bottom: 2.4rem; }
+.contact-item {
+  display: flex;
+  gap: 1.1rem;
+  padding: 1.2rem 0;
+  border-top: 1px solid var(--bord);
+}
+.contact-item:last-child { border-bottom: 1px solid var(--bord); }
+.contact-icon {
+  flex-shrink: 0;
+  width: 20px; height: 20px;
+  margin-top: .15rem;
+  color: var(--or-texte);
+}
+.contact-icon svg { width: 100%; height: 100%; }
+
+.contact-item-text strong {
+  display: block;
+  font-size: .69rem;
+  font-weight: 600;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--or-texte);
+  margin-bottom: .35rem;
+}
+.contact-item-text span,
+.contact-item-text a { font-size: .88rem; color: var(--mid); line-height: 1.6; }
+.contact-item-text a:hover { color: var(--encre); border-bottom: 1px solid var(--or); }
+
+.social-links { display: flex; gap: .7rem; }
+.social-link {
+  display: grid;
+  place-items: center;
+  width: 42px; height: 42px;
+  border: 1px solid var(--bord);
+  color: var(--or-texte);
+  transition: background var(--lent), color var(--lent), border-color var(--lent);
+}
+.social-link svg { width: 17px; height: 17px; }
+.social-link:hover { background: var(--or-texte); border-color: var(--or-texte); color: #fff; }
+
+.contact-map { display: flex; flex-direction: column; gap: 1px; background: var(--bord); }
+
+.map-placeholder {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.6rem 1.8rem;
+  background: var(--papier);
+  font-size: .8rem;
+  line-height: 1.6;
+  color: var(--mid);
+}
+.map-placeholder svg { width: 22px; height: 22px; flex-shrink: 0; color: var(--or-texte); }
+
+.contact-form { background: var(--papier); padding: clamp(1.8rem, 4vw, 2.6rem); }
+
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.form-group { margin-bottom: 1.1rem; }
+
+.form-group label {
+  display: block;
+  margin-bottom: .5rem;
+  font-size: .69rem;
+  font-weight: 600;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--or-texte);
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+  width: 100%;
+  padding: .85rem 1rem;
+  border: 1px solid var(--bord);
+  border-radius: 0;
+  background: var(--blanc);
+  font-family: var(--sans);
+  font-size: .88rem;
+  color: var(--encre);
+  transition: border-color var(--lent);
+  caret-color: var(--or-texte);
+}
+.form-group input::placeholder,
+.form-group textarea::placeholder { color: var(--mid-clair); }
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: var(--or-texte);
+}
+.form-group textarea { resize: vertical; min-height: 116px; }
+
+.form-submit { width: 100%; justify-content: center; }
+
+/* ============================================================
+   PIED DE PAGE
+   ============================================================ */
+footer { background: var(--nuit); color: rgba(255,255,255,.6); padding: 5rem 0 2rem; }
+
+.footer-top {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr 1fr 1fr;
+  gap: 2.5rem;
+  padding-bottom: 3rem;
+}
+
+.footer-brand img { height: 52px; width: auto; object-fit: contain; margin-bottom: 1.3rem; }
+.footer-brand p { font-size: .82rem; line-height: 1.75; max-width: 34ch; }
+
+.footer-col h3 {
+  font-family: var(--sans);
+  font-size: .69rem;
+  font-weight: 600;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: var(--or);
+  margin-bottom: 1.2rem;
+}
+.footer-col ul li { margin-bottom: .6rem; }
+.footer-col ul li a {
+  font-size: .82rem;
+  color: rgba(255,255,255,.58);
+  transition: color var(--lent);
+}
+.footer-col ul li a:hover { color: var(--or-clair); }
+
+.footer-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding-top: 2rem;
+  border-top: 1px solid rgba(255,255,255,.1);
+  font-size: .72rem;
+  color: rgba(255,255,255,.4);
+}
+.footer-bottom a { color: rgba(255,255,255,.55); }
+.footer-bottom a:hover { color: var(--or-clair); }
+
+/* ============================================================
+   APPARITIONS
+   Une seule idée : le contenu monte de quelques pixels, lentement.
+   ============================================================ */
+.reveal {
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity 1s cubic-bezier(.22,.61,.36,1), transform 1s cubic-bezier(.22,.61,.36,1);
+}
+.reveal.visible { opacity: 1; transform: none; }
+.reveal-delay-1 { transition-delay: .09s; }
+.reveal-delay-2 { transition-delay: .18s; }
+.reveal-delay-3 { transition-delay: .27s; }
+.reveal-delay-4 { transition-delay: .36s; }
+
+/* ============================================================
+   VISIONNEUSE
+   ============================================================ */
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(10,8,6,.94);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity var(--lent), visibility var(--lent);
+}
+.lightbox.active { opacity: 1; visibility: visible; }
+.lightbox img { max-width: 88vw; max-height: 86vh; object-fit: contain; }
+
+.lightbox-close,
+.lightbox-nav {
+  position: absolute;
+  color: #fff;
+  opacity: .55;
+  transition: opacity var(--lent);
+  line-height: 1;
+}
+.lightbox-close:hover, .lightbox-nav:hover { opacity: 1; }
+.lightbox-close { top: 1.5rem; right: 1.8rem; font-size: 2.2rem; }
+.lightbox-nav { top: 50%; transform: translateY(-50%); font-size: 3rem; padding: 0 1rem; }
+.lightbox-prev { left: .6rem; }
+.lightbox-next { right: .6rem; }
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+/* Le dégradé de bord ne sert que si le rail défile vraiment. Appliqué en
+   permanence, il rongeait le dernier nom (« La Possession ») alors que la
+   liste tenait entière. */
+@media (max-width: 1100px) {
+  .lieux-list {
+    mask-image: linear-gradient(90deg, #000 calc(100% - 30px), transparent 100%);
+    -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 30px), transparent 100%);
+  }
+}
+
+@media (max-width: 1024px) {
+  :root { --gouttiere: 1.6rem; }
+  .welcome-grid,
+  .champions-grid,
+  .formation-grid,
+  .contact-grid { grid-template-columns: 1fr; }
+  .formation-visual { order: 1; }
+  .formation-text   { order: 2; }
+  .welcome-img-wrap img,
+  .champions-img-main,
+  .formation-img { aspect-ratio: 3 / 2; }
+  .champions-img-inset { width: 30%; right: 14px; bottom: 14px; }
+  .footer-top { grid-template-columns: 1fr 1fr; gap: 2rem; }
+  .galerie-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+@media (max-width: 768px) {
+  :root { --barre-h: 62px; --rail-h: 38px; }
+
+  .hamburger { display: flex; }
+
+  /* Menu principal en panneau plein écran. Le rail des pizzerias, lui,
+     reste TOUJOURS visible : c'est l'objet de la demande. */
+  .nav-links {
+    position: fixed;
+    inset: 0;
+    flex-direction: column;
+    justify-content: center;
+    gap: 1.9rem;
+    background: var(--blanc);
+    transform: translateX(100%);
+    transition: transform var(--lent);
+    z-index: 1001;
+  }
+  .nav-links.open { transform: translateX(0); }
+  .nav-links a { color: var(--encre) !important; font-size: .82rem; letter-spacing: .2em; }
+  .nav-links a::after { background: var(--or-texte); }
+
+  .navbar-lieux-inner { gap: .9rem; }
+  .lieux-list { gap: 1.05rem; }
+  .lieux-list a { font-size: .69rem; letter-spacing: .07em; }
+
+  .hero { padding-top: calc(var(--barre-h) + var(--rail-h) + 2rem); }
+  .hero-actions { flex-direction: column; align-items: stretch; }
+  .hero-actions .btn { justify-content: center; }
+
+  .welcome-stats { padding: 1.6rem 0; gap: .8rem; }
+  .stat-number { font-size: 1.7rem; }
+  .stat-label { font-size: .69rem; letter-spacing: .1em; }
+
+  .welcome-img-badge { padding: 1.1rem 1.4rem; }
+  .welcome-img-badge .year { font-size: 1.7rem; }
+
+  .galerie-grid { grid-template-columns: repeat(2, 1fr); }
+
+  .form-row { grid-template-columns: 1fr; }
+
+  .footer-top { grid-template-columns: 1fr; }
+  .footer-bottom { flex-direction: column; align-items: flex-start; }
+}
+
+@media (max-width: 420px) {
+  :root { --gouttiere: 1.25rem; }
+  .pizzeria-card { padding: 1.9rem 1.5rem; }
+  .galerie-item:first-child { grid-column: span 2; grid-row: span 1; aspect-ratio: 2 / 1; }
+}
+
+/* ===== ACCESSIBILITÉ ===== */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+  .reveal { opacity: 1; transform: none; }
+  .hero-bg { transform: none; }
+}

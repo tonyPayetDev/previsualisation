@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Koytcha Immo — Avant / Après</title>
+<style>
+  :root{--magenta:#e6007e;--ink:#17171f;--muted:#6b6b76}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;background:#f4f1f4;color:var(--ink);min-height:100vh;display:flex;flex-direction:column}
+  header{padding:1.1rem 1.3rem .9rem;text-align:center}
+  header .brand{display:inline-flex;align-items:center;gap:.5rem;font-weight:800;letter-spacing:-.02em;font-size:1.15rem}
+  header .brand .mark{width:26px;height:26px;border-radius:50%;background:var(--magenta);position:relative}
+  header .brand .mark::before{content:"";position:absolute;left:8px;top:5px;width:4px;height:16px;background:#fff;border-radius:2px;transform:rotate(-12deg)}
+  header .brand .immo{color:var(--magenta)}
+  header p{color:var(--muted);font-size:.85rem;margin-top:.35rem}
+  .toggle{display:inline-flex;background:#fff;border:1px solid #e6dfe4;border-radius:999px;padding:.3rem;margin:.9rem auto 0;box-shadow:0 6px 20px rgba(20,10,20,.08)}
+  .toggle button{border:none;background:transparent;color:var(--muted);font-weight:700;font-size:.88rem;padding:.6rem 1.5rem;border-radius:999px;cursor:pointer;transition:.25s}
+  .toggle button.on{background:var(--magenta);color:#fff;box-shadow:0 6px 16px rgba(230,0,126,.35)}
+  .stage{flex:1;position:relative;margin:1rem auto 1.2rem;width:min(1180px,94vw);border-radius:18px;overflow:hidden;box-shadow:0 22px 60px rgba(20,10,20,.16);background:#000}
+  .frame{position:relative;width:100%;height:74vh;min-height:520px}
+  iframe{position:absolute;inset:0;width:100%;height:100%;border:0;opacity:0;transition:opacity .35s;pointer-events:none}
+  iframe.on{opacity:1;pointer-events:auto}
+  .tag{position:absolute;top:.8rem;left:.8rem;z-index:5;background:rgba(15,13,20,.82);color:#fff;font-size:.72rem;font-weight:700;letter-spacing:.06em;padding:.4rem .8rem;border-radius:999px;backdrop-filter:blur(6px)}
+  .tag b{color:#ff5db1}
+  footer{text-align:center;color:var(--muted);font-size:.76rem;padding:0 1rem 1.2rem}
+  footer a{color:var(--magenta);font-weight:700;text-decoration:none}
+</style>
+</head>
+<body>
+  <header>
+    <div class="brand"><span class="mark"></span>Koytcha<span class="immo">immo</span></div>
+    <p>Proposition de header animé — comparez l'avant et l'après. Même contenu : recherche → programmes → présentation.</p>
+    <div class="toggle">
+      <button id="b-avant" type="button">Avant</button>
+      <button id="b-apres" class="on" type="button">Après ✨</button>
+    </div>
+  </header>
+
+  <div class="stage">
+    <span class="tag" id="tag"><b>APRÈS</b> — design premium</span>
+    <div class="frame">
+      <iframe id="if-avant" src="../koytcha-header/_before.html" loading="lazy" title="Version avant"></iframe>
+      <iframe id="if-apres" class="on" src="../koytcha-header/" loading="lazy" title="Version après"></iframe>
+    </div>
+  </div>
+
+  <footer>
+    Ouvrir en plein écran : <a href="../koytcha-header/" target="_blank" rel="noopener">version proposée →</a> · Programmes et textes = exemples, non contractuels.
+  </footer>
+
+  <script>
+    const bA=document.getElementById('b-avant'),bB=document.getElementById('b-apres');
+    const ifA=document.getElementById('if-avant'),ifB=document.getElementById('if-apres');
+    const tag=document.getElementById('tag');
+    function show(after){
+      bB.classList.toggle('on',after);bA.classList.toggle('on',!after);
+      ifB.classList.toggle('on',after);ifA.classList.toggle('on',!after);
+      tag.innerHTML=after?'<b>APRÈS</b> — design premium':'<b>AVANT</b> — version initiale';
+    }
+    bA.onclick=()=>show(false);bB.onclick=()=>show(true);
+  </script>
+</body>
+</html>

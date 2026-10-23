@@ -1,0 +1,257 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Le plan — tunnel de vente</title>
+<style>
+:root{--bg:#0a0a0a;--carte:#141419;--trait:#23232c;--or:#FFE600;--cyan:#00D4FF;
+      --violet:#A855F7;--rouge:#FF6B5A;--orange:#FFB020;--vert:#3DD68C;
+      --ink:#F3F3F7;--doux:#8B8B96}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:#C9CCD4;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;
+  line-height:1.62;padding:30px 16px 90px;display:flex;flex-direction:column;align-items:center}
+.w{width:100%;max-width:780px}
+.eb{font-size:11.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--or);font-weight:700}
+h1{font-size:clamp(25px,5.6vw,38px);color:var(--ink);letter-spacing:-.03em;line-height:1.12;margin:9px 0 12px}
+h1 em{font-style:normal;color:var(--or)}
+p.s{color:var(--doux);font-size:15.5px;max-width:62ch}
+h2{font-size:clamp(19px,4vw,24px);color:var(--ink);letter-spacing:-.02em;margin:42px 0 4px}
+h2 .p{display:inline-block;font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+  padding:4px 10px;border-radius:999px;vertical-align:middle;margin-left:10px;font-weight:700}
+.p.r{background:rgba(255,107,90,.15);color:var(--rouge);border:1px solid rgba(255,107,90,.4)}
+.p.o{background:rgba(255,176,32,.14);color:var(--orange);border:1px solid rgba(255,176,32,.4)}
+.p.v{background:rgba(61,214,140,.13);color:var(--vert);border:1px solid rgba(61,214,140,.4)}
+.sub{color:var(--doux);font-size:14.5px;margin-bottom:14px}
+.f{background:var(--carte);border:1px solid var(--trait);border-radius:15px;padding:19px 21px;margin-top:13px}
+.f.urg{border-left:4px solid var(--rouge)}
+.f.moy{border-left:4px solid var(--orange)}
+.f.calme{border-left:4px solid var(--vert)}
+.f h3{font-size:17px;color:var(--ink);letter-spacing:-.01em;margin-bottom:4px}
+.f .num{font-size:11.5px;letter-spacing:.16em;color:var(--doux);font-weight:700;text-transform:uppercase}
+.f p{font-size:15px;margin-top:9px}
+.f .preuve{background:#000;border:1px solid var(--trait);border-radius:10px;padding:11px 13px;
+  margin-top:11px;font-size:13.5px;color:#B9BEC4}
+.f .preuve b{color:var(--or)}
+.f ul{margin:10px 0 0 19px}
+.f li{margin:7px 0;font-size:14.8px}
+.f li b{color:var(--ink)}
+.meta{display:flex;gap:8px;flex-wrap:wrap;margin-top:13px}
+.meta span{font-size:11.5px;letter-spacing:.06em;padding:5px 10px;border-radius:8px;
+  border:1px solid var(--trait);background:#0f0f14;color:var(--doux)}
+.meta span b{color:var(--ink)}
+table{border-collapse:collapse;width:100%;margin-top:14px;font-size:14px}
+th,td{padding:9px 10px;border-bottom:1px solid var(--trait);text-align:left;vertical-align:top}
+th{color:var(--or);font-size:11px;letter-spacing:.1em;text-transform:uppercase}
+td.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.bad{color:var(--rouge);font-weight:700}
+code{background:#000;padding:1px 6px;border-radius:4px;font-size:13px;color:var(--or)}
+.fin{margin-top:44px;border-top:1px solid var(--trait);padding-top:18px;font-size:14px;color:var(--doux)}
+</style>
+<div class="w">
+
+<div class="eb">Plan de travail · 3 septembre 2026</div>
+<h1>Ton tunnel : <em>ce qui fuit, ce qui manque</em></h1>
+<p class="s">Rien ici ne sort d'une bonne idée en l'air. Chaque point est un défaut que j'ai
+mesuré aujourd'hui dans tes systèmes, ou une fonctionnalité qui débloque un défaut mesuré.
+Classé par <b>distance au cash</b> — ta règle.</p>
+
+<!-- ══════════════ ROUGE ══════════════ -->
+<h2>D'abord réparer <span class="p r">le cash est déjà passé à côté</span></h2>
+<div class="sub">Trois fuites où l'argent est déjà sorti par la porte. Rien de neuf ne vaut la
+peine tant que celles-là coulent.</div>
+
+<div class="f urg">
+  <div class="num">Fuite 01</div>
+  <h3>Quatorze posts LinkedIn sont morts en silence</h3>
+  <p>Ta série secteurs — resto, immo, beauté, santé, garage, artisan, voyage, avocat, solaire,
+  événementiel — <b>n'est jamais partie sur LinkedIn</b>. Ni les quatre prompt-reveal. Tous
+  programmés les 27 et 28 août, tous en échec, aucune alerte.</p>
+  <div class="preuve">Relevé chez Blotato : 14 posts en état <b>failed</b>,
+  message identique — <code>Failed to fetch media URL: 403 Forbidden</code>.
+  Les 10 vidéos existent toujours et répondent en <b>HTTP 200</b> quand c'est moi qui les demande :
+  c'est le <b>fetcher de Blotato</b> qui se prend le 403 de Cloudflare, pas l'URL qui est morte.</div>
+  <ul>
+    <li><b>À faire :</b> republier les 14 en <b>upload binaire</b> (presigned + PUT), jamais par URL.</li>
+    <li><b>Et surtout :</b> une alerte quand un post passe en <code>failed</code>. Aujourd'hui,
+    rien ne te prévient — c'est comme ça qu'on perd deux semaines de production sans le savoir.</li>
+  </ul>
+  <div class="meta"><span>effort <b>2 h</b></span><span>coût <b>0 €</b></span>
+    <span>débloque <b>10 secteurs × 1 réseau</b></span></div>
+</div>
+
+<div class="f urg">
+  <div class="num">Fuite 02</div>
+  <h3>Ta campagne emails est finie, et personne n'a pris la suite</h3>
+  <p>Les <b>50 agences de voyages sont toutes contactées</b> — 50/50. Le workflow tourne encore
+  chaque matin à 8 h et n'envoie plus rien. Pendant ce temps, les <b>50 emails hôtels</b> sont
+  écrits, relus, prêts, et n'ont pas de file.</p>
+  <div class="preuve">Vérifié ce soir : exécution du 03/09 à 08 h, statut <b>success</b>,
+  <b>0 email composé</b>. Aucun workflow « hôtels » n'existe dans n8n.</div>
+  <ul>
+    <li><b>À faire :</b> mettre les hôtels en file (bloqué chez moi par le garde-fou de sécurité —
+    il te faut soit lever la règle, soit dupliquer les deux workflows toi-même).</li>
+    <li><b>À construire :</b> un <b>enchaînement de secteurs</b> — quand une campagne atteint
+    50/50, la suivante démarre seule. Sinon ça se reproduira à chaque secteur.</li>
+  </ul>
+  <div class="meta"><span>effort <b>3 h</b></span><span>coût <b>0 €</b></span>
+    <span>débloque <b>50 prospects en attente</b></span></div>
+</div>
+
+<div class="f urg">
+  <div class="num">Fuite 03</div>
+  <h3>Les leads arrivent — la fuite est à la sortie</h3>
+  <p>Trois personnes sur quatre qui t'ont contacté <b>n'ont jamais eu de réponse</b>, dont une
+  demande d'audit. Le formulaire capte, le workflow n'aiguille pas selon la source.</p>
+  <ul>
+    <li><b>À construire :</b> un aiguillage par <code>source</code> — audit, ressource, démo,
+    contact — avec un accusé de réception différent pour chacun et une relance à J+2.</li>
+    <li>C'est exactement ce que tu vends aux autres. Ne pas l'avoir chez toi est le pire des
+    arguments commerciaux.</li>
+  </ul>
+  <div class="meta"><span>effort <b>4 h</b></span><span>coût <b>0 €</b></span>
+    <span>débloque <b>chaque lead futur</b></span></div>
+</div>
+
+<!-- ══════════════ ORANGE ══════════════ -->
+<h2>Ensuite construire <span class="p o">ça rapproche du cash</span></h2>
+<div class="sub">Les outils que tu m'as demandés, plus ceux que tes propres défauts appellent.</div>
+
+<div class="f moy">
+  <div class="num">Feature 04 · ton idée</div>
+  <h3>Le radar LinkedIn</h3>
+  <p>Oui, c'est faisable — et LinkedIn est ton réseau le plus sous-exploité : tu y publies
+  <b>le même texte que TikTok</b> alors que l'audience et le format n'ont rien à voir.</p>
+  <div class="preuve">Relevé sur tes 30 derniers posts LinkedIn : les publiés portent un
+  <b>vrai texte long</b> avec une analyse (« le goulot d'étranglement redevient l'idée »), et
+  ce sont les meilleurs. Mais la moitié de tes posts y sont des copies TikTok.</div>
+  <ul>
+    <li><b>Ce que le radar ferait :</b> scraper les posts qui percent dans ton secteur sur
+    LinkedIn (via le webhook Apify qui marche déjà), en extraire la <b>structure</b> — accroche,
+    longueur, présence de chiffres, format de la chute — et te proposer trois angles par semaine.</li>
+    <li><b>Le piège à éviter :</b> ne pas copier les sujets, copier les <b>structures</b>. Un
+    sujet volé se voit ; une structure, non.</li>
+  </ul>
+  <div class="meta"><span>effort <b>6-8 h</b></span><span>coût <b>~1 €/semaine de scrape</b></span>
+    <span>dépend de <b>ton accord sur la dépense</b></span></div>
+</div>
+
+<div class="f moy">
+  <div class="num">Feature 05 · ton idée</div>
+  <h3>Le carrousel</h3>
+  <p>Faisable, et c'est le format qui manque : tu ne produis que de la vidéo. Or un carrousel se
+  lit sans son, se sauvegarde, et revient dans le fil des semaines plus tard — trois choses
+  qu'une vidéo ne fait pas.</p>
+  <ul>
+    <li><b>Ce que je construirais :</b> même chaîne que tes vidéos — un brief, un gabarit,
+    un rendu — mais en <b>8 images PNG</b> au lieu d'un MP4. Le moteur existe déjà : c'est le
+    même rendu HTML que tes cartes.</li>
+    <li><b>Le vrai gain :</b> un carrousel se fabrique à partir d'une vidéo <b>déjà faite</b>.
+    Tes 77 vidéos deviennent 77 carrousels sans réécrire une ligne.</li>
+  </ul>
+  <div class="meta"><span>effort <b>4-5 h</b></span><span>coût <b>0 €</b></span>
+    <span>débloque <b>un 2ᵉ format sur 77 sujets</b></span></div>
+</div>
+
+<div class="f moy">
+  <div class="num">Feature 06</div>
+  <h3>Le pont qui manque : valider = rendre</h3>
+  <p>Aujourd'hui, l'onglet CRÉER produit un brief que tu me colles. Ça marche, mais c'est toi
+  le fil électrique. Le rendu tourne sur ta machine, pas dans le navigateur.</p>
+  <ul>
+    <li><b>À construire :</b> un déclencheur n8n qui entre en SSH sur la machine et lance le
+    rendu — le mécanisme <b>existe déjà</b> pour l'avatar-reel, il suffit de le rebrancher.</li>
+    <li>Même chose pour <code>/tournage/</code> : ta prise part sur R2, mais c'est encore toi qui
+    me passes la commande.</li>
+  </ul>
+  <div class="meta"><span>effort <b>5 h</b></span><span>coût <b>0 €</b></span>
+    <span>supprime <b>2 copier-coller par vidéo</b></span></div>
+</div>
+
+<div class="f moy">
+  <div class="num">Feature 07</div>
+  <h3>La récolte de scripts</h3>
+  <p>Tu m'as parlé d'une vidéo à récupérer pour en tirer les scripts. Le mécanisme est là :
+  <code>tokscript</code> transcrit, et l'agent <code>script-writer</code> écrit dans ton Sheet.</p>
+  <div class="preuve">Une réserve honnête : la transcription YouTube <b>a expiré deux fois</b>
+  aujourd'hui sur la vidéo que tu m'as envoyée (50 s de délai). Le chemin Instagram et TikTok,
+  lui, répond. À tester avant de bâtir dessus.</div>
+  <ul>
+    <li><b>À construire :</b> tu colles une URL, ça transcrit, ça extrait la <b>structure du
+    script</b> (accroche, promesse, preuve, chute) et ça dépose une ligne « à faire » dans ton Sheet.</li>
+  </ul>
+  <div class="meta"><span>effort <b>4 h</b></span><span>coût <b>0 €</b></span>
+    <span>bloqué par <b>la transcription à fiabiliser</b></span></div>
+</div>
+
+<!-- ══════════════ VERT ══════════════ -->
+<h2>Puis solidifier <span class="p v">ça évite de reperdre du cash</span></h2>
+<div class="sub">Moins spectaculaire, mais c'est ce qui fait qu'on ne refait pas deux fois le
+même travail.</div>
+
+<div class="f calme">
+  <div class="num">Chantier 08</div>
+  <h3>Les crons meurent avec la session</h3>
+  <p>Les deux relèves que j'ai posées aujourd'hui — le backlog à 6 h 03, les décisions de
+  <code>/tri/</code> à 7 h 17 — <b>disparaissent quand la session se ferme</b>, et expirent de
+  toute façon en 7 jours.</p>
+  <ul><li><b>À faire :</b> les porter dans n8n, où ils survivent. Une heure de travail pour que
+  tout ce qu'on a construit aujourd'hui tienne la semaine prochaine.</li></ul>
+  <div class="meta"><span>effort <b>1 h</b></span><span>coût <b>0 €</b></span></div>
+</div>
+
+<div class="f calme">
+  <div class="num">Chantier 09</div>
+  <h3>Tes outils sont invisibles</h3>
+  <p>La page d'accueil que tu écris à la main <b>n'arrive jamais en production</b> :
+  <code>build-index.mjs</code> la réécrit à chaque déploiement. La carte « Tourner » ajoutée en
+  août n'a jamais été vue. C'est la vraie cause de l'éparpillement dont tu te plains.</p>
+  <ul><li><b>À faire :</b> deux portes dans le générateur — <code>/tri/</code> pour ce qui se
+  décide au pouce, <code>/taches/valider/</code> pour ce qui se décide en lisant. Le reste
+  s'atteint depuis elles.</li></ul>
+  <div class="meta"><span>effort <b>1 h</b></span><span>coût <b>0 €</b></span></div>
+</div>
+
+<div class="f calme">
+  <div class="num">Chantier 10</div>
+  <h3>Le studio de poses — 3 sur 24</h3>
+  <p>Aucun de tes clips avatar n'a de plage bouche fermée exploitable : <b>1,15 s au mieux</b>.
+  C'est pour ça que les médaillons avatar sont des images figées, et pas des inserts vivants.</p>
+  <ul><li><b>À faire :</b> filmer les 21 poses restantes, <b>silencieuses</b>. Une demi-heure de
+  tournage qui débloque tous les inserts, dans tous les formats, pour toujours.</li></ul>
+  <div class="meta"><span>effort <b>30 min de ta part</b></span><span>coût <b>0 €</b></span>
+    <span>débloque <b>tous les formats</b></span></div>
+</div>
+
+<div class="f calme">
+  <div class="num">Chantier 11</div>
+  <h3>La qualité des skills, une par une</h3>
+  <p>Tu as <b>29 skills vidéo</b>. Je n'en ai audité aucune systématiquement — et plusieurs
+  référencent des outils absents (ElevenLabs, Gemini, HeyGen) ou des chemins morts.</p>
+  <ul><li><b>À faire :</b> une passe par skill — est-ce qu'elle tourne encore, ses dépendances
+  existent-elles, sa sortie est-elle à ta charte. Une par jour, pas les 29 d'un coup.</li>
+  <li>Le bouton « un souci sur ce style » de l'onglet CRÉER alimentera cette liste.</li></ul>
+  <div class="meta"><span>effort <b>30 min × 29</b></span><span>coût <b>0 €</b></span></div>
+</div>
+
+<!-- ══════════════ RÉCAP ══════════════ -->
+<h2>Si tu ne fais que trois choses</h2>
+<table>
+  <tr><th>Ordre</th><th>Quoi</th><th class="n">Effort</th><th class="n">Ce que ça rend</th></tr>
+  <tr><td class="bad">1</td><td>Republier les 14 posts LinkedIn morts</td><td class="n">2 h</td>
+      <td class="n">10 secteurs enfin diffusés</td></tr>
+  <tr><td class="bad">2</td><td>Aiguiller les leads entrants</td><td class="n">4 h</td>
+      <td class="n">plus aucun lead sans réponse</td></tr>
+  <tr><td class="bad">3</td><td>Filmer les 21 poses silencieuses</td><td class="n">30 min</td>
+      <td class="n">tous les formats débloqués</td></tr>
+</table>
+<p class="s" style="margin-top:12px">Les trois coûtent <b>zéro euro</b> et six heures et demie.
+Le radar LinkedIn et le carrousel sont plus excitants — mais ils produisent du contenu pour un
+tunnel qui fuit encore.</p>
+
+<div class="fin">
+  Sources — Blotato (40 posts TikTok et 30 posts LinkedIn relevés le 03/09), exécutions n8n
+  (<code>RZknWlRQXDxsCYoW</code>, <code>u6wPLkdRql1WVBEh</code>), registre des refus,
+  <code>/work/prospection-hotels/</code>, <code>lips-map.json</code>, et l'atelier
+  <code>/studio/</code>. Tous les chiffres sont vérifiables et datés du jour.
+</div>
+</div>

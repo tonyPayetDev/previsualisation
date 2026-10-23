@@ -1,0 +1,291 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Le Contrechamp — concept vidéo VR</title>
+<meta name="description" content="Concept de vidéo verticale pour une salle de réalité virtuelle : le décalage entre ce qu'on voit d'un joueur et ce qu'il vit. Script minuté, plan de tournage, budget.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chivo:wght@400;700;900&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ground:#08090C;
+  --surface:#101319;
+  --raise:#171B23;
+  --line:#252B36;
+  --ink:#EFF1F5;
+  --soft:#AAB2C0;
+  --faint:#9199A8;
+  --volt:#4DE1C1;
+  --volt-deep:#2FA98F;
+  --heat:#FF6B4A;
+  --display:'Chivo',system-ui,sans-serif;
+  --read:'Newsreader',Georgia,serif;
+  --wrap:1000px;
+  --fs-xs:13px;
+  --fs-sm:16.5px;
+  --fs-md:21px;
+  --fs-lg:27px;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--ground);color:var(--ink);
+  font-family:var(--display);font-size:var(--fs-sm);line-height:1.65;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3{margin:0;font-weight:900;letter-spacing:-.025em;line-height:1.02;text-wrap:balance}
+p{margin:0}
+a{color:var(--volt)}
+.wrap{max-width:var(--wrap);margin:0 auto;padding:0 24px}
+:focus-visible{outline:2px solid var(--volt);outline-offset:3px;border-radius:3px}
+.tag{
+  font-size:var(--fs-xs);font-weight:700;letter-spacing:.11em;
+  text-transform:uppercase;color:var(--volt);
+}
+
+header{padding:76px 0 54px;border-bottom:1px solid var(--line)}
+h1{font-size:clamp(2.7rem,7.5vw,5rem)}
+h1 span{color:var(--volt)}
+.lede{
+  margin-top:26px;font-family:var(--read);font-size:var(--fs-lg);
+  color:var(--soft);max-width:44ch;line-height:1.45;
+}
+.ctx{margin-top:14px;color:var(--faint);font-size:var(--fs-sm)}
+.meta{display:flex;flex-wrap:wrap;gap:9px;margin-top:30px}
+.chip{
+  border:1px solid var(--line);border-radius:100px;padding:7px 17px;
+  font-size:var(--fs-xs);font-weight:700;
+}
+.chip b{color:var(--volt)}
+
+section{padding:76px 0;border-bottom:1px solid var(--line)}
+h2{font-size:clamp(1.7rem,3.8vw,2.5rem);margin-bottom:14px}
+.intro{color:var(--soft);max-width:58ch;font-family:var(--read);font-size:var(--fs-md);line-height:1.5}
+
+/* idee */
+.why{background:var(--surface);border:1px solid var(--line);padding:28px 32px;
+  margin-top:30px;border-radius:5px}
+.why p{font-family:var(--read);font-size:var(--fs-md);line-height:1.5}
+.why p+p{margin-top:14px;color:var(--soft)}
+
+/* script */
+.shots{margin-top:38px;display:flex;flex-direction:column;gap:14px}
+.shot{
+  background:var(--surface);border:1px solid var(--line);border-radius:5px;
+  display:grid;grid-template-columns:104px 1fr;overflow:hidden;
+}
+@media(max-width:620px){.shot{grid-template-columns:1fr}}
+.tc{
+  background:var(--raise);padding:22px 16px;text-align:center;
+  border-right:1px solid var(--line);
+}
+@media(max-width:620px){.tc{border-right:0;border-bottom:1px solid var(--line);
+  display:flex;gap:12px;justify-content:flex-start;align-items:baseline;padding:12px 20px}}
+.tc b{display:block;font-size:var(--fs-md);font-weight:900;color:var(--volt);
+  font-variant-numeric:tabular-nums;line-height:1}
+.tc span{display:block;margin-top:5px;font-size:var(--fs-xs);color:var(--faint)}
+@media(max-width:620px){.tc b,.tc span{display:inline;margin:0}}
+.sh-body{padding:22px 26px}
+.cam{font-size:var(--fs-xs);font-weight:700;letter-spacing:.02em;
+  color:var(--heat);margin-bottom:10px}
+.cam.b{color:var(--volt)}
+.vis{color:var(--soft);font-size:var(--fs-sm)}
+.vo{
+  margin-top:14px;padding-left:16px;border-left:2px solid var(--line);
+  font-family:var(--read);font-size:var(--fs-md);font-style:italic;line-height:1.45;
+}
+.vo b{font-style:normal;font-weight:500;color:var(--volt);font-family:var(--display);
+  font-size:var(--fs-xs);letter-spacing:.08em;text-transform:uppercase;display:block;
+  margin-bottom:5px;color:var(--faint)}
+
+/* tournage */
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:34px}
+@media(max-width:780px){.grid2{grid-template-columns:1fr}}
+.box{background:var(--surface);border:1px solid var(--line);border-radius:5px;padding:28px 30px}
+.box h3{font-size:var(--fs-md);margin-bottom:16px}
+.box ul{margin:0;padding-left:19px;color:var(--soft)}
+.box li{margin-bottom:9px}
+.box li:last-child{margin-bottom:0}
+.box li b{color:var(--ink)}
+
+table{width:100%;border-collapse:collapse;font-size:var(--fs-sm);margin-top:22px}
+th,td{text-align:left;padding:12px 10px;border-bottom:1px solid var(--line)}
+th{font-size:var(--fs-xs);letter-spacing:.09em;text-transform:uppercase;color:var(--faint);font-weight:700}
+td:last-child{text-align:right;font-variant-numeric:tabular-nums;font-weight:700}
+.tw{overflow-x:auto}
+
+.flag{background:var(--raise);border:1px solid var(--heat);border-radius:5px;
+  padding:24px 28px;margin-top:30px}
+.flag h3{font-size:var(--fs-md);color:var(--heat);margin-bottom:12px}
+.flag p{color:var(--soft)}
+.flag p+p{margin-top:12px}
+
+footer{padding:44px 0 70px;color:var(--faint);font-size:var(--fs-xs)}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+<header>
+  <h1>Le <span>Contrechamp</span></h1>
+  <p class="lede">Il a l'air ridicule. Puis on montre ce qu'il voit — et plus personne ne rit de la même façon.</p>
+  <p class="ctx">Concept de vidéo verticale pour une salle de réalité virtuelle.</p>
+  <div class="meta">
+    <span class="chip"><b>30</b> secondes</span>
+    <span class="chip">format <b>9:16</b></span>
+    <span class="chip"><b>2</b> sources d'image</span>
+    <span class="chip">tournage <b>1 h</b></span>
+  </div>
+</header>
+
+<section>
+  <h2>Pourquoi ce format</h2>
+  <p class="intro">La réalité virtuelle a un avantage qu'aucun autre commerce n'a : il existe deux versions de la même scène, et l'écart entre les deux est le spectacle.</p>
+  <div class="why">
+    <p>Filmer un joueur seul, c'est filmer quelqu'un qui gesticule dans une pièce vide. C'est drôle, mais ça ne vend rien.</p>
+    <p>Filmer seulement l'écran du casque, c'est un jeu vidéo de plus dans un fil déjà saturé. Personne ne s'arrête.</p>
+    <p>Le montage des deux, en revanche, produit une chose qu'on ne peut pas fabriquer : la preuve que la réaction était réelle. C'est ça qu'une salle VR vend — pas un jeu, une réaction impossible à simuler.</p>
+  </div>
+</section>
+
+<section>
+  <h2>Le script, minuté</h2>
+  <p class="intro">Deux sources : <strong style="color:var(--heat)">SALLE</strong> (téléphone sur pied) et <strong style="color:var(--volt)">CASQUE</strong> (enregistrement interne). Le montage alterne.</p>
+
+  <div class="shots">
+
+    <div class="shot">
+      <div class="tc"><b>0—2,5s</b><span>salle</span></div>
+      <div class="sh-body">
+        <p class="cam">Salle · plan fixe</p>
+        <p class="vis">Un joueur seul au centre d'une pièce vide. Il recule d'un coup, bras tendus devant lui, comme s'il rattrapait quelque chose. Rien autour de lui. Son d'ambiance seul, pas de musique.</p>
+        <p class="vo"><b>Voix off</b>Il a l'air ridicule.</p>
+      </div>
+    </div>
+
+    <div class="shot">
+      <div class="tc"><b>2,5—4s</b><span>salle</span></div>
+      <div class="sh-body">
+        <p class="cam">Salle · même plan</p>
+        <p class="vis">Il se fige. Une seconde de silence complet — c'est la respiration qui prépare la bascule.</p>
+        <p class="vo"><b>Voix off</b>Regarde ce qu'il voit.</p>
+      </div>
+    </div>
+
+    <div class="shot">
+      <div class="tc"><b>4—11s</b><span>casque</span></div>
+      <div class="sh-body">
+        <p class="cam b">Casque · plein cadre</p>
+        <p class="vis">Bascule brutale, sans transition. Le vide sous ses pieds. La hauteur. Ses mains virtuelles qui cherchent une prise. On tient le plan assez longtemps pour que le spectateur ressente le vertige à sa place.</p>
+        <p class="vo"><b>Voix off</b>Cinquante mètres. Il sait que c'est faux. Son corps, non.</p>
+      </div>
+    </div>
+
+    <div class="shot">
+      <div class="tc"><b>11—18s</b><span>alterné</span></div>
+      <div class="sh-body">
+        <p class="cam">Salle ↔ Casque · coupes rapides</p>
+        <p class="vis">Alternance serrée entre les deux sources, sur d'autres joueurs. Quelqu'un qui rit, quelqu'un qui s'accroche à un ami, quelqu'un qui refuse d'avancer. Chaque geste absurde trouve son explication une demi-seconde plus tard.</p>
+        <p class="vo"><b>Voix off</b>C'est ça qu'on vend ici. Pas un jeu. Une réaction que tu ne peux pas simuler.</p>
+      </div>
+    </div>
+
+    <div class="shot">
+      <div class="tc"><b>18—25s</b><span>salle</span></div>
+      <div class="sh-body">
+        <p class="cam">Salle · plans larges</p>
+        <p class="vis">Le lieu vivant. Un groupe qui attend son tour, des gens qui commentent l'écran de retour, un anniversaire. On voit enfin l'endroit, pas seulement les casques.</p>
+        <p class="vo"><b>Voix off</b>Anniversaires, séminaires, ou juste un vendredi soir. Une heure ici, et personne ne regarde son téléphone.</p>
+      </div>
+    </div>
+
+    <div class="shot">
+      <div class="tc"><b>25—30s</b><span>carton</span></div>
+      <div class="sh-body">
+        <p class="cam">Carton final</p>
+        <p class="vis">Nom du lieu, ville, et une seule action. Pas trois. Le créneau se réserve en ligne ou par message, on choisit un seul chemin.</p>
+        <p class="vo"><b>Voix off</b>[Nom du lieu], [ville]. Réserve ton créneau.</p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<section>
+  <h2>Ce qu'il faut pour le tourner</h2>
+  <p class="intro">C'est le point fort de ce concept : les deux sources existent déjà chez eux, personne n'a besoin de matériel.</p>
+
+  <div class="grid2">
+    <div class="box">
+      <h3>La salle</h3>
+      <ul>
+        <li><b>Un téléphone sur un pied</b>, à hauteur de poitrine, plan fixe. Aucun mouvement de caméra.</li>
+        <li><b>Lumière existante</b> — la pénombre d'une salle VR fait partie de l'ambiance, on ne la corrige pas.</li>
+        <li><b>Filmer en 9:16 directement</b>, jamais recadrer après.</li>
+        <li>Prévoir <b>4 ou 5 joueurs différents</b> : sur dix réactions, deux seulement sont exploitables.</li>
+      </ul>
+    </div>
+    <div class="box">
+      <h3>Le casque</h3>
+      <ul>
+        <li><b>Tous les casques enregistrent</b> ou diffusent leur écran. C'est natif, aucun logiciel à installer.</li>
+        <li><b>Lancer l'enregistrement avant</b> le plan salle, pour pouvoir recaler ensuite.</li>
+        <li><b>Un repère sonore</b> au départ — un clap, une porte — suffit à synchroniser les deux sources au montage.</li>
+        <li>Choisir <b>une scène de vertige ou de chute</b> : c'est ce qui produit les gestes les plus lisibles de l'extérieur.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="tw">
+  <table>
+    <tr><th>Poste</th><th>Charge</th></tr>
+    <tr><td>Tournage sur place (2 sources, 4-5 joueurs)</td><td>1 h</td></tr>
+    <tr><td>Montage, sous-titres, étalonnage</td><td>2 h</td></tr>
+    <tr><td>Voix off — voix clonée, aucun studio</td><td>15 min</td></tr>
+    <tr><td>Déclinaisons (3 hooks différents, même corps)</td><td>30 min</td></tr>
+  </table>
+  </div>
+</section>
+
+<section>
+  <h2>Les trois pièges</h2>
+  <div class="grid2">
+    <div class="box">
+      <h3>Montrer le casque en premier</h3>
+      <p style="color:var(--soft)">Si la vidéo s'ouvre sur l'écran du jeu, elle devient un gameplay parmi des millions. L'ordre n'est pas décoratif : le ridicule doit précéder l'explication, sinon il n'y a plus de bascule.</p>
+    </div>
+    <div class="box">
+      <h3>Mettre de la musique dès la première seconde</h3>
+      <p style="color:var(--soft)">Le silence des deux premières secondes est ce qui rend la scène gênante — donc regardable. La musique entre à la bascule, pas avant.</p>
+    </div>
+  </div>
+  <div class="flag">
+    <h3>Le piège qui coûte le plus cher</h3>
+    <p>Demander de commenter un mot-clé sans avoir préparé la réponse automatique. Sur ce compte, une vidéo a récolté six commentaires — le meilleur score de son corpus — et <strong>les six personnes n'ont jamais rien reçu</strong>, faute d'automatisation branchée.</p>
+    <p>Si cette vidéo appelle à commenter, la porte doit exister <strong>avant</strong> la publication, pas après.</p>
+  </div>
+</section>
+
+<section style="border-bottom:0">
+  <h2>Trois déclinaisons, un seul tournage</h2>
+  <p class="intro">Le corps de la vidéo ne change pas. Seules les huit premières secondes changent, et on garde celle qui retient le mieux.</p>
+  <div class="grid2" style="grid-template-columns:1fr">
+    <div class="box">
+      <ul>
+        <li><b>Hook A — le ridicule.</b> « Il a l'air ridicule. Regarde ce qu'il voit. » Celui décrit ci-dessus.</li>
+        <li><b>Hook B — le refus.</b> On ouvre sur quelqu'un qui recule et dit non de la tête, casque sur les yeux. « Elle sait qu'il n'y a rien. Elle n'avance pas quand même. »</li>
+        <li><b>Hook C — le spectateur.</b> On ouvre sur les gens qui <em>regardent</em> le joueur, pas sur le joueur. « Le meilleur moment, c'est pas de jouer. C'est de regarder l'autre jouer. »</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div>Concept établi le 19 août 2026. Durées et structure calées sur les formats mesurés les plus performants du compte : 28 à 35 secondes, accroche dans les trois premières secondes.</div>
+</footer>
+
+</div>
+</body>
+</html>

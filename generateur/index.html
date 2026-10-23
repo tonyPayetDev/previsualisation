@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>Générateur de template JSON</title>
+<style>
+  :root{--bg:#0a0a0f;--panneau:#111117;--bord:#242430;--gold:#eab308;--violet:#8b5cf6;
+        --txt:#EDEDED;--mut:#8A8A8A;--vert:#3ED37B;--rouge:#ef4444;--champ:#0f0f14}
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--txt);-webkit-text-size-adjust:100%;
+    font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif}
+  .wrap{max-width:660px;margin:0 auto;padding:22px 18px 70px}
+  a.retour{color:var(--mut);font-size:13px;text-decoration:none}a.retour:hover{color:var(--gold)}
+  header{display:flex;align-items:center;gap:12px;margin:14px 0 4px}
+  .lock{width:42px;height:42px;border-radius:11px;background:var(--gold);display:flex;align-items:center;justify-content:center;flex:none}
+  h1{font-size:24px;font-weight:800;margin:0;letter-spacing:-.4px}
+  .sub{color:var(--mut);font-size:14px;margin:2px 0 22px;line-height:1.5}
+  label.cl{display:block;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--mut);font-weight:700;margin:22px 0 8px}
+  label.cl .mini{float:right;font-size:11px;font-weight:700;letter-spacing:.02em;color:var(--violet);background:none;border:0;cursor:pointer;text-transform:none}
+  select,textarea,input[type=text]{width:100%;background:var(--champ);color:var(--txt);border:1px solid var(--bord);border-radius:12px;padding:13px 14px;font-size:16px;font-family:inherit}
+  textarea{resize:vertical;line-height:1.45}
+  select:focus,textarea:focus,input:focus{outline:none;border-color:var(--gold)}
+  .meta{display:flex;flex-wrap:wrap;gap:7px;margin:12px 0 2px}
+  .chip{font-size:12px;padding:6px 11px;border-radius:20px;border:1px solid var(--bord);background:var(--champ);color:var(--mut)}
+  .chip.gold{border-color:var(--gold);color:var(--gold)}
+  .chip.warn{border-color:#5a4a1a;color:#e6c65a}
+  .aide{color:var(--mut);font-size:13.5px;line-height:1.55;margin:12px 2px 0}
+  .fournir{margin:12px 0 0;padding:12px 14px;background:var(--champ);border:1px solid var(--bord);border-left:2px solid var(--gold);border-radius:0 12px 12px 0}
+  .fournir b{display:block;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:6px}
+  .fournir ul{margin:0;padding-left:18px}.fournir li{font-size:13.5px;color:var(--mut);line-height:1.6}
+  .duree-row{display:flex;gap:10px;align-items:center}.duree-row input{flex:1}
+  .duree-row .hint{font-size:12px;color:var(--mut);white-space:nowrap}
+  .tags{display:flex;flex-wrap:wrap;gap:8px}
+  .tag{font-size:13px;padding:8px 13px;border-radius:20px;border:1px solid var(--bord);background:var(--champ);color:var(--mut);cursor:pointer;user-select:none}
+  .tag.on{background:rgba(234,179,8,.14);border-color:var(--gold);color:var(--gold);font-weight:600}
+  .bar{margin-top:26px}
+  button.act{width:100%;padding:15px;border-radius:13px;border:0;font-size:16px;font-weight:800;cursor:pointer;background:var(--gold);color:#0a0a0f}
+  pre.out{white-space:pre;overflow-x:auto;background:#0d0d12;border:1px solid var(--bord);border-radius:14px;padding:16px;font-size:13px;line-height:1.5;color:#dfe3ea;margin-top:18px;font-family:ui-monospace,"SF Mono",Menlo,monospace}
+  .copy{width:100%;margin-top:10px;padding:14px;border-radius:12px;border:1px solid var(--gold);background:rgba(234,179,8,.12);color:var(--gold);font-weight:800;font-size:15px;cursor:pointer}
+  .foot{color:var(--mut);font-size:12px;margin-top:26px;line-height:1.5}
+  [hidden]{display:none!important}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="retour" href="/">← toutes les prévisualisations</a>
+  <header>
+    <div class="lock"><svg viewBox="0 0 24 24" width="23" height="23" fill="#0a0a0f"><path d="M13 2L4.5 13.5H11L10 22l8.5-11.5H12z"/></svg></div>
+    <div><h1>Générateur de template</h1></div>
+  </header>
+  <p class="sub">Choisis un de tes templates, ajuste la durée et le sujet, puis <b>copie le JSON</b>. Tu me le transmets tel quel : il reproduit exactement le template, avec la bonne durée, le bon format et les verrous.</p>
+
+  <label class="cl" for="tpl">Le template</label>
+  <select id="tpl"></select>
+  <div class="meta" id="meta"></div>
+  <p class="aide" id="aide"></p>
+  <div class="fournir" id="fournir"></div>
+
+  <label class="cl" for="duree">La durée</label>
+  <div class="duree-row">
+    <input id="duree" type="text" inputmode="text" placeholder="ex. 30 s">
+    <span class="hint" id="dureeReco"></span>
+  </div>
+
+  <label class="cl" for="sujet">De quoi ça parle</label>
+  <textarea id="sujet" rows="4" placeholder="Le sujet, l'angle, ce que tu veux dire. Écris comme tu parles."></textarea>
+
+  <label class="cl">Hashtags <span id="nbTags">3</span>/5
+    <button type="button" class="mini" id="reset">remettre les 3</button></label>
+  <div class="tags" id="tagsBox"></div>
+
+  <label class="cl" for="mot">Le mot à commenter (CTA)</label>
+  <input id="mot" type="text" placeholder="OUTILS, VEILLE, PROMPT…" autocapitalize="characters">
+
+  <div class="bar"><button class="act" id="valider">Générer le JSON</button></div>
+
+  <pre class="out" id="out" hidden></pre>
+  <button class="copy" id="copier" hidden>Copier le JSON</button>
+
+  <p class="foot">Le JSON se copie ici ; c'est toi qui me le passes. Le rendu tourne sur la machine, pas dans le navigateur.</p>
+</div>
+
+<script>
+(function(){
+  var $=function(id){return document.getElementById(id);};
+  /* 14 templates réels — extraits du catalogue /templates/, durées et formats vérifiés */
+  var T=[
+    {id:'journal-ia',nom:'Journal IA',skill:'/veille-journal-ia',aspect:'9:16',w:1080,h:1920,fps:30,min:45,max:60,def:52,avatar:true,usage:'informer',
+     aide:"4 à 6 brèves avec chiffres et sources, deux running gags (2 adjectifs max, jamais 3), avatar en ponctuation. Refus de rendre sous 3 brèves.",
+     fournir:["Rien à fournir en temps normal : la routine cloud écrit journal-ia/AAAA-MM-JJ.md chaque nuit.","Sinon fournir l'édition du jour, ou attendre la routine."]},
+    {id:'prompt-reveal',nom:'Prompt Reveal',skill:'/prompt-reveal-branded',aspect:'9:16',w:1080,h:1920,fps:30,min:25,max:30,def:28,avatar:false,usage:'vendre',
+     aide:"Un rendu IA bluffant plein cadre, le prompt qui défile façon terminal — coupé net après 3 lignes, floute, cadenas rouge, carte CTA. Le prompt n'est JAMAIS lisible en entier.",
+     fournir:["Le rendu IA final (vidéo ou image du hook).","Le prompt complet (il part en DM).","Les images de référence en b-roll.","Le mot-clé CTA en majuscules, un seul mot."]},
+    {id:'revelation-ab',nom:'Révélation A/B',skill:'/revelation-ab-branded',aspect:'9:16',w:1080,h:1920,fps:30,min:35,max:45,def:40,avatar:true,usage:'prouver',
+     aide:"Une astuce qui circule (A) vs le détail qui change tout, montré à l'écran (B). Avatar.",
+     fournir:["Une astuce IA qui circule déjà (côté A).","Le détail qui change tout + de quoi le montrer (côté B).","Un mot-clé CTA, avec une ressource réelle derrière."]},
+    {id:'videoboost-v3',nom:'VideoBoost v3 — banque avatar',skill:'/veille-to-video-v3',aspect:'9:16',w:1080,h:1920,fps:30,min:25,max:40,def:30,avatar:true,usage:'informer',
+     aide:"Talking-head banque avatar + habillage. Décor UNIQUE : bureau (tuto/technique) OU voiture (humour/mindset), jamais les deux. Inter 700.",
+     fournir:["Un script (ou une ligne « à faire » du Sheet de suivi).","Le décor : bureau pour un tuto, voiture pour humour/mindset."]},
+    {id:'horror-beatsync',nom:'Horror Beat-Sync',skill:'/horror-beatsync-video',aspect:'9:16',w:1080,h:1920,fps:30,min:28,max:34,def:32,avatar:true,usage:'divertir',
+     aide:"Ambiance horror calée sur le beat, fin sur un mini-drop (34,42 s max).",
+     fournir:["Un rush talking-head (voix incluse) ou une compo HyperFrames.","Un script — ou l'un des 3 déjà calés sur la grille."]},
+    {id:'reel-remix',nom:'Reel Remix',skill:'/reel-remix',aspect:'9:16',w:1080,h:1920,fps:30,min:30,max:35,def:32,avatar:true,usage:'informer',panneauHaut:'1080×1120',
+     aide:"Panneau screen-record en haut + avatar en bas. 100-115 mots. On clone le FORMAT, jamais le contenu de la source.",
+     fournir:["Une URL de reel Instagram/TikTok/YouTube Short.","Le sujet équivalent côté Autoboost — ton angle.","Ton propre screen record pour le panneau du haut."]},
+    {id:'yapping-facecam',nom:'Yapping face caméra',skill:'/yapping-facecam-branded',aspect:'9:16',w:1080,h:1920,fps:30,min:25,max:40,def:32,avatar:true,usage:'informer',
+     aide:"Face caméra, débit rapide, captions mot-à-mot.",
+     fournir:["Un sujet / angle.","Un mot-clé CTA et le message DM associé."]},
+    {id:'hook-puissant',nom:'Hook puissant (hook stacking)',skill:'/hook-puissant-branded',aspect:'9:16',w:1080,h:1920,fps:30,min:25,max:30,def:28,avatar:true,usage:'vendre',
+     aide:"Chute + atterrissage, pile de hooks, panneau app à 4 vues, countdown 3-2-1, slam final GO. Ligne néon beat-sync.",
+     fournir:["Le sujet réel livré entre le hook et le CTA (bloc valeur 8-22 s).","Un mot-clé CTA et la ressource promise derrière."]},
+    {id:'essai-contemplatif',nom:'Essai contemplatif',skill:'/essai-contemplatif-branded',aspect:'9:16 ou 16:9',w:1080,h:1920,fps:30,min:45,max:75,def:60,avatar:false,usage:'divertir',demanderFormat:true,
+     aide:"Long, lent, très peu de texte. Une idée suivie jusqu'au bout, sans CTA qui pousse.",
+     fournir:["L'objet banal de départ (point d'entrée concret).","Le pourquoi / la thèse vers laquelle on monte.","La dernière phrase, celle qui retourne juste avant le blanc."]},
+    {id:'foodboost-vitrine',nom:'FoodBoost vitrine',skill:'/foodboost-vitrine-video',aspect:'9:16',w:1080,h:1920,fps:30,min:18,max:22,def:20,avatar:false,usage:'vendre',reseau:'@foodboost',
+     aide:"Cinémagraphes de plats, nom + accroche par plan, carton final. Pour un restaurant → publie sur @foodboost, jamais AutomatisationBoost.",
+     fournir:["Une liste de plats (n'importe quelle cuisine) et un angle.","Tout le reste part de config.json : style, plats, narration."]},
+    {id:'clip-musical-ia',nom:'Clip musical IA',skill:'/clip-musical-ia',aspect:'9:16 ET 16:9',w:1080,h:1920,fps:30,min:120,max:180,def:150,avatar:false,usage:'divertir',lesDeuxFormats:true,
+     aide:"Clip musical monté sur des plans Higgsfield. Toujours rendu en 9:16 ET 16:9.",
+     fournir:["Le fichier .wav du morceau (obligatoire).","Une liste de liens higgsfield.ai/s/... (obligatoire).","Titre, artiste, durée cible, CTA de fin — sinon défauts."]},
+    {id:'script-pspc',nom:'Script PSVC',skill:'/script-pspc-branded',aspect:'script',w:0,h:0,fps:0,min:30,max:45,def:40,avatar:null,usage:'vendre',scriptSeul:true,
+     aide:"Écrit un script (pas de vidéo) : Problème → Solution → Validation → CTA. ~15 caractères/s.",
+     fournir:["Le sujet et ta galère vécue, datée et chiffrée.","Une preuve montrable (site en ligne, post programmé, chiffre mesuré).","Un mot-clé CTA, avec la ressource qui existe déjà."]},
+    {id:'motion-design-site',nom:'Site motion design (flipbook au scroll)',skill:'/motion-design-site',aspect:'page web',w:0,h:0,fps:0,min:0,max:0,def:0,avatar:null,usage:'vendre',siteSeul:true,
+     aide:"Une page web statique animée au scroll — pas une vidéo.",
+     fournir:["Une direction visuelle : références, palette hex, ambiance, typos.","Le sujet de l'animation qui défile au scroll."]},
+    {id:'website-to-video',nom:'Website to video',skill:'/website-to-video',aspect:'selon la demande',w:1080,h:1920,fps:30,min:15,max:30,def:22,avatar:false,usage:'vendre',
+     aide:"Capture d'un site → vidéo. Workflow à 7 étapes avec points d'arrêt : ce n'est pas un one-shot.",
+     fournir:["Une URL de site à capturer.","De répondre aux questions posées aux points d'arrêt."]}
+  ];
+  var TAGS3=['automatisation','ia','n8n'];
+  var TAGS_SUGG=['automatisation','ia','n8n','videoIA','freelance','veilleIA','AutomationBoost','prompt','seedance','contenu','claudecode','reunion','foodboost'];
+  var chosen=new Set(TAGS3);
+
+  function cur(){var id=$('tpl').value;return T.filter(function(x){return x.id===id;})[0]||T[0];}
+  function fmtLabel(x){
+    if(x.scriptSeul) return 'script, pas de vidéo';
+    if(x.siteSeul) return 'site statique';
+    if(x.lesDeuxFormats) return '9:16 ET 16:9 · '+x.fps+' fps';
+    if(x.demanderFormat) return x.aspect+' · à choisir';
+    return x.aspect+' · '+x.w+'×'+x.h+' · '+x.fps+' fps';
+  }
+  function dureeReco(x){
+    if(x.siteSeul) return 'sans objet (page web)';
+    if(x.scriptSeul) return 'narration '+x.min+'–'+x.max+' s';
+    if(x.def>=120) return '≈ '+Math.round(x.def/60*10)/10+' min';
+    return 'conseillé : '+x.min+'–'+x.max+' s';
+  }
+  function remplir(){
+    $('tpl').innerHTML=T.map(function(x){return '<option value="'+x.id+'">'+x.nom+'</option>';}).join('');
+    maj();
+  }
+  function maj(){
+    var x=cur();
+    var chips=['<span class="chip gold">'+x.skill+'</span>','<span class="chip">'+fmtLabel(x)+'</span>'];
+    if(x.avatar===true) chips.push('<span class="chip">avec avatar</span>');
+    else if(x.avatar===false) chips.push('<span class="chip">sans avatar</span>');
+    chips.push('<span class="chip">'+x.usage.charAt(0).toUpperCase()+x.usage.slice(1)+'</span>');
+    if(x.panneauHaut) chips.push('<span class="chip">panneau haut '+x.panneauHaut+'</span>');
+    if(x.reseau) chips.push('<span class="chip warn">'+x.reseau+'</span>');
+    $('meta').innerHTML=chips.join('');
+    $('aide').textContent=x.aide;
+    $('fournir').innerHTML='<b>À fournir</b><ul>'+x.fournir.map(function(f){return '<li>'+f+'</li>';}).join('')+'</ul>';
+    $('dureeReco').textContent=dureeReco(x);
+    var dis=x.siteSeul;
+    $('duree').disabled=dis;
+    if(!$('duree').dataset.touched){
+      $('duree').value = x.siteSeul ? '' : (x.scriptSeul ? x.min+'-'+x.max+' s narration' : (x.def>=120? (x.def)+' s' : x.def+' s'));
+    }
+  }
+  $('tpl').addEventListener('change',function(){ $('duree').dataset.touched=''; maj(); });
+  $('duree').addEventListener('input',function(){ this.dataset.touched='1'; });
+
+  function majTags(){
+    $('tagsBox').innerHTML='';
+    TAGS_SUGG.forEach(function(t){
+      var b=document.createElement('span');
+      b.className='tag'+(chosen.has(t)?' on':'');
+      b.textContent='#'+t;
+      b.addEventListener('click',function(){
+        if(chosen.has(t)) chosen.delete(t);
+        else { if(chosen.size>=5) return; chosen.add(t); }
+        majTags();
+      });
+      $('tagsBox').appendChild(b);
+    });
+    $('nbTags').textContent=chosen.size;
+  }
+  $('reset').addEventListener('click',function(){ chosen=new Set(TAGS3); majTags(); });
+
+  $('valider').addEventListener('click',function(){
+    var x=cur();
+    var sujet=$('sujet').value.trim();
+    var mot=$('mot').value.trim().toUpperCase();
+    if(!sujet){ alert("Dis de quoi ça parle — sans sujet je ne peux rien monter."); $('sujet').focus(); return; }
+    var spec={
+      reproduire:"Reproduis EXACTEMENT ce template, sans l'appauvrir. Clone la mécanique de la référence, n'échange que les timings (durées réelles des voix) et les textes.",
+      template:x.id,
+      nom:x.nom,
+      skill:x.skill,
+      format:{ aspect:x.aspect },
+      avatar:x.avatar,
+      usage:x.usage,
+      duree_cible:$('duree').value.trim()||dureeReco(x),
+      sujet:sujet,
+      hashtags:[...chosen].map(function(t){return '#'+t;}),
+      a_fournir:x.fournir
+    };
+    if(!x.siteSeul && !x.scriptSeul){ spec.format.largeur=x.w; spec.format.hauteur=x.h; spec.format.fps=x.fps; }
+    if(x.panneauHaut) spec.format.panneau_haut=x.panneauHaut;
+    if(x.lesDeuxFormats) spec.format.rendre_les_deux=['9:16','16:9'];
+    if(x.demanderFormat) spec.format.a_choisir=true;
+    if(mot){ spec.cta={ mot:mot, action:'commente '+mot+' → ressource en DM' }; }
+    if(x.reseau){ spec.reseau=x.reseau; spec.note_reseau='Publier UNIQUEMENT sur '+x.reseau+', jamais sur AutomatisationBoost.'; }
+    spec.rappels=['musique libre de droits, différente de la dernière vidéo','CTA explicite à la fin','vérifier refuses.mjs avant publication'];
+    var txt=JSON.stringify(spec,null,2);
+    $('out').textContent=txt; $('out').hidden=false; $('copier').hidden=false;
+    try{ localStorage.setItem('gen-dernier-json',txt); }catch(e){}
+    $('out').scrollIntoView({behavior:'smooth',block:'nearest'});
+  });
+  $('copier').addEventListener('click',async function(){
+    var b=this;
+    try{ await navigator.clipboard.writeText($('out').textContent); b.textContent='Copié ✓'; }
+    catch(e){ b.textContent='Copie refusée — sélectionne à la main'; }
+    setTimeout(function(){ b.textContent='Copier le JSON'; },1800);
+  });
+
+  remplir(); majTags();
+  try{ var last=localStorage.getItem('gen-dernier-json'); if(last){ $('out').textContent=last; } }catch(e){}
+})();
+</script>
+</body>
+</html>

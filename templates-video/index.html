@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Mes gabarits vidéo</title>
+<style>
+  :root{--fond:#0a0a0f;--panneau:#111117;--bord:#242430;--jaune:#FFE600;--violet:#A855F7;
+        --texte:#f2f2f5;--doux:#9a9aa8;--vert:#3ED37B;--rouge:#ef4444}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--fond);color:var(--texte);padding:32px 16px 90px;
+    font:400 16px/1.6 Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+  .env{max-width:1080px;margin:0 auto}
+  a.retour{color:var(--doux);font-size:13px;text-decoration:none}a.retour:hover{color:var(--jaune)}
+  .sur{font:700 11px/1 Inter,sans-serif;letter-spacing:.18em;text-transform:uppercase;color:var(--jaune);margin:20px 0 12px}
+  h1{font:700 clamp(26px,4.8vw,38px)/1.1 Inter,sans-serif;letter-spacing:-.02em;margin:0 0 14px}
+  .chap{color:var(--doux);max-width:64ch;margin:0 0 28px}.chap b{color:var(--texte)}
+  h2{font:700 20px/1.25 Inter,sans-serif;margin:38px 0 14px}
+  .grille{display:grid;gap:22px;grid-template-columns:repeat(auto-fill,minmax(290px,1fr))}
+  .carte{background:var(--panneau);border:1px solid var(--bord);border-radius:14px;overflow:hidden;display:flex;flex-direction:column}
+  .carte.ref{border-color:var(--jaune)}
+  .carte.pauvre{border-color:#3a2a2a}
+  video{width:100%;aspect-ratio:9/16;background:#000;display:block;object-fit:contain}
+  .corps{padding:15px 17px 17px;display:flex;flex-direction:column;gap:10px;flex:1}
+  .et{font:800 10.5px/1 Inter,sans-serif;letter-spacing:.1em;text-transform:uppercase;padding:5px 10px;border-radius:6px;align-self:flex-start}
+  .e-ref{background:var(--jaune);color:#0a0a0a}.e-ok{background:#1e2c45;color:#8ab4ff}.e-pauvre{background:#3a2020;color:#ea9b9b}
+  h3{font:700 16px/1.3 Inter,sans-serif;margin:0}
+  .meca{font-size:12.5px;color:var(--doux);line-height:1.7;margin:0}
+  .meca b{color:var(--texte)}
+  .poids{font:700 13px/1 Inter,sans-serif;font-variant-numeric:tabular-nums;color:var(--doux);margin-top:auto;
+    padding-top:10px;border-top:1px solid var(--bord)}
+  .poids em{font-style:normal;color:var(--jaune)}
+  .bloc{border-left:2px solid var(--jaune);padding:3px 0 3px 18px;max-width:66ch;color:var(--doux);margin:22px 0}
+  .bloc p{margin:0 0 12px}.bloc p:last-child{margin:0}.bloc b{color:var(--texte)}
+  code{font:400 13px/1.5 ui-monospace,Menlo,monospace;color:var(--jaune)}
+</style>
+</head>
+<body><div class="env">
+<a class="retour" href="/">← toutes les prévisualisations</a>
+<p class="sur">Gabarits · 29 août</p>
+<h1>Tous mes gabarits vidéo, côte à côte</h1>
+<p class="chap">Tu as vu tout de suite que les nouvelles vidéos n'avaient pas les détails de
+l'ancienne. <b>Tu avais raison, et c'est mesurable</b> : ta référence pèse 26 Ko de composition,
+mon gabarit simplifié 12 Ko. J'avais enlevé la moitié des mécanismes. Voilà les trois familles,
+avec ce que chacune contient vraiment.</p>
+
+<h2>Les gabarits</h2>
+<div class="grille">
+  <article class="carte ref">
+    <video src="https://assets.automatisationboost.com/gabarits/hook-puissant.mp4" controls playsinline preload="metadata"></video>
+    <div class="corps">
+      <span class="et e-ref">Référence — validée</span>
+      <h3>hook-puissant</h3>
+      <p class="meca">Chute + atterrissage (<b>secousse, flash, lignes de vitesse</b>) · pile de
+      2 hooks · panneau app à <b>4 vues animées</b> : grille de 6 cartes en cascade, fil de
+      messagerie en 3 bulles, horloge heures→secondes barrée, curseur · <b>countdown 3-2-1</b>
+      avec anneau · décollage de la fenêtre · <b>slam final</b> GO + logo · ligne néon beat-sync
+      134 BPM · captions colorées mot par mot.</p>
+      <p class="poids">compo <em>26 Ko</em> · 11 segments de voix · 31 s</p>
+    </div>
+  </article>
+
+  <article class="carte pauvre">
+    <video src="https://assets.automatisationboost.com/secteurs/resto.mp4" controls playsinline preload="metadata"></video>
+    <div class="corps">
+      <span class="et e-pauvre">Gabarit v2 — appauvri</span>
+      <h3>secteur (v2)</h3>
+      <p class="meca">Hook plein cadre · fenêtre néon · <b>canvas n8n</b> : nœuds qui
+      apparaissent quand la voix les nomme, fils jaune→violet · carton transformation ·
+      pilule CTA · ligne néon animée · captions mot-à-mot en dégradé.<br>
+      <b>Ce qui manque par rapport à la référence :</b> pas de chute ni d'atterrissage, pas de
+      pile de hooks, une seule vue au lieu de quatre, pas de countdown, pas de décollage,
+      pas de slam final.</p>
+      <p class="poids">compo <em>12 Ko</em> · 6 segments · ~28 s</p>
+    </div>
+  </article>
+
+  <article class="carte">
+    <video src="https://assets.automatisationboost.com/gabarits/stats.mp4" controls playsinline preload="metadata"></video>
+    <div class="corps">
+      <span class="et e-ok">Nouveau — stats</span>
+      <h3>stats à côté de l'avatar</h3>
+      <p class="meca">Colonne avatar à gauche (460×818, le 9:16 exact des clips) et
+      <b>carte de statistique à droite</b> qui glisse depuis le bord, chiffre qui pousse ·
+      badge de source affiché <b>uniquement</b> quand la donnée en a une · ligne néon ·
+      captions mot-à-mot.</p>
+      <p class="poids">compo <em>~14 Ko</em> · 9 cartes · ~77 s</p>
+    </div>
+  </article>
+</div>
+
+<h2>Ce qui change à partir de maintenant</h2>
+<div class="bloc">
+  <p><b>Ta question était la bonne : non, je n'enregistrais pas les compos.</b> Chaque build
+  réécrivait <code>public/index.html</code>. Seul <code>hook-puissant</code> a survécu parce qu'il
+  était versionné dans git — c'est pour ça qu'il a gardé tous ses détails depuis le 15 août.</p>
+  <p><b>Le registre de compos figées est en place.</b> Quand tu dis « celle-là est ok », la compo
+  part dans <code>/work/compos/&lt;nom&gt;-&lt;date&gt;.html</code>, elle est inscrite au registre et
+  commitée. Une compo figée ne se réécrit jamais — le script refuse.</p>
+  <p><b>Et les nouvelles vidéos ne repartent plus d'un gabarit appauvri.</b> Une « forge » clone
+  le HTML de la référence et n'échange que deux choses : la carte des timings (calculée sur les
+  vraies durées des voix) et les textes. Toute la mécanique d'origine survit, par construction.</p>
+</div>
+</div></body></html>

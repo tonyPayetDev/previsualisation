@@ -1,0 +1,212 @@
+/* =============================================
+   L'Éthique Café — Custom Stylesheet
+   Complements Tailwind CSS
+   ============================================= */
+
+/* ---- Smooth scroll ---- */
+html {
+  scroll-behavior: smooth;
+}
+
+/* ---- Font defaults ---- */
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ---- Navbar scroll state ---- */
+#header.scrolled {
+  background-color: #32373c !important;
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.15);
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+#header.scrolled nav {
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+}
+
+/* When scrolled, logo doesn't need invert (bg is already dark) */
+#header.scrolled .nav-logo-img {
+  filter: brightness(0) invert(1);
+}
+
+/* Nav links when scrolled */
+#header.scrolled .nav-link {
+  color: white;
+}
+
+/* ---- Gallery grid ---- */
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-auto-rows: 240px;
+  gap: 1rem;
+}
+
+.gallery-item {
+  overflow: hidden;
+  border-radius: 0.75rem;
+}
+
+.gallery-item--large {
+  grid-column: span 2;
+  grid-row: span 2;
+}
+
+.gallery-item--wide {
+  grid-column: span 2;
+}
+
+@media (max-width: 1024px) {
+  .gallery-grid {
+    grid-template-columns: repeat(3, 1fr);
+    grid-auto-rows: 200px;
+  }
+
+  .gallery-item--large {
+    grid-column: span 2;
+    grid-row: span 2;
+  }
+
+  .gallery-item--wide {
+    grid-column: span 2;
+  }
+}
+
+@media (max-width: 640px) {
+  .gallery-grid {
+    grid-template-columns: repeat(2, 1fr);
+    grid-auto-rows: 160px;
+  }
+
+  .gallery-item--large {
+    grid-column: span 2;
+    grid-row: span 1;
+  }
+
+  .gallery-item--wide {
+    grid-column: span 2;
+  }
+}
+
+/* ---- Hero section ---- */
+#accueil {
+  min-height: 100svh;
+}
+
+/* ---- Section transitions (fade-in on scroll) ---- */
+.fade-in-up {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+
+.fade-in-up.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ---- Back to top visibility ---- */
+#back-to-top.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* ---- Form focus ring (secondary color) ---- */
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+  border-color: #f78da7;
+  box-shadow: 0 0 0 3px rgba(247, 141, 167, 0.25);
+}
+
+/* ---- Selection color ---- */
+::selection {
+  background-color: #f78da7;
+  color: white;
+}
+
+/* ---- Scrollbar ---- */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #f78da7;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #e0637e;
+}
+
+/* ---- Mobile menu transition ---- */
+#mobile-menu {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+}
+
+#mobile-menu.open {
+  max-height: 400px;
+}
+
+/* ---- CTA button pulse effect ---- */
+@keyframes pulse-ring {
+  0% { box-shadow: 0 0 0 0 rgba(247, 141, 167, 0.5); }
+  70% { box-shadow: 0 0 0 12px rgba(247, 141, 167, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(247, 141, 167, 0); }
+}
+
+.btn-pulse {
+  animation: pulse-ring 2s infinite;
+}
+
+/* ---- Gallery image zoom on hover ---- */
+.gallery-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.gallery-item:hover img {
+  transform: scale(1.06);
+}
+
+/* ---- Event card hover ---- */
+.event-card {
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.event-card:hover {
+  transform: translateX(4px);
+}
+
+/* ---- Accessibility: focus-visible ---- */
+a:focus-visible,
+button:focus-visible {
+  outline: 3px solid #f78da7;
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* ---- Print styles ---- */
+@media print {
+  #header,
+  #back-to-top {
+    display: none !important;
+  }
+
+  section {
+    page-break-inside: avoid;
+  }
+}

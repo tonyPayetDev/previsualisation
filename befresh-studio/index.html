@@ -1,0 +1,576 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Studio vidéo BeFresh</title>
+<meta name="description" content="Choisis un angle, écris ton texte, choisis tes photos : ta vidéo BeFresh se crée sous tes yeux.">
+<meta name="theme-color" content="#000000">
+<meta name="robots" content="noindex">
+<link rel="icon" href="assets/logo-befresh.png">
+<style>
+@font-face{font-family:"Outfit";src:url("assets/Outfit-Bold.ttf") format("truetype");font-weight:700;font-display:block}
+:root{--bg:#000;--s1:#121212;--s2:#1c1c1c;--line:#2a2a2a;--gold:#E0AE3A;--mag:#E9268C;--txt:#fff;--mute:#a9a9a9;--r:16px}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--txt);font-family:"Outfit",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-weight:700;line-height:1.35;-webkit-font-smoothing:antialiased}
+p,label,input,textarea,small{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-weight:400}
+.wrap{max-width:1120px;margin:0 auto;padding:0 16px}
+header{padding:22px 0 8px;display:flex;gap:14px;align-items:center}
+header img{width:56px;height:56px;border-radius:50%;flex:none}
+header h1{font-size:24px;margin:0;letter-spacing:.2px}
+header h1 span{color:var(--gold)}
+header p{margin:2px 0 0;color:var(--mute);font-size:14px}
+.layout{display:block}
+@media(min-width:920px){.layout{display:grid;grid-template-columns:1fr 400px;gap:40px;align-items:start}.side{position:sticky;top:16px}}
+section{margin:22px 0 30px}
+.step{display:flex;align-items:center;gap:10px;margin:0 0 12px}
+.step b{width:30px;height:30px;border-radius:50%;background:var(--gold);color:#000;display:grid;place-items:center;font-size:16px;flex:none}
+.step h2{font-size:20px;margin:0}
+.hint{color:var(--mute);font-size:14px;margin:-4px 0 12px}
+.hint em{color:var(--gold);font-style:normal;font-weight:600}
+/* angles */
+.angles{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;padding:2px 2px 10px;margin:0 -16px;padding-left:16px;padding-right:16px;scrollbar-width:none}
+.angles::-webkit-scrollbar{display:none}
+@media(min-width:920px){.angles{display:grid;grid-template-columns:repeat(2,1fr);overflow:visible;margin:0;padding:0}}
+.card{scroll-snap-align:start;flex:0 0 78%;max-width:330px;background:var(--s1);border:2px solid var(--line);border-radius:var(--r);padding:14px 14px 16px;text-align:left;color:var(--txt);cursor:pointer;font:inherit;transition:border-color .15s,transform .15s}
+@media(min-width:920px){.card{max-width:none}}
+.card:active{transform:scale(.98)}
+.card .n{font-size:12px;color:var(--mag);letter-spacing:1.5px;text-transform:uppercase}
+.card h3{margin:4px 0 8px;font-size:18px}
+.card p{margin:0;color:#d8d8d8;font-size:14.5px;font-style:italic}
+.card[aria-pressed="true"]{border-color:var(--gold);background:#1a1508}
+.card[aria-pressed="true"] h3{color:var(--gold)}
+/* text */
+.fields{display:grid;gap:12px}
+.f label{display:block;font-size:13px;color:var(--mute);margin:0 0 5px}
+.f label i{color:var(--mag);font-style:normal}
+.f input{width:100%;background:var(--s1);border:2px solid var(--line);border-radius:12px;color:#fff;font-size:17px;padding:12px 13px;outline:none}
+.f input:focus{border-color:var(--gold)}
+/* photos */
+.counter{font-size:14px;color:var(--mute);margin:-4px 0 12px}
+.counter b{color:var(--gold)}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+@media(min-width:600px){.grid{grid-template-columns:repeat(4,1fr)}}
+.ph{position:relative;aspect-ratio:9/16;border-radius:12px;overflow:hidden;border:3px solid transparent;padding:0;background:var(--s2);cursor:pointer}
+.ph img{width:100%;height:100%;object-fit:cover;display:block;transition:opacity .15s}
+.ph[aria-pressed="false"] img{opacity:.6}
+.ph[aria-pressed="true"]{border-color:var(--gold)}
+.ph .o{position:absolute;top:6px;right:6px;width:28px;height:28px;border-radius:50%;background:var(--gold);color:#000;font-size:15px;display:none;place-items:center}
+.ph[aria-pressed="true"] .o{display:grid}
+.ph:disabled{cursor:not-allowed}
+.warn{color:var(--mag);font-size:14px;min-height:20px;margin:8px 0 0;font-family:system-ui,sans-serif;font-weight:500}
+/* player */
+.player{position:relative;width:100%;max-width:360px;margin:0 auto;aspect-ratio:9/16;border-radius:20px;overflow:hidden;background:#000;box-shadow:0 0 0 1px #2c2c2c,0 20px 60px rgba(233,38,140,.18)}
+.player canvas{width:100%;height:100%;display:block}
+.pbar{display:flex;gap:10px;justify-content:center;margin:12px 0 0}
+.btn{appearance:none;border:0;border-radius:999px;padding:14px 20px;font:700 16px "Outfit",system-ui,sans-serif;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;min-height:48px}
+.btn.ghost{background:var(--s2);color:#fff;border:1px solid var(--line)}
+.btn.gold{background:var(--gold);color:#000;width:100%}
+.btn.mag{background:var(--mag);color:#fff;width:100%}
+.btn:disabled{opacity:.5;cursor:wait}
+.btn svg{width:20px;height:20px;flex:none}
+.dl{margin:18px 0 0}
+.prog{height:10px;background:var(--s2);border-radius:99px;overflow:hidden;margin:12px 0 6px;display:none}
+.prog i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--gold),var(--mag))}
+.status{font-size:14px;color:var(--mute);min-height:20px;font-family:system-ui,sans-serif}
+.status a{color:var(--gold)}
+.note{background:var(--s1);border:1px solid var(--line);border-left:4px solid var(--gold);border-radius:12px;padding:12px 14px;font-size:14px;color:#d7d7d7;margin:14px 0 0}
+.cta{margin:26px 0 0;padding:20px 16px;border-radius:var(--r);background:linear-gradient(160deg,#2a0716,#120309);border:1px solid #4a1230;text-align:center}
+.cta h2{margin:0 0 6px;font-size:21px}
+.cta p{margin:0 0 14px;color:#e9c9d8;font-size:15px}
+footer{padding:26px 0 40px;text-align:center;color:#6f6f6f;font-size:13px;font-family:system-ui,sans-serif}
+/* mini preview */
+.mini{position:fixed;right:12px;bottom:12px;width:76px;aspect-ratio:9/16;border-radius:12px;overflow:hidden;border:2px solid var(--gold);box-shadow:0 8px 24px rgba(0,0,0,.6);z-index:20;padding:0;background:#000;cursor:pointer;transition:opacity .2s,transform .2s}
+.mini canvas{width:100%;height:100%;display:block}
+.mini span{position:absolute;left:0;right:0;bottom:0;background:rgba(0,0,0,.75);font-size:10px;color:var(--gold);padding:3px 0;text-align:center;letter-spacing:.5px}
+.mini.hide{opacity:0;transform:translateY(20px);pointer-events:none}
+.mini.typing{opacity:0;pointer-events:none}
+footer{padding-bottom:120px}
+@media(min-width:920px){footer{padding-bottom:40px}}
+@media(min-width:920px){.mini{display:none}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <img src="assets/logo-befresh.png" alt="Logo BeFresh">
+    <div>
+      <h1>Studio vidéo <span>BeFresh</span></h1>
+      <p>Ta vidéo à tes couleurs, en 3 étapes.</p>
+    </div>
+  </header>
+
+  <div class="layout">
+    <main>
+      <section aria-labelledby="s1">
+        <div class="step"><b>1</b><h2 id="s1">Choisis un angle</h2></div>
+        <p class="hint">Glisse pour voir les 7 idées. Le texte se remplit tout seul.</p>
+        <div class="angles" id="angles" role="group" aria-label="Angles"></div>
+      </section>
+
+      <section aria-labelledby="s2">
+        <div class="step"><b>2</b><h2 id="s2">Modifie ton texte</h2></div>
+        <p class="hint">Mets un mot entre <em>*étoiles*</em> pour l'écrire en or.</p>
+        <div class="fields" id="fields"></div>
+      </section>
+
+      <section aria-labelledby="s3">
+        <div class="step"><b>3</b><h2 id="s3">Choisis tes photos</h2></div>
+        <p class="counter" id="counter"></p>
+        <div class="grid" id="grid"></div>
+        <p class="warn" id="warn" aria-live="polite"></p>
+      </section>
+    </main>
+
+    <aside class="side">
+      <section aria-labelledby="s4" id="previewSec">
+        <div class="step"><b>4</b><h2 id="s4">Ta vidéo</h2></div>
+        <div class="player"><canvas id="cv" width="1080" height="1920" aria-label="Aperçu de la vidéo"></canvas></div>
+        <div class="pbar">
+          <button class="btn ghost" id="playBtn" type="button"></button>
+          <button class="btn ghost" id="soundBtn" type="button"></button>
+        </div>
+        <div class="dl">
+          <button class="btn gold" id="dlBtn" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0-5-5m5 5 5-5M4 20h16"/></svg>
+            Télécharger ma vidéo
+          </button>
+          <div class="prog" id="prog"><i></i></div>
+          <div class="status" id="status" aria-live="polite"></div>
+          <div class="note">C'est une démo : la vidéo s'enregistre depuis ton téléphone, en direct (15 s). La version branchée sur ton compte sortira en <b>MP4 HD</b>, avec ta voix ou une voix off, prête à publier.</div>
+        </div>
+        <div class="cta">
+          <h2>Ça te plaît ?</h2>
+          <p>On peut brancher ce studio sur ton compte, avec tes vraies photos du mois.</p>
+          <a class="btn mag" id="waBtn" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.2-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.8 11.9 11.9 0 0 0 4.6 4c1.7.7 2.4.8 3.2.6.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.1-.3-.2-.5-.3Z"/></svg>
+            Brancher ça pour mon compte
+          </a>
+        </div>
+      </section>
+    </aside>
+  </div>
+
+  <footer>Démo préparée par Tony PAYET</footer>
+</div>
+
+<button class="mini" id="mini" type="button" aria-label="Voir l'aperçu"><canvas id="miniCv" width="135" height="240"></canvas><span>APERÇU</span></button>
+<audio id="music" src="assets/musique-libre.mp3" preload="auto" loop></audio>
+
+<script>
+(() => {
+'use strict';
+const GOLD = '#E0AE3A', MAG = '#E9268C', W = 1080, H = 1920, DUR = 15, END = 12.4;
+const CTA_DEFAULT = 'Retrouve-nous sur @befresh.events';
+
+/* Texts come from BEFRESH-7-ANGLES.md. No dish, price, schedule or market day is invented. */
+const ANGLES = [
+  { t: 'Le vrai détox', ex: '« Un jus, c\'est trois fruits et rien d\'autre. »',
+    lines: ['Un jus, c\'est trois fruits et *rien d\'autre*.', 'Pourquoi c\'est devenu si rare ?', 'Chez nous, tout est *frais* et fait maison.', 'Le détox, ce n\'est pas une option. C\'est notre métier.'],
+    photos: [2, 5, 3, 8] },
+  { t: 'Le mojito', ex: '« Le même goût. La même fraîcheur. Sauf qu\'à minuit, tu conduis. »',
+    lines: ['Le même goût. La même *fraîcheur*.', 'Sauf qu\'à minuit, *tu conduis*.', 'Menthe fraîche, citron vert, glace pilée.', ''],
+    photos: [1, 4, 3] },
+  { t: 'Le stand en action', ex: '« Le stand se monte. La journée défile. »',
+    lines: ['Le stand se monte. La journée *défile*.', 'Des jus frais, servis devant toi.', 'Viens nous voir sur notre prochain marché.', ''],
+    photos: [14, 15, 13, 11, 6] },
+  { t: 'Un seul produit', ex: '« Menthe fraîche, citron vert, glace pilée. Rien d\'autre. »',
+    lines: ['Menthe fraîche, citron vert, *glace pilée*.', 'Rien d\'autre.', 'Regarde-le de près.', ''],
+    photos: [4, 1, 5] },
+  { t: 'Ce qui fait le prix', ex: '« On me demande toujours combien ça coûte. »',
+    lines: ['On me demande toujours *combien ça coûte*.', 'La vraie réponse : ça dépend de *quatre choses*.', 'Les invités. La durée.', 'Les recettes. Le déplacement.'],
+    photos: [12, 7, 6, 16] },
+  { t: 'Les coulisses', ex: '« Personne ne voit cette partie. »',
+    lines: ['Personne ne voit *cette partie*.', 'La découpe, la mise en place, les bocaux alignés.', 'C\'est pourtant elle qui fait *la différence*.', ''],
+    photos: [2, 8, 9, 10] },
+  { t: 'Ça rentre chez moi ?', ex: '« Un jardin, un parking, une salle. »',
+    lines: ['Un jardin, un parking, *une salle*.', 'Le bar s\'installe là où tu fais la fête.', 'Mariage, anniversaire, séminaire : *on vient à toi*.', ''],
+    photos: [7, 16, 6, 14, 12] },
+];
+const NPH = 17, MINP = 3, MAXP = 6;
+
+const state = { angle: 0, lines: ANGLES[0].lines.slice(), cta: CTA_DEFAULT, sel: ANGLES[0].photos.slice(), playing: true, sound: false };
+
+/* ---------- assets ---------- */
+const imgs = {};
+function loadImg(src) { return new Promise(r => { const i = new Image(); i.decoding = 'async'; i.onload = () => r(i); i.onerror = () => r(null); i.src = src; }); }
+const pad = n => String(n).padStart(2, '0');
+function getPhoto(n) {
+  if (!imgs[n]) { imgs[n] = { img: null, p: loadImg('assets/photos/p' + pad(n) + '.jpg').then(i => { imgs[n].img = i; }) }; }
+  return imgs[n];
+}
+let logo = null;
+
+/* ---------- UI build ---------- */
+const $ = id => document.getElementById(id);
+const anglesEl = $('angles');
+ANGLES.forEach((a, i) => {
+  const b = document.createElement('button');
+  b.type = 'button'; b.className = 'card'; b.setAttribute('aria-pressed', i === 0);
+  b.innerHTML = '<div class="n">Angle ' + (i + 1) + '</div><h3></h3><p></p>';
+  b.querySelector('h3').textContent = a.t; b.querySelector('p').textContent = a.ex;
+  b.onclick = () => pickAngle(i);
+  anglesEl.appendChild(b);
+});
+const FIELDS = [['Accroche', 'les 3 premières secondes', 0], ['Phrase 2', '', 1], ['Phrase 3', '', 2], ['Phrase 4', 'facultatif', 3]];
+const fieldsEl = $('fields');
+const inputs = [];
+FIELDS.forEach(([lab, sub, idx]) => {
+  const d = document.createElement('div'); d.className = 'f';
+  const id = 'l' + idx;
+  d.innerHTML = '<label for="' + id + '">' + lab + (sub ? ' <i>' + sub + '</i>' : '') + '</label><input id="' + id + '" maxlength="70" autocomplete="off">';
+  fieldsEl.appendChild(d);
+  const inp = d.querySelector('input'); inputs[idx] = inp;
+  inp.addEventListener('input', () => { state.lines[idx] = inp.value; });
+});
+{
+  const d = document.createElement('div'); d.className = 'f';
+  d.innerHTML = '<label for="lcta">Fin de la vidéo <i>ton appel à l\'action</i></label><input id="lcta" maxlength="50" autocomplete="off">';
+  fieldsEl.appendChild(d);
+  const inp = d.querySelector('input'); inp.value = state.cta;
+  inp.addEventListener('input', () => { state.cta = inp.value; });
+}
+function fillInputs() { inputs.forEach((inp, i) => { inp.value = state.lines[i] || ''; }); }
+
+const grid = $('grid');
+const phBtns = [];
+for (let n = 1; n <= NPH; n++) {
+  const b = document.createElement('button');
+  b.type = 'button'; b.className = 'ph';
+  b.innerHTML = '<img loading="lazy" alt="Photo ' + n + ' de BeFresh" src="assets/thumbs/p' + pad(n) + '.jpg"><span class="o"></span>';
+  b.onclick = () => togglePhoto(n);
+  grid.appendChild(b); phBtns[n] = b;
+}
+function renderPhotos() {
+  for (let n = 1; n <= NPH; n++) {
+    const k = state.sel.indexOf(n), b = phBtns[n];
+    b.setAttribute('aria-pressed', k >= 0);
+    b.querySelector('.o').textContent = k >= 0 ? k + 1 : '';
+  }
+  $('counter').innerHTML = '<b>' + state.sel.length + ' / ' + MAXP + '</b> photos choisies. Touche dans l\'ordre des plans (3 minimum).';
+}
+function togglePhoto(n) {
+  const k = state.sel.indexOf(n), warn = $('warn');
+  warn.textContent = '';
+  if (k >= 0) {
+    if (state.sel.length <= MINP) { warn.textContent = 'Il faut au moins 3 photos.'; return; }
+    state.sel.splice(k, 1);
+  } else {
+    if (state.sel.length >= MAXP) { warn.textContent = '6 photos maximum : retire-en une d\'abord.'; return; }
+    state.sel.push(n); getPhoto(n);
+  }
+  renderPhotos(); restart();
+}
+function pickAngle(i) {
+  state.angle = i;
+  state.lines = ANGLES[i].lines.slice();
+  state.sel = ANGLES[i].photos.slice(); state.sel.forEach(getPhoto);
+  [...anglesEl.children].forEach((c, j) => c.setAttribute('aria-pressed', j === i));
+  fillInputs(); renderPhotos(); $('warn').textContent = ''; restart();
+}
+
+/* ---------- renderer (same function for preview and recording) ---------- */
+const cv = $('cv'), ctx = cv.getContext('2d');
+const ease = t => 1 - Math.pow(1 - Math.min(Math.max(t, 0), 1), 3);
+const easeBack = t => { t = Math.min(Math.max(t, 0), 1); const c = 1.7; return 1 + (c + 1) * Math.pow(t - 1, 3) + c * Math.pow(t - 1, 2); };
+const clamp01 = t => Math.min(Math.max(t, 0), 1);
+
+function drawCover(img, scale, ox, oy, alpha) {
+  if (!img) return;
+  const r = Math.max(W / img.width, H / img.height) * scale;
+  const w = img.width * r, h = img.height * r;
+  ctx.globalAlpha = alpha;
+  ctx.drawImage(img, (W - w) / 2 + ox, (H - h) / 2 + oy, w, h);
+  ctx.globalAlpha = 1;
+}
+/* parse "*gold*" markup into word tokens */
+function tokens(s) {
+  const out = []; let gold = false;
+  s.split(/(\*)/).forEach(p => {
+    if (p === '*') { gold = !gold; return; }
+    const glue = out.length && p && !/^\s/.test(p);
+    p.split(/\s+/).filter(Boolean).forEach((w, i) => {
+      if (i === 0 && glue && /^[.,!?;:\u2026)\u00bb'-]+$/.test(w)) out[out.length - 1].w += w; // keep "fraîcheur." together
+      else out.push({ w, gold });
+    });
+  });
+  return out;
+}
+function layout(tok, size, maxW) {
+  ctx.font = '700 ' + size + 'px Outfit';
+  const space = ctx.measureText(' ').width, lines = [[]]; let lw = 0;
+  tok.forEach(t => {
+    const w = ctx.measureText(t.w).width;
+    if (lines[lines.length - 1].length && lw + space + w > maxW) { lines.push([]); lw = 0; }
+    const L = lines[lines.length - 1];
+    t.width = w; L.push(t); lw += (L.length > 1 ? space : 0) + w;
+  });
+  return { lines, space };
+}
+function fitLayout(tok, size, maxW, maxLines) {
+  let s = size, L;
+  while (true) { L = layout(tok, s, maxW); if (L.lines.length <= maxLines || s <= 44) break; s -= 4; }
+  L.size = s; return L;
+}
+function rr(x, y, w, h, r) { ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r); ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath(); }
+
+/* animated text block: words pop in one by one, centered on cy */
+function drawTextBlock(str, t0, t1, t, size, cy, opts = {}) {
+  if (t < t0 || t > t1 || !str.trim()) return;
+  const tok = tokens(str); if (!tok.length) return;
+  const L = fitLayout(tok, size, 900, opts.maxLines || 3), s = L.size, lh = s * 1.16;
+  const out = clamp01((t1 - t) / 0.28);
+  const blockH = L.lines.length * lh;
+  let top = cy - blockH / 2;
+  // panel
+  const widest = Math.max(...L.lines.map(l => l.reduce((a, x) => a + x.width, 0) + L.space * (l.length - 1)));
+  const pin = ease((t - t0) / 0.3) * out;
+  if (pin > 0) {
+    ctx.globalAlpha = 0.72 * pin; ctx.fillStyle = '#000';
+    rr(W / 2 - widest / 2 - 44, top - 34, widest + 88, blockH + 68, 28); ctx.fill();
+    ctx.globalAlpha = 1;
+    const barW = (widest + 88) * ease((t - t0 - 0.1) / 0.45);
+    ctx.fillStyle = opts.bar || MAG; ctx.globalAlpha = out;
+    rr(W / 2 - widest / 2 - 44, top + blockH + 34 - 10, barW, 10, 5); ctx.fill();
+    ctx.globalAlpha = 1;
+  }
+  ctx.textBaseline = 'middle'; ctx.font = '700 ' + s + 'px Outfit';
+  let k = 0; const per = Math.min(0.14, 1.1 / tok.length);
+  L.lines.forEach((line, li) => {
+    const lw = line.reduce((a, x) => a + x.width, 0) + L.space * (line.length - 1);
+    let x = W / 2 - lw / 2; const y = top + lh * li + lh / 2;
+    line.forEach(w => {
+      const p = (t - t0 - 0.12 - k * per) / 0.32;
+      if (p > 0) {
+        const sc = 0.6 + 0.4 * easeBack(p), a = clamp01(p * 2) * out;
+        ctx.save(); ctx.globalAlpha = a; ctx.translate(x + w.width / 2, y + (1 - ease(p)) * 30); ctx.scale(sc, sc);
+        ctx.fillStyle = w.gold ? GOLD : '#fff';
+        ctx.shadowColor = 'rgba(0,0,0,.55)'; ctx.shadowBlur = 12;
+        ctx.fillText(w.w, -w.width / 2, 0); ctx.restore();
+      }
+      x += w.width + L.space; k++;
+    });
+  });
+}
+
+function drawFrame(t) {
+  t = ((t % DUR) + DUR) % DUR;
+  ctx.fillStyle = '#000'; ctx.fillRect(0, 0, W, H);
+  const sel = state.sel.length ? state.sel : [1];
+  const n = sel.length, seg = END / n, XF = 0.4;
+  // photos with Ken Burns + crossfade
+  for (let i = 0; i < n; i++) {
+    const s0 = i * seg, s1 = s0 + seg + (i < n - 1 ? XF : 0.6);
+    if (t < s0 || t > s1) continue;
+    const ph = getPhoto(sel[i]).img;
+    const p = (t - s0) / (seg + XF);
+    const zin = i % 2 === 0;
+    const scale = zin ? 1.02 + 0.10 * p : 1.12 - 0.10 * p;
+    const ox = (i % 3 - 1) * 30 * (p - 0.5), oy = (i % 2 ? -1 : 1) * 24 * (p - 0.5);
+    const a = i === 0 ? 1 : ease((t - s0) / XF);
+    const punch = 1 + 0.035 * (1 - ease((t - s0) / 0.35));
+    drawCover(ph, scale * punch, ox, oy, a);
+  }
+  // readability gradients
+  let g = ctx.createLinearGradient(0, 0, 0, 420); g.addColorStop(0, 'rgba(0,0,0,.55)'); g.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = g; ctx.fillRect(0, 0, W, 420);
+  g = ctx.createLinearGradient(0, H * 0.45, 0, H); g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(1, 'rgba(0,0,0,.7)');
+  ctx.fillStyle = g; ctx.fillRect(0, H * 0.45, W, H * 0.55);
+
+  // corner logo (inside top safe zone: below 8 %)
+  if (logo && t < END + 0.3) {
+    const a = ease(t / 0.5) * clamp01((END + 0.3 - t) / 0.3);
+    ctx.globalAlpha = a; ctx.drawImage(logo, 64, 176, 132, 132); ctx.globalAlpha = 1;
+    ctx.font = '700 34px Outfit'; ctx.fillStyle = '#fff'; ctx.textBaseline = 'middle'; ctx.globalAlpha = a * 0.92;
+    ctx.fillText('@befresh.events', 216, 242); ctx.globalAlpha = 1;
+  }
+
+  // texts: hook then phrases, all between 8 % and 80 % of height
+  const lines = state.lines.map(s => (s || '').trim());
+  const hook = lines[0], rest = lines.slice(1).filter(Boolean);
+  const HOOK_END = 3.6;
+  drawTextBlock(hook, 0.25, HOOK_END, t, 96, 1180, { bar: GOLD, maxLines: 4 });
+  if (rest.length) {
+    const span = (END - 0.2 - HOOK_END) / rest.length;
+    rest.forEach((s, i) => drawTextBlock(s, HOOK_END + 0.15 + i * span, HOOK_END + (i + 1) * span, t, 78, 1240, { bar: MAG, maxLines: 4 }));
+  }
+
+  // end card
+  if (t > END - 0.1) {
+    const p = (t - END + 0.1) / 0.5;
+    ctx.globalAlpha = ease(p); ctx.fillStyle = '#000'; ctx.fillRect(0, 0, W, H); ctx.globalAlpha = 1;
+    // soft magenta / gold glow
+    const gl = ctx.createRadialGradient(W / 2, 760, 40, W / 2, 760, 620);
+    gl.addColorStop(0, 'rgba(233,38,140,.28)'); gl.addColorStop(1, 'rgba(233,38,140,0)');
+    ctx.globalAlpha = ease(p); ctx.fillStyle = gl; ctx.fillRect(0, 0, W, H); ctx.globalAlpha = 1;
+    if (logo) {
+      const q = easeBack((t - END - 0.1) / 0.6), sz = 400 * Math.max(q, 0);
+      if (sz > 0) ctx.drawImage(logo, W / 2 - sz / 2, 760 - sz / 2, sz, sz);
+      // gold ring sweep
+      ctx.strokeStyle = GOLD; ctx.lineWidth = 8; ctx.beginPath();
+      ctx.arc(W / 2, 760, 236, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * ease((t - END - 0.3) / 0.9)); ctx.stroke();
+    }
+    const cta = (state.cta || '').trim() || CTA_DEFAULT;
+    const pc = ease((t - END - 0.6) / 0.4);
+    if (pc > 0) {
+      ctx.globalAlpha = pc; ctx.textBaseline = 'middle';
+      const L = fitLayout(tokens(cta).map(x => ({ ...x, gold: x.gold || /@befresh/i.test(x.w) })), 64, 920, 3);
+      ctx.font = '700 ' + L.size + 'px Outfit';
+      L.lines.forEach((line, li) => {
+        const lw = line.reduce((a, x) => a + x.width, 0) + L.space * (line.length - 1);
+        let x = W / 2 - lw / 2; const y = 1160 + (30 * (1 - pc)) + li * L.size * 1.2;
+        line.forEach(w => { ctx.fillStyle = w.gold ? GOLD : '#fff'; ctx.fillText(w.w, x, y); x += w.width + L.space; });
+      });
+      ctx.globalAlpha = 1;
+    }
+    const ph2 = ease((t - END - 1.0) / 0.4);
+    if (ph2 > 0) {
+      ctx.globalAlpha = ph2; ctx.fillStyle = MAG; rr(W / 2 - 150, 1420, 300 * ph2, 10, 5); ctx.fill();
+      ctx.font = '700 40px Outfit'; ctx.fillStyle = '#fff'; ctx.textAlign = 'center';
+      ctx.fillText('Jus détox · jus frais maison · mojito', W / 2, 1490);
+      ctx.textAlign = 'left'; ctx.globalAlpha = 1;
+    }
+  }
+}
+
+/* ---------- playback ---------- */
+let t0 = performance.now(), pausedAt = 0, curT = 0, recording = false;
+const miniCv = $('miniCv'), mctx = miniCv.getContext('2d');
+const music = $('music');
+function restart() { t0 = performance.now(); pausedAt = 0; if (state.sound && !recording) { music.currentTime = 0; } }
+function now() { return state.playing ? (performance.now() - t0) / 1000 : pausedAt; }
+function loop() {
+  curT = recording ? (performance.now() - recStart) / 1000 : now();
+  drawFrame(recording ? Math.min(curT, DUR - 0.001) : curT);
+  if (!miniHidden) mctx.drawImage(cv, 0, 0, miniCv.width, miniCv.height);
+  if (state.sound && state.playing && !recording) {
+    const want = curT % DUR; if (Math.abs(music.currentTime - want) > 0.35 && want < 15.5) music.currentTime = want;
+  }
+  requestAnimationFrame(loop);
+}
+const ICON_PAUSE = '<svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>Pause';
+const ICON_PLAY = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 5v14l12-7z"/></svg>Lecture';
+const ICON_SOFF = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor"/><path d="m17 9 5 6m0-6-5 6"/></svg>Musique';
+const ICON_SON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor"/><path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/></svg>Musique';
+function paintButtons() {
+  $('playBtn').innerHTML = state.playing ? ICON_PAUSE : ICON_PLAY;
+  $('soundBtn').innerHTML = state.sound ? ICON_SON : ICON_SOFF;
+  $('soundBtn').setAttribute('aria-pressed', state.sound);
+  $('soundBtn').title = 'Musique libre de droits (Mixkit)';
+}
+$('playBtn').onclick = () => {
+  if (recording) return;
+  if (state.playing) { pausedAt = now(); state.playing = false; music.pause(); }
+  else { t0 = performance.now() - pausedAt * 1000; state.playing = true; if (state.sound) music.play().catch(() => {}); }
+  paintButtons();
+};
+$('soundBtn').onclick = () => {
+  if (recording) return;
+  state.sound = !state.sound;
+  if (state.sound) { ensureAudioGraph(); music.currentTime = now() % DUR; if (state.playing) music.play().catch(() => {}); }
+  else music.pause();
+  paintButtons();
+};
+
+/* mini preview visible only while the big player is off-screen (phone) */
+let miniHidden = false;
+const mini = $('mini');
+document.addEventListener('focusin', e => { if (e.target.tagName === 'INPUT') mini.classList.add('typing'); });
+document.addEventListener('focusout', () => mini.classList.remove('typing'));
+mini.onclick = () => $('previewSec').scrollIntoView({ behavior: 'smooth', block: 'start' });
+if ('IntersectionObserver' in window) {
+  new IntersectionObserver(es => { es.forEach(e => { miniHidden = e.isIntersecting; mini.classList.toggle('hide', miniHidden); }); }, { threshold: 0.25 }).observe(cv);
+}
+
+/* ---------- audio graph for recording ---------- */
+let actx = null, audioDest = null;
+function ensureAudioGraph() {
+  if (actx) { if (actx.state === 'suspended') actx.resume(); return; }
+  try {
+    const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return;
+    actx = new AC();
+    const src = actx.createMediaElementSource(music);
+    audioDest = actx.createMediaStreamDestination();
+    src.connect(actx.destination); src.connect(audioDest);
+  } catch (e) { actx = null; audioDest = null; }
+}
+
+/* ---------- download (MediaRecorder on the very same canvas) ---------- */
+let recStart = 0;
+function pickMime() {
+  if (!window.MediaRecorder) return null;
+  const c = ['video/mp4;codecs=avc1.42E01E,mp4a.40.2', 'video/mp4;codecs=avc1', 'video/mp4', 'video/webm;codecs=vp9,opus', 'video/webm;codecs=vp8,opus', 'video/webm'];
+  for (const m of c) { try { if (MediaRecorder.isTypeSupported(m)) return m; } catch (e) {} }
+  return '';
+}
+function setStatus(html) { $('status').innerHTML = html; }
+$('dlBtn').onclick = async () => {
+  if (recording) return;
+  const mime = pickMime();
+  if (mime === null || !cv.captureStream) { setStatus('Ton navigateur ne sait pas enregistrer la vidéo. Essaie avec Chrome ou Safari à jour.'); return; }
+  const btn = $('dlBtn'), prog = $('prog'), bar = prog.firstElementChild;
+  btn.disabled = true; prog.style.display = 'block'; bar.style.width = '0';
+  setStatus('Enregistrement en cours… garde cette page ouverte (15 s).');
+  $('previewSec').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  const stream = cv.captureStream(30);
+  if (state.sound) { ensureAudioGraph(); if (audioDest) audioDest.stream.getAudioTracks().forEach(tr => stream.addTrack(tr)); }
+  let rec;
+  try { rec = new MediaRecorder(stream, mime ? { mimeType: mime, videoBitsPerSecond: 8000000 } : { videoBitsPerSecond: 8000000 }); }
+  catch (e) { rec = new MediaRecorder(stream); }
+  const chunks = [];
+  rec.ondataavailable = e => { if (e.data && e.data.size) chunks.push(e.data); };
+  const done = new Promise(r => { rec.onstop = r; });
+  recording = true; state.playing = true; paintButtons();
+  if (state.sound) { music.currentTime = 0; music.play().catch(() => {}); }
+  recStart = performance.now();
+  rec.start(250);
+  await new Promise(r => {
+    const tick = () => {
+      const p = (performance.now() - recStart) / 1000 / DUR;
+      bar.style.width = Math.min(100, p * 100).toFixed(1) + '%';
+      if (p >= 1) r(); else setTimeout(tick, 100);
+    };
+    tick();
+  });
+  rec.stop(); await done;
+  recording = false; restart();
+  const type = (rec.mimeType || mime || 'video/webm').split(';')[0];
+  const ext = type.includes('mp4') ? 'mp4' : 'webm';
+  const blob = new Blob(chunks, { type });
+  const name = 'befresh-video.' + ext;
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove();
+  let extra = '';
+  try {
+    const file = new File([blob], name, { type });
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      extra = ' <a href="#" id="shareLnk">Enregistrer / partager</a>';
+      setTimeout(() => { const l = $('shareLnk'); if (l) l.onclick = ev => { ev.preventDefault(); navigator.share({ files: [file], title: 'Ma vidéo BeFresh' }).catch(() => {}); }; });
+    }
+  } catch (e) {}
+  setStatus('C\'est prêt (' + ext.toUpperCase() + ', ' + (blob.size / 1e6).toFixed(1) + ' Mo). <a href="' + url + '" download="' + name + '">Télécharger à nouveau</a>.' + extra);
+  btn.disabled = false;
+};
+
+/* ---------- WhatsApp ---------- */
+$('waBtn').href = 'https://wa.me/262692417749?text=' + encodeURIComponent('Bonjour Tony, j\'ai testé l\'éditeur BeFresh, on peut en parler ?');
+
+/* ---------- boot ---------- */
+fillInputs(); renderPhotos(); paintButtons();
+state.sel.forEach(getPhoto);
+Promise.all([
+  document.fonts ? document.fonts.load('700 80px Outfit').catch(() => {}) : 0,
+  loadImg('assets/logo-befresh.png').then(i => { logo = i; }),
+  ...state.sel.map(n => getPhoto(n).p),
+]).then(() => {
+  // preload the rest quietly
+  for (let n = 1; n <= NPH; n++) getPhoto(n);
+  restart(); requestAnimationFrame(loop);
+});
+window.__befresh = { drawFrame, state, pause: () => { state.playing = false; } };
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,494 @@
+/* Les Papi'es — génération de la page.
+ *
+ * LE MONDE : « midi sous la varangue ». Il ne sort pas d'une palette de
+ * catégorie mais de leurs propres photos : charpente en bois clair, mur de
+ * pierre volcanique, nappe kraft, verdure dehors — et la serviette pliée jaune
+ * moutarde posée sur chaque table, qu'on retrouve exactement dans le dhal du
+ * plateau créole. D'où un site EN PLEIN JOUR. Le restaurant sombre aux lampes à
+ * filament est le réflexe du métier ; ici ce serait un mensonge sur le lieu.
+ *
+ * LE PARTI PRIS : la carte est le spectacle. Ils servent plus de cent plats, du
+ * rougail boucané à la langouste, et du kangourou. La plupart des sites de
+ * restaurant enterrent ça dans un PDF. Ici on la déplie.
+ *
+ * Tout le contenu est relevé sur leur site réel (carte.json en porte la trace).
+ * Aucun prix, aucune composition, aucun horaire n'est inventé.
+ *
+ *   node build.mjs   ->  index.html
+ */
+import fs from 'node:fs';
+import path from 'node:path';
+
+const D = path.dirname(new URL(import.meta.url).pathname);
+const carte = JSON.parse(fs.readFileSync(path.join(D, 'carte.json'), 'utf8'));
+
+const TEL = '0692 76 03 24';
+const TEL_URL = '+262692760324';
+const ADRESSE = '8 chemin Ringuin, Saint-Pierre 97410';
+const MAPS = 'https://www.google.com/maps/search/?api=1&query=' +
+  encodeURIComponent("Restaurant Les Papi'es, 8 chemin Ringuin, Saint-Pierre, La Réunion");
+
+/* Icônes dessinées, un seul poids de trait. Pas d'emoji : un glyphe système ne
+   se thème pas et ne s'aligne jamais sur la ligne de base du texte. */
+const ico = (d, extra = '') => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+ stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}${extra}</svg>`;
+const ICO = {
+  tel: ico('<path d="M4.5 3.5h3.2l1.6 4-2 1.4a12.5 12.5 0 0 0 5.8 5.8l1.4-2 4 1.6v3.2a1.5 1.5 0 0 1-1.6 1.5A16.5 16.5 0 0 1 3 5.1 1.5 1.5 0 0 1 4.5 3.5Z"/>'),
+  pin: ico('<path d="M12 21s7-6.1 7-11a7 7 0 1 0-14 0c0 4.9 7 11 7 11Z"/><circle cx="12" cy="10" r="2.6"/>'),
+  heure: ico('<circle cx="12" cy="12" r="8.5"/><path d="M12 7v5.2l3.2 2"/>'),
+  fleche: ico('<path d="M5 12h13m-5.5-5.5L18.5 12l-6 5.5"/>'),
+};
+
+/* Contenu relevé sur leur site. Les plats mis en avant sont ceux que leur
+   propre client cite dans l'avis publié — pas une sélection de notre goût. */
+const SIGNATURES = [
+  { photo: 'h-plateau-creole.jpg', nom: 'Civet zourite', prix: '22,00',
+    mot: "Le poulpe mijoté au vin rouge et aux épices. Un plat qui demande des heures et qu'on ne fait plus beaucoup.",
+    alt: "Plateau créole des Papi'es : rougail, brèdes, dhal et civet zourite servis dans leurs bols" },
+  { photo: 'h-riz-cantonais.jpg', nom: 'Bol renversé', prix: '15,00',
+    mot: "Riz, viande, œuf au plat, renversé sur l'assiette au moment du service.",
+    alt: 'Bol renversé — riz cantonais servi chaud' },
+  { photo: 'h-grillade-riz.jpg', nom: 'Rougail boucané', prix: '15,00',
+    mot: "Le plat qui ne quitte jamais la carte. Quinze euros, et vous repartez calé.",
+    alt: 'Grillade créole accompagnée de riz et de son rougail' },
+];
+
+const AVIS = {
+  texte: "Super restaurant avec une superbe ambiance. L'équipe est vraiment super sympa et réactive. La cuisine y est très bonne, surtout la cuisine créole. Bol renversé et civet zourite vraiment top, et brioche perdue magique.",
+  auteur: 'David-Adrien Indian',
+};
+
+const GALERIE = [
+  ['h-poulet-frites.jpg', 'Poulet frites servi à la varangue'],
+  ['h-boeuf-riz.jpg', 'Émincé de bœuf et son riz'],
+  ['h-tagliatelle.jpg', "Tagliatelles des Papi'es"],
+  ['h-carry-accompagnements.jpg', 'Carry et ses accompagnements créoles'],
+  ['h-fondant-chocolat.jpg', 'Fondant au chocolat, glace vanille'],
+  ['h-crepe-chocolat.jpg', 'Crêpe au chocolat et sa chantilly'],
+  ['h-coupe-fraise.jpg', 'Coupe glacée à la fraise'],
+  ['h-cocktails.jpg', 'Cocktails maison'],
+  ['h-punch.jpg', 'Punch créole'],
+  ['h-cocktail-agrume.jpg', 'Cocktail aux agrumes'],
+  ['h-cafe-gourmand.jpg', 'Café gourmand'],
+];
+
+const HORAIRES = [
+  ['Mercredi', '12h – 14h30', '19h – 22h30'],
+  ['Jeudi', '12h – 14h30', '19h – 22h30'],
+  ['Vendredi', '12h – 14h30', '19h – 22h30'],
+  ['Samedi', '12h – 14h30', '19h – 22h30'],
+  ['Dimanche', '12h – 15h', null],
+];
+
+const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+const woff = (f) => `fonts/${f}`;
+
+const sectionsHTML = carte.sections.map((s) => `
+      <section class="plat-groupe">
+        <h3>${esc(s.titre)}</h3>
+        ${s.note ? `<p class="groupe-note">${esc(s.note)}</p>` : ''}
+        <ul class="plats">
+          ${s.plats.map(([nom, prix]) => `<li><span class="plat-nom">${esc(nom)}</span><span class="plat-lien" aria-hidden="true"></span><span class="plat-prix">${esc(prix)}&nbsp;€</span></li>`).join('\n          ')}
+        </ul>
+      </section>`).join('\n');
+
+const jsonLD = {
+  '@context': 'https://schema.org', '@type': 'Restaurant',
+  name: "Restaurant Les Papi'es", servesCuisine: ['Créole', 'Française', 'Grillades'],
+  priceRange: '€€', telephone: '+262 692 76 03 24',
+  address: { '@type': 'PostalAddress', streetAddress: '8 chemin Ringuin', addressLocality: 'Saint-Pierre', postalCode: '97410', addressRegion: 'La Réunion', addressCountry: 'RE' },
+  openingHoursSpecification: [
+    { '@type': 'OpeningHoursSpecification', dayOfWeek: ['Wednesday', 'Thursday', 'Friday', 'Saturday'], opens: '12:00', closes: '14:30' },
+    { '@type': 'OpeningHoursSpecification', dayOfWeek: ['Wednesday', 'Thursday', 'Friday', 'Saturday'], opens: '19:00', closes: '22:30' },
+    { '@type': 'OpeningHoursSpecification', dayOfWeek: 'Sunday', opens: '12:00', closes: '15:00' },
+  ],
+};
+
+const html = `<!doctype html>
+<html lang="fr" class="no-js">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Les Papi'es — Grill &amp; Comfort, Saint-Pierre</title>
+<meta name="description" content="Cuisine créole, grillades et gibier à Saint-Pierre. Rougail boucané, civet zourite, bol renversé, kangourou. Ouvert du mercredi au dimanche. 0692 76 03 24.">
+<meta name="theme-color" content="#F7F2E8" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#221F1C" media="(prefers-color-scheme: dark)">
+<link rel="preload" as="image" href="photos/h-plateau-creole.jpg" fetchpriority="high">
+<script type="application/ld+json">${JSON.stringify(jsonLD)}</script>
+<style>
+@font-face{font-family:Bodoni;src:url(${woff('bodoni-moda-latin-400-normal.woff2')}) format('woff2');font-weight:400;font-display:swap}
+@font-face{font-family:Bodoni;src:url(${woff('bodoni-moda-latin-700-normal.woff2')}) format('woff2');font-weight:700;font-display:swap}
+@font-face{font-family:Sora;src:url(${woff('sora-latin-400-normal.woff2')}) format('woff2');font-weight:400;font-display:swap}
+@font-face{font-family:Sora;src:url(${woff('sora-latin-700-normal.woff2')}) format('woff2');font-weight:700;font-display:swap}
+
+/* Les couleurs viennent de la salle et de l'assiette, relevées sur les photos :
+   le kraft de la nappe, le basalte du mur et des tables, le jaune moutarde de
+   la serviette pliée — le même que celui du dhal. Un seul accent, tenu partout. */
+:root{
+  --papier:#F7F2E8; --kraft:#EADFC9; --kraft-fonce:#DCCFB4;
+  --basalte:#221F1C; --encre:#4A443D; --trait:#CFC2A8;
+  --moutarde:#9A6A05; --moutarde-vive:#C98A11; --braise:#8E3312; --bredes:#3B5730;
+  --sur-accent:#1B1508;
+  --t-xs:.875rem; --t-s:1rem; --t-m:1.15rem;
+  --serif:Bodoni,'Bodoni MT',Didot,'Times New Roman',serif;
+  --sans:Sora,ui-sans-serif,system-ui,-apple-system,'Segoe UI',sans-serif;
+  --marge:clamp(1.25rem,5vw,4rem); --large:74rem;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --papier:#1A1815; --kraft:#252118; --kraft-fonce:#2E2920;
+    --basalte:#F2EADA; --encre:#BDB2A0; --trait:#3B342A;
+    --moutarde:#E0A22A; --moutarde-vive:#EFB63F; --braise:#D4643A; --bredes:#8FB07C;
+    --sur-accent:#17130A;
+  }
+}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{margin:0;background:var(--papier);color:var(--basalte);
+  font:400 var(--t-s)/1.65 var(--sans);
+  text-rendering:optimizeLegibility;-webkit-font-smoothing:antialiased;
+  padding-bottom:env(safe-area-inset-bottom)}
+img{max-width:100%;display:block}
+h1,h2,h3{font-family:var(--serif);font-weight:700;letter-spacing:-.015em;
+  text-wrap:balance;margin:0;line-height:1.04}
+a{color:inherit}
+::selection{background:var(--moutarde-vive);color:var(--sur-accent)}
+:where(a,button,summary):focus-visible{outline:2.5px solid var(--moutarde-vive);
+  outline-offset:3px;border-radius:2px}
+html{scrollbar-color:var(--kraft-fonce) var(--papier)}
+::-webkit-scrollbar{width:11px;height:11px}
+::-webkit-scrollbar-track{background:var(--papier)}
+::-webkit-scrollbar-thumb{background:var(--kraft-fonce);border:3px solid var(--papier);border-radius:99px}
+svg{width:1em;height:1em;flex:none}
+
+.enveloppe{max-width:var(--large);margin-inline:auto;padding-inline:var(--marge)}
+
+/* ── barre haute ─────────────────────────────────────────────── */
+.haut{position:sticky;top:0;z-index:40;background:color-mix(in srgb,var(--papier) 88%,transparent);
+  backdrop-filter:blur(10px);border-bottom:1px solid var(--trait)}
+.haut .enveloppe{display:flex;align-items:center;justify-content:space-between;
+  gap:1rem;min-height:64px}
+.marque{font-family:var(--serif);font-size:1.35rem;font-weight:700;letter-spacing:.005em;
+  text-decoration:none;display:inline-flex;align-items:center;min-height:44px}
+.marque i{font-style:normal;color:var(--moutarde)}
+.appel{display:inline-flex;align-items:center;gap:.55rem;background:var(--moutarde-vive);
+  color:var(--sur-accent);text-decoration:none;font-weight:700;font-size:var(--t-xs);
+  padding:.7rem 1.15rem;border-radius:2px;min-height:44px;
+  transition:transform .18s cubic-bezier(.2,.8,.3,1),box-shadow .18s}
+.appel:hover{transform:translateY(-2px);box-shadow:0 8px 22px -8px rgba(120,80,0,.55)}
+.appel:active{transform:translateY(0)}
+.haut .appel .lib{display:none}
+@media (min-width:34rem){.haut .appel .lib{display:inline}}
+
+/* ── ouverture, en tête de page ──────────────────────────────── */
+.ouverture{display:grid;gap:clamp(1.75rem,4vw,3rem);align-items:center;
+  padding-block:clamp(2.25rem,6vw,5rem)}
+@media (min-width:56rem){
+  .ouverture{grid-template-columns:1.02fr .98fr;gap:clamp(2.5rem,5vw,4.5rem);
+    padding-block:clamp(3.5rem,7vw,6rem)}
+}
+.ouverture h1{font-size:clamp(2.6rem,1.6rem + 4.6vw,5.5rem);max-width:14ch;margin-bottom:1.1rem}
+.ouverture h1 em{font-style:normal;color:var(--moutarde);display:block}
+.plat-vedette{position:relative;margin-inline:calc(var(--marge)*-1)}
+@media (min-width:56rem){.plat-vedette{margin-inline:0}}
+.plat-vedette img{width:100%;aspect-ratio:4/3;object-fit:cover}
+@media (min-width:56rem){.plat-vedette img{aspect-ratio:4/5}}
+.plat-vedette figcaption{position:absolute;left:0;bottom:0;
+  background:var(--moutarde-vive);color:var(--sur-accent);
+  font-size:var(--t-xs);font-weight:700;padding:.55rem .9rem;letter-spacing:.01em}
+.chapeau{color:var(--encre);max-width:44ch;font-size:var(--t-m);margin:0 0 1.5rem}
+.etat{display:flex;flex-wrap:wrap;gap:.5rem .8rem;align-items:baseline;margin:0 0 1.6rem;
+  font-size:var(--t-xs);color:var(--encre)}
+.etat b{display:inline-flex;align-items:center;gap:.5rem;font-weight:700;color:var(--basalte)}
+.pastille{width:9px;height:9px;border-radius:50%;background:var(--bredes);flex:none;
+  box-shadow:0 0 0 4px color-mix(in srgb,var(--bredes) 22%,transparent)}
+.pastille.dodo{background:var(--trait);box-shadow:0 0 0 4px color-mix(in srgb,var(--trait) 30%,transparent)}
+.duo{display:flex;flex-wrap:wrap;gap:.7rem}
+.second{display:inline-flex;align-items:center;gap:.55rem;text-decoration:none;font-weight:700;
+  font-size:var(--t-xs);padding:.7rem 1.15rem;min-height:44px;border-radius:2px;
+  color:var(--basalte);border:1px solid var(--trait);transition:background .18s,border-color .18s}
+.second:hover{background:var(--kraft);border-color:var(--moutarde)}
+
+/* ── ce qu'on vient chercher ─────────────────────────────────── */
+.bloc{padding-block:clamp(3.5rem,9vw,6.5rem);scroll-margin-top:72px}
+.bloc-titre{font-size:clamp(1.9rem,1.4rem + 2.2vw,3.1rem);margin-bottom:.6rem}
+.bloc-intro{color:var(--encre);max-width:62ch;margin:0 0 clamp(2rem,4vw,3rem)}
+
+.signatures{display:grid;gap:clamp(1.6rem,3.5vw,2.4rem);
+  grid-template-columns:repeat(auto-fit,minmax(min(100%,17rem),1fr))}
+.signature img{width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:2px}
+.signature h3{font-size:1.6rem;margin:1rem 0 .3rem;display:flex;align-items:baseline;
+  justify-content:space-between;gap:1rem}
+.signature h3 span{font-family:var(--sans);font-size:var(--t-xs);font-weight:700;color:var(--moutarde);
+  font-variant-numeric:tabular-nums;flex:none}
+.signature p{margin:0;color:var(--encre);font-size:var(--t-s)}
+
+/* ── l'avis ──────────────────────────────────────────────────── */
+.avis{background:var(--kraft);border-block:1px solid var(--trait)}
+.avis blockquote{margin:0;font-family:var(--serif);font-weight:400;
+  font-size:clamp(1.4rem,1.1rem + 1.7vw,2.35rem);line-height:1.3;max-width:26ch}
+.avis figcaption{margin-top:1.4rem;font-size:var(--t-xs);color:var(--encre);letter-spacing:.02em}
+.avis figcaption b{color:var(--basalte)}
+
+/* ── la carte ────────────────────────────────────────────────── */
+.carte{column-gap:clamp(2rem,5vw,4.5rem)}
+@media (min-width:52rem){.carte{columns:2}}
+@media (min-width:78rem){.carte{columns:3}}
+.plat-groupe{break-inside:avoid;margin-bottom:clamp(2rem,3.5vw,2.9rem)}
+.plat-groupe h3{font-size:1.35rem;padding-bottom:.5rem;border-bottom:1px solid var(--trait);
+  margin-bottom:.85rem}
+.groupe-note{margin:-.35rem 0 .85rem;font-size:var(--t-xs);color:var(--moutarde)}
+.plats{list-style:none;margin:0;padding:0}
+.plats li{display:flex;align-items:baseline;gap:.5rem;padding:.36rem 0;font-size:var(--t-s)}
+.plat-lien{flex:1;border-bottom:1px dotted var(--trait);transform:translateY(-.24em)}
+.plat-prix{font-weight:700;font-variant-numeric:tabular-nums;flex:none;color:var(--encre)}
+.extras{margin-top:2.5rem;padding-top:1.6rem;border-top:1px solid var(--trait);
+  display:grid;gap:1.4rem;grid-template-columns:repeat(auto-fit,minmax(min(100%,20rem),1fr))}
+.extras h4{font-family:var(--serif);font-size:1.15rem;margin:0 0 .35rem}
+.extras p{margin:0;color:var(--encre);font-size:var(--t-xs)}
+
+/* ── galerie ─────────────────────────────────────────────────── */
+.defile{display:grid;grid-auto-flow:column;grid-auto-columns:min(72vw,20rem);
+  gap:1rem;overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x mandatory;
+  padding-bottom:1rem;margin-inline:calc(var(--marge)*-1);padding-inline:var(--marge)}
+.defile img{scroll-snap-align:start;width:100%;aspect-ratio:1;object-fit:cover;border-radius:2px}
+
+/* ── la maison ───────────────────────────────────────────────── */
+.maison{display:grid;gap:clamp(2rem,4vw,3.5rem);align-items:center}
+@media (min-width:52rem){.maison{grid-template-columns:1.05fr .95fr}}
+.maison img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:2px}
+.maison p{color:var(--encre);max-width:52ch}
+
+/* ── venir ───────────────────────────────────────────────────── */
+.venir{background:var(--kraft);border-top:1px solid var(--trait)}
+.venir-grille{display:grid;gap:clamp(2rem,4vw,3.5rem)}
+@media (min-width:52rem){.venir-grille{grid-template-columns:1fr 1fr}}
+.faits{list-style:none;margin:0 0 2rem;padding:0;display:grid;gap:1.1rem}
+.faits li{display:flex;gap:.85rem;align-items:flex-start}
+.faits svg{color:var(--moutarde);margin-top:.2em;font-size:1.15rem}
+.faits a{font-weight:700;text-decoration-color:var(--trait);text-underline-offset:3px;
+  display:inline-flex;align-items:center;min-height:44px}
+.faits a:hover{text-decoration-color:var(--moutarde)}
+.faits small{display:block;color:var(--encre);font-size:var(--t-xs);font-weight:400}
+.horaires{width:100%;border-collapse:collapse;font-size:var(--t-xs);
+  font-variant-numeric:tabular-nums}
+.horaires caption{font-family:var(--serif);font-size:1.35rem;font-weight:700;
+  text-align:left;margin-bottom:.9rem}
+.horaires th{text-align:left;font-weight:400;color:var(--encre);padding:.6rem 0;vertical-align:top}
+.horaires td{text-align:right;padding:.6rem 0;white-space:nowrap;vertical-align:top}
+.horaires tr+tr th,.horaires tr+tr td{border-top:1px solid var(--trait)}
+.horaires .aujourdhui th,.horaires .aujourdhui td{font-weight:700;color:var(--moutarde)}
+.note-jours{margin-top:1rem;font-size:var(--t-xs);color:var(--encre)}
+
+/* ── pied ────────────────────────────────────────────────────── */
+footer{padding-block:2.5rem 7rem;font-size:var(--t-xs);color:var(--encre);
+  border-top:1px solid var(--trait)}
+@media (min-width:52rem){footer{padding-bottom:2.5rem}}
+
+/* ── barre d'appel, mobile ───────────────────────────────────── */
+.barre-appel{position:fixed;left:0;right:0;bottom:0;z-index:50;
+  padding:.7rem var(--marge) calc(.7rem + env(safe-area-inset-bottom));
+  background:color-mix(in srgb,var(--papier) 92%,transparent);backdrop-filter:blur(10px);
+  border-top:1px solid var(--trait)}
+.barre-appel .appel{width:100%;justify-content:center;font-size:var(--t-m);padding-block:.85rem}
+.barre-appel{transform:translateY(100%);transition:transform .32s cubic-bezier(.16,1,.3,1)}
+.barre-appel.visible{transform:none}
+.no-js .barre-appel{transform:none}
+@media (min-width:52rem){.barre-appel{display:none}}
+
+/* Le seul moment animé de la page : le titre se pose au chargement.
+   Défaut = visible, l'animation ne fait que retarder ; sans JS ni avec
+   « mouvement réduit », rien ne manque. */
+@media (prefers-reduced-motion:no-preference){
+  .js .ouverture h1,.js .chapeau,.js .etat,.js .duo{
+    animation:poser .85s cubic-bezier(.16,1,.3,1) backwards}
+  .js .chapeau{animation-delay:.09s}.js .etat{animation-delay:.16s}.js .duo{animation-delay:.23s}
+}
+@keyframes poser{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+<a class="appel" href="tel:${TEL_URL}" style="position:absolute;left:-9999px" onfocus="this.style.cssText=''">Appeler le restaurant</a>
+
+<header class="haut">
+  <div class="enveloppe">
+    <a class="marque" href="#haut">Les Papi<i>'</i>es</a>
+    <a class="appel" href="tel:${TEL_URL}">${ICO.tel}<span class="lib">${TEL}</span></a>
+  </div>
+</header>
+
+<main id="haut">
+
+<div class="ouverture enveloppe">
+  <div>
+    <h1>Le civet zourite<em>mijote depuis ce matin.</em></h1>
+    <p class="chapeau">Cuisine créole, grillades et gibier, sous la varangue à Saint-Pierre.
+      Plus de cent plats à la carte — et la langouste à côté du rougail boucané.</p>
+    <p class="etat"><b><span class="pastille" id="pastille"></span><span id="etat-mot">Ouvert du mercredi au dimanche</span></b>
+      <span id="etat-detail">midi et soir</span></p>
+    <div class="duo">
+      <a class="appel" href="tel:${TEL_URL}">${ICO.tel} Réserver — ${TEL}</a>
+      <a class="second" href="#carte">Voir la carte ${ICO.fleche}</a>
+    </div>
+  </div>
+  <figure class="plat-vedette">
+    <img src="photos/h-plateau-creole.jpg" width="1200" height="1500"
+         alt="${esc(SIGNATURES[0].alt)}" fetchpriority="high">
+    <figcaption>Plateau créole — rougail, brèdes, dhal, civet zourite</figcaption>
+  </figure>
+</div>
+
+<section class="bloc enveloppe">
+  <h2 class="bloc-titre">Ce qu'on vient chercher ici</h2>
+  <p class="bloc-intro">Trois plats que leurs clients citent d'eux-mêmes. Le reste de la carte
+    est plus large — mais on commence rarement ailleurs.</p>
+  <div class="signatures">
+    ${SIGNATURES.map((s) => `<article class="signature">
+      <img src="photos/${s.photo}" loading="lazy" width="1200" height="1500" alt="${esc(s.alt)}">
+      <h3>${esc(s.nom)}<span>${s.prix}&nbsp;€</span></h3>
+      <p>${esc(s.mot)}</p>
+    </article>`).join('\n    ')}
+  </div>
+</section>
+
+<section class="avis bloc">
+  <figure class="enveloppe">
+    <blockquote>«&nbsp;${esc(AVIS.texte)}&nbsp;»</blockquote>
+    <figcaption><b>${esc(AVIS.auteur)}</b> — avis publié sur leur page</figcaption>
+  </figure>
+</section>
+
+<section class="bloc enveloppe" id="carte">
+  <h2 class="bloc-titre">La carte</h2>
+  <p class="bloc-intro">Elle est longue, et c'est voulu. Créole, grillades, poissons, risottos,
+    et deux pièces de kangourou qu'on ne trouve pas ailleurs sur l'île.</p>
+  <div class="carte">
+${sectionsHTML}
+  </div>
+  <div class="extras">
+    <div><h4>Les sauces</h4><p>${esc(carte.sauces.liste)} — ${esc(carte.sauces.prix)}&nbsp;€</p></div>
+    <div><h4>Les parfums de glace</h4><p>${esc(carte.parfums)}</p></div>
+  </div>
+</section>
+
+<section class="bloc enveloppe">
+  <h2 class="bloc-titre">À table</h2>
+  <p class="bloc-intro">Les assiettes telles qu'elles sortent, photographiées sur place.</p>
+  <div class="defile">
+    ${GALERIE.map(([f, a]) => `<img src="photos/${f}" loading="lazy" width="1200" height="1200" alt="${esc(a)}">`).join('\n    ')}
+  </div>
+</section>
+
+<section class="bloc enveloppe">
+  <div class="maison">
+    <img src="photos/h-salle.jpg" loading="lazy" width="1200" height="900"
+         alt="La varangue des Papi'es : charpente en bois, mur de pierre volcanique, tables dressées">
+    <div>
+      <h2 class="bloc-titre">La maison</h2>
+      <p>Les Papi'es, c'est un lieu convivial où l'on vient pour bien manger et passer un bon
+        moment. L'équipe vous accueille dans une ambiance chaleureuse, autour de plats faits
+        maison, préparés avec soin et passion.</p>
+      <p>Que ce soit pour une pause déjeuner, un dîner entre amis ou un repas à emporter,
+        c'est l'endroit idéal pour savourer une cuisine simple, authentique et gourmande.</p>
+    </div>
+  </div>
+</section>
+
+<section class="venir bloc">
+  <div class="enveloppe venir-grille">
+    <div>
+      <h2 class="bloc-titre">Venir</h2>
+      <ul class="faits">
+        <li>${ICO.tel}<div><a href="tel:${TEL_URL}">${TEL}</a><small>Réservation et commandes à emporter</small></div></li>
+        <li>${ICO.pin}<div><a href="${MAPS}" target="_blank" rel="noopener">${ADRESSE}</a><small>Ouvrir l'itinéraire</small></div></li>
+        <li>${ICO.heure}<div>Service midi et soir<small>Dernière commande 30 min avant la fermeture</small></div></li>
+      </ul>
+      <a class="appel" href="tel:${TEL_URL}">${ICO.tel} Appeler maintenant</a>
+    </div>
+    <table class="horaires">
+      <caption>Horaires</caption>
+      <tbody>
+        ${HORAIRES.map(([j, midi, soir]) => `<tr data-jour="${esc(j)}"><th scope="row">${esc(j)}</th><td>${esc(midi)}${soir ? `<br>${esc(soir)}` : ''}</td></tr>`).join('\n        ')}
+      </tbody>
+    </table>
+  </div>
+  <p class="enveloppe note-jours">Lundi et mardi ne figurent pas sur les horaires annoncés
+    par le restaurant : appelez pour vérifier.</p>
+</section>
+
+</main>
+
+<footer class="enveloppe">
+  <p>Restaurant Les Papi'es — Grill &amp; Comfort · ${ADRESSE} · ${TEL}</p>
+</footer>
+
+<div class="barre-appel">
+  <a class="appel" href="tel:${TEL_URL}">${ICO.tel} Réserver — ${TEL}</a>
+</div>
+
+<script>
+document.documentElement.classList.remove('no-js');document.documentElement.classList.add('js');
+/* Sans JS la barre reste visible : mieux vaut un doublon qu'un numéro absent. */
+(function () {
+  var barre = document.querySelector('.barre-appel');
+  var ancre = document.querySelector('.ouverture .duo');
+  if (!barre || !ancre || !('IntersectionObserver' in window)) {
+    if (barre) barre.classList.add('visible');
+    return;
+  }
+  new IntersectionObserver(function (e) {
+    barre.classList.toggle('visible', !e[0].isIntersecting);
+  }, { rootMargin: '-10px 0px 0px 0px' }).observe(ancre);
+})();
+/* Horaires réels du restaurant, en heure de La Réunion (UTC+4), quel que soit
+   le fuseau du visiteur : quelqu'un à Paris doit lire l'état du restaurant,
+   pas le sien. Lundi et mardi ne sont PAS déclarés fermés — le restaurant ne
+   les annonce nulle part, et l'affirmer serait inventer. */
+(function () {
+  var svc = { 3: [[720, 870], [1140, 1350]], 4: [[720, 870], [1140, 1350]],
+              5: [[720, 870], [1140, 1350]], 6: [[720, 870], [1140, 1350]],
+              0: [[720, 900]] };
+  var noms = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
+  var re = new Date(Date.now() + (new Date().getTimezoneOffset() + 240) * 60000);
+  var j = re.getDay(), min = re.getHours() * 60 + re.getMinutes();
+  var mot = document.getElementById('etat-mot');
+  var det = document.getElementById('etat-detail');
+  var pas = document.getElementById('pastille');
+  var lig = document.querySelector('.horaires tr[data-jour="' + noms[j] + '"]');
+  if (lig) lig.classList.add('aujourdhui');
+
+  var hhmm = function (m) { return (m / 60 | 0) + 'h' + (m % 60 ? String(m % 60).padStart(2, '0') : ''); };
+  var creneaux = svc[j];
+  if (!creneaux) {                       // lundi ou mardi : non annoncé
+    mot.textContent = 'Horaires non annoncés aujourd\\u2019hui';
+    det.textContent = 'appelez pour vérifier';
+    pas.className = 'pastille dodo';
+    return;
+  }
+  for (var i = 0; i < creneaux.length; i++) {
+    if (min >= creneaux[i][0] && min < creneaux[i][1]) {
+      mot.textContent = 'Ouvert';
+      det.textContent = 'jusqu\\u2019à ' + hhmm(creneaux[i][1]);
+      return;
+    }
+    if (min < creneaux[i][0]) {
+      mot.textContent = 'Ouvre à ' + hhmm(creneaux[i][0]);
+      det.textContent = 'aujourd\\u2019hui';
+      pas.className = 'pastille dodo';
+      return;
+    }
+  }
+  var suite = j === 0 ? 3 : (j === 6 ? 0 : j + 1);
+  mot.textContent = 'Fermé';
+  det.textContent = 'réouverture ' + noms[suite].toLowerCase() + ' à 12h';
+  pas.className = 'pastille dodo';
+})();
+</script>
+</body>
+</html>
+`;
+
+fs.writeFileSync(path.join(D, 'index.html'), html);
+const plats = carte.sections.reduce((n, s) => n + s.plats.length, 0);
+console.log(`index.html écrit — ${Math.round(html.length / 1024)} Ko · ${carte.sections.length} sections · ${plats} plats`);

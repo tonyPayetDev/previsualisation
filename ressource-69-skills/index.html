@@ -1,0 +1,419 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>69 skills Claude Code + les 7 que j'ai écrites — AutomatisationBoost</title>
+<style>
+:root{
+  --bg:#0a0a0f;--carte:#121218;--bord:#242430;--txt:#EDEDED;--mut:#9A9AA6;
+  --jaune:#FFE600;--violet:#A855F7;--pre:#0d0d13;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--txt);
+  font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  -webkit-font-smoothing:antialiased;overflow-x:hidden}
+body{line-height:1.5;font-size:16px}
+main{max-width:640px;margin:0 auto;padding:28px 16px 48px}
+a{color:var(--jaune);text-decoration:none;word-break:break-word}
+a:active,a:hover{text-decoration:underline}
+
+/* header */
+.hdr{margin-bottom:28px}
+.tag{display:inline-block;font-size:12px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--jaune);border:1px solid var(--jaune);border-radius:999px;padding:5px 12px;margin-bottom:14px}
+h1{font-size:clamp(28px,7.5vw,40px);line-height:1.08;margin:0 0 10px;letter-spacing:-.02em;font-weight:800}
+h1 em{font-style:normal;color:var(--jaune)}
+h1 em.v{color:var(--violet)}
+.sub{color:var(--mut);font-size:15px;margin:0 0 14px}
+.compteur{display:flex;gap:10px;flex-wrap:wrap;margin:0 0 16px}
+.compteur span{display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:6px 12px;border-radius:10px;
+  background:var(--carte);border:1px solid var(--bord);font-size:14px;font-weight:700}
+.compteur b{font-size:18px;color:var(--jaune)}
+.compteur .v b{color:var(--violet)}
+.promo{background:var(--carte);border:1px solid var(--bord);border-left:3px solid var(--violet);
+  border-radius:12px;padding:12px 14px;font-size:14.5px;line-height:1.45}
+.promo a{color:var(--violet);font-weight:700}
+.how{color:var(--mut);font-size:13.5px;margin:16px 0 0}
+
+/* cards */
+.carte{background:var(--carte);border:1px solid var(--bord);border-radius:16px;padding:18px 16px 16px;margin:0 0 18px;
+  position:relative;overflow:hidden}
+.carte::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--acc)}
+.carte.j{--acc:var(--jaune);--acc-txt:#0a0a0f}
+.carte.v{--acc:var(--violet);--acc-txt:#fff}
+.num{display:inline-flex;align-items:center;justify-content:center;min-width:34px;height:34px;padding:0 10px;border-radius:10px;
+  background:var(--acc);color:var(--acc-txt);font-weight:800;font-size:15px;margin-bottom:10px}
+h2{font-size:22px;line-height:1.15;margin:0 0 8px;letter-spacing:-.01em;font-weight:800}
+h3{font-size:17px;line-height:1.2;margin:0 0 6px;font-weight:800}
+.hook{font-size:15px;margin:0 0 12px;color:var(--txt)}
+.src{font-size:14px;margin:0 0 12px;padding:10px 12px;background:rgba(255,255,255,.03);border-radius:10px;border:1px dashed var(--bord);line-height:1.5}
+.src b{color:var(--acc)}
+.src .mut{color:var(--mut)}
+.lbl{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--mut);margin:0 0 6px;display:flex;justify-content:space-between;align-items:center}
+pre{margin:0;background:var(--pre);border:1px solid var(--bord);border-radius:12px;padding:14px;
+  font:13px/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:#D6D6DE;
+  white-space:pre-wrap;word-break:break-word;overflow:auto;max-height:340px;-webkit-overflow-scrolling:touch}
+pre::-webkit-scrollbar{width:6px}pre::-webkit-scrollbar-thumb{background:var(--bord);border-radius:6px}
+
+/* skill list */
+.skills{list-style:none;margin:16px 0 0;padding:0;border-top:1px solid var(--bord)}
+.skills li{padding:10px 0;border-bottom:1px solid var(--bord);font-size:14px;line-height:1.45}
+.skills li:last-child{border-bottom:0}
+.skills code{font:600 13.5px/1.4 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:var(--acc);word-break:break-word}
+.skills .d{display:block;color:var(--txt);margin-top:2px}
+.skills .via{display:inline-block;font-size:11px;color:var(--mut);border:1px solid var(--bord);border-radius:6px;padding:1px 6px;margin-left:6px;vertical-align:middle}
+.sous{margin:16px 0 0;padding:14px 0 0;border-top:1px solid var(--bord)}
+.sous:first-of-type{border-top:0;padding-top:0}
+.sous h3 code{font:800 16px/1.2 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:var(--acc)}
+.sous .d{font-size:14px;margin:0 0 10px}
+.dm{display:flex;align-items:center;gap:8px;margin-top:8px;padding:9px 12px;border-radius:10px;
+  background:rgba(168,85,247,.12);border:1px solid rgba(168,85,247,.45);font-size:13.5px;line-height:1.4}
+.dm b{color:var(--violet);white-space:nowrap}
+.dm svg{width:18px;height:18px;flex:none;color:var(--violet)}
+.etapes{font-size:14px;color:var(--txt);margin:0 0 4px;padding:0;list-style:none;counter-reset:e}
+.etapes li{position:relative;padding-left:28px;margin:0 0 10px;counter-increment:e}
+.etapes li::before{content:counter(e);position:absolute;left:0;top:1px;width:20px;height:20px;border-radius:6px;
+  border:1px solid var(--acc);color:var(--acc);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.etapes code{font:600 13px/1.4 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:var(--acc);word-break:break-word}
+
+/* buttons */
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:48px;margin-top:12px;
+  border:0;border-radius:12px;background:var(--acc);color:var(--acc-txt);font:700 16px/1 inherit;font-family:inherit;
+  cursor:pointer;-webkit-tap-highlight-color:transparent;transition:transform .08s ease,filter .15s ease;touch-action:manipulation}
+.btn:active{transform:scale(.98);filter:brightness(1.1)}
+.btn.ok{background:#3ED37B;color:#0a0a0f}
+.btn svg{width:18px;height:18px;flex:none}
+.cta{--acc:var(--jaune);--acc-txt:#0a0a0f;text-align:center}
+.cta p{margin:0 0 6px;font-size:15px}
+.cta a.btn{text-decoration:none;min-height:52px}
+.foot{text-align:center;color:var(--mut);font-size:13px;margin:26px 0 0;line-height:1.6}
+.foot a{color:var(--jaune);font-weight:700}
+</style>
+</head>
+<body>
+<main>
+  <header class="hdr">
+    <span class="tag">Ressource gratuite</span>
+    <h1><em>69</em> skills Claude Code + les <em class="v">7</em> que j'ai écrites</h1>
+    <p class="sub">Installées dans mon business, toutes gratuites sauf mention.</p>
+    <div class="compteur" aria-live="polite">
+      <span><b id="n-packs">…</b> skills installées</span>
+      <span class="v"><b id="n-tony">…</b> skills maison</span>
+      <span>total <b id="n-total">…</b></span>
+    </div>
+    <div class="promo">Tu veux qu'on installe et qu'on branche tout ça sur tes vrais outils ? → <a href="https://automatisationboost.com/">automatisationboost.com</a></div>
+    <p class="how">Chaque pack : le dépôt d'origine (cliquable), la commande d'installation à copier, puis la liste des skills avec une ligne chacune. Appuie sur <b>Copier</b>, colle dans ton terminal, c'est parti.</p>
+  </header>
+
+  <!-- PACK 1 : marketing -->
+  <section class="carte j pack" id="p-marketing">
+    <span class="num">Pack 1</span>
+    <h2>Marketing <span class="mut">· <span data-count>19</span> skills</span></h2>
+    <p class="hook">Copywriting, prospection, offres, prix, réseaux, pubs : tout ce qui vend, avant même de coder.</p>
+    <p class="src"><b>Dépôt :</b> <a href="https://github.com/coreyhaines31/marketingskills" target="_blank" rel="noopener">github.com/coreyhaines31/marketingskills</a> <span class="mut">(MIT, 14 skills de ce pack)</span><br>
+      <b>+ 5 skills</b> (brand, design, design-system, slides, ui-styling) livrées avec le pack <a href="https://github.com/nextlevelbuilder/ui-ux-pro-max-skill" target="_blank" rel="noopener">ui-ux-pro-max</a> <span class="mut">(auteur ClaudeKit, voir pack 6)</span></p>
+    <div class="lbl"><span>Commande d'installation</span><span>terminal</span></div>
+<pre id="c-marketing">npx skills add coreyhaines31/marketingskills</pre>
+    <button class="btn" type="button" data-copy="c-marketing"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><span>Copier la commande</span></button>
+    <ul class="skills">
+      <li class="skill"><code>ad-creative</code><span class="d">Génère et décline des créas publicitaires (titres, textes, variantes) pour Meta, Google, LinkedIn.</span></li>
+      <li class="skill"><code>ads</code><span class="d">Pilote tes campagnes payantes : structure, ciblage, budget, optimisation.</span></li>
+      <li class="skill"><code>brand</code><span class="via">via ui-ux-pro-max</span><span class="d">Voix de marque, identité visuelle, cohérence des messages et des assets.</span></li>
+      <li class="skill"><code>cold-email</code><span class="d">Écrit des emails de prospection B2B et leurs relances qui obtiennent des réponses.</span></li>
+      <li class="skill"><code>copywriting</code><span class="d">Rédige ou réécrit les textes d'une page : accueil, landing, tarifs, à propos.</span></li>
+      <li class="skill"><code>cro</code><span class="d">Améliore le taux de conversion d'une page ou d'un formulaire.</span></li>
+      <li class="skill"><code>customer-research</code><span class="d">Mène et synthétise la recherche client : interviews, profil client idéal, verbatims.</span></li>
+      <li class="skill"><code>design</code><span class="via">via ui-ux-pro-max</span><span class="d">Logo, identité, mockups, bannières, icônes, visuels réseaux : le couteau suisse design.</span></li>
+      <li class="skill"><code>design-system</code><span class="via">via ui-ux-pro-max</span><span class="d">Tokens, échelles, specs de composants, présentations conformes à la marque.</span></li>
+      <li class="skill"><code>lead-magnets</code><span class="d">Conçoit et optimise un lead magnet pour capter des emails.</span></li>
+      <li class="skill"><code>marketing-psychology</code><span class="d">Applique les biais et modèles mentaux de la psychologie au marketing.</span></li>
+      <li class="skill"><code>offers</code><span class="d">Construit une offre irrésistible : valeur, bonus, garantie, rareté.</span></li>
+      <li class="skill"><code>pricing</code><span class="d">Décide tes prix, tes paliers et ta stratégie de monétisation.</span></li>
+      <li class="skill"><code>product-marketing</code><span class="d">Crée le document de contexte produit (cible, positionnement) que toutes les autres skills lisent. À lancer en premier.</span></li>
+      <li class="skill"><code>prospecting</code><span class="d">Trouve, qualifie et liste des prospects B2B ou commerces locaux.</span></li>
+      <li class="skill"><code>seo-audit</code><span class="d">Audite le SEO technique d'un site et explique pourquoi il ne ranke pas.</span></li>
+      <li class="skill"><code>social</code><span class="d">Crée, planifie et optimise les contenus LinkedIn, X, Instagram, TikTok, Facebook.</span></li>
+      <li class="skill"><code>slides</code><span class="via">via ui-ux-pro-max</span><span class="d">Présentations HTML stratégiques avec graphiques et design tokens.</span></li>
+      <li class="skill"><code>ui-styling</code><span class="via">via ui-ux-pro-max</span><span class="d">Interfaces propres et accessibles avec shadcn/ui et Tailwind.</span></li>
+    </ul>
+  </section>
+
+  <!-- PACK 2 : hyperframes -->
+  <section class="carte j pack" id="p-hyperframes">
+    <span class="num">Pack 2</span>
+    <h2>HyperFrames <span class="mut">· <span data-count>16</span> skills</span></h2>
+    <p class="hook">Le moteur de toutes mes vidéos : du HTML qui devient un MP4, piloté par l'agent.</p>
+    <p class="src"><b>Dépôt :</b> <a href="https://github.com/heygen-com/hyperframes" target="_blank" rel="noopener">github.com/heygen-com/hyperframes</a> <span class="mut">(open source)</span> · site <a href="https://hyperframes.app/" target="_blank" rel="noopener">hyperframes.app</a></p>
+    <div class="lbl"><span>Commande d'installation</span><span>terminal · Node ≥ 22 + FFmpeg</span></div>
+<pre id="c-hyperframes">npx skills add heygen-com/hyperframes</pre>
+    <button class="btn" type="button" data-copy="c-hyperframes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><span>Copier la commande</span></button>
+    <ul class="skills">
+      <li class="skill"><code>hyperframes-read-first</code><span class="d">Le point d'entrée : lit ta demande vidéo et l'envoie vers le bon workflow.</span></li>
+      <li class="skill"><code>hyperframes-core</code><span class="d">Le contrat de base d'une composition HTML → vidéo : structure, clips, pistes, timing.</span></li>
+      <li class="skill"><code>hyperframes-animation</code><span class="d">Toutes les règles d'animation : timing, transitions de scènes, techniques motion design.</span></li>
+      <li class="skill"><code>hyperframes-creative</code><span class="d">Direction artistique hors animation : palettes, typo, narration, rythme.</span></li>
+      <li class="skill"><code>hyperframes-media</code><span class="d">Préparation des assets : voix off, musique, transcription, détourage.</span></li>
+      <li class="skill"><code>hyperframes-cli</code><span class="d">La ligne de commande : créer, vérifier, prévisualiser, rendre une vidéo.</span></li>
+      <li class="skill"><code>hyperframes-registry</code><span class="d">Installe et branche des blocs et composants prêts à l'emploi dans une compo.</span></li>
+      <li class="skill"><code>embedded-captions</code><span class="d">Ajoute des sous-titres stylés (32 identités visuelles) sur une vidéo face caméra.</span></li>
+      <li class="skill"><code>faceless-explainer</code><span class="d">Transforme un texte ou un sujet en vidéo explicative sans visage, avec voix et musique.</span></li>
+      <li class="skill"><code>general-video</code><span class="d">Le workflow de repli pour toute vidéo : reels de marque, montages, cartons.</span></li>
+      <li class="skill"><code>graphic-overlays</code><span class="d">Habille une vidéo existante de cartons animés : titres, bandeaux, chiffres.</span></li>
+      <li class="skill"><code>motion-graphics</code><span class="d">Motion graphic court où le mouvement est le message : typo cinétique, compteurs, logo.</span></li>
+      <li class="skill"><code>pr-to-video</code><span class="d">Transforme une pull request GitHub en vidéo de présentation.</span></li>
+      <li class="skill"><code>product-launch-video</code><span class="d">Vidéo de lancement produit, promo SaaS, reveal de fonctionnalité.</span></li>
+      <li class="skill"><code>remotion-to-hyperframes</code><span class="d">Porte une composition Remotion (React) vers HyperFrames.</span></li>
+      <li class="skill"><code>website-to-video</code><span class="d">Capture un site web et le transforme en vidéo de présentation.</span></li>
+    </ul>
+  </section>
+
+  <!-- PACK 3 : cloudflare -->
+  <section class="carte j pack" id="p-cloudflare">
+    <span class="num">Pack 3</span>
+    <h2>Cloudflare <span class="mut">· <span data-count>13</span> skills</span></h2>
+    <p class="hook">Le pack officiel Cloudflare : Workers, stockage, agents IA, sécurité, performance.</p>
+    <p class="src"><b>Dépôt :</b> <a href="https://github.com/cloudflare/skills" target="_blank" rel="noopener">github.com/cloudflare/skills</a> <span class="mut">(officiel Cloudflare)</span></p>
+    <div class="lbl"><span>Commande d'installation</span><span>terminal</span></div>
+<pre id="c-cloudflare">npx skills add https://github.com/cloudflare/skills</pre>
+    <button class="btn" type="button" data-copy="c-cloudflare"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><span>Copier la commande</span></button>
+    <ul class="skills">
+      <li class="skill"><code>cloudflare</code><span class="d">Toute la plateforme : Workers, Pages, KV, D1, R2, Workers AI, réseau.</span></li>
+      <li class="skill"><code>wrangler</code><span class="d">La CLI Workers : déployer, développer, gérer KV, R2, D1, Queues.</span></li>
+      <li class="skill"><code>workers-best-practices</code><span class="d">Relit et écrit du code Workers selon les bonnes pratiques de production.</span></li>
+      <li class="skill"><code>agents-sdk</code><span class="d">Construit des agents IA sur Workers : état, WebSocket, tâches planifiées, serveurs MCP.</span></li>
+      <li class="skill"><code>durable-objects</code><span class="d">Coordination avec état : chat, multijoueur, réservations.</span></li>
+      <li class="skill"><code>cloudflare-email-service</code><span class="d">Envoie et reçoit des emails transactionnels via Cloudflare.</span></li>
+      <li class="skill"><code>cloudflare-one</code><span class="d">Zero Trust et SASE : Access, Gateway, WARP, Tunnel.</span></li>
+      <li class="skill"><code>cloudflare-one-migrations</code><span class="d">Planifie une migration depuis Zscaler, Palo Alto ou un VPN classique vers Cloudflare One.</span></li>
+      <li class="skill"><code>sandbox-stable</code><span class="d">Apps Sandbox sur le SDK stable : commandes, sessions, fichiers, ports.</span></li>
+      <li class="skill"><code>sandbox-next</code><span class="d">Apps Sandbox sur le SDK 1.0 preview : exécution de code, runners IA.</span></li>
+      <li class="skill"><code>sandbox-migrate-to-next</code><span class="d">Migre une app Sandbox de la version stable vers la preview.</span></li>
+      <li class="skill"><code>turnstile-spin</code><span class="d">Installe Turnstile (anti-bot) de bout en bout dans un projet.</span></li>
+      <li class="skill"><code>web-perf</code><span class="d">Mesure les Core Web Vitals et repère ce qui ralentit une page.</span></li>
+    </ul>
+  </section>
+
+  <!-- PACK 4 : n8n -->
+  <section class="carte j pack" id="p-n8n">
+    <span class="num">Pack 4</span>
+    <h2>n8n <span class="mut">· <span data-count>8</span> skills</span></h2>
+    <p class="hook">Pour que Claude construise des workflows n8n propres du premier coup, via le serveur MCP n8n.</p>
+    <p class="src"><b>Dépôt :</b> <a href="https://github.com/czlonkowski/n8n-skills" target="_blank" rel="noopener">github.com/czlonkowski/n8n-skills</a> <span class="mut">(MIT · nécessite le serveur MCP <a href="https://github.com/czlonkowski/n8n-mcp" target="_blank" rel="noopener">n8n-mcp</a>)</span></p>
+    <div class="lbl"><span>Commande d'installation</span><span>dans Claude Code</span></div>
+<pre id="c-n8n">/plugin install czlonkowski/n8n-skills</pre>
+    <button class="btn" type="button" data-copy="c-n8n"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><span>Copier la commande</span></button>
+    <ul class="skills">
+      <li class="skill"><code>n8n-mcp-tools-expert</code><span class="d">Utilise correctement les outils MCP n8n : recherche de nœuds, validation, templates. À lire en premier.</span></li>
+      <li class="skill"><code>n8n-workflow-patterns</code><span class="d">Les architectures de workflows éprouvées pour bien démarrer.</span></li>
+      <li class="skill"><code>n8n-node-configuration</code><span class="d">Configure les nœuds : champs requis, dépendances entre propriétés.</span></li>
+      <li class="skill"><code>n8n-expression-syntax</code><span class="d">Écrit et corrige les expressions {{ }} de n8n.</span></li>
+      <li class="skill"><code>n8n-validation-expert</code><span class="d">Interprète les erreurs de validation et les corrige.</span></li>
+      <li class="skill"><code>n8n-code-javascript</code><span class="d">Écrit le JavaScript des nœuds Code : $input, $json, boucles, appels HTTP.</span></li>
+      <li class="skill"><code>n8n-code-python</code><span class="d">La même chose en Python.</span></li>
+      <li class="skill"><code>n8n-code-tool</code><span class="d">Code pour l'outil personnalisé appelable par un agent IA (différent du nœud Code).</span></li>
+    </ul>
+  </section>
+
+  <!-- PACK 5 : higgsfield -->
+  <section class="carte j pack" id="p-higgsfield">
+    <span class="num">Pack 5</span>
+    <h2>Higgsfield <span class="mut">· <span data-count>8</span> skills</span></h2>
+    <p class="hook">Génération d'images, vidéos et sites par IA, pilotée depuis le terminal. <span class="mut">Skills gratuites, générations payantes en crédits Higgsfield.</span></p>
+    <p class="src"><b>Dépôt :</b> <a href="https://github.com/higgsfield-ai/skills" target="_blank" rel="noopener">github.com/higgsfield-ai/skills</a> <span class="mut">(officiel)</span> · CLI <a href="https://github.com/higgsfield-ai/cli" target="_blank" rel="noopener">higgsfield-ai/cli</a></p>
+    <div class="lbl"><span>Commande d'installation</span><span>terminal · 2 lignes</span></div>
+<pre id="c-higgsfield">npm i -g @higgsfield/cli
+npx skills add higgsfield-ai/skills</pre>
+    <button class="btn" type="button" data-copy="c-higgsfield"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><span>Copier les 2 commandes</span></button>
+    <ul class="skills">
+      <li class="skill"><code>higgsfield-generate</code><span class="d">Génère images, vidéos, 3D et audio (GPT Image, Seedance, Nano Banana, Marketing Studio).</span></li>
+      <li class="skill"><code>higgsfield-soul-id</code><span class="d">Entraîne un personnage à ton visage pour des images et vidéos fidèles.</span></li>
+      <li class="skill"><code>higgsfield-brandkit</code><span class="d">Crée un système de marque complet : palettes, logos SVG, typo, mockups.</span></li>
+      <li class="skill"><code>higgsfield-product-photoshoot</code><span class="d">Photos produit qualité studio par IA.</span></li>
+      <li class="skill"><code>higgsfield-marketplace-cards</code><span class="d">Fiches produit conformes pour marketplaces : image principale, secondaires, contenu A+.</span></li>
+      <li class="skill"><code>higgsfield-video-explainer</code><span class="d">Vidéo explicative narrée par blocs de 10 secondes, un seul style visuel.</span></li>
+      <li class="skill"><code>higgsfield-websites</code><span class="d">Construit et déploie sites, apps et jeux via la CLI Higgsfield.</span></li>
+      <li class="skill"><code>higgsfield-youtube-thumbnail</code><span class="d">Miniatures YouTube et covers verticales à fort taux de clic.</span></li>
+    </ul>
+  </section>
+
+  <!-- PACK 6 : design (5 dépôts distincts) -->
+  <section class="carte j pack" id="p-design">
+    <span class="num">Pack 6</span>
+    <h2>Design &amp; outils <span class="mut">· <span data-count>5</span> skills</span></h2>
+    <p class="hook">Cinq skills, cinq origines différentes : chacune a son dépôt et sa commande.</p>
+
+    <div class="sous">
+      <h3><code class="skill">ui-ux-pro-max</code></h3>
+      <p class="d">Intelligence design : 50+ styles, 161 palettes, 57 paires de polices, 99 règles UX, pour web et mobile.</p>
+      <p class="src"><b>Dépôt :</b> <a href="https://github.com/nextlevelbuilder/ui-ux-pro-max-skill" target="_blank" rel="noopener">github.com/nextlevelbuilder/ui-ux-pro-max-skill</a></p>
+<pre id="c-uiux">/plugin marketplace add nextlevelbuilder/ui-ux-pro-max-skill
+/plugin install ui-ux-pro-max@ui-ux-pro-max-skill</pre>
+      <button class="btn" type="button" data-copy="c-uiux"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><span>Copier</span></button>
+    </div>
+
+    <div class="sous">
+      <h3><code class="skill">impeccable</code></h3>
+      <p class="d">Fait passer une interface de « correcte » à « remarquable » : critique, polish, typo, couleur, motion.</p>
+      <p class="src"><b>Dépôt :</b> <a href="https://github.com/pbakaus/impeccable" target="_blank" rel="noopener">github.com/pbakaus/impeccable</a> <span class="mut">· puis ouvre <code>/plugin</code> et installe Impeccable dans la liste</span></p>
+<pre id="c-impeccable">/plugin marketplace add pbakaus/impeccable</pre>
+      <button class="btn" type="button" data-copy="c-impeccable"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><span>Copier</span></button>
+    </div>
+
+    <div class="sous">
+      <h3><code class="skill">playwright-skill</code></h3>
+      <p class="d">Automatise un navigateur : tester des pages, remplir des formulaires, prendre des captures d'écran.</p>
+      <p class="src"><b>Dépôt :</b> <a href="https://github.com/lackeyjb/playwright-skill" target="_blank" rel="noopener">github.com/lackeyjb/playwright-skill</a></p>
+<pre id="c-playwright">npx skills add lackeyjb/playwright-skill --skill playwright-skill --yes</pre>
+      <button class="btn" type="button" data-copy="c-playwright"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><span>Copier</span></button>
+    </div>
+
+    <div class="sous">
+      <h3><code class="skill">design-motion-principles</code></h3>
+      <p class="d">Motion et micro-interactions selon Emil Kowalski, Jakub Krehel et Jhey Tompkins, avec un audit anti « animation IA ».</p>
+      <p class="src"><b>Dépôt :</b> <a href="https://github.com/kylezantos/design-motion-principles" target="_blank" rel="noopener">github.com/kylezantos/design-motion-principles</a></p>
+<pre id="c-motion">npx skills add kylezantos/design-motion-principles</pre>
+      <button class="btn" type="button" data-copy="c-motion"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><span>Copier</span></button>
+    </div>
+
+    <div class="sous">
+      <h3><code class="skill">coolify-deploy</code></h3>
+      <p class="d">Déploie un dossier de site (statique ou Dockerfile) sur Coolify en passant par GitHub, et vérifie que c'est en ligne.</p>
+      <p class="src"><b>Origine :</b> skill maison, écrite pour mon serveur Coolify <span class="mut">· pas de dépôt public, elle vit dans mon <code>.claude/skills/</code></span></p>
+    </div>
+  </section>
+
+  <!-- LES 7 DE TONY -->
+  <section class="carte v" id="p-tony">
+    <span class="num">Les 7 que j'ai écrites</span>
+    <h2>Mes skills maison <span class="mut">· <span data-count-tony>7</span> skills</span></h2>
+    <p class="hook">Celles-là ne sont sur aucun dépôt : elles encodent ma façon de faire des vidéos et des sites. Tu les reçois en fichier avec cette liste.</p>
+
+    <div class="sous">
+      <h3><code class="tony">prompt-reveal-branded</code></h3>
+      <p class="d">Vidéo courte qui montre un rendu IA bluffant, fait défiler le prompt à l'écran puis le cache : pour le recevoir, il faut s'abonner et commenter un mot. L'envoi en message privé est automatique.</p>
+      <div class="dm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span><b>Reçue en DM</b> — fichier envoyé avec la liste</span></div>
+    </div>
+    <div class="sous">
+      <h3><code class="tony">autoboost-split</code></h3>
+      <p class="d">Vidéo 9:16 en écran scindé : les images d'illustration en haut, moi qui parle en bas, la légende posée sur la couture. Le format de toutes mes nouvelles vidéos.</p>
+      <div class="dm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span><b>Reçue en DM</b> — fichier envoyé avec la liste</span></div>
+    </div>
+    <div class="sous">
+      <h3><code class="tony">hook-puissant-branded</code></h3>
+      <p class="d">Construit une accroche qui retient dans les 2 premières secondes en empilant un choc visuel et une phrase qui crée la tension, avec une fin en montée.</p>
+      <div class="dm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span><b>Reçue en DM</b> — fichier envoyé avec la liste</span></div>
+    </div>
+    <div class="sous">
+      <h3><code class="tony">yapping-facecam-branded</code></h3>
+      <p class="d">Vidéo face caméra qui capte l'attention : accroche brutale, promesse, une info ou une surprise nouvelle toutes les 2 à 4 secondes, punchline finale.</p>
+      <div class="dm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span><b>Reçue en DM</b> — fichier envoyé avec la liste</span></div>
+    </div>
+    <div class="sous">
+      <h3><code class="tony">script-pspc-branded</code></h3>
+      <p class="d">Écrit un script de vidéo sociale en 4 temps : problème, solution, preuve chiffrée, appel à l'action déclenché par un mot-clé. Prêt à monter.</p>
+      <div class="dm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span><b>Reçue en DM</b> — fichier envoyé avec la liste</span></div>
+    </div>
+    <div class="sous">
+      <h3><code class="tony">seedance-10s-director</code></h3>
+      <p class="d">Transforme une vidéo ou une idée en prompts Seedance de 10 secondes exactement, avec un personnage de référence, dirigés plan par plan comme un réalisateur.</p>
+      <div class="dm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span><b>Reçue en DM</b> — fichier envoyé avec la liste</span></div>
+    </div>
+    <div class="sous">
+      <h3><code class="tony">site-cinematique-scroll</code></h3>
+      <p class="d">Produit le brief complet d'un site vitrine haut de gamme où une séquence vidéo IA défile au scroll : image de départ, découpage des plans, structure du site, direction artistique, budget.</p>
+      <div class="dm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span><b>Reçue en DM</b> — fichier envoyé avec la liste</span></div>
+    </div>
+  </section>
+
+  <!-- COMMENT INSTALLER -->
+  <section class="carte j" id="p-how">
+    <span class="num">Mode d'emploi</span>
+    <h2>Comment installer une skill</h2>
+    <p class="hook">Une skill, c'est juste un dossier avec un fichier <code>SKILL.md</code> dedans. Trois étapes, aucune exception.</p>
+    <ol class="etapes">
+      <li>Clone (ou copie) le dossier de la skill dans <code>.claude/skills/</code> à la racine de ton projet — ou dans <code>~/.claude/skills/</code> pour l'avoir partout.</li>
+      <li>Vérifie qu'il contient bien un <code>SKILL.md</code> avec un <code>name</code> et une <code>description</code> en tête de fichier : c'est ça que Claude lit.</li>
+      <li>Dans Claude Code, tape <code>/nom-de-la-skill</code> (par exemple <code>/copywriting</code>). Elle apparaît aussi toute seule quand ta demande correspond à sa description.</li>
+    </ol>
+    <div class="lbl"><span>Exemple complet</span><span>terminal</span></div>
+<pre id="c-how">mkdir -p .claude/skills
+git clone https://github.com/kylezantos/design-motion-principles.git /tmp/dmp
+cp -r /tmp/dmp/skills/design-motion-principles .claude/skills/
+ls .claude/skills/design-motion-principles/SKILL.md</pre>
+    <button class="btn" type="button" data-copy="c-how"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><span>Copier l'exemple</span></button>
+  </section>
+
+  <!-- CTA -->
+  <section class="carte cta j" id="p-cta">
+    <h2>Tu veux que ça tourne dans <em style="font-style:normal;color:var(--jaune)">ton</em> business ?</h2>
+    <p>J'installe, je branche sur tes outils (n8n, réseaux, site) et je te laisse une machine qui produit toute seule.</p>
+    <a class="btn" href="https://automatisationboost.com/">Voir ce que je fais → automatisationboost.com</a>
+  </section>
+
+  <p class="foot">Liste vérifiée le 7 septembre 2026. Les dépôts appartiennent à leurs auteurs.<br><a href="https://automatisationboost.com/">automatisationboost.com</a></p>
+</main>
+
+<script>
+(function(){
+  'use strict';
+
+  /* compteur calculé depuis la liste réelle */
+  var packs=document.querySelectorAll('.pack');
+  var nPacks=0;
+  for(var p=0;p<packs.length;p++){
+    var n=packs[p].querySelectorAll('.skill').length;
+    nPacks+=n;
+    var c=packs[p].querySelector('[data-count]');
+    if(c)c.textContent=String(n);
+  }
+  var nTony=document.querySelectorAll('#p-tony .tony').length;
+  var ct=document.querySelector('[data-count-tony]');
+  if(ct)ct.textContent=String(nTony);
+  document.getElementById('n-packs').textContent=String(nPacks);
+  document.getElementById('n-tony').textContent=String(nTony);
+  document.getElementById('n-total').textContent=nPacks+' + '+nTony+' = '+(nPacks+nTony);
+
+  /* presse-papiers avec repli */
+  function fallbackCopy(text){
+    var ta=document.createElement('textarea');
+    ta.value=text;
+    ta.setAttribute('readonly','');
+    ta.style.position='fixed';ta.style.top='0';ta.style.left='0';ta.style.opacity='0';ta.style.pointerEvents='none';
+    document.body.appendChild(ta);
+    ta.focus();ta.select();
+    try{ta.setSelectionRange(0,text.length);}catch(e){}
+    var ok=false;
+    try{ok=document.execCommand('copy');}catch(e){ok=false;}
+    document.body.removeChild(ta);
+    return ok;
+  }
+  function copyText(text){
+    if(navigator.clipboard&&navigator.clipboard.writeText){
+      return navigator.clipboard.writeText(text).then(function(){return true;}).catch(function(){return fallbackCopy(text);});
+    }
+    return Promise.resolve(fallbackCopy(text));
+  }
+  function flash(btn){
+    var span=btn.querySelector('span');
+    if(btn.dataset.busy==='1')return;
+    btn.dataset.busy='1';
+    var old=span.textContent;
+    span.textContent='Copié ✓';
+    btn.classList.add('ok');
+    setTimeout(function(){span.textContent=old;btn.classList.remove('ok');btn.dataset.busy='';},1500);
+  }
+  var btns=document.querySelectorAll('.btn[data-copy]');
+  for(var i=0;i<btns.length;i++){
+    btns[i].addEventListener('click',function(){
+      var btn=this;
+      var pre=document.getElementById(btn.getAttribute('data-copy'));
+      if(!pre)return;
+      copyText(pre.textContent).then(function(){flash(btn);});
+    });
+  }
+})();
+</script>
+</body>
+</html>

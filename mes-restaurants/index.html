@@ -1,0 +1,999 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Mes sites de restaurants — AutomatisationBoost</title>
+<style>
+:root{
+  --bg:#0a0a0f; --carte:#121218; --bord:#242430; --txt:#EDEDED; --mut:#8A8A8A;
+  --jaune:#eab308; --violet:#8b5cf6; --vert:#3ddc84; --orange:#ffa726; --rouge:#ff6b6b;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0; background:var(--bg); color:var(--txt);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  font-size:16px; line-height:1.5; overflow-x:hidden;
+}
+.wrap{max-width:640px; margin:0 auto; padding:22px 16px 64px}
+header{margin-bottom:22px}
+.kicker{
+  font-size:11px; letter-spacing:.16em; text-transform:uppercase;
+  color:var(--jaune); margin:0 0 8px; font-weight:700;
+}
+h1{font-size:27px; line-height:1.15; margin:0 0 10px; font-weight:800; letter-spacing:-.02em}
+.compte{
+  margin:0 0 4px; font-size:15px; color:var(--txt);
+}
+.compte b{color:var(--jaune)}
+.compte .sep{color:var(--bord); padding:0 6px}
+.compte .v{color:var(--violet)}
+.sous{margin:0; font-size:13px; color:var(--mut)}
+.btn{
+  -webkit-appearance:none; appearance:none; display:flex; align-items:center; justify-content:center;
+  gap:9px; width:100%; min-height:52px; margin-top:16px; padding:12px 16px;
+  background:var(--jaune); color:#0a0a0f; border:0; border-radius:12px;
+  font-size:16px; font-weight:800; font-family:inherit; cursor:pointer;
+  letter-spacing:-.01em;
+}
+.btn svg{width:19px; height:19px; flex:none}
+.btn.ok{background:var(--violet); color:#fff}
+.carte{
+  background:var(--carte); border:1px solid var(--bord); border-radius:14px;
+  padding:15px 15px 12px; margin-bottom:12px;
+}
+.haut{display:flex; align-items:flex-start; justify-content:space-between; gap:10px}
+.carte h2{font-size:18px; line-height:1.25; margin:0; font-weight:700; letter-spacing:-.01em; min-width:0; overflow-wrap:anywhere}
+.pastille{
+  flex:none; display:inline-flex; align-items:center; gap:6px;
+  font-size:11px; font-weight:700; letter-spacing:.04em; white-space:nowrap;
+  padding:5px 9px; border-radius:999px; border:1px solid var(--bord); background:#0d0d13;
+  margin-top:2px;
+}
+.pastille i{width:7px; height:7px; border-radius:50%; display:block; flex:none}
+.pastille.ok{color:var(--vert)} .pastille.ok i{background:var(--vert)}
+.pastille.warn{color:var(--orange)} .pastille.warn i{background:var(--orange)}
+.pastille.ko{color:var(--rouge)} .pastille.ko i{background:var(--rouge)}
+.ville{margin:5px 0 0; font-size:13px; color:var(--mut)}
+.lien{
+  display:flex; align-items:center; justify-content:space-between; gap:10px;
+  min-height:52px; margin-top:11px; padding:11px 13px;
+  background:#0d0d13; border:1px solid #33333f; border-radius:11px;
+  color:var(--jaune); text-decoration:none; font-weight:700; font-size:14px;
+  letter-spacing:-.01em; overflow-wrap:anywhere;
+}
+.lien svg{width:17px; height:17px; flex:none; opacity:.75}
+.lien.second{color:var(--violet); font-size:13px; font-weight:600; min-height:48px}
+.quoi{margin:10px 0 0; font-size:13.5px; color:#C4C4CC; line-height:1.45}
+.vnote{margin:6px 0 0; font-size:12px; color:var(--mut); line-height:1.4}
+.variante{margin-top:12px; padding-top:11px; border-top:1px dashed var(--bord)}
+.vlbl{margin:2px 0 0; font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--mut); font-weight:700}
+.meta{
+  display:flex; flex-wrap:wrap; gap:4px 10px; margin:10px 0 0;
+  font-size:10.5px; color:#6E6E7A; letter-spacing:.04em; overflow-wrap:anywhere;
+}
+.meta .uuid{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+.bloc-fin{margin-top:26px; border-top:1px solid var(--bord); padding-top:20px}
+.bloc-fin h3{font-size:15px; margin:0 0 6px; font-weight:800; color:var(--violet)}
+.bloc-fin p.intro{margin:0 0 12px; font-size:13px; color:var(--mut)}
+.attente{background:var(--carte); border:1px solid var(--bord); border-radius:11px; padding:11px 13px; margin-bottom:8px}
+.attente b{display:block; font-size:14.5px; font-weight:700}
+.attente span{display:block; font-size:11px; color:#6E6E7A; margin-top:3px; overflow-wrap:anywhere}
+footer{margin-top:26px; font-size:11.5px; color:#6E6E7A; line-height:1.6}
+@media (min-width:520px){ h1{font-size:31px} }
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <p class="kicker">AutomatisationBoost · La Réunion</p>
+  <h1>Mes sites de restaurants</h1>
+  <p class="compte"><b>51 restaurants</b><span class="sep">·</span><span class="v">51 en ligne</span></p>
+  <p class="sous">59 sites déployés sur Coolify (certains restaurants ont deux versions). Codes HTTP relevés le 8 septembre 2026.</p>
+  <button class="btn" id="tout" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><span>Copier tous les liens</span></button>
+</header>
+
+<main>
+  <article class="carte">
+    <div class="haut">
+      <h2>Boulangerie Le Mamita</h2>
+      <span class="pastille ok"><i></i>en ligne · 200</span>
+    </div>
+    <p class="ville">Saint-Denis</p>
+    
+      <a class="lien" href="https://boulangerie-le-mamita.automatisationboost.com" target="_blank" rel="noopener">
+        <span class="dom">boulangerie-le-mamita.automatisationboost.com</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"/><path d="M9 7h8v8"/></svg>
+      </a>
+    <p class="quoi">Site vitrine — boulangerie pâtisserie artisanale, 30 ans de maison</p>
+    
+    <p class="meta"><span>tonyPayetDev/boulangerie-le-mamita</span><span class="uuid">ug0i3z1t358o2ipxsppz04a4</span></p>
+  </article>
+  <article class="carte">
+    <div class="haut">
+      <h2>By Glad Café</h2>
+      <span class="pastille ok"><i></i>en ligne · 200</span>
+    </div>
+    <p class="ville">Saint-Denis</p>
+    
+      <a class="lien" href="https://bygladcafe-optimisation-seo.automatisationboost.com" target="_blank" rel="noopener">
+        <span class="dom">bygladcafe-optimisation-seo.automatisationboost.com</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"/><path d="M9 7h8v8"/></svg>
+      </a>
+    <p class="quoi">Site vitrine + optimisation SEO — boulangerie pâtisserie, carte et service traiteur</p>
+    
+    <p class="meta"><span>tonyPayetDev/bygladcafe-optimisation-seo</span><span class="uuid">odkkd49z7vo47hv8my3b0zhz</span></p>
+  </article>
+  <article class="carte">
+    <div class="haut">
+      <h2>Cassava</h2>
+      <span class="pastille ok"><i></i>en ligne · 200</span>
+    </div>
+    <p class="ville">La Réunion</p>
+    
+      <a class="lien" href="http://xc080o4cw4sgcowsw84g4w8c.158.220.127.234.sslip.io" target="_blank" rel="noopener">
+        <span class="dom">xc080o4cw4sgcowsw84g4w8c.158.220.127.234.sslip.io</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"/><path d="M9 7h8v8"/></svg>
+      </a>
+    <p class="quoi">Site vitrine — micro-boulangerie et table bistronomique, menu du jour et livraison</p>
+    <div class="variante">
+      <div class="haut"><p class="vlbl">Autre version</p><span class="pastille ok"><i></i>en ligne · 200</span></div>
+      <p class="vnote">1re version</p>
+      
+      <a class="lien second" href="http://k8c8sgosc0c8s4gkcw0c0844.158.220.127.234.sslip.io" target="_blank" rel="noopener">
+        <span class="dom">k8c8sgosc0c8s4gkcw0c0844.158.220.127.234.sslip.io</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"/><path d="M9 7h8v8"/></svg>
+      </a>
+      <p class="meta"><span>tonyPayetDev/cassava-micro-boulangerie</span><span class="uuid">k8c8sgosc0c8s4gkcw0c0844</span></p>
+    </div>
+    <p class="meta"><span>tonyPayetDev/cassava-micro-boulangerie-reunion</span><span class="uuid">xc080o4cw4sgcowsw84g4w8c</span></p>
+  </article>
+  <article class="carte">
+    <div class="haut">
+      <h2>Le Gourmand</h2>
+      <span class="pastille ok"><i></i>en ligne · 200</span>
+    </div>
+    
+    
+      <a class="lien" href="https://contact-le-gourmand.automatisationboost.com" target="_blank" rel="noopener">
+        <span class="dom">contact-le-gourmand.automatisationboost.com</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"/><path d="M9 7h8v8"/></svg>
+      </a>
+    <p class="quoi">Page contact et réservation — horaires, adresses, formulaire</p>
+    
+    <p class="meta"><span>tonyPayetDev/contact-le-gourmand</span><span class="uuid">xwcaan797disyt8yaeyjz96j</span></p>
+  </article>
+  <article class="carte">
+    <div class="haut">
+      <h2>Dalilo Pizza</h2>
+      <span class="pastille ok"><i></i>en ligne · 200</span>
+    </div>
+    <p class="ville">Le Tampon</p>
+    
+      <a class="lien" href="http://sow0k8ss00cwsgs8g88okwkc.158.220.127.234.sslip.io" target="_blank" rel="noopener">
+        <span class="dom">sow0k8ss00cwsgs8g88okwkc.158.220.127.234.sslip.io</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"/><path d="M9 7h8v8"/></svg>
+      </a>
+    <p class="quoi">Site vitrine — pizzeria au feu de bois et restauration rapide, livraison</p>
+    
+    <p class="meta"><span>tonyPayetDev/dalilo-pizza-tampon</span><span class="uuid">sow0k8ss00cwsgs8g88okwkc</span></p>
+  </article>
+  <article class="carte">
+    <div class="haut">
+      <h2>Dan CaKe</h2>
+      <span class="pastille ok"><i></i>en ligne · 200</span>
+    </div>
+    <p class="ville">Saint-Denis</p>
+    
+      <a class="lien" href="http://pogc8coc08skgk0owc0skoko.158.220.127.234.sslip.io" target="_blank" rel="noopener">
+        <span class="dom">pogc8coc08skgk0owc0skoko.158.220.127.234.sslip.io</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"/><path d="M9 7h8v8"/></svg>
+      </a>
+    <p class="quoi">Site vitrine — pâtisseries sur commande, artisan pâtissier</p>
+    
+    <p class="meta"><span>tonyPayetDev/dan-cake-patisserie</span><span class="uuid">pogc8coc08skgk0owc0skoko</span></p>
+  </article>
+  <article class="carte">
+    <div class="haut">
+      <h2>Giulietta</h2>
+      <span class="pastille ok"><i></i>en ligne · 200</span>
+    </div>
+    <p class="ville">Terre-Sainte, Saint-Pierre</p>
+    
+      <a class="lien" href="https://giulietta-pizzeria-saint-pierre.automatisationboost.com" target="_blank" rel="noopener">
+        <span class="dom">giulietta-pizzeria-saint-pierre.automatisationboost.com</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"/><path d="M9 7h8v8"/></svg>
+      </a>
+    <p class="quoi">Site vitrine + commande en ligne — pizzeria artisanale, livraison</p>
+    
+    <p class="meta"><span>tonyPayetDev/giulietta-pizzeria-saint-pierre</span><span class="uuid">b10iqoxjzwb0iy3xaa0ow8dr</span></p>
+  </article>
+  <article class="carte">
+    <div class="haut">
+      <h2>La Guinguette du Grand Morin</h2>
+      <span class="pastille ok"><i></i>en ligne · 200</span>
+    </div>
+    <p class="ville">Mouroux</p>
+    
+      <a class="lien" href="http://lk4o4cc0ok0oggo08gsgsggo.158.220.127.234.sslip.io" target="_blank" rel="noopener">
+        <span class="dom">lk4o4cc0ok0oggo08gsgsggo.158.220.127.234.sslip.io</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"/><path d="M9 7h8v8"/></svg>
+      </a>
+    <p class="quoi">Site vitrine — cuisine française, réservation, commande et privatisation</p>
+    
+    <p class="meta"><span>tonyPayetDev/guinguette-du-grand-morin-eatbu-com-</span><span class="uuid">lk4o4cc0ok0oggo08gsgsggo</span></p>
+  </article>
+  <article class="carte">
+    <div class="haut">
+      <h2>K'Mila Pizza</h2>
+      <span class="pastille ok"><i></i>en ligne · 200</span>
+    </div>
+    <p class="ville">Saint-Pierre · Saint-Joseph · Vincendo</p>
+    
+      <a class="lien" href="https://kmila-pizza-reunion.automatisationboost.com" target="_blank" rel="noopener">
+        <span class="dom">kmila-pizza-reunion.automatisationboost.com</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"/><path d="M9 7h8v8"/></svg>
+      </a>
+    <p class="quoi">Site vitrine multi-adresses — pizzerias, carte, livraison et réservation</p>
+    
+    <p class="meta"><span>tonyPayetDev/kmila-pizza-reunion</span><span class="uuid">i113pmnbiwx6yfriz46dapi7</span></p>
+  </article>
+  <article class="carte">
+    <div class="haut">
+      <h2>L'Andalouse</h2>
+      <span class="pastille ok"><i></i>en ligne · 200</span>
+    </div>
+    <p class="ville">Saint-Joseph</p>
+    
+      <a class="lien" href="https://l-andalouse-saint-joseph.automatisationboost.com" target="_blank" rel="noopener">
+        <span class="dom">l-andalouse-saint-joseph.automatisationboost.com</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"/><path d="M9 7h8v8"/></svg>
+      </a>
+    <p class="quoi">Site vitrine — pizzéria, menu, photos et avis</p>
+    
+    <p class="meta"><span>tonyPayetDev/l-andalouse-saint-joseph</span><span class="uuid">i13yuhnrhd7mrjh57skt0tj4</span></p>
+  </article>
+  <article class="carte">
+    <div class="haut">
+      <h2>La Casa Blanca</h2>
+      <span class="pastille ok"><i></i>en ligne · 200</span>
+    </div>
+    <p class="ville">Saint-Denis</p>
+    
+      <a class="lien" href="https://la-casa-blanca.automatisationboost.com" target="_blank" rel="noopener">
+        <span class="dom">la-casa-blanca.automatisationboost.com</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"/><path d="M9 7h8v8"/></svg>
+      </a>
+    <p class="quoi">Site vitrine — lieu pluriel : restaurants, concept store, réservation</p>
+    
+    <p class="meta"><span>tonyPayetDev/la-casa-blanca</span><span class="uuid">tjf4l07iqb65s0ci4c1hus17</span></p>
+  </article>
+  <article class="carte">
+    <div class="haut">
+      <h2>La Kaz de Ben</h2>
+      <span class="pastille ok"><i></i>en ligne · 200</span>
+    </div>
+    <p class="ville">Saint-Gilles-les-Hauts</p>
+    
+      <a class="lien" href="http://r8wc4wwg8w0o48g8cgo88k8k.158.220.127.234.sslip.io" target="_blank" rel="noopener">
+        <span class="dom">r8wc4wwg8w0o48g8cgo88k8k.158.220.127.234.sslip.io</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"/><path d="M9 7h8v8"/></svg>
+      </a>
+    <p class="quoi">Site vitrine — restaurant réunionnais, carte et réservation</p>
+    
+    <p class="meta"><span>tonyPayetDev/la-kaz-de-ben</span><span class="uuid">r8wc4wwg8w0o48g8cgo88k8k</span></p>
+  </article>
+  <article class="carte">
+    <div class="haut">
+      <h2>LaCaseARepas</h2>
+      <span class="pastille ok"><i></i>en ligne · 200</span>
+    </div>
+    <p class="ville">Le Tampon</p>
+    
+      <a class="lien" href="http://oowsg0w8c8s8wkccg8c4osc0.158.220.127.234.sslip.io" target="_blank" rel="noopener">
+        <span class="dom">oowsg0w8c8s8wkccg8c4osc0.158.220.127.234.sslip.io</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"/><path d="M9 7h8v8"/></svg>
+      </a>
+    <p class="quoi">Site vitrine + optimisation SEO — cuisine créole et chinoise à emporter</p>
+    
+    <p class="meta"><span>tonyPayetDev/lacasearepas-optimisation-seo</span><span class="uuid">oowsg0w8c8s8wkccg8c4osc0</span></p>
+  </article>
+  <article class="carte">
+    <div class="haut">
+      <h2>La Gare Brasserie</h2>
+      <span class="pastille ok"><i></i>en ligne · 200</span>
+    </div>
+    <p class="ville">Saint-Pierre</p>
+    
+      <a class="lien" href="https://lagare-brasserie-optimisation-seo.automatisationboost.com" target="_blank" rel="noopener">
+        <span class="dom">lagare-brasserie-optimisation-seo.automatisationboost.com</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"/><path d="M9 7h8v8"/></svg>
+      </a>
+    <p class="quoi">Site vitrine + optimisation SEO — brasserie, cuisine réunionnaise, spectacles</p>
+    
+    <p class="meta"><span>tonyPayetDev/lagare-brasserie-optimisation-seo</span><span class="uuid">h13xobiv53alxmax1bw6cvwp</span></p>
+  </article>
+  <article class="carte">
+    <div class="haut">
+      <h2>L'Atelier de Ben</h2>
+      <span class="pastille ok"><i></i>en ligne · 200</span>
+    </div>
+    <p class="ville">Saint-Denis</p>
+    
+      <a class="lien" href="http://k00so4gwooo4s040gc8okc0o.158.220.127.234.sslip.io" target="_blank" rel="noopener">
+        <span class="dom">k00so4gwooo4s040gc8okc0o.158.220.127.234.sslip.io</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"/><path d="M9 7h8v8"/></svg>
+      </a>
+    <p class="quoi">Site vitrine + optimisation SEO — gastronomie française, carte, réservation, livraison</p>
+    <div class="variante">
+      <div class="haut"><p class="vlbl">Autre version</p><span class="pastille warn"><i></i>page vide · 200</span></div>
+      <p class="vnote">répond 200 mais sert la page nginx par défaut — rien de déployé</p>
+      
+      <a class="lien second" href="http://ww0wk0wgw0cgo4kwo40gkcsk.158.220.127.234.sslip.io" target="_blank" rel="noopener">
+        <span class="dom">ww0wk0wgw0cgo4kwo40gkcsk.158.220.127.234.sslip.io</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"/><path d="M9 7h8v8"/></svg>
+      </a>
+      <p class="meta"><span>tonyPayetDev/latelier-de-ben-site</span><span class="uuid">ww0wk0wgw0cgo4kwo40gkcsk</span></p>
+    </div>
+    <p class="meta"><span>tonyPayetDev/latelier-de-ben-optimisation-seo</span><span class="uuid">k00so4gwooo4s040gc8okc0o</span></p>
+  </article>
+  <article class="carte">
+    <div class="haut">
+      <h2>L'Atelier Traiteur</h2>
+      <span class="pastille ok"><i></i>en ligne · 200</span>
+    </div>
+    <p class="ville">La Réunion</p>
+    
+      <a class="lien" href="https://latelier-traiteur-reunion.automatisationboost.com" target="_blank" rel="noopener">
+        <span class="dom">latelier-traiteur-reunion.automatisationboost.com</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"/><path d="M9 7h8v8"/></svg>
+      </a>
+    <p class="quoi">Site vitrine — traiteur événementiel, prestations et devis</p>
+    <div class="variante">
+      <div class="haut"><p class="vlbl">Autre version</p><span class="pastille ok"><i></i>en ligne · 200</span></div>
+      <p class="vnote">2e version</p>
+      
+      <a class="lien second" href="https://latelier-traiteur-la-reunion.automatisationboost.com" target="_blank" rel="noopener">
+        <span class="dom">latelier-traiteur-la-reunion.automatisationboost.com</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"/><path d="M9 7h8v8"/></svg>
+      </a>
+      <p class="meta"><span>tonyPayetDev/latelier-traiteur-la-reunion</span><span class="uuid">daiu9awxsg54n8261dbh9idf</span></p>
+    </div>
+    <p class="meta"><span>tonyPayetDev/latelier-traiteur-reunion</span><span class="uuid">sgoznluic4mbg9xgxrygai7f</span></p>
+  </article>
+  <article class="carte">
+    <div class="haut">
+      <h2>Le BàO</h2>
+      <span class="pastille ok"><i></i>en ligne · 200</span>
+    </div>
+    <p class="ville">Saint-Pierre</p>
+    
+      <a class="lien" href="https://le-bao-restaurant-saint-pierre-974.automatisationboost.com" target="_blank" rel="noopener">
+        <span class="dom">le-bao-restaurant-saint-pierre-974.automatisationboost.com</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"/><path d="M9 7h8v8"/></svg>
+      </a>
+    <p class="quoi">Site vitrine — restaurant et cocktails, carte et réservation</p>
+    <div class="variante">
+      <div class="haut"><p class="vlbl">Autre version</p><span class="pastille ok"><i></i>en ligne · 200</span></div>
+      <p class="vnote">même dépôt, 2e app</p>
+      
+      <a class="lien second" href="http://wa2ecmzul8knxkoy3ubwdwuk.158.220.127.234.sslip.io" target="_blank" rel="noopener">
+        <span class="dom">wa2ecmzul8knxkoy3ubwdwuk.158.220.127.234.sslip.io</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"/><path d="M9 7h8v8"/></svg>
+      </a>
+      <p class="meta"><span>tonyPayetDev/le-bao-restaurant-saint-pierre-974</span><span class="uuid">wa2ecmzul8knxkoy3ubwdwuk</span></p>
+    </div>
+    <p class="meta"><span>tonyPayetDev/le-bao-restaurant-saint-pierre-974</span><span class="uuid">h11jwvjllronrs5azjxb3fz6</span></p>
+  </article>
+  <article class="carte">
+    <div class="haut">
+      <h2>Le Bistrot de Saint Paul</h2>
+      <span class="pastille ok"><i></i>en ligne · 200</span>
+    </div>
+    <p class="ville">Saint-Paul</p>
+    
+      <a class="lien" href="http://rc44484084oos04888c4g0gc.158.220.127.234.sslip.io" target="_blank" rel="noopener">
+        <span class="dom">rc44484084oos04888c4g0gc.158.220.127.234.sslip.io</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"/><path d="M9 7h8v8"/></svg>
+      </a>
+    <p class="quoi">Site vitrine — restaurant terrasse, cuisine métropolitaine, réservation</p>
+    
+    <p class="meta"><span>tonyPayetDev/le-bistrot-saint-paul</span><span class="uuid">rc44484084oos04888c4g0gc</span></p>
+  </article>
+  <article class="carte">
+    <div class="haut">
+      <h2>Le Bonbon de Pain — Snack Atchia</h2>
+      <span class="pastille ok"><i></i>en ligne · 200</span>
+    </div>
+    <p class="ville">Saint-Denis</p>
+    
+      <a class="lien" href="http://d4ssokgwcksokc4ckcsokkok.158.220.127.234.sslip.io" target="_blank" rel="noopener">
+        <span class="dom">d4ssokgwcksokc4ckcsokkok.158.220.127.234.sslip.io</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"/><path d="M9 7h8v8"/></svg>
+      </a>
+    <p class="quoi">Site vitrine — snack, gâteaux, sucré et salé</p>
+    <div class="variante">
+      <div class="haut"><p class="vlbl">Autre version</p><span class="pastille ok"><i></i>en ligne · 200</span></div>
+      <p class="vnote">2e version</p>
+      
+      <a class="lien second" href="http://agso48w8ccwcg448o0ss4w0w.158.220.127.234.sslip.io" target="_blank" rel="noopener">
+        <span class="dom">agso48w8ccwcg448o0ss4w0w.158.220.127.234.sslip.io</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"/><path d="M9 7h8v8"/></svg>
+      </a>
+      <p class="meta"><span>tonyPayetDev/le-bonbon-de-pain-snack-atchia</span><span class="uuid">agso48w8ccwcg448o0ss4w0w</span></p>
+    </div>
+    <p class="meta"><span>tonyPayetDev/le-bonbon-de-pain</span><span class="uuid">d4ssokgwcksokc4ckcsokkok</span></p>
+  </article>
+  <article class="carte">
+    <div class="haut">
+      <h2>Le Glacier de Marie B</h2>
+      <span class="pastille ok"><i></i>en ligne · 200</span>
+    </div>
+    <p class="ville">Saint-Gilles les Bains</p>
+    
+      <a class="lien" href="https://le-glacier-de-marie-b.automatisationboost.com" target="_blank" rel="noopener">
+        <span class="dom">le-glacier-de-marie-b.automatisationboost.com</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"/><path d="M9 7h8v8"/></svg>
+      </a>
+    <p class="quoi">Site vitrine — glaces artisanales et spécialités</p>
+    
+    <p class="meta"><span>tonyPayetDev/le-glacier-de-marie-b</span><span class="uuid">l4t7in0dlq0fendb9y44ub5o</span></p>
+  </article>
+  <article class="carte">
+    <div class="haut">
+      <h2>Le Relais Commerson</h2>
+      <span class="pastille ok"><i></i>en ligne · 200</span>
+    </div>
+    <p class="ville">Le Tampon</p>
+    
+      <a class="lien" href="http://xws8w0wss4sk00wggocc4g0c.158.220.127.234.sslip.io" target="_blank" rel="noopener">
+        <span class="dom">xws8w0wss4sk00wggocc4g0c.158.220.127.234.sslip.io</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"/><path d="M9 7h8v8"/></svg>
+      </a>
+    <p class="quoi">Site vitrine — buffet créole à volonté, privatisation, réservation</p>
+    
+    <p class="meta"><span>tonyPayetDev/le-relais-commerson-tampon</span><span class="uuid">xws8w0wss4sk00wggocc4g0c</span></p>
+  </article>
+  <article class="carte">
+    <div class="haut">
+      <h2>Le So'Met By Nono</h2>
+      <span class="pastille ok"><i></i>en ligne · 200</span>
+    </div>
+    <p class="ville">Le Maïdo</p>
+    
+      <a class="lien" href="https://le-somet-by-nono.automatisationboost.com" target="_blank" rel="noopener">
+        <span class="dom">le-somet-by-nono.automatisationboost.com</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"/><path d="M9 7h8v8"/></svg>
+      </a>
+    <p class="quoi">Site vitrine — cuisine traditionnelle au wok, carte et réservation</p>
+    
+    <p class="meta"><span>tonyPayetDev/le-somet-by-nono</span><span class="uuid">bmfgj0xa9z9z6qkmjqh7ynaa</span></p>
+  </article>
+  <article class="carte">
+    <div class="haut">
+      <h2>Le786</h2>
+      <span class="pastille ok"><i></i>en ligne · 200</span>
+    </div>
+    <p class="ville">La Réunion</p>
+    
+      <a class="lien" href="http://xcgcwkwkw00o0ooc8c8o88cg.158.220.127.234.sslip.io" target="_blank" rel="noopener">
+        <span class="dom">xcgcwkwkw00o0ooc8c8o88cg.158.220.127.234.sslip.io</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"/><path d="M9 7h8v8"/></svg>
+      </a>
+    <p class="quoi">Commande en ligne — apéritifs 100% halal, panier et livraison</p>
+    
+    <p class="meta"><span>tonyPayetDev/le786-halal-commande-en-ligne</span><span class="uuid">xcgcwkwkw00o0ooc8c8o88cg</span></p>
+  </article>
+  <article class="carte">
+    <div class="haut">
+      <h2>Les Brillantes Gorgées</h2>
+      <span class="pastille ok"><i></i>en ligne · 200</span>
+    </div>
+    <p class="ville">La Réunion</p>
+    
+      <a class="lien" href="http://a8g80g8kw04gsw0kksgwc0w4.158.220.127.234.sslip.io" target="_blank" rel="noopener">
+        <span class="dom">a8g80g8kw04gsw0kksgwc0w4.158.220.127.234.sslip.io</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"/><path d="M9 7h8v8"/></svg>
+      </a>
+    <p class="quoi">Site vitrine — dégustations de vin, événements et box</p>
+    
+    <p class="meta"><span>tonyPayetDev/les-brillantes-gorgees</span><span class="uuid">a8g80g8kw04gsw0kksgwc0w4</span></p>
+  </article>
+  <article class="carte">
+    <div class="haut">
+      <h2>L'Impériale Pizzéria &amp; Kazumi Sushi</h2>
+      <span class="pastille ok"><i></i>en ligne · 200</span>
+    </div>
+    <p class="ville">Le Tampon</p>
+    
+      <a class="lien" href="http://c8og44sow8ogso8o8wo4w0kc.158.220.127.234.sslip.io" target="_blank" rel="noopener">
+        <span class="dom">c8og44sow8ogso8o8wo4w0kc.158.220.127.234.sslip.io</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"/><path d="M9 7h8v8"/></svg>
+      </a>
+    <p class="quoi">Site vitrine — pizzeria et sushis, carte, livraison, réservation</p>
+    
+    <p class="meta"><span>tonyPayetDev/limperiale-pizzeria-kazumi</span><span class="uuid">c8og44sow8ogso8o8wo4w0kc</span></p>
+  </article>
+  <article class="carte">
+    <div class="haut">
+      <h2>Mama Betty</h2>
+      <span class="pastille ok"><i></i>en ligne · 200</span>
+    </div>
+    <p class="ville">Laxou (Nancy)</p>
+    
+      <a class="lien" href="http://nswks4o8088k040ogo4cg80k.158.220.127.234.sslip.io" target="_blank" rel="noopener">
+        <span class="dom">nswks4o8088k040ogo4cg80k.158.220.127.234.sslip.io</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"/><path d="M9 7h8v8"/></svg>
+      </a>
+    <p class="quoi">Site vitrine — steakhouse, cuisson à la braise, réservation</p>
+    
+    <p class="meta"><span>mamabetty-fr (dépôt via tunnel Cloudflare)</span><span class="uuid">nswks4o8088k040ogo4cg80k</span></p>
+  </article>
+  <article class="carte">
+    <div class="haut">
+      <h2>Mam'Zelle Pizza</h2>
+      <span class="pastille ok"><i></i>en ligne · 200</span>
+    </div>
+    <p class="ville">La Réunion</p>
+    
+      <a class="lien" href="https://mamzelle-pizza-ile-reunion.automatisationboost.com" target="_blank" rel="noopener">
+        <span class="dom">mamzelle-pizza-ile-reunion.automatisationboost.com</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"/><path d="M9 7h8v8"/></svg>
+      </a>
+    <p class="quoi">Site vitrine — pizzeria, carte et réservation</p>
+    <div class="variante">
+      <div class="haut"><p class="vlbl">Autre version</p><span class="pastille ok"><i></i>en ligne · 200</span></div>
+      <p class="vnote">conteneur marqué exited/unhealthy dans Coolify, la page répond quand même</p>
+      
+      <a class="lien second" href="https://mamzelle-pizza-ile-de-la-reunion.automatisationboost.com" target="_blank" rel="noopener">
+        <span class="dom">mamzelle-pizza-ile-de-la-reunion.automatisationboost.com</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"/><path d="M9 7h8v8"/></svg>
+      </a>
+      <p class="meta"><span>tonyPayetDev/mamzelle-pizza-ile-de-la-reunion</span><span class="uuid">fyw1hhih1gry8wh8winarbqk</span></p>
+    </div>
+    <p class="meta"><span>tonyPayetDev/mamzelle-pizza-ile-reunion</span><span class="uuid">rg8ko0wsgcc4swco0sogo8sk</span></p>
+  </article>
+  <article class="carte">
+    <div class="haut">
+      <h2>Mediterraneo</h2>
+      <span class="pastille ok"><i></i>en ligne · 200</span>
+    </div>
+    <p class="ville">Saint-Denis</p>
+    
+      <a class="lien" href="https://mediterraneo-restaurant-italien-saint-denis.automatisationboost.com" target="_blank" rel="noopener">
+        <span class="dom">mediterraneo-restaurant-italien-saint-denis.automatisationboost.com</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"/><path d="M9 7h8v8"/></svg>
+      </a>
+    <p class="quoi">Site vitrine — restaurant italien, carte et réservation</p>
+    
+    <p class="meta"><span>tonyPayetDev/mediterraneo-restaurant-italien-saint-denis</span><span class="uuid">h11zd66li30bqk1y8b3g5a85</span></p>
+  </article>
+  <article class="carte">
+    <div class="haut">
+      <h2>Métisse Réception</h2>
+      <span class="pastille ok"><i></i>en ligne · 200</span>
+    </div>
+    <p class="ville">Saint-Pierre</p>
+    
+      <a class="lien" href="https://metisse-reception-saint-pierre.automatisationboost.com" target="_blank" rel="noopener">
+        <span class="dom">metisse-reception-saint-pierre.automatisationboost.com</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"/><path d="M9 7h8v8"/></svg>
+      </a>
+    <p class="quoi">Site vitrine — salle de réception et traiteur événementiel</p>
+    
+    <p class="meta"><span>tonyPayetDev/metisse-reception-saint-pierre</span><span class="uuid">dkbp2l81xabt3fpd5l1ivi93</span></p>
+  </article>
+  <article class="carte">
+    <div class="haut">
+      <h2>MIO Pizza</h2>
+      <span class="pastille ok"><i></i>en ligne · 200</span>
+    </div>
+    <p class="ville">La Réunion (9 adresses)</p>
+    
+      <a class="lien" href="https://mio-pizza-la-reunion.automatisationboost.com" target="_blank" rel="noopener">
+        <span class="dom">mio-pizza-la-reunion.automatisationboost.com</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"/><path d="M9 7h8v8"/></svg>
+      </a>
+    <p class="quoi">Site vitrine multi-adresses — pizzeria artisanale depuis 1984, livraison</p>
+    
+    <p class="meta"><span>tonyPayetDev/mio-pizza-la-reunion</span><span class="uuid">x4so0k8kkwsgoc8og0gow008</span></p>
+  </article>
+  <article class="carte">
+    <div class="haut">
+      <h2>O Métis S by MétisSage</h2>
+      <span class="pastille ok"><i></i>en ligne · 200</span>
+    </div>
+    <p class="ville">Saint-André</p>
+    
+      <a class="lien" href="http://psoosgw00cgooss8wkkss4co.158.220.127.234.sslip.io" target="_blank" rel="noopener">
+        <span class="dom">psoosgw00cgooss8wkkss4co.158.220.127.234.sslip.io</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"/><path d="M9 7h8v8"/></svg>
+      </a>
+    <p class="quoi">Site vitrine — traiteur, carte et livraison</p>
+    
+    <p class="meta"><span>tonyPayetDev/o-metis-s-traiteur-saint-andre</span><span class="uuid">psoosgw00cgooss8wkkss4co</span></p>
+  </article>
+  <article class="carte">
+    <div class="haut">
+      <h2>Oncle Sam</h2>
+      <span class="pastille ok"><i></i>en ligne · 200</span>
+    </div>
+    <p class="ville">La Réunion</p>
+    
+      <a class="lien" href="http://xs8kc80ossgc8sgkskk0sw8k.158.220.127.234.sslip.io" target="_blank" rel="noopener">
+        <span class="dom">xs8kc80ossgc8sgkskk0sw8k.158.220.127.234.sslip.io</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"/><path d="M9 7h8v8"/></svg>
+      </a>
+    <p class="quoi">Commande en ligne — samoussas, bouchons et plats créoles, livraison</p>
+    
+    <p class="meta"><span>tonyPayetDev/oncle-sam-saveurs-reunion</span><span class="uuid">xs8kc80ossgc8sgkskk0sw8k</span></p>
+  </article>
+  <article class="carte">
+    <div class="haut">
+      <h2>Pizza Club</h2>
+      <span class="pastille ok"><i></i>en ligne · 200</span>
+    </div>
+    <p class="ville">Saint-Pierre</p>
+    
+      <a class="lien" href="https://pizza-club-saint-pierre.automatisationboost.com" target="_blank" rel="noopener">
+        <span class="dom">pizza-club-saint-pierre.automatisationboost.com</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"/><path d="M9 7h8v8"/></svg>
+      </a>
+    <p class="quoi">Site vitrine + commande — pizzas, pâtes, salades, livraison</p>
+    
+    <p class="meta"><span>tonyPayetDev/pizza-club-saint-pierre</span><span class="uuid">xbr2lui54itbhq8uakgre3m4</span></p>
+  </article>
+  <article class="carte">
+    <div class="haut">
+      <h2>Pizza E Basta</h2>
+      <span class="pastille ok"><i></i>en ligne · 200</span>
+    </div>
+    <p class="ville">Saint-Pierre</p>
+    
+      <a class="lien" href="http://u0wcs84s0wwwc8c484wsc40g.158.220.127.234.sslip.io" target="_blank" rel="noopener">
+        <span class="dom">u0wcs84s0wwwc8c484wsc40g.158.220.127.234.sslip.io</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"/><path d="M9 7h8v8"/></svg>
+      </a>
+    <p class="quoi">Site vitrine — pizzeria italienne, carte, livraison et réservation</p>
+    
+    <p class="meta"><span>tonyPayetDev/pizza-e-basta-saint-pierre</span><span class="uuid">u0wcs84s0wwwc8c484wsc40g</span></p>
+  </article>
+  <article class="carte">
+    <div class="haut">
+      <h2>Pizza &amp; Shake</h2>
+      <span class="pastille ok"><i></i>en ligne · 200</span>
+    </div>
+    <p class="ville">Saint-Pierre</p>
+    
+      <a class="lien" href="http://h400cock0gs4so44g4csscc8.158.220.127.234.sslip.io" target="_blank" rel="noopener">
+        <span class="dom">h400cock0gs4so44g4csscc8.158.220.127.234.sslip.io</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"/><path d="M9 7h8v8"/></svg>
+      </a>
+    <p class="quoi">Site vitrine — pizzeria artisanale et pâtes fraîches, livraison</p>
+    
+    <p class="meta"><span>tonyPayetDev/pizza-shake-saint-pierre</span><span class="uuid">h400cock0gs4so44g4csscc8</span></p>
+  </article>
+  <article class="carte">
+    <div class="haut">
+      <h2>Pizzas Les Mascareignes</h2>
+      <span class="pastille ok"><i></i>en ligne · 200</span>
+    </div>
+    <p class="ville">Saint-Pierre</p>
+    
+      <a class="lien" href="http://iog00k0s8okc0wk0sgsg0wck.158.220.127.234.sslip.io" target="_blank" rel="noopener">
+        <span class="dom">iog00k0s8okc0wk0sgsg0wck.158.220.127.234.sslip.io</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"/><path d="M9 7h8v8"/></svg>
+      </a>
+    <p class="quoi">Site vitrine — pizzas artisanales, carte et livraison</p>
+    
+    <p class="meta"><span>tonyPayetDev/pizzas-les-mascareignes</span><span class="uuid">iog00k0s8okc0wk0sgsg0wck</span></p>
+  </article>
+  <article class="carte">
+    <div class="haut">
+      <h2>Plan B</h2>
+      <span class="pastille ok"><i></i>en ligne · 200</span>
+    </div>
+    <p class="ville">Saint-Denis</p>
+    
+      <a class="lien" href="http://hgkw4sgwwg4cg888wo4ggo4c.158.220.127.234.sslip.io" target="_blank" rel="noopener">
+        <span class="dom">hgkw4sgwwg4cg888wo4ggo4c.158.220.127.234.sslip.io</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"/><path d="M9 7h8v8"/></svg>
+      </a>
+    <p class="quoi">Site vitrine — burgers maison, carte et livraison</p>
+    
+    <p class="meta"><span>tonyPayetDev/planb-restaurant-burgers-saint-denis</span><span class="uuid">hgkw4sgwwg4cg888wo4ggo4c</span></p>
+  </article>
+  <article class="carte">
+    <div class="haut">
+      <h2>Sud Service Traiteur</h2>
+      <span class="pastille ok"><i></i>en ligne · 200</span>
+    </div>
+    <p class="ville">Saint-Pierre</p>
+    
+      <a class="lien" href="https://plats-frais-surgeles-saint-pierre.automatisationboost.com" target="_blank" rel="noopener">
+        <span class="dom">plats-frais-surgeles-saint-pierre.automatisationboost.com</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"/><path d="M9 7h8v8"/></svg>
+      </a>
+    <p class="quoi">Site vitrine — plats frais et surgelés préparés depuis 1987, livraison</p>
+    
+    <p class="meta"><span>tonyPayetDev/plats-frais-surgeles-saint-pierre</span><span class="uuid">oiz1h4opbawjglhdedjg95hp</span></p>
+  </article>
+  <article class="carte">
+    <div class="haut">
+      <h2>R'eat'Chy</h2>
+      <span class="pastille ok"><i></i>en ligne · 200</span>
+    </div>
+    <p class="ville">Saint-Pierre</p>
+    
+      <a class="lien" href="http://c8c8k4g880gcoc4ss08g8o44.158.220.127.234.sslip.io" target="_blank" rel="noopener">
+        <span class="dom">c8c8k4g880gcoc4ss08g8o44.158.220.127.234.sslip.io</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"/><path d="M9 7h8v8"/></svg>
+      </a>
+    <p class="quoi">Site vitrine + optimisation SEO — snack bar, sandwichs, salades, livraison</p>
+    
+    <p class="meta"><span>tonyPayetDev/reatchy-snackbar-optimisation</span><span class="uuid">c8c8k4g880gcoc4ss08g8o44</span></p>
+  </article>
+  <article class="carte">
+    <div class="haut">
+      <h2>Le Relais des Cimes</h2>
+      <span class="pastille ok"><i></i>en ligne · 200</span>
+    </div>
+    <p class="ville">Hell-Bourg, Salazie</p>
+    
+      <a class="lien" href="https://relais-des-cimes.automatisationboost.com" target="_blank" rel="noopener">
+        <span class="dom">relais-des-cimes.automatisationboost.com</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"/><path d="M9 7h8v8"/></svg>
+      </a>
+    <p class="quoi">Site vitrine — hôtel et restaurant, 29 chambres, réservation</p>
+    
+    <p class="meta"><span>tonyPayetDev/relais-des-cimes</span><span class="uuid">dr0uvrgz2jrop4qs0yrb2i9r</span></p>
+  </article>
+  <article class="carte">
+    <div class="haut">
+      <h2>Restaurant Coulée 77</h2>
+      <span class="pastille ok"><i></i>en ligne · 200</span>
+    </div>
+    <p class="ville">Piton Sainte-Rose</p>
+    
+      <a class="lien" href="http://d8swkc8c4sw8gkg4wwokwgww.158.220.127.234.sslip.io" target="_blank" rel="noopener">
+        <span class="dom">d8swkc8c4sw8gkg4wwokwgww.158.220.127.234.sslip.io</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"/><path d="M9 7h8v8"/></svg>
+      </a>
+    <p class="quoi">Site vitrine — cuisine créole authentique, carte et réservation</p>
+    <div class="variante">
+      <div class="haut"><p class="vlbl">Autre version</p><span class="pastille ok"><i></i>en ligne · 200</span></div>
+      <p class="vnote">version boutique</p>
+      
+      <a class="lien second" href="http://rcow80800so4cwocosgc4gsk.158.220.127.234.sslip.io" target="_blank" rel="noopener">
+        <span class="dom">rcow80800so4cwocosgc4gsk.158.220.127.234.sslip.io</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"/><path d="M9 7h8v8"/></svg>
+      </a>
+      <p class="meta"><span>boutique-restaurant-coulee77-com (dépôt via tunnel Cloudflare)</span><span class="uuid">rcow80800so4cwocosgc4gsk</span></p>
+    </div>
+    <p class="meta"><span>tonyPayetDev/restaurant-coulee77</span><span class="uuid">d8swkc8c4sw8gkg4wwokwgww</span></p>
+  </article>
+  <article class="carte">
+    <div class="haut">
+      <h2>Le Caritologue</h2>
+      <span class="pastille ok"><i></i>en ligne · 200</span>
+    </div>
+    <p class="ville">Saint-Pierre</p>
+    
+      <a class="lien" href="https://restaurant-creole-lecaritologue.automatisationboost.com" target="_blank" rel="noopener">
+        <span class="dom">restaurant-creole-lecaritologue.automatisationboost.com</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"/><path d="M9 7h8v8"/></svg>
+      </a>
+    <p class="quoi">Site vitrine — cuisine créole au feu de bois, carte, réservation, traiteur</p>
+    
+    <p class="meta"><span>tonyPayetDev/restaurant-creole-lecaritologue</span><span class="uuid">efv1mppgbfs1yunuu10edf4j</span></p>
+  </article>
+  <article class="carte">
+    <div class="haut">
+      <h2>Le Saint-Pierre (franco-portugais)</h2>
+      <span class="pastille ok"><i></i>en ligne · 200</span>
+    </div>
+    <p class="ville">Coulommiers</p>
+    
+      <a class="lien" href="http://hw84s44wkcw8o0ccow08wgs0.158.220.127.234.sslip.io" target="_blank" rel="noopener">
+        <span class="dom">hw84s44wkcw8o0ccow08wgs0.158.220.127.234.sslip.io</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"/><path d="M9 7h8v8"/></svg>
+      </a>
+    <p class="quoi">Site vitrine — cuisine franco-portugaise, menu du jour, réservation</p>
+    
+    <p class="meta"><span>tonyPayetDev/restaurant-franco-portugais-coulommiers</span><span class="uuid">hw84s44wkcw8o0ccow08wgs0</span></p>
+  </article>
+  <article class="carte">
+    <div class="haut">
+      <h2>La Fabrique</h2>
+      <span class="pastille ok"><i></i>en ligne · 200</span>
+    </div>
+    <p class="ville">Saint-Denis</p>
+    
+      <a class="lien" href="https://restaurant-la-fabrique-saint-denis.automatisationboost.com" target="_blank" rel="noopener">
+        <span class="dom">restaurant-la-fabrique-saint-denis.automatisationboost.com</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"/><path d="M9 7h8v8"/></svg>
+      </a>
+    <p class="quoi">Site vitrine — cuisine 100% locale et vin nature, réservation</p>
+    
+    <p class="meta"><span>tonyPayetDev/restaurant-la-fabrique-saint-denis</span><span class="uuid">uz6yylsj7qhbrakse73p5386</span></p>
+  </article>
+  <article class="carte">
+    <div class="haut">
+      <h2>La Parenthèse</h2>
+      <span class="pastille ok"><i></i>en ligne · 200</span>
+    </div>
+    <p class="ville">Saint-Gilles — Hôtel Latitude 21</p>
+    
+      <a class="lien" href="http://rk8gs088kk8cg8gwsk08kwo4.158.220.127.234.sslip.io" target="_blank" rel="noopener">
+        <span class="dom">rk8gs088kk8cg8gwsk08kwo4.158.220.127.234.sslip.io</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"/><path d="M9 7h8v8"/></svg>
+      </a>
+    <p class="quoi">Site vitrine — cuisine créole raffinée, carte et réservation</p>
+    <div class="variante">
+      <div class="haut"><p class="vlbl">Autre version</p><span class="pastille ok"><i></i>en ligne · 200</span></div>
+      <p class="vnote">2e version</p>
+      
+      <a class="lien second" href="http://jk0wkogwkg4kgcg48skwgcw0.158.220.127.234.sslip.io" target="_blank" rel="noopener">
+        <span class="dom">jk0wkogwkg4kgcg48skwgcw0.158.220.127.234.sslip.io</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"/><path d="M9 7h8v8"/></svg>
+      </a>
+      <p class="meta"><span>tonyPayetDev/restaurant-la-parenthese-saint-gilles</span><span class="uuid">jk0wkogwkg4kgcg48skwgcw0</span></p>
+    </div>
+    <p class="meta"><span>tonyPayetDev/restaurant-la-parenthese-latitude21</span><span class="uuid">rk8gs088kk8cg8gwsk08kwo4</span></p>
+  </article>
+  <article class="carte">
+    <div class="haut">
+      <h2>Restaurant La Piscine</h2>
+      <span class="pastille ok"><i></i>en ligne · 200</span>
+    </div>
+    <p class="ville">Melun</p>
+    
+      <a class="lien" href="http://us8o88ws04csg0gsgooocwc0.158.220.127.234.sslip.io" target="_blank" rel="noopener">
+        <span class="dom">us8o88ws04csg0gsgooocwc0.158.220.127.234.sslip.io</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"/><path d="M9 7h8v8"/></svg>
+      </a>
+    <p class="quoi">Site vitrine — restaurant au bord de la piscine, carte et réservation</p>
+    
+    <p class="meta"><span>tonyPayetDev/restaurant-la-piscine-melun</span><span class="uuid">us8o88ws04csg0gsgooocwc0</span></p>
+  </article>
+  <article class="carte">
+    <div class="haut">
+      <h2>Restaurant Le Bourg Murat</h2>
+      <span class="pastille ok"><i></i>en ligne · 200</span>
+    </div>
+    <p class="ville">La Plaine des Cafres</p>
+    
+      <a class="lien" href="https://restaurant-le-bourg-murat.automatisationboost.com" target="_blank" rel="noopener">
+        <span class="dom">restaurant-le-bourg-murat.automatisationboost.com</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"/><path d="M9 7h8v8"/></svg>
+      </a>
+    <p class="quoi">Site vitrine — cuisine créole et métropolitaine, réservation</p>
+    
+    <p class="meta"><span>tonyPayetDev/restaurant-le-bourg-murat</span><span class="uuid">uq8c4b29ssxh9jw6if0z3eak</span></p>
+  </article>
+  <article class="carte">
+    <div class="haut">
+      <h2>Salaisons de Bourbon</h2>
+      <span class="pastille ok"><i></i>en ligne · 200</span>
+    </div>
+    <p class="ville">Saint-Pierre</p>
+    
+      <a class="lien" href="https://salaisons-de-bourbon.automatisationboost.com" target="_blank" rel="noopener">
+        <span class="dom">salaisons-de-bourbon.automatisationboost.com</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"/><path d="M9 7h8v8"/></svg>
+      </a>
+    <p class="quoi">Site vitrine — charcuterie locale depuis 1973</p>
+    
+    <p class="meta"><span>tonyPayetDev/salaisons-de-bourbon</span><span class="uuid">s1w8cnq62kx8s0p8khae9mxt</span></p>
+  </article>
+  <article class="carte">
+    <div class="haut">
+      <h2>SMOK'EAT</h2>
+      <span class="pastille ok"><i></i>en ligne · 200</span>
+    </div>
+    <p class="ville">La Réunion</p>
+    
+      <a class="lien" href="https://smokehouse-reunion.automatisationboost.com" target="_blank" rel="noopener">
+        <span class="dom">smokehouse-reunion.automatisationboost.com</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"/><path d="M9 7h8v8"/></svg>
+      </a>
+    <p class="quoi">Site vitrine — smokehouse, spécialités fumées, livraison et traiteur</p>
+    
+    <p class="meta"><span>tonyPayetDev/smokehouse-reunion</span><span class="uuid">cewm85g5krqzpfnbya88hgw8</span></p>
+  </article>
+  <article class="carte">
+    <div class="haut">
+      <h2>Ti' Terre Sainte</h2>
+      <span class="pastille ok"><i></i>en ligne · 200</span>
+    </div>
+    <p class="ville">Terre Sainte, Saint-Pierre</p>
+    
+      <a class="lien" href="https://ti-terre-sainte-pizzeria.automatisationboost.com" target="_blank" rel="noopener">
+        <span class="dom">ti-terre-sainte-pizzeria.automatisationboost.com</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"/><path d="M9 7h8v8"/></svg>
+      </a>
+    <p class="quoi">Site vitrine — pizzeria au feu de bois, pâte au levain, livraison</p>
+    
+    <p class="meta"><span>tonyPayetDev/ti-terre-sainte-pizzeria</span><span class="uuid">gi8dixa19bn5r1amu4y1hotd</span></p>
+  </article>
+  <article class="carte">
+    <div class="haut">
+      <h2>Villa Fleurié</h2>
+      <span class="pastille ok"><i></i>en ligne · 200</span>
+    </div>
+    <p class="ville">Saint-Denis</p>
+    
+      <a class="lien" href="https://villa-fleurie-restaurant-seminaires.automatisationboost.com" target="_blank" rel="noopener">
+        <span class="dom">villa-fleurie-restaurant-seminaires.automatisationboost.com</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"/><path d="M9 7h8v8"/></svg>
+      </a>
+    <p class="quoi">Site vitrine — restaurant panoramique et séminaires, réservation</p>
+    
+    <p class="meta"><span>tonyPayetDev/villa-fleurie-restaurant-seminaires</span><span class="uuid">vpp79a15by7orgcxcpzldad8</span></p>
+  </article>
+</main>
+
+<section class="bloc-fin">
+  <h3>Pas encore en ligne</h3>
+  <p class="intro">Dossiers présents dans le dépôt, sans application Coolify : rien à ouvrir tant qu'ils ne sont pas déployés.</p>
+  <div class="attente"><b>Bateau Pirate</b><span>bateau-pirate-restaurant / restaurant-bateau-pirate</span></div>
+  <div class="attente"><b>La Kantine Traiteur</b><span>la-kantine-traiteur</span></div>
+  <div class="attente"><b>Pizza Di Muro (SEO)</b><span>pizza-di-muro-optimisation / pizza-di-muro-seo-optimisation</span></div>
+  <div class="attente"><b>Mam'Zelle Pizza (variante SEO)</b><span>mamzelle-pizza-optimisation</span></div>
+  <div class="attente"><b>L'Impériale / Kazumi (variante)</b><span>limperiale-kazumi-re</span></div>
+</section>
+
+<footer>
+  Source : API Coolify (applications réellement déployées) + test HTTP de chaque domaine avec anti-cache.<br>
+  Pastille verte = le domaine a répondu 200 avec la bonne page. Orange = le domaine répond mais sert une page vide.
+</footer>
+</div>
+
+<script>
+(function(){
+  var LIENS = "Boulangerie Le Mamita — https://boulangerie-le-mamita.automatisationboost.com\nBy Glad Café — https://bygladcafe-optimisation-seo.automatisationboost.com\nCassava — http://xc080o4cw4sgcowsw84g4w8c.158.220.127.234.sslip.io\nLe Gourmand — https://contact-le-gourmand.automatisationboost.com\nDalilo Pizza — http://sow0k8ss00cwsgs8g88okwkc.158.220.127.234.sslip.io\nDan CaKe — http://pogc8coc08skgk0owc0skoko.158.220.127.234.sslip.io\nGiulietta — https://giulietta-pizzeria-saint-pierre.automatisationboost.com\nLa Guinguette du Grand Morin — http://lk4o4cc0ok0oggo08gsgsggo.158.220.127.234.sslip.io\nK'Mila Pizza — https://kmila-pizza-reunion.automatisationboost.com\nL'Andalouse — https://l-andalouse-saint-joseph.automatisationboost.com\nLa Casa Blanca — https://la-casa-blanca.automatisationboost.com\nLa Kaz de Ben — http://r8wc4wwg8w0o48g8cgo88k8k.158.220.127.234.sslip.io\nLaCaseARepas — http://oowsg0w8c8s8wkccg8c4osc0.158.220.127.234.sslip.io\nLa Gare Brasserie — https://lagare-brasserie-optimisation-seo.automatisationboost.com\nL'Atelier de Ben — http://k00so4gwooo4s040gc8okc0o.158.220.127.234.sslip.io\nL'Atelier Traiteur — https://latelier-traiteur-reunion.automatisationboost.com\nLe BàO — https://le-bao-restaurant-saint-pierre-974.automatisationboost.com\nLe Bistrot de Saint Paul — http://rc44484084oos04888c4g0gc.158.220.127.234.sslip.io\nLe Bonbon de Pain — Snack Atchia — http://d4ssokgwcksokc4ckcsokkok.158.220.127.234.sslip.io\nLe Glacier de Marie B — https://le-glacier-de-marie-b.automatisationboost.com\nLe Relais Commerson — http://xws8w0wss4sk00wggocc4g0c.158.220.127.234.sslip.io\nLe So'Met By Nono — https://le-somet-by-nono.automatisationboost.com\nLe786 — http://xcgcwkwkw00o0ooc8c8o88cg.158.220.127.234.sslip.io\nLes Brillantes Gorgées — http://a8g80g8kw04gsw0kksgwc0w4.158.220.127.234.sslip.io\nL'Impériale Pizzéria & Kazumi Sushi — http://c8og44sow8ogso8o8wo4w0kc.158.220.127.234.sslip.io\nMama Betty — http://nswks4o8088k040ogo4cg80k.158.220.127.234.sslip.io\nMam'Zelle Pizza — https://mamzelle-pizza-ile-reunion.automatisationboost.com\nMediterraneo — https://mediterraneo-restaurant-italien-saint-denis.automatisationboost.com\nMétisse Réception — https://metisse-reception-saint-pierre.automatisationboost.com\nMIO Pizza — https://mio-pizza-la-reunion.automatisationboost.com\nO Métis S by MétisSage — http://psoosgw00cgooss8wkkss4co.158.220.127.234.sslip.io\nOncle Sam — http://xs8kc80ossgc8sgkskk0sw8k.158.220.127.234.sslip.io\nPizza Club — https://pizza-club-saint-pierre.automatisationboost.com\nPizza E Basta — http://u0wcs84s0wwwc8c484wsc40g.158.220.127.234.sslip.io\nPizza & Shake — http://h400cock0gs4so44g4csscc8.158.220.127.234.sslip.io\nPizzas Les Mascareignes — http://iog00k0s8okc0wk0sgsg0wck.158.220.127.234.sslip.io\nPlan B — http://hgkw4sgwwg4cg888wo4ggo4c.158.220.127.234.sslip.io\nSud Service Traiteur — https://plats-frais-surgeles-saint-pierre.automatisationboost.com\nR'eat'Chy — http://c8c8k4g880gcoc4ss08g8o44.158.220.127.234.sslip.io\nLe Relais des Cimes — https://relais-des-cimes.automatisationboost.com\nRestaurant Coulée 77 — http://d8swkc8c4sw8gkg4wwokwgww.158.220.127.234.sslip.io\nLe Caritologue — https://restaurant-creole-lecaritologue.automatisationboost.com\nLe Saint-Pierre (franco-portugais) — http://hw84s44wkcw8o0ccow08wgs0.158.220.127.234.sslip.io\nLa Fabrique — https://restaurant-la-fabrique-saint-denis.automatisationboost.com\nLa Parenthèse — http://rk8gs088kk8cg8gwsk08kwo4.158.220.127.234.sslip.io\nRestaurant La Piscine — http://us8o88ws04csg0gsgooocwc0.158.220.127.234.sslip.io\nRestaurant Le Bourg Murat — https://restaurant-le-bourg-murat.automatisationboost.com\nSalaisons de Bourbon — https://salaisons-de-bourbon.automatisationboost.com\nSMOK'EAT — https://smokehouse-reunion.automatisationboost.com\nTi' Terre Sainte — https://ti-terre-sainte-pizzeria.automatisationboost.com\nVilla Fleurié — https://villa-fleurie-restaurant-seminaires.automatisationboost.com";
+
+  function fallbackCopy(text){
+    var ta=document.createElement('textarea');
+    ta.value=text;
+    ta.setAttribute('readonly','');
+    ta.style.position='fixed';ta.style.top='0';ta.style.left='0';ta.style.opacity='0';ta.style.pointerEvents='none';
+    document.body.appendChild(ta);
+    ta.focus();ta.select();
+    try{ta.setSelectionRange(0,text.length);}catch(e){}
+    var ok=false;
+    try{ok=document.execCommand('copy');}catch(e){ok=false;}
+    document.body.removeChild(ta);
+    return ok;
+  }
+
+  function copyText(text){
+    if(navigator.clipboard&&navigator.clipboard.writeText){
+      return navigator.clipboard.writeText(text).then(function(){return true;}).catch(function(){return fallbackCopy(text);});
+    }
+    return Promise.resolve(fallbackCopy(text));
+  }
+
+  function flash(btn){
+    var span=btn.querySelector('span');
+    if(btn.dataset.busy==='1')return;
+    btn.dataset.busy='1';
+    var old=span.textContent;
+    span.textContent='Copié ✓';
+    btn.classList.add('ok');
+    setTimeout(function(){span.textContent=old;btn.classList.remove('ok');btn.dataset.busy='';},1500);
+  }
+
+  var tout=document.getElementById('tout');
+  if(tout){
+    tout.addEventListener('click',function(){
+      var btn=this;
+      copyText(LIENS).then(function(){flash(btn);});
+    });
+  }
+})();
+</script>
+</body>
+</html>

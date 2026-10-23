@@ -1,0 +1,352 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>5 choses à automatiser dès aujourd'hui avec l'IA — AutomatisationBoost</title>
+<style>
+:root{
+  --bg:#0a0a0f;--carte:#121218;--bord:#242430;--txt:#EDEDED;--mut:#9A9AA6;
+  --jaune:#FFE600;--violet:#A855F7;--pre:#0d0d13;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--txt);
+  font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  -webkit-font-smoothing:antialiased;overflow-x:hidden}
+body{line-height:1.5;font-size:16px}
+main{max-width:640px;margin:0 auto;padding:28px 16px 48px}
+
+/* header */
+.hdr{margin-bottom:28px}
+.tag{display:inline-block;font-size:12px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--jaune);border:1px solid var(--jaune);border-radius:999px;padding:5px 12px;margin-bottom:14px}
+h1{font-size:clamp(28px,7.5vw,40px);line-height:1.08;margin:0 0 10px;letter-spacing:-.02em;font-weight:800}
+h1 em{font-style:normal;color:var(--jaune)}
+.sub{color:var(--mut);font-size:15px;margin:0 0 16px}
+.promo{background:var(--carte);border:1px solid var(--bord);border-left:3px solid var(--violet);
+  border-radius:12px;padding:12px 14px;font-size:14.5px;line-height:1.45}
+.promo a{color:var(--violet);font-weight:700;text-decoration:none;word-break:break-word}
+.promo a:active,.promo a:hover{text-decoration:underline}
+.how{color:var(--mut);font-size:13.5px;margin:16px 0 0}
+
+/* cards */
+.carte{background:var(--carte);border:1px solid var(--bord);border-radius:16px;padding:18px 16px 16px;margin:0 0 18px;
+  position:relative;overflow:hidden}
+.carte::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--acc)}
+.carte.j{--acc:var(--jaune);--acc-txt:#0a0a0f}
+.carte.v{--acc:var(--violet);--acc-txt:#fff}
+.num{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:10px;
+  background:var(--acc);color:var(--acc-txt);font-weight:800;font-size:16px;margin-bottom:10px}
+h2{font-size:22px;line-height:1.15;margin:0 0 8px;letter-spacing:-.01em;font-weight:800}
+.hook{font-size:15px;margin:0 0 12px;color:var(--txt)}
+.att{font-size:14px;margin:0 0 14px;padding:10px 12px;background:rgba(255,255,255,.03);border-radius:10px;border:1px dashed var(--bord)}
+.att b{color:var(--acc)}
+.etapes{font-size:14px;color:var(--txt);margin:0 0 14px;padding:0 0 0 0;list-style:none;counter-reset:e}
+.etapes li{position:relative;padding-left:28px;margin:0 0 8px;counter-increment:e}
+.etapes li::before{content:counter(e);position:absolute;left:0;top:1px;width:20px;height:20px;border-radius:6px;
+  border:1px solid var(--acc);color:var(--acc);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.lbl{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--mut);margin:0 0 6px;display:flex;justify-content:space-between;align-items:center}
+pre{margin:0;background:var(--pre);border:1px solid var(--bord);border-radius:12px;padding:14px;
+  font:13px/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:#D6D6DE;
+  white-space:pre-wrap;word-break:break-word;overflow:auto;max-height:340px;-webkit-overflow-scrolling:touch}
+pre::-webkit-scrollbar{width:6px}pre::-webkit-scrollbar-thumb{background:var(--bord);border-radius:6px}
+
+/* buttons */
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:48px;margin-top:12px;
+  border:0;border-radius:12px;background:var(--acc);color:var(--acc-txt);font:700 16px/1 inherit;font-family:inherit;
+  cursor:pointer;-webkit-tap-highlight-color:transparent;transition:transform .08s ease,filter .15s ease;touch-action:manipulation}
+.btn:active{transform:scale(.98);filter:brightness(1.1)}
+.btn.ok{background:#3ED37B;color:#0a0a0f}
+.btn svg{width:18px;height:18px;flex:none}
+.tout{--acc:var(--txt);--acc-txt:#0a0a0f;background:var(--txt);margin-top:6px;min-height:52px}
+.foot{text-align:center;color:var(--mut);font-size:13px;margin:26px 0 0;line-height:1.6}
+.foot a{color:var(--jaune);text-decoration:none;font-weight:700}
+</style>
+</head>
+<body>
+<main>
+  <header class="hdr">
+    <span class="tag">Ressource gratuite</span>
+    <h1>5 choses à automatiser <em>dès aujourd'hui</em> avec l'IA</h1>
+    <p class="sub">5 projets · 10 min chacun · 0 compétence technique</p>
+    <div class="promo">Tu veux que ça tourne tout seul, branché sur tes vrais outils ? → <a href="https://automatisationboost.com/">automatisationboost.com</a></div>
+    <p class="how">Chaque carte : ce que tu obtiens, 3 étapes, et LE prompt à coller dans Claude ou ChatGPT. Appuie sur <b>Copier</b>, colle, c'est parti.</p>
+  </header>
+
+  <!-- 1 -->
+  <section class="carte j" id="c1">
+    <span class="num">1</span>
+    <h2>La boîte mail qui se trie</h2>
+    <p class="hook">Tu ouvres Gmail le matin et tu n'as pas 47 mails : tu as une liste de 3 urgences, des brouillons déjà prêts, et un résumé qui se lit en 60 secondes.</p>
+    <p class="att"><b>Ce qui atterrit :</b> chaque matin, tes mails classés par urgence, des brouillons de réponse dans Gmail, et un résumé de 60 s.</p>
+    <ol class="etapes">
+      <li>Copie le prompt ci-dessous dans Claude ou ChatGPT.</li>
+      <li>Colle-lui les mails de la nuit (ou connecte Gmail si ton outil le permet).</li>
+      <li>Lis le résumé, ouvre les brouillons, envoie ceux qui te conviennent. Refais-le demain.</li>
+    </ol>
+    <div class="lbl"><span>Le prompt</span><span>Claude · ChatGPT</span></div>
+<pre id="p1">Tu es mon assistant de boîte mail. Chaque matin, tu prends tous les mails que je te donne et tu me rends une seule chose : un plan de réponse que je peux exécuter en 10 minutes.
+
+ÉTAPES
+1. Lis chaque mail et classe-le dans une seule case : URGENT (réponse attendue aujourd'hui, argent, client, deadline), À TRAITER (réponse dans la semaine), INFO (rien à faire, juste à savoir), BRUIT (newsletter, pub, notification).
+2. Pour chaque mail URGENT et À TRAITER, rédige un brouillon de réponse complet, prêt à envoyer, dans mon ton (direct, poli, court, tutoiement si l'expéditeur me tutoie).
+3. Écris un résumé du matin qui se lit en 60 secondes : 3 phrases maximum par catégorie, en commençant par les urgences.
+4. Termine par la liste des mails BRUIT que je peux archiver d'un coup, sans les ouvrir.
+
+RÈGLES
+- Ne réponds jamais à ma place à une question d'argent ou d'engagement : rédige le brouillon, mais mets [À VALIDER] devant.
+- Si un mail te manque du contexte, dis-le en une ligne au lieu d'inventer.
+- Ne dépasse jamais 120 mots par brouillon.
+- Un mail = une seule case. Pas de doublon.
+
+FORMAT DE SORTIE
+## Résumé du matin (60 s)
+…
+## Urgent — brouillons prêts
+**De : [expéditeur] — Objet : [objet]**
+[brouillon]
+## À traiter — brouillons prêts
+…
+## Info
+- [une ligne par mail]
+## À archiver
+- [expéditeur — objet]
+
+Voici mes mails :</pre>
+    <button class="btn" data-copy="p1" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><span>Copier le prompt</span></button>
+  </section>
+
+  <!-- 2 -->
+  <section class="carte v" id="c2">
+    <span class="num">2</span>
+    <h2>Le carnet de bord automatique</h2>
+    <p class="hook">À 18 h, tu as l'impression d'avoir couru toute la journée sans savoir quoi. Ce prompt te sort la vraie liste, datée, en 2 minutes.</p>
+    <p class="att"><b>Ce qui atterrit :</b> chaque soir, une note datée de ce que tu as vraiment accompli, prête à être rangée dans Notion, Obsidian ou un simple dossier.</p>
+    <ol class="etapes">
+      <li>Le soir, colle le prompt puis vide ta tête : messages envoyés, réunions, tâches cochées, brouillon de mémoire, en vrac.</li>
+      <li>L'IA trie ce qui est fait, ce qui est en cours, ce qui a bloqué.</li>
+      <li>Copie la note dans ton carnet. Après 5 jours tu as une vraie semaine sous les yeux.</li>
+    </ol>
+    <div class="lbl"><span>Le prompt</span><span>Claude · ChatGPT</span></div>
+<pre id="p2">Tu es mon carnet de bord. Chaque soir, je te donne ma journée en vrac (messages, réunions, tâches, ce qui me reste en tête) et tu la transformes en une note datée, honnête et courte.
+
+ÉTAPES
+1. Repère ce qui a été réellement TERMINÉ aujourd'hui (une action finie, un livrable envoyé, une décision prise). Pas ce que j'ai « avancé », pas ce que j'ai « regardé ».
+2. Sépare ensuite ce qui est EN COURS (commencé, pas fini) et ce qui a BLOQUÉ (attente d'une réponse, problème technique, manque de temps).
+3. Repère 1 chose que j'ai apprise ou comprise aujourd'hui, même minuscule.
+4. Propose LA priorité de demain matin : une seule, choisie parmi ce qui est en cours ou bloqué.
+
+RÈGLES
+- Ne gonfle jamais la journée. Si j'ai peu fait, la note est courte, et c'est normal.
+- Reformule en phrases d'action au passé : « Envoyé le devis à X », pas « Devis ».
+- Aucun jugement, aucun encouragement, aucune émotion. Des faits.
+- Date du jour en tête, format JJ/MM/AAAA.
+- 150 mots maximum au total.
+
+FORMAT DE SORTIE
+# Carnet — [date]
+## Fait
+- …
+## En cours
+- …
+## Bloqué
+- … (par quoi / par qui)
+## Appris
+- …
+## Demain matin
+- [une seule priorité]
+
+Voici ma journée :</pre>
+    <button class="btn" data-copy="p2" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><span>Copier le prompt</span></button>
+  </section>
+
+  <!-- 3 -->
+  <section class="carte j" id="c3">
+    <span class="num">3</span>
+    <h2>Le ménage du vendredi</h2>
+    <p class="hook">Ton dossier Téléchargements, c'est 400 fichiers dont tu ne sais plus rien. Le vendredi, l'IA te sort le plan de rangement et le script pour l'appliquer.</p>
+    <p class="att"><b>Ce qui atterrit :</b> chaque fin de semaine, ton dossier Téléchargements rangé par type et par date, les doublons repérés, sans rien supprimer sans ton accord.</p>
+    <ol class="etapes">
+      <li>Ouvre ton dossier Téléchargements, sélectionne tout, copie les noms de fichiers (ou fais une capture d'écran de la liste).</li>
+      <li>Colle le prompt + la liste. L'IA te rend le plan de rangement et un petit script prêt à lancer (Mac ou Windows).</li>
+      <li>Lance le script. La semaine prochaine, même geste, 2 minutes.</li>
+    </ol>
+    <div class="lbl"><span>Le prompt</span><span>Claude · ChatGPT</span></div>
+<pre id="p3">Tu es mon agent de rangement. Chaque vendredi, je te donne la liste des fichiers de mon dossier Téléchargements et tu me rends un plan de rangement clair, puis le script qui l'applique.
+
+ÉTAPES
+1. Classe chaque fichier dans un sous-dossier selon son type : Documents (pdf, docx, xlsx…), Images, Vidéos, Audio, Archives (zip, rar), Installeurs (dmg, exe, pkg), Captures d'écran, Autres.
+2. Dans chaque sous-dossier, regroupe par mois : AAAA-MM.
+3. Repère les doublons probables (même nom avec « (1) », « copie », même taille) et les fichiers de plus de 6 mois jamais renommés : liste-les à part, sans rien supprimer.
+4. Écris le script qui crée les dossiers et déplace les fichiers. Demande-moi d'abord : Mac (zsh) ou Windows (PowerShell) ?
+
+RÈGLES
+- Tu DÉPLACES, tu ne supprimes jamais. La suppression, c'est moi, à la main, sur ta liste.
+- Le script doit être lisible ligne par ligne, avec un commentaire par bloc.
+- Si un nom de fichier est ambigu, mets-le dans « Autres » plutôt que de deviner.
+- Avant le script, affiche le plan en tableau pour que je valide.
+
+FORMAT DE SORTIE
+## Plan de rangement
+| Fichier | Destination |
+|---|---|
+## À vérifier (doublons / vieux fichiers)
+- …
+## Script
+```
+[script complet]
+```
+
+Voici la liste de mes fichiers :</pre>
+    <button class="btn" data-copy="p3" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><span>Copier le prompt</span></button>
+  </section>
+
+  <!-- 4 -->
+  <section class="carte v" id="c4">
+    <span class="num">4</span>
+    <h2>Le veilleur personnel</h2>
+    <p class="hook">Tu scrolles LinkedIn 40 minutes pour « rester informé » et tu retiens rien. Un veilleur qui lit à ta place et te rend 5 lignes, ça change tout.</p>
+    <p class="att"><b>Ce qui atterrit :</b> un résumé régulier de l'actualité de ton secteur, 5 points, avec pour chacun « et pour moi, ça change quoi ».</p>
+    <ol class="etapes">
+      <li>Remplis les 3 crochets du prompt : ton secteur, ton métier, tes 3 sources préférées.</li>
+      <li>Lance-le dans un outil avec recherche web activée (Claude ou ChatGPT, mode recherche).</li>
+      <li>Le lundi et le jeudi, même prompt. Garde les résumés : c'est ta base de contenu.</li>
+    </ol>
+    <div class="lbl"><span>Le prompt</span><span>Claude · ChatGPT</span></div>
+<pre id="p4">Tu es mon veilleur personnel. Ton secteur de veille : [TON SECTEUR]. Mon métier : [TON MÉTIER]. Mes sources de confiance : [SOURCE 1], [SOURCE 2], [SOURCE 3].
+
+ÉTAPES
+1. Cherche les nouveautés des 7 derniers jours dans ce secteur : annonces, lancements, changements de règles, chiffres marquants, gros débats.
+2. Garde uniquement les 5 informations qui ont un impact réel sur quelqu'un qui fait mon métier. Écarte les rumeurs et les articles qui répètent une même annonce.
+3. Pour chaque info : une ligne de fait (avec la date et la source), puis une ligne « Pour moi, ça change : … » écrite depuis mon point de vue.
+4. Termine par UNE action concrète à faire cette semaine, tirée de ce que tu as trouvé.
+
+RÈGLES
+- Chaque info doit avoir une source vérifiable (lien ou nom du média + date). Sans source, tu ne la gardes pas.
+- Ne mets pas « il est important de » ni « dans un monde en constante évolution ». Des faits, du concret.
+- Si une semaine est calme, dis-le et rends moins de 5 points. Ne remplis pas pour remplir.
+- 200 mots maximum au total.
+
+FORMAT DE SORTIE
+# Veille [secteur] — semaine du [date]
+1. **[titre court]** — [fait, source, date]
+   → Pour moi, ça change : …
+2. …
+## Action de la semaine
+- …</pre>
+    <button class="btn" data-copy="p4" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><span>Copier le prompt</span></button>
+  </section>
+
+  <!-- 5 -->
+  <section class="carte j" id="c5">
+    <span class="num">5</span>
+    <h2>Le brief avant réunion</h2>
+    <p class="hook">Arriver en rendez-vous en ayant oublié le prénom du client et ce qu'on s'est dit la dernière fois, c'est fini. 3 minutes avant, tu as ta fiche.</p>
+    <p class="att"><b>Ce qui atterrit :</b> avant chaque rendez-vous, une fiche d'une page : qui, pourquoi, ce qu'on s'est dit, ce que tu veux obtenir, et les 3 questions à poser.</p>
+    <ol class="etapes">
+      <li>Colle le prompt, puis l'invitation du rendez-vous et les derniers échanges (mails, messages, notes).</li>
+      <li>L'IA te rend la fiche. Lis-la dans l'ascenseur.</li>
+      <li>Après la réunion, colle tes notes : elle prépare déjà le brief du prochain rendez-vous.</li>
+    </ol>
+    <div class="lbl"><span>Le prompt</span><span>Claude · ChatGPT</span></div>
+<pre id="p5">Tu es mon préparateur de réunion. Avant chaque rendez-vous, je te donne l'invitation et tout ce que j'ai comme historique (mails, messages, notes, site de la personne) et tu me rends une fiche d'une page que je lis en 3 minutes.
+
+ÉTAPES
+1. Identifie qui je vois : nom, rôle, entreprise, ce qu'elle fait, et comment on s'est connus si l'historique le dit.
+2. Résume ce qu'on s'est déjà dit : les engagements pris de chaque côté, les points restés ouverts, les chiffres évoqués (prix, délais, volumes).
+3. Déduis le but probable de CE rendez-vous et écris l'objectif que je devrais viser : une phrase, mesurable (une décision, une date, un oui).
+4. Prépare 3 questions à poser, ordonnées de la plus ouverte à la plus engageante, et 1 objection probable avec ma réponse.
+
+RÈGLES
+- Tout ce que tu ne trouves pas dans ce que je t'ai donné, tu l'écris « inconnu ». Tu n'inventes pas de contexte.
+- Cite les dates des échanges précédents pour que je puisse dire « le 12, vous m'aviez dit… ».
+- Pas de conseil de posture (« soyez confiant »). De l'information, des questions, un objectif.
+- 250 mots maximum.
+
+FORMAT DE SORTIE
+# Brief — [personne] — [date du RDV]
+**Qui :** …
+**Contexte :** …
+## Ce qu'on s'est dit
+- [date] — …
+## Objectif de ce rendez-vous
+- …
+## 3 questions
+1. …
+2. …
+3. …
+## Objection probable → ma réponse
+- …
+
+Voici l'invitation et l'historique :</pre>
+    <button class="btn" data-copy="p5" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><span>Copier le prompt</span></button>
+  </section>
+
+  <button class="btn tout" id="tout" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><span>Tout copier (les 5 prompts)</span></button>
+
+  <p class="foot">Ces prompts marchent à la main dans Claude ou ChatGPT. La version qui tourne toute seule, chaque matin ou chaque vendredi sans que tu y penses, passe par les tâches planifiées de ton outil (option payante sur Claude comme sur ChatGPT) ou par un workflow n8n branché sur ta vraie boîte mail, ton vrai agenda, tes vrais fichiers. C'est ce que je construis : <a href="https://automatisationboost.com/">automatisationboost.com</a></p>
+</main>
+
+<script>
+(function(){
+  'use strict';
+  var TITRES={p1:'1. La boîte mail qui se trie',p2:'2. Le carnet de bord automatique',p3:'3. Le ménage du vendredi',p4:'4. Le veilleur personnel',p5:'5. Le brief avant réunion'};
+
+  function fallbackCopy(text){
+    var ta=document.createElement('textarea');
+    ta.value=text;
+    ta.setAttribute('readonly','');
+    ta.style.position='fixed';ta.style.top='0';ta.style.left='0';ta.style.opacity='0';ta.style.pointerEvents='none';
+    document.body.appendChild(ta);
+    ta.focus();ta.select();
+    try{ta.setSelectionRange(0,text.length);}catch(e){}
+    var ok=false;
+    try{ok=document.execCommand('copy');}catch(e){ok=false;}
+    document.body.removeChild(ta);
+    return ok;
+  }
+
+  function copyText(text){
+    if(navigator.clipboard&&navigator.clipboard.writeText){
+      return navigator.clipboard.writeText(text).then(function(){return true;}).catch(function(){return fallbackCopy(text);});
+    }
+    return Promise.resolve(fallbackCopy(text));
+  }
+
+  function flash(btn){
+    var span=btn.querySelector('span');
+    if(btn.dataset.busy==='1')return;
+    btn.dataset.busy='1';
+    var old=span.textContent;
+    span.textContent='Copié ✓';
+    btn.classList.add('ok');
+    setTimeout(function(){span.textContent=old;btn.classList.remove('ok');btn.dataset.busy='';},1500);
+  }
+
+  var btns=document.querySelectorAll('.btn[data-copy]');
+  for(var i=0;i<btns.length;i++){
+    btns[i].addEventListener('click',function(){
+      var btn=this;
+      var pre=document.getElementById(btn.getAttribute('data-copy'));
+      if(!pre)return;
+      copyText(pre.textContent).then(function(){flash(btn);});
+    });
+  }
+
+  var tout=document.getElementById('tout');
+  if(tout){
+    tout.addEventListener('click',function(){
+      var parts=[];
+      for(var k in TITRES){
+        var pre=document.getElementById(k);
+        if(pre)parts.push('=== '+TITRES[k]+' ===\n\n'+pre.textContent);
+      }
+      var btn=this;
+      copyText(parts.join('\n\n\n')).then(function(){flash(btn);});
+    });
+  }
+})();
+</script>
+</body>
+</html>

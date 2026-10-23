@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prévisualisation — combat-beatsync</title>
+<style>
+  :root{ --bg:#0a0a0f; --panel:#111117; --border:#242430; --neon-yellow:#f5d90a; --neon-purple:#a855f7; --neon-orange:#ff7a1a; --text:#f2f2f5; --muted:#9a9aa8; }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;padding:2rem 1rem 4rem}
+  .wrap{max-width:480px;margin:0 auto}
+  a.back{color:var(--muted);font-size:.8rem;text-decoration:none;display:inline-block;margin-bottom:1rem}
+  header{text-align:center;margin-bottom:2rem}
+  header h1{font-size:1.4rem;margin:0 0 .3rem;background:linear-gradient(90deg,var(--neon-yellow),var(--neon-orange));-webkit-background-clip:text;background-clip:text;color:transparent}
+  header p{color:var(--muted);font-size:.85rem;margin:0}
+  .card{background:var(--panel);border:1px solid var(--border);border-radius:16px;overflow:hidden;box-shadow:0 0 0 1px rgba(245,217,10,.06),0 20px 60px -20px rgba(168,85,247,.35);margin-bottom:1.5rem}
+  .card-head{padding:1rem 1.2rem .8rem;display:flex;justify-content:space-between;align-items:center;gap:.5rem}
+  .badge{font-size:.7rem;font-weight:600;padding:.25rem .6rem;border-radius:999px;background:rgba(245,217,10,.12);color:var(--neon-yellow);border:1px solid rgba(245,217,10,.3);white-space:nowrap}
+  .card-head h2{font-size:1rem;margin:0;font-weight:600}
+  video{display:block;width:100%;aspect-ratio:9/16;background:#000}
+  .meta{padding:1rem 1.2rem 1.3rem;border-top:1px solid var(--border);font-size:.8rem;color:#c9c9d4;line-height:1.7}
+  .meta b{color:var(--neon-yellow)}
+  .fix{padding:1rem 1.2rem 1.3rem;border-top:1px solid var(--border);font-size:.8rem;color:#c9c9d4;line-height:1.65}
+  .fix h3{margin:0 0 .5rem;font-size:.82rem;color:var(--neon-orange);letter-spacing:.02em}
+  .fix b{color:var(--neon-yellow)}
+  .grid{padding:0 1.2rem 1.3rem;font-size:.72rem;color:#c9c9d4}
+  .grid table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
+  .grid th,.grid td{text-align:left;padding:.28rem .3rem;border-bottom:1px solid rgba(36,36,48,.8)}
+  .grid th{color:var(--neon-purple);font-weight:600}
+  .grid td.ok{color:#4ade80}
+  .grid td.soft{color:var(--muted)}
+  .note{margin:0 1.2rem 1.3rem;padding:.9rem 1rem;border-radius:12px;background:rgba(168,85,247,.08);border:1px solid rgba(168,85,247,.3);font-size:.76rem;line-height:1.6;color:#e2d4ff}
+  .note b{color:var(--neon-purple)}
+  footer{text-align:center;margin-top:2rem;font-size:.75rem;color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="/">← Toutes les vidéos</a>
+  <header>
+    <h1>Combat Beat-Sync</h1>
+    <p>v4 — plan entier (dézoomé) · un impact toutes les 2 s</p>
+  </header>
+
+  <div class="card">
+    <div class="card-head">
+      <h2>Rendu final</h2>
+      <span class="badge">⏳ À valider</span>
+    </div>
+    <video src="https://assets.automatisationboost.com/previsualisation/combat-beatsync/video.mp4" poster="cover.jpg" controls playsinline loop></video>
+    <div class="meta">
+      Durée <b>17,03 s</b> · Poids <b>12 Mo</b> · Format <b>1080×1920</b> · <b>60 fps</b> · 1022 frames<br>
+      <b>BPM mesuré 114,5</b> (beat 0,524 s) · <b>7 impacts</b> espacés de <b>2,096 s</b> · <b>16 plans</b><br>
+      Coût : <b>0 crédit Higgsfield · 0 $ WaveSpeed</b> — 100 % réutilisation des rushes existants
+    </div>
+
+    <div class="fix">
+      <h3>Correction 1 — « on ne voit pas les combats »</h3>
+      L'ancien montage recadrait le 1280×720 en 9:16, soit un zoom <b>×2,7</b> qui coupait les corps.
+      Le recadrage est supprimé : le plan est désormais affiché <b>ENTIER</b>, mis à l'échelle sur la
+      largeur (1080×608) et centré verticalement. Les bandes haut/bas ne sont ni noires ni vides —
+      elles sont remplies par <b>le même plan, flouté et agrandi</b> (backdrop blur), avec un gamma
+      relevé pour que les rushes de nuit ne retombent pas en bandes noires.<br><br>
+      Le mouvement est conservé mais bridé : push-in / pull-out de <b>1,00 → 1,06 max</b> (≤ 2,5 %
+      de rognage sur les bords), et le shake d'impact est <b>vertical en priorité</b> (656 px de marge
+      au-dessus et en dessous ⇒ aucun corps ne peut sortir du cadre).
+      <b>Vérifié sur frames extraites</b> : les deux combattants sont visibles en entier sur les 7 impacts.
+    </div>
+
+    <div class="fix">
+      <h3>Correction 2 — un coup toutes les 2 secondes</h3>
+      Avant : un impact tous les <b>2 temps (1,048 s)</b>. Maintenant : un impact tous les
+      <b>4 temps</b>. À 114,5 BPM cela fait <b>2,096 s</b> — c'est le multiple propre le plus proche
+      de 2 s (3 temps = 1,572 s, 5 temps = 2,620 s). 2,000 s pile aurait dérivé du beat et sonné faux.<br><br>
+      Chaque grille tombe à moins de <b>50 ms</b> d'un onset réellement mesuré dans la piste.
+      Entre deux impacts, un <b>cut doux</b> (sans flash, sans shake, sans SFX) porte l'élan et
+      l'approche pour éviter les 2 s de plan statique, plus un <b>whoosh d'élan</b> 0,42 s avant
+      chaque coup. Freeze de 2 à 4 frames sur les impacts les plus gros.
+    </div>
+
+    <div class="grid">
+      <table>
+        <tr><th>Temps</th><th>Effet</th><th>Luminance</th></tr>
+        <tr><td>1,312 s</td><td class="soft">cut doux (amorce)</td><td class="soft">80</td></tr>
+        <tr><td><b>2,367 s</b> — drop</td><td>flash + shake + freeze 2f + SFX</td><td class="ok">255 ✓</td></tr>
+        <tr><td>3,400 s</td><td class="soft">cut doux</td><td class="soft">122</td></tr>
+        <tr><td><b>4,450 s</b></td><td>flash + shake + freeze 3f + SFX</td><td class="ok">255 ✓</td></tr>
+        <tr><td>5,500 s</td><td class="soft">cut doux</td><td class="soft">105</td></tr>
+        <tr><td><b>6,550 s</b></td><td>flash + shake + freeze 2f + SFX</td><td class="ok">255 ✓</td></tr>
+        <tr><td>7,600 s</td><td class="soft">cut doux</td><td class="soft">80</td></tr>
+        <tr><td><b>8,650 s</b></td><td>flash + shake + freeze 2f + SFX</td><td class="ok">254 ✓</td></tr>
+        <tr><td>9,700 s</td><td class="soft">cut doux</td><td class="soft">114</td></tr>
+        <tr><td><b>10,750 s</b></td><td>flash + shake + freeze 2f + SFX</td><td class="ok">255 ✓</td></tr>
+        <tr><td>11,800 s</td><td class="soft">cut doux</td><td class="soft">102</td></tr>
+        <tr><td><b>12,833 s</b></td><td>flash + shake + freeze 2f + SFX</td><td class="ok">255 ✓</td></tr>
+        <tr><td>13,883 s</td><td class="soft">cut doux</td><td class="soft">84</td></tr>
+        <tr><td><b>14,933 s</b> — climax</td><td>flash + shake + freeze 4f + SFX</td><td class="ok">255 ✓</td></tr>
+        <tr><td>15,983 s</td><td class="soft">cut doux — résolution</td><td class="soft">97</td></tr>
+      </table>
+    </div>
+
+    <div class="note">
+      <b>Preuve mesurée</b> — luminance analysée frame par frame sur les 1022 frames du fichier final :
+      les <b>7 seules</b> frames dépassant 200 de luminance sont 142, 267, 393, 519, 645, 770, 896,
+      soit exactement la grille 2 s. <b>7/7 flashs</b>, <b>0 flash parasite</b> sur les cuts doux.
+      Écarts mesurés entre flashs : 2,083 / 2,100 / 2,100 / 2,100 / 2,083 / 2,100 s.
+    </div>
+
+    <div class="fix">
+      <h3>Sources — inchangées</h3>
+      Mêmes <b>3 rushes 100 % live-action</b>, même bande son, montage 60 fps sur frontières de
+      frames en cumulé : <b>bus-fight</b> (bagarre de bus, nuit) · <b>combat-teleport</b>
+      (ruelle graffiti, nuit) · <b>street-ruins</b> (ville en ruines, poussière).
+      Aucun anime, aucun robot. Aucune génération : 0 €.
+    </div>
+  </div>
+
+  <footer>Automation Boost — prévisualisation interne</footer>
+</div>
+</body>
+</html>

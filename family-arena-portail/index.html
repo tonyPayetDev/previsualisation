@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Family Arena — Un autre monde à chaque pas</title>
+<meta name="description" content="Proposition de refonte cinématique — Family Arena, centre multi-activité de 400 m² à Saint-Pierre, La Réunion.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+/* ---------------------------------------------------------------------------
+   Family Arena — proposition.
+   Palette relevée sur familyarena.re : bleu nuit #111E3C, bleu vif #0064FB,
+   rouge #F34A4A pour l'action. L'interface porte LEUR charte ; les mondes
+   gardent la leur, ce sont les jeux, pas la marque.
+   (Voir le correctif du 24/08 plus bas : l'or de leur thème a été retiré.)
+   --------------------------------------------------------------------------- */
+:root{
+  --nuit:#080d1c;
+  --nuit-2:#111E3C;
+  --nuit-3:#16224a;
+  --ligne:#22305c;
+  --txt:#eef2fb;
+  --mut:#8a97ba;
+  /* ── Correctif couleurs 24/08 ────────────────────────────────────────────
+     L'or #EFB509 a ete retire. Il figure bien dans la palette Elementor de
+     familyarena.re, mais il n'y est quasiment jamais PEINT : sur 31 declarations,
+     9 sont en #EFB50900 (alpha 00 = transparent) et 10 sont derriere un :hover.
+     Le lire dans la feuille de style et en faire un accent, c'est inventer une
+     couleur que personne ne voit sur leur site.
+     Ce qu'on voit vraiment chez eux : le bleu vif #0064FB (leur globale
+     Elementor principale), le bleu nuit #111E3C, et un rouge #F34A4A qui sert
+     au seul bouton reellement rempli. On s'en tient a ca. */
+  --vif:#0064FB;        /* accent : leur bleu de marque, celui qui est affiche */
+  --vif-fonce:#0045E8;  /* survol et degrades */
+  --cta:#F34A4A;        /* reserve au bouton de reservation, comme chez eux */
+  --sur-vif:#ffffff;    /* le texte pose sur --vif ou --cta */
+  --bleu:#0274be;
+  --bleu-clair:#71AFDB;
+  --dsp:'Archivo','Arial Narrow',sans-serif;
+  --bdy:'Inter',system-ui,sans-serif;
+  --mno:'JetBrains Mono',ui-monospace,monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--nuit);color:var(--txt);font-family:var(--bdy);font-size:17px;
+  line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+.dsp{font-family:var(--dsp);font-variation-settings:'wdth' 76,'wght' 800;
+  text-transform:uppercase;letter-spacing:-.005em;line-height:.94;text-wrap:balance}
+.mono{font-family:var(--mno);font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--bleu-clair)}
+.wrap{max-width:1180px;margin:0 auto;padding:0 28px}
+
+.bandeau{background:var(--vif);color:var(--sur-vif);text-align:center;padding:9px 16px;
+  font-size:13px;font-weight:600;position:relative;z-index:30}
+
+.nav{position:sticky;top:0;z-index:20;display:flex;align-items:center;
+  justify-content:space-between;padding:15px 28px;
+  background:rgba(8,13,28,.86);backdrop-filter:blur(8px);
+  border-bottom:1px solid var(--ligne)}
+/* Leur logo porte deja le pictogramme famille — deux parents, deux enfants.
+   C'est le signal le plus direct de tout le site : il passe devant le mot. */
+.nav .marque{display:flex;align-items:center;gap:11px;
+  font-family:var(--dsp);font-variation-settings:'wdth' 72,'wght' 800;
+  text-transform:uppercase;font-size:19px;letter-spacing:.03em;color:var(--txt);text-decoration:none}
+.nav .marque img{width:42px;height:42px;display:block;flex:none}
+@media(max-width:520px){.nav .marque span{display:none}}
+.nav .marque i{font-style:normal;color:var(--vif)}
+.nav-liens{display:flex;gap:24px;align-items:center}
+.nav-liens a{color:var(--mut);text-decoration:none;font-size:14px;transition:color .2s}
+.nav-liens a:hover{color:var(--txt)}
+.nav .btn{background:var(--vif);color:var(--sur-vif);padding:10px 18px;border-radius:3px;
+  font-size:13px;font-weight:700;text-decoration:none;transition:transform .2s}
+.nav .btn:hover{transform:translateY(-2px)}
+@media(max-width:900px){.nav-liens a:not(.btn){display:none}}
+
+/* ---------- Le passage ---------- */
+#film{position:relative;height:620vh}
+#colle{position:sticky;top:0;height:100vh;overflow:hidden}
+#toile{position:absolute;inset:0;width:100%;height:100%;display:block}
+#colle::after{content:'';position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(to top,rgba(8,13,28,.95) 0%,rgba(8,13,28,.42) 36%,
+    rgba(8,13,28,.06) 62%,rgba(8,13,28,.5) 100%)}
+.chapitres{position:absolute;inset:0;z-index:2}
+.chap{position:absolute;left:0;right:0;bottom:10vh;padding:0 28px;max-width:1180px;margin:0 auto;
+  opacity:0;transform:translateY(26px);transition:opacity .45s ease,transform .45s ease;
+  will-change:opacity,transform}
+.chap.vu{opacity:1;transform:none}
+.chap .mono{display:block;margin-bottom:14px}
+.chap h1,.chap h2{font-size:clamp(38px,6.6vw,92px);max-width:16ch}
+.chap p{margin-top:18px;max-width:48ch;color:#c2cbe4;font-size:clamp(15px,1.5vw,19px)}
+.chap .prix{display:inline-block;margin-top:22px;font-family:var(--mno);font-size:13px;
+  letter-spacing:.06em;color:var(--vif);border:1px solid rgba(0,100,251,.45);
+  padding:8px 14px;border-radius:3px}
+.chap .cta{display:inline-flex;align-items:center;gap:10px;margin-top:26px;
+  background:var(--cta);color:var(--sur-vif);text-decoration:none;padding:15px 26px;
+  border-radius:3px;font-weight:700;font-size:15px;transition:transform .2s,box-shadow .2s}
+.chap .cta:hover{transform:translateY(-2px);box-shadow:0 12px 34px rgba(0,100,251,.3)}
+.defiler{position:absolute;bottom:24px;left:50%;transform:translateX(-50%);z-index:3;
+  font-family:var(--mno);font-size:10.5px;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--mut);display:flex;flex-direction:column;align-items:center;gap:9px;transition:opacity .3s}
+.defiler span{display:block;width:1px;height:32px;background:linear-gradient(var(--vif),transparent)}
+.jauge{position:absolute;left:26px;top:50%;transform:translateY(-50%);z-index:3;
+  display:flex;flex-direction:column;gap:8px}
+.jauge b{display:block;width:2px;height:24px;background:var(--ligne);transition:background .3s}
+.jauge b.on{background:var(--vif)}
+@media(max-width:900px){.jauge{display:none}}
+
+section{position:relative;z-index:2;background:var(--nuit)}
+.sec{padding:104px 0}
+.sec-t{font-size:clamp(30px,4.4vw,54px);max-width:20ch;margin-bottom:16px}
+.sec-i{color:var(--mut);max-width:56ch;margin-bottom:48px}
+.eyebrow{display:block;margin-bottom:16px}
+
+/* Activités */
+.grille{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+@media(max-width:980px){.grille{grid-template-columns:1fr 1fr}}
+@media(max-width:660px){.grille{grid-template-columns:1fr}}
+.act{border:1px solid var(--ligne);background:var(--nuit-2);border-radius:5px;
+  overflow:hidden;display:flex;flex-direction:column;
+  transition:border-color .25s,transform .25s}
+.act:hover{border-color:var(--vif);transform:translateY(-3px)}
+/* La photo est en 3:2 et `cover` : les originaux vont du 2000×1333 au portrait,
+   sans cadrage impose la grille se decalerait carte par carte. */
+.act .vue{display:block;width:100%;height:auto;aspect-ratio:3/2;object-fit:cover;
+  background:var(--nuit-3);border-bottom:1px solid var(--ligne)}
+.act-txt{padding:26px 26px 30px;display:flex;flex-direction:column;flex:1}
+/* Karaoke et i-Quiz n'ont aucune photo utilisable sur familyarena.re : le seul
+   visuel karaoke est une affiche promotionnelle portant prix et creneaux.
+   Le bloc image devient donc un chiffre — vrai, source, et de meme emprise. */
+.vue-vide{aspect-ratio:3/2;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;gap:7px;border-bottom:1px solid var(--ligne);
+  background:radial-gradient(120% 120% at 50% 0%,var(--nuit-3),var(--nuit-2))}
+.vue-vide b{font-family:var(--dsp);font-variation-settings:'wdth' 68,'wght' 800;
+  font-size:clamp(40px,4.6vw,58px);line-height:1;color:var(--vif);
+  font-variant-numeric:tabular-nums}
+.vue-vide span{font-family:var(--mno);font-size:11px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--mut)}
+.badge-neuf{align-self:flex-start;font-family:var(--mno);font-size:10px;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--sur-vif);background:var(--vif);
+  padding:5px 10px;border-radius:3px;margin-bottom:16px}
+.act h3{font-family:var(--dsp);font-variation-settings:'wdth' 74,'wght' 800;
+  text-transform:uppercase;font-size:23px;margin-bottom:10px}
+.act .age{font-family:var(--mno);font-size:11px;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--bleu-clair);display:block;margin-bottom:14px}
+.act p{font-size:14.5px;color:#b3bed9}
+
+/* Le mur de photos.
+   Grille de 4 colonnes ou deux images occupent 2 colonnes : sans ces deux
+   respirations, huit vignettes identiques se lisent comme un catalogue.
+   `grid-auto-flow: dense` evite les trous quand une large ne rentre pas. */
+.mur{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+@media(max-width:900px){.mur{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){.mur{grid-template-columns:1fr}}
+.ph{margin:0;border-radius:5px;overflow:hidden;background:var(--nuit-2);
+  border:1px solid var(--ligne)}
+.ph img{display:block;width:100%;height:auto;aspect-ratio:3/2;object-fit:cover;
+  transition:transform .5s ease}
+.ph:hover img{transform:scale(1.04)}
+.note-ph{margin-top:26px;font-size:14.5px;color:var(--mut);max-width:60ch}
+
+/* Tarifs */
+.tarifs{display:grid;grid-template-columns:repeat(5,1fr);gap:14px}
+@media(max-width:1040px){.tarifs{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:540px){.tarifs{grid-template-columns:1fr}}
+.tar{border:1px solid var(--ligne);background:var(--nuit-2);border-radius:5px;
+  padding:26px 20px;text-align:center;display:flex;flex-direction:column}
+.tar.phare{border-color:var(--vif)}
+.tar h4{font-family:var(--dsp);font-variation-settings:'wdth' 74,'wght' 800;
+  text-transform:uppercase;font-size:18px;margin-bottom:14px}
+.tar .p{font-family:var(--dsp);font-variation-settings:'wdth' 68,'wght' 800;
+  font-size:46px;color:var(--vif);line-height:1;font-variant-numeric:tabular-nums}
+.tar .u{font-size:12.5px;color:var(--mut);margin-top:10px;flex:1}
+.tar .note{font-size:11.5px;color:var(--mut);margin-top:14px;padding-top:12px;
+  border-top:1px solid var(--ligne);line-height:1.45}
+.autres{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:22px}
+@media(max-width:760px){.autres{grid-template-columns:1fr}}
+.bloc{border:1px solid var(--ligne);background:var(--nuit-2);border-radius:5px;padding:26px}
+.bloc h4{font-family:var(--dsp);font-variation-settings:'wdth' 74,'wght' 800;
+  text-transform:uppercase;font-size:19px;margin-bottom:16px}
+.bloc .l{display:flex;justify-content:space-between;gap:16px;padding:11px 0;
+  border-top:1px solid var(--ligne);font-size:14.5px}
+.bloc .l:first-of-type{border-top:0}
+.bloc .l b{font-family:var(--mno);color:var(--bleu-clair);white-space:nowrap}
+.bloc .d{font-size:12.5px;color:var(--mut);margin-top:14px}
+
+.reserve{border-top:1px solid var(--ligne);background:var(--nuit-2)}
+.reserve .in{display:grid;grid-template-columns:1fr auto;gap:36px;align-items:center}
+@media(max-width:820px){.reserve .in{grid-template-columns:1fr;gap:26px}}
+.reserve .cta{display:inline-flex;align-items:center;gap:10px;background:var(--cta);
+  color:var(--sur-vif);text-decoration:none;padding:17px 30px;border-radius:3px;
+  font-weight:700;font-size:16px;white-space:nowrap;transition:transform .2s}
+.reserve .cta:hover{transform:translateY(-2px)}
+
+footer{border-top:1px solid var(--ligne);padding:38px 0;color:var(--mut);font-size:13.5px}
+.avert{margin-top:26px;padding:18px 20px;border:1px solid var(--ligne);border-radius:5px;
+  background:rgba(2,116,190,.07);font-size:13px;color:var(--mut);line-height:1.6}
+.avert b{color:var(--bleu-clair)}
+
+.ap{opacity:0;transform:translateY(22px);transition:opacity .6s ease,transform .6s ease}
+.ap.vu{opacity:1;transform:none}
+
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .ap,.chap{opacity:1!important;transform:none!important;transition:none}
+  #film{height:auto}
+  #colle{position:relative;height:auto;min-height:74vh}
+  .chapitres{position:relative}
+  .chap{position:relative;bottom:auto;padding:80px 28px 40px}
+}
+</style>
+</head>
+<body>
+
+<div class="bandeau">Proposition de refonte — page de démonstration, non publiée</div>
+
+<nav class="nav">
+  <a href="#" class="marque">
+    <img src="photos/logo.png" alt="Family Arena" width="304" height="300">
+    <span>Family<i>Arena</i></span>
+  </a>
+  <div class="nav-liens">
+    <a href="#activites">Activités</a>
+    <a href="#eux">Photos</a>
+    <a href="#tarifs">Tarifs</a>
+    <a href="#venir">Venir</a>
+    <a href="#venir" class="btn">Réserver</a>
+  </div>
+</nav>
+
+<!-- ============ LE PASSAGE ============ -->
+<div id="film">
+  <div id="colle">
+    <canvas id="toile"></canvas>
+
+    <div class="jauge" id="jauge"><b class="on"></b><b></b><b></b><b></b><b></b><b></b></div>
+
+    <div class="chapitres">
+      <div class="chap" data-chap="0">
+        <span class="mono">Saint-Pierre · La Réunion</span>
+        <!-- Le titre est LEUR phrase, mot pour mot depuis familyarena.re :
+             « Chez nous venez seul, à deux, entre amis, en famille ». Elle dit
+             la cible mieux que n'importe quelle accroche écrite pour eux. -->
+        <h1 class="dsp">Seul, à deux,<br>entre amis,<br>en famille.</h1>
+        <p>400 m² à Saint-Pierre. Réalité virtuelle, HADO, simulateurs, escape games et karaoké en box privée. Vous arrivez les mains vides : tout est sur place.</p>
+        <a href="#venir" class="cta">Réserver un créneau →</a>
+      </div>
+
+      <div class="chap" data-chap="1">
+        <span class="mono">Le passage</span>
+        <h2 class="dsp">Vous posez<br>les casques.</h2>
+        <p>Un pod de 9 m² par joueur, casque HTC Vive Pro. Chacun le sien — et tout le monde dans la même partie.</p>
+      </div>
+
+      <div class="chap" data-chap="2">
+        <span class="mono">Monde 1 · Pods VR</span>
+        <h2 class="dsp">Le mur<br>s'ouvre.</h2>
+        <p>Jeux de tir, zombies, escape games. Jusqu'à 9 personnes en même temps — et à partir de 6 joueurs, ça devient un tournoi par équipes.</p>
+        <span class="prix">à partir de 9 €</span>
+      </div>
+
+      <div class="chap" data-chap="3">
+        <span class="mono">Monde 2 · HADO</span>
+        <h2 class="dsp">Vous lancez<br>des boules<br>d'énergie.</h2>
+        <p>Capteurs de mouvement, réalité augmentée et vrai sport. On tire, on remonte son bouclier, on esquive. L’expérience d’être dans un jeu vidéo réel.</p>
+      </div>
+
+      <div class="chap" data-chap="4">
+        <span class="mono">Monde 3 · Simulateurs</span>
+        <h2 class="dsp">À vous<br>le volant.</h2>
+        <p>Deux baquets de course pour prendre la place d'un vrai pilote. Et le X-MOTION, près de 10 aventures en 9D, avec un effet vent.</p>
+        <span class="prix">10 € et 18 €</span>
+      </div>
+
+      <div class="chap" data-chap="5">
+        <span class="mono">Monde 4 · Escape Game</span>
+        <h2 class="dsp">La porte<br>se referme.</h2>
+        <p>Maison hantée, vaisseau spatial, chambre d'enfant : tablette en main, vous rassemblez les indices ensemble, dès 7-8 ans. Ou la version laser, à traverser sans couper un fil. Unique à La Réunion.</p>
+        <a href="#tarifs" class="cta">Voir tous les tarifs →</a>
+      </div>
+    </div>
+
+    <div class="defiler" id="defiler">Défiler<span></span></div>
+  </div>
+</div>
+
+<!-- ============ ACTIVITÉS ============ -->
+<section class="sec" id="activites">
+  <div class="wrap">
+    <span class="mono eyebrow ap">Ce qu'il y a dans les 400 m²</span>
+    <h2 class="dsp sec-t ap">Six façons<br>d'être ensemble.</h2>
+    <p class="sec-i ap">Venez seul, à deux, entre amis ou en famille. Tout est sur place, y compris de quoi manger.</p>
+
+    <!-- Toutes les photos viennent de familyarena.re — galerie photo et pages
+         activités. Aucune image générée, aucune banque d'images.
+         i-Quiz n'a AUCUNE photo sur leur site : sa carte reste typographique
+         plutôt que d'emprunter une image d'une autre activité. -->
+    <div class="grille">
+      <div class="act ap">
+        <img class="vue" src="photos/carte-vr.jpg" alt="Une famille joue ensemble dans les pods VR de Family Arena" width="900" height="600" loading="lazy">
+        <div class="act-txt">
+          <h3>Pods VR</h3>
+          <span class="age">Casque HTC Vive Pro</span>
+          <p>Des espaces de jeu de 9 m² chacun. En solo ou en multijoueur jusqu'à 9 personnes dans la même partie — et à partir de 6, un tournoi par équipes.</p>
+        </div>
+      </div>
+      <div class="act ap">
+        <img class="vue" src="photos/carte-hado.jpg" alt="Un joueur en pleine partie de HADO devant le mur HADO" width="900" height="600" loading="lazy">
+        <div class="act-txt">
+          <h3>HADO</h3>
+          <span class="age">Réalité augmentée · sport</span>
+          <p>Capteur de mouvement, AR et sport réunis. Tirer des boules d'énergie, remonter les boucliers, combattre des monstres. L'expérience d'être dans un jeu vidéo réel.</p>
+        </div>
+      </div>
+      <div class="act ap">
+        <img class="vue" src="photos/carte-simu.jpg" alt="Un baquet de course avec volant devant les écrans du simulateur" width="900" height="600" loading="lazy">
+        <div class="act-txt">
+          <h3>Simulateurs</h3>
+          <span class="age">Course auto · X-MOTION 9D</span>
+          <p>Deux baquets pour les amateurs de course automobile. Et le X-MOTION, près de 10 aventures en 9D avec un effet vent.</p>
+        </div>
+      </div>
+      <div class="act ap">
+        <img class="vue" src="photos/carte-escape.jpg" alt="La salle laser de l'escape game, traversée de faisceaux verts" width="900" height="600" loading="lazy">
+        <div class="act-txt">
+          <h3>Escape Game</h3>
+          <span class="age">Dès 5-6 ans · 30 à 50 min</span>
+          <p>Deux escape games d'un nouveau genre, uniques à La Réunion. En réalité augmentée sur tablette dès 7-8 ans, ou en version laser à traverser dès 5-6 ans.</p>
+        </div>
+      </div>
+      <div class="act act-sans-vue ap">
+        <div class="vue-vide"><b>44 000</b><span>titres au catalogue</span></div>
+        <div class="act-txt">
+          <h3>Karaoké en box</h3>
+          <span class="age">Small 2-8 · Big 9-16</span>
+          <p>Plus de 44 000 titres, micro, écran TV et jeux de lumière. En privé, sans embêter personne.</p>
+        </div>
+      </div>
+      <div class="act act-sans-vue ap">
+        <div class="vue-vide"><b>5 ans</b><span>l'âge minimum</span></div>
+        <div class="act-txt">
+          <span class="badge-neuf">Nouveau</span>
+          <h3>i-Quiz</h3>
+          <span class="age">Dès 5 ans</span>
+          <p>Le premier quiz game de La Réunion. Questions-réponses sur écran géant, et de vrais buzzers pour affronter vos amis, votre famille ou vos collègues.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ LEURS PHOTOS ============
+     La section qui manquait. Tout le reste de la page decrit des machines ;
+     celle-ci montre QUI s'en sert. Les huit images viennent de leur galerie
+     photo — ce sont leurs clients, chez eux, pas des mannequins.
+     C'est ce qui fait passer « centre de loisirs techno » a « sortie en famille ». -->
+<section class="sec familles" id="eux" style="border-top:1px solid var(--ligne)">
+  <div class="wrap">
+    <span class="mono eyebrow ap">Leurs photos, pas les nôtres</span>
+    <h2 class="dsp sec-t ap">Le plus jeune<br>a cinq ans.</h2>
+    <p class="sec-i ap">Un enfant en tee-shirt Spider-Man, ses parents à côté, quatre pods allumés en même temps. C'est à ça que ressemble un samedi ici.</p>
+
+    <!-- Six tuiles, toutes au même format. Une première version faisait varier
+         la taille des vignettes ; une tuile double occupait deux colonnes mais
+         gardait la hauteur d'une seule ligne, ce qui creusait un trou sous ses
+         voisines. La hiérarchie est portée par le titre, pas par la grille. -->
+    <div class="mur">
+      <figure class="ph"><img src="photos/gal-1.jpg" alt="Un enfant en tee-shirt Spider-Man joue en réalité virtuelle, casque et manettes en main" width="900" height="600" loading="lazy"></figure>
+      <figure class="ph"><img src="photos/gal-2.jpg" alt="Une famille — parents et enfants — dans les pods VR côte à côte" width="900" height="600" loading="lazy"></figure>
+      <figure class="ph"><img src="photos/gal-4.jpg" alt="Un enfant casque sur la tête devant le mur VR Family" width="900" height="600" loading="lazy"></figure>
+      <figure class="ph"><img src="photos/gal-3.jpg" alt="Plusieurs joueurs dans la même partie, chacun dans son pod" width="900" height="600" loading="lazy"></figure>
+      <figure class="ph"><img src="photos/gal-7.jpg" alt="L'espace arcade : baby-foot, air hockey et bornes de course" width="900" height="600" loading="lazy"></figure>
+      <figure class="ph"><img src="photos/gal-8.jpg" alt="L'espace détente, avec tables et chaises pour souffler entre deux parties" width="900" height="600" loading="lazy"></figure>
+    </div>
+
+    <p class="note-ph">Entre deux parties, il y a un baby-foot, un air hockey et de quoi s'asseoir. Personne n'attend debout.</p>
+  </div>
+</section>
+
+<!-- ============ TARIFS ============ -->
+<section class="sec" id="tarifs" style="border-top:1px solid var(--ligne)">
+  <div class="wrap">
+    <span class="mono eyebrow ap">Tarifs</span>
+    <h2 class="dsp sec-t ap">À partir de 9 €.</h2>
+    <p class="sec-i ap">Que vous soyez novice ou confirmé, plusieurs forfaits. Tous disponibles en bon cadeau.</p>
+
+    <div class="tarifs">
+      <div class="tar ap"><h4>Starter</h4><div class="p">9 €</div>
+        <div class="u">1 personne / pod VR</div>
+        <div class="note">Facile à prolonger sur une expérience plus longue.</div></div>
+      <div class="tar ap"><h4>Confirmé</h4><div class="p">17 €</div>
+        <div class="u">1 personne / pod VR</div>
+        <div class="note">Multijoueur possible sur cette formule : 15 € / personne.</div></div>
+      <div class="tar phare ap"><h4>Le Top</h4><div class="p">24 €</div>
+        <div class="u">1 personne / pod VR</div>
+        <div class="note">Les meilleurs jeux et expériences, dans un temps optimal.</div></div>
+      <div class="tar ap"><h4>Winner</h4><div class="p">29 €</div>
+        <div class="u">1 personne / pod VR</div>
+        <div class="note">Multijoueur possible sur cette formule : 15 € / personne.</div></div>
+      <div class="tar ap"><h4>Pack Family</h4><div class="p">49 €</div>
+        <div class="u">4 personnes max / pod VR</div>
+        <div class="note">2 h à partager. Lundi, mardi, jeudi et vendredi, hors vacances scolaires.</div></div>
+    </div>
+
+    <div class="autres">
+      <div class="bloc ap">
+        <h4>Simulateur</h4>
+        <div class="l"><span>1 personne</span><b>10 €</b></div>
+        <div class="l"><span>1 personne — format long</span><b>18 €</b></div>
+        <div class="d">Baquet de course ou X-MOTION 9D.</div>
+      </div>
+      <div class="bloc ap">
+        <h4>Escape Game</h4>
+        <div class="l"><span>1 à 2 personnes</span><b>19 €</b></div>
+        <div class="l"><span>3 à 4 personnes</span><b>35 €</b></div>
+        <div class="d">Durée entre 20 et 30 minutes selon votre niveau.</div>
+      </div>
+    </div>
+
+    <p class="sec-i ap" style="margin:28px 0 0;font-size:14px">
+      Tarif de groupe à partir de 20 personnes. Restauration sur place ou à emporter,
+      midi et soir : tapas, sandwichs, tacos, salades, pâtes, confiserie.
+    </p>
+  </div>
+</section>
+
+<!-- ============ VENIR ============ -->
+<section class="sec reserve" id="venir">
+  <div class="wrap in">
+    <div class="ap">
+      <span class="mono eyebrow">Venir</span>
+      <h2 class="dsp sec-t" style="margin-bottom:14px">Family Arena,<br>Saint-Pierre.</h2>
+      <p style="color:var(--mut);max-width:50ch;margin:0">
+        Centre multi-activité de plus de 400 m². Réalité virtuelle, HADO, simulateurs
+        dynamiques et karaoké en box privé. Bons cadeaux disponibles sur toutes les formules.
+      </p>
+    </div>
+    <a href="https://familyarena.re/infos-pratiques/contact/" class="cta">Réserver un créneau →</a>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div>Family Arena · Saint-Pierre, La Réunion · familyarena.re</div>
+    <div class="avert">
+      <b>Page de démonstration.</b> Proposition de refonte réalisée par AutomatisationBoost.
+      Tous les textes, activités et tarifs proviennent du site actuel de Family Arena et n'ont
+      pas été modifiés. Les images du parcours sont des <b>illustrations générées</b> : elles
+      représentent les univers de jeu proposés, ce ne sont pas des photographies du centre.
+      Rien n'a été publié ni mis en ligne sur le site du client.
+    </div>
+  </div>
+</footer>
+
+<script>
+/* --- Le passage : scrub d'une séquence de 132 images sur 6 mondes --- */
+(function () {
+  var NB = 132;
+  var film = document.getElementById('film');
+  var toile = document.getElementById('toile');
+  var ctx = toile.getContext('2d', { alpha: false });
+  var chaps = [].slice.call(document.querySelectorAll('.chap'));
+  var barres = [].slice.call(document.querySelectorAll('#jauge b'));
+  var defiler = document.getElementById('defiler');
+  var reduit = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  var imgs = new Array(NB), prets = new Array(NB), dernier = -1;
+  function url(i) { return 'seq/' + String(i).padStart(3, '0') + '.webp'; }
+
+  function charger(i, prio) {
+    if (imgs[i]) return;
+    var im = new Image();
+    if (prio) im.fetchPriority = 'high';
+    im.onload = function () { prets[i] = true; if (dernier < 0) peindre(0); };
+    im.src = url(i);
+    imgs[i] = im;
+  }
+
+  function dimensionner() {
+    var r = Math.min(window.devicePixelRatio || 1, 2);
+    toile.width = Math.round(toile.clientWidth * r);
+    toile.height = Math.round(toile.clientHeight * r);
+    if (dernier >= 0) { var d = dernier; dernier = -1; peindre(d); }
+  }
+
+  function peindre(i) {
+    // Jamais de noir : à défaut de l'image visée, la plus proche déjà décodée.
+    var j = i;
+    if (!prets[j]) {
+      var t = -1;
+      for (var d = 1; d < NB; d++) {
+        if (j - d >= 0 && prets[j - d]) { t = j - d; break; }
+        if (j + d < NB && prets[j + d]) { t = j + d; break; }
+      }
+      if (t < 0) return;
+      j = t;
+    }
+    if (j === dernier) return;
+    dernier = j;
+    var im = imgs[j], cw = toile.width, ch = toile.height;
+    var e = Math.max(cw / im.width, ch / im.height);
+    var w = im.width * e, h = im.height * e;
+    ctx.fillStyle = '#05070f';
+    ctx.fillRect(0, 0, cw, ch);
+    ctx.drawImage(im, (cw - w) / 2, (ch - h) / 2, w, h);
+  }
+
+  var tick = false;
+  function auScroll() {
+    if (tick) return;
+    tick = true;
+    requestAnimationFrame(function () {
+      tick = false;
+      var r = film.getBoundingClientRect();
+      var course = film.offsetHeight - window.innerHeight;
+      var p = course > 0 ? Math.min(1, Math.max(0, -r.top / course)) : 0;
+      peindre(Math.min(NB - 1, Math.round(p * (NB - 1))));
+
+      // Le chapitre le plus proche gagne : jamais deux textes superposés.
+      var pos = p * 6, meilleur = 0, dmin = Infinity;
+      chaps.forEach(function (c, i) {
+        var d = Math.abs(pos - (i + 0.5));
+        if (d < dmin) { dmin = d; meilleur = i; }
+      });
+      chaps.forEach(function (c, i) { c.classList.toggle('vu', i === meilleur); });
+      barres.forEach(function (b, i) { b.classList.toggle('on', i === meilleur); });
+      defiler.style.opacity = p > 0.04 ? '0' : '1';
+    });
+  }
+
+  if (reduit) {
+    charger(30, true);
+    chaps.forEach(function (c) { c.classList.add('vu'); });
+  } else {
+    dimensionner();
+    [0, 22, 44, 66, 88, 110, 131].forEach(function (i) { charger(i, true); });
+    var n = 0;
+    (function suite() {
+      while (n < NB && imgs[n]) n++;
+      if (n >= NB) return;
+      charger(n);
+      imgs[n].addEventListener('load', suite, { once: true });
+      imgs[n].addEventListener('error', suite, { once: true });
+    })();
+    window.addEventListener('scroll', auScroll, { passive: true });
+    window.addEventListener('resize', function () { dimensionner(); auScroll(); });
+    auScroll();
+  }
+})();
+
+/* --- Apparitions au scroll --- */
+(function () {
+  var io = new IntersectionObserver(function (ents) {
+    ents.forEach(function (e) {
+      if (!e.isIntersecting) return;
+      e.target.classList.add('vu');
+      io.unobserve(e.target);
+    });
+  }, { rootMargin: '0px 0px -10% 0px', threshold: 0.12 });
+  document.querySelectorAll('.ap').forEach(function (c) { io.observe(c); });
+})();
+</script>
+</body>
+</html>
